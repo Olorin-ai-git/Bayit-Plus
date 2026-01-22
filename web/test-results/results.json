@@ -1,0 +1,1409 @@
+{
+  "config": {
+    "configFile": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/playwright.config.ts",
+    "rootDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 5
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 5
+        },
+        "id": "chromium-desktop",
+        "name": "chromium-desktop",
+        "testDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 5
+        },
+        "id": "firefox-desktop",
+        "name": "firefox-desktop",
+        "testDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 5
+        },
+        "id": "webkit-desktop",
+        "name": "webkit-desktop",
+        "testDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 5
+        },
+        "id": "ipad-pro",
+        "name": "ipad-pro",
+        "testDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 5
+        },
+        "id": "ipad",
+        "name": "ipad",
+        "testDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 5
+        },
+        "id": "iphone-15",
+        "name": "iphone-15",
+        "testDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 5
+        },
+        "id": "iphone-15-pro-max",
+        "name": "iphone-15-pro-max",
+        "testDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 5
+        },
+        "id": "iphone-se",
+        "name": "iphone-se",
+        "testDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 5
+        },
+        "id": "desktop-2k",
+        "name": "desktop-2k",
+        "testDir": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.57.0",
+    "workers": 5,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "footer-visual-regression.spec.ts",
+      "file": "footer-visual-regression.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Footer Migration - Visual Regression",
+          "file": "footer-visual-regression.spec.ts",
+          "line": 18,
+          "column": 6,
+          "specs": [
+            {
+              "title": "TC-WEB-1: Footer matches baseline - Desktop 1920px",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 13895,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:18:53.134Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-b6cab-s-baseline---Desktop-1920px-chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-b6cab-s-baseline---Desktop-1920px-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-b6cab-s-baseline---Desktop-1920px-chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-d3741074b11b8dd6a9b4",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 35,
+              "column": 3
+            },
+            {
+              "title": "TC-WEB-1b: Footer matches baseline - Desktop 2560px (2K)",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 13785,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:18:53.123Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-c2923-seline---Desktop-2560px-2K--chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-c2923-seline---Desktop-2560px-2K--chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-c2923-seline---Desktop-2560px-2K--chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-5269f3f5a89168584d77",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 50,
+              "column": 3
+            },
+            {
+              "title": "TC-WEB-2a: Footer matches baseline - iPhone SE 320px",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 13888,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:18:53.091Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-00d83--baseline---iPhone-SE-320px-chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-00d83--baseline---iPhone-SE-320px-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-00d83--baseline---iPhone-SE-320px-chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-df892ad3e7a6bc83944d",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 64,
+              "column": 3
+            },
+            {
+              "title": "TC-WEB-2b: Footer matches baseline - iPhone 15 375px",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 13824,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:18:53.125Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-39359--baseline---iPhone-15-375px-chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-39359--baseline---iPhone-15-375px-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-39359--baseline---iPhone-15-375px-chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-fd1f6e3516e73d30d98c",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 76,
+              "column": 3
+            },
+            {
+              "title": "TC-WEB-2c: Footer matches baseline - iPhone 15 Pro Max 430px",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "failed",
+                      "duration": 13804,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:18:53.122Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-7f173-e---iPhone-15-Pro-Max-430px-chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-7f173-e---iPhone-15-Pro-Max-430px-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-7f173-e---iPhone-15-Pro-Max-430px-chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-bfa80a5c19cfa645e8d1",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 88,
+              "column": 3
+            },
+            {
+              "title": "TC-WEB-2d: Footer matches baseline - iPad 768px",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 4,
+                      "status": "failed",
+                      "duration": 12233,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:19:08.258Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-a909f-tches-baseline---iPad-768px-chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-a909f-tches-baseline---iPad-768px-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-a909f-tches-baseline---iPad-768px-chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-2008e7adc4e2205ddf8a",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 100,
+              "column": 3
+            },
+            {
+              "title": "TC-WEB-2e: Footer matches baseline - iPad Pro 1024px",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 12099,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:19:08.239Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-d5cd1--baseline---iPad-Pro-1024px-chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-d5cd1--baseline---iPad-Pro-1024px-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-d5cd1--baseline---iPad-Pro-1024px-chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-513bbc2b337a8439d4e6",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 112,
+              "column": 3
+            },
+            {
+              "title": "TC-WEB-3a: Social button hover state",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 11974,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:19:08.240Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-2213c-a-Social-button-hover-state-chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-2213c-a-Social-button-hover-state-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-2213c-a-Social-button-hover-state-chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-5eea4da897ec2c6af8cb",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 126,
+              "column": 3
+            },
+            {
+              "title": "TC-WEB-3b: Expand/collapse transition",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 12004,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:19:08.246Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-9f569--Expand-collapse-transition-chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-9f569--Expand-collapse-transition-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-9f569--Expand-collapse-transition-chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-76438546fb74f60f4300",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 141,
+              "column": 3
+            },
+            {
+              "title": "TC-WEB-3c: Newsletter form focus state",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 11842,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:19:08.287Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-d4a98-Newsletter-form-focus-state-chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-d4a98-Newsletter-form-focus-state-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-d4a98-Newsletter-form-focus-state-chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-6a621b9cb6d40a148b24",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 161,
+              "column": 3
+            },
+            {
+              "title": "TC-WEB-4: Glass effects render correctly",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 12441,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:19:21.181Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-d5020-ss-effects-render-correctly-chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-d5020-ss-effects-render-correctly-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-d5020-ss-effects-render-correctly-chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-69d5847b72868f206b1c",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 178,
+              "column": 3
+            },
+            {
+              "title": "TC-WEB-5: Footer RTL layout correct (Hebrew)",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 12519,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:19:21.179Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-026a4--RTL-layout-correct-Hebrew--chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-026a4--RTL-layout-correct-Hebrew--chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-026a4--RTL-layout-correct-Hebrew--chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-f38e7dccc17855dd6bfd",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 197,
+              "column": 3
+            },
+            {
+              "title": "TC-WEB-6: Keyboard navigation works",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 12355,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:19:21.140Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-a994e-6-Keyboard-navigation-works-chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-a994e-6-Keyboard-navigation-works-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-a994e-6-Keyboard-navigation-works-chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-28c4cf6d5b87faf7c840",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 224,
+              "column": 3
+            },
+            {
+              "title": "TC-WEB-7: Core Web Vitals within thresholds",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 13,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 12368,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:19:21.159Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-0aeda-eb-Vitals-within-thresholds-chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-0aeda-eb-Vitals-within-thresholds-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-0aeda-eb-Vitals-within-thresholds-chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-8027252c3c610362355e",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 258,
+              "column": 3
+            },
+            {
+              "title": "TC-WEB-A1: All interactive elements have accessible names",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 14,
+                      "parallelIndex": 4,
+                      "status": "failed",
+                      "duration": 12351,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:19:21.216Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-95f3f-ments-have-accessible-names-chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-95f3f-ments-have-accessible-names-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-95f3f-ments-have-accessible-names-chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-2c175c9460216748b6a9",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 303,
+              "column": 3
+            },
+            {
+              "title": "TC-WEB-A2: Color contrast meets WCAG AA",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 15,
+                      "parallelIndex": 4,
+                      "status": "failed",
+                      "duration": 10873,
+                      "error": {
+                        "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n",
+                        "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16",
+                        "location": {
+                          "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                          "column": 16,
+                          "line": 25
+                        },
+                        "snippet": "  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                            "column": 16,
+                            "line": 25
+                          },
+                          "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('footer')\u001b[22m\n\n\n  23 |\n  24 |     // Wait for Footer to load\n> 25 |     await page.waitForSelector('footer', { state: 'attached' });\n     |                ^\n  26 |\n  27 |     // Wait for network to be idle (all resources loaded)\n  28 |     await page.waitForLoadState('networkidle');\n    at /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts:25:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-22T09:19:34.303Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-b24a7-olor-contrast-meets-WCAG-AA-chromium-desktop/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-b24a7-olor-contrast-meets-WCAG-AA-chromium-desktop/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/footer-visual-regression-F-b24a7-olor-contrast-meets-WCAG-AA-chromium-desktop/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/footer-visual-regression.spec.ts",
+                        "column": 16,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a0cb77e0e92ccc36ab03-0dbc8b18861ba2084a45",
+              "file": "footer-visual-regression.spec.ts",
+              "line": 320,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-01-22T09:18:52.452Z",
+    "duration": 52929.866,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 16,
+    "flaky": 0
+  }
+}

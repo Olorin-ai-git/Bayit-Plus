@@ -9,7 +9,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Animated,
@@ -19,6 +18,7 @@ import {
   Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
 import { colors, spacing, fontSize, borderRadius } from '../theme';
 import { cultureService } from '../services/api';
 import { isTV } from '../utils/platform';
@@ -234,24 +234,33 @@ export const CultureCityRow: React.FC<CultureCityRowProps> = ({
   // Loading state
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View className="my-4 rounded-2xl overflow-hidden">
         <ImageBackground
           source={FallbackBackground}
-          style={styles.backgroundImage}
-          imageStyle={styles.backgroundImageStyle}
+          className={clsx("justify-end", isTV ? "min-h-[320px]" : "min-h-[280px]")}
+          imageStyle={{ borderRadius: borderRadius.lg }}
           resizeMode="cover"
         >
-          <View style={styles.backgroundOverlay} />
-          <View style={styles.contentWrapper}>
+          <View className="absolute inset-0 bg-black/50 rounded-2xl" />
+          <View className="p-4">
             {showTitle && (
-              <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row' }]}>
-                <Text style={styles.headerTitle}>{getCityDisplayName()}</Text>
-                <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>
+              <View className={clsx(
+                "items-center mb-1",
+                isRTL ? "flex-row-reverse" : "flex-row"
+              )}>
+                <Text className={clsx(
+                  "font-bold text-white",
+                  isTV ? "text-xl" : "text-lg"
+                )}>{getCityDisplayName()}</Text>
+                <Text className={clsx(
+                  isTV ? "text-xl" : "text-lg",
+                  isRTL ? "mr-2" : "ml-2"
+                )}>
                   {getCultureFlag()}
                 </Text>
               </View>
             )}
-            <View style={styles.loadingContainer}>
+            <View className="h-[200px] justify-center items-center">
               <ActivityIndicator color={accentColor} size="large" />
             </View>
           </View>
@@ -263,25 +272,34 @@ export const CultureCityRow: React.FC<CultureCityRowProps> = ({
   // Empty state
   if (!data?.items?.length) {
     return (
-      <View style={styles.container}>
+      <View className="my-4 rounded-2xl overflow-hidden">
         <ImageBackground
           source={FallbackBackground}
-          style={styles.backgroundImage}
-          imageStyle={styles.backgroundImageStyle}
+          className={clsx("justify-end", isTV ? "min-h-[320px]" : "min-h-[280px]")}
+          imageStyle={{ borderRadius: borderRadius.lg }}
           resizeMode="cover"
         >
-          <View style={styles.backgroundOverlay} />
-          <View style={styles.contentWrapper}>
+          <View className="absolute inset-0 bg-black/50 rounded-2xl" />
+          <View className="p-4">
             {showTitle && (
-              <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row' }]}>
-                <Text style={styles.headerTitle}>{getCityDisplayName()}</Text>
-                <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>
+              <View className={clsx(
+                "items-center mb-1",
+                isRTL ? "flex-row-reverse" : "flex-row"
+              )}>
+                <Text className={clsx(
+                  "font-bold text-white",
+                  isTV ? "text-xl" : "text-lg"
+                )}>{getCityDisplayName()}</Text>
+                <Text className={clsx(
+                  isTV ? "text-xl" : "text-lg",
+                  isRTL ? "mr-2" : "ml-2"
+                )}>
                   {getCultureFlag()}
                 </Text>
               </View>
             )}
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>{t('cultureCities.noContent')}</Text>
+            <View className="h-[150px] justify-center items-center">
+              <Text className="text-white/60 text-base">{t('cultureCities.noContent')}</Text>
             </View>
           </View>
         </ImageBackground>
@@ -290,23 +308,32 @@ export const CultureCityRow: React.FC<CultureCityRowProps> = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View className="my-4 rounded-2xl overflow-hidden">
       <ImageBackground
         source={FallbackBackground}
-        style={styles.backgroundImage}
-        imageStyle={styles.backgroundImageStyle}
+        className={clsx("justify-end", isTV ? "min-h-[320px]" : "min-h-[280px]")}
+        imageStyle={{ borderRadius: borderRadius.lg }}
         resizeMode="cover"
       >
-        <View style={styles.backgroundOverlay} />
+        <View className="absolute inset-0 bg-black/50 rounded-2xl" />
 
-        <View style={styles.contentWrapper}>
+        <View className="p-4">
           {/* Header */}
           {showTitle && (
-            <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row' }]}>
-              <Text style={styles.headerTitle}>
+            <View className={clsx(
+              "items-center mb-1",
+              isRTL ? "flex-row-reverse" : "flex-row"
+            )}>
+              <Text className={clsx(
+                "font-bold text-white",
+                isTV ? "text-xl" : "text-lg"
+              )}>
                 {t('cultureCities.connectionTo', { city: getCityDisplayName() })}
               </Text>
-              <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>
+              <Text className={clsx(
+                isTV ? "text-xl" : "text-lg",
+                isRTL ? "mr-2" : "ml-2"
+              )}>
                 {getCultureFlag()}
               </Text>
             </View>
@@ -314,7 +341,10 @@ export const CultureCityRow: React.FC<CultureCityRowProps> = ({
 
           {/* Subtitle with city native name */}
           {city?.name_native && (
-            <Text style={[styles.subtitle, { textAlign: isRTL ? 'right' : 'left' }]}>
+            <Text className={clsx(
+              "text-white/80 mb-4",
+              isTV ? "text-base" : "text-sm"
+            )} style={{ textAlign: isRTL ? 'right' : 'left' }}>
               {city.name_native}
             </Text>
           )}
@@ -323,7 +353,10 @@ export const CultureCityRow: React.FC<CultureCityRowProps> = ({
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={[styles.itemsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+            contentContainerClassName={clsx(
+              "py-2 gap-4",
+              isRTL ? "flex-row-reverse" : "flex-row"
+            )}
           >
             {data.items.map((item, index) => (
               <ContentCard
@@ -343,9 +376,18 @@ export const CultureCityRow: React.FC<CultureCityRowProps> = ({
           </ScrollView>
 
           {/* Sources */}
-          <View style={[styles.sourcesContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Text style={styles.sourcesLabel}>{t('cultureCities.sources')}: </Text>
-            <Text style={styles.sourcesText}>
+          <View className={clsx(
+            "mt-4 items-center flex-wrap",
+            isRTL ? "flex-row-reverse" : "flex-row"
+          )}>
+            <Text className={clsx(
+              "text-white/40",
+              isTV ? "text-xs" : "text-[10px]"
+            )}>{t('cultureCities.sources')}: </Text>
+            <Text className={clsx(
+              "text-white/60 flex-shrink",
+              isTV ? "text-xs" : "text-[10px]"
+            )}>
               {Array.from(new Set(data.items.map(item => item.source_name))).join(', ')}
             </Text>
           </View>
@@ -402,54 +444,97 @@ const ContentCard: React.FC<ContentCardProps> = ({
     >
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <View
+          className={clsx(
+            "w-[261px] h-[180px] p-4 rounded-2xl border-2 overflow-hidden backdrop-blur-sm",
+            isFocused ? "border-2" : "border-transparent bg-transparent"
+          )}
           style={[
-            styles.contentCard,
-            isFocused && [styles.contentCardFocused, { borderColor: accentColor }],
+            isFocused && { borderColor: accentColor },
+            // @ts-ignore - Web-specific CSS properties
+            {
+              backdropFilter: 'blur(4px)',
+              WebkitBackdropFilter: 'blur(4px)',
+            }
           ]}
         >
-          <View style={[styles.cardHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Text style={[styles.categoryEmoji, { marginLeft: isRTL ? spacing.sm : 0, marginRight: isRTL ? 0 : spacing.sm }]}>
+          <View className={clsx(
+            "items-center mb-2",
+            isRTL ? "flex-row-reverse" : "flex-row"
+          )}>
+            <Text className={clsx(
+              isTV ? "text-lg" : "text-base",
+              isRTL ? "ml-2" : "mr-2"
+            )}>
               {categoryEmoji}
             </Text>
-            <View style={[styles.categoryBadge, { backgroundColor: `${accentColor}40` }]}>
-              <Text style={[styles.categoryText, { color: accentColor }]}>
+            <View className="px-2 py-0.5 rounded-full" style={{ backgroundColor: `${accentColor}40` }}>
+              <Text className={clsx(
+                "font-semibold",
+                isTV ? "text-sm" : "text-xs"
+              )} style={{ color: accentColor }}>
                 {categoryLabel}
               </Text>
             </View>
           </View>
 
-          <Text style={[styles.cardTitle, { textAlign: isRTL ? 'right' : 'left', writingDirection: 'auto' }]} numberOfLines={3}>
+          <Text
+            className={clsx(
+              "font-semibold text-white mb-2",
+              isTV ? "text-base leading-6" : "text-sm leading-5"
+            )}
+            style={{ textAlign: isRTL ? 'right' : 'left', writingDirection: 'auto' }}
+            numberOfLines={3}
+          >
             {title}
           </Text>
 
           {summary && (
-            <Text style={[styles.cardSummary, { textAlign: isRTL ? 'right' : 'left', writingDirection: 'auto' }]} numberOfLines={2}>
+            <Text
+              className={clsx(
+                "text-white/80 mb-2",
+                isTV ? "text-sm leading-5" : "text-xs leading-4"
+              )}
+              style={{ textAlign: isRTL ? 'right' : 'left', writingDirection: 'auto' }}
+              numberOfLines={2}
+            >
               {summary}
             </Text>
           )}
 
           {/* Tags */}
           {item.tags.length > 0 && (
-            <View style={[styles.tagsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View className={clsx(
+              "flex-wrap gap-1 mt-auto mb-2",
+              isRTL ? "flex-row-reverse" : "flex-row"
+            )}>
               {item.tags.slice(0, 3).map((tag, i) => (
-                <View key={i} style={styles.tag}>
-                  <Text style={styles.tagText}>{tag}</Text>
+                <View key={i} className="bg-white/10 px-2 py-0.5 rounded-full">
+                  <Text className={clsx(
+                    "text-white/60",
+                    isTV ? "text-xs" : "text-[10px]"
+                  )}>{tag}</Text>
                 </View>
               ))}
             </View>
           )}
 
           {/* Source and score */}
-          <View style={[styles.cardFooter, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Text style={styles.sourceText}>{item.source_name}</Text>
-            <View style={styles.scoreContainer}>
+          <View className={clsx(
+            "justify-between items-center mt-auto",
+            isRTL ? "flex-row-reverse" : "flex-row"
+          )}>
+            <Text className={clsx(
+              "text-white/40",
+              isTV ? "text-xs" : "text-[10px]"
+            )}>{item.source_name}</Text>
+            <View className="flex-row gap-0.5">
               {[...Array(5)].map((_, i) => (
                 <View
                   key={i}
-                  style={[
-                    styles.scoreDot,
-                    i < Math.round(item.relevance_score / 2) && { backgroundColor: accentColor },
-                  ]}
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{
+                    backgroundColor: i < Math.round(item.relevance_score / 2) ? accentColor : 'rgba(255, 255, 255, 0.2)'
+                  }}
                 />
               ))}
             </View>
@@ -459,157 +544,5 @@ const ContentCard: React.FC<ContentCardProps> = ({
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: spacing.md,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-  },
-  backgroundImage: {
-    minHeight: isTV ? 320 : 280,
-    justifyContent: 'flex-end',
-  },
-  backgroundImageStyle: {
-    borderRadius: borderRadius.lg,
-  },
-  backgroundOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: borderRadius.lg,
-  },
-  contentWrapper: {
-    padding: spacing.md,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  headerTitle: {
-    fontSize: isTV ? fontSize.xl : fontSize.lg,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  headerEmoji: {
-    fontSize: isTV ? fontSize.xl : fontSize.lg,
-  },
-  subtitle: {
-    fontSize: isTV ? fontSize.md : fontSize.sm,
-    color: colors.textSecondary,
-    marginBottom: spacing.md,
-  },
-  loadingContainer: {
-    height: 200,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyContainer: {
-    height: 150,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyText: {
-    color: colors.textMuted,
-    fontSize: fontSize.md,
-  },
-  itemsContainer: {
-    paddingVertical: spacing.sm,
-    gap: spacing.md,
-  },
-  contentCard: {
-    width: 261,
-    height: 180,
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    backgroundColor: 'transparent',
-    overflow: 'hidden',
-    // @ts-ignore - Web-specific CSS properties
-    backdropFilter: 'blur(4px)',
-    WebkitBackdropFilter: 'blur(4px)',
-  },
-  contentCardFocused: {
-    borderWidth: 2,
-  },
-  cardHeader: {
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  categoryEmoji: {
-    fontSize: isTV ? fontSize.lg : fontSize.md,
-  },
-  categoryBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs / 2,
-    borderRadius: borderRadius.full,
-  },
-  categoryText: {
-    fontSize: isTV ? fontSize.sm : fontSize.xs,
-    fontWeight: '600',
-  },
-  cardTitle: {
-    fontSize: isTV ? fontSize.md : fontSize.sm,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.sm,
-    lineHeight: isTV ? 24 : 20,
-  },
-  cardSummary: {
-    fontSize: isTV ? fontSize.sm : fontSize.xs,
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-    lineHeight: isTV ? 20 : 16,
-  },
-  tagsContainer: {
-    flexWrap: 'wrap',
-    gap: spacing.xs,
-    marginTop: 'auto',
-    marginBottom: spacing.sm,
-  },
-  tag: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs / 2,
-    borderRadius: borderRadius.full,
-  },
-  tagText: {
-    fontSize: isTV ? fontSize.xs : 10,
-    color: colors.textMuted,
-  },
-  cardFooter: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 'auto',
-  },
-  sourceText: {
-    fontSize: isTV ? fontSize.xs : 10,
-    color: colors.textMuted,
-  },
-  scoreContainer: {
-    flexDirection: 'row',
-    gap: 3,
-  },
-  scoreDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  sourcesContainer: {
-    marginTop: spacing.md,
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
-  sourcesLabel: {
-    fontSize: isTV ? fontSize.xs : 10,
-    color: colors.textMuted,
-  },
-  sourcesText: {
-    fontSize: isTV ? fontSize.xs : 10,
-    color: colors.textSecondary,
-    flexShrink: 1,
-  },
-});
 
 export default CultureCityRow;

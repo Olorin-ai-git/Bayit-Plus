@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Animated,
   TouchableOpacity,
   Pressable,
@@ -12,6 +11,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import clsx from 'clsx';
 import { GlassView } from './ui';
 import { SubtitleFlags } from './SubtitleFlags';
 import { colors, borderRadius, spacing } from '../theme';
@@ -194,11 +194,23 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
 
   if (items.length === 0) {
     return (
-      <View style={styles.container}>
-        <GlassView intensity="low" style={[styles.carouselWrapper, { height }]}>
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyIcon}>🎬</Text>
-            <Text style={styles.emptyText}>{t('empty.noContent')}</Text>
+      <View className="w-full">
+        <GlassView intensity="low" className={clsx(
+          "overflow-hidden bg-black/50",
+          isMobilePhone ? "rounded-xl" : "rounded-2xl"
+        )} style={{ height }}>
+          <View className={clsx(
+            "flex-1 justify-center items-center",
+            isMobilePhone ? "p-4" : "p-8"
+          )}>
+            <Text className={clsx(
+              "mb-2",
+              isMobilePhone ? "text-3xl" : "text-5xl"
+            )}>🎬</Text>
+            <Text className={clsx(
+              "font-semibold text-white text-center",
+              isMobilePhone ? "text-base" : "text-xl"
+            )}>{t('empty.noContent')}</Text>
           </View>
         </GlassView>
       </View>
@@ -208,10 +220,19 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
   const currentItem = items[activeIndex];
 
   return (
-    <View style={styles.container}>
+    <View className="w-full">
       <GlassView
         intensity="low"
-        style={[styles.carouselWrapper, { height }, isFocused && styles.carouselFocused]}
+        className={clsx(
+          "overflow-hidden bg-black/50",
+          isMobilePhone ? "rounded-xl" : "rounded-2xl",
+          isFocused && "border-purple-500 border-[3px]"
+        )}
+        style={[
+          { height },
+          // @ts-ignore - Web CSS property for glow effect
+          isFocused && Platform.OS === 'web' && { boxShadow: `0 0 20px ${colors.primary}80` }
+        ]}
       >
         <TouchableOpacity
           ref={mainCarouselRef}
@@ -219,32 +240,63 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
           onPress={() => onItemPress?.(currentItem)}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          style={styles.touchable}
+          className="flex-1"
           // @ts-ignore - tvOS specific focus navigation
           hasTVPreferredFocus={Platform.isTV}
           nextFocusLeft={leftArrowNode || undefined}
           nextFocusRight={rightArrowNode || undefined}
         >
-          <Animated.View style={[styles.itemContainer, { opacity: fadeAnim }]}>
+          <Animated.View className={clsx(
+            "flex-1 relative overflow-hidden",
+            isMobilePhone ? "rounded-xl" : "rounded-2xl"
+          )} style={{ opacity: fadeAnim }}>
             {/* Background Image */}
             {currentItem.image && (
               <Image
                 source={{ uri: currentItem.image }}
-                style={styles.backgroundImage}
+                className={clsx(
+                  "absolute top-0 left-0 right-0",
+                  isMobilePhone ? "rounded-xl" : "rounded-2xl"
+                )}
+                style={[
+                  {
+                    height: Platform.isTV ? '130%' : '100%',
+                  },
+                  // @ts-ignore - Web CSS properties
+                  Platform.OS === 'web' && {
+                    objectFit: 'cover',
+                    objectPosition: 'center 20%',
+                  }
+                ]}
                 resizeMode="cover"
               />
             )}
 
             {/* Gradient Overlay */}
-            <View style={styles.gradientOverlay} />
+            <View className={clsx(
+              "absolute inset-0",
+              isMobilePhone ? "rounded-xl bg-black/55" : "rounded-2xl bg-[rgba(13,13,26,0.3)]"
+            )} />
 
             {/* Content Container */}
-            <View style={styles.contentContainer}>
+            <View className={clsx(
+              "absolute inset-0 justify-between",
+              isMobilePhone ? "p-3" : "p-8"
+            )}>
               {/* Badge - Top Right for RTL, Top Left for LTR */}
               {currentItem.badge && (
-                <View style={[styles.badgeContainer, isRTL ? styles.badgeRight : styles.badgeLeft]}>
-                  <GlassView intensity="high" style={styles.badge}>
-                    <Text style={styles.badgeText}>{currentItem.badge}</Text>
+                <View className={clsx(
+                  "absolute",
+                  isMobilePhone ? "top-3" : "top-8",
+                  isRTL ? (isMobilePhone ? "right-3" : "right-20") : (isMobilePhone ? "left-3" : "left-20")
+                )}>
+                  <GlassView intensity="high" className={clsx(
+                    isMobilePhone ? "px-2 py-1" : "px-4 py-2"
+                  )}>
+                    <Text className={clsx(
+                      "text-purple-500 font-bold",
+                      isMobilePhone ? "text-[11px]" : "text-sm"
+                    )}>{currentItem.badge}</Text>
                   </GlassView>
                 </View>
               )}
@@ -252,7 +304,11 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
               {/* Action Buttons - Top corner opposite to badge */}
               {showActions && currentItem.contentType && (favoritesService || watchlistService) && (
                 <View
-                  style={[styles.actionButtons, isRTL ? styles.actionButtonsLeft : styles.actionButtonsRight]}
+                  className={clsx(
+                    "absolute flex-row z-10",
+                    isMobilePhone ? "top-3 gap-1" : "top-8 gap-2",
+                    isRTL ? (isMobilePhone ? "left-3" : "left-8") : (isMobilePhone ? "right-3" : "right-8")
+                  )}
                   // @ts-ignore - Web only onClick
                   onClick={(e: any) => { e.stopPropagation(); e.preventDefault(); }}
                 >
@@ -260,10 +316,19 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                     <Pressable
                       onPress={(e) => handleFavoriteToggle(currentItem, e)}
                       disabled={actionLoading[`fav-${currentItem.id}`]}
-                      style={[
-                        styles.actionButton,
-                        favoriteStates[currentItem.id] && styles.actionButtonActive,
-                      ]}
+                      className={clsx(
+                        "justify-center items-center bg-black/50",
+                        isMobilePhone ? "w-8 h-8 rounded-2xl" : "w-10 h-10 rounded-[20px]",
+                        favoriteStates[currentItem.id] && "bg-white/15"
+                      )}
+                      style={
+                        // @ts-ignore - Web transition
+                        Platform.OS === 'web' && {
+                          backdropFilter: 'blur(8px)',
+                          transition: 'all 0.2s ease',
+                          cursor: 'pointer',
+                        }
+                      }
                     >
                       <Ionicons
                         name={favoriteStates[currentItem.id] ? 'star' : 'star-outline'}
@@ -276,10 +341,19 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                     <Pressable
                       onPress={(e) => handleWatchlistToggle(currentItem, e)}
                       disabled={actionLoading[`wl-${currentItem.id}`]}
-                      style={[
-                        styles.actionButton,
-                        watchlistStates[currentItem.id] && styles.actionButtonActive,
-                      ]}
+                      className={clsx(
+                        "justify-center items-center bg-black/50",
+                        isMobilePhone ? "w-8 h-8 rounded-2xl" : "w-10 h-10 rounded-[20px]",
+                        watchlistStates[currentItem.id] && "bg-white/15"
+                      )}
+                      style={
+                        // @ts-ignore - Web transition
+                        Platform.OS === 'web' && {
+                          backdropFilter: 'blur(8px)',
+                          transition: 'all 0.2s ease',
+                          cursor: 'pointer',
+                        }
+                      }
                     >
                       <Ionicons
                         name={watchlistStates[currentItem.id] ? 'bookmark' : 'bookmark-outline'}
@@ -292,17 +366,60 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
               )}
 
               {/* Text Content - Right for RTL, Left for LTR */}
-              <View style={[styles.textSection, isRTL ? styles.textSectionRight : styles.textSectionLeft]}>
-                <Text style={[styles.title, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>
+              <View className={clsx(
+                "absolute",
+                isMobilePhone ? "bottom-12 max-w-[75%]" : "bottom-[100px]",
+                isRTL ? (isMobilePhone ? "right-3 items-end" : "right-20 items-end") : (isMobilePhone ? "left-3 items-start" : "left-20 items-start")
+              )}>
+                <Text
+                  className={clsx(
+                    "font-bold text-white",
+                    isMobilePhone ? "text-xl mb-1" : "text-[42px] mb-2"
+                  )}
+                  style={{
+                    textAlign: isRTL ? 'right' : 'left',
+                    textShadowColor: 'rgba(0, 0, 0, 0.9)',
+                    textShadowOffset: { width: 0, height: 1 },
+                    textShadowRadius: isMobilePhone ? 3 : 4,
+                  }}
+                  numberOfLines={2}
+                >
                   {currentItem.title}
                 </Text>
                 {currentItem.subtitle && (
-                  <Text style={[styles.subtitle, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>
+                  <Text
+                    className={clsx(
+                      "font-semibold tracking-wide",
+                      isMobilePhone ? "text-[13px] text-white mb-1" : "text-lg text-white/80 mb-3"
+                    )}
+                    style={{
+                      textAlign: isRTL ? 'right' : 'left',
+                      ...(isMobilePhone && {
+                        textShadowColor: 'rgba(0, 0, 0, 0.8)',
+                        textShadowOffset: { width: 0, height: 1 },
+                        textShadowRadius: 2,
+                      }),
+                    }}
+                    numberOfLines={2}
+                  >
                     {currentItem.subtitle}
                   </Text>
                 )}
                 {currentItem.description && (
-                  <Text style={[styles.description, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={4}>
+                  <Text
+                    className={clsx(
+                      isMobilePhone ? "text-xs text-white/90 leading-4 max-w-[280px]" : "text-base text-white/80 leading-6 max-w-[500px]"
+                    )}
+                    style={{
+                      textAlign: isRTL ? 'right' : 'left',
+                      ...(isMobilePhone && {
+                        textShadowColor: 'rgba(0, 0, 0, 0.8)',
+                        textShadowOffset: { width: 0, height: 1 },
+                        textShadowRadius: 2,
+                      }),
+                    }}
+                    numberOfLines={4}
+                  >
                     {currentItem.description}
                   </Text>
                 )}
@@ -319,10 +436,24 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
               )}
 
               {/* Play Button - Right for RTL, Left for LTR */}
-              <View style={[styles.playButtonContainer, isRTL ? styles.playButtonRight : styles.playButtonLeft]}>
-                <GlassView intensity="medium" style={[styles.playButton, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                  <Text style={styles.playIcon}>▶</Text>
-                  <Text style={styles.playText}>{t('common.watchNow')}</Text>
+              <View className={clsx(
+                "absolute",
+                isMobilePhone ? "bottom-3" : "bottom-8",
+                isRTL ? (isMobilePhone ? "right-3" : "right-20") : (isMobilePhone ? "left-3" : "left-20")
+              )}>
+                <GlassView intensity="medium" className={clsx(
+                  "flex-row items-center",
+                  isRTL ? "flex-row-reverse" : "flex-row",
+                  isMobilePhone ? "px-3.5 py-2 gap-1.5" : "px-6 py-3.5 gap-3"
+                )}>
+                  <Text className={clsx(
+                    "text-purple-500",
+                    isMobilePhone ? "text-sm" : "text-lg"
+                  )}>▶</Text>
+                  <Text className={clsx(
+                    "font-bold text-white",
+                    isMobilePhone ? "text-sm" : "text-lg"
+                  )}>{t('common.watchNow')}</Text>
                 </GlassView>
               </View>
             </View>
@@ -334,7 +465,10 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
           <>
             <TouchableOpacity
               ref={leftArrowRef as any}
-              style={[styles.navButton, styles.navButtonLeft]}
+              className={clsx(
+                "absolute top-1/2 z-10",
+                Platform.isTV ? "left-6 -mt-10" : (isMobilePhone ? "left-2 -mt-4" : "left-4 -mt-6")
+              )}
               activeOpacity={0.8}
               onPress={() => {
                 console.log('[GlassCarousel] Left arrow pressed, isRTL:', isRTL);
@@ -358,17 +492,24 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
               // @ts-ignore - tvOS specific focus navigation
               nextFocusRight={mainCarouselNode || undefined}
             >
-              <View style={[
-                styles.navButtonInner,
-                leftArrowFocused && styles.navButtonFocused
-              ]}>
-                <Text style={styles.navButtonText}>{isRTL ? '›' : '‹'}</Text>
+              <View className={clsx(
+                "justify-center items-center bg-black/60 border-white/30",
+                Platform.isTV ? "w-20 h-20 rounded-[40px] border-2" : (isMobilePhone ? "w-8 h-8 rounded-2xl border" : "w-12 h-12 rounded-3xl border-2"),
+                leftArrowFocused && "border-purple-500 border-[3px] bg-purple-500/30 scale-110"
+              )}>
+                <Text className={clsx(
+                  "text-white font-bold",
+                  Platform.isTV ? "text-5xl" : (isMobilePhone ? "text-xl" : "text-3xl")
+                )}>{isRTL ? '›' : '‹'}</Text>
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity
               ref={rightArrowRef as any}
-              style={[styles.navButton, styles.navButtonRight]}
+              className={clsx(
+                "absolute top-1/2 z-10",
+                Platform.isTV ? "right-6 -mt-10" : (isMobilePhone ? "right-2 -mt-4" : "right-4 -mt-6")
+              )}
               activeOpacity={0.8}
               onPress={() => {
                 console.log('[GlassCarousel] Right arrow pressed, isRTL:', isRTL);
@@ -392,11 +533,15 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
               // @ts-ignore - tvOS specific focus navigation
               nextFocusLeft={mainCarouselNode || undefined}
             >
-              <View style={[
-                styles.navButtonInner,
-                rightArrowFocused && styles.navButtonFocused
-              ]}>
-                <Text style={styles.navButtonText}>{isRTL ? '‹' : '›'}</Text>
+              <View className={clsx(
+                "justify-center items-center bg-black/60 border-white/30",
+                Platform.isTV ? "w-20 h-20 rounded-[40px] border-2" : (isMobilePhone ? "w-8 h-8 rounded-2xl border" : "w-12 h-12 rounded-3xl border-2"),
+                rightArrowFocused && "border-purple-500 border-[3px] bg-purple-500/30 scale-110"
+              )}>
+                <Text className={clsx(
+                  "text-white font-bold",
+                  Platform.isTV ? "text-5xl" : (isMobilePhone ? "text-xl" : "text-3xl")
+                )}>{isRTL ? '‹' : '›'}</Text>
               </View>
             </TouchableOpacity>
           </>
@@ -404,18 +549,22 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
 
         {/* Pagination Dots */}
         {items.length > 1 && (
-          <View style={styles.pagination}>
+          <View className={clsx(
+            "absolute left-0 right-0 flex-row justify-center items-center",
+            isMobilePhone ? "bottom-2 gap-1" : "bottom-4 gap-2"
+          )}>
             {items.map((_, index) => (
               <TouchableOpacity
                 key={index}
                 onPress={() => transitionToIndex(index)}
-                style={styles.dotTouchable}
+                className={isMobilePhone ? "p-0.5" : "p-1"}
               >
                 <View
-                  style={[
-                    styles.dot,
-                    index === activeIndex && styles.dotActive,
-                  ]}
+                  className={clsx(
+                    "bg-white/30",
+                    isMobilePhone ? "w-1.5 h-1.5 rounded-[3px]" : "w-2 h-2 rounded",
+                    index === activeIndex && (isMobilePhone ? "w-4 bg-purple-500" : "w-6 bg-purple-500")
+                  )}
                 />
               </TouchableOpacity>
             ))}
@@ -429,259 +578,5 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
 // Check if we're on a mobile device (not TV, not web)
 const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
 const isMobilePhone = isMobile && !Platform.isTV;
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
-  carouselWrapper: {
-    borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
-    overflow: 'hidden',
-    backgroundColor: 'rgba(10, 10, 10, 0.5)',
-    // @ts-ignore - Web CSS property
-    ...(Platform.OS === 'web' && {
-      backdropFilter: 'blur(8px)',
-      WebkitBackdropFilter: 'blur(8px)',
-    }),
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: isMobilePhone ? 16 : 32,
-  },
-  emptyIcon: {
-    fontSize: isMobilePhone ? 32 : 48,
-    marginBottom: isMobilePhone ? 8 : 16,
-  },
-  emptyText: {
-    fontSize: isMobilePhone ? 16 : 20,
-    fontWeight: '600',
-    color: colors.text,
-    textAlign: 'center',
-  },
-  carouselFocused: {
-    borderColor: colors.primary,
-    borderWidth: 3,
-    // @ts-ignore - Web CSS property for glow effect
-    boxShadow: `0 0 20px ${colors.primary}80`,
-  },
-  touchable: {
-    flex: 1,
-  },
-  itemContainer: {
-    flex: 1,
-    position: 'relative',
-    borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
-    overflow: 'hidden',
-  },
-  backgroundImage: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    // Make image taller to show more of the top (heads) instead of center-cropping
-    // On TV, we want to see actors' faces, so we extend the image down and crop the bottom
-    height: Platform.isTV ? '130%' : '100%',
-    borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
-    // Web: position image to show more of the center-top
-    ...(Platform.OS === 'web' && {
-      objectFit: 'cover',
-      objectPosition: 'center 20%',
-    }),
-  },
-  gradientOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    // Stronger gradient on mobile for better text contrast
-    backgroundColor: isMobilePhone ? 'rgba(0, 0, 0, 0.55)' : 'rgba(13, 13, 26, 0.3)',
-    borderRadius: isMobilePhone ? borderRadius.md : borderRadius.lg,
-  },
-  contentContainer: {
-    ...StyleSheet.absoluteFillObject,
-    padding: isMobilePhone ? 12 : 32,
-    justifyContent: 'space-between',
-  },
-  badgeContainer: {
-    position: 'absolute',
-    top: isMobilePhone ? 12 : 32,
-  },
-  badgeRight: {
-    right: isMobilePhone ? 12 : 80,
-  },
-  badgeLeft: {
-    left: isMobilePhone ? 12 : 80,
-  },
-  badge: {
-    paddingHorizontal: isMobilePhone ? 8 : 16,
-    paddingVertical: isMobilePhone ? 4 : 8,
-  },
-  badgeText: {
-    color: colors.primary,
-    fontSize: isMobilePhone ? 11 : 14,
-    fontWeight: 'bold',
-  },
-  textSection: {
-    position: 'absolute',
-    bottom: isMobilePhone ? 48 : 100,
-    // On mobile, limit width to prevent text from spanning full width
-    ...(isMobilePhone && {
-      maxWidth: '75%',
-    }),
-  },
-  textSectionRight: {
-    right: isMobilePhone ? 12 : 80,
-    alignItems: 'flex-end',
-  },
-  textSectionLeft: {
-    left: isMobilePhone ? 12 : 80,
-    alignItems: 'flex-start',
-  },
-  title: {
-    fontSize: isMobilePhone ? 20 : 42,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: isMobilePhone ? 4 : 8,
-    // Text shadow for better readability
-    textShadowColor: 'rgba(0, 0, 0, 0.9)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: isMobilePhone ? 3 : 4,
-  },
-  subtitle: {
-    fontSize: isMobilePhone ? 13 : 18,
-    color: isMobilePhone ? colors.text : colors.textSecondary,
-    marginBottom: isMobilePhone ? 4 : 12,
-    fontWeight: '600',
-    letterSpacing: 0.5,
-    // Text shadow for mobile readability
-    ...(isMobilePhone && {
-      textShadowColor: 'rgba(0, 0, 0, 0.8)',
-      textShadowOffset: { width: 0, height: 1 },
-      textShadowRadius: 2,
-    }),
-  },
-  description: {
-    fontSize: isMobilePhone ? 12 : 16,
-    color: isMobilePhone ? 'rgba(255, 255, 255, 0.9)' : colors.textSecondary,
-    lineHeight: isMobilePhone ? 16 : 24,
-    maxWidth: isMobilePhone ? 280 : 500,
-    // Text shadow for mobile readability
-    ...(isMobilePhone && {
-      textShadowColor: 'rgba(0, 0, 0, 0.8)',
-      textShadowOffset: { width: 0, height: 1 },
-      textShadowRadius: 2,
-    }),
-  },
-  playButtonContainer: {
-    position: 'absolute',
-    bottom: isMobilePhone ? 12 : 32,
-  },
-  playButtonRight: {
-    right: isMobilePhone ? 12 : 80,
-  },
-  playButtonLeft: {
-    left: isMobilePhone ? 12 : 80,
-  },
-  playButton: {
-    alignItems: 'center',
-    paddingHorizontal: isMobilePhone ? 14 : 24,
-    paddingVertical: isMobilePhone ? 8 : 14,
-    gap: isMobilePhone ? 6 : 12,
-  },
-  playIcon: {
-    fontSize: isMobilePhone ? 14 : 18,
-    color: colors.primary,
-  },
-  playText: {
-    fontSize: isMobilePhone ? 14 : 18,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  navButton: {
-    position: 'absolute',
-    top: '50%',
-    marginTop: Platform.isTV ? -40 : (isMobilePhone ? -16 : -24),
-    zIndex: 10,
-  },
-  navButtonLeft: {
-    left: Platform.isTV ? 24 : (isMobilePhone ? 8 : 16),
-  },
-  navButtonRight: {
-    right: Platform.isTV ? 24 : (isMobilePhone ? 8 : 16),
-  },
-  navButtonInner: {
-    width: Platform.isTV ? 80 : (isMobilePhone ? 32 : 48),
-    height: Platform.isTV ? 80 : (isMobilePhone ? 32 : 48),
-    borderRadius: Platform.isTV ? 40 : (isMobilePhone ? 16 : 24),
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderWidth: isMobilePhone ? 1 : 2,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  navButtonText: {
-    fontSize: Platform.isTV ? 48 : (isMobilePhone ? 20 : 32),
-    color: colors.text,
-    fontWeight: 'bold',
-  },
-  navButtonFocused: {
-    borderWidth: 3,
-    borderColor: colors.primary,
-    backgroundColor: 'rgba(139, 92, 246, 0.3)',
-    transform: [{ scale: 1.1 }],
-  },
-  pagination: {
-    position: 'absolute',
-    bottom: isMobilePhone ? 8 : 16,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: isMobilePhone ? 4 : 8,
-  },
-  dotTouchable: {
-    padding: isMobilePhone ? 2 : 4,
-  },
-  dot: {
-    width: isMobilePhone ? 6 : 8,
-    height: isMobilePhone ? 6 : 8,
-    borderRadius: isMobilePhone ? 3 : 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  dotActive: {
-    width: isMobilePhone ? 16 : 24,
-    backgroundColor: colors.primary,
-  },
-  actionButtons: {
-    position: 'absolute',
-    top: isMobilePhone ? 12 : 32,
-    flexDirection: 'row',
-    gap: isMobilePhone ? spacing.xs : spacing.sm,
-    zIndex: 10,
-  },
-  actionButtonsRight: {
-    right: isMobilePhone ? 12 : 32,
-  },
-  actionButtonsLeft: {
-    left: isMobilePhone ? 12 : 32,
-  },
-  actionButton: {
-    width: isMobilePhone ? 32 : 40,
-    height: isMobilePhone ? 32 : 40,
-    borderRadius: isMobilePhone ? 16 : 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    // @ts-ignore - Web transition
-    ...(Platform.OS === 'web' && {
-      backdropFilter: 'blur(8px)',
-      transition: 'all 0.2s ease',
-      cursor: 'pointer',
-    }),
-  },
-  actionButtonActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-  },
-});
 
 export default GlassCarousel;
