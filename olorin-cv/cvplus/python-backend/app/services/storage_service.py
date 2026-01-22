@@ -5,25 +5,42 @@ Google Cloud Storage integration following Olorin patterns
 
 import logging
 from typing import Optional
+
 from google.cloud import storage
 from google.cloud.exceptions import GoogleCloudError
 
 from app.core.config import get_settings
 
 logger = logging.getLogger(__name__)
-settings = get_settings()
 
 
 class StorageService:
     """
     Google Cloud Storage service
     Follows Olorin storage patterns
+    Uses lazy initialization to avoid import-time errors
     """
 
+    _client: Optional[storage.Client] = None
+    _bucket: Optional[storage.Bucket] = None
+
     def __init__(self):
-        self.client = storage.Client(project=settings.firebase_project_id)
-        self.bucket_name = settings.storage_bucket
-        self.bucket = self.client.bucket(self.bucket_name)
+        self._settings = get_settings()
+        self.bucket_name = self._settings.storage_bucket
+
+    @property
+    def client(self) -> storage.Client:
+        """Lazy initialization of GCS client."""
+        if self._client is None:
+            self._client = storage.Client(project=self._settings.firebase_project_id)
+        return self._client
+
+    @property
+    def bucket(self) -> storage.Bucket:
+        """Lazy initialization of GCS bucket."""
+        if self._bucket is None:
+            self._bucket = self.client.bucket(self.bucket_name)
+        return self._bucket
 
     async def upload_file(
         self,

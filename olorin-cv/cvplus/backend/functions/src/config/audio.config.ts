@@ -111,7 +111,7 @@ export function getConfig(): AudioConfig {
   try {
     return audioConfigSchema.parse(config);
   } catch (error) {
-    throw new Error(`Invalid audio configuration: ${error.message}`);
+    throw new Error(`Invalid audio configuration: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 

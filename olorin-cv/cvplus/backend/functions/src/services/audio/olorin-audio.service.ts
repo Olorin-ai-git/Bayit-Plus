@@ -10,8 +10,10 @@
 
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 import axios, { AxiosInstance } from 'axios';
+import http from 'http';
+import https from 'https';
 import { logger } from '../../utils/logger';
-import { AudioFileDocument, TTSOptions, STTOptions, AudioProcessingResult } from '../../types/audio';
+import { TTSOptions, STTOptions } from '../../types/audio';
 import { getConfig } from '../../config/audio.config';
 
 /**
@@ -29,6 +31,16 @@ export class OlorinTTSService {
     this.apiClient = axios.create({
       baseURL: this.config.olorinTTSBaseURL,
       timeout: this.config.ttsTimeout,
+      httpAgent: new http.Agent({
+        keepAlive: true,
+        maxSockets: 50,
+        keepAliveMsecs: 60000,
+      }),
+      httpsAgent: new https.Agent({
+        keepAlive: true,
+        maxSockets: 50,
+        keepAliveMsecs: 60000,
+      }),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -105,7 +117,7 @@ export class OlorinTTSService {
       });
     } catch (error) {
       logger.error('TTS generation failed', { error, text: text.substring(0, 100) });
-      throw new Error(`TTS generation failed: ${error.message}`);
+      throw new Error(`TTS generation failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -163,6 +175,16 @@ export class OlorinSTTService {
     this.apiClient = axios.create({
       baseURL: this.config.olorinSTTBaseURL,
       timeout: this.config.sttTimeout,
+      httpAgent: new http.Agent({
+        keepAlive: true,
+        maxSockets: 50,
+        keepAliveMsecs: 60000,
+      }),
+      httpsAgent: new https.Agent({
+        keepAlive: true,
+        maxSockets: 50,
+        keepAliveMsecs: 60000,
+      }),
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -230,7 +252,7 @@ export class OlorinSTTService {
         error,
         audioSize: audioBuffer.length,
       });
-      throw new Error(`STT transcription failed: ${error.message}`);
+      throw new Error(`STT transcription failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

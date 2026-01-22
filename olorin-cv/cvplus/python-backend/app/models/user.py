@@ -4,9 +4,10 @@ MongoDB models for user accounts
 """
 
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 from beanie import Document, Indexed
 from pydantic import Field, EmailStr
+from pymongo import IndexModel, ASCENDING, DESCENDING
 
 
 class User(Document):
@@ -51,8 +52,15 @@ class User(Document):
     class Settings:
         name = "users"
         indexes = [
-            "email",
-            "firebase_uid",
-            "is_active",
-            "subscription_tier",
+            IndexModel([("email", ASCENDING)], unique=True),
+            IndexModel([("firebase_uid", ASCENDING)], sparse=True),
+            IndexModel([("is_active", ASCENDING)]),
+            IndexModel(
+                [("subscription_tier", ASCENDING), ("created_at", DESCENDING)],
+                name="idx_subscription_tier_created"
+            ),
+            IndexModel(
+                [("role", ASCENDING), ("is_active", ASCENDING)],
+                name="idx_role_active"
+            ),
         ]

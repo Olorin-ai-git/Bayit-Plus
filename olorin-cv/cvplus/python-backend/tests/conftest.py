@@ -5,7 +5,7 @@ Shared test setup and utilities
 
 import os
 
-# Mock environment variables for testing - MUST be set BEFORE app imports
+# Set environment variables for testing - MUST be set BEFORE app imports
 os.environ.setdefault("APP_ENV", "test")
 os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key-min-32-characters-long")
 os.environ.setdefault("MONGODB_URI", "mongodb://localhost:27017/")
@@ -20,115 +20,110 @@ os.environ.setdefault("API_BASE_URL", "https://api.test.olorin.ai")
 
 import pytest
 import asyncio
-from typing import AsyncGenerator, Generator
-from fastapi.testclient import TestClient
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
+from typing import Generator
+from unittest.mock import MagicMock
 
-from app.main import app
-from app.models import CV, CVAnalysis, Profile, ContactRequest, AnalyticsEvent, User
-from app.core.config import get_settings
+from bson import ObjectId
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture(scope="session")
 def event_loop() -> Generator:
     """Create event loop for async tests"""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
     yield loop
     loop.close()
 
 
-@pytest.fixture(scope="session")
-async def test_db():
-    """Initialize test database"""
-    settings = get_settings()
-
-    # Use test database
-    test_db_name = f"{settings.mongodb_db_name}_test"
-
-    client = AsyncIOMotorClient(settings.mongodb_uri)
-
-    # Initialize Beanie with test database
-    await init_beanie(
-        database=client[test_db_name],
-        document_models=[CV, CVAnalysis, Profile, ContactRequest, AnalyticsEvent, User]
-    )
-
-    yield client[test_db_name]
-
-    # Cleanup: drop test database
-    await client.drop_database(test_db_name)
-    client.close()
-
-
-@pytest.fixture
-async def clean_db(test_db):
-    """Clean database before each test"""
-    # Drop all collections
-    for collection_name in await test_db.list_collection_names():
-        await test_db[collection_name].delete_many({})
-    yield
-
-
 @pytest.fixture
 def client() -> TestClient:
-    """FastAPI test client"""
+    """FastAPI test client with lazy import to avoid circular dependencies."""
+    from app.main import app
     return TestClient(app)
 
 
 @pytest.fixture
-async def test_user(clean_db) -> User:
-    """Create test user"""
-    user = User(
-        email="test@example.com",
-        password_hash="$2b$12$hashed_password",
-        full_name="Test User",
-        is_active=True,
-        is_verified=True,
-        subscription_tier="pro",
-    )
-    await user.save()
-    return user
+def mock_user_id() -> str:
+    """Generate a valid mock user ID."""
+    return str(ObjectId())
 
 
 @pytest.fixture
-def auth_headers(test_user: User) -> dict:
-    """Get auth headers with JWT token"""
+def auth_headers(mock_user_id: str) -> dict:
+    """Get auth headers with JWT token for mock user."""
     from app.core.security import create_access_token
 
     token = create_access_token(
-        data={"sub": str(test_user.id), "email": test_user.email}
+        data={"sub": mock_user_id, "email": "test@example.com"}
     )
 
     return {"Authorization": f"Bearer {token}"}
 
 
 @pytest.fixture
-async def test_cv(test_user: User, clean_db) -> CV:
-    """Create test CV"""
-    cv = CV(
-        user_id=str(test_user.id),
-        filename="cvs/test/test_cv.pdf",
-        original_filename="test_cv.pdf",
-        file_format="pdf",
-        file_size_bytes=1024,
-        storage_url="https://storage.googleapis.com/test/cv.pdf",
-        extracted_text="Test CV content",
-        status="completed",
-    )
-    await cv.save()
-    return cv
+def test_user_data() -> dict:
+    """Test user data without database dependency."""
+    user_id = str(ObjectId())
+    return {
+        "id": user_id,
+        "email": "test@example.com",
+        "password_hash": "$2b$12$hashed_password",
+        "full_name": "Test User",
+        "is_active": True,
+        "is_verified": True,
+        "subscription_tier": "pro",
+    }
+
+
+def create_mock_user(user_id: str = None) -> MagicMock:
+    """Create a mock user object."""
+    mock = MagicMock()
+    mock.id = ObjectId(user_id) if user_id else ObjectId()
+    mock.email = "test@example.com"
+    mock.password_hash = "$2b$12$hashed_password"
+    mock.full_name = "Test User"
+    mock.is_active = True
+    mock.is_verified = True
+    mock.subscription_tier = "pro"
+    return mock
 
 
 @pytest.fixture
-async def test_profile(test_user: User, test_cv: CV, clean_db) -> Profile:
-    """Create test profile"""
-    profile = Profile(
-        user_id=str(test_user.id),
-        cv_id=str(test_cv.id),
-        slug="test-profile",
-        public_url="https://cvplus.olorin.ai/cv/test-profile",
-        visibility="public",
-    )
-    await profile.save()
-    return profile
+def test_user() -> MagicMock:
+    """Create mock test user without database."""
+    return create_mock_user()
+
+
+@pytest.fixture
+def test_cv(test_user: MagicMock) -> MagicMock:
+    """Create mock test CV without database."""
+    mock = MagicMock()
+    mock.id = ObjectId()
+    mock.user_id = str(test_user.id)
+    mock.filename = "cvs/test/test_cv.pdf"
+    mock.original_filename = "test_cv.pdf"
+    mock.file_format = "pdf"
+    mock.file_size_bytes = 1024
+    mock.storage_url = "https://storage.googleapis.com/test/cv.pdf"
+    mock.extracted_text = "Test CV content"
+    mock.status = "completed"
+    mock.analysis_id = None
+    mock.structured_data = None
+    mock.processing_error = None
+    return mock
+
+
+@pytest.fixture
+def test_profile(test_user: MagicMock, test_cv: MagicMock) -> MagicMock:
+    """Create mock test profile without database."""
+    mock = MagicMock()
+    mock.id = ObjectId()
+    mock.user_id = str(test_user.id)
+    mock.cv_id = str(test_cv.id)
+    mock.slug = "test-profile"
+    mock.public_url = "https://cvplus.olorin.ai/cv/test-profile"
+    mock.visibility = "public"
+    return mock

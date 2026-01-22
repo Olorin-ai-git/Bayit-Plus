@@ -22,6 +22,8 @@ from app.core.logging_config import configure_logging, get_logger
 
 # Import middleware
 from app.middleware import RateLimitMiddleware
+from app.middleware.csrf_middleware import CSRFMiddleware
+from app.middleware.security_headers import SecurityHeadersMiddleware
 
 # Configure Olorin structured logging
 configure_logging()
@@ -39,16 +41,23 @@ app = FastAPI(
 # Get settings
 settings = get_settings()
 
+# Add Security Headers Middleware (first - applies to all responses)
+app.add_middleware(SecurityHeadersMiddleware)
+
+# Add CSRF Protection Middleware
+app.add_middleware(CSRFMiddleware)
+
 # Add Olorin rate limiting middleware
 app.add_middleware(RateLimitMiddleware, requests_per_minute=60)
 
-# Configure CORS
+# Configure CORS (must be after other middlewares)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-CSRF-Token"],  # Expose CSRF token to frontend
 )
 
 # Include routers

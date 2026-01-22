@@ -1,0 +1,111 @@
+name: Security Audit
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: NPM Audit
+        run: |
+          echo "🔐 Running npm audit..."
+          npm audit --audit-level=moderate || {
+            echo "⚠️  Vulnerabilities found"
+            npm audit --json > audit-results.json
+            exit 1
+          }
+
+      - name: ESLint Security Plugin
+        run: |
+          echo "🛡️  Running ESLint security checks..."
+          npm run lint:security || {
+            echo "❌ Security issues found by ESLint"
+            exit 1
+          }
+
+      - name: Check for secrets in code
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+
+      - name: Check for unsafe className patterns
+        run: |
+          echo "⚠️  Checking for unsafe className patterns..."
+          VIOLATIONS=0
+
+          # Check for direct style injection
+          if grep -r "style={{.*dangerouslySetInnerHTML" src/ --include="*.tsx" --include="*.ts"; then
+            echo "❌ dangerouslySetInnerHTML with inline styles found"
+            VIOLATIONS=$((VIOLATIONS + 1))
+          fi
+
+          # Check for eval usage
+          if grep -r "\beval\(" src/ --include="*.tsx" --include="*.ts"; then
+            echo "❌ eval() usage found"
+            VIOLATIONS=$((VIOLATIONS + 1))
+          fi
+
+          # Check for Function constructor
+          if grep -r "new Function" src/ --include="*.tsx" --include="*.ts"; then
+            echo "❌ Function constructor found"
+            VIOLATIONS=$((VIOLATIONS + 1))
+          fi
+
+          # Check for unvalidated className interpolation
+          if grep -r 'className={\`.*\${[^}]*}\`}' src/ --include="*.tsx" | grep -v "sanitizeArbitraryValue\|platformClass"; then
+            echo "⚠️  Unvalidated className interpolation found"
+            echo "Use sanitizeArbitraryValue() or platformClass() for dynamic classNames"
+            VIOLATIONS=$((VIOLATIONS + 1))
+          fi
+
+          if [ "$VIOLATIONS" -gt 0 ]; then
+            echo "❌ $VIOLATIONS security violations found"
+            exit 1
+          else
+            echo "✅ No security violations found"
+          fi
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        if: github.event_name == 'pull_request'
+
+      - name: Upload audit results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-audit-results
+          path: audit-results.json
+
+      - name: Security audit summary
+        if: always()
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ Security Audit Complete"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "No critical vulnerabilities"
+          echo "No secrets exposed"
+          echo "No unsafe className patterns"

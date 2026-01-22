@@ -7,12 +7,13 @@ from datetime import datetime
 from typing import Optional, List, Dict
 from beanie import Document, Indexed
 from pydantic import Field
+from pymongo import IndexModel, ASCENDING, DESCENDING
 
 
 class CVAnalysis(Document):
     """CV analysis results from Olorin AI Agent"""
 
-    cv_id: Indexed(str)
+    cv_id: Indexed(str, unique=True)
     user_id: Indexed(str)
 
     # Analysis results
@@ -45,9 +46,16 @@ class CVAnalysis(Document):
     class Settings:
         name = "cv_analyses"
         indexes = [
-            "user_id",
-            "cv_id",
-            [("user_id", 1), ("created_at", -1)],
+            IndexModel([("cv_id", ASCENDING)], unique=True),
+            IndexModel([("user_id", ASCENDING)]),
+            IndexModel(
+                [("user_id", ASCENDING), ("created_at", DESCENDING)],
+                name="idx_user_created"
+            ),
+            IndexModel(
+                [("status", ASCENDING), ("created_at", DESCENDING)],
+                name="idx_status_created"
+            ),
         ]
 
 
@@ -86,7 +94,14 @@ class CV(Document):
     class Settings:
         name = "cvs"
         indexes = [
-            "user_id",
-            "status",
-            [("user_id", 1), ("created_at", -1)],
+            IndexModel([("user_id", ASCENDING)]),
+            IndexModel([("status", ASCENDING)]),
+            IndexModel(
+                [("user_id", ASCENDING), ("created_at", DESCENDING)],
+                name="idx_user_created"
+            ),
+            IndexModel(
+                [("status", ASCENDING), ("created_at", DESCENDING)],
+                name="idx_status_created"
+            ),
         ]

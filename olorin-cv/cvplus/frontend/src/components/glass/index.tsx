@@ -39,10 +39,11 @@ export function GlassButton({
 }: GlassButtonProps) {
   const baseStyles = 'rounded-lg font-semibold transition-all duration-200 backdrop-blur-xl';
 
+  // iOS HIG compliant touch targets (44x44pt minimum)
   const sizeStyles = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2',
-    lg: 'px-6 py-3 text-lg',
+    sm: 'px-4 py-3 text-sm min-h-[44px]',      // 44px minimum
+    md: 'px-6 py-3.5 min-h-[44px]',            // 44px minimum
+    lg: 'px-8 py-4 text-lg min-h-[56px]',      // Larger for prominence
   };
 
   const variantStyles = {

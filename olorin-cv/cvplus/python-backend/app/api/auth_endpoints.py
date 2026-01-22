@@ -3,7 +3,7 @@ Authentication API Endpoints
 Route handlers for user registration, login, logout, and token management
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Response
 from fastapi.security import HTTPAuthorizationCredentials
 
 from app.core.security import (
@@ -12,6 +12,8 @@ from app.core.security import (
     get_password_hash,
     verify_password,
 )
+from app.core.password_validator import validate_password_strength
+from app.services.account_lockout_service import AccountLockoutService
 from app.models import User
 from app.core.config import get_settings
 from app.api.auth_schemas import (
@@ -31,7 +33,7 @@ settings = get_settings()
 
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
-async def register(user_data: UserRegister):
+async def register(user_data: UserRegister, response: Response):
     """
     Register a new user account
 
@@ -42,6 +44,13 @@ async def register(user_data: UserRegister):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered",
+        )
+
+    password_error = validate_password_strength(user_data.password)
+    if password_error:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=password_error,
         )
 
     hashed_password = get_password_hash(user_data.password)
@@ -61,6 +70,15 @@ async def register(user_data: UserRegister):
         data={"sub": str(user.id), "email": user.email}
     )
 
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="strict",
+        max_age=settings.jwt_access_token_expire_minutes * 60,
+    )
+
     return TokenResponse(
         access_token=access_token,
         token_type="bearer",
@@ -77,21 +95,35 @@ async def register(user_data: UserRegister):
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(credentials: UserLogin):
+async def login(credentials: UserLogin, request: Request, response: Response):
     """
     Authenticate user and return JWT access token
 
     Validates credentials and returns token if authentication succeeds
     """
+    is_locked = await AccountLockoutService.is_account_locked(credentials.email)
+    if is_locked:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Account temporarily locked due to multiple failed attempts. Please try again in 15 minutes.",
+        )
+
     user = await User.find_one(User.email == credentials.email)
+    client_ip = request.client.host if request.client else "unknown"
 
     if not user:
+        await AccountLockoutService.record_login_attempt(
+            credentials.email, client_ip, success=False
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
 
     if not verify_password(credentials.password, user.password_hash):
+        await AccountLockoutService.record_login_attempt(
+            credentials.email, client_ip, success=False
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
@@ -103,8 +135,22 @@ async def login(credentials: UserLogin):
             detail="Invalid email or password",
         )
 
+    await AccountLockoutService.record_login_attempt(
+        credentials.email, client_ip, success=True
+    )
+    await AccountLockoutService.clear_failed_attempts(credentials.email)
+
     access_token = create_access_token(
         data={"sub": str(user.id), "email": user.email}
+    )
+
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="strict",
+        max_age=settings.jwt_access_token_expire_minutes * 60,
     )
 
     return TokenResponse(
@@ -123,13 +169,13 @@ async def login(credentials: UserLogin):
 
 
 @router.post("/logout")
-async def logout(credentials: HTTPAuthorizationCredentials = Depends(security)):
+async def logout(response: Response, credentials: HTTPAuthorizationCredentials = Depends(security)):
     """
-    Logout user (invalidate token)
+    Logout user (clear httpOnly cookie)
 
-    Note: JWT tokens are stateless, so actual invalidation happens client-side
-    In production, implement token blacklisting if needed
+    Clears the httpOnly access_token cookie to log user out
     """
+    response.delete_cookie(key="access_token", samesite="strict", secure=True)
     return {"message": "Logged out successfully"}
 
 

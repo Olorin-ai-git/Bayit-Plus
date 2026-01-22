@@ -11,6 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
 import { GlassView } from './ui/GlassView';
 import { jerusalemService } from '../services/api';
 import { isTV } from '../utils/platform';
@@ -132,7 +133,10 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
 
   if (loading) {
     return (
-      <View className={`${isMobilePhone ? 'my-2 rounded-2xl mx-2' : 'my-4 rounded-3xl mx-4'} overflow-hidden`}>
+      <View className={clsx(
+        "overflow-hidden",
+        isMobilePhone ? "my-2 rounded-2xl mx-2" : "my-4 rounded-3xl mx-4"
+      )}>
         <ImageBackground
           source={JerusalemBackground}
           style={{ width: '100%', minHeight: isMobilePhone ? 180 : 320 }}
@@ -140,20 +144,39 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
           resizeMode="cover"
         >
           <View
-            className={`absolute inset-0 bg-[rgba(10,10,30,0.5)] ${isMobilePhone ? 'rounded-2xl' : 'rounded-3xl'}`}
+            className={clsx(
+              "absolute inset-0 bg-[rgba(10,10,30,0.5)]",
+              isMobilePhone ? "rounded-2xl" : "rounded-3xl"
+            )}
           />
-          <View className={`relative z-10 ${isMobilePhone ? 'py-2' : 'py-4'}`}>
+          <View className={clsx(
+            "relative z-10",
+            isMobilePhone ? "py-2" : "py-4"
+          )}>
             {showTitle && (
-              <View className={`flex items-center mb-1 ${isMobilePhone ? 'px-4' : 'px-6'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-                <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
+              <View className={clsx(
+                "flex items-center mb-1",
+                isMobilePhone ? "px-4" : "px-6",
+                isRTL ? "flex-row-reverse" : "flex-row"
+              )}>
+                <Text className={clsx(
+                  "font-semibold text-white",
+                  isMobilePhone ? "text-base" : "text-lg"
+                )}>
                   {t('jerusalem.title')}
                 </Text>
-                <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
+                <Text className={clsx(
+                  isMobilePhone ? "text-base" : "text-xl",
+                  isRTL ? "mr-2" : "ml-2"
+                )}>
                   🇮🇱
                 </Text>
               </View>
             )}
-            <View className={`justify-center items-center ${isMobilePhone ? 'h-20' : 'h-36'}`}>
+            <View className={clsx(
+              "justify-center items-center",
+              isMobilePhone ? "h-20" : "h-36"
+            )}>
               <ActivityIndicator color="#a855f7" size="large" />
             </View>
           </View>
@@ -164,7 +187,10 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
 
   if (!data?.items?.length) {
     return (
-      <View className={`${isMobilePhone ? 'my-2 rounded-2xl mx-2' : 'my-4 rounded-3xl mx-4'} overflow-hidden`}>
+      <View className={clsx(
+        "overflow-hidden",
+        isMobilePhone ? "my-2 rounded-2xl mx-2" : "my-4 rounded-3xl mx-4"
+      )}>
         <ImageBackground
           source={JerusalemBackground}
           style={{ width: '100%', minHeight: isMobilePhone ? 180 : 320 }}
@@ -172,21 +198,43 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
           resizeMode="cover"
         >
           <View
-            className={`absolute inset-0 bg-[rgba(10,10,30,0.5)] ${isMobilePhone ? 'rounded-2xl' : 'rounded-3xl'}`}
+            className={clsx(
+              "absolute inset-0 bg-[rgba(10,10,30,0.5)]",
+              isMobilePhone ? "rounded-2xl" : "rounded-3xl"
+            )}
           />
-          <View className={`relative z-10 ${isMobilePhone ? 'py-2' : 'py-4'}`}>
+          <View className={clsx(
+            "relative z-10",
+            isMobilePhone ? "py-2" : "py-4"
+          )}>
             {showTitle && (
-              <View className={`flex items-center mb-1 ${isMobilePhone ? 'px-4' : 'px-6'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-                <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
+              <View className={clsx(
+                "flex items-center mb-1",
+                isMobilePhone ? "px-4" : "px-6",
+                isRTL ? "flex-row-reverse" : "flex-row"
+              )}>
+                <Text className={clsx(
+                  "font-semibold text-white",
+                  isMobilePhone ? "text-base" : "text-lg"
+                )}>
                   {t('jerusalem.title')}
                 </Text>
-                <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
+                <Text className={clsx(
+                  isMobilePhone ? "text-base" : "text-xl",
+                  isRTL ? "mr-2" : "ml-2"
+                )}>
                   🇮🇱
                 </Text>
               </View>
             )}
-            <View className={`justify-center items-center px-6 ${isMobilePhone ? 'h-14' : 'h-24'}`}>
-              <Text className={`text-${isMobilePhone ? 'sm' : 'base'} text-white/60 text-center`}>
+            <View className={clsx(
+              "justify-center items-center px-6",
+              isMobilePhone ? "h-14" : "h-24"
+            )}>
+              <Text className={clsx(
+                "text-white/60 text-center",
+                isMobilePhone ? "text-sm" : "text-base"
+              )}>
                 {t('jerusalem.noContent')}
               </Text>
             </View>
@@ -215,7 +263,10 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
   };
 
   return (
-    <View className={`${isMobilePhone ? 'my-2 rounded-2xl mx-2' : 'my-4 rounded-3xl mx-4'} overflow-hidden`}>
+    <View className={clsx(
+      "overflow-hidden",
+      isMobilePhone ? "my-2 rounded-2xl mx-2" : "my-4 rounded-3xl mx-4"
+    )}>
       {/* Background Image */}
       <ImageBackground
         source={JerusalemBackground}
@@ -225,25 +276,45 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
       >
         {/* Semi-transparent overlay */}
         <View
-          className={`absolute inset-0 bg-[rgba(10,10,30,0.5)] ${isMobilePhone ? 'rounded-2xl' : 'rounded-3xl'}`}
+          className={clsx(
+            "absolute inset-0 bg-[rgba(10,10,30,0.5)]",
+            isMobilePhone ? "rounded-2xl" : "rounded-3xl"
+          )}
         />
 
         {/* Content */}
-        <View className={`relative z-10 ${isMobilePhone ? 'py-2' : 'py-4'}`}>
+        <View className={clsx(
+          "relative z-10",
+          isMobilePhone ? "py-2" : "py-4"
+        )}>
           {/* Header */}
           {showTitle && (
-            <View className={`flex items-center mb-1 ${isMobilePhone ? 'px-4' : 'px-6'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-              <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
+            <View className={clsx(
+              "flex items-center mb-1",
+              isMobilePhone ? "px-4" : "px-6",
+              isRTL ? "flex-row-reverse" : "flex-row"
+            )}>
+              <Text className={clsx(
+                "font-semibold text-white",
+                isMobilePhone ? "text-base" : "text-lg"
+              )}>
                 {t('jerusalem.title')}
               </Text>
-              <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
+              <Text className={clsx(
+                isMobilePhone ? "text-base" : "text-xl",
+                isRTL ? "mr-2" : "ml-2"
+              )}>
                 🇮🇱
               </Text>
             </View>
           )}
 
           {/* Subtitle */}
-          <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/60 ${isMobilePhone ? 'px-4 mb-2' : 'px-6 mb-4'} ${isRTL ? 'text-right' : 'text-left'}`}>
+          <Text className={clsx(
+            "text-white/60",
+            isMobilePhone ? "text-xs px-4 mb-2" : "text-sm px-6 mb-4",
+            isRTL ? "text-right" : "text-left"
+          )}>
             {t('jerusalem.subtitle')}
           </Text>
 
@@ -251,7 +322,10 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerClassName={`${isMobilePhone ? 'px-4 gap-2' : 'px-6 gap-4'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}
+            contentContainerClassName={clsx(
+              isMobilePhone ? "px-4 gap-2" : "px-6 gap-4",
+              isRTL ? "flex-row-reverse" : "flex-row"
+            )}
           >
             {data.items.map((item, index) => (
               <ContentCard
@@ -269,11 +343,20 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
           </ScrollView>
 
           {/* Sources */}
-          <View className={`${isMobilePhone ? 'px-4 mt-1' : 'px-6 mt-2'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-            <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/40`}>
+          <View className={clsx(
+            isMobilePhone ? "px-4 mt-1" : "px-6 mt-2",
+            isRTL ? "flex-row-reverse" : "flex-row"
+          )}>
+            <Text className={clsx(
+              "text-white/40",
+              isMobilePhone ? "text-xs" : "text-sm"
+            )}>
               {t('jerusalem.sources')}:{' '}
             </Text>
-            <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/40`}>
+            <Text className={clsx(
+              "text-white/40",
+              isMobilePhone ? "text-xs" : "text-sm"
+            )}>
               {Array.from(new Set(data.items.map(item => item.source_name))).join(', ')}
             </Text>
           </View>
@@ -326,26 +409,43 @@ const ContentCard: React.FC<ContentCardProps> = ({
     >
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
         <GlassView
-          className={`
-            ${isMobilePhone ? 'w-44 h-32 p-4 rounded-xl mr-2' : 'w-64 h-44 p-6 rounded-2xl mr-4'}
-            border-2
-            ${isFocused ? 'border-blue-500 bg-blue-500/20 shadow-blue-500/40 shadow-lg' : 'border-transparent'}
-          `}
+          className={clsx(
+            "border-2",
+            isMobilePhone ? "w-44 h-32 p-4 rounded-xl mr-2" : "w-64 h-44 p-6 rounded-2xl mr-4",
+            isFocused ? "border-blue-500 bg-blue-500/20 shadow-blue-500/40 shadow-lg" : "border-transparent"
+          )}
           intensity="subtle"
         >
-          <View className={`flex items-center ${isMobilePhone ? 'mb-1' : 'mb-2'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-            <Text className={`text-${isMobilePhone ? 'lg' : '2xl'} ${isRTL ? 'ml-2' : 'mr-2'}`}>
+          <View className={clsx(
+            "flex items-center",
+            isMobilePhone ? "mb-1" : "mb-2",
+            isRTL ? "flex-row-reverse" : "flex-row"
+          )}>
+            <Text className={clsx(
+              isMobilePhone ? "text-lg" : "text-2xl",
+              isRTL ? "ml-2" : "mr-2"
+            )}>
               {CATEGORY_EMOJIS[item.category] || '📰'}
             </Text>
-            <View className={`bg-blue-500/30 ${isMobilePhone ? 'px-2 py-0.5' : 'px-4 py-1'} rounded-full border border-blue-500/60`}>
-              <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-blue-300/90 font-semibold`}>
+            <View className={clsx(
+              "bg-blue-500/30 rounded-full border border-blue-500/60",
+              isMobilePhone ? "px-2 py-0.5" : "px-4 py-1"
+            )}>
+              <Text className={clsx(
+                "text-blue-300/90 font-semibold",
+                isMobilePhone ? "text-xs" : "text-sm"
+              )}>
                 {categoryLabel}
               </Text>
             </View>
           </View>
 
           <Text
-            className={`text-${isMobilePhone ? 'sm' : 'base'} font-bold text-white mb-1 leading-${isMobilePhone ? '4' : '5'} ${isRTL ? 'text-right' : 'text-left'}`}
+            className={clsx(
+              "font-bold text-white mb-1",
+              isMobilePhone ? "text-sm leading-4" : "text-base leading-5",
+              isRTL ? "text-right" : "text-left"
+            )}
             numberOfLines={3}
           >
             {title}
@@ -353,7 +453,11 @@ const ContentCard: React.FC<ContentCardProps> = ({
 
           {summary && (
             <Text
-              className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/70 ${isMobilePhone ? 'mb-1 leading-3' : 'mb-2 leading-4'} ${isRTL ? 'text-right' : 'text-left'}`}
+              className={clsx(
+                "text-white/70",
+                isMobilePhone ? "text-xs mb-1 leading-3" : "text-sm mb-2 leading-4",
+                isRTL ? "text-right" : "text-left"
+              )}
               numberOfLines={2}
             >
               {summary}
@@ -362,10 +466,20 @@ const ContentCard: React.FC<ContentCardProps> = ({
 
           {/* Tags */}
           {item.tags.length > 0 && (
-            <View className={`flex flex-wrap ${isMobilePhone ? 'gap-0.5 mb-1' : 'gap-1 mb-2'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+            <View className={clsx(
+              "flex flex-wrap",
+              isMobilePhone ? "gap-0.5 mb-1" : "gap-1 mb-2",
+              isRTL ? "flex-row-reverse" : "flex-row"
+            )}>
               {item.tags.slice(0, 3).map((tag, i) => (
-                <View key={i} className={`bg-white/10 ${isMobilePhone ? 'px-1 py-0.5 rounded-sm' : 'px-2 py-1 rounded'}`}>
-                  <Text className={`text-${isMobilePhone ? '[9px]' : 'xs'} text-white/60`}>
+                <View key={i} className={clsx(
+                  "bg-white/10",
+                  isMobilePhone ? "px-1 py-0.5 rounded-sm" : "px-2 py-1 rounded"
+                )}>
+                  <Text className={clsx(
+                    "text-white/60",
+                    isMobilePhone ? "text-[9px]" : "text-xs"
+                  )}>
                     {tag}
                   </Text>
                 </View>
@@ -374,18 +488,28 @@ const ContentCard: React.FC<ContentCardProps> = ({
           )}
 
           {/* Source and score */}
-          <View className={`flex justify-between items-center mt-auto ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-            <Text className={`text-${isMobilePhone ? '[9px]' : 'xs'} text-white/40 uppercase`}>
+          <View className={clsx(
+            "flex justify-between items-center mt-auto",
+            isRTL ? "flex-row-reverse" : "flex-row"
+          )}>
+            <Text className={clsx(
+              "text-white/40 uppercase",
+              isMobilePhone ? "text-[9px]" : "text-xs"
+            )}>
               {item.source_name}
             </Text>
-            <View className={`flex ${isMobilePhone ? 'gap-0.5' : 'gap-1'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+            <View className={clsx(
+              "flex",
+              isMobilePhone ? "gap-0.5" : "gap-1",
+              isRTL ? "flex-row-reverse" : "flex-row"
+            )}>
               {[...Array(5)].map((_, i) => (
                 <View
                   key={i}
-                  className={`
-                    ${isMobilePhone ? 'w-1 h-1 rounded-[2px]' : 'w-1.5 h-1.5 rounded-[3px]'}
-                    ${i < Math.ceil(item.relevance_score / 2) ? 'bg-blue-500' : 'bg-white/20'}
-                  `}
+                  className={clsx(
+                    isMobilePhone ? "w-1 h-1 rounded-[2px]" : "w-1.5 h-1.5 rounded-[3px]",
+                    i < Math.ceil(item.relevance_score / 2) ? "bg-blue-500" : "bg-white/20"
+                  )}
                 />
               ))}
             </View>

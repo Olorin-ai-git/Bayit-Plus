@@ -3,17 +3,22 @@ CV Processing API Endpoints
 Handles CV upload, analysis, generation, and enhancement
 """
 
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from fastapi.responses import RedirectResponse
-from typing import List, Optional
 from pydantic import BaseModel
 
 from app.core.security import get_current_user
-from app.services import CVService
-from app.models import CV
+
 
 router = APIRouter()
-cv_service = CVService()
+
+
+def get_cv_service():
+    """Lazy initialization of CV service to avoid import-time errors."""
+    from app.services import CVService
+    return CVService()
 
 # Request/Response Models
 class CVAnalysisRequest(BaseModel):
@@ -38,7 +43,8 @@ class CVGenerationResponse(BaseModel):
 @router.post("/upload", response_model=CVAnalysisResponse)
 async def upload_cv(
     file: UploadFile = File(...),
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user),
+    cv_service=Depends(get_cv_service)
 ):
     """
     Upload and analyze a CV file
@@ -98,7 +104,8 @@ async def analyze_cv(
 @router.post("/generate", response_model=CVGenerationResponse)
 async def generate_cv(
     request: CVGenerationRequest,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user),
+    cv_service=Depends(get_cv_service)
 ):
     """
     Generate a new CV from user data
@@ -124,7 +131,8 @@ async def generate_cv(
 @router.get("/status/{job_id}")
 async def get_cv_status(
     job_id: str,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user),
+    cv_service=Depends(get_cv_service)
 ):
     """Get processing status for a CV job"""
     try:
@@ -151,7 +159,8 @@ async def get_cv_status(
 @router.get("/download/{job_id}")
 async def download_cv(
     job_id: str,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user),
+    cv_service=Depends(get_cv_service)
 ):
     """Download a processed CV"""
     try:

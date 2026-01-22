@@ -1,0 +1,325 @@
+name: Deploy Frontend (New)
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-frontend-new.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+          - development
+
+env:
+  NODE_VERSION: '20'
+  CACHE_DEPENDENCY_PATH: 'frontend/package-lock.json'
+  WORKING_DIR: frontend
+  TARGET_ENV: ${{ github.event.inputs.environment || 'production' }}
+
+jobs:
+  build:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+
+    outputs:
+      bundle_size: ${{ steps.bundle-analysis.outputs.bundle_size }}
+      firebase_project: ${{ steps.config.outputs.firebase_project }}
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+
+    - name: Install Dependencies
+      working-directory: ${{ env.WORKING_DIR }}
+      run: |
+        echo "Installing dependencies..."
+        npm ci
+        echo "✅ Dependencies installed"
+
+    - name: Configure Environment
+      id: config
+      run: |
+        case "${{ env.TARGET_ENV }}" in
+          "production")
+            FIREBASE_PROJECT="${{ secrets.FIREBASE_PROJECT_ID_PROD || 'cvplus-production' }}"
+            BUILD_ENV="production"
+            ;;
+          "staging")
+            FIREBASE_PROJECT="${{ secrets.FIREBASE_PROJECT_ID_STAGING || 'cvplus-staging' }}"
+            BUILD_ENV="staging"
+            ;;
+          "development")
+            FIREBASE_PROJECT="${{ secrets.FIREBASE_PROJECT_ID_DEV || 'cvplus-dev' }}"
+            BUILD_ENV="development"
+            ;;
+          *)
+            FIREBASE_PROJECT="${{ secrets.FIREBASE_PROJECT_ID_PROD || 'cvplus-production' }}"
+            BUILD_ENV="production"
+            ;;
+        esac
+
+        echo "firebase_project=${FIREBASE_PROJECT}" >> $GITHUB_OUTPUT
+        echo "BUILD_ENV=${BUILD_ENV}" >> $GITHUB_ENV
+
+        echo "Configuration:"
+        echo "- Environment: ${{ env.TARGET_ENV }}"
+        echo "- Firebase Project: ${FIREBASE_PROJECT}"
+        echo "- Build Environment: ${BUILD_ENV}"
+
+    - name: Build Application
+      working-directory: ${{ env.WORKING_DIR }}
+      env:
+        NODE_ENV: production
+        VITE_APP_ENV: ${{ env.BUILD_ENV }}
+        VITE_FIREBASE_PROJECT_ID: ${{ steps.config.outputs.firebase_project }}
+      run: |
+        echo "Building frontend for ${{ env.BUILD_ENV }}..."
+        npm run build
+        echo "✅ Build completed"
+
+    - name: Verify Build Output
+      working-directory: ${{ env.WORKING_DIR }}
+      run: |
+        if [ ! -d "dist" ] || [ ! -f "dist/index.html" ]; then
+          echo "❌ Build output verification failed"
+          exit 1
+        fi
+        echo "✅ Build output verified"
+
+    - name: Bundle Size Analysis
+      id: bundle-analysis
+      working-directory: ${{ env.WORKING_DIR }}
+      run: |
+        BUNDLE_SIZE=$(du -sb dist/ | cut -f1)
+        BUNDLE_SIZE_MB=$(echo "scale=2; $BUNDLE_SIZE / 1048576" | bc)
+
+        echo "bundle_size=${BUNDLE_SIZE}" >> $GITHUB_OUTPUT
+        echo "bundle_size_mb=${BUNDLE_SIZE_MB}" >> $GITHUB_OUTPUT
+
+        echo "Bundle size: ${BUNDLE_SIZE_MB} MB"
+
+        # Threshold check (5MB)
+        THRESHOLD=5242880
+        if [ "$BUNDLE_SIZE" -gt "$THRESHOLD" ]; then
+          echo "⚠️ Bundle size exceeds 5MB threshold"
+          echo "::warning::Bundle size (${BUNDLE_SIZE_MB}MB) exceeds 5MB"
+        else
+          echo "✅ Bundle size within limits"
+        fi
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-dist-${{ env.TARGET_ENV }}
+        path: ${{ env.WORKING_DIR }}/dist/
+        retention-days: 7
+
+  deploy:
+    name: Deploy to Firebase Hosting
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Download Build Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: frontend-dist-${{ env.TARGET_ENV }}
+        path: ${{ env.WORKING_DIR }}/dist/
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Install Firebase Tools
+      run: npm install -g firebase-tools
+
+    - name: Authenticate to Firebase
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      run: |
+        echo "Authenticating to Firebase..."
+        firebase use ${{ needs.build.outputs.firebase_project }} --token ${FIREBASE_TOKEN}
+
+    - name: Deploy to Firebase Hosting
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      run: |
+        echo "Deploying to Firebase Hosting..."
+
+        firebase deploy \
+          --only hosting \
+          --project ${{ needs.build.outputs.firebase_project }} \
+          --token ${FIREBASE_TOKEN}
+
+        echo "✅ Deployment completed"
+
+    - name: Get Deployment URL
+      id: deployment-url
+      run: |
+        case "${{ env.TARGET_ENV }}" in
+          "production")
+            HOSTING_URL="https://cvplus.web.app"
+            ;;
+          "staging")
+            HOSTING_URL="https://cvplus-staging.web.app"
+            ;;
+          "development")
+            HOSTING_URL="https://cvplus-dev.web.app"
+            ;;
+          *)
+            HOSTING_URL="https://cvplus.web.app"
+            ;;
+        esac
+
+        echo "hosting_url=${HOSTING_URL}" >> $GITHUB_OUTPUT
+        echo "Deployment URL: ${HOSTING_URL}"
+
+  post-deployment:
+    name: Post-Deployment Verification
+    runs-on: ubuntu-latest
+    needs: [build, deploy]
+
+    steps:
+    - name: Wait for Propagation
+      run: |
+        echo "Waiting for deployment to propagate..."
+        sleep 15
+
+    - name: Health Check
+      run: |
+        HOSTING_URL="${{ needs.deploy.outputs.hosting_url }}"
+
+        echo "Performing health check on: ${HOSTING_URL}"
+
+        MAX_RETRIES=5
+        RETRY_COUNT=0
+
+        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+          if curl -f -s "${HOSTING_URL}" > /dev/null; then
+            echo "✅ Health check passed"
+            exit 0
+          else
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "Attempt ${RETRY_COUNT}/${MAX_RETRIES} failed, retrying..."
+            sleep 10
+          fi
+        done
+
+        echo "❌ Health check failed after ${MAX_RETRIES} attempts"
+        exit 1
+
+    - name: Verify Content
+      run: |
+        HOSTING_URL="${{ needs.deploy.outputs.hosting_url }}"
+
+        echo "Verifying content..."
+
+        if curl -s "${HOSTING_URL}" | grep -q "CVPlus"; then
+          echo "✅ Application content verified"
+        else
+          echo "⚠️ Application content verification failed"
+        fi
+
+    - name: Performance Check
+      run: |
+        HOSTING_URL="${{ needs.deploy.outputs.hosting_url }}"
+
+        echo "Measuring response time..."
+
+        RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' "${HOSTING_URL}")
+        echo "Response time: ${RESPONSE_TIME}s"
+
+        # Check if response time is acceptable (< 3 seconds)
+        if (( $(echo "$RESPONSE_TIME < 3.0" | bc -l) )); then
+          echo "✅ Response time acceptable"
+        else
+          echo "⚠️ Response time exceeds 3 seconds"
+        fi
+
+  rollback-preparation:
+    name: Rollback Preparation
+    runs-on: ubuntu-latest
+    needs: [build, deploy]
+    if: failure()
+
+    steps:
+    - name: Prepare Rollback Instructions
+      run: |
+        echo "# 🔄 Frontend Rollback Instructions" > rollback.md
+        echo "" >> rollback.md
+        echo "## Firebase Console Rollback" >> rollback.md
+        echo "1. Go to Firebase Console" >> rollback.md
+        echo "2. Navigate to Hosting section" >> rollback.md
+        echo "3. Select the project: ${{ needs.build.outputs.firebase_project }}" >> rollback.md
+        echo "4. View deployment history" >> rollback.md
+        echo "5. Click 'Rollback' on the previous stable version" >> rollback.md
+        echo "" >> rollback.md
+        echo "## CLI Rollback" >> rollback.md
+        echo '```bash' >> rollback.md
+        echo "firebase hosting:rollback --project ${{ needs.build.outputs.firebase_project }}" >> rollback.md
+        echo '```' >> rollback.md
+
+    - name: Upload Rollback Instructions
+      uses: actions/upload-artifact@v4
+      with:
+        name: rollback-instructions-${{ env.TARGET_ENV }}
+        path: rollback.md
+
+  deployment-summary:
+    name: Deployment Summary
+    runs-on: ubuntu-latest
+    needs: [build, deploy, post-deployment]
+    if: always()
+
+    steps:
+    - name: Generate Summary
+      run: |
+        echo "# 🌐 Frontend Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Configuration" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: ${{ env.TARGET_ENV }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Firebase Project**: ${{ needs.build.outputs.firebase_project }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Bundle Size**: $(echo "scale=2; ${{ needs.build.outputs.bundle_size }} / 1048576" | bc) MB" >> $GITHUB_STEP_SUMMARY
+        echo "- **Deployment URL**: ${{ needs.deploy.outputs.hosting_url }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Deployment Status" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
+        echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Build | ${{ needs.build.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Deploy | ${{ needs.deploy.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Verification | ${{ needs.post-deployment.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+        if [ "${{ needs.build.result }}" = "success" ] && \
+           [ "${{ needs.deploy.result }}" = "success" ] && \
+           [ "${{ needs.post-deployment.result }}" = "success" ]; then
+          echo "## ✅ Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Frontend deployed successfully to ${{ env.TARGET_ENV }}." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Quick Links" >> $GITHUB_STEP_SUMMARY
+          echo "- 🌐 **Live Site**: ${{ needs.deploy.outputs.hosting_url }}" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "## ❌ Deployment Failed" >> $GITHUB_STEP_SUMMARY
+          echo "Please review logs and consider rollback." >> $GITHUB_STEP_SUMMARY
+        fi

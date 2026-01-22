@@ -262,13 +262,14 @@ export function loadConfig(): Config {
     return config;
   } catch (error) {
     console.error('❌ CRITICAL: Configuration validation failed');
-    console.error('Configuration errors:', error);
 
     if (error instanceof z.ZodError) {
       console.error('\nDetailed validation errors:');
       error.errors.forEach((err) => {
         console.error(`  - ${err.path.join('.')}: ${err.message}`);
       });
+    } else {
+      console.error('Error:', error instanceof Error ? error.message : String(error));
     }
 
     console.error('\n💡 Please check your environment variables against .env.example');

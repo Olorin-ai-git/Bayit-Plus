@@ -11,4 +11,4 @@
  * - api/auth.ts: Authentication endpoints
  */
 
-export * from './api';
+export * from './api/index';

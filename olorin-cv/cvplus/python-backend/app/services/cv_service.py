@@ -1,18 +1,16 @@
-"""
-CV Service
-Business logic for CV processing, analysis, and generation
-"""
+"""CV Service - Business logic for CV processing, analysis, and generation"""
 
 import logging
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
 from fastapi import UploadFile
 
+from app.core.config import get_settings
 from app.models import CV, CVAnalysis
 from app.services.ai_agent_service import AIAgentService
-from app.services.storage_service import StorageService
 from app.services.cv_text_extraction import extract_text
-from app.core.config import get_settings
+from app.services.storage_service import StorageService
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -26,22 +24,9 @@ class CVService:
         self.storage = StorageService()
 
     async def upload_and_analyze(
-        self,
-        file: UploadFile,
-        user_id: str,
-        language: str = "en"
+        self, file: UploadFile, user_id: str, language: str = "en"
     ) -> CV:
-        """
-        Upload CV file and trigger analysis
-
-        Args:
-            file: Uploaded CV file
-            user_id: User ID
-            language: CV language
-
-        Returns:
-            Created CV document
-        """
+        """Upload CV file, extract text, store, and trigger AI analysis"""
         logger.info(f"Uploading CV for user {user_id}", extra={
             "filename": file.filename,
             "content_type": file.content_type,

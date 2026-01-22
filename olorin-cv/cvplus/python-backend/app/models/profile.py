@@ -4,9 +4,10 @@ MongoDB models for public CV profiles
 """
 
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 from beanie import Document, Indexed
 from pydantic import Field, EmailStr
+from pymongo import IndexModel, ASCENDING, DESCENDING
 
 
 class ContactRequest(Document):
@@ -39,10 +40,17 @@ class ContactRequest(Document):
     class Settings:
         name = "contact_requests"
         indexes = [
-            "profile_id",
-            "profile_owner_id",
-            "status",
-            [("profile_owner_id", 1), ("created_at", -1)],
+            IndexModel([("profile_id", ASCENDING)]),
+            IndexModel([("profile_owner_id", ASCENDING)]),
+            IndexModel([("status", ASCENDING)]),
+            IndexModel(
+                [("profile_owner_id", ASCENDING), ("created_at", DESCENDING)],
+                name="idx_owner_created"
+            ),
+            IndexModel(
+                [("profile_owner_id", ASCENDING), ("status", ASCENDING)],
+                name="idx_owner_status"
+            ),
         ]
 
 
@@ -90,9 +98,21 @@ class Profile(Document):
     class Settings:
         name = "profiles"
         indexes = [
-            "user_id",
-            "cv_id",
-            "slug",
-            "visibility",
-            [("user_id", 1), ("created_at", -1)],
+            IndexModel([("slug", ASCENDING)], unique=True),
+            IndexModel([("user_id", ASCENDING)]),
+            IndexModel([("cv_id", ASCENDING)]),
+            IndexModel([("visibility", ASCENDING)]),
+            IndexModel(
+                [("user_id", ASCENDING), ("created_at", DESCENDING)],
+                name="idx_user_created"
+            ),
+            IndexModel(
+                [("visibility", ASCENDING), ("created_at", DESCENDING)],
+                name="idx_visibility_created"
+            ),
+            IndexModel(
+                [("custom_domain", ASCENDING)],
+                sparse=True,
+                name="idx_custom_domain"
+            ),
         ]

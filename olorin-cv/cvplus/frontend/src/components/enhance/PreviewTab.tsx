@@ -28,7 +28,13 @@ export function PreviewTab({ cvData }: PreviewTabProps) {
         {cvData?.work_history && cvData.work_history.length > 0 && (
           <div>
             <h3 className="text-xl font-bold mb-2">Work History</h3>
-            {cvData.work_history.map((work, idx) => (
+            {cvData.work_history.map((work: {
+              company: string;
+              role: string;
+              start_date: string;
+              end_date?: string;
+              responsibilities: string;
+            }, idx: number) => (
               <div key={idx} className="mb-4">
                 <h4 className="font-semibold">{work.role}</h4>
                 <p className="text-gray-600">{work.company}</p>
@@ -44,7 +50,12 @@ export function PreviewTab({ cvData }: PreviewTabProps) {
         {cvData?.education && cvData.education.length > 0 && (
           <div>
             <h3 className="text-xl font-bold mb-2">Education</h3>
-            {cvData.education.map((edu, idx) => (
+            {cvData.education.map((edu: {
+              institution: string;
+              degree: string;
+              field: string;
+              year: string;
+            }, idx: number) => (
               <div key={idx} className="mb-3">
                 <h4 className="font-semibold">{edu.degree} in {edu.field}</h4>
                 <p className="text-gray-600">{edu.institution}</p>
@@ -58,7 +69,7 @@ export function PreviewTab({ cvData }: PreviewTabProps) {
           <div>
             <h3 className="text-xl font-bold mb-2">Skills</h3>
             <div className="flex flex-wrap gap-2">
-              {cvData.skills.map((skill, idx) => (
+              {cvData.skills.map((skill: string, idx: number) => (
                 <span
                   key={idx}
                   className="px-3 py-1 bg-blue-500/20 rounded-full text-sm"

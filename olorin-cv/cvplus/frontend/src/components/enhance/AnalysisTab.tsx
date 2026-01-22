@@ -16,7 +16,7 @@ export function AnalysisTab({ cvData }: AnalysisTabProps) {
         <div>
           <h3 className="text-lg font-semibold mb-2">Top Skills Detected</h3>
           <div className="flex flex-wrap gap-2">
-            {cvData?.skills.map((skill, idx) => (
+            {cvData?.skills.map((skill: string, idx: number) => (
               <span
                 key={idx}
                 className="px-3 py-1 bg-blue-500/20 rounded-full text-sm"
@@ -45,7 +45,7 @@ export function AnalysisTab({ cvData }: AnalysisTabProps) {
           <div>
             <h3 className="text-lg font-semibold mb-2">Recommendations</h3>
             <ul className="list-disc list-inside space-y-1 text-gray-300">
-              {cvData.recommendations.map((rec, idx) => (
+              {cvData.recommendations.map((rec: string, idx: number) => (
                 <li key={idx}>{rec}</li>
               ))}
             </ul>
@@ -56,7 +56,7 @@ export function AnalysisTab({ cvData }: AnalysisTabProps) {
           <div>
             <h3 className="text-lg font-semibold mb-2">Missing Sections</h3>
             <ul className="list-disc list-inside space-y-1 text-gray-300">
-              {cvData.missing_sections.map((section, idx) => (
+              {cvData.missing_sections.map((section: string, idx: number) => (
                 <li key={idx}>{section}</li>
               ))}
             </ul>

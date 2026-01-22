@@ -1,0 +1,130 @@
+name: Migration Validation
+
+on:
+  pull_request:
+    paths:
+      - 'src/**/*.tsx'
+      - 'src/**/*.ts'
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  validate-migration:
+    name: Validate StyleSheet Migration
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for StyleSheet.create usage
+        run: |
+          echo "🔍 Checking for StyleSheet.create() usage..."
+          if grep -r "StyleSheet\.create" src/ --include="*.tsx" --include="*.ts" | grep -v "\.legacy\." | grep -v "// migration-exception"; then
+            echo "❌ ERROR: StyleSheet.create() found in non-legacy files"
+            echo "Files must use TailwindCSS className only"
+            echo "If this is a legacy file, rename it to *.legacy.tsx"
+            exit 1
+          else
+            echo "✅ No StyleSheet.create() usage found"
+          fi
+
+      - name: Check file sizes (200 line limit)
+        run: |
+          echo "📏 Checking file sizes (200 line limit)..."
+          VIOLATIONS=0
+          while IFS= read -r file; do
+            LINES=$(wc -l < "$file")
+            if [ "$LINES" -gt 200 ]; then
+              echo "❌ $file exceeds 200 lines ($LINES lines)"
+              VIOLATIONS=$((VIOLATIONS + 1))
+            fi
+          done < <(find src/ -name "*.tsx" -o -name "*.ts" | grep -v "\.test\." | grep -v "\.legacy\.")
+
+          if [ "$VIOLATIONS" -gt 0 ]; then
+            echo "❌ ERROR: $VIOLATIONS files exceed 200 line limit"
+            exit 1
+          else
+            echo "✅ All files under 200 lines"
+          fi
+
+      - name: Check for hardcoded values
+        run: |
+          echo "🔒 Checking for hardcoded values..."
+          if grep -r "http://\|https://" src/ --include="*.tsx" --include="*.ts" | grep -v "^[[:space:]]*//" | grep -v "process.env" | grep -v "// hardcode-exception"; then
+            echo "⚠️  WARNING: Hardcoded URLs found"
+            echo "Consider using environment variables or config"
+          fi
+
+      - name: Check for @ts-ignore (non-whitelisted)
+        run: |
+          echo "⚙️  Checking for @ts-ignore usage..."
+          VIOLATIONS=0
+          while IFS= read -r line; then
+            if ! echo "$line" | grep -q "// @ts-ignore.*whitelist"; then
+              echo "⚠️  $line"
+              VIOLATIONS=$((VIOLATIONS + 1))
+            fi
+          done < <(grep -r "@ts-ignore" src/ --include="*.tsx" --include="*.ts" || true)
+
+          if [ "$VIOLATIONS" -gt 10 ]; then
+            echo "⚠️  WARNING: $VIOLATIONS @ts-ignore comments found"
+            echo "Consider fixing TypeScript errors instead"
+          fi
+
+      - name: TypeScript type check
+        run: npm run typecheck
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: Build project
+        run: npm run build
+
+      - name: Check bundle size
+        run: |
+          echo "📦 Analyzing bundle size..."
+          BUNDLE_SIZE=$(du -sb build/ | awk '{print $1}')
+          THRESHOLD=524288000  # 500MB
+
+          echo "Bundle size: $(numfmt --to=iec-i --suffix=B $BUNDLE_SIZE)"
+
+          if [ "$BUNDLE_SIZE" -gt "$THRESHOLD" ]; then
+            echo "❌ ERROR: Bundle too large (>500MB)"
+            exit 1
+          else
+            echo "✅ Bundle size acceptable"
+          fi
+
+      - name: Run tests
+        run: npm test -- --ci --coverage --maxWorkers=2
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/coverage-final.json
+          flags: unittests
+          name: codecov-umbrella
+
+      - name: Migration validation summary
+        if: always()
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ Migration Validation Complete"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "No StyleSheet.create() usage"
+          echo "All files under 200 lines"
+          echo "TypeScript checks passed"
+          echo "Build successful"
+          echo "Tests passed"

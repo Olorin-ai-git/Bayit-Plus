@@ -31,7 +31,7 @@ export function CustomizeTab({ cvData }: CustomizeTabProps) {
             Key Skills
           </label>
           <div className="flex flex-wrap gap-2">
-            {cvData?.skills.map((skill, idx) => (
+            {cvData?.skills.map((skill: string, idx: number) => (
               <span
                 key={idx}
                 className="px-3 py-1 bg-blue-500/20 rounded-full text-sm"
@@ -47,7 +47,7 @@ export function CustomizeTab({ cvData }: CustomizeTabProps) {
               Certifications
             </label>
             <ul className="list-disc list-inside space-y-1 text-gray-300">
-              {cvData.certifications.map((cert, idx) => (
+              {cvData.certifications.map((cert: string, idx: number) => (
                 <li key={idx}>{cert}</li>
               ))}
             </ul>

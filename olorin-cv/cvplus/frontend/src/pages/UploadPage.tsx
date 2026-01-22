@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GlassCard, GlassButton } from '@/components/glass';
 import { useCVUpload } from '../hooks/useCVUpload';
+import { CVAnalysisResult } from '@/services/api';
 
 const VALID_TYPES = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 const MAX_SIZE = 10 * 1024 * 1024;
@@ -62,7 +63,7 @@ export function UploadPage() {
     setError(null);
 
     uploadMutation.mutate(file, {
-      onSuccess: (data) => {
+      onSuccess: (data: CVAnalysisResult) => {
         navigate(`/enhance/${data.job_id}`);
       },
       onError: (error) => {

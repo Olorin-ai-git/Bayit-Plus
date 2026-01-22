@@ -11,21 +11,34 @@ if (!API_BASE_URL) {
   throw new Error('VITE_API_BASE_URL environment variable is required');
 }
 
-// Create axios instance
+// Create axios instance with httpOnly cookie support
 export const apiClient: AxiosInstance = axios.create({
   baseURL: `${API_BASE_URL}/api/v1`,
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Send httpOnly cookies with requests
 });
 
-// Request interceptor for adding auth token
+// Helper to get cookie by name
+function getCookie(name: string): string | null {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  return null;
+}
+
+// Request interceptor for CSRF token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Cookies are sent automatically with withCredentials: true
+    // Add CSRF token to headers for state-changing requests
+    if (config.method && ['post', 'put', 'patch', 'delete'].includes(config.method.toLowerCase())) {
+      const csrfToken = getCookie('csrf_token');
+      if (csrfToken) {
+        config.headers['X-CSRF-Token'] = csrfToken;
+      }
     }
     return config;
   },
@@ -37,7 +50,8 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('auth_token');
+      // Session expired - redirect to login
+      // No need to clear localStorage (using httpOnly cookies)
       window.location.href = '/login';
     }
     return Promise.reject(error);

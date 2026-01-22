@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Optional, Dict
 from beanie import Document, Indexed
 from pydantic import Field
+from pymongo import IndexModel, ASCENDING, DESCENDING
 
 
 class AnalyticsEvent(Document):
@@ -42,11 +43,25 @@ class AnalyticsEvent(Document):
     class Settings:
         name = "analytics_events"
         indexes = [
-            "event_type",
-            "user_id",
-            "cv_id",
-            "profile_id",
-            "created_at",
-            [("user_id", 1), ("event_type", 1), ("created_at", -1)],
-            [("profile_id", 1), ("event_type", 1), ("created_at", -1)],
+            IndexModel([("event_type", ASCENDING)]),
+            IndexModel([("user_id", ASCENDING)], sparse=True),
+            IndexModel([("cv_id", ASCENDING)], sparse=True),
+            IndexModel([("profile_id", ASCENDING)], sparse=True),
+            IndexModel(
+                [("user_id", ASCENDING), ("event_type", ASCENDING), ("created_at", DESCENDING)],
+                name="idx_user_event_created"
+            ),
+            IndexModel(
+                [("profile_id", ASCENDING), ("event_type", ASCENDING), ("created_at", DESCENDING)],
+                name="idx_profile_event_created"
+            ),
+            IndexModel(
+                [("event_type", ASCENDING), ("created_at", DESCENDING)],
+                name="idx_event_type_created"
+            ),
+            IndexModel(
+                [("created_at", ASCENDING)],
+                expireAfterSeconds=30 * 24 * 60 * 60,  # 30 days TTL
+                name="idx_ttl_created_at"
+            ),
         ]

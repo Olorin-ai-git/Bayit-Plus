@@ -22,16 +22,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuth = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      if (!token) {
-        setIsLoading(false);
-        return;
-      }
-
+      // With httpOnly cookies, browser automatically sends token
+      // Just check if we can get user data
       const userData = await authAPI.getCurrentUser();
       setUser(userData);
     } catch (error) {
-      localStorage.removeItem('auth_token');
+      // Not authenticated or session expired
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -40,7 +36,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     const response = await authAPI.login(email, password);
-    localStorage.setItem('auth_token', response.access_token);
+    // httpOnly cookie is set by backend automatically
+    // No need to store token in localStorage
     setUser(response.user);
   };
 
@@ -50,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       // Continue with logout even if API call fails
     } finally {
-      localStorage.removeItem('auth_token');
+      // httpOnly cookie is cleared by backend
       setUser(null);
     }
   };

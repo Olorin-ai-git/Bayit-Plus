@@ -10,4 +10,6 @@ export { profileAPI } from './profile';
 export { analyticsAPI } from './analytics';
 export { authAPI } from './auth';
 
-export default apiClient;
+// Re-export apiClient as default
+import { apiClient as defaultClient } from './client';
+export default defaultClient;

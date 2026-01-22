@@ -3,7 +3,7 @@
  */
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { profileAPI, Profile } from '../services/api';
+import { profileAPI } from '../services/api';
 
 export function useCreateProfile() {
   const queryClient = useQueryClient();
