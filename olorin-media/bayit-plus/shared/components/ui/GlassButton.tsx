@@ -5,12 +5,18 @@ import {
   Text,
   View,
   ActivityIndicator,
+  Platform,
   type ViewStyle,
   type TextStyle,
   type StyleProp,
 } from 'react-native';
 import { GlassView } from './GlassView';
 import { useTVFocus } from '../hooks/useTVFocus';
+
+// tvOS requires minimum 29pt font size for 10-foot UI per Apple HIG
+const TV_MIN_FONT_SIZE = 29;
+const TV_BODY_FONT_SIZE = 32;
+const TV_LARGE_FONT_SIZE = 36;
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'destructive' | 'outline' | 'success' | 'warning' | 'cancel' | 'info';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -56,10 +62,15 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
     styleType: 'button',
   });
 
+  // Detect tvOS for 10-foot UI font requirements
+  const isTV = Platform.isTV || Platform.OS === 'tvos';
+
+  // All sizes must meet 44x44pt minimum touch target per iOS HIG
+  // tvOS requires minimum 29pt font size per Apple HIG
   const sizeStyles = {
-    sm: { paddingVertical: 8, paddingHorizontal: 16, fontSize: 14 },
-    md: { paddingVertical: 12, paddingHorizontal: 24, fontSize: 16 },
-    lg: { paddingVertical: 16, paddingHorizontal: 32, fontSize: 18 },
+    sm: { paddingVertical: 12, paddingHorizontal: 16, fontSize: isTV ? TV_MIN_FONT_SIZE : 14, minHeight: 44, minWidth: 44 },
+    md: { paddingVertical: 14, paddingHorizontal: 24, fontSize: isTV ? TV_BODY_FONT_SIZE : 16, minHeight: 48, minWidth: 48 },
+    lg: { paddingVertical: 18, paddingHorizontal: 32, fontSize: isTV ? TV_LARGE_FONT_SIZE : 18, minHeight: 56, minWidth: 56 },
   };
 
   const variantStyles: Record<ButtonVariant, ViewStyle> = {
@@ -204,6 +215,8 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
   const buttonStyle: ViewStyle = {
     paddingVertical: currentSize.paddingVertical,
     paddingHorizontal: currentSize.paddingHorizontal,
+    minHeight: currentSize.minHeight,
+    minWidth: currentSize.minWidth,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',

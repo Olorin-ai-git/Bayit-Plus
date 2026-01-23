@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, Pressable, Animated } from 'react-native';
-import { colors, spacing, borderRadius } from '../../theme';
+import React, { useMemo } from 'react';
+import { View, Text, Pressable, StyleSheet, ViewStyle, Platform } from 'react-native';
+import { colors } from '../../theme';
 
 export interface GlassToggleProps {
   value: boolean;
@@ -10,6 +10,10 @@ export interface GlassToggleProps {
   disabled?: boolean;
   size?: 'small' | 'medium';
   isRTL?: boolean;
+  /** Accessibility label (defaults to label if not provided) */
+  accessibilityLabel?: string;
+  /** Accessibility hint describing what happens when toggled */
+  accessibilityHint?: string;
 }
 
 const SIZES = {
@@ -25,6 +29,8 @@ export const GlassToggle: React.FC<GlassToggleProps> = ({
   disabled = false,
   size = 'medium',
   isRTL = false,
+  accessibilityLabel: a11yLabel,
+  accessibilityHint,
 }) => {
   const dimensions = SIZES[size];
 
@@ -34,29 +40,59 @@ export const GlassToggle: React.FC<GlassToggleProps> = ({
     }
   };
 
+  // Web keyboard handler for accessibility
+  const handleKeyDown = (event: any) => {
+    if (Platform.OS === 'web' && !disabled) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        onValueChange(!value);
+      }
+    }
+  };
+
+  // Memoize dynamic styles to prevent unnecessary re-renders
+  const trackStyle: ViewStyle = useMemo(() => ({
+    width: dimensions.width,
+    height: dimensions.height,
+    borderRadius: dimensions.height / 2,
+    alignItems: value ? 'flex-end' : 'flex-start',
+    ...(value
+      ? { backgroundColor: colors.primary, borderColor: colors.primary }
+      : { backgroundColor: 'rgba(255, 255, 255, 0.1)', borderColor: 'rgba(255, 255, 255, 0.1)' }),
+  }), [dimensions, value]);
+
+  const knobStyle: ViewStyle = useMemo(() => ({
+    width: dimensions.knob,
+    height: dimensions.knob,
+    borderRadius: dimensions.knob / 2,
+    backgroundColor: value ? colors.text : 'rgba(255, 255, 255, 0.9)',
+  }), [dimensions, value]);
+
+  // Accessibility props for the toggle
+  const a11yProps = {
+    accessibilityRole: 'switch' as const,
+    accessibilityLabel: a11yLabel || label || 'Toggle',
+    accessibilityHint: accessibilityHint,
+    accessibilityState: { checked: value, disabled },
+    accessible: true,
+  };
+
+  // Web-specific props for keyboard navigation
+  const webProps = Platform.OS === 'web' ? {
+    // @ts-ignore - Web-specific prop
+    tabIndex: disabled ? -1 : 0,
+    onKeyDown: handleKeyDown,
+  } : {};
+
   const Toggle = () => (
     <Pressable
       onPress={handlePress}
       disabled={disabled}
-      className={`p-0.5 justify-center border ${value ? '' : 'border-white/10'} ${value ? '' : 'bg-white/10'} ${disabled ? 'opacity-50' : ''}`}
-      style={{
-        width: dimensions.width,
-        height: dimensions.height,
-        borderRadius: dimensions.height / 2,
-        alignItems: value ? 'flex-end' : 'flex-start',
-        ...(value ? { backgroundColor: colors.primary, borderColor: colors.primary } : {})
-      }}
+      style={[styles.track, trackStyle, disabled && styles.disabled]}
+      {...a11yProps}
+      {...webProps}
     >
-      <View
-        className="bg-white/90 shadow-sm"
-        style={{
-          width: dimensions.knob,
-          height: dimensions.knob,
-          borderRadius: dimensions.knob / 2,
-          backgroundColor: value ? colors.text : 'rgba(255, 255, 255, 0.9)',
-          elevation: 2,
-        }}
-      />
+      <View style={[styles.knob, knobStyle]} />
     </Pressable>
   );
 
@@ -68,21 +104,76 @@ export const GlassToggle: React.FC<GlassToggleProps> = ({
     <Pressable
       onPress={handlePress}
       disabled={disabled}
-      className={`flex-row items-center justify-between py-2 gap-4 ${isRTL ? 'flex-row-reverse' : ''} ${disabled ? 'opacity-50' : ''}`}
+      style={[styles.container, isRTL && styles.containerRTL, disabled && styles.disabled]}
+      {...a11yProps}
+      {...webProps}
     >
-      <View className="flex-1">
-        <Text className={`text-[15px] font-medium ${isRTL ? 'text-right' : ''}`} style={{ color: disabled ? colors.textMuted : colors.text }}>
+      <View style={styles.labelContainer}>
+        <Text style={[styles.label, isRTL && styles.textRTL, disabled && styles.labelDisabled]}>
           {label}
         </Text>
         {description && (
-          <Text className={`text-[13px] mt-0.5 leading-[18px] ${isRTL ? 'text-right' : ''}`} style={{ color: colors.textMuted }}>
+          <Text style={[styles.description, isRTL && styles.textRTL]}>
             {description}
           </Text>
         )}
       </View>
-      <Toggle />
+      <View pointerEvents="none">
+        <View style={[styles.track, trackStyle, disabled && styles.disabled]}>
+          <View style={[styles.knob, knobStyle]} />
+        </View>
+      </View>
     </Pressable>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10, // Ensures 44pt minimum touch target height per iOS HIG
+    minHeight: 44, // Explicit minimum touch target per iOS HIG
+    gap: 16,
+  },
+  containerRTL: {
+    flexDirection: 'row-reverse',
+  },
+  labelContainer: {
+    flex: 1,
+  },
+  label: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  labelDisabled: {
+    color: colors.textMuted,
+  },
+  description: {
+    fontSize: 13,
+    marginTop: 2,
+    lineHeight: 18,
+    color: colors.textMuted,
+  },
+  textRTL: {
+    textAlign: 'right',
+  },
+  track: {
+    padding: 2,
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  knob: {
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+});
 
 export default GlassToggle;

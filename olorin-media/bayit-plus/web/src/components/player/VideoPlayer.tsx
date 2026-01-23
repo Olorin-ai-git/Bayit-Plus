@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
+import { useState, useEffect, useRef } from 'react'
+import { View, Text, StyleSheet, ActivityIndicator, Animated, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassView, GlassBadge } from '@bayit/shared/ui'
 import { useAuthStore } from '@/stores/authStore'
+import { ttsService } from '@bayit/shared/services/ttsService'
 import {
   WatchPartyButton,
   WatchPartyCreateModal,
@@ -18,12 +19,14 @@ import SubtitleOverlay from './SubtitleOverlay'
 import SubtitleControls from './SubtitleControls'
 import LiveSubtitleControls from './LiveSubtitleControls'
 import LiveSubtitleOverlay from './LiveSubtitleOverlay'
+import { DubbingControls, DubbingOverlay } from './dubbing'
 import { RecordButton } from './RecordButton'
 import { RecordingStatusIndicator } from './RecordingStatusIndicator'
 import PlayerControls from './PlayerControls'
 import ProgressBar from './ProgressBar'
 import SettingsPanel from './SettingsPanel'
-import { useVideoPlayer, useSubtitles, useLiveSubtitles, useWatchParty } from './hooks'
+import TriviaOverlay from './TriviaOverlay'
+import { useVideoPlayer, useSubtitles, useLiveSubtitles, useWatchParty, useLiveDubbing, useTrivia } from './hooks'
 import { VideoPlayerProps } from './types'
 
 export default function VideoPlayer({
@@ -78,6 +81,20 @@ export default function VideoPlayer({
     handleLiveSubtitleCue,
   } = useLiveSubtitles()
 
+  // Live dubbing management (Premium feature)
+  const dubbing = useLiveDubbing({
+    channelId: contentId || '',
+    videoElement: videoRef.current,
+  })
+
+  // Trivia management (VOD only)
+  const trivia = useTrivia({
+    contentId,
+    language: t('app.lang'),
+    currentTime: state.currentTime,
+    isPlaying: state.isPlaying && !isLive,
+  })
+
   // Watch Party integration
   const {
     party,
@@ -113,6 +130,30 @@ export default function VideoPlayer({
   const [showSettings, setShowSettings] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [recordingDuration, setRecordingDuration] = useState(0)
+  const [isTTSPlaying, setIsTTSPlaying] = useState(false)
+
+  // Settings dropdown animation
+  const settingsSlideAnim = useRef(new Animated.Value(0)).current
+  const settingsOpacityAnim = useRef(new Animated.Value(0)).current
+
+  // Track TTS state to prevent trivia display during TTS playback
+  useEffect(() => {
+    const handleTTSPlaying = () => setIsTTSPlaying(true)
+    const handleTTSStopped = () => setIsTTSPlaying(false)
+
+    ttsService.on('playing', handleTTSPlaying)
+    ttsService.on('stopped', handleTTSStopped)
+    ttsService.on('completed', handleTTSStopped)
+
+    // Initialize with current state
+    setIsTTSPlaying(ttsService.isCurrentlyPlaying())
+
+    return () => {
+      ttsService.off('playing', handleTTSPlaying)
+      ttsService.off('stopped', handleTTSStopped)
+      ttsService.off('completed', handleTTSStopped)
+    }
+  }, [])
 
   // Detect mobile
   useEffect(() => {
@@ -155,6 +196,26 @@ export default function VideoPlayer({
       {/* Live Subtitle Overlay (Premium) */}
       {isLive && <LiveSubtitleOverlay cues={visibleLiveSubtitles} />}
 
+      {/* Live Dubbing Overlay (Premium) */}
+      {isLive && (
+        <DubbingOverlay
+          isActive={dubbing.isConnected}
+          originalText={dubbing.lastTranscript}
+          translatedText={dubbing.lastTranslation}
+          latencyMs={dubbing.latencyMs}
+        />
+      )}
+
+      {/* Trivia Overlay (VOD only) */}
+      {!isLive && trivia.triviaEnabled && (
+        <TriviaOverlay
+          fact={trivia.currentFact}
+          onDismiss={trivia.dismissFact}
+          isRTL={t('app.lang') === 'he'}
+          isTTSPlaying={isTTSPlaying}
+        />
+      )}
+
       {/* Loading Spinner */}
       {state.loading && (
         <View style={styles.loadingOverlay}>
@@ -187,21 +248,68 @@ export default function VideoPlayer({
         />
       )}
 
-      {/* Settings Panel */}
-      <SettingsPanel
-        isOpen={showSettings}
-        isLive={isLive}
-        videoRef={videoRef}
-        availableSubtitleLanguages={availableSubtitleLanguages}
-        liveSubtitleLang={liveSubtitleLang}
-        availableQualities={state.availableQualities}
-        currentQuality={state.currentQuality}
-        currentPlaybackSpeed={state.playbackSpeed}
-        onClose={() => setShowSettings(false)}
-        onLiveSubtitleLangChange={setLiveSubtitleLang}
-        onQualityChange={controls.changeQuality}
-        onPlaybackSpeedChange={controls.setPlaybackSpeed}
-      />
+      {/* Live Controls Slide Panel */}
+      {isLive && (
+        <GlassSlideContainer
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+          direction="right"
+          width={360}
+        >
+          <View style={styles.liveControlsContainer}>
+            <Text style={styles.liveControlsTitle}>{t('player.liveControls', 'Live Controls')}</Text>
+
+            {/* Live Translation Control */}
+            <View style={styles.controlSection}>
+              <LiveSubtitleControls
+                channelId={contentId}
+                isLive={isLive}
+                isPremium={user?.subscription?.plan === 'premium' || user?.subscription?.plan === 'family'}
+                videoElement={videoRef.current}
+                onSubtitleCue={handleLiveSubtitleCue}
+                onShowUpgrade={onShowUpgrade}
+                targetLang={liveSubtitleLang}
+                onLanguageChange={setLiveSubtitleLang}
+              />
+            </View>
+
+            {/* Live Dubbing Control */}
+            <View style={styles.controlSection}>
+              <DubbingControls
+                isEnabled={dubbing.isConnected}
+                isConnecting={dubbing.isConnecting}
+                isAvailable={dubbing.isAvailable}
+                isPremium={user?.subscription?.plan === 'premium' || user?.subscription?.plan === 'family'}
+                targetLanguage={dubbing.targetLanguage}
+                availableLanguages={dubbing.availableLanguages}
+                latencyMs={dubbing.latencyMs}
+                error={dubbing.error}
+                onToggle={() => dubbing.isConnected ? dubbing.disconnect() : dubbing.connect()}
+                onLanguageChange={dubbing.setTargetLanguage}
+                onShowUpgrade={onShowUpgrade}
+              />
+            </View>
+          </View>
+        </GlassSlideContainer>
+      )}
+
+      {/* VOD Settings Panel */}
+      {!isLive && (
+        <SettingsPanel
+          isOpen={showSettings}
+          isLive={isLive}
+          videoRef={videoRef}
+          availableSubtitleLanguages={availableSubtitleLanguages}
+          liveSubtitleLang={liveSubtitleLang}
+          availableQualities={state.availableQualities}
+          currentQuality={state.currentQuality}
+          currentPlaybackSpeed={state.playbackSpeed}
+          onClose={() => setShowSettings(false)}
+          onLiveSubtitleLangChange={setLiveSubtitleLang}
+          onQualityChange={controls.changeQuality}
+          onPlaybackSpeedChange={controls.setPlaybackSpeed}
+        />
+      )}
 
       {/* Controls Overlay */}
       <View
@@ -310,6 +418,7 @@ export default function VideoPlayer({
             state={state}
             controls={controls}
             isLive={isLive}
+            liveSubtitleLang={liveSubtitleLang}
             showChaptersPanel={showChaptersPanel}
             showSceneSearchPanel={showSceneSearchPanel}
             showSettings={showSettings}
@@ -343,20 +452,6 @@ export default function VideoPlayer({
                   onSubtitlesRefresh={fetchAvailableSubtitles}
                   isLoading={subtitlesLoading}
                   containerRef={containerRef}
-                />
-              ) : null
-            }
-            renderLiveSubtitleControls={() =>
-              isLive && contentId ? (
-                <LiveSubtitleControls
-                  channelId={contentId}
-                  isLive={isLive}
-                  isPremium={user?.subscription?.plan === 'premium' || user?.subscription?.plan === 'family'}
-                  videoElement={videoRef.current}
-                  onSubtitleCue={handleLiveSubtitleCue}
-                  onShowUpgrade={onShowUpgrade}
-                  targetLang={liveSubtitleLang}
-                  onLanguageChange={setLiveSubtitleLang}
                 />
               ) : null
             }
@@ -563,5 +658,18 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(16, 185, 129, 0.5)',
     borderRadius: borderRadius.lg,
+  },
+  liveControlsContainer: {
+    flex: 1,
+    gap: spacing.xl,
+  },
+  liveControlsTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  controlSection: {
+    gap: spacing.md,
   },
 })
