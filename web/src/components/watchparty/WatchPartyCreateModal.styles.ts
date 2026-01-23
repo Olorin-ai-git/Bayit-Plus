@@ -44,6 +44,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
+    minHeight: isTV ? 80 : 44,
     padding: spacing.md,
     backgroundColor: colors.glass,
     borderRadius: borderRadius.lg,
@@ -61,9 +62,9 @@ export const styles = StyleSheet.create({
     color: colors.text,
   },
   checkbox: {
-    width: isTV ? 26 : 22,
-    height: isTV ? 26 : 22,
-    borderRadius: isTV ? 6 : 4,
+    width: isTV ? 48 : 28,
+    height: isTV ? 48 : 28,
+    borderRadius: isTV ? 8 : 6,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
@@ -82,6 +83,7 @@ export const styles = StyleSheet.create({
   },
   cancelButton: {
     flex: 1,
+    minHeight: isTV ? 80 : 44,
     paddingVertical: isTV ? spacing.md : spacing.sm,
     backgroundColor: colors.glass,
     borderRadius: borderRadius.md,
@@ -101,6 +103,7 @@ export const styles = StyleSheet.create({
   },
   createButton: {
     flex: 1,
+    minHeight: isTV ? 80 : 44,
     paddingVertical: isTV ? spacing.md : spacing.sm,
     backgroundColor: colors.primary,
     borderRadius: borderRadius.md,
@@ -113,14 +116,14 @@ export const styles = StyleSheet.create({
     elevation: 8,
   },
   createButtonHovered: {
-    backgroundColor: '#B968F7',
+    backgroundColor: colors.primaryLight,
     shadowOpacity: 0.7,
     shadowRadius: 16,
   },
   createButtonText: {
     fontSize: isTV ? 16 : 14,
     fontWeight: '700',
-    color: '#111122',
+    color: colors.background,
   },
   buttonDisabled: {
     opacity: 0.5,

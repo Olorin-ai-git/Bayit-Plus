@@ -44,22 +44,24 @@ class LiveSubtitleService {
 
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
       const wsHost = API_BASE_URL.replace(/^https?:\/\//, '')
-      const wsUrl = `${wsProtocol}//${wsHost}/ws/live/${channelId}/subtitles?token=${token}&target_lang=${targetLang}`
+      const wsUrl = `${wsProtocol}//${wsHost}/ws/live/${channelId}/subtitles?target_lang=${targetLang}`
 
       this.ws = new WebSocket(wsUrl)
 
       this.ws.onopen = async () => {
-        logger.debug('WebSocket connected', 'liveSubtitleService')
-        this.isConnected = true
-        await this.startAudioCapture(videoElement)
+        logger.debug('WebSocket connected, sending authentication', 'liveSubtitleService')
+        // Send authentication message (SECURITY: token via message, not URL)
+        this.ws?.send(JSON.stringify({ type: 'authenticate', token }))
       }
 
-      this.ws.onmessage = (event) => {
+      this.ws.onmessage = async (event) => {
         try {
           const msg = JSON.parse(event.data)
           logger.debug('Message received', 'liveSubtitleService', { type: msg.type, msg })
           if (msg.type === 'connected') {
-            logger.debug(`Connected - Source: ${msg.source_lang}, Target: ${msg.target_lang}`, 'liveSubtitleService')
+            logger.debug(`Authenticated - Source: ${msg.source_lang}, Target: ${msg.target_lang}`, 'liveSubtitleService')
+            this.isConnected = true
+            await this.startAudioCapture(videoElement)
           } else if (msg.type === 'subtitle') {
             logger.debug('Subtitle received', 'liveSubtitleService', { text: msg.data.text, data: msg.data })
             logger.debug('Calling onSubtitle callback', 'liveSubtitleService', msg.data)

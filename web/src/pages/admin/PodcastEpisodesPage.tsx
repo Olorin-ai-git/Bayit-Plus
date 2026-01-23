@@ -1,16 +1,16 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Plus, Edit, Trash2, X, AlertCircle, ChevronLeft } from 'lucide-react'
-import { GlassInput } from '@bayit/shared/ui'
-import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web'
-import { adminContentService } from '@/services/adminApi'
+import { Plus, Edit, Trash2, X, AlertCircle, ChevronLeft, Languages, RefreshCw } from 'lucide-react'
+import { GlassInput, GlassSelect, GlassButton } from '@bayit/shared/ui'
+import { GlassTable } from '@bayit/shared/ui/web'
+import { adminPodcastsService, adminPodcastEpisodesService } from '@bayit/shared-services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
-import type { PodcastEpisode, PaginatedResponse } from '@/types/content'
+import type { PodcastEpisode, PaginatedResponse, TranslationStatus } from '@/types/content'
 
 interface Pagination {
   page: number
@@ -20,6 +20,29 @@ interface Pagination {
 
 interface EditingEpisode extends Partial<PodcastEpisode> {
   id?: string
+}
+
+const TRANSLATION_STATUS_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'processing', label: 'Processing' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'failed', label: 'Failed' },
+]
+
+function TranslationStatusBadge({ status }: { status?: TranslationStatus }) {
+  const statusConfig: Record<string, { bg: string; color: string; label: string }> = {
+    pending: { bg: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b', label: 'Pending' },
+    processing: { bg: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6', label: 'Processing' },
+    completed: { bg: 'rgba(16, 185, 129, 0.2)', color: '#10b981', label: 'Completed' },
+    failed: { bg: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', label: 'Failed' },
+  }
+  const config = statusConfig[status || 'pending'] || statusConfig.pending
+  return (
+    <View style={[styles.badge, { backgroundColor: config.bg }]}>
+      <Text style={[styles.badgeText, { color: config.color }]}>{config.label}</Text>
+    </View>
+  )
 }
 
 export default function PodcastEpisodesPage() {
@@ -36,18 +59,25 @@ export default function PodcastEpisodesPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editData, setEditData] = useState<EditingEpisode>({})
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [translating, setTranslating] = useState<string | null>(null)
+  const [bulkTranslating, setBulkTranslating] = useState(false)
+  const [statusFilter, setStatusFilter] = useState<string>('all')
 
   const loadEpisodes = useCallback(async () => {
     if (!podcastId) return
     setIsLoading(true)
     setError(null)
     try {
-      const response: PaginatedResponse<PodcastEpisode> = await adminContentService.getPodcastEpisodes(
+      const filters: { page: number; page_size: number; translation_status?: TranslationStatus } = {
+        page: pagination.page,
+        page_size: pagination.pageSize,
+      }
+      if (statusFilter !== 'all') {
+        filters.translation_status = statusFilter as TranslationStatus
+      }
+      const response: PaginatedResponse<PodcastEpisode> = await adminPodcastEpisodesService.getEpisodes(
         podcastId,
-        {
-          page: pagination.page,
-          page_size: pagination.pageSize,
-        }
+        filters
       )
       setItems(response.items || [])
       setPagination((prev) => ({ ...prev, total: response.total || 0 }))
@@ -58,22 +88,24 @@ export default function PodcastEpisodesPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [podcastId, pagination.page, pagination.pageSize])
+  }, [podcastId, pagination.page, pagination.pageSize, statusFilter])
 
   useEffect(() => {
-    // Load podcast title
     const loadPodcast = async () => {
       if (!podcastId) return
       try {
-        const podcast = await adminContentService.getPodcastItem(podcastId)
+        const podcast = await adminPodcastsService.getPodcast(podcastId)
         setPodcastTitle(podcast.title)
       } catch (err) {
         logger.error('Failed to load podcast', 'PodcastEpisodesPage', err)
       }
     }
     loadPodcast()
+  }, [podcastId])
+
+  useEffect(() => {
     loadEpisodes()
-  }, [podcastId, loadEpisodes])
+  }, [loadEpisodes])
 
   const handleEdit = (item: PodcastEpisode) => {
     setEditingId(item.id)
@@ -90,12 +122,16 @@ export default function PodcastEpisodesPage() {
       return
     }
     try {
-      await adminContentService.updatePodcastEpisode(podcastId!, editingId!, editData)
+      if (editingId === 'new') {
+        await adminPodcastEpisodesService.createEpisode(podcastId!, editData)
+      } else {
+        await adminPodcastEpisodesService.updateEpisode(podcastId!, editingId!, editData)
+      }
       setEditingId(null)
       setEditData({})
       await loadEpisodes()
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to update episode'
+      const msg = err instanceof Error ? err.message : 'Failed to save episode'
       logger.error(msg, 'PodcastEpisodesPage', err)
       setError(msg)
     }
@@ -107,7 +143,7 @@ export default function PodcastEpisodesPage() {
       async () => {
         try {
           setDeleting(id)
-          await adminContentService.deletePodcastEpisode(podcastId!, id)
+          await adminPodcastEpisodesService.deleteEpisode(podcastId!, id)
           setItems(items.filter((item) => item.id !== id))
         } catch (err) {
           const msg = err instanceof Error ? err.message : 'Failed to delete episode'
@@ -121,71 +157,120 @@ export default function PodcastEpisodesPage() {
     )
   }
 
+  const handleTranslate = async (episodeId: string) => {
+    try {
+      setTranslating(episodeId)
+      await adminPodcastEpisodesService.triggerTranslation(podcastId!, episodeId)
+      await loadEpisodes()
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to queue translation'
+      logger.error(msg, 'PodcastEpisodesPage', err)
+      setError(msg)
+    } finally {
+      setTranslating(null)
+    }
+  }
+
+  const handleTranslateAll = async () => {
+    try {
+      setBulkTranslating(true)
+      const result = await adminPodcastsService.triggerBulkTranslation(podcastId!)
+      setError(null)
+      logger.info(`Queued ${result.episodes_queued} episodes for translation`, 'PodcastEpisodesPage')
+      await loadEpisodes()
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to queue bulk translation'
+      logger.error(msg, 'PodcastEpisodesPage', err)
+      setError(msg)
+    } finally {
+      setBulkTranslating(false)
+    }
+  }
+
   const columns = [
     {
       key: 'episode_number',
       label: t('admin.content.columns.episodeNumber', { defaultValue: 'Episode #' }),
-      render: (episodeNum: number | undefined) => <Text className="text-sm text-white">{episodeNum || '-'}</Text>,
+      width: 80,
+      render: (episodeNum: number | undefined) => <Text style={styles.cellText}>{episodeNum || '-'}</Text>,
     },
     {
       key: 'title',
       label: t('admin.content.columns.title', { defaultValue: 'Title' }),
-      render: (title: string) => <Text className="text-sm text-white">{title}</Text>,
-    },
-    {
-      key: 'description',
-      label: t('admin.content.columns.description', { defaultValue: 'Description' }),
-      render: (desc: string | undefined) => (
-        <Text style={[styles.cellText, styles.descText]} numberOfLines={2}>
-          {desc || '-'}
-        </Text>
-      ),
+      render: (title: string) => <Text style={styles.cellText}>{title}</Text>,
     },
     {
       key: 'duration',
       label: t('admin.content.columns.duration', { defaultValue: 'Duration' }),
-      render: (duration: string | undefined) => <Text className="text-sm text-white">{duration || '-'}</Text>,
+      width: 100,
+      render: (duration: string | undefined) => <Text style={styles.cellText}>{duration || '-'}</Text>,
     },
     {
       key: 'published_at',
       label: t('admin.content.columns.publishedDate', { defaultValue: 'Published' }),
+      width: 120,
       render: (date: string | undefined) => (
-        <Text className="text-sm text-white">{date ? new Date(date).toLocaleDateString() : '-'}</Text>
+        <Text style={styles.cellText}>{date ? new Date(date).toLocaleDateString() : '-'}</Text>
+      ),
+    },
+    {
+      key: 'translation_status',
+      label: t('admin.content.columns.translationStatus', { defaultValue: 'Translation' }),
+      width: 140,
+      render: (status: TranslationStatus | undefined, item: PodcastEpisode) => (
+        <View style={[styles.translationCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <TranslationStatusBadge status={status} />
+          <GlassButton
+            variant="ghost"
+            size="sm"
+            onPress={() => handleTranslate(item.id)}
+            disabled={translating === item.id || status === 'processing'}
+            icon={translating === item.id ? <RefreshCw size={16} color={colors.primary} /> : <Languages size={16} color={colors.primary} />}
+            style={styles.translateBtn}
+            accessibilityLabel={t('admin.podcasts.translateEpisode', { defaultValue: 'Translate episode' })}
+          />
+        </View>
       ),
     },
     {
       key: 'actions',
       label: '',
       width: 100,
-      render: (_: any, item: PodcastEpisode) => (
+      render: (_: unknown, item: PodcastEpisode) => (
         <View style={[styles.actionsCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <Pressable
+          <GlassButton
+            variant="ghost"
+            size="sm"
             onPress={() => handleEdit(item)}
-            style={[styles.actionButton, { backgroundColor: '#a855f780' }]}
-          >
-            <Edit size={14} color="#a855f7" />
-          </Pressable>
-          <Pressable
+            icon={<Edit size={16} color="#a855f7" />}
+            style={styles.actionButton}
+            accessibilityLabel={t('admin.podcasts.editEpisode', { defaultValue: 'Edit episode' })}
+          />
+          <GlassButton
+            variant="ghost"
+            size="sm"
             onPress={() => handleDelete(item.id)}
             disabled={deleting === item.id}
-            style={[styles.actionButton, { backgroundColor: '#ef444480', opacity: deleting === item.id ? 0.5 : 1 }]}
-          >
-            <Trash2 size={14} color="#ef4444" />
-          </Pressable>
+            icon={<Trash2 size={16} color="#ef4444" />}
+            style={styles.actionButton}
+            accessibilityLabel={t('admin.podcasts.deleteEpisode', { defaultValue: 'Delete episode' })}
+          />
         </View>
       ),
     },
   ]
 
   return (
-    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
-      <Pressable
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <GlassButton
+        variant="ghost"
         onPress={() => navigate('/admin/podcasts')}
         style={[styles.breadcrumb, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+        icon={<ChevronLeft size={16} color={colors.primary} />}
+        accessibilityLabel={t('admin.common.backToPodcasts', { defaultValue: 'Back to podcasts' })}
       >
-        <ChevronLeft size={16} color={colors.primary} />
         <Text style={styles.breadcrumbText}>{t('admin.common.back')} {t('admin.titles.podcasts')}</Text>
-      </Pressable>
+      </GlassButton>
 
       <View style={[styles.header, { flexDirection }]}>
         <View>
@@ -194,32 +279,61 @@ export default function PodcastEpisodesPage() {
             {t('admin.podcasts.episodesSubtitle', { defaultValue: 'Manage episodes' })}
           </Text>
         </View>
-        <Pressable
-          onPress={() => {
-            setEditingId('new')
-            setEditData({ episode_number: items.length + 1 })
-          }}
-          style={styles.addButton}
-        >
-          <Plus size={18} color={colors.text} />
-          <Text style={styles.addButtonText}>{t('admin.actions.new', { defaultValue: 'New' })}</Text>
-        </Pressable>
+        <View style={[styles.headerActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <GlassButton
+            variant="secondary"
+            onPress={handleTranslateAll}
+            disabled={bulkTranslating}
+            icon={<Languages size={18} color={colors.text} />}
+            accessibilityLabel={t('admin.podcasts.translateAllEpisodes', { defaultValue: 'Translate all episodes' })}
+          >
+            {bulkTranslating ? t('common.loading') : t('admin.podcasts.translateAll', 'Translate All')}
+          </GlassButton>
+          <GlassButton
+            variant="primary"
+            onPress={() => {
+              setEditingId('new')
+              setEditData({ episode_number: items.length + 1 })
+            }}
+            icon={<Plus size={18} color={colors.text} />}
+            accessibilityLabel={t('admin.actions.newEpisode', { defaultValue: 'Create new episode' })}
+          >
+            {t('admin.actions.new', { defaultValue: 'New' })}
+          </GlassButton>
+        </View>
       </View>
 
       {error && (
-        <View style={[styles.errorContainer, { marginBottom: spacing.lg }]}>
+        <View style={styles.errorContainer}>
           <AlertCircle size={18} color="#ef4444" />
-          <Text className="flex-1 text-red-500 text-sm">{error}</Text>
-          <Pressable onPress={() => setError(null)}>
-            <X size={18} color="#ef4444" />
-          </Pressable>
+          <Text style={styles.errorText}>{error}</Text>
+          <GlassButton
+            variant="ghost"
+            size="sm"
+            onPress={() => setError(null)}
+            icon={<X size={18} color="#ef4444" />}
+            accessibilityLabel={t('common.dismissError', { defaultValue: 'Dismiss error' })}
+          />
         </View>
       )}
+
+      <View style={styles.filterRow}>
+        <GlassSelect
+          value={statusFilter}
+          onChange={(value) => {
+            setStatusFilter(value)
+            setPagination((prev) => ({ ...prev, page: 1 }))
+          }}
+          options={TRANSLATION_STATUS_OPTIONS}
+          label={t('admin.podcasts.filterByStatus', 'Filter by Status')}
+          containerStyle={styles.filterSelect}
+        />
+      </View>
 
       {editingId && (
         <View style={styles.editForm}>
           <Text style={styles.formTitle}>
-            {editingId === 'new' ? 'New Episode' : 'Edit Episode'}
+            {editingId === 'new' ? t('admin.podcasts.newEpisode', 'New Episode') : t('admin.podcasts.editEpisode', 'Edit Episode')}
           </Text>
           <GlassInput
             label={t('admin.podcasts.episodes.form.title', 'Episode title')}
@@ -245,14 +359,6 @@ export default function PodcastEpisodesPage() {
             keyboardType="number-pad"
           />
           <GlassInput
-            label={t('admin.podcasts.episodes.form.seasonNumber', 'Season number (optional)')}
-            containerStyle={styles.input}
-            placeholder="Season number (optional)"
-            value={String(editData.season_number || '')}
-            onChangeText={(value) => setEditData({ ...editData, season_number: parseInt(value) || undefined })}
-            keyboardType="number-pad"
-          />
-          <GlassInput
             label={t('admin.podcasts.episodes.form.duration', 'Duration')}
             containerStyle={styles.input}
             placeholder="Duration (e.g., 45:30)"
@@ -274,12 +380,20 @@ export default function PodcastEpisodesPage() {
             onChangeText={(value) => setEditData({ ...editData, published_at: value ? `${value}T00:00:00Z` : undefined })}
           />
           <View style={styles.formActions}>
-            <Pressable onPress={() => setEditingId(null)} style={styles.cancelBtn}>
-              <Text style={styles.cancelBtnText}>{t('admin.common.cancel')}</Text>
-            </Pressable>
-            <Pressable onPress={handleSaveEdit} style={styles.saveBtn}>
-              <Text style={styles.saveBtnText}>{t('admin.common.save')}</Text>
-            </Pressable>
+            <GlassButton
+              variant="secondary"
+              onPress={() => setEditingId(null)}
+              accessibilityLabel={t('admin.common.cancel')}
+            >
+              {t('admin.common.cancel')}
+            </GlassButton>
+            <GlassButton
+              variant="primary"
+              onPress={handleSaveEdit}
+              accessibilityLabel={t('admin.common.saveEpisode', { defaultValue: 'Save episode' })}
+            >
+              {t('admin.common.save')}
+            </GlassButton>
           </View>
         </View>
       )}
@@ -297,3 +411,64 @@ export default function PodcastEpisodesPage() {
   )
 }
 
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  content: { padding: spacing.lg },
+  breadcrumb: {
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.md,
+  },
+  breadcrumbText: { color: colors.primary, fontSize: 14 },
+  header: {
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: spacing.lg,
+    gap: spacing.md,
+  },
+  headerActions: { gap: spacing.sm, alignItems: 'center' },
+  pageTitle: { color: colors.text, fontSize: 24, fontWeight: 'bold' },
+  subtitle: { color: colors.textSecondary, fontSize: 14, marginTop: spacing.xs },
+  btnDisabled: { opacity: 0.5 },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    marginBottom: spacing.lg,
+    gap: spacing.sm,
+  },
+  errorText: { flex: 1, color: '#ef4444', fontSize: 14 },
+  filterRow: {
+    flexDirection: 'row',
+    marginBottom: spacing.md,
+    gap: spacing.md,
+  },
+  filterSelect: { width: 200 },
+  editForm: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.lg,
+  },
+  formTitle: { color: colors.text, fontSize: 18, fontWeight: 'bold', marginBottom: spacing.md },
+  input: { marginBottom: spacing.md },
+  formActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.md },
+  cellText: { color: colors.text, fontSize: 14 },
+  descText: { color: colors.textSecondary },
+  translationCell: { alignItems: 'center', gap: spacing.xs },
+  translateBtn: {
+    minWidth: 44,
+    minHeight: 44,
+    borderRadius: borderRadius.md,
+  },
+  actionsCell: { gap: spacing.xs },
+  actionButton: {
+    minWidth: 44,
+    minHeight: 44,
+    borderRadius: borderRadius.md,
+  },
+  badge: { paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: borderRadius.sm },
+  badgeText: { fontSize: 12, fontWeight: '600' },
+})

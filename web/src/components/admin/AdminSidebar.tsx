@@ -21,6 +21,7 @@ import {
   Check,
   Video,
   Upload,
+  Clock,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
@@ -85,6 +86,7 @@ const NAV_ITEMS: NavItem[] = [
       { key: 'live-channels', labelKey: 'admin.nav.liveChannels', route: '/admin/live-channels' },
       { key: 'radio-stations', labelKey: 'admin.nav.radioStations', route: '/admin/radio-stations' },
       { key: 'podcasts', labelKey: 'admin.nav.podcasts', route: '/admin/podcasts' },
+      { key: 'translations', labelKey: 'admin.nav.translations', route: '/admin/translations' },
       { key: 'widgets', labelKey: 'admin.nav.widgets', route: '/admin/widgets' },
     ],
   },

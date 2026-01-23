@@ -7,6 +7,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
+from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.models.admin import AuditAction, Permission
 from app.models.content import Podcast, PodcastEpisode
 from app.models.user import User
@@ -24,14 +25,19 @@ async def get_podcast_episodes(
     podcast_id: str,
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=50, le=500),
+    translation_status: str = Query(default=None),
     current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
 ):
-    """Get episodes for a podcast."""
+    """Get episodes for a podcast with optional translation status filter."""
     podcast = await Podcast.get(podcast_id)
     if not podcast:
         raise HTTPException(status_code=404, detail="Podcast not found")
 
+    # Build query with optional translation status filter
     query = PodcastEpisode.find(PodcastEpisode.podcast_id == podcast_id)
+    if translation_status:
+        query = query.find(PodcastEpisode.translation_status == translation_status)
+
     total = await query.count()
     skip = (page - 1) * page_size
     items = (
@@ -54,6 +60,10 @@ async def get_podcast_episodes(
                 "season_number": item.season_number,
                 "published_at": item.published_at.isoformat(),
                 "thumbnail": item.thumbnail,
+                "translation_status": item.translation_status,
+                "available_languages": item.available_languages,
+                "original_language": item.original_language,
+                "retry_count": item.retry_count,
             }
             for item in items
         ],
@@ -216,6 +226,7 @@ async def delete_podcast_episode(
 
 
 @router.post("/podcasts/{podcast_id}/episodes/{episode_id}/translate")
+@limiter.limit(RATE_LIMITS.get("translation_single", "10/minute"))
 async def trigger_translation(
     podcast_id: str,
     episode_id: str,
@@ -225,7 +236,7 @@ async def trigger_translation(
     """
     Manually trigger translation for a specific episode.
 
-    Note: Rate limited to prevent abuse. Check rate_limiter middleware for limits.
+    Rate limited to 10 requests per minute to prevent abuse.
     """
     # Verify podcast exists
     podcast = await Podcast.get(podcast_id)
@@ -273,8 +284,69 @@ async def trigger_translation(
     }
 
 
+@router.post("/podcasts/{podcast_id}/translate-all")
+@limiter.limit(RATE_LIMITS.get("translation_bulk", "5/hour"))
+async def trigger_bulk_translation(
+    podcast_id: str,
+    request: Request,
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
+):
+    """Trigger translation for all pending/failed episodes of a podcast. Rate limited to 5/hour."""
+    # Verify podcast exists
+    podcast = await Podcast.get(podcast_id)
+    if not podcast:
+        raise HTTPException(status_code=404, detail="Podcast not found")
+
+    # Get translation worker
+    worker = get_translation_worker()
+    if not worker:
+        raise HTTPException(
+            status_code=503,
+            detail="Translation service not available. Check configuration.",
+        )
+
+    # Find all episodes with status = pending or failed (with retry_count < max_retries)
+    episodes = await PodcastEpisode.find(
+        PodcastEpisode.podcast_id == podcast_id,
+        {"$or": [
+            {"translation_status": "pending"},
+            {"translation_status": "failed", "retry_count": {"$lt": 3}},
+        ]},
+    ).to_list()
+
+    queued_count = 0
+    for episode in episodes:
+        success = await worker.queue_episode(str(episode.id))
+        if success:
+            queued_count += 1
+
+    # Audit logging
+    await log_audit(
+        str(current_user.id),
+        AuditAction.PODCAST_UPDATED,
+        "podcast",
+        podcast_id,
+        {
+            "action": "bulk_translation_triggered",
+            "episodes_queued": queued_count,
+            "total_eligible": len(episodes),
+        },
+        request,
+    )
+
+    return {
+        "status": "queued",
+        "podcast_id": podcast_id,
+        "episodes_queued": queued_count,
+        "total_eligible": len(episodes),
+        "message": f"Queued {queued_count} episodes for translation",
+    }
+
+
 @router.get("/translation/status")
+@limiter.limit(RATE_LIMITS.get("translation_status", "30/minute"))
 async def get_translation_status(
+    request: Request,
     current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
 ):
     """Get overall translation status and queue size using aggregation."""
@@ -290,4 +362,49 @@ async def get_translation_status(
         "completed": status_map.get("completed", 0),
         "failed": status_map.get("failed", 0),
         "total": sum(status_map.values()),
+    }
+
+
+@router.get("/translation/failed")
+@limiter.limit(RATE_LIMITS.get("translation_status", "30/minute"))
+async def get_failed_translations(
+    request: Request,
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=20, le=100),
+    current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
+):
+    """Get list of failed translation episodes for the dashboard."""
+    query = PodcastEpisode.find(PodcastEpisode.translation_status == "failed")
+    total = await query.count()
+    skip = (page - 1) * page_size
+
+    items = (
+        await query.sort(-PodcastEpisode.updated_at)
+        .skip(skip)
+        .limit(page_size)
+        .to_list()
+    )
+
+    # Get podcast titles for display
+    podcast_ids = list(set(item.podcast_id for item in items))
+    podcasts = await Podcast.find({"_id": {"$in": podcast_ids}}).to_list()
+    podcast_map = {str(p.id): p.title for p in podcasts}
+
+    return {
+        "items": [
+            {
+                "id": str(item.id),
+                "podcast_id": item.podcast_id,
+                "podcast_title": podcast_map.get(item.podcast_id, "Unknown"),
+                "title": item.title,
+                "retry_count": item.retry_count,
+                "max_retries": item.max_retries,
+                "updated_at": item.updated_at.isoformat(),
+            }
+            for item in items
+        ],
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "total_pages": (total + page_size - 1) // page_size,
     }

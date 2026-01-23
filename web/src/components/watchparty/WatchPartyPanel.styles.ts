@@ -62,8 +62,8 @@ export const styles = StyleSheet.create({
     color: colors.text,
   },
   closeButton: {
-    width: isTV ? 40 : 32,
-    height: isTV ? 40 : 32,
+    width: isTV ? 80 : 44,
+    height: isTV ? 80 : 44,
     borderRadius: borderRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',

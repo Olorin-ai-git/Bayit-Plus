@@ -7,6 +7,7 @@ import { useEffect, useRef } from 'react'
 import { View, Text, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import WatchPartyChatInput from './WatchPartyChatInput'
+import { sanitizeChatMessage, sanitizeUsername } from './chatSanitizer'
 import { styles } from './WatchPartyChat.styles'
 
 interface Message {
@@ -34,10 +35,14 @@ function ChatMessage({ message, isOwnMessage }: { message: Message; isOwnMessage
   const isEmoji = message.message_type === 'emoji'
   const isSystem = message.message_type === 'system'
 
+  // Sanitize content and username
+  const sanitizedContent = isEmoji ? message.content : sanitizeChatMessage(message.content)
+  const sanitizedUsername = sanitizeUsername(message.user_name)
+
   if (isSystem) {
     return (
       <View style={styles.systemMessageContainer}>
-        <Text style={styles.systemMessageText}>{message.content}</Text>
+        <Text style={styles.systemMessageText}>{sanitizedContent}</Text>
       </View>
     )
   }
@@ -51,10 +56,10 @@ function ChatMessage({ message, isOwnMessage }: { message: Message; isOwnMessage
     <View style={isOwnMessage ? styles.messageRowReverse : styles.messageRow}>
       <View style={getBubbleStyle()}>
         {!isOwnMessage && !isEmoji && (
-          <Text style={styles.userName}>{message.user_name}</Text>
+          <Text style={styles.userName}>{sanitizedUsername}</Text>
         )}
         <Text style={isEmoji ? styles.textEmoji : styles.textNormal}>
-          {message.content}
+          {sanitizedContent}
         </Text>
         {!isEmoji && (
           <Text style={[styles.timestamp, isOwnMessage ? styles.timestampOwn : styles.timestampOther]}>

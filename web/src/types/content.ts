@@ -311,6 +311,8 @@ export interface PodcastUpdateInput {
 
 // ============ PODCAST EPISODES ============
 
+export type TranslationStatus = 'pending' | 'processing' | 'completed' | 'failed'
+
 export interface PodcastEpisode {
   id: string
   podcast_id: string
@@ -322,6 +324,11 @@ export interface PodcastEpisode {
   season_number?: number
   published_at: string
   thumbnail?: string
+  // Translation fields
+  translation_status?: TranslationStatus
+  available_languages?: string[]
+  original_language?: string
+  retry_count?: number
 }
 
 export interface PodcastEpisodeCreateInput {
@@ -431,6 +438,12 @@ export interface PodcastFilters {
   search?: string
   category?: string
   is_active?: boolean
+  page?: number
+  page_size?: number
+}
+
+export interface PodcastEpisodeFilters {
+  translation_status?: TranslationStatus
   page?: number
   page_size?: number
 }

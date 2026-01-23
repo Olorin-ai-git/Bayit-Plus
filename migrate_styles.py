@@ -4,6 +4,16 @@ Migrate StyleSheet.create() to TailwindCSS/NativeWind className
 """
 import re
 import os
+import sys
+from pathlib import Path
+
+# Add backend to path to import ScriptConfig
+sys.path.insert(0, str(Path(__file__).parent / "backend"))
+try:
+    from scripts.config.script_config import get_script_config
+except ImportError:
+    # Fallback if config not available
+    get_script_config = None
 
 # Style mappings
 STYLE_MAP = {
@@ -101,7 +111,26 @@ def process_file(filepath):
     print(f"  ✓ Migrated")
 
 def main():
-    admin_dir = '/Users/olorin/Documents/olorin/olorin-media/bayit-plus/shared/screens/admin'
+    # Use ScriptConfig if available, otherwise fallback to git root
+    if get_script_config:
+        config = get_script_config()
+        admin_dir = config.shared_dir / "screens" / "admin"
+    else:
+        # Fallback: detect project root via git
+        try:
+            import subprocess
+            result = subprocess.run(
+                ["git", "rev-parse", "--show-toplevel"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            project_root = Path(result.stdout.strip())
+            admin_dir = project_root / "shared" / "screens" / "admin"
+        except:
+            admin_dir = Path(__file__).parent / "shared" / "screens" / "admin"
+
+    admin_dir = str(admin_dir)
 
     for filename in os.listdir(admin_dir):
         if filename.endswith('.tsx') and filename != 'index.ts':

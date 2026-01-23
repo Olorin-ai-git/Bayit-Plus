@@ -41,6 +41,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: colors.glassBorder,
     borderRadius: borderRadius.lg,
+    minHeight: isTV ? 80 : 44,
     paddingHorizontal: spacing.lg,
     paddingVertical: isTV ? spacing.lg : spacing.md,
     fontSize: isTV ? 28 : 24,
@@ -51,7 +52,7 @@ export const styles = StyleSheet.create({
     letterSpacing: isTV ? 8 : 6,
   },
   inputError: {
-    borderColor: '#EF4444',
+    borderColor: colors.error,
     borderWidth: 2,
   },
   characterCount: {
@@ -69,6 +70,7 @@ export const styles = StyleSheet.create({
   },
   cancelButton: {
     flex: 1,
+    minHeight: isTV ? 80 : 44,
     paddingVertical: isTV ? spacing.md : spacing.sm,
     backgroundColor: colors.glass,
     borderRadius: borderRadius.md,
@@ -88,6 +90,7 @@ export const styles = StyleSheet.create({
   },
   joinButton: {
     flex: 1,
+    minHeight: isTV ? 80 : 44,
     paddingVertical: isTV ? spacing.md : spacing.sm,
     backgroundColor: colors.primary,
     borderRadius: borderRadius.md,
@@ -100,14 +103,14 @@ export const styles = StyleSheet.create({
     elevation: 8,
   },
   joinButtonHovered: {
-    backgroundColor: '#B968F7',
+    backgroundColor: colors.primaryLight,
     shadowOpacity: 0.7,
     shadowRadius: 16,
   },
   joinButtonText: {
     fontSize: isTV ? 16 : 14,
     fontWeight: '700',
-    color: '#111122',
+    color: colors.background,
   },
   buttonDisabled: {
     opacity: 0.5,

@@ -1,7 +1,16 @@
 #!/bin/bash
 # Migrate StyleSheet to TailwindCSS for all admin screens
 
-DIR="/Users/olorin/Documents/olorin/olorin-media/bayit-plus/shared/screens/admin"
+# Source configuration
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "${SCRIPT_DIR}/backend/scripts/config/paths.env" ]; then
+    source "${SCRIPT_DIR}/backend/scripts/config/paths.env"
+fi
+
+# Configuration from environment or defaults
+PROJECT_ROOT="${PROJECT_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+SHARED_DIR="${SHARED_DIR:-${PROJECT_ROOT}/shared}"
+DIR="${SHARED_DIR}/screens/admin"
 
 for file in "$DIR"/*.tsx; do
     echo "Processing: $(basename "$file")"

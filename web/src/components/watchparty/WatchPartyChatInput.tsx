@@ -1,9 +1,11 @@
 import { useState, useRef } from 'react'
-import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Send, Smile } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
 import { GlassView, GlassInput } from '@bayit/shared/ui'
+import { isValidChatMessage, sanitizeChatMessage } from './chatSanitizer'
+import { styles } from './WatchPartyChatInput.styles'
 
 const QUICK_EMOJIS = ['👍', '❤️', '😂', '😮', '👏', '🔥']
 
@@ -21,7 +23,15 @@ export default function WatchPartyChatInput({ onSend, disabled }: WatchPartyChat
   const handleSubmit = () => {
     const trimmed = message.trim()
     if (!trimmed || disabled) return
-    onSend(trimmed)
+
+    // Validate message
+    if (!isValidChatMessage(trimmed)) {
+      return
+    }
+
+    // Sanitize before sending
+    const sanitized = sanitizeChatMessage(trimmed)
+    onSend(sanitized)
     setMessage('')
     inputRef.current?.focus()
   }
@@ -39,26 +49,32 @@ export default function WatchPartyChatInput({ onSend, disabled }: WatchPartyChat
   }
 
   return (
-    <View className="relative">
+    <View style={styles.container}>
       {showEmojis && (
-        <GlassView className="absolute bottom-full mb-3 right-0 flex-row gap-2 p-3 z-50">
+        <GlassView style={styles.emojiPanel} intensity="medium" accessibilityRole="menu" accessibilityLabel={t('watchParty.emojiPicker')}>
           {QUICK_EMOJIS.map((emoji) => (
             <Pressable
               key={emoji}
               onPress={() => handleEmojiClick(emoji)}
-              className="w-8 h-8 items-center justify-center rounded-md hover:bg-white/10"
+              style={styles.emojiButton}
+              accessibilityRole="button"
+              accessibilityLabel={t('watchParty.sendEmoji', { emoji })}
+              accessibilityHint={t('watchParty.sendEmojiHint')}
             >
-              <Text className="text-lg">{emoji}</Text>
+              <Text style={styles.emojiText}>{emoji}</Text>
             </Pressable>
           ))}
         </GlassView>
       )}
 
-      <View className="flex-row items-center gap-3">
+      <View style={styles.inputRow}>
         <Pressable
           onPress={() => setShowEmojis(!showEmojis)}
-          className="w-9 h-9 items-center justify-center rounded-md"
-          style={[showEmojis && styles.emojiButtonActive]}
+          style={[styles.toggleEmojiButton, showEmojis && styles.emojiButtonActive]}
+          accessibilityRole="button"
+          accessibilityLabel={t('watchParty.toggleEmoji')}
+          accessibilityHint={t('watchParty.toggleEmojiHint')}
+          accessibilityState={{ expanded: showEmojis }}
         >
           <Smile size={18} color={colors.textSecondary} />
         </Pressable>
@@ -70,18 +86,24 @@ export default function WatchPartyChatInput({ onSend, disabled }: WatchPartyChat
           onKeyPress={handleKeyPress}
           placeholder={t('watchParty.typeMessage')}
           editable={!disabled}
-          containerClassName="flex-1"
-          inputClassName="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white outline-none"
+          containerStyle={styles.inputContainer}
+          inputStyle={styles.input}
           maxLength={500}
+          accessibilityLabel={t('watchParty.chatInput')}
+          accessibilityHint={t('watchParty.chatInputHint')}
         />
 
         <Pressable
           onPress={handleSubmit}
           disabled={!message.trim() || disabled}
-          className="w-9 h-9 items-center justify-center rounded-md"
           style={[
+            styles.sendButton,
             !message.trim() || disabled ? styles.sendButtonDisabled : styles.sendButtonActive,
           ]}
+          accessibilityRole="button"
+          accessibilityLabel={t('watchParty.sendMessage')}
+          accessibilityHint={t('watchParty.sendMessageHint')}
+          accessibilityState={{ disabled: !message.trim() || disabled }}
         >
           <Send size={16} color={(!message.trim() || disabled) ? colors.textMuted : colors.background} />
         </Pressable>
@@ -89,16 +111,3 @@ export default function WatchPartyChatInput({ onSend, disabled }: WatchPartyChat
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  emojiButtonActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  sendButtonDisabled: {
-    opacity: 0.5,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  sendButtonActive: {
-    backgroundColor: '#9333ea',
-  },
-})

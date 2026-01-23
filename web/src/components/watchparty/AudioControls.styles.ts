@@ -15,7 +15,10 @@ export const styles = StyleSheet.create({
   },
   button: {
     position: 'relative',
-    padding: spacing.sm,
+    width: isTV ? 80 : 44,
+    height: isTV ? 80 : 44,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: borderRadius.sm,
   },
   buttonConnecting: {
@@ -42,10 +45,10 @@ export const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: isTV ? 14 : 12,
-    color: '#9CA3AF',
+    color: colors.textSecondary,
   },
   speakingText: {
     fontSize: isTV ? 14 : 12,
-    color: '#34D399',
+    color: colors.success,
   },
 })

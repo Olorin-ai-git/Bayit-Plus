@@ -11,6 +11,7 @@ from app.core.security import get_current_active_user
 from app.models.live_feature_quota import FeatureType, UsageStats
 from app.models.user import User
 from app.services.live_feature_quota_service import LiveFeatureQuotaService
+from app.services.rate_limiter_live import get_rate_limiter
 
 router = APIRouter(prefix="/live/quota", tags=["Live Feature Quota"])
 logger = logging.getLogger(__name__)
@@ -24,6 +25,12 @@ async def get_my_usage(current_user: User = Depends(get_current_active_user)):
     Returns:
         UsageStats with current usage, limits, and availability for both subtitles and dubbing
     """
+    # Rate limiting for API requests
+    rate_limiter = await get_rate_limiter()
+    allowed, error_msg, reset_in = await rate_limiter.check_api_request(str(current_user.id), "my-usage")
+    if not allowed:
+        raise HTTPException(status_code=429, detail=error_msg, headers={"Retry-After": str(reset_in)})
+
     try:
         stats = await LiveFeatureQuotaService.get_usage_stats(str(current_user.id))
         return UsageStats(**stats)
@@ -50,6 +57,12 @@ async def check_availability(
             "usage": UsageStats
         }
     """
+    # Rate limiting for quota checks
+    rate_limiter = await get_rate_limiter()
+    allowed_rate, error_msg_rate, reset_in = await rate_limiter.check_quota_check_limit(str(current_user.id))
+    if not allowed_rate:
+        raise HTTPException(status_code=429, detail=error_msg_rate, headers={"Retry-After": str(reset_in)})
+
     try:
         allowed, error_msg, usage_stats = await LiveFeatureQuotaService.check_quota(
             str(current_user.id),
@@ -88,6 +101,12 @@ async def get_session_history(
             "offset": int
         }
     """
+    # Rate limiting for API requests
+    rate_limiter = await get_rate_limiter()
+    allowed, error_msg, reset_in = await rate_limiter.check_api_request(str(current_user.id), "session-history")
+    if not allowed:
+        raise HTTPException(status_code=429, detail=error_msg, headers={"Retry-After": str(reset_in)})
+
     try:
         from app.models.live_feature_quota import LiveFeatureUsageSession
 

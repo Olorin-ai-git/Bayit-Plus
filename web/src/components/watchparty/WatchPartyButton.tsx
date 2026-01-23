@@ -4,7 +4,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react'
-import { View, Text, Pressable, Animated, I18nManager } from 'react-native'
+import { View, Text, Pressable, Animated, I18nManager, Platform } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Users, Plus, UserPlus, ChevronDown, Crown } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
@@ -63,8 +63,10 @@ export default function WatchPartyButton({
     }
   }, [hasActiveParty])
 
-  // Click outside to close dropdown
+  // Click outside to close dropdown (web only)
   useEffect(() => {
+    if (Platform.OS !== 'web') return
+
     const handleClickOutside = () => setIsOpen(false)
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside)

@@ -46,8 +46,8 @@ export const styles = StyleSheet.create({
     color: colors.text,
   },
   closeButton: {
-    width: isTV ? 36 : 32,
-    height: isTV ? 36 : 32,
+    width: isTV ? 80 : 44,
+    height: isTV ? 80 : 44,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: borderRadius.sm,
@@ -71,6 +71,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.sm,
+    minHeight: isTV ? 80 : 44,
     paddingVertical: spacing.md,
   },
   tabActive: {
@@ -83,7 +84,7 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
   },
   tabTextActive: {
-    color: '#C084FC',
+    color: colors.primaryLight,
   },
   tabTextInactive: {
     color: colors.textMuted,

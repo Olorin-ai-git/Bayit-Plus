@@ -70,6 +70,8 @@ from app.models.watchlist import Conversation, WatchHistory, WatchlistItem
 from app.models.widget import Widget
 from app.models.youngsters_content import YoungstersContentSource
 from app.services.mcp_content_discovery import ContentDiscoveryQueue
+# Migration tracking models (script infrastructure)
+from scripts.migrations.models import MigrationRecord, RollbackData
 
 
 class Database:
@@ -206,6 +208,9 @@ async def connect_to_mongo():
         ContentDiscoveryQueue,
         # Live Dubbing models
         LiveDubbingSession,
+        # Migration tracking models (script infrastructure)
+        MigrationRecord,
+        RollbackData,
     ]
 
     # Conditionally add Olorin models based on database separation setting

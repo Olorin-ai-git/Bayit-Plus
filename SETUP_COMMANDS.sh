@@ -7,8 +7,10 @@ echo ""
 
 # Step 1: Add detect-secrets to PATH
 echo "Step 1: Adding detect-secrets to PATH..."
-export PATH="/Users/olorin/Library/Python/3.9/bin:$PATH"
-echo "✅ PATH updated"
+# Use configured Python bin path or detect from environment
+PYTHON_BIN_PATH="${PYTHON_BIN_PATH:-${HOME}/Library/Python/3.9/bin}"
+export PATH="${PYTHON_BIN_PATH}:$PATH"
+echo "✅ PATH updated (using: ${PYTHON_BIN_PATH})"
 echo ""
 
 # Step 2: Verify tools are installed

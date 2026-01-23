@@ -475,12 +475,21 @@ class LiveTranslationService:
             raise
 
     async def translate_text(
-        self, text: str, source_lang: str, target_lang: str
+        self, text: str, source_lang: str, target_lang: str, timeout_seconds: float = 0.250
     ) -> str:
         """
         Translate text using configured translation provider.
 
         Supports: Google Cloud Translate, OpenAI GPT-4o-mini, or Claude.
+
+        Args:
+            text: Text to translate
+            source_lang: Source language code (e.g., "he")
+            target_lang: Target language code (e.g., "en")
+            timeout_seconds: Timeout for translation (default 250ms for live dubbing)
+
+        Returns:
+            Translated text, or original text if translation times out or fails
         """
         language_names = {
             "he": "Hebrew",
@@ -500,7 +509,7 @@ class LiveTranslationService:
 
         try:
             if self.translation_provider == "google" and self.translate_client:
-                # Google Cloud Translate (synchronous, fast)
+                # Google Cloud Translate (synchronous, fast - no timeout needed)
                 result = self.translate_client.translate(
                     text, source_language=source_lang, target_language=target_lang
                 )
@@ -510,48 +519,66 @@ class LiveTranslationService:
                 return translated
 
             elif self.translation_provider == "openai" and self.openai_client:
-                # OpenAI GPT-4o-mini translation (async)
-                response = await self.openai_client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": (
-                                f"You are a professional translator. "
-                                f"Translate the following text from {source_name} to {target_name}. "
-                                f"Return ONLY the translated text, nothing else."
-                            ),
-                        },
-                        {"role": "user", "content": text},
-                    ],
-                    temperature=0.3,
-                    max_tokens=500,
-                )
+                # OpenAI GPT-4o-mini translation (async with timeout for live dubbing)
+                try:
+                    response = await asyncio.wait_for(
+                        self.openai_client.chat.completions.create(
+                            model="gpt-4o-mini",
+                            messages=[
+                                {
+                                    "role": "system",
+                                    "content": (
+                                        f"You are a professional translator. "
+                                        f"Translate the following text from {source_name} to {target_name}. "
+                                        f"Return ONLY the translated text, nothing else."
+                                    ),
+                                },
+                                {"role": "user", "content": text},
+                            ],
+                            temperature=0.3,
+                            max_tokens=500,
+                        ),
+                        timeout=timeout_seconds,
+                    )
 
-                translated = response.choices[0].message.content.strip()
-                logger.debug(f"OpenAI Translate: {text} → {translated}")
-                return translated
+                    translated = response.choices[0].message.content.strip()
+                    logger.debug(f"OpenAI Translate: {text} → {translated}")
+                    return translated
+                except asyncio.TimeoutError:
+                    logger.warning(
+                        f"OpenAI translation timeout after {timeout_seconds*1000:.0f}ms, returning original"
+                    )
+                    return text
 
             elif self.translation_provider == "claude" and self.anthropic_client:
-                # Claude translation (async)
-                response = await self.anthropic_client.messages.create(
-                    model=settings.CLAUDE_MODEL,
-                    max_tokens=500,
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": (
-                                f"Translate the following text from {source_name} to {target_name}. "
-                                f"Return ONLY the translated text, nothing else.\n\n"
-                                f"Text to translate: {text}"
-                            ),
-                        }
-                    ],
-                )
+                # Claude translation (async with timeout for live dubbing)
+                try:
+                    response = await asyncio.wait_for(
+                        self.anthropic_client.messages.create(
+                            model=settings.CLAUDE_MODEL,
+                            max_tokens=500,
+                            messages=[
+                                {
+                                    "role": "user",
+                                    "content": (
+                                        f"Translate the following text from {source_name} to {target_name}. "
+                                        f"Return ONLY the translated text, nothing else.\n\n"
+                                        f"Text to translate: {text}"
+                                    ),
+                                }
+                            ],
+                        ),
+                        timeout=timeout_seconds,
+                    )
 
-                translated = response.content[0].text.strip()
-                logger.debug(f"Claude Translate: {text} → {translated}")
-                return translated
+                    translated = response.content[0].text.strip()
+                    logger.debug(f"Claude Translate: {text} → {translated}")
+                    return translated
+                except asyncio.TimeoutError:
+                    logger.warning(
+                        f"Claude translation timeout after {timeout_seconds*1000:.0f}ms, returning original"
+                    )
+                    return text
 
             else:
                 logger.warning(

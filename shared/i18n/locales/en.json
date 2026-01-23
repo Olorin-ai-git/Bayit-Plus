@@ -55,7 +55,11 @@
     "collapse": "Collapse",
     "upgrade": "Upgrade to Premium",
     "skip": "Skip",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing...",
+    "refreshData": "Refresh data",
+    "dismissError": "Dismiss error"
   },
   "demo": {
     "banner": "DEMO MODE",
@@ -1000,7 +1004,7 @@
     "albumArt": "Album art for {{title}}",
     "seekBar": "Playback progress",
     "skipBack": "Skip back {{seconds}} seconds",
-    "skipForward": "Skip forward {{seconds}} seconds",
+    "skipForward": "Skip forward 30 seconds",
     "noStream": "Stream not available",
     "loadError": "Failed to load stream",
     "settings": "Settings",
@@ -1011,7 +1015,6 @@
     "previousChapter": "Previous chapter",
     "nextChapter": "Next chapter",
     "skipBackward": "Skip backward 30 seconds",
-    "skipForward": "Skip forward 30 seconds",
     "restart": "Restart from beginning",
     "subtitlesOff": "Off",
     "speed": "Speed",
@@ -1347,10 +1350,27 @@
       "unmute": "Unmute",
       "speaking": "Speaking",
       "connecting": "Connecting to audio...",
-      "noAudio": "Audio not available"
+      "noAudio": "Audio not available",
+      "muteHint": "Mutes your microphone",
+      "unmuteHint": "Unmutes your microphone to speak"
     },
     "textOnlyMode": "Text Chat Only",
-    "endParty": "End Party"
+    "endParty": "End Party",
+    "toggleEmoji": "Toggle emoji picker",
+    "toggleEmojiHint": "Opens emoji quick picker for reactions",
+    "sendEmoji": "Send {{emoji}}",
+    "sendEmojiHint": "Sends emoji reaction to chat",
+    "emojiPicker": "Emoji picker",
+    "chatInput": "Chat message input",
+    "chatInputHint": "Type a message to send to the party chat",
+    "sendMessageHint": "Sends your message to the party chat",
+    "copyCodeHint": "Copies room code to clipboard",
+    "share": "Share",
+    "shareHint": "Share party link or copy code",
+    "copied": "Copied!",
+    "endPartyHint": "Ends the party for all participants",
+    "leaveParty": "Leave Party",
+    "leavePartyHint": "Leaves the party without ending it"
   },
   "footer": {
     "brandDescription": "Your home in the USA. TV broadcasts, VOD, radio and podcasts in Hebrew.",
@@ -1577,6 +1597,9 @@
       "save": "Save",
       "active": "Active",
       "back": "Back",
+      "backToPodcasts": "Back to podcasts",
+      "savePodcast": "Save podcast",
+      "saveEpisode": "Save episode",
       "filterAction": "Action",
       "filterResource": "Resource",
       "filterUser": "User",
@@ -1599,7 +1622,9 @@
       "addUser": "Add User",
       "newCampaign": "New Campaign",
       "sendEmail": "Send Email",
-      "viewReports": "View Reports"
+      "viewReports": "View Reports",
+      "newPodcast": "Create new podcast",
+      "newEpisode": "Create new episode"
     },
     "auditActions": {
       "user_created": "User Created",
@@ -1696,7 +1721,8 @@
       "auditLogs": "Audit Logs",
       "librarian": "Librarian Agent",
       "liveQuotas": "Live Quotas",
-      "featured": "Featured"
+      "featured": "Featured",
+      "translations": "Translations"
     },
     "liveQuotas": {
       "title": "Live Feature Quota Management",
@@ -2592,6 +2618,16 @@
       "episodesSubtitle": "Manage episodes",
       "emptyMessage": "No podcasts found",
       "noEpisodes": "No episodes found",
+      "translateAll": "Translate All",
+      "translateAllEpisodes": "Translate all episodes",
+      "translateEpisode": "Translate episode",
+      "viewEpisodes": "View episodes",
+      "editPodcast": "Edit podcast",
+      "deletePodcast": "Delete podcast",
+      "editEpisode": "Edit episode",
+      "deleteEpisode": "Delete episode",
+      "newEpisode": "New Episode",
+      "filterByStatus": "Filter by Status",
       "form": {
         "title": "Podcast title",
         "author": "Author",
@@ -2610,6 +2646,28 @@
           "audioUrl": "Audio URL (required)",
           "publishedDate": "Published Date (YYYY-MM-DD)"
         }
+      }
+    },
+    "translation": {
+      "title": "Translation Dashboard",
+      "subtitle": "Monitor podcast episode translations",
+      "retry": "Retry",
+      "retryTranslation": "Retry translation",
+      "view": "View",
+      "viewEpisodes": "View episodes",
+      "failedEpisodes": "Failed Translations",
+      "noFailed": "No failed translations",
+      "columns": {
+        "episodeTitle": "Episode",
+        "podcast": "Podcast",
+        "retries": "Retries",
+        "lastAttempt": "Last Attempt"
+      },
+      "stats": {
+        "pending": "Pending",
+        "processing": "Processing",
+        "completed": "Completed",
+        "failed": "Failed"
       }
     },
     "users": {
@@ -3509,125 +3567,6 @@
     "skip": "Skip for now"
   },
   "taxonomy": {
-    "title": "Content Classification",
-    "sections": {
-      "title": "Sections",
-      "description": "Primary navigation categories",
-      "movies": "Movies",
-      "series": "Series",
-      "kids": "Kids",
-      "judaism": "Judaism",
-      "documentaries": "Documentaries",
-      "live": "Live"
-    },
-    "formats": {
-      "title": "Format",
-      "description": "Content structural type",
-      "movie": "Movie",
-      "series": "Series",
-      "documentary": "Documentary",
-      "short": "Short",
-      "clip": "Clip"
-    },
-    "genres": {
-      "title": "Genres",
-      "description": "Mood and style",
-      "drama": "Drama",
-      "comedy": "Comedy",
-      "action": "Action",
-      "thriller": "Thriller",
-      "animation": "Animation",
-      "musical": "Musical",
-      "romance": "Romance",
-      "horror": "Horror",
-      "sci-fi": "Sci-Fi",
-      "documentary": "Documentary",
-      "family": "Family",
-      "adventure": "Adventure",
-      "fantasy": "Fantasy",
-      "crime": "Crime",
-      "mystery": "Mystery",
-      "war": "War",
-      "western": "Western",
-      "biography": "Biography",
-      "history": "History",
-      "sport": "Sport"
-    },
-    "audiences": {
-      "title": "Audience",
-      "description": "Age appropriateness",
-      "general": "General",
-      "kids": "Kids",
-      "family": "Family",
-      "mature": "Mature"
-    },
-    "topicTags": {
-      "title": "Topics",
-      "description": "Content themes",
-      "jewish": "Jewish",
-      "israeli": "Israeli",
-      "educational": "Educational",
-      "historical": "Historical",
-      "sports": "Sports",
-      "nature": "Nature",
-      "science": "Science",
-      "music": "Music",
-      "art": "Art",
-      "cooking": "Cooking",
-      "travel": "Travel",
-      "technology": "Technology"
-    },
-    "subcategories": {
-      "title": "Subcategories",
-      "kids": {
-        "cartoons": "Cartoons",
-        "educational": "Educational",
-        "music": "Music",
-        "hebrew-learning": "Hebrew Learning",
-        "stories": "Stories",
-        "jewish": "Jewish",
-        "learning-hebrew": "Learning Hebrew",
-        "young-science": "Young Science",
-        "math-fun": "Fun Math",
-        "nature-animals": "Nature & Animals",
-        "interactive": "Interactive",
-        "hebrew-songs": "Hebrew Songs",
-        "nursery-rhymes": "Nursery Rhymes",
-        "kids-movies": "Kids Movies",
-        "kids-series": "Kids Series",
-        "jewish-holidays": "Jewish Holidays",
-        "torah-stories": "Torah Stories",
-        "bedtime-stories": "Bedtime Stories"
-      },
-      "ageGroups": {
-        "title": "Age Groups",
-        "toddlers": "Toddlers (0-3)",
-        "preschool": "Preschool (3-5)",
-        "elementary": "Elementary (5-10)",
-        "preteen": "Pre-teen (10-12)"
-      },
-      "judaism": {
-        "shiurim": "Torah Classes",
-        "tefila": "Prayer",
-        "jewish-music": "Jewish Music",
-        "holidays": "Holidays",
-        "documentaries": "Documentaries"
-      }
-    },
-    "admin": {
-      "selectSection": "Select Section",
-      "selectSections": "Select Sections",
-      "primarySection": "Primary Section",
-      "selectFormat": "Select Format",
-      "selectAudience": "Select Audience",
-      "selectGenres": "Select Genres",
-      "selectTopics": "Select Topics",
-      "selectSubcategories": "Select Subcategories",
-      "crossListing": "Cross-listing",
-      "crossListingHint": "Content can appear in multiple sections"
-    }
-  },
-  "taxonomy": {
     "sections": {
       "movies": "Movies",
       "series": "Series",
@@ -3775,6 +3714,67 @@
       "create_session_failed": "Failed to create session",
       "add_transcript_failed": "Failed to add transcript",
       "generate_recap_failed": "Failed to generate recap"
+    }
+  },
+  "dubbing": {
+    "title": "Live Dubbing",
+    "enabled": "Live Dubbing Enabled",
+    "selectLanguage": "Select Language",
+    "originalAudio": "Original Audio",
+    "dubbedAudio": "Dubbed Audio",
+    "selectVoice": "Select Voice",
+    "adjustVolume": "Adjust Volume",
+    "tapToSelect": "Tap to select this language",
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "he": "עברית",
+      "ar": "العربية",
+      "ru": "Русский",
+      "fr": "Français",
+      "de": "Deutsch"
+    },
+    "onboarding": {
+      "title": "Introducing Live Dubbing",
+      "description": "Experience live content in your language. Our AI translates and replays audio in real-time as you watch.",
+      "feature1": "7 languages supported",
+      "feature2": "Real-time processing",
+      "feature3": "Adjust audio balance",
+      "tryNow": "Try Now",
+      "later": "Maybe Later"
+    },
+    "consent": {
+      "title": "Audio Processing Consent",
+      "message": "Live dubbing processes your audio in real-time using AI services. Audio is processed for translation only and not stored permanently.",
+      "accept": "I Agree",
+      "decline": "No Thanks"
+    },
+    "errors": {
+      "connectionFailed": "Connection Failed",
+      "connectionFailedMessage": "Unable to connect to dubbing service",
+      "connectionFailedAction": "Check your internet connection and try again",
+      "notAuthenticated": "Not Authenticated",
+      "notAuthenticatedMessage": "Please sign in again",
+      "notAuthenticatedAction": "Sign in to use live dubbing",
+      "premiumRequired": "Premium Feature",
+      "premiumRequiredMessage": "Live dubbing requires a Premium subscription",
+      "premiumRequiredAction": "Upgrade to Premium to access this feature",
+      "channelUnavailable": "Not Available",
+      "channelUnavailableMessage": "Dubbing is not available for this channel",
+      "audioCaptureError": "Microphone Error",
+      "audioCaptureErrorMessage": "Unable to access your microphone",
+      "sttServiceError": "Speech Recognition Error",
+      "sttServiceErrorMessage": "Failed to recognize speech",
+      "ttsServiceError": "Dubbing Error",
+      "ttsServiceErrorMessage": "Failed to generate dubbed audio",
+      "translationTimeout": "Translation Timeout",
+      "translationTimeoutMessage": "Translation took too long, retrying",
+      "websocketClosed": "Connection Lost",
+      "websocketClosedMessage": "Dubbing connection was closed",
+      "rateLimitExceeded": "Too Many Attempts",
+      "rateLimitExceededMessage": "Please wait before trying again",
+      "sessionTimeout": "Session Expired",
+      "sessionTimeoutMessage": "Your dubbing session has expired"
     }
   },
   "trivia": {
