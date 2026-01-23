@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Download, Eye, FileText } from 'lucide-react';
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web';
@@ -175,9 +175,15 @@ export default function TransactionsPage() {
         <Pressable
           key={status}
           onPress={() => setFilters((prev) => ({ ...prev, status }))}
-          className={`px-4 py-2 rounded-lg ${filters.status === status ? 'bg-purple-500' : ''}`}
+          style={[
+            styles.filterButton,
+            filters.status === status && styles.filterButtonActive
+          ]}
         >
-          <Text className={`text-sm ${filters.status === status ? 'text-white font-medium' : 'text-gray-400'}`}>
+          <Text style={[
+            styles.filterButtonText,
+            filters.status === status && styles.filterButtonTextActive
+          ]}>
             {status === 'all' ? t('admin.transactions.filters.all') : t(statusColors[status]?.labelKey)}
           </Text>
         </Pressable>
@@ -258,3 +264,21 @@ export default function TransactionsPage() {
   );
 }
 
+const styles = StyleSheet.create({
+  filterButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  filterButtonActive: {
+    backgroundColor: '#a855f7',
+  },
+  filterButtonText: {
+    fontSize: 14,
+    color: '#9ca3af',
+  },
+  filterButtonTextActive: {
+    color: '#ffffff',
+    fontWeight: '500',
+  },
+});

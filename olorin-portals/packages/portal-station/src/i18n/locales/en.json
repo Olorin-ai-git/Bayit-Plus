@@ -1,0 +1,402 @@
+{
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "solutions": "Solutions",
+    "pricing": "Pricing",
+    "demo": "Live Demo",
+    "contact": "Contact",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "title": "THE DJ THAT",
+    "titleHighlight": "NEVER SLEEPS",
+    "subtitle": "Automate your airwaves. From jingle generation to seamless scheduling, Station-AI runs your broadcast so you don't have to.",
+    "description": "AI-powered radio station management for 24/7 autonomous operation",
+    "ctaExplore": "Start Broadcasting",
+    "ctaDemo": "View Live Demo",
+    "dashboardAlt": "Station-AI Dashboard Interface"
+  },
+  "features": {
+    "sectionTitle": "The Spell of Flow",
+    "automation": {
+      "title": "Intelligent Flow Generation",
+      "description": "Type 'Friday Afternoon Chill,' and the Conductor weaves a perfect playlist of songs, ads, and transitions. It's not just shuffle; it's curation.",
+      "imageAlt": "Intelligent automation workflow"
+    },
+    "analytics": {
+      "title": "24/7 Autonomous Operation",
+      "description": "The Phantom Conductor never sleeps, never takes breaks, and never makes mistakes. Your station runs flawlessly around the clock."
+    },
+    "voice": {
+      "title": "AI Voice Synthesis",
+      "description": "Generate station IDs, weather updates, and announcements in any voice. No human required."
+    },
+    "scheduling": {
+      "title": "Smart Content Management",
+      "description": "Organize songs, shows, and commercials with intelligent categorization and rotation."
+    },
+    "multilingual": {
+      "title": "Dual Language Support",
+      "description": "Full Hebrew (RTL) and English interface for Israeli and international broadcasters."
+    },
+    "cloud": {
+      "title": "Cloud-Based Freedom",
+      "description": "Access your station from anywhere. No hardware, no maintenance, just broadcasting."
+    }
+  },
+  "workflow": {
+    "sectionTitle": "Intelligent Workflow",
+    "sectionSubtitle": "AI-powered radio management in 4 steps",
+    "step1": { "title": "Content Ingestion", "description": "Import music, ads, and shows into your library" },
+    "step2": { "title": "AI Scheduling", "description": "Let AI create optimal playlists and programming schedules" },
+    "step3": { "title": "Broadcasting", "description": "Automated on-air content delivery with seamless transitions" },
+    "step4": { "title": "Analytics", "description": "Track performance and continuously improve programming" }
+  },
+  "metrics": {
+    "title": "The Numbers Don't Lie",
+    "subtitle": "Station-AI powers radio stations that never sleep",
+    "retention": "85%",
+    "retentionLabel": "Listener Retention",
+    "scheduling": "92%",
+    "schedulingLabel": "Manual Work Eliminated",
+    "revenue": "+40%",
+    "revenueLabel": "Ad Revenue Increase",
+    "engagement": "2.3x",
+    "engagementLabel": "Engagement Boost",
+    "uptime": {
+      "value": "24/7",
+      "label": "Continuous Operation"
+    },
+    "unlimited": {
+      "value": "Unlimited",
+      "label": "Content & Scheduling"
+    },
+    "cloud": {
+      "value": "100%",
+      "label": "Cloud-Based"
+    }
+  },
+  "solutions": {
+    "title": "Station Management Solutions",
+    "commercial": { "title": "Commercial Radio", "description": "Optimize programming and maximize ad revenue" },
+    "music": { "title": "Music Stations", "description": "AI-curated playlists that keep listeners engaged" },
+    "talk": { "title": "Talk Radio", "description": "Schedule shows and manage content seamlessly" },
+    "community": { "title": "Community Stations", "description": "Affordable automation for local broadcasters" }
+  },
+  "cta": {
+    "title": "Ready to Never Sleep Again?",
+    "subtitle": "Join broadcasters who've handed the reins to the Phantom Conductor",
+    "button": "Request a Demo"
+  },
+  "contactPage": {
+    "title": "Partner With Us",
+    "subtitle": "Let's discuss how we can transform your radio operations",
+    "formTitle": "Tell Us About Your Station",
+    "infoTitle": "Contact Information",
+    "form": {
+      "name": "Full Name",
+      "email": "Work Email",
+      "company": "Station Name",
+      "phone": "Phone Number",
+      "stationType": "Station Type",
+      "selectStationType": "Select your station type",
+      "stationTypes": {
+        "commercial": "Commercial Radio",
+        "music": "Music Station",
+        "talk": "Talk Radio",
+        "community": "Community Station",
+        "internet": "Internet Radio",
+        "podcast": "Podcast Network"
+      },
+      "listeners": "Monthly Listeners",
+      "selectListeners": "Select listener range",
+      "listenerRanges": {
+        "under-10k": "Under 10,000",
+        "10k-50k": "10,000 - 50,000",
+        "50k-100k": "50,000 - 100,000",
+        "100k-500k": "100,000 - 500,000",
+        "over-500k": "Over 500,000"
+      },
+      "message": "How can we help?",
+      "messagePlaceholder": "Tell us about your radio station challenges..."
+    },
+    "contactInfo": {
+      "email": {
+        "label": "Email",
+        "value": "radio@olorin.ai"
+      },
+      "phone": {
+        "label": "Phone",
+        "value": "+1 (201) 397-9142"
+      },
+      "address": {
+        "label": "Location",
+        "value": "Teaneck, NJ, USA"
+      },
+      "hours": {
+        "label": "Business Hours",
+        "value": "Mon - Fri: 9AM - 6PM EST"
+      }
+    },
+    "submit": "Submit Request",
+    "sending": "Sending...",
+    "success": "Thank you! We'll be in touch within 24 hours.",
+    "error": "Something went wrong. Please try again or email us directly.",
+    "scheduleTitle": "Prefer to Schedule a Call?",
+    "scheduleSubtitle": "Book a personalized demo with our radio automation experts",
+    "scheduleCta": "Schedule Demo Call"
+  },
+  "demoPage": {
+    "title": "See Our",
+    "titleHighlight": "Radio Platform",
+    "subtitle": "Experience AI-powered radio automation that transforms station operations",
+    "scheduleCta": "Schedule Live Demo",
+    "stepsTitle": "How It Works",
+    "steps": {
+      "import": { "title": "Content Import", "description": "Upload music, ads, and shows" },
+      "schedule": { "title": "AI Scheduling", "description": "Generate optimized playlists" },
+      "broadcast": { "title": "Broadcast", "description": "Automated on-air delivery" },
+      "analyze": { "title": "Analyze", "description": "Track and improve performance" }
+    },
+    "featuresTitle": "Platform Highlights",
+    "features": {
+      "automation": { "title": "24/7 Automation", "description": "Unattended broadcasting with failover protection" },
+      "scheduling": { "title": "Smart Scheduling", "description": "AI-generated playlists based on listener data" },
+      "analytics": { "title": "Live Analytics", "description": "Real-time listener metrics and engagement" },
+      "ads": { "title": "Ad Insertion", "description": "Dynamic ad placement for maximum revenue" },
+      "content": { "title": "Content Studio", "description": "Create jingles, promos, and voice tracks" },
+      "voice": { "title": "AI Voice", "description": "Generate voice-overs with AI synthesis" }
+    },
+    "sections": {
+      "scheduler": { "title": "Playlist Scheduler", "description": "Intelligent playlist creation with AI-driven song selection", "f1": "Genre-aware scheduling", "f2": "Tempo and mood matching", "f3": "Artist separation rules", "f4": "Dayparting optimization" },
+      "analytics": { "title": "Analytics Dashboard", "description": "Comprehensive listener insights and performance tracking", "f1": "Real-time listener counts", "f2": "Geographic distribution", "f3": "Content performance", "f4": "Engagement metrics" },
+      "content": { "title": "Content Studio", "description": "Create professional radio content with AI assistance", "f1": "Jingle and promo creation", "f2": "Voice track generation", "f3": "Audio processing", "f4": "Bulk import tools" }
+    },
+    "platformsTitle": "Available On",
+    "ctaTitle": "Ready for Your Custom Demo?",
+    "ctaSubtitle": "Schedule a personalized demonstration tailored to your station needs",
+    "ctaButton": "Schedule Demo"
+  },
+  "pricingPage": {
+    "title": "Affordable",
+    "titleHighlight": "Radio Plans",
+    "subtitle": "Choose the plan that fits your station - from community radio to broadcast networks",
+    "starter": {
+      "name": "Community",
+      "price": "Contact Us",
+      "priceNote": "For small stations",
+      "description": "Perfect for community and internet radio stations",
+      "cta": "Get Started",
+      "f1": "1 Station",
+      "f2": "10 GB content storage",
+      "f3": "Basic listener analytics",
+      "f4": "AI playlist scheduling",
+      "f5": "Ad insertion",
+      "f6": "API access"
+    },
+    "professional": {
+      "name": "Professional",
+      "badge": "Most Popular",
+      "price": "Contact for Quote",
+      "priceNote": "Custom pricing",
+      "description": "For growing stations with advanced needs",
+      "cta": "Get Quote",
+      "f1": "Up to 5 stations",
+      "f2": "100 GB content storage",
+      "f3": "Advanced analytics & insights",
+      "f4": "All automation features",
+      "f5": "Ad insertion & revenue tools",
+      "f6": "White-label solution"
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "price": "Custom",
+      "priceNote": "Volume-based",
+      "description": "For broadcast networks and large operations",
+      "cta": "Contact Sales",
+      "f1": "Unlimited stations",
+      "f2": "Unlimited content storage",
+      "f3": "Full analytics suite",
+      "f4": "All professional features",
+      "f5": "Dedicated infrastructure",
+      "f6": "White-label with custom integrations"
+    },
+    "comparisonTitle": "Feature Comparison",
+    "comparison": {
+      "activeStations": {
+        "name": "Active Stations",
+        "starter": "1 Station",
+        "professional": "Up to 5",
+        "enterprise": "Unlimited"
+      },
+      "contentLibrary": {
+        "name": "Content Library",
+        "starter": "10 GB",
+        "professional": "100 GB",
+        "enterprise": "Unlimited"
+      },
+      "listenerAnalytics": {
+        "name": "Listener Analytics"
+      },
+      "aiScheduling": {
+        "name": "AI Scheduling"
+      },
+      "adInsertion": {
+        "name": "Ad Insertion"
+      },
+      "apiAccess": {
+        "name": "API Access"
+      },
+      "whiteLabel": {
+        "name": "White-Label"
+      },
+      "dedicatedSupport": {
+        "name": "Dedicated Support"
+      }
+    },
+    "faqTitle": "Frequently Asked Questions",
+    "faq": {
+      "q1": "How is pricing calculated?",
+      "a1": "Pricing is based on the number of stations, listener volume, and features required. Contact us for a custom quote tailored to your needs.",
+      "q2": "Can I upgrade my plan later?",
+      "a2": "Yes, you can upgrade at any time. We'll help migrate your content and settings seamlessly to the new plan.",
+      "q3": "What support is included?",
+      "a3": "All plans include email support. Professional and Enterprise plans include priority support with dedicated account managers."
+    },
+    "ctaTitle": "Ready to Transform Your Station?",
+    "ctaSubtitle": "Let's discuss your radio automation needs and find the perfect plan",
+    "ctaButton": "Contact Sales"
+  },
+  "featuresPage": {
+    "title": "Powerful",
+    "titleHighlight": "Radio Features",
+    "subtitle": "Complete radio automation platform powered by AI",
+    "automation": {
+      "title": "Automation & Scheduling",
+      "description": "Intelligent automation for 24/7 unattended broadcasting",
+      "scheduling": { "title": "AI Scheduling", "description": "Intelligent playlist generation based on listener preferences", "h1": "Genre-aware scheduling", "h2": "Dayparting optimization", "h3": "Artist separation rules" },
+      "playlists": { "title": "Smart Playlists", "description": "AI-curated playlists that adapt to your audience", "h1": "Mood and tempo matching", "h2": "Listener preference learning", "h3": "Automatic rotation rules" },
+      "transitions": { "title": "Seamless Transitions", "description": "Professional crossfades and segues automatically", "h1": "Beat-matched transitions", "h2": "Voice track integration", "h3": "Commercial break handling" }
+    },
+    "analytics": {
+      "title": "Analytics & Insights",
+      "description": "Comprehensive listener analytics and performance tracking",
+      "listener": { "title": "Listener Analytics", "description": "Deep insights into audience behavior and preferences", "h1": "Real-time listener counts", "h2": "Geographic distribution", "h3": "Listening duration" },
+      "content": { "title": "Content Performance", "description": "Track which content resonates with your audience", "h1": "Song performance metrics", "h2": "Show ratings", "h3": "Engagement patterns" },
+      "realtime": { "title": "Real-Time Monitoring", "description": "Live dashboard for station operations", "h1": "On-air monitoring", "h2": "Stream health checks", "h3": "Instant alerts" }
+    },
+    "content": {
+      "title": "Content Management",
+      "description": "Complete tools for managing your audio library",
+      "library": { "title": "Content Library", "description": "Organize and manage your entire audio catalog", "h1": "Metadata management", "h2": "Category organization", "h3": "Search and filtering" },
+      "voiceover": { "title": "AI Voice Generation", "description": "Create professional voice tracks with AI synthesis", "h1": "Natural voice synthesis", "h2": "Multiple voice options", "h3": "Custom scripts" },
+      "ads": { "title": "Ad Management", "description": "Dynamic ad insertion and revenue optimization", "h1": "Targeted ad insertion", "h2": "Revenue tracking", "h3": "Inventory management" }
+    },
+    "techSpecsTitle": "Technical Specifications",
+    "techSpecs": {
+      "audioFormats": { "label": "Audio Formats", "value": "MP3, AAC, FLAC, WAV" },
+      "streaming": { "label": "Streaming", "value": "Icecast, Shoutcast, HLS" },
+      "bitrates": { "label": "Bitrates", "value": "64-320 kbps" },
+      "automation": { "label": "Automation", "value": "24/7 Unattended" },
+      "api": { "label": "API", "value": "RESTful JSON" },
+      "integrations": { "label": "Integrations", "value": "RDS, DAB+, HD Radio" },
+      "backup": { "label": "Backup", "value": "Cloud + Local" },
+      "uptimeSLA": { "label": "Uptime SLA", "value": "99.9%" }
+    },
+    "workflowTitle": "Content Workflow",
+    "workflow": {
+      "s1": { "title": "Import", "description": "Content ingestion" },
+      "s2": { "title": "Schedule", "description": "AI playlist generation" },
+      "s3": { "title": "Broadcast", "description": "On-air delivery" },
+      "s4": { "title": "Analyze", "description": "Performance tracking" }
+    },
+    "ctaTitle": "Ready to Automate Your Station?",
+    "ctaSubtitle": "See all features in action with a personalized demo",
+    "ctaButton": "Schedule Demo"
+  },
+  "solutionsPage": {
+    "title": "Radio",
+    "titleHighlight": "Solutions",
+    "subtitle": "Powering radio stations of all sizes with intelligent automation",
+    "commercial": {
+      "title": "Commercial Radio",
+      "industry": "Commercial Broadcasting",
+      "challenge": "Commercial stations need to maximize ad revenue while maintaining engaging programming that keeps listeners tuned in.",
+      "solution": "Our AI optimizes playlist scheduling and ad insertion to maximize both listener retention and advertising revenue.",
+      "r1": { "metric": "Revenue Increase", "value": "+30%" },
+      "r2": { "metric": "Listener Retention", "value": "+50%" },
+      "r3": { "metric": "Manual Work", "value": "-40%" },
+      "r4": { "metric": "Ad Fill Rate", "value": "95%" },
+      "f1": "Dynamic ad insertion",
+      "f2": "Revenue optimization",
+      "f3": "Audience targeting",
+      "f4": "Performance analytics",
+      "testimonial": { "quote": "Olorin.ai Media Enrichment transformed our station operations. We've seen significant improvements in both listener engagement and ad revenue.", "author": "Station Manager", "role": "Commercial Radio" }
+    },
+    "music": {
+      "title": "Music Stations",
+      "industry": "Music Radio",
+      "challenge": "Music stations struggle to create varied playlists that maintain listener interest without repetition.",
+      "solution": "AI-curated playlists that adapt to listener preferences, ensuring fresh content that keeps audiences engaged.",
+      "r1": { "metric": "Playlist Variety", "value": "+60%" },
+      "r2": { "metric": "Skip Rate", "value": "-45%" },
+      "r3": { "metric": "Listening Time", "value": "+35%" },
+      "r4": { "metric": "Repeat Listeners", "value": "+50%" },
+      "f1": "Genre-aware scheduling",
+      "f2": "Mood-based playlists",
+      "f3": "Tempo matching",
+      "f4": "Artist separation"
+    },
+    "talk": {
+      "title": "Talk Radio",
+      "industry": "Talk & News",
+      "challenge": "Talk radio requires precise show scheduling, guest management, and seamless transitions between segments.",
+      "solution": "Comprehensive show scheduling with automated segment handling, commercial breaks, and content management.",
+      "r1": { "metric": "Scheduling Time", "value": "-50%" },
+      "r2": { "metric": "Show Transitions", "value": "Seamless" },
+      "r3": { "metric": "Content Archive", "value": "100%" },
+      "r4": { "metric": "Listener Growth", "value": "+25%" },
+      "f1": "Show scheduling",
+      "f2": "Segment automation",
+      "f3": "Guest management",
+      "f4": "Content archiving"
+    },
+    "community": {
+      "title": "Community Radio",
+      "industry": "Community Broadcasting",
+      "challenge": "Community stations operate with limited budgets and volunteer staff, needing affordable, easy-to-use automation.",
+      "solution": "Cost-effective automation that simplifies operations, allowing volunteers to focus on content creation rather than technical tasks.",
+      "r1": { "metric": "Cost Savings", "value": "60%" },
+      "r2": { "metric": "Volunteer Hours", "value": "-50%" },
+      "r3": { "metric": "On-Air Quality", "value": "+40%" },
+      "r4": { "metric": "24/7 Coverage", "value": "Yes" },
+      "f1": "Affordable pricing",
+      "f2": "Easy-to-use interface",
+      "f3": "Volunteer training",
+      "f4": "24/7 automation"
+    },
+    "statsTitle": "Platform Impact",
+    "stats": {
+      "retention": "Listener Retention",
+      "retentionValue": "50%",
+      "scheduling": "Manual Work Reduction",
+      "schedulingValue": "40%",
+      "revenue": "Revenue Improvement",
+      "revenueValue": "30%",
+      "uptime": "Platform Uptime",
+      "uptimeValue": "99.9%"
+    },
+    "ctaTitle": "Ready to Transform Your Station?",
+    "ctaSubtitle": "Let's discuss how we can automate your radio operations",
+    "ctaButton": "Contact Us"
+  },
+  "accessibility": {
+    "skipToContent": "Skip to main content",
+    "scrollToFeatures": "Scroll down to explore features section",
+    "requestDemo": "Request a live demonstration of Station-AI",
+    "requestDemoFromMetrics": "Request a demo after viewing success metrics",
+    "callToAction": "Get started with Station-AI call to action",
+    "getStartedContact": "Get started by contacting our team"
+  }
+}

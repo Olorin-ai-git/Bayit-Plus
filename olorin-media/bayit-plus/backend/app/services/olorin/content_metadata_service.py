@@ -192,6 +192,29 @@ class ContentMetadataService:
         contents = await self.get_contents_by_ids(content_ids)
         return {str(c.id): c for c in contents}
 
+    async def get_series_episodes(
+        self, series_id: str
+    ) -> List[Content]:
+        """
+        Get all episodes for a series.
+
+        Args:
+            series_id: The series ID to fetch episodes for
+
+        Returns:
+            List of Content documents (episodes) sorted by season and episode number
+        """
+        if not self._initialized:
+            await self.initialize()
+
+        try:
+            return await Content.find(
+                {"series_id": series_id, "content_type": "episode"}
+            ).sort([("season", 1), ("episode", 1)]).to_list()
+        except Exception as e:
+            logger.error(f"Error fetching series episodes for {series_id}: {e}")
+            return []
+
     async def text_search(
         self,
         query_text: str,

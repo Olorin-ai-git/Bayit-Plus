@@ -34,6 +34,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  isHydrated: boolean;
   // Passkey session state
   passkeySessionToken: string | null;
   passkeySessionExpires: string | null;
@@ -72,6 +73,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      isHydrated: false,
       // Passkey session state
       passkeySessionToken: null,
       passkeySessionExpires: null,
@@ -297,6 +299,19 @@ export const useAuthStore = create<AuthState>()(
         passkeySessionToken: state.passkeySessionToken,
         passkeySessionExpires: state.passkeySessionExpires,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // Data integrity check: if authenticated but no user, reset auth state
+          if (state.isAuthenticated && !state.user) {
+            console.warn('[AuthStore] Data integrity issue: authenticated but no user. Resetting auth state.');
+            state.isAuthenticated = false;
+            state.token = null;
+            state.passkeySessionToken = null;
+            state.passkeySessionExpires = null;
+          }
+          state.isHydrated = true;
+        }
+      },
     }
   )
 );

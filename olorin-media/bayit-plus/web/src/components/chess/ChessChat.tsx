@@ -3,7 +3,7 @@
  * Allows players to communicate and request chess advice from AI.
  */
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, Platform } from 'react-native';
+import { View, Text, ScrollView, Pressable, Platform, StyleSheet } from 'react-native';
 import { colors, spacing } from '@bayit/shared/theme';
 import { Send, Mic, MicOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -88,7 +88,8 @@ export default function ChessChat({
         {voiceEnabled && (
           <View className="flex-row items-center gap-3">
             <Pressable
-              className={`p-3 rounded-lg ${isMuted ? 'bg-red-500/20' : 'bg-green-500/20'}`}
+              className="p-3 rounded-lg"
+              style={[isMuted ? styles.micMuted : styles.micActive]}
               onPress={toggleMute}
             >
               {isMuted ? (
@@ -159,9 +160,8 @@ export default function ChessChat({
 
         <Pressable
           onPress={handleSend}
-          className={`p-3 rounded-lg bg-purple-500/20 justify-center items-center ${
-            !inputText.trim() ? 'opacity-50' : ''
-          }`}
+          className="p-3 rounded-lg bg-purple-500/20 justify-center items-center"
+          style={[!inputText.trim() && styles.disabled]}
           disabled={!inputText.trim()}
         >
           <Send size={20} color={inputText.trim() ? colors.primary : colors.textSecondary} />
@@ -175,3 +175,15 @@ export default function ChessChat({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  micMuted: {
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+  },
+  micActive: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+});

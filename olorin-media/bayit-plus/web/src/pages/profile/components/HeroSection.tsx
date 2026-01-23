@@ -1,13 +1,16 @@
 import { useRef, useState } from 'react';
-import { View, Text, Pressable, Image } from 'react-native';
+import { View, Text, Pressable, Image, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Camera, Zap, Shield, Star, Download } from 'lucide-react';
 import { GlassView } from '@bayit/shared/ui';
 import { useAuthStore } from '@/stores/authStore';
 import { profilesService } from '@/services/api';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { StatCard } from './StatCard';
 import type { UserStats } from '../types';
+
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
 interface HeroSectionProps {
   isRTL: boolean;
@@ -67,9 +70,9 @@ export function HeroSection({ isRTL, stats, statsLoading, onAvatarUploadSuccess 
   };
 
   return (
-    <GlassView className="p-8 mb-6" intensity="medium">
-      <View className={`items-center gap-8 mb-8 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-        <View className="items-center">
+    <GlassView style={styles.container} intensity="medium">
+      <View style={[styles.heroRow, isRTL && styles.heroRowReverse]}>
+        <View style={styles.avatarContainer}>
           <input
             ref={fileInputRef}
             type="file"
@@ -78,42 +81,42 @@ export function HeroSection({ isRTL, stats, statsLoading, onAvatarUploadSuccess 
             style={{ display: 'none' }}
           />
           <Pressable onPress={handleAvatarClick} disabled={avatarUploading}>
-            <View className="relative">
+            <View style={styles.avatarWrapper}>
               {user?.avatar ? (
-                <Image source={{ uri: user.avatar }} className="w-[100px] h-[100px] rounded-full border-[3px] border-[#6B21A8]" />
+                <Image source={{ uri: user.avatar }} style={styles.avatar} />
               ) : (
-                <View className="w-[100px] h-[100px] rounded-full bg-[#6B21A8]/30 justify-center items-center border-[3px] border-[#6B21A8]">
-                  <Text className="text-4xl font-bold text-[#6B21A8]">{initial}</Text>
+                <View style={styles.avatarPlaceholder}>
+                  <Text style={styles.avatarInitial}>{initial}</Text>
                 </View>
               )}
               {avatarUploading && (
-                <View className="absolute top-0 left-0 right-0 bottom-0 bg-black/50 rounded-full justify-center items-center">
-                  <Text className="text-2xl text-white">...</Text>
+                <View style={styles.avatarUploadingOverlay}>
+                  <Text style={styles.uploadingText}>...</Text>
                 </View>
               )}
-              <View className="absolute bottom-0 right-0 w-8 h-8 rounded-2xl bg-[#6B21A8] justify-center items-center border-2 border-black">
+              <View style={styles.cameraButton}>
                 <Camera size={16} color="#fff" />
               </View>
             </View>
           </Pressable>
         </View>
 
-        <View className={`flex-1 ${isRTL ? 'items-end' : ''}`}>
-          <View className={`items-center gap-2 mb-1 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-            <Text className={`text-[28px] font-bold text-white ${isRTL ? 'text-right' : ''}`}>{user?.name || t('profile.guest')}</Text>
+        <View style={[styles.userInfoContainer, isRTL && styles.userInfoContainerRTL]}>
+          <View style={[styles.nameRow, isRTL && styles.nameRowReverse]}>
+            <Text style={[styles.userName, isRTL && styles.textRight]}>{user?.name || t('profile.guest')}</Text>
             {isAdmin() && (
-              <View className="flex-row items-center gap-1 bg-[#F59E0B]/20 px-3 py-1 rounded">
+              <View style={styles.adminBadge}>
                 <Shield size={12} color="#F59E0B" />
-                <Text className="text-[11px] font-semibold text-[#F59E0B]">{t('profile.admin', 'Admin')}</Text>
+                <Text style={styles.adminBadgeText}>{t('profile.admin', 'Admin')}</Text>
               </View>
             )}
           </View>
-          <Text className={`text-[15px] text-white/60 mb-2 ${isRTL ? 'text-right' : ''}`}>{user?.email}</Text>
+          <Text style={[styles.userEmail, isRTL && styles.textRight]}>{user?.email}</Text>
 
           {user?.subscription ? (
-            <View className={`flex-row items-center gap-2 bg-[#F59E0B]/15 px-4 py-2 rounded-lg mb-2 ${isRTL ? 'self-end' : 'self-start'}`}>
+            <View style={[styles.subscriptionBadge, isRTL && styles.subscriptionBadgeRTL]}>
               <Zap size={14} color="#F59E0B" />
-              <Text className="text-[13px] font-semibold text-[#F59E0B]">
+              <Text style={styles.subscriptionText}>
                 {user.subscription.plan === 'premium'
                   ? t('profile.premium', 'Premium')
                   : t('profile.basic', 'Basic')}
@@ -121,20 +124,20 @@ export function HeroSection({ isRTL, stats, statsLoading, onAvatarUploadSuccess 
             </View>
           ) : (
             <Link to="/subscribe" style={{ textDecoration: 'none' }}>
-              <View className="bg-[#6B21A8] px-4 py-2 rounded-lg mb-2">
-                <Text className="text-[13px] font-semibold text-white">{t('profile.upgrade', 'Upgrade to Premium')}</Text>
+              <View style={styles.upgradeButton}>
+                <Text style={styles.upgradeButtonText}>{t('profile.upgrade', 'Upgrade to Premium')}</Text>
               </View>
             </Link>
           )}
 
-          <Text className={`text-xs text-white/60 ${isRTL ? 'text-right' : ''}`}>
+          <Text style={[styles.memberSince, isRTL && styles.textRight]}>
             {t('profile.memberSince', 'Member since')}{' '}
             {user?.created_at ? new Date(user.created_at).toLocaleDateString() : '-'}
           </Text>
         </View>
       </View>
 
-      <View className={`gap-4 flex-wrap ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+      <View style={[styles.statsRow, isRTL && styles.statsRowReverse]}>
         <StatCard
           icon={Star}
           iconColor="#F59E0B"
@@ -153,3 +156,160 @@ export function HeroSection({ isRTL, stats, statsLoading, onAvatarUploadSuccess 
     </GlassView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    padding: spacing.xl,
+    marginBottom: spacing.lg,
+  },
+  heroRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xl,
+    marginBottom: spacing.xl,
+  },
+  heroRowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  avatarContainer: {
+    alignItems: 'center',
+  },
+  avatarWrapper: {
+    position: 'relative',
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: borderRadius.full,
+    borderWidth: 3,
+    borderColor: colors.primaryDark,
+  },
+  avatarPlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: colors.primaryDark,
+  },
+  avatarInitial: {
+    fontSize: IS_TV_BUILD ? fontSize['4xl'] : 36,
+    fontWeight: 'bold',
+    color: colors.primaryDark,
+  },
+  avatarUploadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: borderRadius.full,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  uploadingText: {
+    fontSize: IS_TV_BUILD ? fontSize['2xl'] : 24,
+    color: colors.text,
+  },
+  cameraButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.primaryDark,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: colors.background,
+  },
+  userInfoContainer: {
+    flex: 1,
+  },
+  userInfoContainerRTL: {
+    alignItems: 'flex-end',
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  nameRowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  userName: {
+    fontSize: IS_TV_BUILD ? fontSize['3xl'] : 28,
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+  adminBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.sm,
+  },
+  adminBadgeText: {
+    fontSize: IS_TV_BUILD ? fontSize.sm : 11,
+    fontWeight: '600',
+    color: colors.warning,
+  },
+  userEmail: {
+    fontSize: IS_TV_BUILD ? fontSize.lg : 15,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginBottom: spacing.sm,
+  },
+  subscriptionBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.sm,
+    alignSelf: 'flex-start',
+  },
+  subscriptionBadgeRTL: {
+    alignSelf: 'flex-end',
+  },
+  subscriptionText: {
+    fontSize: IS_TV_BUILD ? fontSize.base : 13,
+    fontWeight: '600',
+    color: colors.warning,
+  },
+  upgradeButton: {
+    backgroundColor: colors.primaryDark,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.sm,
+  },
+  upgradeButtonText: {
+    fontSize: IS_TV_BUILD ? fontSize.base : 13,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  memberSince: {
+    fontSize: IS_TV_BUILD ? fontSize.xs : 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  statsRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    flexWrap: 'wrap',
+  },
+  statsRowReverse: {
+    flexDirection: 'row-reverse',
+  },
+});

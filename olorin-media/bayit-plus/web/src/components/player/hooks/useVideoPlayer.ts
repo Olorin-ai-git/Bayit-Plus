@@ -12,6 +12,7 @@ interface UseVideoPlayerOptions {
   src: string
   isLive?: boolean
   autoPlay?: boolean
+  initialSeekTime?: number
   onProgress?: (currentTime: number, duration: number) => void
   onEnded?: () => void
   contentId?: string
@@ -29,6 +30,7 @@ export function useVideoPlayer({
   src,
   isLive = false,
   autoPlay = false,
+  initialSeekTime,
   onProgress,
   onEnded,
   contentId,
@@ -37,6 +39,7 @@ export function useVideoPlayer({
   const containerRef = useRef<HTMLDivElement>(null)
   const hlsRef = useRef<Hls | null>(null)
   const progressInterval = useRef<NodeJS.Timeout | null>(null)
+  const initialSeekPerformed = useRef(false)
 
   const [state, setState] = useState<PlayerState>({
     isPlaying: false,
@@ -183,6 +186,25 @@ export function useVideoPlayer({
       }
     }
   }, [state.isPlaying, isLive, onProgress])
+
+  // Initial seek from deep link (e.g., ?t=120 URL parameter)
+  useEffect(() => {
+    if (
+      initialSeekTime != null &&
+      initialSeekTime > 0 &&
+      !initialSeekPerformed.current &&
+      videoRef.current &&
+      !state.loading &&
+      state.duration > 0
+    ) {
+      // Only seek if the time is within video duration
+      if (initialSeekTime < state.duration) {
+        videoRef.current.currentTime = initialSeekTime
+        initialSeekPerformed.current = true
+        logger.info('Initial seek performed', 'useVideoPlayer', { seekTime: initialSeekTime })
+      }
+    }
+  }, [initialSeekTime, state.loading, state.duration])
 
   // Auto-hide controls
   useEffect(() => {

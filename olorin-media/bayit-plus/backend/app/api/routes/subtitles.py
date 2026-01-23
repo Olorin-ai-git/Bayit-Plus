@@ -6,7 +6,7 @@ Handles subtitle tracks, nikud generation, and word translation.
 from datetime import datetime
 from typing import List, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 
 from app.core.rate_limiter import limiter, RATE_LIMITS
 from app.models.subtitles import (SUBTITLE_LANGUAGES, SubtitleCueModel,
@@ -115,6 +115,7 @@ async def get_subtitle_cues(
 @router.post("/{content_id}/nikud")
 @limiter.limit(RATE_LIMITS["subtitle_nikud"])
 async def generate_nikud_for_track(
+    request: Request,
     content_id: str,
     language: str = "he",
     force: bool = False,
@@ -164,6 +165,7 @@ async def generate_nikud_for_track(
 @router.post("/{content_id}/import")
 @limiter.limit(RATE_LIMITS["subtitle_import"])
 async def import_subtitles(
+    request: Request,
     content_id: str,
     source_url: str,
     language: str = "he",
@@ -289,6 +291,7 @@ async def translate_single_word(
 @router.post("/translate/phrase")
 @limiter.limit(RATE_LIMITS["subtitle_translate_phrase"])
 async def translate_phrase_endpoint(
+    request: Request,
     phrase: str,
     source_lang: str = "he",
     target_lang: str = "en",
@@ -312,6 +315,7 @@ async def translate_phrase_endpoint(
 @router.post("/nikud/text")
 @limiter.limit(RATE_LIMITS["subtitle_nikud"])
 async def add_nikud_to_text(
+    request: Request,
     text: str,
 ) -> dict:
     """
@@ -332,6 +336,7 @@ async def add_nikud_to_text(
 @router.post("/{content_id}/fetch-external")
 @limiter.limit(RATE_LIMITS["subtitle_fetch_external"])
 async def fetch_external_subtitles(
+    request: Request,
     content_id: str,
     languages: Optional[List[str]] = Query(
         default=None,
@@ -538,6 +543,7 @@ async def get_subtitle_cache_stats() -> dict:
 @router.delete("/{content_id}/{language}")
 @limiter.limit(RATE_LIMITS["subtitle_delete"])
 async def delete_subtitle_track(
+    request: Request,
     content_id: str,
     language: str,
 ) -> dict:

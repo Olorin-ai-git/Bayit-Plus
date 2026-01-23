@@ -2,7 +2,7 @@
  * Chess game controls component (resign, offer draw, new game).
  */
 import React from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { colors, spacing } from '@bayit/shared/theme';
 import { Flag, RotateCcw, Lightbulb } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -42,9 +42,8 @@ export default function ChessControls({
       {/* Game Controls */}
       <View className="flex-row gap-3">
         <Pressable
-          className={`flex-1 flex-row items-center justify-center gap-2 py-3 px-4 rounded-lg bg-red-500/20 ${
-            !isGameActive ? 'opacity-50' : ''
-          }`}
+          className="flex-1 flex-row items-center justify-center gap-2 py-3 px-4 rounded-lg bg-red-500/20"
+          style={[!isGameActive && styles.disabled]}
           onPress={onResign}
           disabled={!isGameActive}
         >
@@ -53,9 +52,8 @@ export default function ChessControls({
         </Pressable>
 
         <Pressable
-          className={`flex-1 flex-row items-center justify-center gap-2 py-3 px-4 rounded-lg bg-yellow-500/20 ${
-            !isGameActive ? 'opacity-50' : ''
-          }`}
+          className="flex-1 flex-row items-center justify-center gap-2 py-3 px-4 rounded-lg bg-yellow-500/20"
+          style={[!isGameActive && styles.disabled]}
           onPress={onOfferDraw}
           disabled={!isGameActive}
         >
@@ -76,3 +74,9 @@ export default function ChessControls({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  disabled: {
+    opacity: 0.5,
+  },
+});

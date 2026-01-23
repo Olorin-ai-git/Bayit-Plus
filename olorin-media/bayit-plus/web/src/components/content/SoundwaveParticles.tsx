@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing } from '@bayit/shared/theme';
 import type { AudioLevel } from '@bayit/shared-utils/vadDetector';
@@ -169,7 +169,7 @@ const SoundwaveParticles: React.FC<SoundwaveParticlesProps> = ({
   }, [isListening, isProcessing, level, hasError, isResponding, responseText]);
 
   return (
-    <View className="w-full h-[100px] bg-black/80 relative overflow-hidden mt-0 pt-0">
+    <View style={styles.container}>
       <canvas
         ref={canvasRef}
         style={{
@@ -180,40 +180,98 @@ const SoundwaveParticles: React.FC<SoundwaveParticlesProps> = ({
       />
 
       {/* Status text overlay */}
-      <View className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <View style={styles.statusOverlay}>
         {hasError && (
-          <View className="flex-row items-center bg-black/60 px-4 py-2 rounded-[20px] gap-2">
-            <View className="w-2 h-2 rounded-full bg-red-500" />
-            <Text className="text-white text-xs font-semibold">{t('common.error', 'Error')}</Text>
+          <View style={styles.statusBadge}>
+            <View style={[styles.statusDot, styles.statusDotError]} />
+            <Text style={styles.statusText}>{t('common.error', 'Error')}</Text>
           </View>
         )}
         {isResponding && !hasError && (
-          <View className="flex-row items-center bg-black/60 px-4 py-2 rounded-[20px] gap-2">
-            <View className="w-2 h-2 rounded-full bg-emerald-500" />
-            <Text className="text-white text-xs font-semibold">{t('voice.speaking', 'Speaking')}</Text>
+          <View style={styles.statusBadge}>
+            <View style={[styles.statusDot, styles.statusDotResponding]} />
+            <Text style={styles.statusText}>{t('voice.speaking', 'Speaking')}</Text>
           </View>
         )}
         {isProcessing && !isResponding && !hasError && (
-          <View className="flex-row items-center bg-black/60 px-4 py-2 rounded-[20px] gap-2">
-            <View className="w-2 h-2 rounded-full bg-amber-400" />
-            <Text className="text-white text-xs font-semibold">{t('voice.processing', 'Processing')}</Text>
+          <View style={styles.statusBadge}>
+            <View style={[styles.statusDot, styles.statusDotProcessing]} />
+            <Text style={styles.statusText}>{t('voice.processing', 'Processing')}</Text>
           </View>
         )}
         {isListening && !isProcessing && !isResponding && !hasError && (
-          <View className="flex-row items-center bg-black/60 px-4 py-2 rounded-[20px] gap-2">
-            <View className="w-2 h-2 rounded-full bg-purple-500" />
-            <Text className="text-white text-xs font-semibold">{t('voice.listening', 'Listening...')}</Text>
+          <View style={styles.statusBadge}>
+            <View style={[styles.statusDot, styles.statusDotListening]} />
+            <Text style={styles.statusText}>{t('voice.listening', 'Listening...')}</Text>
           </View>
         )}
         {!isListening && !isProcessing && !isResponding && !hasError && (
-          <View className="flex-row items-center bg-black/60 px-4 py-2 rounded-[20px] gap-2">
-            <View className="w-2 h-2 rounded-full bg-indigo-500" />
-            <Text className="text-white text-xs font-semibold">{t('voice.ready', 'Ready')}</Text>
+          <View style={styles.statusBadge}>
+            <View style={[styles.statusDot, styles.statusDotIdle]} />
+            <Text style={styles.statusText}>{t('voice.ready', 'Ready')}</Text>
           </View>
         )}
       </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    height: 100,
+    backgroundColor: 'rgba(10, 10, 20, 0.8)',
+    position: 'relative' as any,
+    overflow: 'hidden' as any,
+    // Ensure content isn't clipped at the top edge of viewport
+    marginTop: 0,
+    paddingTop: 0,
+  },
+  statusOverlay: {
+    position: 'absolute' as any,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: 'flex' as any,
+    alignItems: 'center',
+    justifyContent: 'center',
+    pointerEvents: 'none' as any,
+  },
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: 20,
+    gap: spacing.sm,
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  statusDotResponding: {
+    backgroundColor: '#10b981', // Green
+  },
+  statusDotProcessing: {
+    backgroundColor: '#fbbf24', // Yellow
+  },
+  statusDotListening: {
+    backgroundColor: '#a855f7', // Blue
+  },
+  statusDotError: {
+    backgroundColor: '#ef4444', // Red
+  },
+  statusDotIdle: {
+    backgroundColor: '#6366f1', // Indigo
+  },
+  statusText: {
+    color: colors.text,
+    fontSize: 12,
+    fontWeight: '600' as any,
+  },
+});
 
 export default SoundwaveParticles;

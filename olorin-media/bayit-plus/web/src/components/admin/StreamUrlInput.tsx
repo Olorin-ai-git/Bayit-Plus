@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, StyleSheet } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { AlertCircle, CheckCircle, Copy } from 'lucide-react'
@@ -107,6 +107,26 @@ export function StreamUrlInput({
     }
   }
 
+  // Dynamic styles for stream type selection
+  const getTypeButtonStyle = (type: 'hls' | 'dash' | 'audio') => [
+    styles.typeButton,
+    streamType === type ? styles.typeButtonActive : null,
+  ];
+
+  const getTypeTextStyle = (type: 'hls' | 'dash' | 'audio') => ({
+    color: streamType === type ? colors.primary : colors.textMuted,
+  });
+
+  const errorContainerStyle = {
+    backgroundColor: `${colors.error}10`,
+    borderColor: `${colors.error}40`,
+  };
+
+  const successContainerStyle = {
+    backgroundColor: `${colors.success}10`,
+    borderColor: `${colors.success}40`,
+  };
+
   return (
     <View className="w-full mb-4">
       <GlassInput
@@ -140,14 +160,15 @@ export function StreamUrlInput({
                 className="flex-1"
               >
                 <GlassView
-                  className={`flex-row items-center justify-center gap-1 py-2 px-4 rounded-lg ${streamType === type ? 'border-2' : ''}`}
+                  className="flex-row items-center justify-center gap-1 py-2 px-4 rounded-lg"
+                  style={getTypeButtonStyle(type)}
                   intensity={streamType === type ? 'high' : 'low'}
                   borderColor={streamType === type ? colors.primary : undefined}
                 >
                   <Text className="text-base">{getStreamTypeIcon(type)}</Text>
                   <Text
                     className="text-xs font-medium"
-                    style={{ color: streamType === type ? colors.primary : colors.textMuted }}
+                    style={getTypeTextStyle(type)}
                   >
                     {type.toUpperCase()}
                   </Text>
@@ -159,14 +180,14 @@ export function StreamUrlInput({
       )}
 
       {error && (
-        <GlassView className="flex-row items-center gap-2 p-4 mt-2 rounded-lg border" intensity="low" style={{ backgroundColor: `${colors.error}10`, borderColor: `${colors.error}40` }}>
+        <GlassView className="flex-row items-center gap-2 p-4 mt-2 rounded-lg border" intensity="low" style={errorContainerStyle}>
           <AlertCircle size={16} color={colors.error} />
           <Text className="flex-1 text-xs" style={{ color: colors.error }}>{error}</Text>
         </GlassView>
       )}
 
       {isValid && url && (
-        <GlassView className="flex-row items-center gap-2 p-4 mt-2 rounded-lg border" intensity="low" style={{ backgroundColor: `${colors.success}10`, borderColor: `${colors.success}40` }}>
+        <GlassView className="flex-row items-center gap-2 p-4 mt-2 rounded-lg border" intensity="low" style={successContainerStyle}>
           <CheckCircle size={16} color={colors.success} />
           <Text className="flex-1 text-xs" style={{ color: colors.success }}>
             {t('admin.content.streamUrlInput.validUrl', { type: streamType.toUpperCase() })}
@@ -193,3 +214,10 @@ export function StreamUrlInput({
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  typeButton: {},
+  typeButtonActive: {
+    borderWidth: 2,
+  },
+});

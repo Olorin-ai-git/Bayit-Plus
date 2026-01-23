@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, Pressable, ActivityIndicator } from 'react-native';
+import { View, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
 import { colors, spacing } from '@bayit/shared/theme';
 import { UploadStages } from '../types';
 import { UPLOAD_STAGES, CRITICAL_STAGES } from '../constants';
@@ -33,9 +33,8 @@ export const StageIndicator: React.FC<StageIndicatorProps> = ({
 
   return (
     <View>
-      <View className={`flex-row items-center my-3 justify-center ${
-        isRTL ? 'flex-row-reverse' : ''
-      }`}>
+      <View className="flex-row items-center my-3 justify-center"
+        style={[isRTL && styles.flexRowReverse]}>
         {UPLOAD_STAGES.map((stage, index) => {
           const stageStatus = stages[stage.key as keyof UploadStages];
           const isActive = stageStatus === 'in_progress';
@@ -79,19 +78,20 @@ export const StageIndicator: React.FC<StageIndicatorProps> = ({
                 />
               )}
               {showSeparator && (
-                <View className={`mx-${spacing.sm} items-center justify-center`}>
+                <View className="items-center justify-center" style={{ marginHorizontal: spacing.sm }}>
                   <View className="w-1 h-1 rounded-full bg-gray-500" />
                 </View>
               )}
               <Pressable
                 onPress={() => setSelectedStage(selectedStage === stage.key ? null : stage.key)}
-                className={`${
-                  isEnrichmentStage ? 'w-6 h-6 rounded-xl opacity-85' : 'w-7 h-7 rounded-full'
-                } items-center justify-center border relative`}
-                style={{
-                  backgroundColor: bgColor,
-                  borderColor: borderColor,
-                }}
+                className="items-center justify-center border relative"
+                style={[
+                  isEnrichmentStage ? styles.enrichmentStage : styles.criticalStage,
+                  {
+                    backgroundColor: bgColor,
+                    borderColor: borderColor,
+                  },
+                ]}
               >
                 <Icon size={isEnrichmentStage ? 10 : 12} color={iconColor} />
                 {isActive && (
@@ -115,3 +115,20 @@ export const StageIndicator: React.FC<StageIndicatorProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  flexRowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  enrichmentStage: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    opacity: 0.85,
+  },
+  criticalStage: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+  },
+});

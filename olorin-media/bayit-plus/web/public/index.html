@@ -582,9 +582,31 @@
           video.removeEventListener('canplay', onCanPlay);
         });
         
+        // Handle video load errors (404, network failure, etc.)
+        video.addEventListener('error', function(e) {
+          console.warn('Video failed to load, skipping splash video:', e);
+          // Show slogan immediately as fallback
+          var sloganContainer = document.querySelector('.slogan-container');
+          if (sloganContainer) {
+            sloganContainer.classList.add('show');
+          }
+          // Hide splash screen after a brief delay
+          setTimeout(function() {
+            if (window.hideSplashWhenReady) {
+              window.hideSplashWhenReady();
+            }
+          }, 1500);
+        });
+
+        // Also handle source error
+        videoSource.addEventListener('error', function(e) {
+          console.warn('Video source failed to load:', e);
+          video.dispatchEvent(new Event('error'));
+        });
+
         // Load the video
         video.load();
-        
+
         // Show slogan when video ends
         video.addEventListener('ended', function() {
           console.log('✓ Video ended, showing slogan...');

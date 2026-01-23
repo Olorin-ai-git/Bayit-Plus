@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   ScrollView,
+  StyleSheet,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui';

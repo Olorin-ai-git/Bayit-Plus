@@ -3,9 +3,10 @@
  * Displays season selection pills
  */
 
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '@bayit/shared/ui';
+import { colors } from '@bayit/shared/theme';
 import type { Season } from '../types/series.types';
 
 interface SeasonSelectorProps {
@@ -28,10 +29,10 @@ export function SeasonSelector({
   }
 
   return (
-    <View className="px-12 py-6">
-      <Text className="text-lg font-semibold text-white mb-4">{t('content.selectSeason')}</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>{t('content.selectSeason')}</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <View className={`gap-4 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : 'flex-row'}`}>
+        <View style={[styles.seasonsRow, { flexDirection }]}>
           {seasons.map((season) => (
             <GlassButton
               key={season.season_number}
@@ -46,3 +47,19 @@ export function SeasonSelector({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 48,
+    paddingVertical: 24,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginBottom: 16,
+  },
+  seasonsRow: {
+    gap: 16,
+  },
+});

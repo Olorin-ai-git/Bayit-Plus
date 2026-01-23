@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Mic, Square, Send } from 'lucide-react'
 import { GlassInput, GlassBadge } from '@bayit/shared/ui'
@@ -39,7 +39,7 @@ export function ChatInputBar({
 
   if (isTVMode) {
     return (
-      <View className={`\${IS_TV ? 'p-6' : 'p-4'} border-t border-white/10 items-center justify-center`}>
+      <View className="border-t border-white/10 items-center justify-center" style={[IS_TV ? styles.paddingTV : styles.paddingMobile]}>
         <View className="flex-col items-center justify-center gap-4 py-6 px-8">
           <SoundwaveVisualizer
             audioLevel={audioLevel}
@@ -57,7 +57,7 @@ export function ChatInputBar({
   }
 
   return (
-    <View className={`\${IS_TV ? 'p-6' : 'p-4'} border-t border-white/10`}>
+    <View className="border-t border-white/10" style={[IS_TV ? styles.paddingTV : styles.paddingMobile]}>
       {(isRecording || isTranscribing) && (
         <View className="flex-row justify-center mb-2">
           {isRecording && (
@@ -77,15 +77,15 @@ export function ChatInputBar({
         </View>
       )}
 
-      <View className={`flex-row items-center gap-2 \${isRTL ? 'flex-row-reverse' : ''}`}>
+      <View className="flex-row items-center gap-2" style={[isRTL && styles.rowReverse]}>
         <Pressable
           onPress={onToggleRecording}
           disabled={isLoading || isTranscribing}
-          className={`\${IS_TV ? 'w-16 h-14 rounded-[28px]' : 'w-12 h-10 rounded-[20px]'} bg-[#8a2be2] items-center justify-center \${
-            isRecording
-              ? 'bg-[#ef4444] shadow-[0_0_8px_rgba(239,68,68,0.5)]'
-              : 'hover:shadow-[0_0_8px_rgba(138,43,226,0.5)]'
-          }`}
+          className="bg-[#8a2be2] items-center justify-center"
+          style={[
+            IS_TV ? styles.micButtonTV : styles.micButtonMobile,
+            isRecording ? styles.recording : styles.notRecording,
+          ]}
           accessibilityLabel={isRecording ? t('chatbot.stopRecording') : t('chatbot.startRecording')}
         >
           {isRecording ? (
@@ -121,11 +121,11 @@ export function ChatInputBar({
         <Pressable
           onPress={onSubmit}
           disabled={!input.trim() || isLoading || isRecording || isTranscribing}
-          className={`\${IS_TV ? 'w-14 h-14 rounded-[28px]' : 'w-10 h-10 rounded-[20px]'} bg-[#8a2be2] items-center justify-center \${
-            (!input.trim() || isLoading)
-              ? 'opacity-50'
-              : 'hover:shadow-[0_0_8px_rgba(138,43,226,0.5)]'
-          }`}
+          className="bg-[#8a2be2] items-center justify-center"
+          style={[
+            IS_TV ? styles.sendButtonTV : styles.sendButtonMobile,
+            (!input.trim() || isLoading) && styles.disabled,
+          ]}
         >
           <Send size={16} color={colors.text} />
         </Pressable>
@@ -133,3 +133,51 @@ export function ChatInputBar({
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  paddingTV: {
+    padding: 24,
+  },
+  paddingMobile: {
+    padding: 16,
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  micButtonTV: {
+    width: 64,
+    height: 56,
+    borderRadius: 28,
+  },
+  micButtonMobile: {
+    width: 48,
+    height: 40,
+    borderRadius: 20,
+  },
+  recording: {
+    backgroundColor: '#ef4444',
+    shadowColor: 'rgba(239, 68, 68, 0.5)',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 8,
+  },
+  notRecording: {
+    shadowColor: 'rgba(138, 43, 226, 0.5)',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 8,
+  },
+  sendButtonTV: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+  },
+  sendButtonMobile: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+})

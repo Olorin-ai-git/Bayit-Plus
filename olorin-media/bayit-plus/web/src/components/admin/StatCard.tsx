@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
 import { colors } from '@bayit/shared/theme';
 import { GlassCard } from '@bayit/shared/ui';
@@ -37,6 +37,16 @@ export default function StatCard({
 }: StatCardProps) {
   const colorStyle = colorMap[color];
 
+  // Dynamic trend badge style
+  const trendBadgeStyle = [
+    styles.trendBadge,
+    trend?.isPositive ? styles.trendPositive : styles.trendNegative,
+  ];
+
+  const trendTextStyle = {
+    color: trend?.isPositive ? '#22C55E' : '#EF4444',
+  };
+
   const content = (
     <GlassCard className="p-4 h-full">
       <View className="flex-row items-start gap-2 mb-2">
@@ -55,8 +65,8 @@ export default function StatCard({
         <Text className="text-2xl font-bold" style={{ color: colorStyle.text }}>{value}</Text>
 
         {trend && (
-          <View className={`px-2 py-1 rounded ${trend.isPositive ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
-            <Text className="text-xs font-semibold" style={{ color: trend.isPositive ? '#22C55E' : '#EF4444' }}>
+          <View className="px-2 py-1 rounded" style={trendBadgeStyle}>
+            <Text className="text-xs font-semibold" style={trendTextStyle}>
               {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}%
             </Text>
           </View>
@@ -77,3 +87,17 @@ export default function StatCard({
 
   return <View className="flex-[1_1_23%] min-w-[200px] max-w-[300px]">{content}</View>;
 }
+
+const styles = StyleSheet.create({
+  trendBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  trendPositive: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+  },
+  trendNegative: {
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+  },
+});

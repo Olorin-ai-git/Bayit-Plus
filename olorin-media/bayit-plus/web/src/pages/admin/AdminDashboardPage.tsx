@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, UserPlus, Tag, Mail, BarChart3 } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import { dashboardService } from '@/services/adminApi';
-import { colors } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
@@ -143,9 +143,9 @@ export default function AdminDashboardPage() {
 
   if (error) {
     return (
-      <View className="flex-1 justify-center items-center px-4">
-        <Text className="text-5xl mb-4">⚠️</Text>
-        <Text className="text-base text-red-500 mb-4">{error}</Text>
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorEmoji}>⚠️</Text>
+        <Text style={styles.errorText}>{error}</Text>
         <GlassButton
           title={t('common.retry')}
           onPress={loadDashboardData}
@@ -157,20 +157,20 @@ export default function AdminDashboardPage() {
 
   if (loading || !stats) {
     return (
-      <View className="flex-1 justify-center items-center gap-2">
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text className="text-sm text-gray-400">{t('common.loading')}</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView className="flex-1" contentContainerStyle={{ padding: 16 }}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Header */}
-      <View className="flex-row items-center justify-between mb-4" style={{ flexDirection }}>
+      <View style={[styles.header, { flexDirection }]}>
         <View>
-          <Text className="text-2xl font-bold text-white" style={{ textAlign }}>{t('admin.dashboard.title')}</Text>
-          <Text className="text-sm text-gray-400 mt-1" style={{ textAlign }}>{t('admin.dashboard.subtitle')}</Text>
+          <Text style={[styles.headerTitle, { textAlign }]}>{t('admin.dashboard.title')}</Text>
+          <Text style={[styles.headerSubtitle, { textAlign }]}>{t('admin.dashboard.subtitle')}</Text>
         </View>
         <GlassButton
           title={t('admin.dashboard.refresh')}
@@ -182,9 +182,9 @@ export default function AdminDashboardPage() {
       </View>
 
       {/* Users Section */}
-      <View className="mb-4">
-        <Text className="text-lg font-semibold text-white mb-3" style={{ textAlign }}>{t('admin.dashboard.users')}</Text>
-        <View className="flex-row flex-wrap gap-3">
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.dashboard.users')}</Text>
+        <View style={styles.statsGrid}>
           <StatCard
             title={t('admin.stats.totalUsers')}
             value={formatNumber(stats.total_users)}
@@ -216,9 +216,9 @@ export default function AdminDashboardPage() {
       </View>
 
       {/* Revenue Section */}
-      <View className="mb-4">
-        <Text className="text-lg font-semibold text-white mb-3" style={{ textAlign }}>{t('admin.dashboard.revenue')}</Text>
-        <View className="flex-row flex-wrap gap-3">
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.dashboard.revenue')}</Text>
+        <View style={styles.statsGrid}>
           <StatCard
             title={t('admin.stats.totalRevenue')}
             value={formatCurrency(stats.total_revenue)}
@@ -249,9 +249,9 @@ export default function AdminDashboardPage() {
       </View>
 
       {/* Subscriptions Section */}
-      <View className="mb-4">
-        <Text className="text-lg font-semibold text-white mb-3" style={{ textAlign }}>{t('admin.dashboard.subscriptions')}</Text>
-        <View className="flex-row gap-3 max-w-[620px]">
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.dashboard.subscriptions')}</Text>
+        <View style={styles.subscriptionsGrid}>
           <StatCard
             title={t('admin.stats.activeSubscriptions')}
             value={formatNumber(stats.active_subscriptions)}
@@ -270,72 +270,72 @@ export default function AdminDashboardPage() {
       </View>
 
       {/* Recent Activity & Quick Actions */}
-      <View className="flex-row gap-4 flex-wrap" style={{ flexDirection }}>
+      <View style={[styles.actionsRow, { flexDirection }]}>
         {/* Recent Activity */}
-        <View className="flex-[2] min-w-[300px]">
-          <Text className="text-lg font-semibold text-white mb-3" style={{ textAlign }}>{t('admin.dashboard.recentActivity')}</Text>
-          <GlassCard className="p-0 min-h-[200px] flex-1">
+        <View style={styles.activitySection}>
+          <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.dashboard.recentActivity')}</Text>
+          <GlassCard style={styles.activityCard}>
             {recentActivity.length > 0 ? (
               recentActivity.map((activity) => (
-                <View key={activity.id} className="flex-row items-center gap-3 px-3 py-3 border-b border-white/5" style={{ flexDirection }}>
-                  <View className="w-10 h-10 rounded-full bg-gray-800 justify-center items-center">
-                    <Text className="text-lg">{getActivityIcon(activity.action)}</Text>
+                <View key={activity.id} style={[styles.activityItem, { flexDirection }]}>
+                  <View style={styles.activityIconContainer}>
+                    <Text style={styles.activityIcon}>{getActivityIcon(activity.action)}</Text>
                   </View>
-                  <View className="flex-1">
-                    <Text className="text-sm font-medium text-white capitalize" style={{ textAlign }}>
+                  <View style={styles.activityDetails}>
+                    <Text style={[styles.activityAction, { textAlign }]}>
                       {t(`admin.auditActions.${activity.action}`, activity.action.replace(/_/g, ' '))}
                     </Text>
                     {activity.details && (
-                      <Text className="text-xs text-gray-400" style={{ textAlign }} numberOfLines={1}>
+                      <Text style={[styles.activityDetailsText, { textAlign }]} numberOfLines={1}>
                         {formatActivityDetails(activity.details)}
                       </Text>
                     )}
                   </View>
-                  <Text className="text-xs text-gray-400">{formatDateTime(activity.created_at)}</Text>
+                  <Text style={styles.activityTime}>{formatDateTime(activity.created_at)}</Text>
                 </View>
               ))
             ) : (
-              <View className="px-8 py-10 items-center justify-center">
-                <Text className="text-sm text-gray-400">{t('admin.dashboard.noRecentActivity', 'No recent activity')}</Text>
+              <View style={styles.emptyActivity}>
+                <Text style={styles.emptyActivityText}>{t('admin.dashboard.noRecentActivity', 'No recent activity')}</Text>
               </View>
             )}
           </GlassCard>
         </View>
 
         {/* Quick Actions */}
-        <View className="flex-1 min-w-[250px]">
-          <Text className="text-lg font-semibold text-white mb-3" style={{ textAlign }}>{t('admin.dashboard.quickActions')}</Text>
-          <GlassCard className="p-3 flex-1">
+        <View style={styles.quickActionsSection}>
+          <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.dashboard.quickActions')}</Text>
+          <GlassCard style={styles.quickActionsCard}>
             <Link to="/admin/users/new" style={{ textDecoration: 'none' }}>
-              <Pressable className="flex-row items-center gap-3 px-3 py-3 rounded-md" style={{ flexDirection }}>
-                <View className="w-10 h-10 rounded-md bg-purple-500/20 justify-center items-center">
+              <Pressable style={[styles.quickActionItem, { flexDirection }]}>
+                <View style={[styles.quickActionIconContainer, styles.quickActionPurple]}>
                   <UserPlus size={20} color={colors.primary} />
                 </View>
-                <Text className="text-sm font-medium text-white flex-1" style={{ textAlign }}>{t('admin.actions.addUser')}</Text>
+                <Text style={[styles.quickActionText, { textAlign }]}>{t('admin.actions.addUser')}</Text>
               </Pressable>
             </Link>
             <Link to="/admin/campaigns/new" style={{ textDecoration: 'none' }}>
-              <Pressable className="flex-row items-center gap-3 px-3 py-3 rounded-md" style={{ flexDirection }}>
-                <View className="w-10 h-10 rounded-md bg-purple-500/20 justify-center items-center">
+              <Pressable style={[styles.quickActionItem, { flexDirection }]}>
+                <View style={[styles.quickActionIconContainer, styles.quickActionPurple]}>
                   <Tag size={20} color="#8B5CF6" />
                 </View>
-                <Text className="text-sm font-medium text-white flex-1" style={{ textAlign }}>{t('admin.actions.newCampaign')}</Text>
+                <Text style={[styles.quickActionText, { textAlign }]}>{t('admin.actions.newCampaign')}</Text>
               </Pressable>
             </Link>
             <Link to="/admin/emails" style={{ textDecoration: 'none' }}>
-              <Pressable className="flex-row items-center gap-3 px-3 py-3 rounded-md" style={{ flexDirection }}>
-                <View className="w-10 h-10 rounded-md bg-amber-500/20 justify-center items-center">
+              <Pressable style={[styles.quickActionItem, { flexDirection }]}>
+                <View style={[styles.quickActionIconContainer, styles.quickActionAmber]}>
                   <Mail size={20} color="#F59E0B" />
                 </View>
-                <Text className="text-sm font-medium text-white flex-1" style={{ textAlign }}>{t('admin.actions.sendEmail')}</Text>
+                <Text style={[styles.quickActionText, { textAlign }]}>{t('admin.actions.sendEmail')}</Text>
               </Pressable>
             </Link>
             <Link to="/admin/billing" style={{ textDecoration: 'none' }}>
-              <Pressable className="flex-row items-center gap-3 px-3 py-3 rounded-md" style={{ flexDirection }}>
-                <View className="w-10 h-10 rounded-md bg-green-500/20 justify-center items-center">
+              <Pressable style={[styles.quickActionItem, { flexDirection }]}>
+                <View style={[styles.quickActionIconContainer, styles.quickActionGreen]}>
                   <BarChart3 size={20} color="#22C55E" />
                 </View>
-                <Text className="text-sm font-medium text-white flex-1" style={{ textAlign }}>{t('admin.actions.viewReports')}</Text>
+                <Text style={[styles.quickActionText, { textAlign }]}>{t('admin.actions.viewReports')}</Text>
               </Pressable>
             </Link>
           </GlassCard>
@@ -344,3 +344,171 @@ export default function AdminDashboardPage() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: spacing.md,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+  },
+  errorEmoji: {
+    fontSize: 48,
+    marginBottom: spacing.md,
+  },
+  errorText: {
+    fontSize: fontSize.base,
+    color: colors.error,
+    marginBottom: spacing.md,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  loadingText: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+  },
+  headerTitle: {
+    fontSize: fontSize['2xl'],
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  headerSubtitle: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+    marginTop: 4,
+  },
+  section: {
+    marginBottom: spacing.md,
+  },
+  sectionTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 12,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  subscriptionsGrid: {
+    flexDirection: 'row',
+    gap: 12,
+    maxWidth: 620,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    flexWrap: 'wrap',
+  },
+  activitySection: {
+    flex: 2,
+    minWidth: 300,
+  },
+  activityCard: {
+    padding: 0,
+    minHeight: 200,
+    flex: 1,
+  },
+  activityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  activityIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.backgroundElevated,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  activityIcon: {
+    fontSize: fontSize.lg,
+  },
+  activityDetails: {
+    flex: 1,
+  },
+  activityAction: {
+    fontSize: fontSize.sm,
+    fontWeight: '500',
+    color: colors.text,
+    textTransform: 'capitalize',
+  },
+  activityDetailsText: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+  },
+  activityTime: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+  },
+  emptyActivity: {
+    paddingHorizontal: 32,
+    paddingVertical: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyActivityText: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+  },
+  quickActionsSection: {
+    flex: 1,
+    minWidth: 250,
+  },
+  quickActionsCard: {
+    padding: 12,
+    flex: 1,
+  },
+  quickActionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: borderRadius.md,
+  },
+  quickActionIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quickActionPurple: {
+    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+  },
+  quickActionAmber: {
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+  },
+  quickActionGreen: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+  },
+  quickActionText: {
+    fontSize: fontSize.sm,
+    fontWeight: '500',
+    color: colors.text,
+    flex: 1,
+  },
+});

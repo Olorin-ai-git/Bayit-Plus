@@ -1,0 +1,270 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        portal: [portal-main, portal-fraud, portal-streaming, portal-station]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install portal dependencies
+        run: npm ci -w packages/${{ matrix.portal }}
+
+      - name: Lint portal
+        run: npm run lint -w packages/${{ matrix.portal }}
+        continue-on-error: false
+
+      - name: Type check portal
+        run: |
+          if [ -f "packages/${{ matrix.portal }}/tsconfig.json" ]; then
+            npx tsc --noEmit -p packages/${{ matrix.portal }}/tsconfig.json
+          else
+            echo "No tsconfig.json found, skipping type check"
+          fi
+        continue-on-error: false
+
+  build-verification:
+    name: Build Verification
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        portal: [portal-main, portal-fraud, portal-streaming, portal-station]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install portal dependencies
+        run: npm ci -w packages/${{ matrix.portal }}
+
+      - name: Build portal
+        run: npm run build -w packages/${{ matrix.portal }}
+        env:
+          CI: false
+
+      - name: Check build output
+        run: |
+          if [ ! -d "packages/${{ matrix.portal }}/build" ]; then
+            echo "Build directory not found!"
+            exit 1
+          fi
+
+          if [ ! -f "packages/${{ matrix.portal }}/build/index.html" ]; then
+            echo "index.html not found in build output!"
+            exit 1
+          fi
+
+          echo "Build verification passed"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.portal }}-build
+          path: packages/${{ matrix.portal }}/build
+          retention-days: 7
+
+  bundle-size-check:
+    name: Bundle Size Analysis
+    runs-on: ubuntu-latest
+    needs: build-verification
+
+    strategy:
+      matrix:
+        portal: [portal-main, portal-fraud, portal-streaming, portal-station]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ matrix.portal }}-build
+          path: packages/${{ matrix.portal }}/build
+
+      - name: Analyze bundle size
+        run: |
+          echo "=== Bundle Size Analysis for ${{ matrix.portal }} ==="
+
+          # Find all JS and CSS files
+          find packages/${{ matrix.portal }}/build/static/js -name "*.js" -exec ls -lh {} \; || true
+          find packages/${{ matrix.portal }}/build/static/css -name "*.css" -exec ls -lh {} \; || true
+
+          # Calculate total sizes
+          JS_SIZE=$(find packages/${{ matrix.portal }}/build/static/js -name "*.js" -exec du -ch {} + | grep total | cut -f1 || echo "0K")
+          CSS_SIZE=$(find packages/${{ matrix.portal }}/build/static/css -name "*.css" -exec du -ch {} + | grep total | cut -f1 || echo "0K")
+
+          echo "Total JavaScript: $JS_SIZE"
+          echo "Total CSS: $CSS_SIZE"
+
+          # Warn if JS bundle is too large (> 500KB)
+          JS_SIZE_KB=$(find packages/${{ matrix.portal }}/build/static/js -name "*.js" -exec du -k {} + | awk '{sum+=$1} END {print sum}')
+          if [ "$JS_SIZE_KB" -gt 500 ]; then
+            echo "::warning::JavaScript bundle size ($JS_SIZE_KB KB) exceeds recommended 500 KB"
+          fi
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Check for known vulnerabilities
+        run: |
+          # Run audit and save results
+          npm audit --json > audit-results.json || true
+
+          # Check for high/critical vulnerabilities
+          HIGH_VULNS=$(cat audit-results.json | jq '.metadata.vulnerabilities.high // 0')
+          CRITICAL_VULNS=$(cat audit-results.json | jq '.metadata.vulnerabilities.critical // 0')
+
+          echo "High severity vulnerabilities: $HIGH_VULNS"
+          echo "Critical severity vulnerabilities: $CRITICAL_VULNS"
+
+          if [ "$CRITICAL_VULNS" -gt 0 ]; then
+            echo "::error::Found $CRITICAL_VULNS critical vulnerabilities"
+            exit 1
+          fi
+
+  smoke-tests:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    needs: build-verification
+
+    strategy:
+      matrix:
+        portal: [portal-main, portal-fraud, portal-streaming, portal-station]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ matrix.portal }}-build
+          path: packages/${{ matrix.portal }}/build
+
+      - name: Install serve package
+        run: npm install -g serve
+
+      - name: Start application server
+        run: |
+          cd packages/${{ matrix.portal }}/build
+          serve -s . -l 3000 &
+          echo $! > /tmp/serve.pid
+          sleep 3
+
+      - name: Wait for server to be ready
+        run: |
+          echo "Waiting for server to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "Server is ready!"
+              exit 0
+            fi
+            echo "Attempt $i: Server not ready yet..."
+            sleep 1
+          done
+          echo "Server failed to start within 30 seconds"
+          exit 1
+
+      - name: Run smoke tests
+        run: node scripts/smoke-test.js http://localhost:3000 ${{ matrix.portal }}
+
+      - name: Stop server
+        if: always()
+        run: |
+          if [ -f /tmp/serve.pid ]; then
+            kill $(cat /tmp/serve.pid) || true
+            rm /tmp/serve.pid
+          fi
+
+      - name: Upload smoke test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.portal }}-smoke-test-results
+          path: |
+            packages/${{ matrix.portal }}/build
+          retention-days: 1
+
+  notify-ci-status:
+    name: Notify CI Status
+    runs-on: ubuntu-latest
+    needs: [lint-and-typecheck, build-verification, bundle-size-check, security-scan, smoke-tests]
+    if: failure()
+
+    strategy:
+      matrix:
+        portal: [portal-main, portal-fraud, portal-streaming, portal-station]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Send CI failure notification
+        run: |
+          bash scripts/notify.sh ci-failure ${{ matrix.portal }} failure \
+            "CI/CD pipeline failed. Check workflow logs for details."
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+          EMAIL_SERVICE_URL: ${{ secrets.EMAIL_SERVICE_URL }}
+          EMAIL_API_KEY: ${{ secrets.EMAIL_API_KEY }}

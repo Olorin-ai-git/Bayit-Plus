@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "olorin-shared"
+version = "0.1.0"
+description = "Olorin.ai shared core services for authentication, configuration, logging, and error handling"
+authors = ["Olorin.ai Platform Team"]
+readme = "README.md"
+packages = [{include = "olorin_shared"}]
+include = ["olorin_shared/py.typed"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pydantic = "^2.12.0"
+pydantic-settings = "^2.0.0"
+pyjwt = "^2.8.0"
+python-json-logger = "^2.0.0"
+structlog = "^23.1.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+pytest-asyncio = "^0.21.0"
+pytest-cov = "^4.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

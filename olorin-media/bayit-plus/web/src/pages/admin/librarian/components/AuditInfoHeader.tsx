@@ -1,8 +1,8 @@
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Pause, PlayCircle, XCircle } from 'lucide-react';
 import { GlassButton } from '@bayit/shared/ui';
-import { colors } from '@bayit/shared/theme';
+import { colors, spacing, fontSize } from '@bayit/shared/theme';
 import { AuditReportDetail } from '@/services/librarianService';
 import { format } from 'date-fns';
 
@@ -38,20 +38,20 @@ export const AuditInfoHeader = ({
   const { t } = useTranslation();
 
   return (
-    <View className="flex flex-row flex-wrap gap-4 mb-4 pb-4 border-b items-center justify-between" style={{ borderBottomColor: `${colors.text}15` }}>
-      <View className="flex-1">
-        <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center gap-2 mb-1`}>
-          <Text className="text-[13px]" style={{ color: colors.textMuted }}>
+    <View style={styles.container}>
+      <View style={styles.infoSection}>
+        <View style={[styles.row, isRTL && styles.rowReverse]}>
+          <Text style={styles.timestamp}>
             {t('admin.librarian.logs.started')}: {format(new Date(report.audit_date), 'HH:mm:ss')}
           </Text>
           {report.status === 'in_progress' && (
-            <Text className="text-[13px] ml-4" style={{ color: colors.warning }}>
+            <Text style={styles.statusRunning}>
               ● {t('admin.librarian.status.running', 'Running')}
             </Text>
           )}
         </View>
         {report.completed_at && (
-          <Text className="text-[13px]" style={{ color: colors.success }}>
+          <Text style={styles.completedText}>
             {t('admin.librarian.logs.completed')}: {format(new Date(report.completed_at), 'HH:mm:ss')}
           </Text>
         )}
@@ -62,17 +62,17 @@ export const AuditInfoHeader = ({
 
           return (
             <View>
-              <Text className="text-xs mt-1" style={{ color: isStale ? colors.warning : colors.textMuted }}>
+              <Text style={[styles.lastLogText, isStale && styles.lastLogStale]}>
                 {t('admin.librarian.logs.lastLog', 'Last log')}: {format(lastLogTime, 'HH:mm:ss')}
                 {timeSinceLastLog > 5 && ` (${timeSinceLastLog}s ago)`}
               </Text>
               {isStale && (
-                <Text className="text-[11px] mt-1 italic" style={{ color: colors.warning }}>
+                <Text style={styles.staleWarning}>
                   ⚠ {t('admin.librarian.logs.staleWarning', 'No new logs for {{seconds}}s - job may be processing or stuck', { seconds: timeSinceLastLog })}
                 </Text>
               )}
               {lastPolledAt && report.status === 'in_progress' && (
-                <Text className="text-[10px] mt-1 opacity-70" style={{ color: colors.textMuted }}>
+                <Text style={styles.pollingStatus}>
                   {t('admin.librarian.logs.pollingStatus', 'Polling active • Last checked')}: {format(lastPolledAt, 'HH:mm:ss')}
                 </Text>
               )}
@@ -82,7 +82,7 @@ export const AuditInfoHeader = ({
       </View>
 
       {report.status === 'in_progress' && (
-        <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-4 items-center`}>
+        <View style={[styles.actionsContainer, isRTL && styles.rowReverse]}>
           <GlassButton
             title={t('common.refresh', 'Refresh')}
             variant="secondary"
@@ -91,7 +91,7 @@ export const AuditInfoHeader = ({
             onPress={onRefresh}
             loading={refreshing}
             disabled={refreshing}
-            className="min-w-[120px] bg-white/5 border border-white/10"
+            style={styles.actionButton}
           />
           {!auditPaused ? (
             <GlassButton
@@ -102,7 +102,7 @@ export const AuditInfoHeader = ({
               onPress={onPause}
               loading={pausingAudit}
               disabled={pausingAudit || cancellingAudit}
-              className="min-w-[120px] bg-white/5 border border-white/10"
+              style={styles.actionButton}
             />
           ) : (
             <GlassButton
@@ -113,7 +113,7 @@ export const AuditInfoHeader = ({
               onPress={onResume}
               loading={resumingAudit}
               disabled={resumingAudit || cancellingAudit}
-              className="min-w-[120px] bg-white/5 border border-white/10"
+              style={styles.actionButton}
             />
           )}
           <GlassButton
@@ -124,7 +124,7 @@ export const AuditInfoHeader = ({
             onPress={onCancel}
             loading={cancellingAudit}
             disabled={pausingAudit || resumingAudit || cancellingAudit}
-            className="min-w-[120px] bg-white/5 border border-white/10"
+            style={styles.actionButton}
             textStyle={{ color: colors.error }}
           />
         </View>
@@ -132,3 +132,73 @@ export const AuditInfoHeader = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+    marginBottom: spacing.md,
+    paddingBottom: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: `${colors.text}15`,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  infoSection: {
+    flex: 1,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  timestamp: {
+    fontSize: 13,
+    color: colors.textMuted,
+  },
+  statusRunning: {
+    fontSize: 13,
+    marginLeft: spacing.md,
+    color: colors.warning,
+  },
+  completedText: {
+    fontSize: 13,
+    color: colors.success,
+  },
+  lastLogText: {
+    fontSize: fontSize.xs,
+    marginTop: spacing.xs,
+    color: colors.textMuted,
+  },
+  lastLogStale: {
+    color: colors.warning,
+  },
+  staleWarning: {
+    fontSize: 11,
+    marginTop: spacing.xs,
+    fontStyle: 'italic',
+    color: colors.warning,
+  },
+  pollingStatus: {
+    fontSize: 10,
+    marginTop: spacing.xs,
+    opacity: 0.7,
+    color: colors.textMuted,
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    alignItems: 'center',
+  },
+  actionButton: {
+    minWidth: 120,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+});

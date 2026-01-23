@@ -3,12 +3,12 @@ import {
   View,
   Text,
   TouchableOpacity,
+  StyleSheet,
   Modal,
   Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
-import clsx from 'clsx';
 import { GlassView } from './ui';
 import { useAuthStore } from '../stores/authStore';
 import { colors, spacing, borderRadius } from '../theme';
@@ -53,29 +53,26 @@ export const UserAccountMenu: React.FC = () => {
   const subscriptionPlan = user?.subscription?.plan || 'basic';
 
   return (
-    <View className="relative justify-center items-center">
+    <View style={styles.container}>
       <TouchableOpacity
         onPress={() => setIsOpen(!isOpen)}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        className={clsx(
-          "w-11 h-11 justify-center items-center rounded-lg bg-white/5 border overflow-hidden",
-          isFocused ? "border-purple-500" : "border-transparent"
-        )}
+        style={[styles.button, isFocused && styles.buttonFocused]}
       >
-        <View className={clsx(
-          "w-9 h-9 rounded-md justify-center items-center",
-          isAuthenticated ? "bg-purple-500" : "bg-white/15"
-        )}>
-          <Text className={clsx(
-            "text-lg font-bold",
-            isAuthenticated ? "text-black" : "text-white/80"
-          )}>
+        <View style={[
+          styles.avatarPlaceholder,
+          isAuthenticated && styles.avatarAuthenticated,
+        ]}>
+          <Text style={[
+            styles.avatarText,
+            isAuthenticated && styles.avatarTextAuthenticated,
+          ]}>
             {displayName.charAt(0).toUpperCase() || '👤'}
           </Text>
         </View>
         {isAuthenticated && (
-          <View className="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-black" />
+          <View style={styles.authBadge} />
         )}
       </TouchableOpacity>
 
@@ -86,30 +83,34 @@ export const UserAccountMenu: React.FC = () => {
         onRequestClose={() => setIsOpen(false)}
       >
         <TouchableOpacity
-          className={clsx(
-            "flex-1 bg-black/50 justify-start pt-[70px]",
-            isRTL ? "items-start pl-12" : "items-end pr-12"
-          )}
+          style={[
+            styles.modalOverlay,
+            isRTL
+              ? { alignItems: 'flex-start', paddingLeft: spacing.xxl }
+              : { alignItems: 'flex-end', paddingRight: spacing.xxl },
+          ]}
           activeOpacity={1}
           onPress={() => setIsOpen(false)}
         >
           <Animated.View
-            className="w-[280px]"
-            style={{ opacity: fadeAnim }}
+            style={[
+              styles.dropdownContainer,
+              { opacity: fadeAnim },
+            ]}
           >
-            <GlassView intensity="high" className="p-6 rounded-2xl">
+            <GlassView intensity="high" style={styles.dropdown}>
               {/* User Info Section */}
-              <View className="flex-col items-center py-4">
-                <View className="w-16 h-16 rounded-full bg-purple-500 justify-center items-center mb-4">
-                  <Text className="text-2xl font-bold text-black">
+              <View style={styles.userSection}>
+                <View style={styles.userAvatarPlaceholder}>
+                  <Text style={styles.userAvatarText}>
                     {displayName.charAt(0).toUpperCase() || '👤'}
                   </Text>
                 </View>
-                <View className="items-center">
-                  <Text className="text-lg font-bold text-white mb-0.5 text-center">{displayName}</Text>
-                  <Text className="text-sm text-white/80 mb-2 text-center">{displayEmail}</Text>
-                  <View className="self-center px-2 py-0.5 rounded-sm bg-purple-900/30">
-                    <Text className="text-xs text-purple-500 font-bold">
+                <View style={styles.userInfo}>
+                  <Text style={styles.userName}>{displayName}</Text>
+                  <Text style={styles.userEmail}>{displayEmail}</Text>
+                  <View style={styles.subscriptionBadge}>
+                    <Text style={styles.subscriptionText}>
                       {subscriptionPlan === 'premium' ? t('account.premium') : t('account.basic')}
                     </Text>
                   </View>
@@ -117,7 +118,7 @@ export const UserAccountMenu: React.FC = () => {
               </View>
 
               {/* Divider */}
-              <View className="h-px bg-white/10 my-2" />
+              <View style={styles.divider} />
 
               {/* Menu Options */}
               <TouchableOpacity
@@ -125,13 +126,10 @@ export const UserAccountMenu: React.FC = () => {
                   setIsOpen(false);
                   navigation.navigate('Profile', { tab: 'profile' });
                 }}
-                className={clsx(
-                  "items-center py-2 px-2 rounded-lg",
-                  isRTL ? "flex-row" : "flex-row-reverse"
-                )}
+                style={[styles.menuOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
               >
-                <Text className={clsx("text-xl", isRTL ? "ml-4" : "mr-4")}>👤</Text>
-                <Text className="text-base text-white">{t('account.personalDetails')}</Text>
+                <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>👤</Text>
+                <Text style={styles.menuText}>{t('account.personalDetails')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -139,13 +137,10 @@ export const UserAccountMenu: React.FC = () => {
                   setIsOpen(false);
                   navigation.navigate('Profile', { tab: 'billing' });
                 }}
-                className={clsx(
-                  "items-center py-2 px-2 rounded-lg",
-                  isRTL ? "flex-row" : "flex-row-reverse"
-                )}
+                style={[styles.menuOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
               >
-                <Text className={clsx("text-xl", isRTL ? "ml-4" : "mr-4")}>💳</Text>
-                <Text className="text-base text-white">{t('account.billing')}</Text>
+                <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>💳</Text>
+                <Text style={styles.menuText}>{t('account.billing')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -153,51 +148,39 @@ export const UserAccountMenu: React.FC = () => {
                   setIsOpen(false);
                   navigation.navigate('Profile', { tab: 'subscription' });
                 }}
-                className={clsx(
-                  "items-center py-2 px-2 rounded-lg",
-                  isRTL ? "flex-row" : "flex-row-reverse"
-                )}
+                style={[styles.menuOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
               >
-                <Text className={clsx("text-xl", isRTL ? "ml-4" : "mr-4")}>⭐</Text>
-                <Text className="text-base text-white">{t('account.manageSubscription')}</Text>
+                <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>⭐</Text>
+                <Text style={styles.menuText}>{t('account.manageSubscription')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={handleSettings}
-                className={clsx(
-                  "items-center py-2 px-2 rounded-lg",
-                  isRTL ? "flex-row" : "flex-row-reverse"
-                )}
+                style={[styles.menuOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
               >
-                <Text className={clsx("text-xl", isRTL ? "ml-4" : "mr-4")}>⚙️</Text>
-                <Text className="text-base text-white">{t('account.settings')}</Text>
+                <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>⚙️</Text>
+                <Text style={styles.menuText}>{t('account.settings')}</Text>
               </TouchableOpacity>
 
               {/* Divider */}
-              <View className="h-px bg-white/10 my-2" />
+              <View style={styles.divider} />
 
               {/* Login/Logout */}
               {isAuthenticated ? (
                 <TouchableOpacity
                   onPress={handleLogout}
-                  className={clsx(
-                    "items-center py-2 px-2 rounded-lg mt-1",
-                    isRTL ? "flex-row" : "flex-row-reverse"
-                  )}
+                  style={[styles.menuOption, styles.logoutOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
                 >
-                  <Text className={clsx("text-xl", isRTL ? "ml-4" : "mr-4")}>🚪</Text>
-                  <Text className="text-base text-red-500">{t('account.logout')}</Text>
+                  <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>🚪</Text>
+                  <Text style={[styles.menuText, styles.logoutText]}>{t('account.logout')}</Text>
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity
                   onPress={handleLogin}
-                  className={clsx(
-                    "items-center py-2 px-2 rounded-lg mt-1",
-                    isRTL ? "flex-row" : "flex-row-reverse"
-                  )}
+                  style={[styles.menuOption, styles.loginOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
                 >
-                  <Text className={clsx("text-xl", isRTL ? "ml-4" : "mr-4")}>🔑</Text>
-                  <Text className="text-base text-purple-500">{t('account.login')}</Text>
+                  <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>🔑</Text>
+                  <Text style={[styles.menuText, styles.loginText]}>{t('account.login')}</Text>
                 </TouchableOpacity>
               )}
             </GlassView>
@@ -207,5 +190,147 @@ export const UserAccountMenu: React.FC = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  button: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'transparent',
+    overflow: 'hidden',
+  },
+  buttonFocused: {
+    borderColor: colors.primary,
+  },
+  avatarPlaceholder: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarAuthenticated: {
+    backgroundColor: colors.primary,
+  },
+  avatarText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.textSecondary,
+  },
+  avatarTextAuthenticated: {
+    color: colors.background,
+  },
+  authBadge: {
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#22c55e',
+    borderWidth: 2,
+    borderColor: colors.background,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-start',
+    paddingTop: 70,
+  },
+  dropdownContainer: {
+    width: 280,
+  },
+  dropdown: {
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
+  },
+  userSection: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    paddingVertical: spacing.md,
+  },
+  userAvatarPlaceholder: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  userAvatarText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.background,
+  },
+  userInfo: {
+    alignItems: 'center',
+  },
+  userName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: 2,
+    textAlign: 'center',
+  },
+  userEmail: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
+    textAlign: 'center',
+  },
+  subscriptionBadge: {
+    alignSelf: 'center',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+  },
+  subscriptionText: {
+    fontSize: 12,
+    color: colors.primary,
+    fontWeight: 'bold',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.glassBorder,
+    marginVertical: spacing.sm,
+  },
+  menuOption: {
+    alignItems: 'center',
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    borderRadius: borderRadius.md,
+  },
+  menuIcon: {
+    fontSize: 20,
+  },
+  menuText: {
+    fontSize: 16,
+    color: colors.text,
+  },
+  logoutOption: {
+    marginTop: spacing.xs,
+  },
+  logoutText: {
+    color: colors.error,
+  },
+  loginOption: {
+    marginTop: spacing.xs,
+  },
+  loginText: {
+    color: colors.primary,
+  },
+});
 
 export default UserAccountMenu;

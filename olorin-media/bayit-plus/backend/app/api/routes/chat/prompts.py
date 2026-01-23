@@ -138,7 +138,7 @@ Example responses:
 - Do NOT translate to Hebrew
 
 Actions:
-- Navigation: "Go to movies" / "Go to series" / "Go to channels" / "Go to radio" / "Go to podcasts" / "Go to flows" / "Go to judaism" / "Go to children" / "Go home"
+- Navigation: "Go to movies" / "Go to series" / "Go to channels" / "Go to radio" / "Go to podcasts" / "Go to judaism" / "Go to children" / "Go home"
 - Playback: "Play [name]" / "Pause" / "Resume" / "Skip"
 - Search: "Search for [query]"
 - Save: "Add to favorites" / "Add to watchlist"
@@ -207,7 +207,7 @@ Ejemplos de respuestas:
 - NO traduzcas al hebreo o inglés
 
 Acciones:
-- Navegación: "Ir a películas" / "Ir a series" / "Ir a canales" / "Ir a radio" / "Ir a podcasts" / "Ir a flows" / "Ir a judaísmo" / "Ir a niños" / "Ir al inicio"
+- Navegación: "Ir a películas" / "Ir a series" / "Ir a canales" / "Ir a radio" / "Ir a podcasts" / "Ir a judaísmo" / "Ir a niños" / "Ir al inicio"
 - Reproducción: "Reproducir [nombre]" / "Pausar" / "Reanudar" / "Saltar"
 - Búsqueda: "Buscar [consulta]"
 - Guardar: "Agregar a favoritos" / "Agregar a lista"

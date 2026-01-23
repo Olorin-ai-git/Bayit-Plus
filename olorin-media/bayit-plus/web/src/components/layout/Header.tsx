@@ -10,7 +10,7 @@ import { useModeEnforcement } from '@bayit/shared-hooks';
 import { chatService } from '@/services/api';
 import { VoiceSearchButton, LanguageSelector, SoundwaveVisualizer } from '@bayit/shared';
 import { useConstantListening } from '@bayit/shared-hooks';
-import { ProfileDropdown } from '@bayit/shared/ProfileDropdown';
+import { ProfileDropdown } from '../../../../shared/components/ProfileDropdown';
 import { colors, spacing } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
 
@@ -25,7 +25,6 @@ const navLinkKeys = [
   { to: '/vod', key: 'nav.vod' },
   { to: '/radio', key: 'nav.radio' },
   { to: '/podcasts', key: 'nav.podcasts' },
-  { to: '/flows', key: 'nav.flows' },
   { to: '/judaism', key: 'nav.judaism' },
   { to: '/children', key: 'nav.children' },
 ];
@@ -343,6 +342,9 @@ const styles = StyleSheet.create({
   voiceButtonContainer: {
     position: 'relative',
     marginHorizontal: spacing.xs,
+    height: IS_TV_BUILD ? 60 : 44,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   iconButton: {
     width: IS_TV_BUILD ? 60 : 40,

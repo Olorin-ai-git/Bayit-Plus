@@ -16,7 +16,6 @@ const ROUTE_LABELS: Record<string, string> = {
   '/vod': 'nav.vod',
   '/radio': 'nav.radio',
   '/podcasts': 'nav.podcasts',
-  '/flows': 'nav.flows',
   '/judaism': 'nav.judaism',
   '/children': 'nav.children',
   '/search': 'nav.search',

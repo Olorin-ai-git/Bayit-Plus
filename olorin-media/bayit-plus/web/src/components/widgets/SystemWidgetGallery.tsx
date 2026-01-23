@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, useWindowDimensions, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, useWindowDimensions, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Check, Tv, Globe, Podcast, Radio, Film, RefreshCw, Eye, EyeOff, RotateCcw, Trash2 } from 'lucide-react';
 import { GlassCard } from '@bayit/shared/ui';
@@ -116,7 +116,8 @@ function SystemWidgetCard({
       onMouseLeave={() => setIsHovered(false)}
       className="flex-1"
     >
-      <GlassCard className={`px-4 py-4 mb-4 flex-row items-center gap-4 relative border-0 ${isHovered ? 'bg-blue-500/5' : ''}`}>
+      <GlassCard className="px-4 py-4 mb-4 flex-row items-center gap-4 relative border-0"
+        style={[isHovered && styles.cardHovered]}>
         <View className="w-12 h-12 rounded-full bg-white/5 justify-center items-center">
           <Text className="text-2xl">{getIcon()}</Text>
         </View>
@@ -154,13 +155,14 @@ function SystemWidgetCard({
         <Pressable
           onPress={handleAction}
           disabled={actionLoading || isLoading}
-          className={`flex-row items-center gap-1.5 px-4 py-2 rounded-lg min-w-[80px] justify-center ${
+          className="flex-row items-center gap-1.5 px-4 py-2 rounded-lg min-w-[80px] justify-center"
+          style={[
             isHidden
-              ? 'bg-yellow-500/20 border border-yellow-500/50'
+              ? styles.actionButtonHidden
               : widget.is_added
-                ? 'bg-green-500/20 border border-green-500/50'
-                : 'bg-blue-600'
-          }`}
+                ? styles.actionButtonAdded
+                : styles.actionButtonAdd
+          ]}
         >
           {actionLoading ? (
             <ActivityIndicator size="small" color={colors.text} />
@@ -326,5 +328,24 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  cardHovered: {
+    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+  },
+  actionButtonHidden: {
+    backgroundColor: 'rgba(234, 179, 8, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(234, 179, 8, 0.5)',
+  },
+  actionButtonAdded: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.5)',
+  },
+  actionButtonAdd: {
+    backgroundColor: '#2563eb',
+  },
+});
 
 export default SystemWidgetGallery;

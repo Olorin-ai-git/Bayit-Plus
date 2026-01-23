@@ -75,7 +75,7 @@ export function usePlaylistManager(): UsePlaylistManagerResult {
   const exitFlow = useCallback(() => {
     setPlaylist([]);
     setFlowName('');
-    navigate('/flows');
+    navigate('/');
   }, [navigate]);
 
   return {

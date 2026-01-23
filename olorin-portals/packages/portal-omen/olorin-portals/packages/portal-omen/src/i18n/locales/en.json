@@ -1,0 +1,57 @@
+{
+  "hero": {
+    "headline": "WEAR YOUR WORDS.",
+    "subheadline": "The world's first outward-facing translation diadem.",
+    "subheadline2": "You speak. They read. Total understanding.",
+    "cta": "EQUIP THE ARTIFACT",
+    "altDevice": "Omen wearable translation device with curved OLED display",
+    "altWizard": "Olorin wizard mascot conjuring the Omen device"
+  },
+  "demo": {
+    "title": "HOW IT WORKS",
+    "subtitle": "The Diadem translates in real-time",
+    "speaking": "Speak naturally",
+    "thinking": "Processing locally",
+    "result": "Translation displayed",
+    "resultText": "NICE TO MEET YOU",
+    "viewer": "Viewer's Perspective",
+    "description": "No awkward pauses. No looking down at phones. Eye contact maintained. The Omen projects subtitles onto reality.",
+    "srSpeaking": "User speaking into device",
+    "srThinking": "Device processing translation locally",
+    "srResult": "Translation displayed: {{text}}"
+  },
+  "specs": {
+    "title": "FORGED IN SILICON",
+    "subtitle": "Supernatural technology meets human connection",
+    "display": {
+      "title": "The Display",
+      "description": "High-Def Curved OLED. Visible in direct sunlight. 120Hz refresh rate for fluid text flow."
+    },
+    "core": {
+      "title": "The Core",
+      "description": "Zero-Latency Inference. Olorin's Language Model runs locally on the NPU. No internet required."
+    },
+    "array": {
+      "title": "The Array",
+      "description": "Beamforming Mic Array. Isolates your voice even in a crowded bazaar."
+    }
+  },
+  "footer": {
+    "title": "THE FUTURE OF DIPLOMACY",
+    "subtitle": "Join the waitlist. Quantities limited.",
+    "cta": "PRE-ORDER THE ARTIFACT"
+  },
+  "nav": {
+    "ecosystem": "Ecosystem",
+    "diadem": "The Diadem",
+    "specs": "Tech Specs",
+    "preorder": "Pre-Order"
+  },
+  "a11y": {
+    "skipToMain": "Skip to main content",
+    "languageSwitch": "Switch language to {{lang}}",
+    "pauseAnimation": "Pause animation",
+    "playAnimation": "Play animation",
+    "deviceFloating": "Floating Omen device with pulsing purple glow effect"
+  }
+}

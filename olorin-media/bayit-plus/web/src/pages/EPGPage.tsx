@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import { View, Text, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { DateTime } from 'luxon'
 import { AlertCircle } from 'lucide-react'
@@ -12,6 +13,7 @@ import { RecordingStatus } from '@/components/epg/EPGRecordingIndicator'
 import { useAuthStore } from '@/stores/authStore'
 import { recordingApi } from '@/services/recordingApi'
 import { useModal } from '@/contexts/ModalContext'
+import { GlassButton } from '@bayit/shared'
 
 const EPGPage: React.FC = () => {
   const { t } = useTranslation()
@@ -219,18 +221,18 @@ const EPGPage: React.FC = () => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
-      <div className="max-w-[1920px] mx-auto space-y-6">
+    <View style={styles.container}>
+      <View style={styles.contentWrapper}>
         {/* Header */}
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2">{t('epg.title')}</h1>
-            <p className="text-white/60">{t('epg.subtitle')}</p>
-          </div>
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.title}>{t('epg.title')}</Text>
+            <Text style={styles.subtitle}>{t('epg.subtitle')}</Text>
+          </View>
 
           {/* View Toggle */}
           <EPGViewToggle view={viewMode} onViewChange={setViewMode} />
-        </div>
+        </View>
 
         {/* Time Controls */}
         <EPGTimeControls
@@ -243,34 +245,35 @@ const EPGPage: React.FC = () => {
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-start gap-3">
+          <View style={styles.errorContainer}>
             <AlertCircle className="text-red-400 flex-shrink-0" size={24} />
-            <div className="flex-1">
-              <h3 className="text-red-400 font-semibold mb-1">{t('epg.errorTitle')}</h3>
-              <p className="text-red-300/80 text-sm mb-3">{error}</p>
-              <button
-                onClick={fetchEPGData}
-                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors text-sm font-medium"
+            <View style={styles.errorContent}>
+              <Text style={styles.errorTitle}>{t('epg.errorTitle')}</Text>
+              <Text style={styles.errorMessage}>{error}</Text>
+              <GlassButton
+                onPress={fetchEPGData}
+                variant="secondary"
+                style={styles.retryButton}
               >
                 {t('common.retry')}
-              </button>
-            </div>
-          </div>
+              </GlassButton>
+            </View>
+          </View>
         )}
 
         {/* Loading State */}
         {loading && (
-          <div className="space-y-4">
+          <View style={styles.loadingContainer}>
             {/* Skeleton timeline */}
-            <div className="h-12 bg-white/5 rounded-xl animate-pulse" />
+            <View style={styles.skeletonTimeline} />
 
             {/* Skeleton rows */}
-            <div className="grid grid-cols-1 gap-4">
+            <View style={styles.skeletonGrid}>
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-24 bg-white/5 rounded-xl animate-pulse" />
+                <View key={i} style={styles.skeletonRow} />
               ))}
-            </div>
-          </div>
+            </View>
+          </View>
         )}
 
         {/* EPG Content */}
@@ -308,9 +311,88 @@ const EPGPage: React.FC = () => {
             onConfirm={handleRecordConfirm}
           />
         )}
-      </div>
-    </div>
+      </View>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    minHeight: '100vh',
+    background: 'linear-gradient(to bottom right, #111827, #1f2937, #111827)',
+    padding: 24,
+  },
+  contentWrapper: {
+    maxWidth: 1920,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    gap: 24,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 16,
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 8,
+  },
+  subtitle: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 14,
+  },
+  errorContainer: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+    borderRadius: 12,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    marginBottom: 24,
+  },
+  errorContent: {
+    flex: 1,
+  },
+  errorTitle: {
+    color: '#f87171',
+    fontWeight: '600',
+    marginBottom: 4,
+    fontSize: 14,
+  },
+  errorMessage: {
+    color: 'rgba(252, 165, 165, 0.8)',
+    fontSize: 13,
+    marginBottom: 12,
+  },
+  retryButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    borderRadius: 8,
+  },
+  loadingContainer: {
+    gap: 16,
+  },
+  skeletonTimeline: {
+    height: 48,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+  },
+  skeletonGrid: {
+    gap: 16,
+  },
+  skeletonRow: {
+    height: 96,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+  },
+})
 
 export default EPGPage

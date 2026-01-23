@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import {
   MessageSquare,
@@ -11,6 +11,7 @@ import {
   Brain,
 } from 'lucide-react';
 import { GlassView } from '@bayit/shared/ui';
+import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 import { useAISettingsStore } from '@/stores/aiSettingsStore';
 import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
 import { SettingRow } from '../components/SettingRow';
@@ -35,33 +36,33 @@ export function AIVoiceTab({ isRTL }: AIVoiceTabProps) {
   } = useVoiceSettingsStore();
 
   return (
-    <View className="gap-6">
-      <GlassView className="p-6 gap-4">
-        <View className={`items-center gap-4 mb-2 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+    <View style={styles.container}>
+      <GlassView style={styles.section}>
+        <View style={[styles.header, isRTL ? styles.headerRTL : styles.headerLTR]}>
           {isRTL ? (
             <>
-              <View className="flex-1">
-                <Text className="text-[13px] font-semibold text-white/60 uppercase tracking-wide text-right">
+              <View style={styles.headerContent}>
+                <Text style={[styles.headerTitle, styles.textRight]}>
                   {t('profile.ai.assistant', 'AI Assistant')}
                 </Text>
-                <Text className="text-[13px] text-white/60 mt-0.5 text-right">
+                <Text style={[styles.headerDescription, styles.textRight]}>
                   {t('profile.ai.assistantDesc', 'Personalized recommendations and help')}
                 </Text>
               </View>
-              <View className="w-12 h-12 rounded-lg bg-[#8B5CF6]/15 justify-center items-center">
+              <View style={[styles.iconContainer, styles.iconPurple]}>
                 <Brain size={24} color="#8B5CF6" />
               </View>
             </>
           ) : (
             <>
-              <View className="w-12 h-12 rounded-lg bg-[#8B5CF6]/15 justify-center items-center">
+              <View style={[styles.iconContainer, styles.iconPurple]}>
                 <Brain size={24} color="#8B5CF6" />
               </View>
-              <View className="flex-1">
-                <Text className="text-[13px] font-semibold text-white/60 uppercase tracking-wide text-left">
+              <View style={styles.headerContent}>
+                <Text style={[styles.headerTitle, styles.textLeft]}>
                   {t('profile.ai.assistant', 'AI Assistant')}
                 </Text>
-                <Text className="text-[13px] text-white/60 mt-0.5 text-left">
+                <Text style={[styles.headerDescription, styles.textLeft]}>
                   {t('profile.ai.assistantDesc', 'Personalized recommendations and help')}
                 </Text>
               </View>
@@ -101,32 +102,32 @@ export function AIVoiceTab({ isRTL }: AIVoiceTabProps) {
         />
       </GlassView>
 
-      <GlassView className="p-6 gap-4">
-        <View className={`items-center gap-4 mb-2 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+      <GlassView style={styles.section}>
+        <View style={[styles.header, isRTL ? styles.headerRTL : styles.headerLTR]}>
           {isRTL ? (
             <>
-              <View className="flex-1">
-                <Text className="text-[13px] font-semibold text-white/60 uppercase tracking-wide text-right">
+              <View style={styles.headerContent}>
+                <Text style={[styles.headerTitle, styles.textRight]}>
                   {t('profile.voice.title', 'Voice Control')}
                 </Text>
-                <Text className="text-[13px] text-white/60 mt-0.5 text-right">
+                <Text style={[styles.headerDescription, styles.textRight]}>
                   {t('profile.voice.description', 'Hands-free navigation')}
                 </Text>
               </View>
-              <View className="w-12 h-12 rounded-lg bg-[#6B21A8]/30 justify-center items-center">
+              <View style={[styles.iconContainer, styles.iconPurpleDark]}>
                 <Mic size={24} color="#6B21A8" />
               </View>
             </>
           ) : (
             <>
-              <View className="w-12 h-12 rounded-lg bg-[#6B21A8]/30 justify-center items-center">
+              <View style={[styles.iconContainer, styles.iconPurpleDark]}>
                 <Mic size={24} color="#6B21A8" />
               </View>
-              <View className="flex-1">
-                <Text className="text-[13px] font-semibold text-white/60 uppercase tracking-wide text-left">
+              <View style={styles.headerContent}>
+                <Text style={[styles.headerTitle, styles.textLeft]}>
                   {t('profile.voice.title', 'Voice Control')}
                 </Text>
-                <Text className="text-[13px] text-white/60 mt-0.5 text-left">
+                <Text style={[styles.headerDescription, styles.textLeft]}>
                   {t('profile.voice.description', 'Hands-free navigation')}
                 </Text>
               </View>
@@ -166,32 +167,32 @@ export function AIVoiceTab({ isRTL }: AIVoiceTabProps) {
         />
       </GlassView>
 
-      <GlassView className="p-6 gap-4">
-        <View className={`items-center gap-4 mb-2 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+      <GlassView style={styles.section}>
+        <View style={[styles.header, isRTL ? styles.headerRTL : styles.headerLTR]}>
           {isRTL ? (
             <>
-              <View className="flex-1">
-                <Text className="text-[13px] font-semibold text-white/60 uppercase tracking-wide text-right">
+              <View style={styles.headerContent}>
+                <Text style={[styles.headerTitle, styles.textRight]}>
                   {t('profile.ai.privacy', 'Privacy & Data')}
                 </Text>
-                <Text className="text-[13px] text-white/60 mt-0.5 text-right">
+                <Text style={[styles.headerDescription, styles.textRight]}>
                   {t('profile.ai.privacyDesc', 'Your data is encrypted and secure')}
                 </Text>
               </View>
-              <View className="w-12 h-12 rounded-lg bg-[#22C55E]/15 justify-center items-center">
+              <View style={[styles.iconContainer, styles.iconGreen]}>
                 <Shield size={24} color="#22C55E" />
               </View>
             </>
           ) : (
             <>
-              <View className="w-12 h-12 rounded-lg bg-[#22C55E]/15 justify-center items-center">
+              <View style={[styles.iconContainer, styles.iconGreen]}>
                 <Shield size={24} color="#22C55E" />
               </View>
-              <View className="flex-1">
-                <Text className="text-[13px] font-semibold text-white/60 uppercase tracking-wide text-left">
+              <View style={styles.headerContent}>
+                <Text style={[styles.headerTitle, styles.textLeft]}>
                   {t('profile.ai.privacy', 'Privacy & Data')}
                 </Text>
-                <Text className="text-[13px] text-white/60 mt-0.5 text-left">
+                <Text style={[styles.headerDescription, styles.textLeft]}>
                   {t('profile.ai.privacyDesc', 'Your data is encrypted and secure')}
                 </Text>
               </View>
@@ -213,3 +214,61 @@ export function AIVoiceTab({ isRTL }: AIVoiceTabProps) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    gap: spacing.lg,
+  },
+  section: {
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  header: {
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  headerLTR: {
+    flexDirection: 'row',
+  },
+  headerRTL: {
+    flexDirection: 'row-reverse',
+  },
+  headerContent: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.6)',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  headerDescription: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: 2,
+  },
+  textLeft: {
+    textAlign: 'left',
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconPurple: {
+    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+  },
+  iconPurpleDark: {
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+  },
+  iconGreen: {
+    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+  },
+});

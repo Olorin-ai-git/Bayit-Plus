@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions } from 'react-native';
+import { View, Text, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
 import { Play, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -97,41 +97,48 @@ function JudaismCard({ item }: { item: JudaismItem }) {
       <Pressable
         onHoverIn={() => setIsHovered(true)}
         onHoverOut={() => setIsHovered(false)}
-        style={{ width: '100%' }}
+        style={styles.cardPressable}
       >
-        <GlassCard className={`w-full p-0 overflow-hidden ${isHovered ? '-translate-y-1' : ''}`}
-          style={isHovered ? {
-            // @ts-ignore - web-specific property
-            boxShadow: `0 8px 32px rgba(107, 33, 168, 0.3)`,
-          } : undefined}>
+        <GlassCard
+          style={[
+            styles.cardContainer,
+            isHovered && {
+              // @ts-ignore - web-specific property
+              boxShadow: `0 8px 32px rgba(107, 33, 168, 0.3)`,
+              transform: [{ translateY: -4 }],
+            }
+          ]}
+        >
           {/* Thumbnail Container - portrait aspect ratio like carousel cards */}
-          <View className="relative aspect-[2/3] overflow-hidden rounded-t-lg bg-black">
+          <View style={styles.thumbnailContainer}>
             {thumbnailUrl ? (
               <Image
                 source={{ uri: thumbnailUrl }}
-                className="w-full h-full"
+                style={styles.thumbnailImage}
                 resizeMode="cover"
                 onError={handleImageError}
               />
             ) : (
-              <View className="w-full h-full bg-glass justify-center items-center">
-                <Text style={{ fontSize: 48 }}>{categoryIcon}</Text>
+              <View style={styles.thumbnailPlaceholder}>
+                <Text style={styles.categoryIconLarge}>{categoryIcon}</Text>
               </View>
             )}
 
             {/* Play Overlay - matches carousel style */}
             {isHovered && (
-              <View className="absolute inset-0 justify-center items-center">
+              <View style={styles.playOverlay}>
                 <LinearGradient
                   colors={['transparent', 'rgba(10, 10, 20, 0.8)']}
-                  className="absolute inset-0"
+                  style={StyleSheet.absoluteFill}
                 />
-                <View className="w-14 h-14 rounded-full bg-white/15 backdrop-blur-lg justify-center items-center"
-                  style={{
+                <View style={[
+                  styles.playButton,
+                  {
                     // @ts-ignore - web-specific property
                     backdropFilter: 'blur(8px)',
                     boxShadow: `0 0 20px ${colors.primary}`,
-                  }}>
+                  }
+                ]}>
                   <Play size={24} color={colors.text} fill={colors.text} />
                 </View>
               </View>
@@ -139,38 +146,44 @@ function JudaismCard({ item }: { item: JudaismItem }) {
 
             {/* Duration Badge - dark glass style like carousel cards */}
             {item.duration && (
-              <View className={`absolute bottom-2 ${isRTL ? 'right-2' : 'left-2'} bg-black/70 px-2 py-0.5 rounded`}>
-                <Text className="text-xs text-white font-medium">{item.duration}</Text>
+              <View style={[styles.durationBadge, isRTL ? styles.badgeRight : styles.badgeLeft]}>
+                <Text style={styles.durationText}>{item.duration}</Text>
               </View>
             )}
 
             {/* Category Badge - top corner */}
-            <View className={`absolute top-2 ${isRTL ? 'right-2' : 'left-2'} bg-black/60 backdrop-blur-lg px-2 py-1 rounded-full`}
-              style={{
+            <View style={[
+              styles.categoryBadge,
+              isRTL ? styles.badgeRight : styles.badgeLeft,
+              {
                 // @ts-ignore - web-specific property
                 backdropFilter: 'blur(8px)',
-              }}>
-              <Text style={{ fontSize: 14 }}>{categoryIcon}</Text>
+              }
+            ]}>
+              <Text style={styles.categoryIconSmall}>{categoryIcon}</Text>
             </View>
           </View>
 
           {/* Content Info */}
-          <View className="p-3">
+          <View style={styles.contentInfo}>
             <Text
-              className={`text-sm font-medium text-white mb-1 ${isHovered ? 'text-primary' : ''}`}
-              style={{ textAlign }}
+              style={[
+                styles.contentTitle,
+                { textAlign },
+                isHovered && styles.contentTitleHovered
+              ]}
               numberOfLines={2}
             >
               {getLocalizedText('title')}
             </Text>
             {item.rabbi && (
-              <View className="flex-row items-center gap-1 mt-0.5">
+              <View style={styles.rabbiContainer}>
                 <User size={14} color={colors.primary} />
-                <Text className="text-xs text-gray-400">{getLocalizedText('rabbi')}</Text>
+                <Text style={styles.rabbiText}>{getLocalizedText('rabbi')}</Text>
               </View>
             )}
             {item.description && (
-              <Text className="text-xs text-gray-500 mt-1" numberOfLines={2}>
+              <Text style={styles.descriptionText} numberOfLines={2}>
                 {getLocalizedText('description')}
               </Text>
             )}
@@ -239,18 +252,18 @@ export default function JudaismPage() {
     switch (selectedCategory) {
       case 'news':
         return (
-          <View className="gap-4">
+          <View style={styles.specialViewContainer}>
             <JewishNewsFeed limit={30} />
           </View>
         );
       case 'calendar':
         return (
-          <View className="gap-4">
-            <View className="flex-row gap-4 flex-wrap">
-              <View className="flex-1 min-w-80">
+          <View style={styles.specialViewContainer}>
+            <View style={styles.calendarRow}>
+              <View style={styles.calendarWidget}>
                 <JewishCalendarWidget />
               </View>
-              <View className="flex-1 min-w-80">
+              <View style={styles.calendarWidget}>
                 <ShabbatTimesCard />
               </View>
             </View>
@@ -258,7 +271,7 @@ export default function JudaismPage() {
         );
       case 'community':
         return (
-          <View className="gap-4">
+          <View style={styles.specialViewContainer}>
             <CommunityDirectory />
           </View>
         );
@@ -272,7 +285,7 @@ export default function JudaismPage() {
   // Default view when "All" is selected and no content - show dashboard
   const renderDashboardView = () => {
     return (
-      <View className="gap-6">
+      <View style={styles.dashboardContainer}>
         {/* Shabbat Eve Section - prominent at top */}
         <ShabbatEveSection />
 
@@ -287,18 +300,18 @@ export default function JudaismPage() {
         </View>
 
         {/* Calendar and Shabbat Times Row */}
-        <View className="flex-row gap-4 flex-wrap">
-          <View className="flex-1 min-w-80">
+        <View style={styles.calendarRow}>
+          <View style={styles.calendarWidget}>
             <JewishCalendarWidget />
           </View>
-          <View className="flex-1 min-w-80">
+          <View style={styles.calendarWidget}>
             <ShabbatTimesCard />
           </View>
         </View>
 
         {/* News Section */}
         <View>
-          <Text className="text-xl font-bold mb-4" style={{ color: colors.text, textAlign }}>
+          <Text style={[styles.sectionTitle, { textAlign }]}>
             📰 {t('judaism.categories.news', 'Jewish News')}
           </Text>
           <JewishNewsFeed limit={10} />
@@ -306,7 +319,7 @@ export default function JudaismPage() {
 
         {/* Community Section */}
         <View>
-          <Text className="text-xl font-bold mb-4" style={{ color: colors.text, textAlign }}>
+          <Text style={[styles.sectionTitle, { textAlign }]}>
             🏛️ {t('judaism.categories.community', 'Community')}
           </Text>
           <CommunityDirectory />
@@ -316,18 +329,18 @@ export default function JudaismPage() {
   };
 
   return (
-    <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 40 }}>
-      <View className="flex-1 px-4 py-6 max-w-7xl mx-auto w-full">
+    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+      <View style={styles.container}>
         {/* Header */}
-        <View className="flex-row items-center gap-3 mb-6" style={{ flexDirection, justifyContent }}>
-          <View className="w-16 h-16 rounded-full items-center justify-center" style={{ backgroundColor: colors.glassLight }}>
-            <Text className="text-4xl">✡️</Text>
+        <View style={[styles.header, { flexDirection, justifyContent }]}>
+          <View style={[styles.iconContainer, { backgroundColor: colors.glassLight }]}>
+            <Text style={styles.headerIcon}>✡️</Text>
           </View>
           <View>
-            <Text className="text-3xl font-bold" style={{ color: colors.text, textAlign }}>
+            <Text style={[styles.headerTitle, { textAlign }]}>
               {t('judaism.title', 'Judaism')}
             </Text>
-            <Text className="text-sm" style={{ color: colors.textSecondary, textAlign }}>
+            <Text style={[styles.headerSubtitle, { textAlign }]}>
               {content.length > 0 ? `${content.length} ${t('judaism.items', 'items')}` : t('judaism.dashboard', 'Your Jewish Dashboard')}
             </Text>
           </View>
@@ -338,8 +351,8 @@ export default function JudaismPage() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            className="mb-6"
-            contentContainerStyle={{ gap: spacing.sm, paddingVertical: spacing.sm }}
+            style={styles.categoriesScroll}
+            contentContainerStyle={styles.categoriesContent}
           >
             {categories.map((category) => (
               <GlassCategoryPill
@@ -357,7 +370,7 @@ export default function JudaismPage() {
         {showSpecialView ? (
           renderSpecialView()
         ) : isLoading ? (
-          <View className="flex-1 items-center justify-center py-16">
+          <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.primary} />
           </View>
         ) : content.length > 0 ? (
@@ -366,19 +379,22 @@ export default function JudaismPage() {
             <ShabbatEveSection />
 
             {/* Jerusalem and Tel Aviv Connection Sections */}
-            <View className="gap-4 my-4">
+            <View style={styles.connectionsContainer}>
               <JerusalemRow />
               <TelAvivRow />
             </View>
 
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginTop: spacing.md }}>
+            <View style={styles.contentGrid}>
               {content.map((item) => (
                 <View
                   key={item.id}
-                  style={{
-                    width: `calc(${100 / numColumns}% - ${(numColumns - 1) * spacing.md / numColumns}px)`,
-                    minWidth: 200,
-                  }}
+                  style={[
+                    styles.gridItem,
+                    {
+                      width: `calc(${100 / numColumns}% - ${(numColumns - 1) * spacing.md / numColumns}px)`,
+                      minWidth: 200,
+                    }
+                  ]}
                 >
                   <JudaismCard item={item} />
                 </View>
@@ -393,3 +409,199 @@ export default function JudaismPage() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  // Card Component Styles
+  cardPressable: {
+    width: '100%',
+  },
+  cardContainer: {
+    width: '100%',
+    padding: 0,
+    overflow: 'hidden',
+  },
+  thumbnailContainer: {
+    position: 'relative',
+    aspectRatio: 2 / 3,
+    overflow: 'hidden',
+    borderTopLeftRadius: borderRadius.lg,
+    borderTopRightRadius: borderRadius.lg,
+    backgroundColor: colors.background,
+  },
+  thumbnailImage: {
+    width: '100%',
+    height: '100%',
+  },
+  thumbnailPlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: colors.glassLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  categoryIconLarge: {
+    fontSize: 48,
+  },
+  playOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  playButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  durationBadge: {
+    position: 'absolute',
+    bottom: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+  },
+  badgeLeft: {
+    left: 8,
+  },
+  badgeRight: {
+    right: 8,
+  },
+  durationText: {
+    fontSize: 12,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  categoryBadge: {
+    position: 'absolute',
+    top: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  categoryIconSmall: {
+    fontSize: 14,
+  },
+  contentInfo: {
+    padding: 12,
+  },
+  contentTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+    marginBottom: 4,
+  },
+  contentTitleHovered: {
+    color: colors.primary,
+  },
+  rabbiContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 2,
+  },
+  rabbiText: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+  descriptionText: {
+    fontSize: 12,
+    color: colors.textTertiary,
+    marginTop: 4,
+  },
+
+  // Main Page Styles
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 40,
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.lg,
+    maxWidth: 1280,
+    marginHorizontal: 'auto',
+    width: '100%',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: spacing.lg,
+  },
+  iconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerIcon: {
+    fontSize: 36,
+  },
+  headerTitle: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  categoriesScroll: {
+    marginBottom: spacing.lg,
+  },
+  categoriesContent: {
+    gap: spacing.sm,
+    paddingVertical: spacing.sm,
+  },
+  specialViewContainer: {
+    gap: spacing.md,
+  },
+  calendarRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    flexWrap: 'wrap',
+  },
+  calendarWidget: {
+    flex: 1,
+    minWidth: 320,
+  },
+  dashboardContainer: {
+    gap: spacing.lg,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 64,
+  },
+  connectionsContainer: {
+    gap: spacing.md,
+    marginVertical: spacing.md,
+  },
+  contentGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+    marginTop: spacing.md,
+  },
+  gridItem: {
+    // Width set dynamically based on numColumns
+  },
+});

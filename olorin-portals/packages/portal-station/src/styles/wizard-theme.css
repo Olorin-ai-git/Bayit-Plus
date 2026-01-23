@@ -1,0 +1,622 @@
+/**
+ * Wizard Theme - Enhanced Glassmorphic Design System
+ * Feature: 027-olorin-wizard-redesign
+ *
+ * Deep purple/black theme with neon glow effects inspired by the wizard mascot.
+ * All classes use Tailwind's @apply directive for consistency with wizard color tokens.
+ */
+
+/* ============================================================================
+ * BASE GLASSMORPHIC STYLES - WIZARD THEME
+ * ============================================================================ */
+
+/**
+ * Enhanced glassmorphic card with wizard theme
+ * Deep purple semi-transparent background with neon border glow
+ */
+.glass-card-wizard {
+  @apply bg-wizard-bg-card backdrop-blur-lg;
+  @apply border-2 border-wizard-border-primary;
+  @apply rounded-xl shadow-glass;
+  @apply transition-all duration-300;
+}
+
+/**
+ * Interactive glassmorphic card with hover glow effect
+ */
+.glass-card-wizard-interactive {
+  @apply glass-card-wizard;
+  @apply hover:border-wizard-border-glow hover:shadow-glow-purple;
+  @apply hover:scale-105 hover:-translate-y-1;
+  @apply cursor-pointer;
+}
+
+/**
+ * Hero glassmorphic card with enhanced glow
+ */
+.glass-card-hero {
+  background: rgba(45, 27, 78, 0.4);
+  backdrop-filter: blur(24px);
+  border: 2px solid rgba(168, 85, 247, 0.3);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5),
+              0 0 30px rgba(168, 85, 247, 0.15);
+  @apply rounded-2xl transition-all duration-500;
+}
+
+.glass-card-hero:hover {
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5),
+              0 0 50px rgba(168, 85, 247, 0.3);
+}
+
+/* ============================================================================
+ * NEON GLOW EFFECTS
+ * ============================================================================ */
+
+/**
+ * Portal-specific neon glow effects
+ * Each portal has its own distinct purple shade for brand identity
+ */
+.glow-main {
+  @apply shadow-glow-main;
+}
+
+.glow-main:hover {
+  @apply shadow-glow-main-lg;
+}
+
+.glow-fraud {
+  @apply shadow-glow-fraud;
+}
+
+.glow-fraud:hover {
+  @apply shadow-glow-fraud-lg;
+}
+
+.glow-streaming {
+  @apply shadow-glow-streaming;
+}
+
+.glow-streaming:hover {
+  @apply shadow-glow-streaming-lg;
+}
+
+.glow-radio {
+  @apply shadow-glow-radio;
+}
+
+.glow-radio:hover {
+  @apply shadow-glow-radio-lg;
+}
+
+.glow-omen {
+  @apply shadow-glow-omen;
+}
+
+.glow-omen:hover {
+  @apply shadow-glow-omen-lg;
+}
+
+/**
+ * Legacy purple glow effect (backward compatibility)
+ * Alias for .glow-main
+ */
+.glow-purple {
+  @apply shadow-glow-main;
+}
+
+.glow-purple:hover {
+  @apply shadow-glow-main-lg;
+}
+
+
+/**
+ * Icon glow effect using drop-shadow filter
+ */
+.glow-icon {
+  filter: drop-shadow(0 0 10px currentColor);
+  @apply transition-all duration-300;
+}
+
+.glow-icon:hover {
+  filter: drop-shadow(0 0 20px currentColor);
+}
+
+/**
+ * Pulsing glow animation
+ */
+.glow-pulse {
+  @apply animate-pulse-glow;
+}
+
+/* ============================================================================
+ * WIZARD BRAND STYLES
+ * ============================================================================ */
+
+/**
+ * Wizard gradient text effect
+ * Purple-to-pink gradient for headings and highlights
+ */
+.wizard-text {
+  @apply bg-wizard-gradient bg-clip-text text-transparent;
+  @apply font-bold;
+}
+
+/**
+ * Wizard text with glow
+ */
+.wizard-text-glow {
+  @apply wizard-text;
+  text-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+}
+
+/**
+ * Wizard brand button - Semi-transparent glassmorphic with dark purple border
+ */
+.wizard-button {
+  background: rgba(45, 27, 78, 0.4);
+  backdrop-filter: blur(12px);
+  @apply text-white font-semibold;
+  @apply px-6 py-3 rounded-lg;
+  border: 2px solid rgba(168, 85, 247, 0.6);
+  @apply shadow-glow-purple hover:shadow-glow-purple-lg;
+  @apply transform transition-all duration-300;
+  @apply hover:scale-105;
+}
+
+.wizard-button:hover {
+  background: rgba(45, 27, 78, 0.6);
+  border-color: rgba(168, 85, 247, 0.9);
+}
+
+.wizard-button:active {
+  @apply scale-95;
+}
+
+/* ============================================================================
+ * TECH CIRCUIT BACKGROUND PATTERNS
+ * ============================================================================ */
+
+/**
+ * Circuit line background pattern
+ */
+.tech-circuit-bg {
+  background-image:
+    linear-gradient(90deg, rgba(168, 85, 247, 0.1) 1px, transparent 1px),
+    linear-gradient(rgba(168, 85, 247, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  @apply relative;
+}
+
+.tech-circuit-bg::before {
+  content: '';
+  @apply absolute inset-0;
+  background: radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.1) 0%, transparent 50%);
+}
+
+/**
+ * Wizard gradient background for hero sections
+ */
+.wizard-gradient-bg {
+  @apply bg-hero-gradient;
+  @apply relative overflow-hidden;
+}
+
+/**
+ * Floating particles effect overlay
+ */
+.wizard-particles {
+  @apply absolute inset-0 pointer-events-none;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, rgba(168, 85, 247, 0.3), transparent),
+    radial-gradient(2px 2px at 60% 70%, rgba(217, 70, 239, 0.3), transparent),
+    radial-gradient(1px 1px at 50% 50%, rgba(34, 211, 238, 0.2), transparent),
+    radial-gradient(2px 2px at 80% 10%, rgba(168, 85, 247, 0.3), transparent),
+    radial-gradient(1px 1px at 90% 60%, rgba(217, 70, 239, 0.2), transparent);
+  background-size: 200% 200%;
+  animation: particleFloat 20s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+  0%, 100% { background-position: 0% 0%; }
+  25% { background-position: 100% 0%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+}
+
+/* ============================================================================
+ * MODAL STYLES - WIZARD THEME
+ * ============================================================================ */
+
+/**
+ * Glassmorphic modal overlay with deep purple tint
+ */
+.glass-modal-overlay-wizard {
+  @apply fixed inset-0 bg-wizard-bg-deep/80 backdrop-blur-md;
+  @apply transition-opacity duration-300;
+  @apply z-40;
+}
+
+/**
+ * Glassmorphic modal content
+ */
+.glass-modal-content-wizard {
+  @apply glass-card-wizard;
+  @apply max-w-2xl mx-auto my-8 p-8;
+  @apply shadow-glass-lg;
+}
+
+/* ============================================================================
+ * HEADER & FOOTER - WIZARD THEME
+ * ============================================================================ */
+
+/**
+ * Glassmorphic sticky header
+ */
+.glass-header-wizard {
+  @apply sticky top-0 bg-wizard-bg-primary/90 backdrop-blur-xl;
+  @apply border-b-2 border-wizard-border-secondary;
+  @apply shadow-glass;
+  @apply z-50 transition-all duration-200;
+}
+
+/**
+ * Glassmorphic footer
+ */
+.glass-footer-wizard {
+  @apply bg-wizard-bg-primary border-t-2 border-wizard-border-secondary;
+  @apply shadow-glass;
+}
+
+/* ============================================================================
+ * PANEL & SECTION STYLES
+ * ============================================================================ */
+
+/**
+ * Wizard panel with accent border and glow
+ */
+.wizard-panel {
+  @apply bg-wizard-bg-card backdrop-blur-lg rounded-xl;
+  @apply border-2 border-wizard-accent-purple/40;
+  @apply shadow-glass;
+  @apply hover:border-wizard-accent-purple/60 hover:shadow-glow-purple;
+  @apply transition-all duration-300;
+}
+
+/**
+ * Feature card with icon glow
+ * NOTE: Add 'group' class directly in JSX, not via @apply
+ */
+.wizard-feature-card {
+  @apply wizard-panel p-6;
+}
+
+.wizard-feature-card .wizard-icon {
+  @apply glow-icon;
+  @apply transition-transform duration-300;
+}
+
+/* ============================================================================
+ * FORM ELEMENTS - WIZARD THEME
+ * ============================================================================ */
+
+/**
+ * Wizard input field
+ */
+.wizard-input {
+  @apply bg-wizard-bg-secondary/50 backdrop-blur-sm;
+  @apply border-2 border-wizard-border-secondary;
+  @apply text-wizard-text-primary placeholder-wizard-text-muted;
+  @apply px-4 py-3 rounded-lg;
+  @apply focus:border-wizard-accent-purple focus:shadow-glow-purple focus:outline-none;
+  @apply transition-all duration-200;
+}
+
+/**
+ * Wizard textarea
+ */
+.wizard-textarea {
+  @apply wizard-input;
+  @apply resize-none;
+}
+
+/**
+ * Wizard select
+ */
+.wizard-select {
+  @apply wizard-input;
+  @apply cursor-pointer;
+}
+
+/* ============================================================================
+ * ANIMATION UTILITIES
+ * ============================================================================ */
+
+/**
+ * Floating animation
+ * NOTE: Use animate-float class directly (defined in tailwind.config.js)
+ */
+
+/**
+ * Shimmer loading effect
+ */
+.loading-shimmer-wizard {
+  background: linear-gradient(
+    90deg,
+    rgba(45, 27, 78, 0.4) 0%,
+    rgba(168, 85, 247, 0.3) 50%,
+    rgba(45, 27, 78, 0.4) 100%
+  );
+  background-size: 200% 100%;
+  @apply animate-shimmer;
+}
+
+/**
+ * Delayed animation classes
+ */
+.animate-delay-100 { animation-delay: 0.1s; }
+.animate-delay-200 { animation-delay: 0.2s; }
+.animate-delay-300 { animation-delay: 0.3s; }
+.animate-delay-400 { animation-delay: 0.4s; }
+.animate-delay-500 { animation-delay: 0.5s; }
+
+/* ============================================================================
+ * HOVER EFFECTS
+ * ============================================================================ */
+
+/**
+ * Hover lift effect
+ */
+.hover-lift {
+  @apply transition-transform duration-300;
+}
+
+.hover-lift:hover {
+  @apply -translate-y-2;
+}
+
+/**
+ * Hover glow effect
+ */
+.hover-glow {
+  @apply transition-shadow duration-300;
+}
+
+.hover-glow:hover {
+  @apply shadow-glow-purple;
+}
+
+/**
+ * Hover scale effect
+ */
+.hover-scale {
+  @apply transition-transform duration-300;
+}
+
+.hover-scale:hover {
+  @apply scale-110;
+}
+
+/**
+ * Hover brighten effect
+ */
+.hover-brighten {
+  @apply transition-all duration-300;
+}
+
+.hover-brighten:hover {
+  filter: brightness(1.2);
+}
+
+/* ============================================================================
+ * MOBILE OPTIMIZATIONS
+ * ============================================================================ */
+
+/**
+ * Reduce backdrop blur on mobile for performance (60fps scrolling)
+ */
+@media (max-width: 768px) {
+  .glass-card-wizard,
+  .glass-card-wizard-interactive,
+  .wizard-panel {
+    @apply backdrop-blur-md; /* 12px instead of 16px+ */
+  }
+
+  .glass-header-wizard {
+    @apply backdrop-blur-lg; /* 16px instead of 24px */
+  }
+
+  .glass-modal-overlay-wizard {
+    @apply backdrop-blur-sm; /* 4px for minimal mobile performance impact */
+  }
+
+  /* Reduce animation complexity on mobile */
+  .wizard-particles {
+    opacity: 0.3;
+    animation-duration: 30s; /* Slower animation */
+  }
+
+  /* Disable 3D transforms on mobile */
+  .hover-lift:hover,
+  .glass-card-wizard-interactive:hover {
+    transform: none;
+  }
+}
+
+/* ============================================================================
+ * BROWSER FALLBACK (NO BACKDROP-FILTER SUPPORT)
+ * ============================================================================ */
+
+/**
+ * Graceful degradation for browsers without backdrop-filter support
+ * Falls back to solid semi-transparent backgrounds
+ */
+@supports not (backdrop-filter: blur(12px)) {
+  .glass-card-wizard,
+  .glass-card-wizard-interactive {
+    background: rgba(45, 27, 78, 0.95);
+  }
+
+  .glass-card-hero {
+    background: rgba(45, 27, 78, 0.9);
+  }
+
+  .glass-header-wizard {
+    background: rgba(26, 0, 51, 0.95);
+  }
+
+  .wizard-panel {
+    background: rgba(45, 27, 78, 0.95);
+  }
+
+  .wizard-input,
+  .wizard-textarea,
+  .wizard-select {
+    background: rgba(45, 27, 78, 0.7);
+  }
+}
+
+/* ============================================================================
+ * ACCESSIBILITY ENHANCEMENTS
+ * ============================================================================ */
+
+/**
+ * Reduced Motion Support
+ * Respects user's prefers-reduced-motion setting
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .wizard-particles {
+    animation: none;
+    opacity: 0.5;
+  }
+
+  .glow-pulse {
+    animation: none;
+  }
+}
+
+/**
+ * Focus visible styles for keyboard navigation
+ */
+.wizard-button:focus-visible,
+.wizard-input:focus-visible,
+.wizard-textarea:focus-visible,
+.wizard-select:focus-visible {
+  @apply outline-2 outline-offset-2 outline-wizard-accent-purple;
+}
+
+/* ============================================================================
+ * UTILITY CLASSES
+ * ============================================================================ */
+
+/**
+ * Text shadow for better readability on complex backgrounds
+ */
+.text-shadow-wizard {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/**
+ * Gradient border effect
+ */
+.border-gradient-wizard {
+  border-image: linear-gradient(135deg, #a855f7, #d946ef) 1;
+}
+
+/**
+ * GPU acceleration hint for smooth animations
+ */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* ============================================================================
+ * SPLASH SCREEN ANIMATIONS
+ * ============================================================================ */
+
+/**
+ * Animated background particles for splash screen
+ */
+.wizard-particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.wizard-particles::before,
+.wizard-particles::after {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
+  animation: particleFloat 8s ease-in-out infinite;
+}
+
+.wizard-particles::before {
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.wizard-particles::after {
+  bottom: 10%;
+  right: 10%;
+  animation-delay: 4s;
+}
+
+/**
+ * Fade in up animation for splash content
+ */
+.animate-fade-in-up {
+  animation: fadeInUp 1s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/**
+ * Smooth fade transitions
+ */
+.transition-opacity {
+  transition-property: opacity;
+}
+
+.duration-800 {
+  transition-duration: 800ms;
+}
+
+/**
+ * Bounce animation for loading dots
+ */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 0.6s ease-in-out infinite;
+}

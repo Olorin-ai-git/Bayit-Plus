@@ -1,7 +1,7 @@
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 
 from app.models.content import Podcast, PodcastEpisode
 from app.services.podcast_sync import sync_all_podcasts
@@ -250,23 +250,50 @@ async def get_episodes(
 
 
 @router.get("/{show_id}/episodes/{episode_id}")
-async def get_episode(show_id: str, episode_id: str):
-    """Get single episode details."""
+async def get_episode(show_id: str, episode_id: str, request: Request):
+    """Get single episode details with translation data."""
     try:
         episode = await PodcastEpisode.get(episode_id)
         if not episode or episode.podcast_id != show_id:
             raise HTTPException(status_code=404, detail="Episode not found")
 
+        # Get user's preferred language from Accept-Language header
+        accept_language = request.headers.get("Accept-Language", "he")
+        preferred_lang = accept_language.split(",")[0].split("-")[0]
+
+        # Determine which audio URL to use
+        audio_url = episode.audio_url  # Default to original
+        if (
+            preferred_lang in episode.available_languages
+            and preferred_lang != episode.original_language
+        ):
+            translation = episode.translations.get(preferred_lang)
+            if translation:
+                audio_url = translation.audio_url
+
         return {
             "id": str(episode.id),
             "title": episode.title,
             "description": episode.description,
-            "audioUrl": episode.audio_url,
+            "audioUrl": audio_url,
+            "originalAudioUrl": episode.audio_url,
             "duration": episode.duration,
             "episodeNumber": episode.episode_number,
             "seasonNumber": episode.season_number,
             "publishedAt": episode.published_at.isoformat(),
             "thumbnail": episode.thumbnail,
+            "availableLanguages": episode.available_languages,
+            "originalLanguage": episode.original_language,
+            "translations": {
+                lang: {
+                    "audioUrl": trans.audio_url,
+                    "transcript": trans.transcript,
+                    "translatedText": trans.translated_text,
+                    "duration": trans.duration,
+                }
+                for lang, trans in episode.translations.items()
+            },
+            "translationStatus": episode.translation_status,
         }
     except HTTPException:
         raise

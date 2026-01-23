@@ -213,12 +213,12 @@
     "epg": "TV Guide",
     "radio": "Radio",
     "podcasts": "Podcasts",
-    "flows": "Flows",
     "judaism": "Judaism",
     "children": "Kids",
     "profile": "Profile",
     "search": "Search",
     "settings": "Settings",
+    "support": "Support",
     "favorites": "Favorites",
     "watchlist": "Watchlist",
     "downloads": "Downloads",
@@ -968,6 +968,23 @@
       "requiredMessage": "requires a paid subscription",
       "upgradeInfo": "Upgrade your subscription to access premium content",
       "upgrade": "Upgrade Now"
+    },
+    "chapters": "Chapters",
+    "sceneSearch": {
+      "title": "Search Scenes",
+      "placeholder": "Search for a scene...",
+      "inputLabel": "Scene search input",
+      "searching": "Searching...",
+      "noResults": "No scenes found",
+      "hint": "Type at least 2 characters to search",
+      "voiceReceived": "Searching for: {{query}}",
+      "seekingTo": "Jumping to {{time}}",
+      "previous": "Previous",
+      "next": "Next",
+      "result": {
+        "jumpTo": "Jump to {{title}} at {{time}}",
+        "hint": "Press to jump to this scene"
+      }
     }
   },
   "empty": {

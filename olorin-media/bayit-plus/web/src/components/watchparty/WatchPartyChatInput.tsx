@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { View, Text, Pressable } from 'react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Send, Smile } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
@@ -57,7 +57,8 @@ export default function WatchPartyChatInput({ onSend, disabled }: WatchPartyChat
       <View className="flex-row items-center gap-3">
         <Pressable
           onPress={() => setShowEmojis(!showEmojis)}
-          className={`w-9 h-9 items-center justify-center rounded-md ${showEmojis ? 'bg-white/10' : ''} hover:bg-white/5`}
+          className="w-9 h-9 items-center justify-center rounded-md"
+          style={[showEmojis && styles.emojiButtonActive]}
         >
           <Smile size={18} color={colors.textSecondary} />
         </Pressable>
@@ -77,9 +78,10 @@ export default function WatchPartyChatInput({ onSend, disabled }: WatchPartyChat
         <Pressable
           onPress={handleSubmit}
           disabled={!message.trim() || disabled}
-          className={`w-9 h-9 items-center justify-center rounded-md ${
-            !message.trim() || disabled ? 'opacity-50 bg-white/10' : 'bg-purple-600'
-          } ${message.trim() && !disabled ? 'hover:shadow-[0_0_8px_rgba(168,85,247,0.5)]' : ''}`}
+          className="w-9 h-9 items-center justify-center rounded-md"
+          style={[
+            !message.trim() || disabled ? styles.sendButtonDisabled : styles.sendButtonActive,
+          ]}
         >
           <Send size={16} color={(!message.trim() || disabled) ? colors.textMuted : colors.background} />
         </Pressable>
@@ -87,3 +89,16 @@ export default function WatchPartyChatInput({ onSend, disabled }: WatchPartyChat
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  emojiButtonActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  sendButtonDisabled: {
+    opacity: 0.5,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  sendButtonActive: {
+    backgroundColor: '#9333ea',
+  },
+})

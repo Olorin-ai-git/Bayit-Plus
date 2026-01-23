@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { View, Text, FlatList, Pressable, Image, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, Image, useWindowDimensions } from 'react-native';
 import { Link } from 'react-router-dom';
 import { Star, Play, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { favoritesService } from '@/services/api';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { GlassCard, GlassView } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
@@ -51,44 +51,44 @@ function FavoriteCard({ item, onRemove }: { item: FavoriteItem; onRemove: (id: s
   const route = `/${TYPE_ROUTES[item.type] || 'vod'}/${item.id}`;
 
   return (
-    <Link to={route} style={{ textDecoration: 'none', flex: 1 }}>
+    <Link to={route} style={styles.cardLinkWrapper}>
       <Pressable
         onHoverIn={() => setIsHovered(true)}
         onHoverOut={() => setIsHovered(false)}
       >
-        <GlassCard className={`p-0 mx-1 relative ${isHovered ? 'scale-102' : ''}`}>
-          <View className="aspect-video relative">
+        <GlassCard style={[styles.cardContainer, isHovered && styles.cardHovered]}>
+          <View style={styles.cardImageContainer}>
             {item.thumbnail ? (
               <Image
                 source={{ uri: item.thumbnail }}
-                className="w-full h-full"
+                style={styles.cardImage}
                 resizeMode="cover"
               />
             ) : (
-              <View className="w-full h-full bg-white/5 justify-center items-center">
-                <Text className="text-3xl">{TYPE_ICONS[item.type] || '⭐'}</Text>
+              <View style={styles.placeholderContainer}>
+                <Text style={styles.placeholderIcon}>{TYPE_ICONS[item.type] || '⭐'}</Text>
               </View>
             )}
 
             {/* Type Badge */}
-            <View className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded-lg">
-              <Text className="text-sm">{TYPE_ICONS[item.type]}</Text>
+            <View style={styles.typeBadge}>
+              <Text style={styles.typeBadgeText}>{TYPE_ICONS[item.type]}</Text>
             </View>
 
             {/* Hover Overlay */}
             {isHovered && (
-              <View className="absolute inset-0 bg-black/50 justify-center items-center">
-                <View className="w-12 h-12 rounded-full bg-purple-600 justify-center items-center">
+              <View style={styles.hoverOverlay}>
+                <View style={styles.playButton}>
                   <Play size={24} color={colors.background} fill={colors.background} />
                 </View>
               </View>
             )}
           </View>
 
-          <View className="p-2">
-            <Text className="text-base font-semibold text-white" numberOfLines={1}>{getLocalizedText('title')}</Text>
+          <View style={styles.cardContent}>
+            <Text style={styles.cardTitle} numberOfLines={1}>{getLocalizedText('title')}</Text>
             {item.subtitle && (
-              <Text className="text-sm text-white/60 mt-1" numberOfLines={1}>{getLocalizedText('subtitle')}</Text>
+              <Text style={styles.cardSubtitle} numberOfLines={1}>{getLocalizedText('subtitle')}</Text>
             )}
           </View>
 
@@ -99,7 +99,7 @@ function FavoriteCard({ item, onRemove }: { item: FavoriteItem; onRemove: (id: s
                 e.stopPropagation();
                 onRemove(item.id);
               }}
-              className="absolute top-2 left-2 w-8 h-8 rounded-full bg-red-500/80 justify-center items-center"
+              style={styles.removeButton}
             >
               <X size={16} color={colors.text} />
             </Pressable>
@@ -145,23 +145,23 @@ export default function FavoritesPage() {
   };
 
   return (
-    <View className="flex-1 px-4 py-6 max-w-[1400px] mx-auto w-full">
+    <View style={styles.container}>
       {/* Header */}
-      <View className={`flex-row items-center gap-2 mb-6 ${isRTL ? 'flex-row-reverse justify-end' : ''}`} style={{ flexDirection, justifyContent }}>
-        <View className="w-14 h-14 rounded-full bg-yellow-500/20 justify-center items-center">
+      <View style={[styles.header, { flexDirection, justifyContent }]}>
+        <View style={styles.headerIcon}>
           <Star size={28} color={colors.warning} />
         </View>
         <View>
-          <Text className="text-3xl font-bold text-white" style={{ textAlign }}>{t('favorites.title')}</Text>
-          <Text className="text-sm text-white/60" style={{ textAlign }}>{favorites.length} {t('favorites.items')}</Text>
+          <Text style={[styles.headerTitle, { textAlign }]}>{t('favorites.title')}</Text>
+          <Text style={[styles.headerSubtitle, { textAlign }]}>{favorites.length} {t('favorites.items')}</Text>
         </View>
       </View>
 
       {/* Loading State */}
       {loading ? (
-        <View className="flex-row flex-wrap gap-4">
+        <View style={styles.loadingGrid}>
           {[...Array(12)].map((_, i) => (
-            <View key={i} className="flex-1 min-w-[150px] max-w-[16.66%] aspect-video bg-white/5 rounded-lg mx-1" />
+            <View key={i} style={styles.skeletonCard} />
           ))}
         </View>
       ) : favorites.length > 0 ? (
@@ -170,23 +170,185 @@ export default function FavoritesPage() {
           keyExtractor={(item) => item.id}
           numColumns={numColumns}
           key={numColumns}
-          contentContainerStyle={{ gap: spacing.md }}
-          columnWrapperStyle={numColumns > 1 ? { gap: spacing.md } : undefined}
+          contentContainerStyle={styles.gridContent}
+          columnWrapperStyle={numColumns > 1 ? styles.gridRow : undefined}
           renderItem={({ item }) => (
-            <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
+            <View style={[styles.gridItem, { maxWidth: `${100 / numColumns}%` }]}>
               <FavoriteCard item={item} onRemove={handleRemove} />
             </View>
           )}
         />
       ) : (
-        <View className="flex-1 justify-center items-center py-16">
-          <GlassCard className="p-12 items-center">
+        <View style={styles.emptyContainer}>
+          <GlassCard style={styles.emptyCard}>
             <Star size={64} color="rgba(245, 158, 11, 0.5)" />
-            <Text className="text-xl font-semibold text-white mt-4 mb-2">{t('favorites.empty')}</Text>
-            <Text className="text-base text-white/70">{t('favorites.emptyHint')}</Text>
+            <Text style={styles.emptyTitle}>{t('favorites.empty')}</Text>
+            <Text style={styles.emptyHint}>{t('favorites.emptyHint')}</Text>
           </GlassCard>
         </View>
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xl,
+    maxWidth: 1400,
+    marginHorizontal: 'auto',
+    width: '100%',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.xl,
+  },
+  headerIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: fontSize['3xl'],
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  headerSubtitle: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+  },
+  loadingGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.lg,
+  },
+  skeletonCard: {
+    flex: 1,
+    minWidth: 150,
+    maxWidth: '16.66%',
+    aspectRatio: 16 / 9,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
+    marginHorizontal: spacing.xs,
+  },
+  gridContent: {
+    gap: spacing.md,
+  },
+  gridRow: {
+    gap: spacing.md,
+  },
+  gridItem: {
+    flex: 1,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 64,
+  },
+  emptyCard: {
+    padding: spacing['3xl'],
+    alignItems: 'center',
+  },
+  emptyTitle: {
+    fontSize: fontSize.xl,
+    fontWeight: '600',
+    color: colors.text,
+    marginTop: spacing.lg,
+    marginBottom: spacing.sm,
+  },
+  emptyHint: {
+    fontSize: fontSize.base,
+    color: colors.textSecondary,
+  },
+  cardLinkWrapper: {
+    textDecoration: 'none',
+    flex: 1,
+  },
+  cardContainer: {
+    padding: 0,
+    marginHorizontal: spacing.xs,
+    position: 'relative',
+  },
+  cardHovered: {
+    transform: [{ scale: 1.02 }],
+  },
+  cardImageContainer: {
+    aspectRatio: 16 / 9,
+    position: 'relative',
+  },
+  cardImage: {
+    width: '100%',
+    height: '100%',
+  },
+  placeholderContainer: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderIcon: {
+    fontSize: fontSize['3xl'],
+  },
+  typeBadge: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.lg,
+  },
+  typeBadgeText: {
+    fontSize: fontSize.sm,
+  },
+  hoverOverlay: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  playButton: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cardContent: {
+    padding: spacing.sm,
+  },
+  cardTitle: {
+    fontSize: fontSize.base,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  cardSubtitle: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+  },
+  removeButton: {
+    position: 'absolute',
+    top: spacing.sm,
+    left: spacing.sm,
+    width: 32,
+    height: 32,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(239, 68, 68, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

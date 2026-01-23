@@ -1,0 +1,99 @@
+/**
+ * CVPlus Portal Styles
+ * Uses Olorin shared wizard theme via Tailwind configuration
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base layer customizations */
+@layer base {
+  body {
+    @apply bg-wizard-bg-deep text-wizard-text-secondary;
+    @apply min-h-screen antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-wizard-text-primary font-bold;
+  }
+}
+
+/* Component utilities from wizard theme */
+@layer components {
+  /* Gradient backgrounds */
+  .wizard-gradient-bg {
+    background: linear-gradient(135deg, #a855f7 0%, #d946ef 100%);
+  }
+
+  /* Text gradient */
+  .wizard-text {
+    @apply bg-gradient-to-r from-wizard-accent-purple to-purple-400 bg-clip-text text-transparent;
+  }
+
+  /* Glassmorphism utilities */
+  .glass-effect {
+    @apply bg-white/10 backdrop-blur-xl border border-white/20;
+  }
+
+  /* Button styles */
+  .wizard-button {
+    @apply px-6 py-3 rounded-lg font-semibold transition-all duration-300;
+    @apply bg-gradient-to-r from-purple-600 to-violet-600;
+    @apply hover:from-purple-500 hover:to-violet-500;
+    @apply text-white shadow-glow-purple;
+  }
+
+  /* Container */
+  .wizard-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section */
+  .wizard-section {
+    @apply py-16 md:py-24;
+  }
+
+  /* Grid layouts */
+  .wizard-grid-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-8;
+  }
+
+  .wizard-grid-3 {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8;
+  }
+
+  .wizard-grid-4 {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8;
+  }
+
+  /* Particle animation container */
+  .wizard-particles {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .wizard-particles::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(2px 2px at 20px 30px, rgba(168, 85, 247, 0.3), transparent),
+                      radial-gradient(2px 2px at 60px 70px, rgba(168, 85, 247, 0.2), transparent),
+                      radial-gradient(1px 1px at 50px 50px, rgba(168, 85, 247, 0.3), transparent),
+                      radial-gradient(1px 1px at 130px 80px, rgba(168, 85, 247, 0.2), transparent),
+                      radial-gradient(2px 2px at 90px 10px, rgba(168, 85, 247, 0.3), transparent);
+    background-size: 200px 200px;
+    background-position: 0 0, 40px 60px, 130px 270px, 70px 100px, 150px 50px;
+    animation: float 20s linear infinite;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(-100px, -100px);
+    }
+  }
+}

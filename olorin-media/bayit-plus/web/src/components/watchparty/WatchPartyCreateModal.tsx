@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Users, MessageSquare, RefreshCw, Check } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
@@ -70,9 +70,8 @@ export default function WatchPartyCreateModal({
           <Text className="flex-1 text-sm font-medium text-white text-right">
             {t('watchParty.options.chatEnabled')}
           </Text>
-          <View className={`w-[22px] h-[22px] rounded items-center justify-center border-2 ${
-            options.chatEnabled ? 'bg-purple-600 border-purple-600' : 'border-white/20'
-          }`}>
+          <View className="w-[22px] h-[22px] rounded items-center justify-center border-2"
+            style={[options.chatEnabled ? styles.checkboxChecked : styles.checkboxUnchecked]}>
             {options.chatEnabled && <Check size={14} color={colors.background} />}
           </View>
         </Pressable>
@@ -85,9 +84,8 @@ export default function WatchPartyCreateModal({
           <Text className="flex-1 text-sm font-medium text-white text-right">
             {t('watchParty.options.syncPlayback')}
           </Text>
-          <View className={`w-[22px] h-[22px] rounded items-center justify-center border-2 ${
-            options.syncPlayback ? 'bg-purple-600 border-purple-600' : 'border-white/20'
-          }`}>
+          <View className="w-[22px] h-[22px] rounded items-center justify-center border-2"
+            style={[options.syncPlayback ? styles.checkboxChecked : styles.checkboxUnchecked]}>
             {options.syncPlayback && <Check size={14} color={colors.background} />}
           </View>
         </Pressable>
@@ -103,9 +101,8 @@ export default function WatchPartyCreateModal({
         <Pressable
           onPress={handleCreate}
           disabled={loading}
-          className={`flex-1 py-3 rounded-md bg-purple-600 items-center justify-center ${
-            loading ? 'opacity-50' : 'hover:shadow-[0_0_12px_rgba(168,85,247,0.5)]'
-          }`}
+          className="flex-1 py-3 rounded-md bg-purple-600 items-center justify-center hover:shadow-[0_0_12px_rgba(168,85,247,0.5)]"
+          style={[loading && styles.buttonLoading]}
         >
           {loading ? (
             <ActivityIndicator size="small" color={colors.background} />
@@ -117,3 +114,16 @@ export default function WatchPartyCreateModal({
     </GlassModal>
   )
 }
+
+const styles = StyleSheet.create({
+  checkboxChecked: {
+    backgroundColor: '#9333ea',
+    borderColor: '#9333ea',
+  },
+  checkboxUnchecked: {
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  buttonLoading: {
+    opacity: 0.5,
+  },
+});

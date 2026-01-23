@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Users, UserCheck, Clock } from 'lucide-react';
 import { GlassView, GlassStatCard } from '@bayit/shared/ui';
@@ -15,15 +15,15 @@ export function StatsHeader({ friendsCount, pendingCount, isRTL }: StatsHeaderPr
   return (
     <>
       <GlassView className="mb-6 p-4" intensity="low">
-        <View className={`items-center gap-4 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+        <View className="items-center gap-4" style={[isRTL ? styles.rowReverse : styles.row]}>
           <View className="w-[60px] h-[60px] rounded-lg bg-[#6B21A8]/20 justify-center items-center border border-white/10">
             <Users size={32} color="#6B21A8" />
           </View>
           <View className="flex-1">
-            <Text className={`text-[28px] font-bold text-white mb-1 ${isRTL ? 'text-right' : ''}`}>
+            <Text className="text-[28px] font-bold text-white mb-1" style={[isRTL && styles.textRight]}>
               {t('friends.title', 'Friends & Opponents')}
             </Text>
-            <Text className={`text-sm text-white/60 ${isRTL ? 'text-right' : ''}`}>
+            <Text className="text-sm text-white/60" style={[isRTL && styles.textRight]}>
               {t('friends.subtitle', 'Connect with players and challenge friends')}
             </Text>
           </View>
@@ -51,3 +51,15 @@ export function StatsHeader({ friendsCount, pendingCount, isRTL }: StatsHeaderPr
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+});

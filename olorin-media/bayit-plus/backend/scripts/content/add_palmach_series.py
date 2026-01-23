@@ -100,13 +100,13 @@ async def add_palmach_series():
                 skipped += 1
                 continue
 
-            # Create episode
+            # Create episode (is_series defaults to False for episodes)
             episode = Content(
                 title=episode_title,
                 description=f"פלמח עונה 1 פרק {episode_num}",
                 category_id=str(palmach_category.id),
                 category_name="פלמח",
-                is_series=True,
+                is_series=False,  # Episodes are NOT series - only parent series should have is_series=True
                 season=1,
                 episode=episode_num,
                 series_id=palmach_series_id,

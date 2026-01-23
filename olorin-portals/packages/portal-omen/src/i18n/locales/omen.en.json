@@ -1,0 +1,316 @@
+{
+  "hero": {
+    "headline": "WEAR YOUR WORDS.",
+    "subheadline": "The world's first outward-facing translation diadem.",
+    "subheadline2": "You speak. They read. Total understanding.",
+    "cta": "EQUIP THE ARTIFACT",
+    "altDevice": "Omen wearable translation device with curved OLED display",
+    "altWizard": "Olorin wizard mascot conjuring the Omen device"
+  },
+  "demo": {
+    "title": "HOW IT WORKS",
+    "subtitle": "The Diadem translates in real-time",
+    "speaking": "Speak naturally",
+    "thinking": "Processing locally",
+    "result": "Translation displayed",
+    "resultText": "NICE TO MEET YOU",
+    "viewer": "Viewer's Perspective",
+    "description": "No awkward pauses. No looking down at phones. Eye contact maintained. The Omen projects subtitles onto reality.",
+    "srSpeaking": "User speaking into device",
+    "srThinking": "Device processing translation locally",
+    "srResult": "Translation displayed: {{text}}"
+  },
+  "specs": {
+    "title": "FORGED IN SILICON",
+    "subtitle": "Supernatural technology meets human connection",
+    "display": {
+      "title": "The Display",
+      "description": "High-Def Curved OLED. Visible in direct sunlight. 120Hz refresh rate for fluid text flow."
+    },
+    "core": {
+      "title": "The Core",
+      "description": "Zero-Latency Inference. Olorin's Language Model runs locally on the NPU. No internet required."
+    },
+    "array": {
+      "title": "The Array",
+      "description": "Beamforming Mic Array. Isolates your voice even in a crowded bazaar."
+    }
+  },
+  "footer": {
+    "title": "THE FUTURE OF DIPLOMACY",
+    "subtitle": "Join the waitlist. Quantities limited.",
+    "cta": "PRE-ORDER THE ARTIFACT"
+  },
+  "nav": {
+    "ecosystem": "Ecosystem",
+    "diadem": "The Diadem",
+    "specs": "Tech Specs",
+    "preorder": "Pre-Order"
+  },
+  "contactPage": {
+    "title": "Get in Touch",
+    "subtitle": "Ready to break language barriers? Let's talk.",
+    "formTitle": "Send us a message",
+    "infoTitle": "Contact Information",
+    "submit": "Send Message",
+    "sending": "Sending...",
+    "success": "Thank you! We'll be in touch soon.",
+    "error": "Failed to send message. Please try again.",
+    "scheduleTitle": "Schedule a Demo",
+    "scheduleSubtitle": "See the Omen in action",
+    "scheduleCta": "Book Demo",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "company": "Company",
+      "phone": "Phone",
+      "useCase": "Use Case",
+      "selectUseCase": "Select your use case",
+      "interest": "Product Interest",
+      "selectInterest": "What interests you?",
+      "message": "Message",
+      "messagePlaceholder": "Tell us about your needs...",
+      "useCases": {
+        "travel": "Travel & Tourism",
+        "business": "Business Meetings",
+        "accessibility": "Accessibility Needs",
+        "learning": "Language Learning",
+        "events": "Conferences & Events",
+        "other": "Other"
+      },
+      "interests": {
+        "iosApp": "iOS App",
+        "wearable": "Wearable Display",
+        "enterprise": "Enterprise Solution",
+        "partnership": "Partnership"
+      }
+    },
+    "contactInfo": {
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Location",
+      "hours": "Business Hours"
+    }
+  },
+  "featuresPage": {
+    "title": "Powered by",
+    "titleHighlight": "AI Translation",
+    "subtitle": "Real-time speech translation that breaks language barriers",
+    "techSpecsTitle": "Technical Specifications",
+    "workflowTitle": "How It Works",
+    "ctaTitle": "Ready to try Omen?",
+    "ctaSubtitle": "Experience the future of real-time translation",
+    "ctaButton": "Get Started",
+    "transcription": {
+      "title": "Real-Time Transcription",
+      "description": "Lightning-fast speech-to-text powered by advanced AI",
+      "realtime": {
+        "title": "Live Transcription",
+        "description": "Instant speech recognition as you speak",
+        "h1": "< 100ms latency",
+        "h2": "16kHz audio quality",
+        "h3": "Noise filtering"
+      },
+      "accuracy": {
+        "title": "AI-Powered Accuracy",
+        "description": "Neural networks trained on millions of hours of speech",
+        "h1": "95%+ accuracy",
+        "h2": "Context-aware",
+        "h3": "Accent adaptation"
+      },
+      "waveform": {
+        "title": "Visual Feedback",
+        "description": "Real-time waveform visualization",
+        "h1": "Live audio levels",
+        "h2": "Speech detection",
+        "h3": "Quality indicators"
+      }
+    },
+    "translation": {
+      "title": "Instant Translation",
+      "description": "Multi-language translation powered by state-of-the-art AI",
+      "instant": {
+        "title": "Real-Time Translation",
+        "description": "Translate speech instantly between languages",
+        "h1": "5 languages",
+        "h2": "Zero delay",
+        "h3": "Natural phrasing"
+      },
+      "languages": {
+        "title": "Multi-Language Support",
+        "description": "Communicate in your preferred language",
+        "h1": "English, Hebrew",
+        "h2": "Spanish, French",
+        "h3": "More coming soon"
+      },
+      "tts": {
+        "title": "Natural Voice Synthesis",
+        "description": "AI-generated voices that sound human",
+        "h1": "ElevenLabs TTS",
+        "h2": "Emotional tone",
+        "h3": "Multiple voices"
+      }
+    },
+    "hardware": {
+      "title": "Hardware Integration",
+      "description": "Seamless integration with iOS and wearable devices",
+      "wearable": {
+        "title": "Wearable Display",
+        "description": "Hands-free translation on your forehead",
+        "h1": "ESP32 BLE",
+        "h2": "OLED display",
+        "h3": "8-hour battery"
+      },
+      "actionButton": {
+        "title": "Action Button",
+        "description": "Quick access via iPhone Action Button",
+        "h1": "Single press",
+        "h2": "Instant activation",
+        "h3": "Haptic feedback"
+      },
+      "bluetooth": {
+        "title": "Bluetooth Connectivity",
+        "description": "Wireless connection to your devices",
+        "h1": "BLE 5.0",
+        "h2": "Auto-connect",
+        "h3": "Low latency"
+      }
+    },
+    "workflow": {
+      "s1": {
+        "title": "Speak",
+        "description": "Press Action Button and speak naturally"
+      },
+      "s2": {
+        "title": "Transcribe",
+        "description": "AI converts speech to text in real-time"
+      },
+      "s3": {
+        "title": "Translate",
+        "description": "Neural network translates to target language"
+      },
+      "s4": {
+        "title": "Display",
+        "description": "Text appears on wearable display or synthesized as speech"
+      }
+    },
+    "techSpecs": {
+      "audioInput": "16kHz Sample Rate",
+      "languages": "5 Languages",
+      "latency": "< 100ms",
+      "platform": "iOS 17.0+",
+      "devices": "iPhone 15/16",
+      "ttsEngine": "ElevenLabs",
+      "transcription": "OpenAI Realtime",
+      "wearable": "ESP32 BLE"
+    }
+  },
+  "pricingPage": {
+    "title": "Simple",
+    "titleHighlight": "Transparent Pricing",
+    "subtitle": "Choose the plan that fits your needs",
+    "comparisonTitle": "Feature Comparison",
+    "faqTitle": "Frequently Asked Questions",
+    "ctaTitle": "Ready to get started?",
+    "ctaSubtitle": "Join thousands breaking language barriers",
+    "ctaButton": "Start Free Trial",
+    "free": {
+      "name": "Free",
+      "price": "$0",
+      "priceNote": "Forever free",
+      "description": "Perfect for trying out Omen",
+      "f1": "30 translation minutes/month",
+      "f2": "2 languages (English, Hebrew)",
+      "f3": "AI voice synthesis",
+      "f4": "Wearable display support",
+      "f5": "Priority processing",
+      "f6": "API access",
+      "cta": "Get Started Free"
+    },
+    "premium": {
+      "name": "Premium",
+      "badge": "Most Popular",
+      "price": "$19",
+      "priceNote": "Per month",
+      "description": "For regular users",
+      "f1": "Unlimited translation minutes",
+      "f2": "5 languages",
+      "f3": "AI voice synthesis",
+      "f4": "Wearable display support",
+      "f5": "Priority processing",
+      "f6": "API access",
+      "cta": "Start Premium"
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "price": "Custom",
+      "priceNote": "Contact us",
+      "description": "For teams and businesses",
+      "f1": "Unlimited everything",
+      "f2": "5+ languages",
+      "f3": "AI voice synthesis",
+      "f4": "Wearable display support",
+      "f5": "Priority processing",
+      "f6": "Custom API integration",
+      "cta": "Contact Sales"
+    },
+    "faq": {
+      "q1": "Can I upgrade or downgrade my plan?",
+      "a1": "Yes! You can change your plan at any time. Upgrades take effect immediately, and downgrades apply at the end of your billing cycle.",
+      "q2": "Do unused minutes roll over?",
+      "a2": "Free tier minutes reset monthly. Premium and Enterprise plans have unlimited minutes, so there's nothing to roll over.",
+      "q3": "Is the wearable display included?",
+      "a3": "The wearable display is a separate hardware purchase. All plans support it, but Premium and Enterprise get priority access to new hardware features."
+    },
+    "comparison": {
+      "translationMinutes": {
+        "label": "Translation Minutes",
+        "free": "30/month",
+        "premium": "Unlimited",
+        "enterprise": "Unlimited"
+      },
+      "languages": {
+        "label": "Languages",
+        "free": "2",
+        "premium": "5",
+        "enterprise": "5+"
+      },
+      "aiVoice": {
+        "label": "AI Voice Synthesis",
+        "free": "true",
+        "premium": "true",
+        "enterprise": "true"
+      },
+      "wearable": {
+        "label": "Wearable Support",
+        "free": "false",
+        "premium": "true",
+        "enterprise": "true"
+      },
+      "priority": {
+        "label": "Priority Processing",
+        "free": "false",
+        "premium": "true",
+        "enterprise": "true"
+      },
+      "customVoice": {
+        "label": "Custom Voice Profiles",
+        "free": "false",
+        "premium": "false",
+        "enterprise": "true"
+      },
+      "api": {
+        "label": "API Access",
+        "free": "false",
+        "premium": "false",
+        "enterprise": "true"
+      },
+      "support": {
+        "label": "Dedicated Support",
+        "free": "false",
+        "premium": "true",
+        "enterprise": "true"
+      }
+    }
+  }
+}

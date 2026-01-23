@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { UserPlus } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
@@ -74,7 +74,8 @@ export default function WatchPartyJoinModal({ isOpen, onClose, onJoin }: WatchPa
           value={roomCode}
           onChangeText={handleCodeChange}
           placeholder={t('placeholder.roomCode', 'ABCD1234')}
-          inputClassName={`bg-white/5 border ${error ? 'border-red-500' : 'border-white/10'} rounded-lg px-6 py-4 text-2xl font-mono text-white text-center tracking-[0.375rem] outline-none`}
+          inputClassName="bg-white/5 border rounded-lg px-6 py-4 text-2xl font-mono text-white text-center tracking-[0.375rem] outline-none"
+          inputStyle={[error ? styles.inputError : styles.inputNormal]}
           autoFocus
           autoCapitalize="characters"
           maxLength={8}
@@ -92,9 +93,8 @@ export default function WatchPartyJoinModal({ isOpen, onClose, onJoin }: WatchPa
         <Pressable
           onPress={handleSubmit}
           disabled={loading || roomCode.length < 4}
-          className={`flex-1 py-3 rounded-md bg-purple-600 items-center justify-center ${
-            (loading || roomCode.length < 4) ? 'opacity-50' : 'hover:shadow-[0_0_12px_rgba(168,85,247,0.5)]'
-          }`}
+          className="flex-1 py-3 rounded-md bg-purple-600 items-center justify-center"
+          style={[(loading || roomCode.length < 4) && styles.disabled]}
         >
           {loading ? (
             <ActivityIndicator size="small" color={colors.background} />
@@ -106,3 +106,15 @@ export default function WatchPartyJoinModal({ isOpen, onClose, onJoin }: WatchPa
     </GlassModal>
   )
 }
+
+const styles = StyleSheet.create({
+  inputError: {
+    borderColor: '#ef4444',
+  },
+  inputNormal: {
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+})

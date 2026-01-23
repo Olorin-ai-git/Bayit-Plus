@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { colors } from '@bayit/shared/theme'
 import WatchPartyChatInput from './WatchPartyChatInput'
@@ -37,23 +37,22 @@ function ChatMessage({ message, isOwnMessage }: { message: Message; isOwnMessage
     )
   }
 
-  const bubbleClass = isEmoji
-    ? 'bg-transparent px-0 py-0'
-    : isOwnMessage
-      ? 'bg-purple-700/30'
-      : 'bg-white/10'
+  const getBubbleStyle = () => {
+    if (isEmoji) return styles.bubbleEmoji
+    return isOwnMessage ? styles.bubbleOwn : styles.bubbleOther
+  }
 
   return (
-    <View className={`flex-row ${isOwnMessage ? 'flex-row-reverse' : ''}`}>
-      <View className={`max-w-[80%] rounded-2xl px-4 py-3 ${bubbleClass}`}>
+    <View className="flex-row" style={[isOwnMessage && styles.rowReverse]}>
+      <View className="max-w-[80%] rounded-2xl px-4 py-3" style={[getBubbleStyle()]}>
         {!isOwnMessage && !isEmoji && (
           <Text className="text-xs font-medium text-purple-400 mb-0.5">{message.user_name}</Text>
         )}
-        <Text className={`${isEmoji ? 'text-3xl' : 'text-sm text-white'}`}>
+        <Text style={[isEmoji ? styles.textEmoji : styles.textNormal]}>
           {message.content}
         </Text>
         {!isEmoji && (
-          <Text className={`text-[10px] mt-2 opacity-0 ${isOwnMessage ? 'text-purple-400/60' : 'text-gray-400'}`}>
+          <Text className="text-[10px] mt-2 opacity-0" style={[isOwnMessage ? styles.timeOwn : styles.timeOther]}>
             {formatTime(message.created_at)}
           </Text>
         )}
@@ -108,3 +107,33 @@ export default function WatchPartyChat({
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  bubbleEmoji: {
+    backgroundColor: 'transparent',
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+  },
+  bubbleOwn: {
+    backgroundColor: 'rgba(109, 40, 217, 0.3)',
+  },
+  bubbleOther: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  textEmoji: {
+    fontSize: 30,
+  },
+  textNormal: {
+    fontSize: 14,
+    color: '#fff',
+  },
+  timeOwn: {
+    color: 'rgba(192, 132, 252, 0.6)',
+  },
+  timeOther: {
+    color: '#9ca3af',
+  },
+})

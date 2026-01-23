@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "olorin-ai"
+  },
+  "targets": {
+    "olorin-ai": {
+      "hosting": {
+        "portal-omen": [
+          "olorin-omen"
+        ]
+      }
+    }
+  }
+}

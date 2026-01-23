@@ -4,7 +4,7 @@
  */
 
 import { useMemo } from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { SubtitleCue, SubtitleSettings, getLanguageInfo } from '@/types/subtitle'
 
 interface SubtitleOverlayProps {
@@ -55,9 +55,8 @@ export default function SubtitleOverlay({
 
   return (
     <View
-      className={`absolute left-0 right-0 z-[100] items-center px-4 ${
-        settings.position === 'top' ? 'top-8' : 'bottom-24'
-      }`}
+      className="absolute left-0 right-0 z-[100] items-center px-4"
+      style={[settings.position === 'top' ? styles.positionTop : styles.positionBottom]}
       pointerEvents="none"
     >
       {activeCues.map((cue) => (
@@ -93,3 +92,12 @@ export default function SubtitleOverlay({
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  positionTop: {
+    top: 32,
+  },
+  positionBottom: {
+    bottom: 96,
+  },
+});

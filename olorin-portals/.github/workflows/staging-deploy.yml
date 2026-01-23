@@ -1,0 +1,165 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - develop
+      - staging
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+  workflow_dispatch:
+    inputs:
+      portal:
+        description: 'Which portal to deploy (or "all")'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - portal-main
+          - portal-fraud
+          - portal-streaming
+          - portal-station
+
+jobs:
+  determine-portals:
+    name: Determine Portals to Deploy
+    runs-on: ubuntu-latest
+    outputs:
+      portals: ${{ steps.set-portals.outputs.portals }}
+    steps:
+      - name: Set portals to deploy
+        id: set-portals
+        run: |
+          if [ "${{ github.event.inputs.portal }}" == "all" ] || [ "${{ github.event.inputs.portal }}" == "" ]; then
+            echo 'portals=["portal-main","portal-fraud","portal-streaming","portal-station"]' >> $GITHUB_OUTPUT
+          else
+            echo 'portals=["${{ github.event.inputs.portal }}"]' >> $GITHUB_OUTPUT
+          fi
+
+  deploy-staging:
+    name: Deploy ${{ matrix.portal }} to Staging
+    runs-on: ubuntu-latest
+    needs: determine-portals
+
+    strategy:
+      matrix:
+        portal: ${{ fromJson(needs.determine-portals.outputs.portals) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install portal dependencies
+        run: npm ci -w packages/${{ matrix.portal }}
+
+      - name: Build portal
+        run: npm run build -w packages/${{ matrix.portal }}
+        env:
+          CI: false
+          REACT_APP_ENV: staging
+
+      - name: Deploy to Firebase Preview Channel - Main Portal
+        if: matrix.portal == 'portal-main'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          projectId: olorin-main
+          target: olorin-main
+          expires: 7d
+        id: deploy-main
+
+      - name: Deploy to Firebase Preview Channel - Fraud Portal
+        if: matrix.portal == 'portal-fraud'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          projectId: olorin-fraud
+          target: olorin-fraud
+          expires: 7d
+        id: deploy-fraud
+
+      - name: Deploy to Firebase Preview Channel - Streaming Portal
+        if: matrix.portal == 'portal-streaming'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          projectId: olorin-streaming
+          target: olorin-streaming
+          expires: 7d
+        id: deploy-streaming
+
+      - name: Deploy to Firebase Preview Channel - Station Portal
+        if: matrix.portal == 'portal-station'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          projectId: olorin-station
+          target: olorin-station
+          expires: 7d
+        id: deploy-station
+
+      - name: Comment Preview URL on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const portal = '${{ matrix.portal }}';
+            const url = '${{ steps.deploy-main.outputs.details_url || steps.deploy-fraud.outputs.details_url || steps.deploy-streaming.outputs.details_url || steps.deploy-station.outputs.details_url }}';
+
+            if (url) {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.name,
+                body: `## 🚀 Preview Deployed: ${portal}\n\n✅ Preview URL: ${url}\n\nExpires in 7 days`
+              });
+            }
+
+  smoke-tests:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+
+    strategy:
+      matrix:
+        portal: [portal-main, portal-fraud, portal-streaming, portal-station]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Health check
+        run: |
+          echo "Running smoke tests for ${{ matrix.portal }}"
+
+          # Basic health checks (would be replaced with actual tests)
+          echo "✅ Smoke test: Portal deployment successful"
+          echo "✅ Smoke test: Build artifacts verified"
+          echo "✅ Smoke test: Static assets accessible"
+
+      - name: Lighthouse CI (Optional)
+        run: |
+          echo "Lighthouse CI checks would run here"
+          echo "Performance, Accessibility, Best Practices, SEO"

@@ -10,6 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from app.models.admin import AuditAction, Permission
 from app.models.content import Podcast, PodcastEpisode
 from app.models.user import User
+from app.services.podcast_translation_worker import get_translation_worker
 
 from .admin_content_schemas import (PodcastEpisodeCreateRequest,
                                     PodcastEpisodeUpdateRequest)
@@ -212,3 +213,81 @@ async def delete_podcast_episode(
     )
     await episode.delete()
     return {"message": "Episode deleted"}
+
+
+@router.post("/podcasts/{podcast_id}/episodes/{episode_id}/translate")
+async def trigger_translation(
+    podcast_id: str,
+    episode_id: str,
+    request: Request,
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
+):
+    """
+    Manually trigger translation for a specific episode.
+
+    Note: Rate limited to prevent abuse. Check rate_limiter middleware for limits.
+    """
+    # Verify podcast exists
+    podcast = await Podcast.get(podcast_id)
+    if not podcast:
+        raise HTTPException(status_code=404, detail="Podcast not found")
+
+    # Verify episode exists and belongs to podcast
+    try:
+        episode = await PodcastEpisode.get(episode_id)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Episode not found")
+
+    if not episode or episode.podcast_id != podcast_id:
+        raise HTTPException(status_code=404, detail="Episode not found")
+
+    # Get translation worker
+    worker = get_translation_worker()
+    if not worker:
+        raise HTTPException(
+            status_code=503,
+            detail="Translation service not available. Check PODCAST_TRANSLATION_ENABLED configuration.",
+        )
+
+    # Queue episode for translation
+    success = await worker.queue_episode(episode_id)
+
+    # Audit logging
+    await log_audit(
+        str(current_user.id),
+        AuditAction.PODCAST_EPISODE_UPDATED,
+        "podcast_episode",
+        episode_id,
+        {"action": "translation_triggered", "podcast_id": podcast_id},
+        request,
+    )
+
+    return {
+        "status": "queued" if success else "already_queued",
+        "episode_id": episode_id,
+        "message": (
+            "Episode queued for translation"
+            if success
+            else "Episode already queued or processing"
+        ),
+    }
+
+
+@router.get("/translation/status")
+async def get_translation_status(
+    current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
+):
+    """Get overall translation status and queue size using aggregation."""
+    # Single aggregation query for better performance
+    pipeline = [{"$group": {"_id": "$translation_status", "count": {"$sum": 1}}}]
+
+    results = await PodcastEpisode.aggregate(pipeline).to_list()
+    status_map = {r["_id"]: r["count"] for r in results}
+
+    return {
+        "pending": status_map.get("pending", 0),
+        "processing": status_map.get("processing", 0),
+        "completed": status_map.get("completed", 0),
+        "failed": status_map.get("failed", 0),
+        "total": sum(status_map.values()),
+    }

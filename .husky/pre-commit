@@ -1,0 +1,24 @@
+#!/bin/sh
+# Pre-commit hook to prevent build artifacts from being committed
+# Created: 2026-01-22
+
+# Reject commits containing build artifacts
+if git diff --cached --name-only | grep -E '(build/|dist/|\.tsbuildinfo$)'; then
+  echo "❌ Error: Build artifacts detected in commit"
+  echo ""
+  echo "Build directories and artifacts should not be committed to git."
+  echo "These files should be generated during build time, not stored in the repository."
+  echo ""
+  echo "Files detected:"
+  git diff --cached --name-only | grep -E '(build/|dist/|\.tsbuildinfo$)'
+  echo ""
+  echo "To fix this issue:"
+  echo "  1. Unstage the build artifacts: git reset HEAD <file>"
+  echo "  2. Ensure .gitignore includes comprehensive build patterns"
+  echo "  3. Retry your commit"
+  echo ""
+  exit 1
+fi
+
+echo "✅ No build artifacts detected in commit"
+exit 0

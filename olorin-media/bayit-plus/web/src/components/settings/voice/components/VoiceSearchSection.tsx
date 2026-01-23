@@ -3,7 +3,7 @@
  * Voice search settings
  */
 
-import { Text } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '@bayit/shared/ui';
 import { VoiceSettingRow } from './VoiceSettingRow';
@@ -23,7 +23,7 @@ export function VoiceSearchSection({
 
   return (
     <GlassView className="p-6 gap-4">
-      <Text className={`text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-1 ${isRTL ? 'text-right' : ''}`}>
+      <Text style={[styles.sectionTitle, isRTL && styles.textRight]}>
         {t('profile.voice.voiceSearch', 'Voice Search')}
       </Text>
 
@@ -37,3 +37,17 @@ export function VoiceSearchSection({
     </GlassView>
   );
 }
+
+const styles = StyleSheet.create({
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#9CA3AF',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    marginBottom: 4,
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+});

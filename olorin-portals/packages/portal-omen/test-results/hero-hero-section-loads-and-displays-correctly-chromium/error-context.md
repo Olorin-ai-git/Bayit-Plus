@@ -1,0 +1,6 @@
+# Page snapshot
+
+```yaml
+- link "Skip to main content" [ref=e1] [cursor=pointer]:
+  - /url: "#main-content"
+```

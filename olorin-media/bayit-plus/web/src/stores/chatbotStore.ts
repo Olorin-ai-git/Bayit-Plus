@@ -4,11 +4,10 @@
  */
 
 import { create } from 'zustand';
-import { flowsService, contentService, liveService, radioService, podcastService } from '@/services/api';
+import { contentService, liveService, radioService, podcastService } from '@/services/api';
 import logger from '@/utils/logger';
 
 export interface ChatbotContext {
-  flows: Array<{ id: string; name: string; type: string }>;
   liveChannels: Array<{ id: string; name: string }>;
   radioStations: Array<{ id: string; name: string }>;
   vodCategories: Array<{ id: string; name: string }>;
@@ -58,20 +57,11 @@ export const useChatbotStore = create<ChatbotStore>((set, get) => ({
   loadContext: async () => {
     set({ contextLoading: true });
     try {
-      const [flowsRes, liveRes, radioRes, podcastRes] = await Promise.all([
-        flowsService.getFlows().catch(() => []),
+      const [liveRes, radioRes, podcastRes] = await Promise.all([
         liveService.getChannels().catch(() => ({ channels: [] })),
         radioService.getStations().catch(() => ({ stations: [] })),
         podcastService.getShows().catch(() => ({ shows: [] })),
       ]);
-
-      // Extract flows - handle both API (returns array) and demo (returns {data: []})
-      const flowsData = Array.isArray(flowsRes) ? flowsRes : (flowsRes.data || []);
-      const flows = flowsData.map((f: any) => ({
-        id: f.id,
-        name: f.name || f.name_en || 'Unnamed Flow',
-        type: f.flow_type,
-      }));
 
       // Extract live channels
       const channelsData = liveRes.data?.channels || liveRes.channels || liveRes.data || [];
@@ -96,7 +86,6 @@ export const useChatbotStore = create<ChatbotStore>((set, get) => ({
 
       set({
         context: {
-          flows,
           liveChannels,
           radioStations,
           vodCategories: [], // Would need separate API call

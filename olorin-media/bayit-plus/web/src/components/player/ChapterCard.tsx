@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from 'react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Play } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
@@ -58,7 +58,11 @@ export default function ChapterCard({
     <Pressable onPress={onClick}>
       {({ hovered }) => (
         <GlassView
-          className={`p-2 rounded-lg ${isActive ? 'border border-purple-500/50 shadow-purple-500/30' : ''} ${hovered && !isActive ? 'bg-white/10' : ''}`}
+          className="p-2 rounded-lg"
+          style={[
+            isActive && styles.cardActive,
+            hovered && !isActive && styles.cardHovered,
+          ]}
           intensity={isActive ? 'high' : 'medium'}
           borderColor={isActive ? colors.primary : undefined}
           style={isActive ? { shadowColor: colors.primary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.3, shadowRadius: 8 } : undefined}
@@ -71,7 +75,8 @@ export default function ChapterCard({
               {/* Title and time */}
               <View className="flex-row items-center justify-between gap-2">
                 <Text
-                  className={`flex-1 text-sm font-medium text-right ${isActive ? 'text-purple-400' : 'text-white'}`}
+                  className="flex-1 text-sm font-medium text-right"
+                  style={[isActive ? styles.textActive : styles.textInactive]}
                   numberOfLines={1}
                 >
                   {chapter.title}
@@ -100,9 +105,10 @@ export default function ChapterCard({
 
             {/* Play indicator */}
             <View
-              className={`w-8 h-8 rounded-2xl items-center justify-center ${
-                isActive ? '' : hovered ? 'bg-white/10' : 'bg-white/5'
-              }`}
+              className="w-8 h-8 rounded-2xl items-center justify-center"
+              style={[
+                !isActive && (hovered ? styles.playBgHovered : styles.playBgDefault),
+              ]}
               style={isActive ? { backgroundColor: colors.primary } : undefined}
             >
               <Play
@@ -117,4 +123,30 @@ export default function ChapterCard({
     </Pressable>
   )
 }
+
+const styles = StyleSheet.create({
+  cardActive: {
+    borderWidth: 1,
+    borderColor: 'rgba(168, 85, 247, 0.5)',
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  cardHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  textActive: {
+    color: '#c084fc',
+  },
+  textInactive: {
+    color: '#fff',
+  },
+  playBgDefault: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  playBgHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+})
 

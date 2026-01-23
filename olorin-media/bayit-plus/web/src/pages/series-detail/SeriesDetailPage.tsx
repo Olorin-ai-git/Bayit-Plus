@@ -4,7 +4,7 @@
  */
 
 import { useEffect } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
@@ -80,22 +80,22 @@ export default function SeriesDetailPage() {
 
   if (loading) {
     return (
-      <View className={`flex-1 justify-center items-center bg-[${colors.background}]`}>
-        <Text className={`text-[${colors.textSecondary}] text-base`}>{t('common.loading')}</Text>
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
 
   if (!series) {
     return (
-      <View className={`flex-1 justify-center items-center bg-[${colors.background}]`}>
-        <Text className={`text-[${colors.textSecondary}] text-lg`}>{t('content.notFound')}</Text>
+      <View style={styles.loadingContainer}>
+        <Text style={styles.notFoundText}>{t('content.notFound')}</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView className={`flex-1 bg-[${colors.background}]`} showsVerticalScrollIndicator={false}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <SeriesHero
         series={series}
         selectedEpisode={selectedEpisode}
@@ -137,3 +137,24 @@ export default function SeriesDetailPage() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background,
+  },
+  loadingText: {
+    color: colors.textSecondary,
+    fontSize: 16,
+  },
+  notFoundText: {
+    color: colors.textSecondary,
+    fontSize: 18,
+  },
+});

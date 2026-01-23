@@ -1,0 +1,173 @@
+/**
+ * Station-AI Design System - Wizard Purple Theme
+ *
+ * CRITICAL: Uses wizard purple (#9333ea) NOT coral red (#F54E5E)
+ * All colors align with Olorin wizard theme for brand consistency
+ */
+
+:root {
+  /* Background colors */
+  --station-bg-deep: #0f0027;
+  --station-bg-base: #1a0033;
+
+  /* Accent colors - Wizard Purple (NOT coral red) */
+  --station-accent: #9333ea;
+  --station-accent-hover: #a855f7;
+  --station-cta: #9333ea;
+  --station-cta-hover: #a855f7;
+
+  /* Glass effects */
+  --station-glass-bg: rgba(147, 51, 234, 0.1);
+  --station-glass-border: rgba(147, 51, 234, 0.2);
+  --station-glow: rgba(147, 51, 234, 0.5);
+
+  /* Text colors */
+  --station-text-primary: #ffffff;
+  --station-text-secondary: #e9d5ff;
+  --station-text-muted: #c4b5fd;
+}
+
+/* Body background */
+body {
+  background: linear-gradient(135deg, var(--station-bg-deep) 0%, var(--station-bg-base) 100%);
+  color: var(--station-text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Glassmorphism utility classes */
+.glass-effect {
+  background: var(--station-glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--station-glass-border);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--station-accent);
+  box-shadow: 0 0 40px var(--station-glow);
+}
+
+/* Purple glow effects */
+.station-glow {
+  box-shadow: 0 0 40px var(--station-glow);
+}
+
+.station-glow-lg {
+  box-shadow: 0 0 60px var(--station-glow);
+}
+
+/* CTA Buttons - Wizard Purple */
+.station-cta {
+  background: var(--station-cta);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(147, 51, 234, 0.4);
+}
+
+.station-cta:hover {
+  background: var(--station-cta-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(147, 51, 234, 0.6);
+}
+
+.station-cta:focus {
+  outline: none;
+  ring: 2px solid var(--station-accent);
+  ring-offset: 4px;
+  ring-offset-color: var(--station-bg-deep);
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px var(--station-glow); }
+  50% { box-shadow: 0 0 40px var(--station-glow); }
+}
+
+.glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* RTL Support */
+[dir="rtl"] {
+  direction: rtl;
+}
+
+[dir="rtl"] .rtl\:mirror {
+  transform: scaleX(-1);
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--station-accent);
+  outline-offset: 4px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--station-bg-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--station-accent);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--station-accent-hover);
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(147, 51, 234, 0.1) 0%,
+    rgba(147, 51, 234, 0.2) 50%,
+    rgba(147, 51, 234, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

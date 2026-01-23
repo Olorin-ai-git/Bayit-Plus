@@ -3,7 +3,7 @@
  * Displays a single voice setting with toggle
  */
 
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Toggle } from './Toggle';
 import { SettingRowProps } from '../types';
 
@@ -19,25 +19,25 @@ export function VoiceSettingRow({
     <Pressable
       onPress={onToggle}
       disabled={disabled}
-      className={`flex-row items-center justify-between py-2 gap-4 ${
-        isRTL ? 'flex-row-reverse' : ''
-      } ${
-        disabled ? 'opacity-50' : ''
-      }`}
+      style={[
+        styles.row,
+        isRTL && styles.rowReverse,
+        disabled && styles.disabled,
+      ]}
     >
       <View className="flex-1">
-        <Text className={`text-[15px] font-medium text-white ${
-          isRTL ? 'text-right' : ''
-        } ${
-          disabled ? 'text-gray-400' : ''
-        }`}>
+        <Text style={[
+          styles.label,
+          isRTL && styles.textRight,
+          disabled && styles.labelDisabled,
+        ]}>
           {label}
         </Text>
-        <Text className={`text-[13px] text-gray-400 mt-0.5 leading-[18px] ${
-          isRTL ? 'text-right' : ''
-        } ${
-          disabled ? 'text-gray-500' : ''
-        }`}>
+        <Text style={[
+          styles.description,
+          isRTL && styles.textRight,
+          disabled && styles.descriptionDisabled,
+        ]}>
           {description}
         </Text>
       </View>
@@ -45,3 +45,39 @@ export function VoiceSettingRow({
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    gap: 16,
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  label: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#ffffff',
+  },
+  labelDisabled: {
+    color: '#9CA3AF',
+  },
+  description: {
+    fontSize: 13,
+    color: '#9CA3AF',
+    marginTop: 2,
+    lineHeight: 18,
+  },
+  descriptionDisabled: {
+    color: '#6B7280',
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+});

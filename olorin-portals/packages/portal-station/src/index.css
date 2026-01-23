@@ -1,0 +1,12 @@
+/**
+ * Station-AI Portal Styles
+ * Imports Tailwind and Station-AI wizard purple theme
+ */
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@import './styles/station-theme.css';
+
+/* Station-AI specific customizations */

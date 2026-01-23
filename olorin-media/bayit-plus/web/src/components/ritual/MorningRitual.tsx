@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { View, Text, Pressable, Image, ActivityIndicator, ScrollView } from 'react-native'
+import { View, Text, Pressable, Image, ActivityIndicator, ScrollView, StyleSheet } from 'react-native'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ritualService } from '../../services/api'
@@ -256,11 +256,8 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
                 <Pressable
                   key={item.id}
                   onPress={() => setCurrentIndex(index)}
-                  className={`flex-row items-center gap-2 p-2 rounded-xl border ${
-                    index === currentIndex
-                      ? 'border-purple-500 bg-purple-900/30'
-                      : 'border-transparent bg-white/5'
-                  } hover:bg-white/10`}
+                  className="flex-row items-center gap-2 p-2 rounded-xl border hover:bg-white/10"
+                  style={[index === currentIndex ? styles.playlistItemActive : styles.playlistItemInactive]}
                 >
                   {item.thumbnail && (
                     <Image
@@ -287,13 +284,11 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
               <Pressable
                 onPress={handlePreviousItem}
                 disabled={currentIndex === 0}
-                className={`w-9 h-9 rounded-full items-center justify-center ${
-                  currentIndex === 0
-                    ? 'bg-white/10 opacity-30'
-                    : 'bg-white/10 hover:bg-white/20'
-                }`}
+                className="w-9 h-9 rounded-full items-center justify-center hover:bg-white/20"
+                style={[currentIndex === 0 ? styles.navButtonDisabled : styles.navButtonEnabled]}
               >
-                <Text className={`text-lg ${currentIndex === 0 ? 'text-gray-500' : 'text-white'}`}>
+                <Text className="text-lg"
+                  style={[currentIndex === 0 ? styles.navTextDisabled : styles.navTextEnabled]}>
                   ←
                 </Text>
               </Pressable>
@@ -303,15 +298,11 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
               <Pressable
                 onPress={handleNextItem}
                 disabled={currentIndex >= (ritualData?.playlist?.length || 0) - 1}
-                className={`w-9 h-9 rounded-full items-center justify-center ${
-                  currentIndex >= (ritualData?.playlist?.length || 0) - 1
-                    ? 'bg-white/10 opacity-30'
-                    : 'bg-white/10 hover:bg-white/20'
-                }`}
+                className="w-9 h-9 rounded-full items-center justify-center hover:bg-white/20"
+                style={[currentIndex >= (ritualData?.playlist?.length || 0) - 1 ? styles.navButtonDisabled : styles.navButtonEnabled]}
               >
-                <Text className={`text-lg ${
-                  currentIndex >= (ritualData?.playlist?.length || 0) - 1 ? 'text-gray-500' : 'text-white'
-                }`}>
+                <Text className="text-lg"
+                  style={[currentIndex >= (ritualData?.playlist?.length || 0) - 1 ? styles.navTextDisabled : styles.navTextEnabled]}>
                   →
                 </Text>
               </Pressable>
@@ -322,3 +313,27 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  playlistItemActive: {
+    borderColor: '#a855f7',
+    backgroundColor: 'rgba(88, 28, 135, 0.3)',
+  },
+  playlistItemInactive: {
+    borderColor: 'transparent',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  navButtonDisabled: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    opacity: 0.3,
+  },
+  navButtonEnabled: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  navTextDisabled: {
+    color: '#6b7280',
+  },
+  navTextEnabled: {
+    color: '#ffffff',
+  },
+});

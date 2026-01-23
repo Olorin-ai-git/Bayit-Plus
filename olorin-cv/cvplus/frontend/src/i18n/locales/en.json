@@ -1,0 +1,116 @@
+{
+  "common": {
+    "appName": "CVPlus",
+    "login": "Login",
+    "logout": "Logout",
+    "loading": "Loading...",
+    "error": "Error",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close"
+  },
+  "nav": {
+    "newCV": "New CV",
+    "dashboard": "Dashboard",
+    "pricing": "Pricing",
+    "menuOpen": "Open menu",
+    "menuClose": "Close menu"
+  },
+  "upload": {
+    "title": "Upload Your CV",
+    "step": "Step {{number}} of 3",
+    "dragDrop": "Drag & drop your CV here, or click to browse",
+    "chooseFile": "Choose File",
+    "supportedFormats": "Supported formats: PDF, DOCX (max 10MB)",
+    "invalidType": "Please upload a PDF or DOCX file",
+    "fileTooBig": "File size must be less than 10MB",
+    "uploadFailed": "Upload failed. Please try again.",
+    "uploadArea": "CV file upload area",
+    "fileSelected": "File {{name}} selected, ready to upload",
+    "uploading": "Uploading CV file, please wait...",
+    "remove": "Remove",
+    "uploadAnalyze": "Upload & Analyze"
+  },
+  "enhance": {
+    "title": "Enhance Your CV",
+    "analyzing": "Analyzing Your CV",
+    "processing": "Processing your CV...",
+    "aiAnalyzing": "Our AI is analyzing your experience, skills, and qualifications",
+    "analysisFailed": "Analysis Failed",
+    "uploadAnother": "Upload Another CV",
+    "noData": "No analysis data available",
+    "uploadCV": "Upload CV",
+    "tabs": {
+      "analysis": "AI Analysis",
+      "customize": "Customize",
+      "preview": "Preview"
+    },
+    "analysis": {
+      "title": "Analysis Results",
+      "topSkills": "Top Skills Detected",
+      "scores": "Analysis Scores",
+      "completeness": "Completeness Score:",
+      "ats": "ATS Compatibility:",
+      "recommendations": "Recommendations",
+      "missingSections": "Missing Sections"
+    },
+    "preview": {
+      "title": "CV Preview",
+      "experience": "Experience:",
+      "education": "Education:",
+      "years": "{{count}} years",
+      "notAvailable": "N/A",
+      "workHistory": "Work History",
+      "present": "Present",
+      "skills": "Skills",
+      "in": "in"
+    },
+    "customize": {
+      "title": "Customize Content",
+      "experienceLevel": "Experience Level",
+      "educationLevel": "Education Level",
+      "keySkills": "Key Skills",
+      "certifications": "Certifications",
+      "notSpecified": "Not specified"
+    },
+    "actions": "Actions",
+    "proceedToShare": "Proceed to Share →",
+    "proceedToShareShort": "Share →",
+    "saveDraft": "Save Draft",
+    "startOver": "Start Over"
+  },
+  "share": {
+    "title": "Share Your CV",
+    "stepComplete": "Step 3 of 3 - You're done! 🎉",
+    "download": "Download",
+    "downloadDescription": "Download your enhanced CV in your preferred format",
+    "downloadPDF": "📄 Download PDF",
+    "downloadDOCX": "📝 Download DOCX",
+    "publicProfile": "Public Profile",
+    "publicProfileDescription": "Share a beautiful online version of your CV",
+    "copyLink": "Copy Link",
+    "copied": "✓ Copied!",
+    "preview": "👁️ Preview",
+    "customize": "⚙️ Customize",
+    "socialShare": "Share on Social Media",
+    "socialShareDescription": "Let your network know about your updated CV",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter",
+    "qrCode": "QR Code",
+    "qrCodeDescription": "QR code for your CV to use on business cards or resumes",
+    "qrCodeComingSoon": "QR Code Generation Coming Soon",
+    "downloadQR": "Download QR Code",
+    "whatsNext": "What's Next?",
+    "whatsNextItems": {
+      "saved": "✓ Your CV is saved and ready to share",
+      "download": "✓ Download and use it for your job applications",
+      "shareProfile": "✓ Share your public profile link with recruiters",
+      "comeback": "✓ Come back anytime to update or create a new version"
+    },
+    "createAnother": "Create Another CV",
+    "viewDashboard": "View My Dashboard",
+    "featureComingSoon": "{{feature}} feature coming soon"
+  }
+}

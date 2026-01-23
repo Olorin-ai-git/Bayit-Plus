@@ -14,7 +14,19 @@ import {
   Gauge,
   Bell,
   CheckCircle,
-  TrendingDown
+  TrendingDown,
+  Activity,
+  GitBranch,
+  ShieldCheck,
+  Users,
+  DollarSign,
+  Lock,
+  Code,
+  BarChart3,
+  FileText,
+  Award,
+  Building2,
+  Quote
 } from 'lucide-react';
 
 const HomePage: React.FC = () => {
@@ -102,11 +114,11 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="fraud-homepage">
-      {/* Hero Section */}
+      {/* Hero Section with Feature Cards */}
       <HeroSection
         title={t('hero.title')}
         titleHighlight={t('hero.titleHighlight')}
-        subtitle={t('hero.description')}
+        subtitle={t('hero.subtitle')}
         primaryCTA={{
           text: t('hero.ctaExplore'),
           onClick: () => {
@@ -117,9 +129,328 @@ const HomePage: React.FC = () => {
           text: t('hero.ctaDemo'),
           onClick: () => navigate('/contact')
         }}
-        icon={<Shield className="w-32 h-32" />}
+        icon={<Shield className="w-24 h-24" />}
         backgroundPattern="circuit"
-      />
+      >
+        {/* Enterprise Feature Cards Grid */}
+        <div className="grid md:grid-cols-3 gap-8 mt-16 max-w-6xl mx-auto">
+          {/* Intelligent Threat Detection Section */}
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-wizard-accent-purple uppercase tracking-wider text-center">
+              {t('heroFeatures.threatDetection.title')}
+            </h3>
+            <div className="space-y-4">
+              <GlassCard className="p-6">
+                <div className="flex items-start space-x-4">
+                  <GlowingIcon icon={<Activity className="w-6 h-6" />} color="fraud" size="md" />
+                  <div>
+                    <h4 className="font-semibold text-wizard-text-primary mb-2">
+                      {t('heroFeatures.threatDetection.realTimeAnalysis.title')}
+                    </h4>
+                    <p className="text-sm text-wizard-text-secondary">
+                      {t('heroFeatures.threatDetection.realTimeAnalysis.description')}
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+
+              <GlassCard className="p-6">
+                <div className="flex items-start space-x-4">
+                  <GlowingIcon icon={<GitBranch className="w-6 h-6" />} color="fraud" size="md" />
+                  <div>
+                    <h4 className="font-semibold text-wizard-text-primary mb-2">
+                      {t('heroFeatures.threatDetection.crossDomain.title')}
+                    </h4>
+                    <p className="text-sm text-wizard-text-secondary">
+                      {t('heroFeatures.threatDetection.crossDomain.description')}
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+
+              <GlassCard className="p-6">
+                <div className="flex items-start space-x-4">
+                  <GlowingIcon icon={<ShieldCheck className="w-6 h-6" />} color="fraud" size="md" />
+                  <div>
+                    <h4 className="font-semibold text-wizard-text-primary mb-2">
+                      {t('heroFeatures.threatDetection.adaptiveBlocking.title')}
+                    </h4>
+                    <p className="text-sm text-wizard-text-secondary">
+                      {t('heroFeatures.threatDetection.adaptiveBlocking.description')}
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+            </div>
+          </div>
+
+          {/* Advanced Risk Management Section */}
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-wizard-accent-purple uppercase tracking-wider text-center">
+              {t('heroFeatures.riskManagement.title')}
+            </h3>
+            <div className="space-y-4">
+              <GlassCard className="p-6">
+                <div className="flex items-start space-x-4">
+                  <GlowingIcon icon={<Users className="w-6 h-6" />} color="fraud" size="md" />
+                  <div>
+                    <h4 className="font-semibold text-wizard-text-primary mb-2">
+                      {t('heroFeatures.riskManagement.behavioral.title')}
+                    </h4>
+                    <p className="text-sm text-wizard-text-secondary">
+                      {t('heroFeatures.riskManagement.behavioral.description')}
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+
+              <GlassCard className="p-6">
+                <div className="flex items-start space-x-4">
+                  <GlowingIcon icon={<DollarSign className="w-6 h-6" />} color="fraud" size="md" />
+                  <div>
+                    <h4 className="font-semibold text-wizard-text-primary mb-2">
+                      {t('heroFeatures.riskManagement.transactionMonitoring.title')}
+                    </h4>
+                    <p className="text-sm text-wizard-text-secondary">
+                      {t('heroFeatures.riskManagement.transactionMonitoring.description')}
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+
+              <GlassCard className="p-6">
+                <div className="flex items-start space-x-4">
+                  <GlowingIcon icon={<Lock className="w-6 h-6" />} color="fraud" size="md" />
+                  <div>
+                    <h4 className="font-semibold text-wizard-text-primary mb-2">
+                      {t('heroFeatures.riskManagement.accountProtection.title')}
+                    </h4>
+                    <p className="text-sm text-wizard-text-secondary">
+                      {t('heroFeatures.riskManagement.accountProtection.description')}
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+            </div>
+          </div>
+
+          {/* Seamless Integration & Reporting Section */}
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-wizard-accent-purple uppercase tracking-wider text-center">
+              {t('heroFeatures.integration.title')}
+            </h3>
+            <div className="space-y-4">
+              <GlassCard className="p-6">
+                <div className="flex items-start space-x-4">
+                  <GlowingIcon icon={<Code className="w-6 h-6" />} color="fraud" size="md" />
+                  <div>
+                    <h4 className="font-semibold text-wizard-text-primary mb-2">
+                      {t('heroFeatures.integration.apiSdk.title')}
+                    </h4>
+                    <p className="text-sm text-wizard-text-secondary">
+                      {t('heroFeatures.integration.apiSdk.description')}
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+
+              <GlassCard className="p-6">
+                <div className="flex items-start space-x-4">
+                  <GlowingIcon icon={<BarChart3 className="w-6 h-6" />} color="fraud" size="md" />
+                  <div>
+                    <h4 className="font-semibold text-wizard-text-primary mb-2">
+                      {t('heroFeatures.integration.dashboards.title')}
+                    </h4>
+                    <p className="text-sm text-wizard-text-secondary">
+                      {t('heroFeatures.integration.dashboards.description')}
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+
+              <GlassCard className="p-6">
+                <div className="flex items-start space-x-4">
+                  <GlowingIcon icon={<FileText className="w-6 h-6" />} color="fraud" size="md" />
+                  <div>
+                    <h4 className="font-semibold text-wizard-text-primary mb-2">
+                      {t('heroFeatures.integration.compliance.title')}
+                    </h4>
+                    <p className="text-sm text-wizard-text-secondary">
+                      {t('heroFeatures.integration.compliance.description')}
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+            </div>
+          </div>
+        </div>
+      </HeroSection>
+
+      {/* Trust Bar Section */}
+      <section className="wizard-section bg-wizard-bg-deep py-12">
+        <div className="wizard-container">
+          <div className="text-center mb-8">
+            <p className="text-sm text-wizard-text-secondary uppercase tracking-wider mb-2">
+              {t('trustBar.subtitle')}
+            </p>
+            <h2 className="text-2xl font-bold text-wizard-text-primary">
+              {t('trustBar.title')}
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+            {/* SOC 2 Badge */}
+            <GlassCard className="p-6 text-center">
+              <GlowingIcon icon={<Award className="w-12 h-12" />} color="fraud" size="lg" />
+              <p className="mt-4 text-sm font-semibold text-wizard-text-primary">
+                {t('trustBar.certifications.soc2')}
+              </p>
+            </GlassCard>
+
+            {/* ISO 27001 Badge */}
+            <GlassCard className="p-6 text-center">
+              <GlowingIcon icon={<Shield className="w-12 h-12" />} color="fraud" size="lg" />
+              <p className="mt-4 text-sm font-semibold text-wizard-text-primary">
+                {t('trustBar.certifications.iso')}
+              </p>
+            </GlassCard>
+
+            {/* GDPR Badge */}
+            <GlassCard className="p-6 text-center">
+              <GlowingIcon icon={<CheckCircle className="w-12 h-12" />} color="fraud" size="lg" />
+              <p className="mt-4 text-sm font-semibold text-wizard-text-primary">
+                {t('trustBar.certifications.gdpr')}
+              </p>
+            </GlassCard>
+
+            {/* PCI-DSS Badge */}
+            <GlassCard className="p-6 text-center">
+              <GlowingIcon icon={<Shield className="w-12 h-12" />} color="fraud" size="lg" />
+              <p className="mt-4 text-sm font-semibold text-wizard-text-primary">
+                {t('trustBar.certifications.pci')}
+              </p>
+            </GlassCard>
+          </div>
+        </div>
+      </section>
+
+      {/* Client Logo Carousel Section */}
+      <section className="wizard-section bg-wizard-bg-primary py-12">
+        <div className="wizard-container">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-wizard-text-primary mb-4">
+              {t('clientLogos.title')}
+            </h2>
+            <p className="text-lg text-wizard-text-secondary">
+              {t('clientLogos.subtitle')}
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center opacity-60 hover:opacity-100 transition-opacity">
+            {/* Placeholder for client logos - will be replaced with actual images */}
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+              <div key={i} className="flex items-center justify-center h-16">
+                <Building2 className="w-12 h-12 text-wizard-text-secondary" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Customer Testimonials Section */}
+      <section className="wizard-section bg-wizard-bg-deep py-20">
+        <div className="wizard-container">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-wizard-text-primary mb-4">
+              {t('testimonials.title')}
+            </h2>
+            <p className="text-lg text-wizard-text-secondary">
+              {t('testimonials.subtitle')}
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Testimonial 1 */}
+            <GlassCard className="p-8">
+              <GlowingIcon icon={<Quote className="w-10 h-10" />} color="fraud" size="lg" />
+              <p className="text-wizard-text-secondary mt-6 mb-6 italic">
+                "{t('testimonials.testimonial1.quote')}"
+              </p>
+              <div className="border-t border-wizard-border-primary pt-6">
+                <p className="font-semibold text-wizard-text-primary">
+                  {t('testimonials.testimonial1.author')}
+                </p>
+                <p className="text-sm text-wizard-text-secondary mb-4">
+                  {t('testimonials.testimonial1.company')}
+                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                    <span className="text-sm text-wizard-accent-purple font-semibold">
+                      {t('testimonials.testimonial1.result')}
+                    </span>
+                  </div>
+                  <p className="text-sm text-wizard-text-secondary pl-6">
+                    {t('testimonials.testimonial1.metric')}
+                  </p>
+                </div>
+              </div>
+            </GlassCard>
+
+            {/* Testimonial 2 */}
+            <GlassCard className="p-8">
+              <GlowingIcon icon={<Quote className="w-10 h-10" />} color="fraud" size="lg" />
+              <p className="text-wizard-text-secondary mt-6 mb-6 italic">
+                "{t('testimonials.testimonial2.quote')}"
+              </p>
+              <div className="border-t border-wizard-border-primary pt-6">
+                <p className="font-semibold text-wizard-text-primary">
+                  {t('testimonials.testimonial2.author')}
+                </p>
+                <p className="text-sm text-wizard-text-secondary mb-4">
+                  {t('testimonials.testimonial2.company')}
+                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                    <span className="text-sm text-wizard-accent-purple font-semibold">
+                      {t('testimonials.testimonial2.result')}
+                    </span>
+                  </div>
+                  <p className="text-sm text-wizard-text-secondary pl-6">
+                    {t('testimonials.testimonial2.metric')}
+                  </p>
+                </div>
+              </div>
+            </GlassCard>
+
+            {/* Testimonial 3 */}
+            <GlassCard className="p-8">
+              <GlowingIcon icon={<Quote className="w-10 h-10" />} color="fraud" size="lg" />
+              <p className="text-wizard-text-secondary mt-6 mb-6 italic">
+                "{t('testimonials.testimonial3.quote')}"
+              </p>
+              <div className="border-t border-wizard-border-primary pt-6">
+                <p className="font-semibold text-wizard-text-primary">
+                  {t('testimonials.testimonial3.author')}
+                </p>
+                <p className="text-sm text-wizard-text-secondary mb-4">
+                  {t('testimonials.testimonial3.company')}
+                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                    <span className="text-sm text-wizard-accent-purple font-semibold">
+                      {t('testimonials.testimonial3.result')}
+                    </span>
+                  </div>
+                  <p className="text-sm text-wizard-text-secondary pl-6">
+                    {t('testimonials.testimonial3.metric')}
+                  </p>
+                </div>
+              </div>
+            </GlassCard>
+          </div>
+        </div>
+      </section>
 
       {/* How Our Agents Explore Section */}
       <section id="agents" className="wizard-section bg-wizard-bg-primary">

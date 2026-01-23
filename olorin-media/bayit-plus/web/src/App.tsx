@@ -1,11 +1,13 @@
 import { useEffect, lazy, Suspense } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { loadSavedLanguage } from '@bayit/shared-i18n'
 import { useDirection } from '@/hooks/useDirection'
 import { VoiceListeningProvider } from '@bayit/shared-contexts'
 import { ModalProvider } from '@/contexts/ModalContext'
 import Layout from './components/layout/Layout'
 import FullscreenVideoOverlay from './components/player/FullscreenVideoOverlay'
+import { useAuthStore } from '@/stores/authStore'
+import './styles/layout-fix.css'
 
 // Loading fallback component
 const LoadingFallback = () => (
@@ -16,6 +18,14 @@ const LoadingFallback = () => (
     </div>
   </div>
 )
+
+// Admin-only route wrapper
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAdmin, isLoading } = useAuthStore()
+  if (isLoading) return <LoadingFallback />
+  if (!isAdmin()) return <Navigate to="/" replace />
+  return <>{children}</>
+}
 
 // Core pages (eagerly loaded for better initial experience)
 import HomePage from './pages/HomePage'
@@ -38,7 +48,6 @@ const SeriesDetailPage = lazy(() => import('./pages/SeriesDetailPage'))
 const MovieDetailPage = lazy(() => import('./pages/MovieDetailPage'))
 const JudaismPage = lazy(() => import('./pages/JudaismPage'))
 const ChildrenPage = lazy(() => import('./pages/ChildrenPage'))
-const FlowsPage = lazy(() => import('./pages/FlowsPage'))
 const FavoritesPage = lazy(() => import('./pages/FavoritesPage'))
 const DownloadsPage = lazy(() => import('./pages/DownloadsPage'))
 const WatchlistPage = lazy(() => import('./pages/WatchlistPage'))
@@ -155,8 +164,7 @@ function App() {
           <Route path="/subscribe" element={<SubscribePage />} />
           <Route path="/judaism" element={<JudaismPage />} />
           <Route path="/children" element={<ChildrenPage />} />
-          <Route path="/flows" element={<FlowsPage />} />
-          <Route path="/games" element={<ChessPage />} />
+          <Route path="/games" element={<AdminRoute><ChessPage /></AdminRoute>} />
           <Route path="/friends" element={<FriendsPage />} />
           <Route path="/player/:userId" element={<PlayerProfilePage />} />
           <Route path="/favorites" element={<FavoritesPage />} />

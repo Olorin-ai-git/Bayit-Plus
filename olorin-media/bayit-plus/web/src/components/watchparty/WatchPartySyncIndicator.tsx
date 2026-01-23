@@ -1,4 +1,4 @@
-import { View, Text, Animated } from 'react-native'
+import { View, Text, Animated, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { RefreshCw, Check, Pause } from 'lucide-react'
 import { useRef, useEffect } from 'react'
@@ -34,16 +34,16 @@ export default function WatchPartySyncIndicator({ isHost, isSynced, hostPaused }
       return {
         icon: <Pause size={14} color="#FBBF24" />,
         text: t('watchParty.hostPaused'),
-        containerClass: 'bg-amber-500/10 border-amber-500/20',
-        textClass: 'text-amber-400',
+        containerStyle: styles.containerPaused,
+        textStyle: styles.textPaused,
       }
     }
     if (isSynced) {
       return {
         icon: <Check size={14} color="#34D399" />,
         text: t('watchParty.synced'),
-        containerClass: 'bg-emerald-500/10 border-emerald-500/20',
-        textClass: 'text-emerald-400',
+        containerStyle: styles.containerSynced,
+        textStyle: styles.textSynced,
       }
     }
     const spin = spinAnim.interpolate({
@@ -57,17 +57,41 @@ export default function WatchPartySyncIndicator({ isHost, isSynced, hostPaused }
         </Animated.View>
       ),
       text: t('watchParty.syncing'),
-      containerClass: 'bg-purple-700/20 border-purple-700/30',
-      textClass: 'text-blue-400',
+      containerStyle: styles.containerSyncing,
+      textStyle: styles.textSyncing,
     }
   }
 
   const state = getState()
 
   return (
-    <View className={`flex-row items-center gap-2 px-3 py-2 rounded-full border ${state.containerClass}`}>
+    <View className="flex-row items-center gap-2 px-3 py-2 rounded-full border" style={[state.containerStyle]}>
       {state.icon}
-      <Text className={`text-xs font-medium ${state.textClass}`}>{state.text}</Text>
+      <Text className="text-xs font-medium" style={[state.textStyle]}>{state.text}</Text>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  containerPaused: {
+    backgroundColor: 'rgba(251, 191, 36, 0.1)',
+    borderColor: 'rgba(251, 191, 36, 0.2)',
+  },
+  textPaused: {
+    color: '#FBBF24',
+  },
+  containerSynced: {
+    backgroundColor: 'rgba(52, 211, 153, 0.1)',
+    borderColor: 'rgba(52, 211, 153, 0.2)',
+  },
+  textSynced: {
+    color: '#34D399',
+  },
+  containerSyncing: {
+    backgroundColor: 'rgba(109, 40, 217, 0.2)',
+    borderColor: 'rgba(109, 40, 217, 0.3)',
+  },
+  textSyncing: {
+    color: '#60A5FA',
+  },
+})

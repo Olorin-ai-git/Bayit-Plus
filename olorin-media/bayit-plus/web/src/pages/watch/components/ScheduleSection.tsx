@@ -3,7 +3,7 @@
  * Displays EPG schedule for live channels
  */
 
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { GlassCard } from '@bayit/shared/ui';
 import { colors } from '@bayit/shared/theme';
 import { ScheduleItem } from '../types';
@@ -29,7 +29,8 @@ export function ScheduleSection({
       {schedule.map((show, i) => (
         <GlassCard
           key={i}
-          className={`p-3 mb-3 ${show.isNow ? 'border border-green-500' : ''}`}
+          className="p-3 mb-3"
+          style={[show.isNow && styles.scheduleItemNow]}
         >
           <View className="flex-row items-center justify-between mb-2">
             <Text className="text-sm text-gray-400">{show.time}</Text>
@@ -45,3 +46,10 @@ export function ScheduleSection({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  scheduleItemNow: {
+    borderWidth: 1,
+    borderColor: '#22c55e',
+  },
+});

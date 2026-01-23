@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -79,17 +79,12 @@ interface Category {
 
 // Section skeleton component for individual sections
 function SectionSkeleton() {
-  const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
-
   return (
-    <View className={`mt-8 ${IS_TV_BUILD ? 'px-8' : 'px-4'}`}>
-      <View className="w-36 h-7 bg-white/5 rounded-lg mb-4" />
-      <View className="flex flex-row gap-4">
+    <View style={styles.skeletonSection}>
+      <View style={styles.skeletonTitle} />
+      <View style={styles.skeletonRow}>
         {[1, 2, 3, 4, 5].map((j) => (
-          <View
-            key={j}
-            className={`${IS_TV_BUILD ? 'w-70' : 'w-50'} aspect-video bg-white/[0.03] rounded-xl`}
-          />
+          <View key={j} style={styles.skeletonCard} />
         ))}
       </View>
     </View>
@@ -98,11 +93,10 @@ function SectionSkeleton() {
 
 // Hero skeleton with Avatar placeholder
 function HeroSkeleton() {
-  const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
   const placeholderImage = 'https://image.tmdb.org/t/p/original/s16H6tpK2utvwDtzZ8Qy4qm5Emw.jpg';
 
   return (
-    <View className={`${IS_TV_BUILD ? 'h-[550px]' : 'h-[600px]'} bg-white/[0.03] relative overflow-hidden rounded-2xl`}>
+    <View style={styles.skeletonHero}>
       <img
         src={placeholderImage}
         alt="Loading..."
@@ -115,16 +109,10 @@ function HeroSkeleton() {
           left: 0,
         }}
       />
-      <View className="absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-b from-black/30 via-black/60 to-black/95" />
-      <View className={`absolute ${IS_TV_BUILD ? 'bottom-30 left-16' : 'bottom-20 left-6'} flex flex-row items-center gap-4`}>
-        <div className="loading-spinner" style={{
-          width: IS_TV_BUILD ? 32 : 24,
-          height: IS_TV_BUILD ? 32 : 24,
-          borderRadius: '50%',
-          border: '3px solid rgba(107, 33, 168, 0.3)',
-          borderTopColor: '#7e22ce',
-        }} />
-        <Text className={`${IS_TV_BUILD ? 'text-2xl' : 'text-xl'} font-semibold text-white drop-shadow-lg`}>Loading...</Text>
+      <View style={styles.skeletonHeroOverlay} />
+      <View style={styles.skeletonLoadingContainer}>
+        <View style={styles.loadingSpinner} />
+        <Text style={styles.skeletonLoadingText}>Loading...</Text>
       </View>
     </View>
   );
@@ -278,24 +266,22 @@ export default function HomePage() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-black" contentContainerStyle={{ paddingBottom: spacing.xl * 2 }}>
-      {/* Header Bar - Dynamic Culture Clock and Refresh Button */}
-      <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} justify-between items-center ${IS_TV_BUILD ? 'px-8 pt-4 pb-2' : 'px-4 pt-4 pb-2'}`}>
-        {/* Dynamic Culture Clock - shows culture time + local time */}
+    <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
+      {/* Header Bar - Dual Time Clocks (Dynamic Culture + USA) */}
+      <View style={[styles.headerBar, isRTL && styles.headerBarRTL]}>
+        {/* Dynamic Culture Clock - changes based on selected culture */}
         <CultureClock
           cultureId={currentCulture?.culture_id}
-          showLocalTime
-          variant="dual"
+          variant="large"
+          style={styles.clockLeft}
         />
 
-        {/* Refresh Button */}
-        <Pressable
-          onPress={syncContent}
-          disabled={syncing}
-          className={`w-12 h-12 rounded-full justify-center items-center bg-emerald-500/20 ${syncing ? 'opacity-70 cursor-not-allowed' : ''} transition-all duration-300`}
-        >
-          <RefreshCw size={20} color={colors.text} />
-        </Pressable>
+        {/* USA Clock - always fixed */}
+        <CultureClock
+          cultureId="usa"
+          variant="large"
+          style={styles.clockRight}
+        />
       </View>
 
       {/* Shabbat Mode Banner - appears during Shabbat */}
@@ -305,7 +291,23 @@ export default function HomePage() {
       <ShabbatEveSection />
 
       {/* Hero Carousel Section */}
-      <View className={`${IS_TV_BUILD ? 'px-8 pt-4' : 'px-4 pt-2'}`}>
+      <View style={styles.carouselSection}>
+        {/* Refresh Button - Positioned in carousel section */}
+        <Pressable
+          onPress={syncContent}
+          disabled={syncing}
+          style={[styles.refreshButton, syncing && styles.refreshButtonDisabled]}
+        >
+          <RefreshCw
+            size={16}
+            color={colors.text}
+            style={syncing ? { transform: [{ rotate: '360deg' }] } : undefined}
+          />
+          <Text style={styles.refreshButtonText}>
+            {syncing ? t('common.syncing', 'Syncing...') : t('common.refresh', 'Refresh')}
+          </Text>
+        </Pressable>
+
         {carouselLoading ? (
           <HeroSkeleton />
         ) : (
@@ -333,7 +335,7 @@ export default function HomePage() {
           <ContentCarousel
             title={t('home.continueWatching')}
             items={filteredContinueWatching}
-            className={`${IS_TV_BUILD ? 'mt-12 px-8' : 'mt-8 px-4'}`}
+            style={styles.section}
           />
         ) : null;
       })()}
@@ -342,23 +344,23 @@ export default function HomePage() {
       {liveLoading ? (
         <SectionSkeleton />
       ) : liveChannels.length > 0 && (
-        <View className={`${IS_TV_BUILD ? 'mt-12 px-8' : 'mt-8 px-4'}`}>
-          <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center justify-between mb-4`}>
-            <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center gap-2`}>
-              <View className="flex flex-row items-center bg-red-500 px-2 py-1 rounded gap-1">
-                <View className="w-1.5 h-1.5 rounded-full bg-white" />
-                <Text className={`${IS_TV_BUILD ? 'text-[12px]' : 'text-[10px]'} font-bold text-white`}>{t('common.live')}</Text>
+        <View style={styles.section}>
+          <View style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View style={[styles.sectionTitleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <View style={styles.liveBadge}>
+                <View style={styles.liveDot} />
+                <Text style={styles.liveBadgeText}>{t('common.live')}</Text>
               </View>
-              <Text className={`${IS_TV_BUILD ? 'text-2xl' : 'text-xl'} font-bold text-white ${isRTL ? 'text-right' : 'text-left'}`}>{t('home.liveTV')}</Text>
+              <Text style={[styles.sectionTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{t('home.liveTV')}</Text>
             </View>
             <Link to="/live" style={{ textDecoration: 'none' }}>
-              <Text className={`${IS_TV_BUILD ? 'text-lg' : 'text-sm'} text-purple-600 font-medium`}>{t('home.allChannels')}</Text>
+              <Text style={styles.seeAll}>{t('home.allChannels')}</Text>
             </Link>
           </View>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: IS_TV_BUILD ? spacing.md : spacing.sm, paddingRight: spacing.md }}
+            contentContainerStyle={[styles.liveRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
           >
             {liveChannels.slice(0, 8).map((channel, index) => (
               <AnimatedCard
@@ -366,7 +368,7 @@ export default function HomePage() {
                 index={index}
                 variant="carousel"
                 isRTL={isRTL}
-                className={`${IS_TV_BUILD ? 'w-80' : 'w-60'}`}
+                style={styles.liveCardWrapper}
               >
                 <GlassLiveChannelCard
                   channel={channel}
@@ -380,13 +382,13 @@ export default function HomePage() {
       )}
 
       {/* Dynamic Culture Trending - shows trending topics for selected culture */}
-      <View className={`${IS_TV_BUILD ? 'mt-12 px-8' : 'mt-8 px-4'}`}>
+      <View style={styles.section}>
         <CultureTrendingRow cultureId={currentCulture?.culture_id} />
       </View>
 
       {/* Dynamic Culture City Rows - shows cities based on selected culture */}
       {cultureCities.map((city) => (
-        <View key={city.city_id} className={`${IS_TV_BUILD ? 'mt-12 px-8' : 'mt-8 px-4'}`}>
+        <View key={city.city_id} style={styles.section}>
           <CultureCityRow
             cityId={city.city_id}
             cultureId={currentCulture?.culture_id}
@@ -397,17 +399,17 @@ export default function HomePage() {
       {/* Fallback to hardcoded rows if no culture cities loaded yet */}
       {cultureCities.length === 0 && !cultureLoading && (
         <>
-          <View className={`${IS_TV_BUILD ? 'mt-12 px-8' : 'mt-8 px-4'}`}>
+          <View style={styles.section}>
             <JerusalemRow />
           </View>
-          <View className={`${IS_TV_BUILD ? 'mt-12 px-8' : 'mt-8 px-4'}`}>
+          <View style={styles.section}>
             <TelAvivRow />
           </View>
         </>
       )}
 
       {/* Content Filters */}
-      <View className={`${IS_TV_BUILD ? 'px-8 my-4' : 'px-4 my-4'} items-start`}>
+      <View style={styles.filterSection}>
         <GlassCheckbox
           label={t('home.showOnlyWithSubtitles', 'Show only with subtitles')}
           checked={showOnlyWithSubtitles}
@@ -438,10 +440,188 @@ export default function HomePage() {
             title={getLocalizedName(category, i18n.language)}
             items={filteredItems}
             seeAllLink={`/vod?category=${category.id}`}
-            className={`${IS_TV_BUILD ? 'mt-12 px-8' : 'mt-8 px-4'}`}
+            style={styles.section}
           />
         );
       })}
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  page: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  pageContent: {
+    paddingBottom: spacing.xl * 2,
+  },
+  // Header Bar
+  headerBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
+  },
+  headerBarRTL: {
+    flexDirection: 'row-reverse',
+  },
+  clockLeft: {
+    alignItems: 'flex-start',
+  },
+  clockRight: {
+    alignItems: 'flex-end',
+  },
+  refreshButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    alignSelf: 'flex-end',
+    marginBottom: spacing.sm,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+  },
+  refreshButtonDisabled: {
+    opacity: 0.5,
+    cursor: 'not-allowed',
+  },
+  refreshButtonText: {
+    color: colors.textSecondary,
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  // Carousel Section
+  carouselSection: {
+    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
+    paddingTop: IS_TV_BUILD ? spacing.md : spacing.sm,
+  },
+  // Filter Section
+  filterSection: {
+    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
+    marginVertical: spacing.md,
+    alignItems: 'flex-start',
+  },
+  // Sections
+  section: {
+    marginTop: IS_TV_BUILD ? spacing.xl * 1.5 : spacing.xl,
+    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+  },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  sectionTitle: {
+    fontSize: IS_TV_BUILD ? 28 : 20,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  seeAll: {
+    fontSize: IS_TV_BUILD ? 18 : 14,
+    color: colors.primary,
+    fontWeight: '500',
+  },
+  liveBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.error,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: 4,
+    gap: 4,
+  },
+  liveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.text,
+  },
+  liveBadgeText: {
+    fontSize: IS_TV_BUILD ? 12 : 10,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  liveRow: {
+    gap: IS_TV_BUILD ? spacing.md : spacing.sm,
+    paddingRight: spacing.md,
+  },
+  liveCardWrapper: {
+    width: IS_TV_BUILD ? 320 : 240,
+  },
+  // Skeleton
+  skeletonHero: {
+    height: IS_TV_BUILD ? 550 : 600,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    position: 'relative',
+    overflow: 'hidden',
+    borderRadius: 16,
+  },
+  skeletonHeroOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    // Use backgroundImage instead of background shorthand for React Native Web
+    backgroundImage: 'linear-gradient(to bottom, rgba(10, 10, 20, 0.3) 0%, rgba(10, 10, 20, 0.6) 50%, rgba(10, 10, 20, 0.95) 100%)' as any,
+  },
+  skeletonLoadingContainer: {
+    position: 'absolute',
+    bottom: IS_TV_BUILD ? 120 : 80,
+    left: IS_TV_BUILD ? spacing.xl * 2 : spacing.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  skeletonLoadingText: {
+    fontSize: IS_TV_BUILD ? 28 : 22,
+    fontWeight: '600',
+    color: colors.text,
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  skeletonSection: {
+    marginTop: spacing.xl,
+    paddingHorizontal: spacing.md,
+  },
+  skeletonTitle: {
+    width: 150,
+    height: 28,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 8,
+    marginBottom: spacing.md,
+  },
+  skeletonRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  skeletonCard: {
+    width: IS_TV_BUILD ? 280 : 200,
+    aspectRatio: 16 / 9,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 12,
+  },
+  loadingSpinner: {
+    width: IS_TV_BUILD ? 32 : 24,
+    height: IS_TV_BUILD ? 32 : 24,
+    borderRadius: '50%',
+    borderWidth: 3,
+    borderColor: 'rgba(107, 33, 168, 0.3)',
+    borderTopColor: '#7e22ce',
+  },
+});

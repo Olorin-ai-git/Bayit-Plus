@@ -12,6 +12,14 @@ import DemoPage from './pages/DemoPage';
 import PricingPage from './pages/PricingPage';
 import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
+import TransactionMonitoringPage from './pages/TransactionMonitoringPage';
+import ChargebackPreventionPage from './pages/ChargebackPreventionPage';
+import APIDocumentationPage from './pages/APIDocumentationPage';
+import AccountTakeoverPage from './pages/AccountTakeoverPage';
+import PaymentFraudPage from './pages/PaymentFraudPage';
+import IdentityVerificationPage from './pages/IdentityVerificationPage';
+import BotDetectionPage from './pages/BotDetectionPage';
+import CompliancePage from './pages/CompliancePage';
 
 function App() {
   const { t } = useTranslation();
@@ -26,15 +34,28 @@ function App() {
     {
       label: 'Solutions',
       items: [
+        { name: t('nav.transactionMonitoring'), href: '/transaction-monitoring', description: 'Real-time transaction analysis' },
+        { name: t('nav.chargebackPrevention'), href: '/chargeback-prevention', description: 'Reduce chargebacks by 80%+' },
+        { name: t('nav.accountTakeover'), href: '/account-takeover', description: 'Prevent unauthorized access' },
+        { name: t('nav.paymentFraud'), href: '/payment-fraud', description: 'Stop payment fraud' },
+        { name: t('nav.identityVerification'), href: '/identity-verification', description: 'Verify user identities' },
+        { name: t('nav.botDetection'), href: '/bot-detection', description: 'Detect and block bots' },
+        { name: t('nav.compliance'), href: '/compliance', description: 'Compliance & reporting' },
         { name: t('nav.useCases'), href: '/use-cases', description: 'Industry-specific solutions' },
-        { name: t('nav.compare'), href: '/compare', description: 'See how we stack up' },
-        { name: t('nav.roi'), href: '/roi', description: 'Calculate your savings' },
       ]
     },
     {
-      label: 'Resources',
+      label: 'Developers',
       items: [
+        { name: t('nav.apiDocs'), href: '/api-documentation', description: 'API reference & SDKs' },
         { name: t('nav.demo'), href: '/demo', description: 'Try our live demo' },
+      ]
+    },
+    {
+      label: 'Company',
+      items: [
+        { name: t('nav.compare'), href: '/compare', description: 'See how we stack up' },
+        { name: t('nav.roi'), href: '/roi', description: 'Calculate your savings' },
         { name: t('nav.pricing'), href: '/pricing', description: 'View pricing plans' },
         { name: t('nav.contact'), href: '/contact', description: 'Get in touch' },
       ]
@@ -64,6 +85,14 @@ function App() {
             <Route path="/demo" element={<DemoPage />} />
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/transaction-monitoring" element={<TransactionMonitoringPage />} />
+            <Route path="/chargeback-prevention" element={<ChargebackPreventionPage />} />
+            <Route path="/api-documentation" element={<APIDocumentationPage />} />
+            <Route path="/account-takeover" element={<AccountTakeoverPage />} />
+            <Route path="/payment-fraud" element={<PaymentFraudPage />} />
+            <Route path="/identity-verification" element={<IdentityVerificationPage />} />
+            <Route path="/bot-detection" element={<BotDetectionPage />} />
+            <Route path="/compliance" element={<CompliancePage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>

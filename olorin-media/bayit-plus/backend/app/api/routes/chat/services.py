@@ -134,7 +134,7 @@ Should the app take an action? Return ONLY a JSON response (no other text).
 If NO action needed, return: {{"action": null}}
 
 If action IS needed, return ONE of these formats:
-- Navigation: {{"action": "navigate", "target": "movies|series|channels|radio|podcasts|flows|judaism|children|home|chess|games"}}
+- Navigation: {{"action": "navigate", "target": "movies|series|channels|radio|podcasts|judaism|children|home|chess"}}
 - Play: {{"action": "play"}}
 - Search: {{"action": "search", "query": "search terms"}}
 - Pause/Resume/Skip: {{"action": "pause"|"resume"|"skip"}}

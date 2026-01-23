@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Search, X, AlertCircle, RefreshCw, Trash2, Star, StarOff } from 'lucide-react'
 import HierarchicalContentTable from '@/components/admin/HierarchicalContentTable'
@@ -8,7 +8,7 @@ import { GlassInput, GlassSelect, GlassButton, GlassCheckbox } from '@bayit/shar
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
-import { spacing, borderRadius } from '@bayit/shared/theme'
+import { spacing, borderRadius, colors } from '@bayit/shared/theme'
 
 interface ContentItem {
   id: string
@@ -191,7 +191,7 @@ export default function ContentLibraryPage() {
   }
 
   return (
-    <ScrollView className="flex-1">
+    <ScrollView style={styles.container}>
       <View style={styles.content}>
         {/* Header */}
         <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -253,7 +253,7 @@ export default function ContentLibraryPage() {
         {error && (
           <View style={styles.errorContainer}>
             <AlertCircle size={18} color="#ef4444" />
-            <Text className="flex-1 text-red-500 text-sm">{error}</Text>
+            <Text style={styles.errorText}>{error}</Text>
             <Pressable onPress={() => setError(null)}>
               <X size={18} color="#ef4444" />
             </Pressable>
@@ -327,3 +327,101 @@ export default function ContentLibraryPage() {
   )
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    padding: spacing.lg,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+    gap: spacing.md,
+  },
+  pageTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  refreshButton: {
+    minWidth: 44,
+  },
+  filtersContainer: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+    flexWrap: 'wrap',
+  },
+  searchWrapper: {
+    flex: 1,
+    minWidth: 250,
+  },
+  filterWrapper: {
+    minWidth: 180,
+  },
+  checkboxWrapper: {
+    justifyContent: 'center',
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+    marginBottom: spacing.lg,
+  },
+  errorText: {
+    flex: 1,
+    color: colors.error,
+    fontSize: 14,
+  },
+  batchActionBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: spacing.md,
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    marginBottom: spacing.lg,
+  },
+  batchActionInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  batchSelectedText: {
+    fontSize: 14,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  clearSelectionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    padding: spacing.xs,
+  },
+  clearSelectionText: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.7)',
+  },
+  batchActions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  batchButton: {
+    minWidth: 100,
+  },
+});

@@ -1,4 +1,4 @@
-import { Pressable, View, Text } from 'react-native';
+import { Pressable, View, Text, StyleSheet } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { GlassCard, GlassAvatar } from '@bayit/shared/ui';
 import type { UserCardProps } from '../types';
@@ -34,19 +34,20 @@ export function FriendCard({
     <GlassCard className="p-4">
       <Pressable
         onPress={viewProfile}
-        className={`items-center gap-4 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}
+        className="items-center gap-4"
+        style={[isRTL ? styles.rowReverse : styles.row]}
       >
         <GlassAvatar uri={avatar} name={name} size="medium" />
 
         <View className="flex-1">
-          <Text className={`text-base font-semibold text-white mb-0.5 ${isRTL ? 'text-right' : ''}`}>{name}</Text>
+          <Text className="text-base font-semibold text-white mb-0.5" style={[isRTL && styles.textRight]}>{name}</Text>
           {subtitle && (
-            <Text className={`text-[13px] text-white/60 mb-1 ${isRTL ? 'text-right' : ''}`}>
+            <Text className="text-[13px] text-white/60 mb-1" style={[isRTL && styles.textRight]}>
               {subtitle}
             </Text>
           )}
           {(friendCount !== undefined || gamesPlayed !== undefined) && (
-            <View className={`gap-4 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+            <View className="gap-4" style={[isRTL ? styles.rowReverse : styles.row]}>
               {friendCount !== undefined && (
                 <Text className="text-xs text-white/60">{friendCount} friends</Text>
               )}
@@ -57,7 +58,7 @@ export function FriendCard({
           )}
         </View>
 
-        <View className={`items-center gap-2 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+        <View className="items-center gap-2" style={[isRTL ? styles.rowReverse : styles.row]}>
           {secondaryAction && SecondaryIcon && (
             <Pressable
               onPress={(e) => {
@@ -91,3 +92,15 @@ export function FriendCard({
     </GlassCard>
   );
 }
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+});

@@ -1,0 +1,116 @@
+{
+  "common": {
+    "appName": "CVPlus",
+    "login": "התחברות",
+    "logout": "התנתקות",
+    "loading": "טוען...",
+    "error": "שגיאה",
+    "save": "שמור",
+    "cancel": "ביטול",
+    "delete": "מחק",
+    "edit": "ערוך",
+    "close": "סגור"
+  },
+  "nav": {
+    "newCV": "קורות חיים חדשים",
+    "dashboard": "לוח בקרה",
+    "pricing": "תמחור",
+    "menuOpen": "פתח תפריט",
+    "menuClose": "סגור תפריט"
+  },
+  "upload": {
+    "title": "העלה את קורות החיים שלך",
+    "step": "שלב {{number}} מתוך 3",
+    "dragDrop": "גרור ושחרר את קורות החיים כאן, או לחץ לבחירה",
+    "chooseFile": "בחר קובץ",
+    "supportedFormats": "פורמטים נתמכים: PDF, DOCX (עד 10MB)",
+    "invalidType": "אנא העלה קובץ PDF או DOCX",
+    "fileTooBig": "גודל הקובץ חייב להיות פחות מ-10MB",
+    "uploadFailed": "ההעלאה נכשלה. אנא נסה שוב.",
+    "uploadArea": "אזור העלאת קורות חיים",
+    "fileSelected": "הקובץ {{name}} נבחר, מוכן להעלאה",
+    "uploading": "מעלה קובץ קורות חיים, אנא המתן...",
+    "remove": "הסר",
+    "uploadAnalyze": "העלה ונתח"
+  },
+  "enhance": {
+    "title": "שפר את קורות החיים שלך",
+    "analyzing": "מנתח את קורות החיים שלך",
+    "processing": "מעבד את קורות החיים שלך...",
+    "aiAnalyzing": "הבינה המלאכותית שלנו מנתחת את הניסיון, הכישורים והכישורים שלך",
+    "analysisFailed": "הניתוח נכשל",
+    "uploadAnother": "העלה קורות חיים אחרים",
+    "noData": "אין נתוני ניתוח זמינים",
+    "uploadCV": "העלה קורות חיים",
+    "tabs": {
+      "analysis": "ניתוח בינה מלאכותית",
+      "customize": "התאם אישית",
+      "preview": "תצוגה מקדימה"
+    },
+    "analysis": {
+      "title": "תוצאות הניתוח",
+      "topSkills": "הכישורים המובילים שזוהו",
+      "scores": "ציוני ניתוח",
+      "completeness": "ציון שלמות:",
+      "ats": "תאימות למערכות גיוס:",
+      "recommendations": "המלצות",
+      "missingSections": "סעיפים חסרים"
+    },
+    "preview": {
+      "title": "תצוגה מקדימה של קורות חיים",
+      "experience": "ניסיון:",
+      "education": "השכלה:",
+      "years": "{{count}} שנים",
+      "notAvailable": "לא זמין",
+      "workHistory": "היסטוריית עבודה",
+      "present": "היום",
+      "skills": "כישורים",
+      "in": "ב"
+    },
+    "customize": {
+      "title": "התאמת תוכן",
+      "experienceLevel": "רמת ניסיון",
+      "educationLevel": "רמת השכלה",
+      "keySkills": "כישורים מרכזיים",
+      "certifications": "הסמכות",
+      "notSpecified": "לא צוין"
+    },
+    "actions": "פעולות",
+    "proceedToShare": "המשך לשיתוף ←",
+    "proceedToShareShort": "שתף ←",
+    "saveDraft": "שמור טיוטה",
+    "startOver": "התחל מחדש"
+  },
+  "share": {
+    "title": "שתף את קורות החיים שלך",
+    "stepComplete": "שלב 3 מתוך 3 - סיימת! 🎉",
+    "download": "הורדה",
+    "downloadDescription": "הורד את קורות החיים המשופרים שלך בפורמט המועדף עליך",
+    "downloadPDF": "📄 הורד PDF",
+    "downloadDOCX": "📝 הורד DOCX",
+    "publicProfile": "פרופיל ציבורי",
+    "publicProfileDescription": "שתף גרסה מקוונת יפה של קורות החיים שלך",
+    "copyLink": "העתק קישור",
+    "copied": "✓ הועתק!",
+    "preview": "👁️ תצוגה מקדימה",
+    "customize": "⚙️ התאם אישית",
+    "socialShare": "שתף ברשתות חברתיות",
+    "socialShareDescription": "הודע לרשת שלך על קורות החיים המעודכנים שלך",
+    "linkedin": "לינקדאין",
+    "twitter": "טוויטר",
+    "qrCode": "קוד QR",
+    "qrCodeDescription": "קוד QR לקורות החיים שלך לשימוש בכרטיסי ביקור או קורות חיים",
+    "qrCodeComingSoon": "יצירת קוד QR בקרוב",
+    "downloadQR": "הורד קוד QR",
+    "whatsNext": "מה הלאה?",
+    "whatsNextItems": {
+      "saved": "✓ קורות החיים שלך נשמרו ומוכנים לשיתוף",
+      "download": "✓ הורד והשתמש בהם לבקשות העבודה שלך",
+      "shareProfile": "✓ שתף את קישור הפרופיל הציבורי שלך עם מגייסים",
+      "comeback": "✓ חזור בכל עת לעדכן או ליצור גרסה חדשה"
+    },
+    "createAnother": "צור קורות חיים נוספים",
+    "viewDashboard": "צפה בלוח הבקרה שלי",
+    "featureComingSoon": "תכונת {{feature}} בקרוב"
+  }
+}

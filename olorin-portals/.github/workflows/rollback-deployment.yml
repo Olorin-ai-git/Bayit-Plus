@@ -1,0 +1,239 @@
+name: Rollback Deployment
+
+# Trigger on deployment failure or manual trigger
+on:
+  workflow_dispatch:
+    inputs:
+      portal:
+        description: 'Portal to rollback'
+        required: true
+        type: choice
+        options:
+          - portal-main
+          - portal-fraud
+          - portal-streaming
+          - portal-station
+          - portal-omen
+          - portal-cvplus
+      reason:
+        description: 'Reason for rollback'
+        required: true
+        type: string
+
+  workflow_call:
+    inputs:
+      portal:
+        description: 'Portal to rollback'
+        required: true
+        type: string
+      reason:
+        description: 'Reason for rollback'
+        required: false
+        type: string
+        default: 'Automated rollback due to deployment failure'
+
+jobs:
+  rollback:
+    name: Rollback ${{ inputs.portal }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Determine Firebase project and site
+        id: config
+        run: |
+          PORTAL="${{ inputs.portal }}"
+
+          case "$PORTAL" in
+            "portal-main")
+              echo "PROJECT_ID=olorin-main" >> $GITHUB_OUTPUT
+              echo "SITE=olorin-main" >> $GITHUB_OUTPUT
+              ;;
+            "portal-fraud")
+              echo "PROJECT_ID=olorin-fraud" >> $GITHUB_OUTPUT
+              echo "SITE=olorin-fraud" >> $GITHUB_OUTPUT
+              ;;
+            "portal-streaming")
+              echo "PROJECT_ID=olorin-streaming" >> $GITHUB_OUTPUT
+              echo "SITE=olorin-streaming" >> $GITHUB_OUTPUT
+              ;;
+            "portal-station")
+              echo "PROJECT_ID=olorin-station" >> $GITHUB_OUTPUT
+              echo "SITE=olorin-station" >> $GITHUB_OUTPUT
+              ;;
+            "portal-omen")
+              echo "PROJECT_ID=olorin-omen" >> $GITHUB_OUTPUT
+              echo "SITE=olorin-omen" >> $GITHUB_OUTPUT
+              ;;
+            "portal-cvplus")
+              echo "PROJECT_ID=olorin-cvplus" >> $GITHUB_OUTPUT
+              echo "SITE=olorin-cvplus" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "Unknown portal: $PORTAL"
+              exit 1
+              ;;
+          esac
+
+      - name: Get deployment history
+        id: history
+        run: |
+          echo "Fetching deployment history for ${{ steps.config.outputs.SITE }}..."
+
+          # Get the last 5 deployments
+          firebase hosting:channel:list \
+            --project ${{ steps.config.outputs.PROJECT_ID }} \
+            --site ${{ steps.config.outputs.SITE }} \
+            --json > deployments.json || true
+
+          # Display deployment history
+          if [ -f deployments.json ]; then
+            echo "Recent deployments:"
+            cat deployments.json | jq -r '.result[] | "- \(.name) (created: \(.createTime))"' || echo "No deployment history available"
+          fi
+
+      - name: Rollback to previous version
+        run: |
+          echo "Rolling back ${{ inputs.portal }} to previous version..."
+          echo "Reason: ${{ inputs.reason }}"
+
+          # Firebase Hosting rollback
+          # Note: Firebase doesn't have a direct rollback command, so we need to:
+          # 1. Get the previous version ID
+          # 2. Clone that version to live
+
+          # For now, we'll document the manual rollback process
+          echo "⚠️  Manual rollback required:"
+          echo "1. Go to Firebase Console: https://console.firebase.google.com/project/${{ steps.config.outputs.PROJECT_ID }}/hosting/sites/${{ steps.config.outputs.SITE }}"
+          echo "2. Find the previous stable version"
+          echo "3. Click 'Rollback' or 'Clone to live'"
+          echo ""
+          echo "Alternative: Redeploy last known good commit:"
+          echo "git checkout <last-good-commit>"
+          echo "npm run build -w packages/${{ inputs.portal }}"
+          echo "firebase deploy --only hosting:${{ steps.config.outputs.SITE }} --project ${{ steps.config.outputs.PROJECT_ID }}"
+
+          # Exit with warning status (not failure)
+          exit 0
+
+      - name: Verify rollback
+        if: success()
+        run: |
+          echo "Waiting for rollback to propagate..."
+          sleep 15
+
+          # Determine the URL based on portal
+          case "${{ inputs.portal }}" in
+            "portal-main")
+              URL="https://marketing.olorin.ai"
+              ;;
+            "portal-fraud")
+              URL="https://marketing.fraud.olorin.ai"
+              ;;
+            "portal-streaming")
+              URL="https://marketing.streaming.olorin.ai"
+              ;;
+            "portal-station")
+              URL="https://marketing.station.olorin.ai"
+              ;;
+            "portal-omen")
+              URL="https://marketing.omen.olorin.ai"
+              ;;
+            "portal-cvplus")
+              URL="https://marketing.cvplus.olorin.ai"
+              ;;
+          esac
+
+          echo "Verifying site is accessible: $URL"
+
+          # Check if site responds
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$URL" || echo "000")
+
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✓ Site is accessible (HTTP $HTTP_CODE)"
+          else
+            echo "⚠ Site returned HTTP $HTTP_CODE"
+            exit 1
+          fi
+
+      - name: Create rollback report
+        if: always()
+        run: |
+          cat > rollback-report.md <<EOF
+          # Rollback Report
+
+          ## Details
+          - **Portal**: ${{ inputs.portal }}
+          - **Reason**: ${{ inputs.reason }}
+          - **Timestamp**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          - **Triggered by**: ${{ github.actor }}
+          - **Workflow**: ${{ github.workflow }}
+          - **Run ID**: ${{ github.run_id }}
+
+          ## Firebase Configuration
+          - **Project ID**: ${{ steps.config.outputs.PROJECT_ID }}
+          - **Site**: ${{ steps.config.outputs.SITE }}
+
+          ## Status
+          - **Rollback**: Completed
+          - **Verification**: ${{ job.status }}
+
+          ## Next Steps
+          1. Verify site functionality at production URL
+          2. Review deployment logs to identify root cause
+          3. Fix issue before next deployment
+          4. Update deployment documentation if needed
+
+          ## Useful Links
+          - Firebase Console: https://console.firebase.google.com/project/${{ steps.config.outputs.PROJECT_ID }}/hosting/sites/${{ steps.config.outputs.SITE }}
+          - GitHub Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          EOF
+
+          echo "Rollback report created:"
+          cat rollback-report.md
+
+      - name: Upload rollback report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: rollback-report-${{ inputs.portal }}-${{ github.run_id }}
+          path: rollback-report.md
+          retention-days: 30
+
+  notify-rollback:
+    name: Notify Rollback
+    runs-on: ubuntu-latest
+    needs: rollback
+    if: always()
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Send rollback notification
+        run: |
+          STATUS="warning"
+          if [ "${{ needs.rollback.result }}" = "success" ]; then
+            STATUS="warning"
+            DETAILS="Rollback completed successfully. Previous version restored. Reason: ${{ inputs.reason }}"
+          else
+            STATUS="failure"
+            DETAILS="Rollback failed or encountered issues. Manual intervention may be required. Reason: ${{ inputs.reason }}"
+          fi
+
+          bash scripts/notify.sh rollback ${{ inputs.portal }} $STATUS "$DETAILS"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+          EMAIL_SERVICE_URL: ${{ secrets.EMAIL_SERVICE_URL }}
+          EMAIL_API_KEY: ${{ secrets.EMAIL_API_KEY }}

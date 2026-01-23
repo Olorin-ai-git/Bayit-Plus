@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { MessageSquare, Mic, CreditCard } from 'lucide-react';
@@ -35,7 +35,7 @@ export function QuickActions({ isRTL, onTabChange }: QuickActionsProps) {
   const navigate = useNavigate();
 
   return (
-    <View className={`gap-4 mb-6 flex-wrap ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+    <View className="gap-4 mb-6 flex-wrap" style={[isRTL ? styles.rowReverse : styles.row]}>
       <ActionButton
         icon={MessageSquare}
         iconColor="#6B21A8"
@@ -57,3 +57,12 @@ export function QuickActions({ isRTL, onTabChange }: QuickActionsProps) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+});

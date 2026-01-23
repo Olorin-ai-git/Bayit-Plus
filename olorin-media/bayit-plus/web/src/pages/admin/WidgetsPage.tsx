@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit, Trash2, X, AlertCircle, Eye, EyeOff, Tv, Globe, Film, Podcast, Radio } from 'lucide-react';
 import { GlassButton, GlassCard } from '@bayit/shared/ui';
@@ -188,13 +188,19 @@ export default function WidgetsPage() {
       label: t('admin.widgets.columns.status'),
       render: (isActive: boolean, item: Widget) => (
         <Pressable onPress={() => handleToggleActive(item)}>
-          <View className={`flex flex-row items-center px-2 py-1 rounded-full ${isActive ? 'bg-green-500/20' : 'bg-gray-500/20'}`}>
+          <View style={[
+            styles.statusBadge,
+            isActive ? styles.statusBadgeActive : styles.statusBadgeInactive
+          ]}>
             {isActive ? (
               <Eye size={12} color="#10b981" />
             ) : (
               <EyeOff size={12} color="#6b7280" />
             )}
-            <Text className={`text-xs font-medium ml-1 ${isActive ? 'text-green-500' : 'text-gray-500'}`}>
+            <Text style={[
+              styles.statusBadgeText,
+              isActive ? styles.statusBadgeTextActive : styles.statusBadgeTextInactive
+            ]}>
               {isActive ? t('admin.widgets.status.active') : t('admin.widgets.status.inactive')}
             </Text>
           </View>
@@ -212,7 +218,10 @@ export default function WidgetsPage() {
       label: '',
       width: 100,
       render: (_: any, item: Widget) => (
-        <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} gap-2 items-center`}>
+        <View style={[
+          styles.actionsContainer,
+          isRTL && styles.actionsContainerRTL
+        ]}>
           <Pressable
             onPress={() => handleEdit(item)}
             className="p-2 rounded-lg bg-purple-500/50 justify-center items-center"
@@ -222,7 +231,10 @@ export default function WidgetsPage() {
           <Pressable
             onPress={() => handleDelete(item.id)}
             disabled={deleting === item.id}
-            className={`p-2 rounded-lg bg-red-500/50 justify-center items-center ${deleting === item.id ? 'opacity-50' : ''}`}
+            style={[
+              styles.deleteButton,
+              deleting === item.id && styles.deleteButtonDisabled
+            ]}
           >
             <Trash2 size={14} color="#ef4444" />
           </Pressable>
@@ -234,10 +246,13 @@ export default function WidgetsPage() {
   return (
     <View className="flex-1 w-full min-h-full">
       <ScrollView className="flex-1 w-full" contentContainerStyle={{ padding: spacing.lg, minWidth: '100%' }}>
-        <View className={`flex ${flexDirection} justify-between items-start mb-6`}>
+        <View style={[
+          styles.headerContainer,
+          isRTL && styles.headerContainerRTL
+        ]}>
           <View>
-            <Text className={`text-2xl font-bold text-white ${textAlign}`}>{t('admin.widgets.title')}</Text>
-            <Text className={`text-sm text-gray-400 mt-1 ${textAlign}`}>
+            <Text style={[styles.headerTitle, { textAlign }]}>{t('admin.widgets.title')}</Text>
+            <Text style={[styles.headerSubtitle, { textAlign }]}>
               {t('admin.widgets.subtitle')}
             </Text>
           </View>
@@ -251,7 +266,10 @@ export default function WidgetsPage() {
 
         {error && (
           <GlassCard className="p-4 mb-6">
-            <View className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center gap-4`}>
+            <View style={[
+              styles.errorContainer,
+              isRTL && styles.errorContainerRTL
+            ]}>
               <AlertCircle size={18} color={colors.error} />
               <Text className="flex-1 text-red-500 text-sm">{error}</Text>
               <Pressable onPress={() => setError(null)}>
@@ -287,3 +305,74 @@ export default function WidgetsPage() {
   );
 }
 
+const styles = StyleSheet.create({
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 24,
+  },
+  headerContainerRTL: {
+    flexDirection: 'row-reverse',
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#9ca3af',
+    marginTop: 4,
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  errorContainerRTL: {
+    flexDirection: 'row-reverse',
+  },
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 9999,
+  },
+  statusBadgeActive: {
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+  },
+  statusBadgeInactive: {
+    backgroundColor: 'rgba(107, 114, 128, 0.2)',
+  },
+  statusBadgeText: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginLeft: 4,
+  },
+  statusBadgeTextActive: {
+    color: '#22c55e',
+  },
+  statusBadgeTextInactive: {
+    color: '#6b7280',
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+  },
+  actionsContainerRTL: {
+    flexDirection: 'row-reverse',
+  },
+  deleteButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: 'rgba(239, 68, 68, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  deleteButtonDisabled: {
+    opacity: 0.5,
+  },
+});

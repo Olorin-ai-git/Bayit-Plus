@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
@@ -7,7 +7,6 @@ import GlassSidebar from './GlassSidebar';
 import Breadcrumbs from './Breadcrumbs';
 import Chatbot from '../chat/Chatbot';
 import SoundwaveParticles from '../content/SoundwaveParticles';
-import RunningFlowBanner from '../flow/RunningFlowBanner';
 import { WidgetManager } from '../widgets';
 import { useVoiceListeningContext } from '@bayit/shared-contexts';
 import { ttsService } from '@bayit/shared-services';
@@ -16,7 +15,6 @@ import { useTizenRemoteKeys } from '@/hooks/useTizenRemoteKeys';
 import { useSamsungVoice } from '@/hooks/useSamsungVoice';
 import { useChatbotStore } from '@/stores/chatbotStore';
 import { useDirection } from '@/hooks/useDirection';
-import { useFlowStore } from '@/stores/flowStore';
 import { VoiceAvatarFAB, VoiceChatModal } from '@bayit/shared/components/support';
 import { useVoiceSupport } from '@bayit/shared-hooks';
 import { supportConfig } from '@bayit/shared-config/supportConfig';
@@ -131,6 +129,21 @@ export default function Layout() {
   const [isResponding, setIsResponding] = useState<boolean>(false);
   const [isTTSSpeaking, setIsTTSSpeaking] = useState<boolean>(false);
 
+  // Animation for voice panel slide up/down
+  const voicePanelAnim = useRef(new Animated.Value(0)).current;
+
+  // Voice panel is visible when any voice activity is happening
+  const isVoiceActive = isListening || isAwake || isProcessing || isResponding || isTTSSpeaking;
+
+  // Animate the voice panel visibility
+  useEffect(() => {
+    Animated.timing(voicePanelAnim, {
+      toValue: isVoiceActive ? 1 : 0,
+      duration: 300,
+      useNativeDriver: false, // height animation doesn't support native driver
+    }).start();
+  }, [isVoiceActive, voicePanelAnim]);
+
   // Listen for TTS events to track response speaking state
   useEffect(() => {
     console.log('[Layout] Setting up TTS event listeners');
@@ -206,18 +219,28 @@ export default function Layout() {
         {/* Breadcrumbs Navigation */}
         <Breadcrumbs />
 
-        {/* Running Flow Banner - shows when a flow is active */}
-        <RunningFlowBanner />
-
-        {/* Voice Soundwave Particles - visible on all pages (100px high) */}
-        <SoundwaveParticles
-          isListening={isListening}
-          isProcessing={isAwake || isProcessing}
-          audioLevel={audioLevel}
-          hasError={voiceError}
-          isResponding={isResponding || isTTSSpeaking}
-          responseText={voiceResponse}
-        />
+        {/* Voice Soundwave Particles - visible only when voice control is active */}
+        <Animated.View
+          style={[
+            styles.voicePanelWrapper,
+            {
+              height: voicePanelAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 100],
+              }),
+              opacity: voicePanelAnim,
+            },
+          ]}
+        >
+          <SoundwaveParticles
+            isListening={isListening}
+            isProcessing={isAwake || isProcessing}
+            audioLevel={audioLevel}
+            hasError={voiceError}
+            isResponding={isResponding || isTTSSpeaking}
+            responseText={voiceResponse}
+          />
+        </Animated.View>
 
         <View style={styles.main}>
           <Outlet />
@@ -311,5 +334,9 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'relative',
     zIndex: 10,
+  },
+  voicePanelWrapper: {
+    overflow: 'hidden',
+    width: '100%',
   },
 });

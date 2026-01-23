@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from 'react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 
@@ -28,13 +28,10 @@ export function ChatSuggestionsPanel({
           <Pressable
             key={index}
             onPress={() => onSuggestionPress?.(question)}
-            className={({ hovered }) =>
-              `px-4 py-1 rounded-full bg-white/5 border border-white/10 ${
-                hovered ? 'bg-white/10 border-primary' : ''
-              }`
-            }
+            className="px-4 py-1 rounded-full bg-white/5 border border-white/10"
+            style={({ hovered }) => [hovered && styles.hovered]}
           >
-            <Text className={`${IS_TV ? 'text-[18px]' : 'text-[12px]'} text-gray-400`}>
+            <Text className="text-gray-400" style={[IS_TV ? styles.textTV : styles.textMobile]}>
               {question}
             </Text>
           </Pressable>
@@ -43,3 +40,16 @@ export function ChatSuggestionsPanel({
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  hovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.primary,
+  },
+  textTV: {
+    fontSize: 18,
+  },
+  textMobile: {
+    fontSize: 12,
+  },
+})

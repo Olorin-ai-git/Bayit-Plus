@@ -8,7 +8,8 @@ Includes resilience patterns for external service calls.
 import logging
 from typing import List, Optional
 
-from app.models.content_embedding import (DialogueSearchQuery, SearchQuery,
+from app.models.content_embedding import (DialogueSearchQuery, SceneSearchQuery,
+                                          SceneSearchResult, SearchQuery,
                                           SemanticSearchResult)
 from app.services.olorin.content_metadata_service import \
     content_metadata_service
@@ -223,6 +224,134 @@ async def dialogue_search(
 
     except Exception as e:
         logger.error(f"Dialogue search failed: {e}")
+
+    return results
+
+
+async def scene_search(
+    query: SceneSearchQuery,
+    partner_id: Optional[str] = None,
+) -> List[SceneSearchResult]:
+    """
+    Search for scenes within specific content or series.
+
+    If series_id provided: fetches all episode content_ids, searches across all.
+    Returns results with timestamps for deep-linking to specific moments.
+
+    Args:
+        query: Scene search query with optional content_id or series_id
+        partner_id: Optional partner ID filter
+
+    Returns:
+        List of scene results with deep-links
+    """
+    if not client_manager.is_initialized:
+        await client_manager.initialize()
+
+    results: List[SceneSearchResult] = []
+
+    try:
+        # Generate query embedding
+        query_embedding = await generate_embedding(query.query)
+        if not query_embedding:
+            logger.error("Failed to generate query embedding for scene search")
+            return results
+
+        # Build filter for subtitle segments
+        filter_dict = {
+            "embedding_type": "subtitle_segment",
+            "language": query.language,
+        }
+
+        # Determine content IDs to search
+        content_ids_to_search: List[str] = []
+        if query.content_id:
+            content_ids_to_search = [query.content_id]
+        elif query.series_id:
+            # Fetch all episode content_ids for the series
+            episodes = await content_metadata_service.get_series_episodes(
+                query.series_id
+            )
+            content_ids_to_search = [str(ep.id) for ep in episodes if ep.id]
+
+        # Add content_id filter if we have specific IDs
+        if content_ids_to_search:
+            if len(content_ids_to_search) == 1:
+                filter_dict["content_id"] = content_ids_to_search[0]
+            else:
+                filter_dict["content_id"] = {"$in": content_ids_to_search}
+
+        # Query Pinecone with resilience
+        pinecone_index = client_manager.pinecone_index
+        pinecone_results = None
+        if pinecone_index:
+            pinecone_results = await safe_pinecone_query(
+                pinecone_index,
+                vector=query_embedding,
+                top_k=query.limit * 2,
+                filter_dict=filter_dict,
+                include_metadata=True,
+            )
+
+        if pinecone_results:
+            # Collect matches and content IDs
+            matches_to_process = []
+            content_ids_to_fetch = set()
+
+            for match in pinecone_results.matches:
+                if match.score < query.min_score:
+                    continue
+
+                metadata = match.metadata or {}
+                content_id = metadata.get("content_id")
+
+                if content_id:
+                    matches_to_process.append((content_id, match, metadata))
+                    content_ids_to_fetch.add(content_id)
+
+                if len(matches_to_process) >= query.limit:
+                    break
+
+            # Batch load all content documents
+            contents_map = await content_metadata_service.get_contents_batch(
+                list(content_ids_to_fetch)
+            )
+
+            # Build results with deep-links
+            for content_id, match, metadata in matches_to_process:
+                content = contents_map.get(content_id)
+                if not content:
+                    continue
+
+                timestamp_seconds = metadata.get("start_time", 0.0)
+                timestamp_formatted = format_timestamp(timestamp_seconds)
+
+                # Build episode info for series (e.g., "S2E5")
+                episode_info = None
+                if content.season and content.episode:
+                    episode_info = f"S{content.season}E{content.episode}"
+
+                # Generate deep-link URL
+                deep_link = f"/watch/{content_id}?t={int(timestamp_seconds)}"
+
+                results.append(
+                    SceneSearchResult(
+                        content_id=content_id,
+                        title=content.title or "",
+                        title_en=content.title_en,
+                        episode_info=episode_info,
+                        thumbnail_url=content.thumbnail,
+                        matched_text=metadata.get("text", ""),
+                        context_text=metadata.get("context_text"),
+                        relevance_score=match.score,
+                        timestamp_seconds=timestamp_seconds,
+                        timestamp_formatted=timestamp_formatted,
+                        deep_link=deep_link,
+                    )
+                )
+
+    except Exception as e:
+        logger.error(f"Scene search failed: {e}")
 
     return results
 

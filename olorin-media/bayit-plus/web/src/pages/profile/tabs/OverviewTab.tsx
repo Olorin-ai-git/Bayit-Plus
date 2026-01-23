@@ -1,8 +1,22 @@
-import { View, Text } from 'react-native';
+/**
+ * OverviewTab Component
+ *
+ * Profile overview with recent activity and account information
+ * Converted from TailwindCSS to StyleSheet for React Native Web compatibility
+ *
+ * Features:
+ * - Recent activity list with timestamps
+ * - Activity type icons (watched/favorite)
+ * - Account information display
+ * - RTL layout support
+ */
+
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { PlayCircle, Star } from 'lucide-react';
 import { GlassView } from '@bayit/shared/ui';
 import { useAuthStore } from '@/stores/authStore';
+import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 import type { RecentActivity } from '../types';
 
 interface OverviewTabProps {
@@ -18,16 +32,16 @@ interface InfoRowProps {
 
 function InfoRow({ label, value, isRTL }: InfoRowProps) {
   return (
-    <View className="flex-row justify-between py-2">
+    <View style={styles.infoRow}>
       {isRTL ? (
         <>
-          <Text className="text-sm text-white font-medium text-left">{value}</Text>
-          <Text className="text-sm text-white/60 text-right">{label}</Text>
+          <Text style={[styles.infoValue, styles.textRight]}>{value}</Text>
+          <Text style={[styles.infoLabel, styles.textRight]}>{label}</Text>
         </>
       ) : (
         <>
-          <Text className="text-sm text-white/60 text-left">{label}</Text>
-          <Text className="text-sm text-white font-medium text-right">{value}</Text>
+          <Text style={[styles.infoLabel, styles.textLeft]}>{label}</Text>
+          <Text style={[styles.infoValue, styles.textLeft]}>{value}</Text>
         </>
       )}
     </View>
@@ -52,22 +66,22 @@ export function OverviewTab({ isRTL, recentActivity }: OverviewTabProps) {
   };
 
   return (
-    <View className="gap-6">
-      <GlassView className="p-6 gap-4">
-        <Text className={`text-[13px] font-semibold text-white/60 uppercase tracking-wide ${isRTL ? 'text-right' : 'text-left'}`}>
+    <View style={styles.container}>
+      <GlassView style={styles.section}>
+        <Text style={[styles.sectionTitle, isRTL && styles.textRight]}>
           {t('profile.recentActivity', 'Recent Activity')}
         </Text>
-        <View className="gap-4">
+        <View style={styles.activityList}>
           {recentActivity.length > 0 ? (
             recentActivity.map((activity) => (
-              <View key={activity.id} className="flex-row items-center gap-4">
+              <View key={activity.id} style={styles.activityItem}>
                 {isRTL ? (
                   <>
-                    <View className="flex-1">
-                      <Text className="text-sm text-white text-right" numberOfLines={1}>
+                    <View style={styles.activityContent}>
+                      <Text style={[styles.activityTitle, styles.textRight]} numberOfLines={1}>
                         {activity.title}
                       </Text>
-                      <Text className="text-xs text-white/60 text-right">
+                      <Text style={[styles.activityTimestamp, styles.textRight]}>
                         {formatTimestamp(activity.timestamp)}
                       </Text>
                     </View>
@@ -84,11 +98,11 @@ export function OverviewTab({ isRTL, recentActivity }: OverviewTabProps) {
                     ) : (
                       <Star size={20} color="#F59E0B" />
                     )}
-                    <View className="flex-1">
-                      <Text className="text-sm text-white text-left" numberOfLines={1}>
+                    <View style={styles.activityContent}>
+                      <Text style={[styles.activityTitle, styles.textLeft]} numberOfLines={1}>
                         {activity.title}
                       </Text>
-                      <Text className="text-xs text-white/60 text-left">
+                      <Text style={[styles.activityTimestamp, styles.textLeft]}>
                         {formatTimestamp(activity.timestamp)}
                       </Text>
                     </View>
@@ -97,18 +111,18 @@ export function OverviewTab({ isRTL, recentActivity }: OverviewTabProps) {
               </View>
             ))
           ) : (
-            <Text className={`text-sm text-white/60 italic ${isRTL ? 'text-right' : 'text-left'}`}>
+            <Text style={[styles.emptyText, isRTL && styles.textRight]}>
               {t('profile.noRecentActivity', 'No recent activity')}
             </Text>
           )}
         </View>
       </GlassView>
 
-      <GlassView className="p-6 gap-4">
-        <Text className={`text-[13px] font-semibold text-white/60 uppercase tracking-wide ${isRTL ? 'text-right' : 'text-left'}`}>
+      <GlassView style={styles.section}>
+        <Text style={[styles.sectionTitle, isRTL && styles.textRight]}>
           {t('profile.accountInfo', 'Account Information')}
         </Text>
-        <View className="gap-2">
+        <View style={styles.infoList}>
           <InfoRow label={t('profile.name', 'Name')} value={user?.name || '-'} isRTL={isRTL} />
           <InfoRow label={t('profile.email', 'Email')} value={user?.email || '-'} isRTL={isRTL} />
           <InfoRow label={t('profile.role', 'Role')} value={user?.role || 'user'} isRTL={isRTL} />
@@ -117,3 +131,69 @@ export function OverviewTab({ isRTL, recentActivity }: OverviewTabProps) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    gap: spacing.lg,
+  },
+  section: {
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.6)',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    textAlign: 'left',
+  },
+  activityList: {
+    gap: spacing.md,
+  },
+  activityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  activityContent: {
+    flex: 1,
+  },
+  activityTitle: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  activityTimestamp: {
+    fontSize: fontSize.xs,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  emptyText: {
+    fontSize: fontSize.sm,
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontStyle: 'italic',
+    textAlign: 'left',
+  },
+  infoList: {
+    gap: spacing.sm,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.sm,
+  },
+  infoLabel: {
+    fontSize: fontSize.sm,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  infoValue: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  textLeft: {
+    textAlign: 'left',
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+});

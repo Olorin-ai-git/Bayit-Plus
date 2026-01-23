@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react'
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native'
+import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { ChatRecommendations } from './ChatRecommendations'
 import type { Message } from './types'
@@ -35,7 +35,8 @@ export function ChatMessageList({
       {messages.map((message, index) => (
         <View
           key={index}
-          className={`mb-2 \${message.role === 'user' ? 'items-start' : 'items-end'}`}
+          className="mb-2"
+          style={[message.role === 'user' ? styles.alignStart : styles.alignEnd]}
         >
           {message.type === 'recommendations' ? (
             <ChatRecommendations
@@ -45,18 +46,21 @@ export function ChatMessageList({
             />
           ) : (
             <View
-              className={`max-w-[80%] \${IS_TV ? 'px-6 py-4' : 'px-4 py-2'} rounded-lg \${
+              className="max-w-[80%] rounded-lg"
+              style={[
+                IS_TV ? styles.paddingTV : styles.paddingMobile,
                 message.role === 'user'
-                  ? 'bg-[#8a2be2] rounded-tr-sm'
+                  ? styles.bgUser
                   : message.isError
-                  ? 'bg-[rgba(239,68,68,0.2)] rounded-tl-sm'
-                  : 'bg-white/10 rounded-tl-sm'
-              }`}
+                  ? styles.bgError
+                  : styles.bgAssistant,
+              ]}
             >
               <Text
-                className={`\${IS_TV ? 'text-[22px] leading-8' : 'text-sm leading-5'} \${
-                  message.isError ? 'text-[#ef4444]' : 'text-white'
-                }`}
+                style={[
+                  IS_TV ? styles.textTV : styles.textMobile,
+                  message.isError ? styles.textError : styles.textWhite,
+                ]}
               >
                 {typeof message.content === 'string' ? message.content : ''}
               </Text>
@@ -75,3 +79,46 @@ export function ChatMessageList({
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  alignStart: {
+    alignItems: 'flex-start',
+  },
+  alignEnd: {
+    alignItems: 'flex-end',
+  },
+  paddingTV: {
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+  },
+  paddingMobile: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  bgUser: {
+    backgroundColor: '#8a2be2',
+    borderTopRightRadius: 2,
+  },
+  bgError: {
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    borderTopLeftRadius: 2,
+  },
+  bgAssistant: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderTopLeftRadius: 2,
+  },
+  textTV: {
+    fontSize: 22,
+    lineHeight: 32,
+  },
+  textMobile: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  textError: {
+    color: '#ef4444',
+  },
+  textWhite: {
+    color: '#fff',
+  },
+})

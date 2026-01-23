@@ -3,7 +3,7 @@
  * Displays list of podcast/show episodes with play and delete actions
  */
 
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Play, Trash2 } from 'lucide-react';
 import { colors } from '@bayit/shared/theme';
 import { Episode } from '../types';
@@ -33,9 +33,8 @@ export function EpisodesList({
       {episodes.map((episode, i) => (
         <View
           key={episode.id}
-          className={`flex-row items-center gap-3 p-4 bg-white/10 backdrop-blur-xl rounded-lg mb-3 ${
-            currentEpisodeId === episode.id ? 'bg-green-500/20 border border-green-500' : ''
-          }`}
+          className="flex-row items-center gap-3 p-4 bg-white/10 backdrop-blur-xl rounded-lg mb-3"
+          style={[currentEpisodeId === episode.id && styles.episodeActive]}
           // @ts-ignore
           pointerEvents="box-none"
         >
@@ -70,3 +69,11 @@ export function EpisodesList({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  episodeActive: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    borderWidth: 1,
+    borderColor: '#22c55e',
+  },
+});

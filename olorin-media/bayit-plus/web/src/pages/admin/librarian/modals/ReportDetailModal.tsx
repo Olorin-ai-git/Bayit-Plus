@@ -1,8 +1,8 @@
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { FileText } from 'lucide-react';
 import { GlassModal, GlassButton, GlassCard, GlassBadge } from '@bayit/shared/ui';
-import { colors } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 import { AuditReportDetail, LibrarianConfig } from '@/services/librarianService';
 
 interface ReportDetailModalProps {
@@ -33,13 +33,13 @@ export const ReportDetailModal = ({
       onClose={onClose}
     >
       {loading ? (
-        <View className="p-8 items-center justify-center min-h-[200px]">
+        <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text className="mt-4 text-base" style={{ color: colors.textMuted }}>{t('admin.librarian.loading')}</Text>
+          <Text style={styles.loadingText}>{t('admin.librarian.loading')}</Text>
         </View>
       ) : report ? (
         <>
-          <View className="p-4 border-b items-end" style={{ borderBottomColor: colors.glassBorder }}>
+          <View style={styles.actionBar}>
             <GlassButton
               title={t('admin.librarian.reports.viewLogs')}
               variant="secondary"
@@ -48,15 +48,15 @@ export const ReportDetailModal = ({
                 onClose();
                 onViewLogs(report.audit_id);
               }}
-              className="self-end"
+              style={styles.actionButton}
             />
           </View>
           <ScrollView style={{ maxHeight: config?.ui.modal_max_height || 600 }}>
-            <GlassCard className="mb-4 p-6">
-              <Text className="text-lg font-semibold mb-4" style={{ color: colors.text }}>{t('admin.librarian.reports.detailModal.summary')}</Text>
-              <View className="flex flex-row gap-4 mb-2">
-                <View className="flex-1">
-                  <Text className="text-[13px] mb-1" style={{ color: colors.textMuted }}>{t('admin.librarian.reports.detailModal.status')}</Text>
+            <GlassCard style={styles.card}>
+              <Text style={styles.cardTitle}>{t('admin.librarian.reports.detailModal.summary')}</Text>
+              <View style={styles.row}>
+                <View style={styles.rowItem}>
+                  <Text style={styles.label}>{t('admin.librarian.reports.detailModal.status')}</Text>
                   <GlassBadge
                     text={t(`admin.librarian.status.${report.status}`, report.status)}
                     variant={
@@ -65,64 +65,64 @@ export const ReportDetailModal = ({
                     }
                   />
                 </View>
-                <View className="flex-1">
-                  <Text className="text-[13px] mb-1" style={{ color: colors.textMuted }}>{t('admin.librarian.reports.detailModal.executionTime')}</Text>
-                  <Text className="text-xl font-semibold" style={{ color: colors.text }}>{report.execution_time_seconds.toFixed(1)}s</Text>
+                <View style={styles.rowItem}>
+                  <Text style={styles.label}>{t('admin.librarian.reports.detailModal.executionTime')}</Text>
+                  <Text style={styles.statValue}>{report.execution_time_seconds.toFixed(1)}s</Text>
                 </View>
               </View>
-              <View className="flex flex-row gap-4 mb-2">
-                <View className="flex-1">
-                  <Text className="text-[13px] mb-1" style={{ color: colors.textMuted }}>{t('admin.librarian.reports.detailModal.totalItems')}</Text>
-                  <Text className="text-xl font-semibold" style={{ color: colors.text }}>{report.summary.total_items ?? 0}</Text>
+              <View style={styles.row}>
+                <View style={styles.rowItem}>
+                  <Text style={styles.label}>{t('admin.librarian.reports.detailModal.totalItems')}</Text>
+                  <Text style={styles.statValue}>{report.summary.total_items ?? 0}</Text>
                 </View>
-                <View className="flex-1">
-                  <Text className="text-[13px] mb-1" style={{ color: colors.textMuted }}>{t('admin.librarian.reports.detailModal.healthyItems')}</Text>
-                  <Text className="text-xl font-semibold" style={{ color: colors.text }}>{report.summary.healthy_items ?? 0}</Text>
+                <View style={styles.rowItem}>
+                  <Text style={styles.label}>{t('admin.librarian.reports.detailModal.healthyItems')}</Text>
+                  <Text style={styles.statValue}>{report.summary.healthy_items ?? 0}</Text>
                 </View>
               </View>
             </GlassCard>
 
-            <GlassCard className="mb-4 p-6">
-              <Text className="text-lg font-semibold mb-4" style={{ color: colors.text }}>{t('admin.librarian.reports.detailModal.issuesFound')}</Text>
+            <GlassCard style={styles.card}>
+              <Text style={styles.cardTitle}>{t('admin.librarian.reports.detailModal.issuesFound')}</Text>
               {report.audit_type === 'ai_agent' ? (
-                <View className="items-center p-6">
-                  <Text className="text-[32px] font-bold mb-1" style={{ color: colors.primary }}>{report.summary.issues_found ?? 0}</Text>
-                  <Text className="text-xs text-center" style={{ color: colors.textMuted }}>{t('admin.librarian.reports.detailModal.totalIssues')}</Text>
+                <View style={styles.centeredBox}>
+                  <Text style={styles.metricLarge}>{report.summary.issues_found ?? 0}</Text>
+                  <Text style={styles.metricLabel}>{t('admin.librarian.reports.detailModal.totalIssues')}</Text>
                   {report.ai_insights && report.ai_insights.length > 0 && (
-                    <Text className="text-[13px] mt-2 italic" style={{ color: colors.textMuted }}>{t('admin.librarian.reports.detailModal.seeInsightsBelow')}</Text>
+                    <Text style={styles.insightHint}>{t('admin.librarian.reports.detailModal.seeInsightsBelow')}</Text>
                   )}
                 </View>
               ) : (
-                <View className="flex flex-row flex-wrap gap-4">
-                  <View className="flex-1 min-w-[45%] items-center p-4 bg-black/20 rounded-xl border" style={{ borderColor: colors.glassBorder }}>
-                    <Text className="text-[32px] font-bold mb-1" style={{ color: colors.primary }}>{report.broken_streams?.length ?? 0}</Text>
-                    <Text className="text-xs text-center" style={{ color: colors.textMuted }}>{t('admin.librarian.reports.detailModal.brokenStreams')}</Text>
+                <View style={styles.gridContainer}>
+                  <View style={styles.gridItem}>
+                    <Text style={styles.metricLarge}>{report.broken_streams?.length ?? 0}</Text>
+                    <Text style={styles.metricLabel}>{t('admin.librarian.reports.detailModal.brokenStreams')}</Text>
                   </View>
-                  <View className="flex-1 min-w-[45%] items-center p-4 bg-black/20 rounded-xl border" style={{ borderColor: colors.glassBorder }}>
-                    <Text className="text-[32px] font-bold mb-1" style={{ color: colors.primary }}>{report.missing_metadata?.length ?? 0}</Text>
-                    <Text className="text-xs text-center" style={{ color: colors.textMuted }}>{t('admin.librarian.reports.detailModal.missingMetadata')}</Text>
+                  <View style={styles.gridItem}>
+                    <Text style={styles.metricLarge}>{report.missing_metadata?.length ?? 0}</Text>
+                    <Text style={styles.metricLabel}>{t('admin.librarian.reports.detailModal.missingMetadata')}</Text>
                   </View>
-                  <View className="flex-1 min-w-[45%] items-center p-4 bg-black/20 rounded-xl border" style={{ borderColor: colors.glassBorder }}>
-                    <Text className="text-[32px] font-bold mb-1" style={{ color: colors.primary }}>{report.misclassifications?.length ?? 0}</Text>
-                    <Text className="text-xs text-center" style={{ color: colors.textMuted }}>{t('admin.librarian.reports.detailModal.misclassifications')}</Text>
+                  <View style={styles.gridItem}>
+                    <Text style={styles.metricLarge}>{report.misclassifications?.length ?? 0}</Text>
+                    <Text style={styles.metricLabel}>{t('admin.librarian.reports.detailModal.misclassifications')}</Text>
                   </View>
-                  <View className="flex-1 min-w-[45%] items-center p-4 bg-black/20 rounded-xl border" style={{ borderColor: colors.glassBorder }}>
-                    <Text className="text-[32px] font-bold mb-1" style={{ color: colors.primary }}>{report.orphaned_items?.length ?? 0}</Text>
-                    <Text className="text-xs text-center" style={{ color: colors.textMuted }}>{t('admin.librarian.reports.detailModal.orphanedItems')}</Text>
+                  <View style={styles.gridItem}>
+                    <Text style={styles.metricLarge}>{report.orphaned_items?.length ?? 0}</Text>
+                    <Text style={styles.metricLabel}>{t('admin.librarian.reports.detailModal.orphanedItems')}</Text>
                   </View>
                 </View>
               )}
             </GlassCard>
 
-            <GlassCard className="mb-4 p-6">
-              <Text className="text-lg font-semibold mb-4" style={{ color: colors.text }}>{t('admin.librarian.reports.detailModal.fixesApplied')}</Text>
-              <View className="items-center p-6">
-                <Text className="text-5xl font-bold mb-1" style={{ color: colors.success }}>
+            <GlassCard style={styles.card}>
+              <Text style={styles.cardTitle}>{t('admin.librarian.reports.detailModal.fixesApplied')}</Text>
+              <View style={styles.centeredBox}>
+                <Text style={styles.fixesValue}>
                   {report.audit_type === 'ai_agent'
                     ? (report.summary.issues_fixed ?? 0)
                     : (report.fixes_applied?.length ?? 0)}
                 </Text>
-                <Text className="text-sm" style={{ color: colors.textMuted }}>
+                <Text style={styles.fixesLabel}>
                   {t('admin.librarian.reports.detailModal.totalFixes', {
                     count: report.audit_type === 'ai_agent'
                       ? (report.summary.issues_fixed ?? 0)
@@ -133,12 +133,12 @@ export const ReportDetailModal = ({
             </GlassCard>
 
             {report.ai_insights && report.ai_insights.length > 0 && (
-              <GlassCard className="mb-4 p-6">
-                <Text className="text-lg font-semibold mb-4" style={{ color: colors.text }}>{t('admin.librarian.reports.detailModal.aiInsights')}</Text>
+              <GlassCard style={styles.card}>
+                <Text style={styles.cardTitle}>{t('admin.librarian.reports.detailModal.aiInsights')}</Text>
                 {report.ai_insights.map((insight, index) => (
-                  <View key={index} className="flex flex-row mb-2 px-2">
-                    <Text className="text-base mt-0.5 mr-2" style={{ color: colors.primary }}>•</Text>
-                    <Text className="flex-1 text-sm leading-5" style={{ color: colors.text }}>{insight}</Text>
+                  <View key={index} style={styles.insightRow}>
+                    <Text style={styles.bulletPoint}>•</Text>
+                    <Text style={styles.insightText}>{insight}</Text>
                   </View>
                 ))}
               </GlassCard>
@@ -149,3 +149,117 @@ export const ReportDetailModal = ({
     </GlassModal>
   );
 };
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    padding: spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 200,
+  },
+  loadingText: {
+    marginTop: spacing.md,
+    fontSize: fontSize.base,
+    color: colors.textMuted,
+  },
+  actionBar: {
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+    alignItems: 'flex-end',
+  },
+  actionButton: {
+    alignSelf: 'flex-end',
+  },
+  card: {
+    marginBottom: spacing.md,
+    padding: spacing.lg,
+  },
+  cardTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: '600',
+    marginBottom: spacing.md,
+    color: colors.text,
+  },
+  row: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.xs,
+  },
+  rowItem: {
+    flex: 1,
+  },
+  label: {
+    fontSize: 13,
+    marginBottom: spacing.xs,
+    color: colors.textMuted,
+  },
+  statValue: {
+    fontSize: fontSize.xl,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  centeredBox: {
+    alignItems: 'center',
+    padding: spacing.lg,
+  },
+  metricLarge: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: spacing.xs,
+    color: colors.primary,
+  },
+  metricLabel: {
+    fontSize: fontSize.xs,
+    textAlign: 'center',
+    color: colors.textMuted,
+  },
+  insightHint: {
+    fontSize: 13,
+    marginTop: spacing.xs,
+    fontStyle: 'italic',
+    color: colors.textMuted,
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+  },
+  gridItem: {
+    flex: 1,
+    minWidth: '45%',
+    alignItems: 'center',
+    padding: spacing.md,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    borderRadius: borderRadius.xl,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  fixesValue: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    marginBottom: spacing.xs,
+    color: colors.success,
+  },
+  fixesLabel: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+  },
+  insightRow: {
+    flexDirection: 'row',
+    marginBottom: spacing.xs,
+    paddingHorizontal: spacing.xs,
+  },
+  bulletPoint: {
+    fontSize: fontSize.base,
+    marginTop: 2,
+    marginRight: spacing.xs,
+    color: colors.primary,
+  },
+  insightText: {
+    flex: 1,
+    fontSize: fontSize.sm,
+    lineHeight: 20,
+    color: colors.text,
+  },
+});

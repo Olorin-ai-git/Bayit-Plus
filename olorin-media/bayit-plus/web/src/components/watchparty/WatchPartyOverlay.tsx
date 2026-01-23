@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { X, Users, MessageSquare } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
@@ -100,12 +100,11 @@ export default function WatchPartyOverlay({
               <Pressable
                 key={tab}
                 onPress={() => setActiveTab(tab)}
-                className={`flex-1 flex-row items-center justify-center gap-3 py-4 ${
-                  isActive ? 'border-b-2 border-purple-600 bg-purple-700/30' : ''
-                }`}
+                className="flex-1 flex-row items-center justify-center gap-3 py-4"
+                style={[isActive && styles.tabActive]}
               >
                 <Icon size={16} color={isActive ? colors.primary : colors.textMuted} />
-                <Text className={`text-sm font-medium ${isActive ? 'text-purple-400' : 'text-gray-400'}`}>
+                <Text className="text-sm font-medium" style={[isActive ? styles.textActive : styles.textInactive]}>
                   {tab === 'participants'
                     ? `${t('watchParty.participants')} (${participants.length})`
                     : t('watchParty.chat')}
@@ -135,3 +134,17 @@ export default function WatchPartyOverlay({
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  tabActive: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#9333ea',
+    backgroundColor: 'rgba(109, 40, 217, 0.3)',
+  },
+  textActive: {
+    color: '#c084fc',
+  },
+  textInactive: {
+    color: '#9ca3af',
+  },
+})

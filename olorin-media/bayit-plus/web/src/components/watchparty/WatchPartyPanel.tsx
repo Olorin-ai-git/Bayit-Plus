@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
@@ -79,9 +79,8 @@ export default function WatchPartyPanel({
 
   return (
     <GlassView
-      className={`fixed top-0 left-0 h-screen w-80 z-40 border-l border-white/10 rounded-none transition-transform duration-300 ease-out ${
-        isOpen ? 'translate-x-0' : '-translate-x-80'
-      }`}
+      className="fixed top-0 left-0 h-screen w-80 z-40 border-l border-white/10 rounded-none transition-transform duration-300 ease-out"
+      style={[isOpen ? styles.panelOpen : styles.panelClosed]}
       intensity="high"
       noBorder
     >
@@ -140,3 +139,12 @@ export default function WatchPartyPanel({
     </GlassView>
   )
 }
+
+const styles = StyleSheet.create({
+  panelOpen: {
+    transform: [{ translateX: 0 }],
+  },
+  panelClosed: {
+    transform: [{ translateX: -320 }], // -80 in rem = -320px
+  },
+})

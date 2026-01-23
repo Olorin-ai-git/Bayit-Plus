@@ -5,7 +5,7 @@
  * Fully localized with RTL/LTR support.
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, Pressable, useWindowDimensions, Platform, Image, Animated } from 'react-native';
+import { View, Text, Pressable, useWindowDimensions, Platform, Image, Animated, StyleSheet } from 'react-native';
 import { Chess } from 'chess.js';
 import { colors, spacing } from '@bayit/shared/theme';
 import { useTranslation } from 'react-i18next';
@@ -349,22 +349,16 @@ export default function ChessBoard({
     return (
       <Pressable
         key={square}
-        className={`justify-end items-center relative overflow-visible ${
-          isLight
-            ? 'bg-purple-500/8 backdrop-blur-sm border-[0.5px] border-purple-500/15'
-            : 'bg-black/60 backdrop-blur-sm border-[0.5px] border-indigo-600/20'
-        } ${
-          isSelected ? 'bg-purple-500/50 backdrop-blur-md border-2 border-purple-500/80 shadow-purple-glow' : ''
-        } ${
-          isLastMoveSquare ? 'bg-green-500/25 backdrop-blur-sm border-[1.5px] border-green-500/50 shadow-green-glow' : ''
-        } ${
-          isIllegalMoveTarget ? 'bg-red-500/35 backdrop-blur-md border-[3px] border-red-500/90 shadow-red-glow animate-shake' : ''
-        } ${
-          isKingInCheck ? 'bg-red-500/30 shadow-check-king' : ''
-        } ${
-          isAttackingPiece ? 'bg-amber-500/30 shadow-check-attacker' : ''
-        }`}
-        style={{ width: squareSize, height: squareSize }}
+        className="justify-end items-center relative overflow-visible"
+        style={[
+          { width: squareSize, height: squareSize },
+          isLight ? styles.squareLight : styles.squareDark,
+          isSelected && styles.squareSelected,
+          isLastMoveSquare && styles.squareLastMove,
+          isIllegalMoveTarget && styles.squareIllegal,
+          isKingInCheck && styles.squareKingCheck,
+          isAttackingPiece && styles.squareAttacking,
+        ]}
         onPress={() => handleSquarePress(square)}
       >
         {/* 3D Glass Chess Piece - Allow overflow to show full detail */}
@@ -396,9 +390,7 @@ export default function ChessBoard({
           const bottomOffset = squareSize * 0.05; // Small lift from bottom edge
 
           return (
-            <View className={`z-[15] ${
-              isKingInCheck || isAttackingPiece ? 'animate-check-glow' : ''
-            }`}>
+            <View className="z-[15]" style={[(isKingInCheck || isAttackingPiece) && styles.pieceCheckGlow]}>
               <Image
                 source={{ uri: pieceImage }}
                 className="z-10 select-none cursor-pointer"
@@ -418,15 +410,17 @@ export default function ChessBoard({
 
         {/* Legal move indicator - only show if hints enabled */}
         {showHints && isLegalMove && (
-          <View className={`absolute ${
-            piece
-              ? 'bg-red-500/40 backdrop-blur-sm border-[3px] border-red-500/90 shadow-capture-indicator'
-              : 'bg-green-500/35 backdrop-blur-sm border-2 border-green-500/70 shadow-legal-move-indicator'
-          }`} style={{
-            width: squareSize * 0.3,
-            height: squareSize * 0.3,
-            borderRadius: squareSize * 0.15
-          }} />
+          <View
+            className="absolute"
+            style={[
+              {
+                width: squareSize * 0.3,
+                height: squareSize * 0.3,
+                borderRadius: squareSize * 0.15
+              },
+              piece ? styles.hintCapture : styles.hintMove
+            ]}
+          />
         )}
       </Pressable>
     );
@@ -544,3 +538,86 @@ export default function ChessBoard({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  squareLight: {
+    backgroundColor: 'rgba(168, 85, 247, 0.08)',
+    backdropFilter: 'blur(4px)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(168, 85, 247, 0.15)',
+  },
+  squareDark: {
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backdropFilter: 'blur(4px)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(79, 70, 229, 0.2)',
+  },
+  squareSelected: {
+    backgroundColor: 'rgba(168, 85, 247, 0.5)',
+    backdropFilter: 'blur(8px)',
+    borderWidth: 2,
+    borderColor: 'rgba(168, 85, 247, 0.8)',
+    shadowColor: '#a855f7',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 10,
+  },
+  squareLastMove: {
+    backgroundColor: 'rgba(34, 197, 94, 0.25)',
+    backdropFilter: 'blur(4px)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(34, 197, 94, 0.5)',
+    shadowColor: '#22c55e',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+  },
+  squareIllegal: {
+    backgroundColor: 'rgba(239, 68, 68, 0.35)',
+    backdropFilter: 'blur(8px)',
+    borderWidth: 3,
+    borderColor: 'rgba(239, 68, 68, 0.9)',
+    shadowColor: '#ef4444',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+  },
+  squareKingCheck: {
+    backgroundColor: 'rgba(239, 68, 68, 0.3)',
+    shadowColor: '#ef4444',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.7,
+    shadowRadius: 15,
+  },
+  squareAttacking: {
+    backgroundColor: 'rgba(245, 158, 11, 0.3)',
+    shadowColor: '#f59e0b',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+  },
+  pieceCheckGlow: {
+    // Animation would be handled by CSS or Animated API
+    opacity: 1,
+  },
+  hintCapture: {
+    backgroundColor: 'rgba(239, 68, 68, 0.4)',
+    backdropFilter: 'blur(4px)',
+    borderWidth: 3,
+    borderColor: 'rgba(239, 68, 68, 0.9)',
+    shadowColor: '#ef4444',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+  },
+  hintMove: {
+    backgroundColor: 'rgba(34, 197, 94, 0.35)',
+    backdropFilter: 'blur(4px)',
+    borderWidth: 2,
+    borderColor: 'rgba(34, 197, 94, 0.7)',
+    shadowColor: '#22c55e',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+  },
+});

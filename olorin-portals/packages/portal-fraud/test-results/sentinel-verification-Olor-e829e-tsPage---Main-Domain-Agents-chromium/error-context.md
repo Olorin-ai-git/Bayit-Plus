@@ -1,0 +1,299 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e6]:
+        - 'link "Olorin-Sentinel: The All-Seeing Shield logo OLORIN-SENTINEL" [ref=e7] [cursor=pointer]':
+          - /url: /
+          - generic [ref=e8]:
+            - 'img "Olorin-Sentinel: The All-Seeing Shield logo" [ref=e9]'
+            - generic [ref=e10]: OLORIN-SENTINEL
+        - navigation [ref=e11]:
+          - link "Home" [ref=e12] [cursor=pointer]:
+            - /url: /
+          - link "Domain Agents" [ref=e13] [cursor=pointer]:
+            - /url: /agents
+          - link "Features" [ref=e14] [cursor=pointer]:
+            - /url: /features
+          - button "Solutions" [ref=e16] [cursor=pointer]:
+            - text: Solutions
+            - img [ref=e17]
+          - button "Resources" [ref=e20] [cursor=pointer]:
+            - text: Resources
+            - img [ref=e21]
+          - link "Demo" [ref=e23] [cursor=pointer]:
+            - /url: /demo/live
+        - generic [ref=e24]:
+          - generic [ref=e25]:
+            - img [ref=e26]
+            - combobox "Select language" [ref=e29] [cursor=pointer]:
+              - option "EN" [selected]
+              - option "FR"
+              - option "ES"
+              - option "IT"
+              - option "中文"
+          - link "Deploy Sentinel" [ref=e30] [cursor=pointer]:
+            - /url: /contact
+    - main [ref=e31]:
+      - generic [ref=e32]:
+        - generic [ref=e34]:
+          - img [ref=e36]
+          - heading "Meet Your 4 Domain Agents" [level=1] [ref=e39]:
+            - text: Meet Your
+            - text: 4 Domain Agents
+          - paragraph [ref=e40]: Specialized Sentinels working 24/7 to detect and prevent fraud across all vectors
+          - generic [ref=e41]:
+            - button "See Sentinels in Action" [ref=e42] [cursor=pointer]
+            - button "Deploy Sentinel" [ref=e43] [cursor=pointer]
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - heading "Your Guardian Team" [level=2] [ref=e47]
+            - paragraph [ref=e48]: Each Sentinel specializes in a specific domain, working together for comprehensive protection
+          - generic [ref=e49]:
+            - generic [ref=e51]:
+              - generic [ref=e52]:
+                - generic [ref=e53]:
+                  - img [ref=e55]
+                  - generic [ref=e58]:
+                    - heading "Location Sentinel" [level=3] [ref=e59]
+                    - paragraph [ref=e60]: Geographic Guardian
+                - paragraph [ref=e61]: The Location Sentinel never sleeps. It patrols your network to detect impossible travel patterns, VPN spoofing, and geographic anomalies that indicate fraudulent activity.
+                - list [ref=e62]:
+                  - listitem [ref=e63]:
+                    - img [ref=e64]
+                    - generic [ref=e67]: Impossible travel detection
+                  - listitem [ref=e68]:
+                    - img [ref=e69]
+                    - generic [ref=e72]: VPN and proxy unmasking
+                  - listitem [ref=e73]:
+                    - img [ref=e74]
+                    - generic [ref=e77]: Geographic risk profiling
+                  - listitem [ref=e78]:
+                    - img [ref=e79]
+                    - generic [ref=e82]: Real-time location verification
+              - generic [ref=e84]:
+                - img [ref=e86]
+                - paragraph [ref=e89]: Sentinel Activity Visualization
+            - generic [ref=e91]:
+              - generic [ref=e92]:
+                - generic [ref=e93]:
+                  - img [ref=e95]
+                  - generic [ref=e100]:
+                    - heading "Network Sentinel" [level=3] [ref=e101]
+                    - paragraph [ref=e102]: Connection Watcher
+                - paragraph [ref=e103]: The Network Sentinel exposes coordinated attack rings that standard filters miss. It traces the invisible threads connecting fraudulent users.
+                - list [ref=e104]:
+                  - listitem [ref=e105]:
+                    - img [ref=e106]
+                    - generic [ref=e109]: Fraud ring identification
+                  - listitem [ref=e110]:
+                    - img [ref=e111]
+                    - generic [ref=e114]: Bot and automation detection
+                  - listitem [ref=e115]:
+                    - img [ref=e116]
+                    - generic [ref=e119]: Connection graph analysis
+                  - listitem [ref=e120]:
+                    - img [ref=e121]
+                    - generic [ref=e124]: Network pattern recognition
+              - generic [ref=e126]:
+                - img [ref=e128]
+                - paragraph [ref=e133]: Sentinel Activity Visualization
+            - generic [ref=e135]:
+              - generic [ref=e136]:
+                - generic [ref=e137]:
+                  - img [ref=e139]
+                  - generic [ref=e142]:
+                    - heading "Bio-Metric Sentinel" [level=3] [ref=e143]
+                    - paragraph [ref=e144]: Behavioral Analyst
+                - paragraph [ref=e145]: The Bio-Metric Sentinel detects compromised accounts through behavioral analysis. It knows the difference between bots and humans.
+                - list [ref=e146]:
+                  - listitem [ref=e147]:
+                    - img [ref=e148]
+                    - generic [ref=e151]: Typing biometrics analysis
+                  - listitem [ref=e152]:
+                    - img [ref=e153]
+                    - generic [ref=e156]: Navigation pattern detection
+                  - listitem [ref=e157]:
+                    - img [ref=e158]
+                    - generic [ref=e161]: Human vs bot distinction
+                  - listitem [ref=e162]:
+                    - img [ref=e163]
+                    - generic [ref=e166]: Session anomaly detection
+              - generic [ref=e168]:
+                - img [ref=e170]
+                - paragraph [ref=e173]: Sentinel Activity Visualization
+            - generic [ref=e175]:
+              - generic [ref=e176]:
+                - generic [ref=e177]:
+                  - img [ref=e179]
+                  - generic [ref=e182]:
+                    - heading "Transaction Sentinel" [level=3] [ref=e183]
+                    - paragraph [ref=e184]: Payment Guardian
+                - paragraph [ref=e185]: The Transaction Sentinel protects revenue and reputation by predicting chargebacks before they happen and detecting velocity-based fraud.
+                - list [ref=e186]:
+                  - listitem [ref=e187]:
+                    - img [ref=e188]
+                    - generic [ref=e191]: Chargeback prediction
+                  - listitem [ref=e192]:
+                    - img [ref=e193]
+                    - generic [ref=e196]: Transaction velocity analysis
+                  - listitem [ref=e197]:
+                    - img [ref=e198]
+                    - generic [ref=e201]: Payment pattern detection
+                  - listitem [ref=e202]:
+                    - img [ref=e203]
+                    - generic [ref=e206]: Velocity-based risk scoring
+              - generic [ref=e208]:
+                - img [ref=e210]
+                - paragraph [ref=e213]: Sentinel Activity Visualization
+        - generic [ref=e215]:
+          - generic [ref=e216]:
+            - heading "Specialty Sentinels" [level=2] [ref=e217]
+            - paragraph [ref=e218]: Additional specialized agents that enhance the core Domain Agent protection
+          - generic [ref=e219]:
+            - generic [ref=e220]:
+              - generic [ref=e221]:
+                - img [ref=e223]
+                - generic [ref=e232]:
+                  - heading "Identity Sentinel" [level=3] [ref=e233]
+                  - paragraph [ref=e234]: Authentication Guardian
+              - paragraph [ref=e235]: Verifies identity through advanced authentication and device intelligence to prevent account takeover and identity fraud.
+              - list [ref=e236]:
+                - listitem [ref=e237]:
+                  - img [ref=e238]
+                  - generic [ref=e241]: Multi-factor authentication analysis
+                - listitem [ref=e242]:
+                  - img [ref=e243]
+                  - generic [ref=e246]: Device fingerprinting
+                - listitem [ref=e247]:
+                  - img [ref=e248]
+                  - generic [ref=e251]: Account takeover prevention
+                - listitem [ref=e252]:
+                  - img [ref=e253]
+                  - generic [ref=e256]: Credential stuffing detection
+            - generic [ref=e257]:
+              - generic [ref=e258]:
+                - img [ref=e260]
+                - generic [ref=e262]:
+                  - heading "Device Sentinel" [level=3] [ref=e263]
+                  - paragraph [ref=e264]: Hardware Intelligence
+              - paragraph [ref=e265]: Monitors device fingerprints and characteristics to identify compromised, emulated, or suspicious devices attempting fraudulent transactions.
+              - list [ref=e266]:
+                - listitem [ref=e267]:
+                  - img [ref=e268]
+                  - generic [ref=e271]: Device fingerprinting
+                - listitem [ref=e272]:
+                  - img [ref=e273]
+                  - generic [ref=e276]: Emulator detection
+                - listitem [ref=e277]:
+                  - img [ref=e278]
+                  - generic [ref=e281]: Rooted/jailbroken detection
+                - listitem [ref=e282]:
+                  - img [ref=e283]
+                  - generic [ref=e286]: Device reputation scoring
+        - generic [ref=e289]:
+          - img [ref=e290]
+          - heading "Sentinel Collaboration" [level=2] [ref=e292]
+          - paragraph [ref=e293]: All Domain Agents work together in real-time, sharing insights and combining their specialized knowledge to provide comprehensive fraud protection that no single system could achieve alone.
+          - generic [ref=e294]:
+            - button "See Sentinels in Action" [ref=e295] [cursor=pointer]:
+              - text: See Sentinels in Action
+              - img [ref=e296]
+            - button "Explore All Features" [ref=e298] [cursor=pointer]
+    - contentinfo [ref=e299]:
+      - generic [ref=e300]:
+        - generic [ref=e301]:
+          - generic [ref=e302]:
+            - 'link "Olorin-Sentinel: The All-Seeing Shield logo OLORIN-SENTINEL" [ref=e303] [cursor=pointer]':
+              - /url: /
+              - generic [ref=e304]:
+                - 'img "Olorin-Sentinel: The All-Seeing Shield logo" [ref=e305]'
+                - generic [ref=e306]: OLORIN-SENTINEL
+            - paragraph [ref=e307]: AI-powered fraud detection and prevention with 6 specialized agents working 24/7 to protect your business.
+            - generic [ref=e308]:
+              - link "LinkedIn" [ref=e309] [cursor=pointer]:
+                - /url: https://linkedin.com/company/olorin-ai
+                - img [ref=e310]
+              - link "Twitter" [ref=e314] [cursor=pointer]:
+                - /url: https://twitter.com/olorin_ai
+                - img [ref=e315]
+          - generic [ref=e317]:
+            - heading "Quick Links" [level=3] [ref=e318]
+            - list [ref=e319]:
+              - listitem [ref=e320]:
+                - link "Home" [ref=e321] [cursor=pointer]:
+                  - /url: /
+              - listitem [ref=e322]:
+                - link "Domain Agents" [ref=e323] [cursor=pointer]:
+                  - /url: /agents
+              - listitem [ref=e324]:
+                - link "Features" [ref=e325] [cursor=pointer]:
+                  - /url: /features
+              - listitem [ref=e326]:
+                - link "Pricing" [ref=e327] [cursor=pointer]:
+                  - /url: /pricing
+              - listitem [ref=e328]:
+                - link "Contact" [ref=e329] [cursor=pointer]:
+                  - /url: /contact
+          - generic [ref=e330]:
+            - heading "Contact Info" [level=3] [ref=e331]
+            - list [ref=e332]:
+              - listitem [ref=e333]:
+                - img [ref=e334]
+                - link "contact@olorin.ai" [ref=e337] [cursor=pointer]:
+                  - /url: mailto:contact@olorin.ai
+              - listitem [ref=e338]:
+                - img [ref=e339]
+                - link "+1 (201) 397-9142" [ref=e341] [cursor=pointer]:
+                  - /url: tel:+12013979142
+              - listitem [ref=e342]:
+                - img [ref=e343]
+                - generic [ref=e346]: 185 Madison Ave. Cresskill 07626 USA
+        - generic [ref=e347]:
+          - paragraph [ref=e348]: © 2026 Olorin.ai. All rights reserved.
+          - generic [ref=e349]:
+            - link "Privacy Policy" [ref=e350] [cursor=pointer]:
+              - /url: /privacy
+            - link "Terms of Service" [ref=e351] [cursor=pointer]:
+              - /url: /terms
+  - iframe [ref=e352]:
+    - generic [ref=f2e2]:
+      - generic [ref=f2e3]: "Compiled with problems:"
+      - button "Dismiss" [ref=f2e4] [cursor=pointer]: ×
+      - generic [ref=f2e5]:
+        - generic [ref=f2e6]:
+          - generic [ref=f2e7]: ERROR in src/App.tsx:3:50
+          - generic [ref=f2e8]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 1 | import React from 'react'; 2 | import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; > 3 | import { Header, Footer, LanguageSelector } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 4 | import { useTranslation } from 'react-i18next'; 5 | import HomePage from './pages/HomePage'; 6 | import AgentsPage from './pages/AgentsPage';"
+        - generic [ref=f2e9]:
+          - generic [ref=f2e10]: ERROR in src/pages/AgentsPage.tsx:4:40
+          - generic [ref=f2e11]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { GlassCard, GlassButton } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | import { ParticleEffect } from '../components'; 6 | import { MapPin, Network, Fingerprint, User, Smartphone, Gauge, Shield, CheckCircle, ArrowRight, Cpu } from 'lucide-react'; 7 |"
+        - generic [ref=f2e12]:
+          - generic [ref=f2e13]: ERROR in src/pages/ComparePage.tsx:4:66
+          - generic [ref=f2e14]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { HeroSection, GlassCard, GlowingIcon, GlassButton } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | import { Check, X, Shield, Bot, Clock, Users, Zap, BarChart3, ArrowRight } from 'lucide-react'; 6 | 7 | const ComparePage: React.FC = () => {"
+        - generic [ref=f2e15]:
+          - generic [ref=f2e16]: ERROR in src/pages/ContactPage.tsx:3:68
+          - generic [ref=f2e17]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 1 | import React from 'react'; 2 | import { useTranslation } from 'react-i18next'; > 3 | import { ContactPageTemplate, ContactField, ContactInfoItem } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 4 | import emailjs from '@emailjs/browser'; 5 | 6 | const ContactPage: React.FC = () => {"
+        - generic [ref=f2e18]:
+          - generic [ref=f2e19]: ERROR in src/pages/DemoPage.tsx:4:70
+          - generic [ref=f2e20]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { DemoPageTemplate, DemoStep, DemoFeature, DemoSection } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | import { Shield, Database, RefreshCw, AlertTriangle, Gauge, MapPin, Network, User, Fingerprint, Zap, Bell } from 'lucide-react'; 6 | 7 | const DemoPage: React.FC = () => {"
+        - generic [ref=f2e21]:
+          - generic [ref=f2e22]: ERROR in src/pages/FeaturesPage.tsx:4:65
+          - generic [ref=f2e23]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { FeaturesPageTemplate, FeatureCategory, TechSpec } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | import { Shield, Zap, Bell, BarChart3, Lock, Globe, Database, RefreshCw, AlertTriangle, Gauge, Settings, Cloud } from 'lucide-react'; 6 | 7 | const FeaturesPage: React.FC = () => {"
+        - generic [ref=f2e24]:
+          - generic [ref=f2e25]: ERROR in src/pages/HomePage.tsx:4:40
+          - generic [ref=f2e26]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { GlassCard, GlassButton } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | import { ParticleEffect, CountUpMetric } from '../components'; 6 | import { 7 | Shield,"
+        - generic [ref=f2e27]:
+          - generic [ref=f2e28]: ERROR in src/pages/NotFoundPage.tsx:2:52
+          - generic [ref=f2e29]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 1 | import React from 'react'; > 2 | import { NotFoundPage as SharedNotFoundPage } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 3 | 4 | const NotFoundPage: React.FC = () => { 5 | return ("
+        - generic [ref=f2e30]:
+          - generic [ref=f2e31]: ERROR in src/pages/PricingPage.tsx:4:50
+          - generic [ref=f2e32]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { PricingPageTemplate, PricingTier } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | 6 | const PricingPage: React.FC = () => { 7 | const { t } = useTranslation();"
+        - generic [ref=f2e33]:
+          - generic [ref=f2e34]: ERROR in src/pages/ROIPage.tsx:4:66
+          - generic [ref=f2e35]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { HeroSection, GlassCard, GlowingIcon, GlassButton } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | import { Calculator, DollarSign, TrendingDown, Clock, Shield, CheckCircle, ArrowRight } from 'lucide-react'; 6 | 7 | const ROIPage: React.FC = () => {"
+        - generic [ref=f2e36]:
+          - generic [ref=f2e37]: ERROR in src/pages/UseCasesPage.tsx:4:61
+          - generic [ref=f2e38]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { UseCasesPageTemplate, UseCase, IndustryStat } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | import { Building2, ShoppingCart, FileText, Heart, Shield } from 'lucide-react'; 6 | 7 | const UseCasesPage: React.FC = () => {"
+```

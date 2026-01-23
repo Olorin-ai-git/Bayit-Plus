@@ -9,15 +9,70 @@
     "compare": "Compare",
     "pricing": "Pricing",
     "contact": "Contact",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "transactionMonitoring": "Transaction Monitoring",
+    "chargebackPrevention": "Chargeback Prevention",
+    "apiDocs": "API Documentation",
+    "accountTakeover": "Account Takeover",
+    "paymentFraud": "Payment Fraud",
+    "identityVerification": "Identity Verification",
+    "botDetection": "Bot Detection",
+    "compliance": "Compliance & Reporting"
   },
   "hero": {
-    "title": "AI-POWERED",
-    "titleHighlight": "FRAUD PREVENTION",
-    "subtitle": "Secure Your Business with Independent AI Agents",
+    "title": "OLORIN.AI: SENTINEL",
+    "titleHighlight": "AI FRAUD DETECTION",
+    "subtitle": "Secure your business with next-gen AI-powered threat detection and prevention.",
     "description": "Detect and prevent fraud in real-time with 6 specialized AI agents",
-    "ctaExplore": "Explore Solutions",
+    "ctaExplore": "EXPLORE SENTINEL",
     "ctaDemo": "Schedule Demo"
+  },
+  "heroFeatures": {
+    "threatDetection": {
+      "title": "INTELLIGENT THREAT DETECTION",
+      "realTimeAnalysis": {
+        "title": "Real-time Anomaly Analysis",
+        "description": "Continuously monitor transactions and user behavior to identify anomalies as they occur, ensuring immediate threat detection."
+      },
+      "crossDomain": {
+        "title": "Cross-Domain Correlation",
+        "description": "Connect data points across multiple domains to uncover sophisticated fraud patterns that single-source analysis would miss."
+      },
+      "adaptiveBlocking": {
+        "title": "Adaptive Blocking",
+        "description": "Automatically block fraudulent activities with intelligent systems that learn and adapt to emerging threats in real-time."
+      }
+    },
+    "riskManagement": {
+      "title": "ADVANCED RISK MANAGEMENT",
+      "behavioral": {
+        "title": "Behavioral Biometrics",
+        "description": "Analyze unique user interaction patterns including typing rhythm, mouse movements, and navigation behavior to detect account takeovers."
+      },
+      "transactionMonitoring": {
+        "title": "Transaction Monitoring",
+        "description": "Track transaction velocity, amount patterns, and geographic consistency to identify suspicious payment activities before they complete."
+      },
+      "accountProtection": {
+        "title": "Account Takeover Prevention",
+        "description": "Protect user accounts with multi-layered authentication verification and behavioral analysis to stop unauthorized access attempts."
+      }
+    },
+    "integration": {
+      "title": "SEAMLESS INTEGRATION & REPORTING",
+      "apiSdk": {
+        "title": "API & SDK Integration",
+        "description": "Integrate fraud detection into your existing infrastructure with comprehensive REST APIs and SDKs for all major platforms."
+      },
+      "dashboards": {
+        "title": "Customizable Dashboards",
+        "description": "Visualize fraud metrics, agent performance, and investigation workflows with fully customizable real-time dashboards."
+      },
+      "compliance": {
+        "title": "Compliance Reporting",
+        "description": "Generate audit-ready reports for PCI-DSS, GDPR, SOC 2, and industry regulations with automated compliance documentation."
+      }
+    }
   },
   "agents": {
     "sectionTitle": "How Our Agents Explore",
@@ -42,6 +97,45 @@
     "realTime": { "title": "Real-Time Threat Analysis", "description": "Detect and respond to fraud attempts in under 1 second" },
     "instantAlert": { "title": "Instant Alert AI", "description": "Automated alerts with intelligent prioritization" },
     "predictive": { "title": "Predictive Protection", "description": "Prevent fraud before it happens with predictive models" }
+  },
+  "trustBar": {
+    "title": "Trusted by enterprises worldwide",
+    "subtitle": "Enterprise-grade security and compliance",
+    "certifications": {
+      "soc2": "SOC 2 Type II Certified",
+      "iso": "ISO 27001 Certified",
+      "gdpr": "GDPR Compliant",
+      "pci": "PCI-DSS Level 1"
+    }
+  },
+  "clientLogos": {
+    "title": "Trusted by leading enterprises",
+    "subtitle": "Join companies protecting billions in transactions"
+  },
+  "testimonials": {
+    "title": "What Our Clients Say",
+    "subtitle": "Real results from enterprise POC evaluations",
+    "testimonial1": {
+      "quote": "During our 30-day POC, we detected a coordinated fraud ring that our previous system missed entirely. The AI agents identified patterns across 15+ seemingly unrelated accounts.",
+      "author": "Director of Risk Management",
+      "company": "Fortune 500 Financial Services",
+      "result": "80% reduction in fraud losses",
+      "metric": "$2.4M saved in first quarter"
+    },
+    "testimonial2": {
+      "quote": "The real-time anomaly detection caught a sophisticated account takeover attempt within 200ms. Our legacy system would have taken 3-5 minutes to flag this.",
+      "author": "VP of Security",
+      "company": "Global E-Commerce Platform",
+      "result": "95% detection accuracy",
+      "metric": "<1s response time"
+    },
+    "testimonial3": {
+      "quote": "Integration was seamless. We had the POC running in our staging environment within 2 hours using their REST API. The documentation is exceptional.",
+      "author": "CTO",
+      "company": "Fintech Unicorn",
+      "result": "60% faster implementation",
+      "metric": "2-hour deployment"
+    }
   },
   "successStory": {
     "title": "POC Success Story",
@@ -505,5 +599,395 @@
     },
     "customAnalysis": "Want a detailed ROI analysis for your specific situation?",
     "ctaButton": "Get Custom Analysis"
+  },
+  "transactionMonitoring": {
+    "hero": {
+      "title": "REAL-TIME",
+      "titleHighlight": "TRANSACTION MONITORING",
+      "subtitle": "Detect suspicious transactions before they complete with sub-second analysis",
+      "cta": "Start Monitoring",
+      "secondaryCta": "See Demo"
+    },
+    "capabilities": {
+      "title": "Transaction Monitoring Capabilities",
+      "subtitle": "Comprehensive transaction analysis powered by AI agents",
+      "realTime": {
+        "title": "Real-Time Analysis",
+        "description": "Monitor every transaction as it happens with <1s latency. Our AI agents analyze patterns, velocity, and anomalies in real-time to catch fraud before it completes."
+      },
+      "velocity": {
+        "title": "Velocity Checks",
+        "description": "Track transaction frequency, volume, and patterns across time windows. Detect rapid-fire attacks, account testing, and coordinated fraud rings."
+      },
+      "patterns": {
+        "title": "Pattern Recognition",
+        "description": "Identify sophisticated fraud patterns across geographic locations, device fingerprints, and behavioral signals that standard rules-based systems miss."
+      }
+    },
+    "useCases": {
+      "title": "Transaction Monitoring Use Cases",
+      "ecommerce": {
+        "title": "E-Commerce Protection",
+        "description": "Protect your online store from card testing, stolen cards, and friendly fraud. Monitor checkout flows, payment methods, and shipping addresses in real-time.",
+        "benefit1": "Stop card testing attacks within seconds",
+        "benefit2": "Detect velocity-based fraud patterns",
+        "benefit3": "Reduce false declines by 60%+"
+      },
+      "banking": {
+        "title": "Banking & Fintech",
+        "description": "Monitor wire transfers, ACH transactions, and mobile payments for money laundering, account takeover, and unauthorized transfers.",
+        "benefit1": "AML/KYC compliance automation",
+        "benefit2": "Cross-border transaction monitoring",
+        "benefit3": "Regulatory reporting ready"
+      }
+    },
+    "technical": {
+      "title": "Technical Specifications",
+      "subtitle": "Enterprise-grade performance and scalability",
+      "speed": {
+        "title": "Sub-Second Detection",
+        "description": "Average detection time from transaction initiation to risk score",
+        "metric": "< 500ms average latency"
+      },
+      "accuracy": {
+        "title": "High Accuracy",
+        "description": "Fraud detection accuracy with minimal false positives",
+        "metric": "95%+ detection rate, <2% false positive rate"
+      }
+    },
+    "cta": {
+      "title": "Stop Transaction Fraud Today",
+      "description": "Schedule a demo to see our transaction monitoring in action with your real data",
+      "primary": "Schedule Demo",
+      "secondary": "Calculate ROI"
+    }
+  },
+  "chargebackPrevention": {
+    "hero": {
+      "title": "REDUCE CHARGEBACKS BY",
+      "titleHighlight": "80%+",
+      "subtitle": "Prevent friendly fraud and reduce chargeback costs with AI-powered dispute prevention",
+      "cta": "Prevent Chargebacks",
+      "secondaryCta": "See Demo"
+    },
+    "benefits": {
+      "title": "Chargeback Prevention Benefits",
+      "subtitle": "Protect revenue and maintain payment processor relationships",
+      "reduce": {
+        "title": "80%+ Reduction",
+        "description": "Reduce chargeback rates by identifying friendly fraud, first-party fraud, and authorization disputes before they occur."
+      },
+      "protect": {
+        "title": "Protect Merchant Status",
+        "description": "Stay below payment processor thresholds and avoid excessive chargeback programs that threaten your ability to accept payments."
+      },
+      "revenue": {
+        "title": "Recover Revenue",
+        "description": "Win more disputes with compelling evidence packages automatically generated from transaction data and fraud signals."
+      }
+    },
+    "howItWorks": {
+      "title": "How Chargeback Prevention Works",
+      "step1": {
+        "title": "Pre-Transaction Screening",
+        "description": "Analyze risk signals before authorizing transactions. Flag high-risk patterns that typically lead to chargebacks such as velocity abuse, BIN attacks, and suspicious shipping addresses."
+      },
+      "step2": {
+        "title": "Real-Time Alerts",
+        "description": "Receive instant notifications when high-risk transactions occur. Option to block, challenge with step-up authentication, or allow with additional monitoring."
+      },
+      "step3": {
+        "title": "Chargeback Prediction",
+        "description": "Machine learning models predict chargeback probability based on transaction characteristics, customer history, and fraud signals. Intervene proactively."
+      },
+      "step4": {
+        "title": "Evidence Automation",
+        "description": "Automatically compile compelling evidence packages when disputes occur. Include transaction logs, device fingerprints, IP data, and communication history."
+      }
+    },
+    "roi": {
+      "title": "Calculate Your Chargeback Savings",
+      "description": "See how much you could save by reducing chargeback rates and operational costs",
+      "cta": "Calculate Savings",
+      "metric1Label": "Average Chargeback Reduction",
+      "metric1Value": "80%+",
+      "metric2Label": "Dispute Win Rate Improvement",
+      "metric2Value": "45%+"
+    },
+    "cta": {
+      "title": "Reduce Chargebacks Starting Today",
+      "description": "Join merchants protecting billions in transactions from chargebacks",
+      "button": "Start Preventing Chargebacks"
+    }
+  },
+  "apiDocumentation": {
+    "hero": {
+      "title": "FRAUD DETECTION",
+      "titleHighlight": "API & SDKs",
+      "subtitle": "Integrate AI-powered fraud detection in minutes with comprehensive REST APIs and SDKs",
+      "cta": "Get API Key",
+      "secondaryCta": "View Docs"
+    },
+    "features": {
+      "title": "API Features",
+      "subtitle": "Developer-friendly fraud detection built for production",
+      "rest": {
+        "title": "RESTful API",
+        "description": "Simple REST API with JSON responses. Analyze transactions, verify identities, and access fraud scores with single HTTP requests."
+      },
+      "security": {
+        "title": "Enterprise Security",
+        "description": "OAuth 2.0 authentication, API key rotation, IP whitelisting, and rate limiting. Bank-grade encryption for all data in transit."
+      },
+      "realtime": {
+        "title": "Real-Time Processing",
+        "description": "Sub-second response times for fraud analysis. WebSocket support for real-time alerts and investigation updates."
+      }
+    },
+    "examples": {
+      "title": "Code Examples",
+      "analyze": {
+        "title": "Analyze Transaction",
+        "code": "POST /api/v1/transactions/analyze\n{\n  \"amount\": 299.99,\n  \"currency\": \"USD\",\n  \"customer_id\": \"cust_123\",\n  \"ip_address\": \"203.0.113.0\",\n  \"device_id\": \"dev_abc123\"\n}\n\nResponse:\n{\n  \"risk_score\": 72,\n  \"recommendation\": \"REVIEW\",\n  \"signals\": [\"velocity_high\", \"new_device\"]\n}"
+      },
+      "webhook": {
+        "title": "Webhook Events",
+        "code": "POST https://your-domain.com/webhook\n{\n  \"event\": \"investigation.completed\",\n  \"investigation_id\": \"inv_789\",\n  \"verdict\": \"FRAUD\",\n  \"confidence\": 0.94,\n  \"timestamp\": \"2024-01-22T10:30:00Z\"\n}"
+      }
+    },
+    "sdks": {
+      "title": "Official SDKs & Libraries",
+      "subtitle": "Native support for popular programming languages",
+      "python": {
+        "name": "Python SDK",
+        "description": "pip install olorin-fraud"
+      },
+      "javascript": {
+        "name": "JavaScript/Node.js",
+        "description": "npm install @olorin/fraud-sdk"
+      },
+      "java": {
+        "name": "Java SDK",
+        "description": "Maven & Gradle support"
+      },
+      "go": {
+        "name": "Go SDK",
+        "description": "go get github.com/olorin/fraud-go"
+      }
+    },
+    "cta": {
+      "title": "Start Building Today",
+      "description": "Get your API key and start integrating fraud detection in minutes",
+      "primary": "Get API Key",
+      "secondary": "Read Documentation"
+    }
+  },
+  "accountTakeover": {
+    "hero": {
+      "title": "STOP ACCOUNT",
+      "titleHighlight": "TAKEOVER ATTACKS",
+      "subtitle": "Detect compromised accounts and unauthorized access in real-time with behavioral AI",
+      "cta": "Protect Accounts",
+      "secondaryCta": "See Demo"
+    },
+    "detection": {
+      "title": "Account Takeover Detection Methods",
+      "subtitle": "Multi-layered protection against unauthorized access",
+      "biometrics": {
+        "title": "Behavioral Biometrics",
+        "description": "Analyze typing patterns, mouse movements, and navigation behavior to detect when someone else is using an account—even with correct credentials."
+      },
+      "behavioral": {
+        "title": "Behavioral Analysis",
+        "description": "Monitor login patterns, session behavior, and activity sequences. Detect anomalies like unusual login times, rapid actions, or deviation from normal workflows."
+      },
+      "anomaly": {
+        "title": "Anomaly Detection",
+        "description": "Machine learning models trained on millions of legitimate sessions identify subtle signals of account compromise invisible to rule-based systems."
+      }
+    },
+    "prevention": {
+      "title": "Prevention Strategies",
+      "item1": {
+        "title": "Credential Stuffing Protection",
+        "description": "Block automated login attempts using stolen username/password combinations from data breaches. Detect patterns across failed login attempts."
+      },
+      "item2": {
+        "title": "Step-Up Authentication",
+        "description": "Trigger additional authentication (2FA, email verification, SMS) when suspicious activity is detected, balancing security with user experience."
+      },
+      "item3": {
+        "title": "Device Fingerprinting",
+        "description": "Track and analyze device characteristics. Alert when accounts are accessed from new devices or suspicious locations."
+      },
+      "item4": {
+        "title": "Session Monitoring",
+        "description": "Continuously monitor active sessions for signs of takeover. Automatically terminate suspicious sessions to prevent damage."
+      },
+      "item5": {
+        "title": "Risk-Based Authentication",
+        "description": "Adjust authentication requirements based on real-time risk scores. High-risk logins require additional verification."
+      }
+    },
+    "cta": {
+      "title": "Protect Your Users' Accounts",
+      "description": "Stop account takeover attacks before damage occurs",
+      "button": "Start Protecting Accounts"
+    }
+  },
+  "paymentFraud": {
+    "hero": {
+      "title": "STOP PAYMENT",
+      "titleHighlight": "FRAUD",
+      "subtitle": "Block stolen cards, card testing, and synthetic fraud before transactions complete",
+      "cta": "Prevent Payment Fraud",
+      "secondaryCta": "See Demo"
+    },
+    "threats": {
+      "title": "Payment Fraud Threats We Detect",
+      "cardTesting": {
+        "title": "Card Testing Attacks",
+        "description": "Detect and block automated bots testing stolen credit card numbers with small transactions. Stop attacks before hundreds of fraudulent purchases occur."
+      },
+      "stolenCards": {
+        "title": "Stolen Card Detection",
+        "description": "Identify transactions using compromised payment credentials through velocity checks, BIN analysis, and cross-merchant fraud networks."
+      },
+      "synthetic": {
+        "title": "Synthetic Identity Fraud",
+        "description": "Catch fraudsters combining real and fake information to create new identities for payment fraud. Detect inconsistencies across data sources."
+      }
+    },
+    "cta": {
+      "title": "Secure Your Payment Flow",
+      "description": "Protect revenue and reduce fraud losses with AI-powered payment fraud detection",
+      "button": "Start Securing Payments"
+    }
+  },
+  "identityVerification": {
+    "hero": {
+      "title": "AUTOMATED",
+      "titleHighlight": "IDENTITY VERIFICATION",
+      "subtitle": "Verify user identities in seconds with AI-powered document analysis and biometric matching",
+      "cta": "Verify Identities",
+      "secondaryCta": "See Demo"
+    },
+    "methods": {
+      "title": "Identity Verification Methods",
+      "document": {
+        "title": "Document Verification",
+        "description": "AI-powered OCR and fraud detection for driver's licenses, passports, and national IDs. Detect photo manipulation, template fraud, and forged documents."
+      },
+      "biometric": {
+        "title": "Biometric Matching",
+        "description": "Compare selfies to government IDs using facial recognition. Ensure the person presenting credentials is the rightful owner."
+      },
+      "liveness": {
+        "title": "Liveness Detection",
+        "description": "Prevent spoofing attacks using photos, videos, or masks. Require real-time user interaction to prove physical presence."
+      }
+    },
+    "cta": {
+      "title": "Verify Identities at Scale",
+      "description": "Onboard users quickly while preventing identity fraud",
+      "button": "Start Verifying Identities"
+    }
+  },
+  "botDetection": {
+    "hero": {
+      "title": "DETECT & BLOCK",
+      "titleHighlight": "BOT ATTACKS",
+      "subtitle": "Stop automated fraud, scraping, and account creation with advanced bot detection",
+      "cta": "Block Bots",
+      "secondaryCta": "See Demo"
+    },
+    "capabilities": {
+      "title": "Bot Detection Capabilities",
+      "behavioral": {
+        "title": "Behavioral Analysis",
+        "description": "Distinguish human behavior from bot patterns. Analyze mouse movements, click patterns, typing speed, and navigation sequences."
+      },
+      "network": {
+        "title": "Network Analysis",
+        "description": "Detect datacenter IPs, VPNs, proxies, and Tor networks. Identify bot traffic patterns and coordinated attacks."
+      },
+      "realtime": {
+        "title": "Real-Time Blocking",
+        "description": "Block malicious bots instantly while allowing legitimate automation (search engines, monitoring tools). Challenge suspicious traffic with CAPTCHA when needed."
+      }
+    },
+    "cta": {
+      "title": "Stop Bot Attacks Today",
+      "description": "Protect your platform from automated fraud and abuse",
+      "button": "Start Blocking Bots"
+    }
+  },
+  "compliance": {
+    "hero": {
+      "title": "COMPLIANCE",
+      "titleHighlight": "& REPORTING",
+      "subtitle": "Automated compliance reporting for PCI-DSS, GDPR, SOC 2, and industry regulations",
+      "cta": "View Compliance",
+      "secondaryCta": "Download Documentation"
+    },
+    "standards": {
+      "title": "Compliance Standards",
+      "pci": {
+        "title": "PCI-DSS Level 1",
+        "description": "Payment Card Industry compliance"
+      },
+      "gdpr": {
+        "title": "GDPR Compliant",
+        "description": "EU data protection regulation"
+      },
+      "soc2": {
+        "title": "SOC 2 Type II",
+        "description": "Security & privacy controls"
+      },
+      "iso": {
+        "title": "ISO 27001",
+        "description": "Information security management"
+      }
+    },
+    "reporting": {
+      "title": "Compliance Reporting Features",
+      "automated": {
+        "title": "Automated Reports",
+        "description": "Generate audit-ready compliance reports automatically. Scheduled delivery to compliance teams and auditors."
+      },
+      "customizable": {
+        "title": "Customizable Templates",
+        "description": "Design custom report formats matching your regulatory requirements. Filter by date range, risk level, and fraud type."
+      },
+      "audit": {
+        "title": "Audit Trail",
+        "description": "Complete audit logs of all fraud decisions, investigations, and system actions. Immutable records for regulatory compliance."
+      }
+    },
+    "documentation": {
+      "title": "Compliance Documentation",
+      "download": "Request",
+      "dpa": {
+        "title": "Data Processing Agreement (DPA)",
+        "description": "GDPR-compliant data processing terms"
+      },
+      "baa": {
+        "title": "Business Associate Agreement (BAA)",
+        "description": "HIPAA compliance for healthcare"
+      },
+      "privacy": {
+        "title": "Privacy Policy",
+        "description": "Data handling and privacy practices"
+      },
+      "security": {
+        "title": "Security Whitepaper",
+        "description": "Technical security architecture"
+      }
+    },
+    "cta": {
+      "title": "Maintain Regulatory Compliance",
+      "description": "Automated reporting and documentation for audit readiness",
+      "button": "Get Compliance Documentation"
+    }
   }
 }

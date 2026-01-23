@@ -208,12 +208,12 @@
     "epg": "מדריך תוכניות",
     "radio": "רדיו",
     "podcasts": "פודקאסטים",
-    "flows": "רצפים",
     "judaism": "יהדות",
     "children": "ילדים",
     "profile": "פרופיל",
     "search": "חיפוש",
     "settings": "הגדרות",
+    "support": "תמיכה",
     "favorites": "מועדפים",
     "watchlist": "רשימת צפייה",
     "downloads": "הורדות",
@@ -974,6 +974,23 @@
       "requiredMessage": "דורש מנוי בתשלום",
       "upgradeInfo": "שדרג את המנוי שלך כדי לגשת לתוכן פרימיום",
       "upgrade": "שדרג כעת"
+    },
+    "chapters": "פרקים",
+    "sceneSearch": {
+      "title": "חיפוש סצנות",
+      "placeholder": "חפש סצנה...",
+      "inputLabel": "שדה חיפוש סצנות",
+      "searching": "מחפש...",
+      "noResults": "לא נמצאו סצנות",
+      "hint": "הקלד לפחות 2 תווים לחיפוש",
+      "voiceReceived": "מחפש: {{query}}",
+      "seekingTo": "קופץ ל-{{time}}",
+      "previous": "הקודם",
+      "next": "הבא",
+      "result": {
+        "jumpTo": "קפוץ ל-{{title}} ב-{{time}}",
+        "hint": "לחץ כדי לקפוץ לסצנה זו"
+      }
     }
   },
   "empty": {

@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, Text, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { XCircle } from 'lucide-react';
 import { GlassBadge } from '@bayit/shared/ui';
@@ -40,7 +40,7 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
 
   return (
     <View className="mb-6 pt-4 border-t" style={{ borderTopColor: colors.glassBorder }}>
-      <View className={`flex-row justify-between items-center mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+      <View style={[styles.headerRow, isRTL && styles.rowReverse]}>
         <Text className="text-lg font-semibold" style={{ textAlign, color: colors.text }}>
           {t('admin.uploads.activeUpload', 'Active Upload')}
         </Text>
@@ -63,7 +63,7 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
         )}
       </View>
       <View className="rounded-lg p-4 border" style={{ backgroundColor: colors.backgroundLight, borderColor: colors.glassBorder }}>
-        <View className={`flex-row items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <View style={[styles.jobRow, isRTL && styles.rowReverse]}>
           <StatusIcon status={job.status} job={job} />
           <Text className="flex-1 text-base font-semibold" style={{ textAlign, color: colors.text }} numberOfLines={1}>
             {job.filename}
@@ -94,7 +94,7 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
 
         <StageError job={job} />
 
-        <View className={`flex-row justify-between gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <View style={[styles.statsRow, isRTL && styles.rowReverse]}>
           <Text className="text-sm" style={{ color: colors.textSecondary }}>
             {formatFileSize(job.bytes_uploaded)} / {formatFileSize(job.file_size)}
           </Text>
@@ -113,3 +113,26 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  jobRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 16,
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+});

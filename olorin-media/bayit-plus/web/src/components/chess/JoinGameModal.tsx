@@ -2,7 +2,7 @@
  * Modal for joining an existing chess game by code.
  */
 import React, { useState } from 'react';
-import { View, Pressable, Text } from 'react-native';
+import { View, Pressable, Text, StyleSheet } from 'react-native';
 import { colors, spacing } from '@bayit/shared/theme';
 import { useTranslation } from 'react-i18next';
 import { GlassInput, GlassModal } from '@bayit/shared/ui';
@@ -79,9 +79,8 @@ export default function JoinGameModal({ visible, onClose, onJoin }: JoinGameModa
         </Pressable>
 
         <Pressable
-          className={`flex-1 py-4 rounded-lg bg-purple-500 items-center ${
-            (joining || gameCode.length !== 6) ? 'opacity-50' : ''
-          }`}
+          className="flex-1 py-4 rounded-lg bg-purple-500 items-center"
+          style={[(joining || gameCode.length !== 6) && styles.disabled]}
           onPress={handleJoin}
           disabled={joining || gameCode.length !== 6}
         >
@@ -93,3 +92,9 @@ export default function JoinGameModal({ visible, onClose, onJoin }: JoinGameModa
     </GlassModal>
   );
 }
+
+const styles = StyleSheet.create({
+  disabled: {
+    opacity: 0.5,
+  },
+});

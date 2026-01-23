@@ -20,7 +20,6 @@ import {
   demoDownloadsService,
   demoJudaismService,
   demoChildrenService,
-  demoFlowsService,
 } from './demoService'
 import logger, {
   getCorrelationId,
@@ -297,6 +296,19 @@ const apiChaptersService = {
   getCategories: () => api.get('/chapters/categories/list'),
 }
 
+// Scene Search Service (API)
+const apiSceneSearchService = {
+  search: (query, contentId, seriesId, language = 'he', limit = 20, minScore = 0.5) =>
+    api.post('/search/scene', {
+      query,
+      content_id: contentId,
+      series_id: seriesId,
+      language,
+      limit,
+      min_score: minScore,
+    }),
+}
+
 // Subtitles Service (API)
 const apiSubtitlesService = {
   getLanguages: () => api.get('/subtitles/languages'),
@@ -471,20 +483,6 @@ const apiJudaismService = {
     api.get('/judaism/shabbat/status', { params: { city, state } }),
 }
 
-// Flows Service (API)
-const apiFlowsService = {
-  getFlows: () => api.get('/flows'),
-  getActiveFlow: () => api.get('/flows/active'),
-  getFlow: (flowId) => api.get(`/flows/${flowId}`),
-  createFlow: (data) => api.post('/flows', data),
-  updateFlow: (flowId, data) => api.put(`/flows/${flowId}`, data),
-  deleteFlow: (flowId) => api.delete(`/flows/${flowId}`),
-  addFlowItem: (flowId, item) => api.post(`/flows/${flowId}/items`, item),
-  removeFlowItem: (flowId, itemIndex) => api.delete(`/flows/${flowId}/items/${itemIndex}`),
-  skipFlowToday: (flowId) => api.post(`/flows/${flowId}/skip-today`),
-  getFlowContent: (flowId) => api.get(`/flows/${flowId}/content`),
-}
-
 // Favorites Service (API)
 const apiFavoritesService = {
   getFavorites: () => api.get('/favorites'),
@@ -546,6 +544,7 @@ export const chatService = isDemo ? demoChatService : apiChatService
 export const zmanService = isDemo ? demoZmanService : apiZmanService
 export const trendingService = isDemo ? demoTrendingService : apiTrendingService
 export const chaptersService = isDemo ? demoChaptersService : apiChaptersService
+export const sceneSearchService = apiSceneSearchService // No demo mode - requires indexed content
 export const subtitlesService = isDemo ? demoSubtitlesService : apiSubtitlesService
 export const subtitlePreferencesService = apiSubtitlePreferencesService // No demo mode - requires auth
 export const ritualService = isDemo ? demoRitualService : apiRitualService
@@ -556,6 +555,5 @@ export const profilesService = apiProfilesService // No demo mode for profiles -
 export const childrenService = isDemo ? demoChildrenService : apiChildrenService
 export const youngstersService = apiYoungstersService // No demo mode - requires real content
 export const judaismService = isDemo ? demoJudaismService : apiJudaismService
-export const flowsService = isDemo ? demoFlowsService : apiFlowsService
 
 export default api

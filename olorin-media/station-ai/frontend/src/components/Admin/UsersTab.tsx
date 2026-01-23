@@ -1,0 +1,779 @@
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  AlertCircle,
+  Users,
+  Shield,
+  Edit,
+  Eye,
+  UserX,
+  UserCheck,
+  Search,
+  ChevronDown,
+  Clock,
+  Mail,
+  Pencil,
+  X,
+  Save,
+  UserPlus,
+  Lock
+} from 'lucide-react'
+import { useService } from '../../services'
+import { useAuth } from '../../contexts/AuthContext'
+import { Select, Checkbox } from '../Form'
+
+// Protected super admin email - cannot be modified or deactivated by other users
+const PROTECTED_ADMIN_EMAIL = 'admin@olorin.ai'
+
+interface UsersTabProps {
+  isRTL: boolean
+}
+
+interface User {
+  _id: string
+  firebase_uid: string
+  email: string
+  display_name: string
+  photo_url: string | null
+  role: 'admin' | 'editor' | 'viewer'
+  is_active: boolean
+  created_at: string
+  last_login: string
+}
+
+interface EditFormData {
+  display_name: string
+  photo_url: string
+}
+
+interface CreateFormData {
+  email: string
+  role: 'admin' | 'editor' | 'viewer'
+  display_name: string
+}
+
+const roleColors = {
+  admin: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
+  editor: 'text-blue-400 bg-blue-500/10 border-blue-500/30',
+  viewer: 'text-dark-300 bg-dark-700/50 border-dark-600'
+}
+
+const roleLabels = {
+  admin: { en: 'Admin', he: 'מנהל' },
+  editor: { en: 'Editor', he: 'עורך' },
+  viewer: { en: 'Viewer', he: 'צופה' }
+}
+
+const roleIcons = {
+  admin: Shield,
+  editor: Edit,
+  viewer: Eye
+}
+
+export default function UsersTab({ isRTL }: UsersTabProps) {
+  const queryClient = useQueryClient()
+  const service = useService()
+  const { dbUser: currentUser } = useAuth()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [roleFilter, setRoleFilter] = useState<string>('')
+  const [showInactive, setShowInactive] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [editForm, setEditForm] = useState<EditFormData>({ display_name: '', photo_url: '' })
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [createForm, setCreateForm] = useState<CreateFormData>({ email: '', role: 'viewer', display_name: '' })
+
+  // Check if a user is the protected super admin
+  const isProtectedAdmin = (user: User) =>
+    user.email.toLowerCase() === PROTECTED_ADMIN_EMAIL.toLowerCase()
+
+  // Check if current user can edit a target user
+  const canEditUser = (targetUser: User) => {
+    if (!isProtectedAdmin(targetUser)) return true
+    // Only the protected admin can edit themselves
+    return currentUser?.email.toLowerCase() === PROTECTED_ADMIN_EMAIL.toLowerCase()
+  }
+
+  // Check if current user can deactivate a target user
+  const canDeactivateUser = (targetUser: User) => {
+    // No one can deactivate the protected admin
+    if (isProtectedAdmin(targetUser)) return false
+    return true
+  }
+
+  // Fetch users
+  const { data: usersData, isLoading, error } = useQuery({
+    queryKey: ['admin', 'users', roleFilter, showInactive],
+    queryFn: () => service.listUsers({
+      role: roleFilter || undefined,
+      include_inactive: showInactive,
+      limit: 200
+    }),
+    retry: false
+  })
+
+  // Fetch user stats
+  const { data: userStats } = useQuery({
+    queryKey: ['admin', 'users', 'stats'],
+    queryFn: () => service.getUserStats(),
+    retry: false
+  })
+
+  // Change role mutation
+  const changeRoleMutation = useMutation({
+    mutationFn: ({ uid, role }: { uid: string; role: 'admin' | 'editor' | 'viewer' }) =>
+      service.setUserRole(uid, role),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
+    }
+  })
+
+  // Deactivate user mutation
+  const deactivateMutation = useMutation({
+    mutationFn: (uid: string) => service.deactivateUser(uid),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
+    }
+  })
+
+  // Reactivate user mutation
+  const reactivateMutation = useMutation({
+    mutationFn: (uid: string) => service.reactivateUser(uid),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
+    }
+  })
+
+  // Update user mutation
+  const updateUserMutation = useMutation({
+    mutationFn: ({ uid, data }: { uid: string; data: { display_name?: string; photo_url?: string } }) =>
+      service.updateUser(uid, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
+      setEditingUser(null)
+    }
+  })
+
+  // Create user mutation
+  const createUserMutation = useMutation({
+    mutationFn: (data: { email: string; role: 'admin' | 'editor' | 'viewer'; display_name?: string }) =>
+      service.createUser(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
+      setShowCreateModal(false)
+      setCreateForm({ email: '', role: 'viewer', display_name: '' })
+    }
+  })
+
+  // Filter users by search query
+  const users = (usersData?.users || []) as User[]
+  const filteredUsers = users.filter(user =>
+    user.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  const handleRoleChange = (uid: string, newRole: 'admin' | 'editor' | 'viewer') => {
+    changeRoleMutation.mutate({ uid, role: newRole })
+    setOpenDropdown(null)
+  }
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr)
+    return date.toLocaleDateString(isRTL ? 'he-IL' : 'en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
+  const openEditModal = (user: User) => {
+    setEditForm({
+      display_name: user.display_name,
+      photo_url: user.photo_url || ''
+    })
+    setEditingUser(user)
+  }
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingUser) return
+
+    updateUserMutation.mutate({
+      uid: editingUser.firebase_uid,
+      data: {
+        display_name: editForm.display_name,
+        photo_url: editForm.photo_url || undefined
+      }
+    })
+  }
+
+  const handleCreateSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    createUserMutation.mutate({
+      email: createForm.email,
+      role: createForm.role,
+      display_name: createForm.display_name || undefined
+    })
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-400"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    const axiosError = error as any
+    const status = axiosError?.response?.status
+    const detail = axiosError?.response?.data?.detail || axiosError?.message || 'Unknown error'
+    const isAuthError = status === 401 || status === 403
+
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <AlertCircle className="mx-auto mb-4 text-amber-400" size={48} />
+          <h3 className="text-lg font-semibold text-dark-100 mb-2">
+            {isAuthError
+              ? (isRTL ? 'נדרשת הרשאת מנהל' : 'Admin Authorization Required')
+              : (isRTL ? 'שגיאה בטעינת נתונים' : 'Error Loading Data')
+            }
+          </h3>
+          <p className="text-sm text-dark-400">
+            {isAuthError
+              ? (isRTL ? 'עליך להתחבר עם חשבון מנהל כדי לצפות בדף זה' : 'Please sign in with an admin account to view this page')
+              : detail
+            }
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* User Statistics */}
+      {userStats && (
+        <div className="glass-card p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Users size={20} className="text-primary-400" />
+            <h3 className="font-semibold text-dark-100">
+              {isRTL ? 'סטטיסטיקות משתמשים' : 'User Statistics'}
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {/* Total */}
+            <div className="p-4 rounded-lg bg-primary-500/10 border border-primary-500/30">
+              <div className="text-2xl font-bold text-primary-400">{userStats.total}</div>
+              <div className="text-sm text-dark-400">{isRTL ? 'סה"כ' : 'Total'}</div>
+            </div>
+
+            {/* Active */}
+            <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
+              <div className="text-2xl font-bold text-emerald-400">{userStats.active}</div>
+              <div className="text-sm text-dark-400">{isRTL ? 'פעילים' : 'Active'}</div>
+            </div>
+
+            {/* Admins */}
+            <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/30">
+              <div className="text-2xl font-bold text-amber-400">{userStats.by_role?.admin || 0}</div>
+              <div className="text-sm text-dark-400">{isRTL ? 'מנהלים' : 'Admins'}</div>
+            </div>
+
+            {/* Editors */}
+            <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/30">
+              <div className="text-2xl font-bold text-blue-400">{userStats.by_role?.editor || 0}</div>
+              <div className="text-sm text-dark-400">{isRTL ? 'עורכים' : 'Editors'}</div>
+            </div>
+
+            {/* Viewers */}
+            <div className="p-4 rounded-lg bg-dark-700/50 border border-dark-600">
+              <div className="text-2xl font-bold text-dark-300">{userStats.by_role?.viewer || 0}</div>
+              <div className="text-sm text-dark-400">{isRTL ? 'צופים' : 'Viewers'}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Filters */}
+      <div className="glass-card p-4">
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Search */}
+          <div className="relative flex-1">
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={isRTL ? 'חיפוש לפי שם או אימייל...' : 'Search by name or email...'}
+              className="w-full pl-10 pr-4 py-2 bg-dark-800 border border-dark-600 rounded-lg text-dark-100 placeholder-dark-400 focus:outline-none focus:border-primary-500"
+            />
+          </div>
+
+          {/* Role Filter */}
+          <Select
+            value={roleFilter}
+            onChange={setRoleFilter}
+            placeholder={isRTL ? 'כל התפקידים' : 'All Roles'}
+            className="min-w-[160px]"
+            options={[
+              { value: '', label: isRTL ? 'כל התפקידים' : 'All Roles' },
+              { value: 'admin', label: isRTL ? 'מנהלים' : 'Admins' },
+              { value: 'editor', label: isRTL ? 'עורכים' : 'Editors' },
+              { value: 'viewer', label: isRTL ? 'צופים' : 'Viewers' }
+            ]}
+          />
+
+          {/* Show Inactive Toggle */}
+          <Checkbox
+            checked={showInactive}
+            onChange={(e) => setShowInactive(e.target.checked)}
+            label={isRTL ? 'הצג לא פעילים' : 'Show Inactive'}
+          />
+
+          {/* Add User Button */}
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+          >
+            <UserPlus size={18} />
+            <span>{isRTL ? 'הוסף משתמש' : 'Add User'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Users Table */}
+      <div className="glass-card overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-dark-600">
+                <th className="text-left px-6 py-4 text-sm font-medium text-dark-400">
+                  {isRTL ? 'משתמש' : 'User'}
+                </th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-dark-400">
+                  {isRTL ? 'אימייל' : 'Email'}
+                </th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-dark-400">
+                  {isRTL ? 'תפקיד' : 'Role'}
+                </th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-dark-400">
+                  {isRTL ? 'התחברות אחרונה' : 'Last Login'}
+                </th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-dark-400">
+                  {isRTL ? 'סטטוס' : 'Status'}
+                </th>
+                <th className="text-left px-6 py-4 text-sm font-medium text-dark-400">
+                  {isRTL ? 'פעולות' : 'Actions'}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredUsers.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-dark-400">
+                    {searchQuery
+                      ? (isRTL ? 'לא נמצאו משתמשים תואמים' : 'No matching users found')
+                      : (isRTL ? 'לא נמצאו משתמשים' : 'No users found')
+                    }
+                  </td>
+                </tr>
+              ) : (
+                filteredUsers.map((user) => {
+                  const RoleIcon = roleIcons[user.role]
+                  return (
+                    <tr
+                      key={user._id}
+                      className={`border-b border-dark-700 hover:bg-white/5 ${
+                        !user.is_active ? 'opacity-50' : ''
+                      }`}
+                    >
+                      {/* User */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          {user.photo_url ? (
+                            <img
+                              src={user.photo_url}
+                              alt={user.display_name}
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-primary-500/20 flex items-center justify-center">
+                              <span className="text-primary-400 font-semibold">
+                                {user.display_name.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex flex-col">
+                            <span className="font-medium text-dark-100">{user.display_name}</span>
+                            {isProtectedAdmin(user) && (
+                              <span className="inline-flex items-center gap-1 text-xs text-amber-400">
+                                <Lock size={10} />
+                                {isRTL ? 'מנהל ראשי' : 'Super Admin'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Email */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2 text-dark-300">
+                          <Mail size={14} />
+                          <span className="text-sm">{user.email}</span>
+                        </div>
+                      </td>
+
+                      {/* Role Dropdown */}
+                      <td className="px-6 py-4">
+                        <div className="relative">
+                          {canEditUser(user) ? (
+                            <button
+                              onClick={() => setOpenDropdown(openDropdown === user._id ? null : user._id)}
+                              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${roleColors[user.role]} hover:opacity-80 transition-opacity`}
+                            >
+                              <RoleIcon size={14} />
+                              <span className="text-sm font-medium">
+                                {roleLabels[user.role][isRTL ? 'he' : 'en']}
+                              </span>
+                              <ChevronDown size={14} />
+                            </button>
+                          ) : (
+                            <div
+                              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${roleColors[user.role]} opacity-60 cursor-not-allowed`}
+                              title={isRTL ? 'לא ניתן לשנות תפקיד מנהל ראשי' : 'Cannot change super admin role'}
+                            >
+                              <Lock size={14} />
+                              <span className="text-sm font-medium">
+                                {roleLabels[user.role][isRTL ? 'he' : 'en']}
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Dropdown Menu */}
+                          {openDropdown === user._id && canEditUser(user) && (
+                            <div className="absolute z-10 mt-1 w-36 bg-dark-800 border border-dark-600 rounded-lg shadow-lg overflow-hidden">
+                              {(['admin', 'editor', 'viewer'] as const).map((role) => {
+                                const Icon = roleIcons[role]
+                                return (
+                                  <button
+                                    key={role}
+                                    onClick={() => handleRoleChange(user.firebase_uid, role)}
+                                    disabled={changeRoleMutation.isPending}
+                                    className={`w-full flex items-center gap-2 px-4 py-2 text-left hover:bg-white/10 transition-colors ${
+                                      user.role === role ? 'bg-primary-500/10' : ''
+                                    }`}
+                                  >
+                                    <Icon size={14} className={roleColors[role].split(' ')[0]} />
+                                    <span className="text-sm text-dark-200">
+                                      {roleLabels[role][isRTL ? 'he' : 'en']}
+                                    </span>
+                                  </button>
+                                )
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+
+                      {/* Last Login */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2 text-dark-400">
+                          <Clock size={14} />
+                          <span className="text-sm">{formatDate(user.last_login)}</span>
+                        </div>
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                            user.is_active
+                              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                              : 'bg-red-500/10 text-red-400 border border-red-500/30'
+                          }`}
+                        >
+                          {user.is_active
+                            ? (isRTL ? 'פעיל' : 'Active')
+                            : (isRTL ? 'לא פעיל' : 'Inactive')
+                          }
+                        </span>
+                      </td>
+
+                      {/* Actions */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          {/* Edit Button */}
+                          <button
+                            onClick={() => canEditUser(user) && openEditModal(user)}
+                            disabled={!canEditUser(user)}
+                            className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                              canEditUser(user)
+                                ? 'text-primary-400 hover:bg-primary-500/10'
+                                : 'text-dark-500 cursor-not-allowed'
+                            }`}
+                            title={
+                              canEditUser(user)
+                                ? (isRTL ? 'ערוך משתמש' : 'Edit User')
+                                : (isRTL ? 'לא ניתן לערוך מנהל ראשי' : 'Cannot edit super admin')
+                            }
+                          >
+                            {canEditUser(user) ? <Pencil size={16} /> : <Lock size={16} />}
+                            <span>{isRTL ? 'ערוך' : 'Edit'}</span>
+                          </button>
+
+                          {/* Deactivate/Reactivate Button */}
+                          {user.is_active ? (
+                            <button
+                              onClick={() => canDeactivateUser(user) && deactivateMutation.mutate(user.firebase_uid)}
+                              disabled={deactivateMutation.isPending || !canDeactivateUser(user)}
+                              className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                                canDeactivateUser(user)
+                                  ? 'text-red-400 hover:bg-red-500/10'
+                                  : 'text-dark-500 cursor-not-allowed'
+                              }`}
+                              title={
+                                canDeactivateUser(user)
+                                  ? (isRTL ? 'השבת משתמש' : 'Deactivate User')
+                                  : (isRTL ? 'לא ניתן להשבית מנהל ראשי' : 'Cannot deactivate super admin')
+                              }
+                            >
+                              {canDeactivateUser(user) ? <UserX size={16} /> : <Lock size={16} />}
+                              <span>{isRTL ? 'השבת' : 'Deactivate'}</span>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => reactivateMutation.mutate(user.firebase_uid)}
+                              disabled={reactivateMutation.isPending}
+                              className="flex items-center gap-2 px-3 py-1.5 text-sm text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
+                              title={isRTL ? 'הפעל משתמש' : 'Reactivate User'}
+                            >
+                              <UserCheck size={16} />
+                              <span>{isRTL ? 'הפעל' : 'Reactivate'}</span>
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Results count */}
+        <div className="px-6 py-3 border-t border-dark-700 text-sm text-dark-400">
+          {isRTL
+            ? `מציג ${filteredUsers.length} מתוך ${usersData?.total || 0} משתמשים`
+            : `Showing ${filteredUsers.length} of ${usersData?.total || 0} users`
+          }
+        </div>
+      </div>
+
+      {/* Edit User Modal */}
+      {editingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-dark-800 border border-dark-600 rounded-xl shadow-2xl w-full max-w-md mx-4">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-dark-600">
+              <h3 className="text-lg font-semibold text-dark-100">
+                {isRTL ? 'עריכת משתמש' : 'Edit User'}
+              </h3>
+              <button
+                onClick={() => setEditingUser(null)}
+                className="p-2 text-dark-400 hover:text-dark-200 hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
+              {/* User Info Header */}
+              <div className="flex items-center gap-4 p-4 bg-dark-700/50 rounded-lg">
+                {editingUser.photo_url ? (
+                  <img
+                    src={editingUser.photo_url}
+                    alt={editingUser.display_name}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-primary-500/20 flex items-center justify-center">
+                    <span className="text-primary-400 font-semibold text-lg">
+                      {editingUser.display_name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <div>
+                  <div className="text-sm text-dark-400">{editingUser.email}</div>
+                  <div className={`inline-flex items-center gap-1 px-2 py-0.5 mt-1 rounded text-xs ${roleColors[editingUser.role]}`}>
+                    {roleLabels[editingUser.role][isRTL ? 'he' : 'en']}
+                  </div>
+                </div>
+              </div>
+
+              {/* Display Name */}
+              <div>
+                <label className="block text-sm font-medium text-dark-300 mb-2">
+                  {isRTL ? 'שם תצוגה' : 'Display Name'}
+                </label>
+                <input
+                  type="text"
+                  value={editForm.display_name}
+                  onChange={(e) => setEditForm({ ...editForm, display_name: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-dark-100 placeholder-dark-400 focus:outline-none focus:border-primary-500"
+                  placeholder={isRTL ? 'הכנס שם תצוגה' : 'Enter display name'}
+                />
+              </div>
+
+              {/* Photo URL */}
+              <div>
+                <label className="block text-sm font-medium text-dark-300 mb-2">
+                  {isRTL ? 'כתובת URL לתמונה' : 'Photo URL'}
+                </label>
+                <input
+                  type="url"
+                  value={editForm.photo_url}
+                  onChange={(e) => setEditForm({ ...editForm, photo_url: e.target.value })}
+                  className="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-dark-100 placeholder-dark-400 focus:outline-none focus:border-primary-500"
+                  placeholder={isRTL ? 'https://example.com/photo.jpg' : 'https://example.com/photo.jpg'}
+                />
+                <p className="text-xs text-dark-400 mt-1">
+                  {isRTL ? 'השאר ריק לשימוש באות ראשונה כאווטאר' : 'Leave empty to use initials as avatar'}
+                </p>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setEditingUser(null)}
+                  className="px-4 py-2 text-sm text-dark-300 hover:text-dark-100 hover:bg-white/10 rounded-lg transition-colors"
+                >
+                  {isRTL ? 'ביטול' : 'Cancel'}
+                </button>
+                <button
+                  type="submit"
+                  disabled={updateUserMutation.isPending || !editForm.display_name.trim()}
+                  className="flex items-center gap-2 px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <Save size={16} />
+                  <span>{updateUserMutation.isPending ? (isRTL ? 'שומר...' : 'Saving...') : (isRTL ? 'שמור' : 'Save')}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Create User Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-dark-800 border border-dark-600 rounded-xl shadow-2xl w-full max-w-md mx-4">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-dark-600">
+              <h3 className="text-lg font-semibold text-dark-100">
+                {isRTL ? 'הוספת משתמש חדש' : 'Add New User'}
+              </h3>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="p-2 text-dark-400 hover:text-dark-200 hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <form onSubmit={handleCreateSubmit} className="p-6 space-y-4">
+              {/* Info Banner */}
+              <div className="p-3 bg-primary-500/10 border border-primary-500/30 rounded-lg">
+                <p className="text-sm text-primary-300">
+                  {isRTL
+                    ? 'המשתמש יקבל את ההרשאות שנבחרו כאשר יתחבר לראשונה עם Google.'
+                    : 'The user will receive the selected permissions when they first sign in with Google.'}
+                </p>
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium text-dark-300 mb-2">
+                  {isRTL ? 'כתובת אימייל' : 'Email Address'} *
+                </label>
+                <input
+                  type="email"
+                  value={createForm.email}
+                  onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-dark-100 placeholder-dark-400 focus:outline-none focus:border-primary-500"
+                  placeholder={isRTL ? 'user@example.com' : 'user@example.com'}
+                />
+              </div>
+
+              {/* Role */}
+              <div>
+                <Select
+                  label={`${isRTL ? 'תפקיד' : 'Role'} *`}
+                  value={createForm.role}
+                  onChange={(value) => setCreateForm({ ...createForm, role: value as 'admin' | 'editor' | 'viewer' })}
+                  options={[
+                    { value: 'viewer', label: isRTL ? 'צופה' : 'Viewer', description: isRTL ? 'יכול לצפות בלבד' : 'Read-only access' },
+                    { value: 'editor', label: isRTL ? 'עורך' : 'Editor', description: isRTL ? 'יכול לערוך תוכן ולוחות זמנים' : 'Can edit content and schedules' },
+                    { value: 'admin', label: isRTL ? 'מנהל' : 'Admin', description: isRTL ? 'גישה מלאה לכל המערכת' : 'Full access to the entire system' }
+                  ]}
+                />
+              </div>
+
+              {/* Display Name (optional) */}
+              <div>
+                <label className="block text-sm font-medium text-dark-300 mb-2">
+                  {isRTL ? 'שם תצוגה' : 'Display Name'} ({isRTL ? 'אופציונלי' : 'optional'})
+                </label>
+                <input
+                  type="text"
+                  value={createForm.display_name}
+                  onChange={(e) => setCreateForm({ ...createForm, display_name: e.target.value })}
+                  className="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-dark-100 placeholder-dark-400 focus:outline-none focus:border-primary-500"
+                  placeholder={isRTL ? 'יעודכן בהתחברות הראשונה' : 'Will be updated on first login'}
+                />
+              </div>
+
+              {/* Error display */}
+              {createUserMutation.isError && (
+                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                  <p className="text-sm text-red-400">
+                    {(createUserMutation.error as any)?.response?.data?.detail || (isRTL ? 'שגיאה ביצירת משתמש' : 'Error creating user')}
+                  </p>
+                </div>
+              )}
+
+              {/* Modal Footer */}
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="px-4 py-2 text-sm text-dark-300 hover:text-dark-100 hover:bg-white/10 rounded-lg transition-colors"
+                >
+                  {isRTL ? 'ביטול' : 'Cancel'}
+                </button>
+                <button
+                  type="submit"
+                  disabled={createUserMutation.isPending || !createForm.email.trim()}
+                  className="flex items-center gap-2 px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <UserPlus size={16} />
+                  <span>{createUserMutation.isPending ? (isRTL ? 'מוסיף...' : 'Adding...') : (isRTL ? 'הוסף משתמש' : 'Add User')}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

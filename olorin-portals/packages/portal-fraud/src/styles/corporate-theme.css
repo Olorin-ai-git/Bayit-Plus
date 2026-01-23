@@ -1,0 +1,147 @@
+/**
+ * Corporate Theme Typography (Fraud Detection Platform Design System)
+ * Inter font family with smaller, technical sizing
+ */
+
+/* Heading Styles - Inter font, smaller sizes, technical aesthetic */
+.corporate-heading-xl {
+  font-family: 'Inter', sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+  color: #F9FAFB;
+  line-height: 1.2;
+}
+
+.corporate-heading-lg {
+  font-family: 'Inter', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: #F9FAFB;
+  line-height: 1.3;
+}
+
+.corporate-heading-md {
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #F9FAFB;
+  line-height: 1.4;
+}
+
+/* Body Text Styles */
+.corporate-body {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #E8E8E8;
+  line-height: 1.6;
+}
+
+.corporate-body-lg {
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #E8E8E8;
+  line-height: 1.6;
+}
+
+.corporate-body-sm {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #B8B8B8;
+  line-height: 1.5;
+}
+
+/* Caption and Small Text */
+.corporate-caption {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #A855F7;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Technical Monospace (for code snippets, data) */
+.corporate-mono {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: 400;
+  color: #10B981;
+  line-height: 1.5;
+}
+
+/* Glassmorphic Card Base Style */
+.corporate-glass-card {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(126, 34, 206, 0.25);
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(126, 34, 206, 0.35);
+  transition: all 0.3s ease;
+}
+
+.corporate-glass-card:hover {
+  border-color: rgba(126, 34, 206, 0.7);
+  box-shadow: 0 0 40px rgba(126, 34, 206, 0.5);
+}
+
+/* Purple Glow Animation (for important elements) */
+@keyframes purple-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(168, 85, 247, 0.8);
+    opacity: 0.9;
+  }
+}
+
+.corporate-pulse {
+  animation: purple-pulse 2s ease-in-out infinite;
+}
+
+/* Agent Color Theme Classes */
+.agent-device {
+  color: #3b82f6;
+}
+
+.agent-location {
+  color: #8b5cf6;
+}
+
+.agent-logs {
+  color: #ec4899;
+}
+
+.agent-network {
+  color: #10b981;
+}
+
+.agent-risk {
+  color: #f59e0b;
+}
+
+.agent-labels {
+  color: #06b6d4;
+}
+
+/* Risk Level Color Classes */
+.risk-low {
+  color: #34c759;
+}
+
+.risk-medium {
+  color: #ff9f0a;
+}
+
+.risk-high {
+  color: #ff3b30;
+}
+
+.risk-critical {
+  color: #ff3b30;
+  font-weight: 700;
+}

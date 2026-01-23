@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';;
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit2, Trash2, Check } from 'lucide-react';
 import { subscriptionsService } from '@/services/adminApi';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassModal, GlassToggle, GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
@@ -132,7 +132,7 @@ export default function PlanManagementPage() {
   };
 
   return (
-    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
+    <ScrollView style={styles.container} contentContainerStyle={{ padding: spacing.lg }}>
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.plans.title')}</Text>
@@ -239,7 +239,7 @@ export default function PlanManagementPage() {
             />
           </View>
 
-          <View className="flex flex-row gap-4 mt-6">
+          <View style={styles.modalActions}>
             <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowEditModal(false)} />
             <GlassButton title={t('common.save')} variant="success" onPress={handleSave} />
           </View>
@@ -257,7 +257,7 @@ export default function PlanManagementPage() {
               {t('admin.plans.confirmDelete', { name: planToDelete.name })}
             </Text>
           )}
-          <View className="flex flex-row gap-4 mt-6">
+          <View style={styles.modalActions}>
             <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowDeleteConfirm(false)} />
             <GlassButton title={t('common.delete')} variant="danger" onPress={handleDeleteConfirm} />
           </View>
@@ -270,8 +270,8 @@ export default function PlanManagementPage() {
         title={t('common.error')}
       >
         <View style={styles.modalContent}>
-          <Text className="flex-1 text-red-500 text-sm">{errorMessage}</Text>
-          <View className="flex flex-row gap-4 mt-6">
+          <Text style={styles.errorText}>{errorMessage}</Text>
+          <View style={styles.modalActions}>
             <GlassButton title={t('common.ok')} variant="success" onPress={() => setShowErrorModal(false)} />
           </View>
         </View>
@@ -280,3 +280,192 @@ export default function PlanManagementPage() {
   );
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: spacing.lg,
+    gap: spacing.md,
+  },
+  pageTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  plansGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.lg,
+  },
+  planCard: {
+    flex: 1,
+    minWidth: 300,
+    padding: spacing.lg,
+  },
+  planCardInactive: {
+    opacity: 0.6,
+  },
+  planHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: spacing.md,
+  },
+  planName: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  planNameEn: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  inactiveBadge: {
+    backgroundColor: colors.glassBorder,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.sm,
+  },
+  inactiveBadgeText: {
+    fontSize: 12,
+    color: colors.textMuted,
+    fontWeight: '500',
+  },
+  priceContainer: {
+    marginBottom: spacing.md,
+  },
+  priceAmount: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  priceInterval: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  trialText: {
+    fontSize: 14,
+    color: colors.success,
+    marginBottom: spacing.md,
+  },
+  featuresContainer: {
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  featureRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  featureText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.text,
+  },
+  subscribersRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.glassBorder,
+    marginBottom: spacing.md,
+  },
+  subscribersLabel: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  subscribersCount: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  planActions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    justifyContent: 'flex-end',
+  },
+  actionButton: {
+    padding: spacing.sm,
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  modalContent: {
+    gap: spacing.md,
+  },
+  formRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  formGroup: {
+    flex: 1,
+    gap: spacing.sm,
+  },
+  formLabel: {
+    fontSize: 14,
+    color: colors.text,
+    fontWeight: '500',
+    marginBottom: spacing.xs,
+  },
+  inputContainer: {
+    marginBottom: 0,
+  },
+  intervalButtons: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  intervalButton: {
+    flex: 1,
+    padding: spacing.md,
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    alignItems: 'center',
+  },
+  intervalButtonActive: {
+    backgroundColor: colors.glassPurple,
+    borderColor: colors.primary,
+  },
+  intervalButtonText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    fontWeight: '500',
+  },
+  intervalButtonTextActive: {
+    color: colors.primary,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: spacing.sm,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginTop: spacing.lg,
+  },
+  modalMessage: {
+    fontSize: 14,
+    color: colors.text,
+    lineHeight: 20,
+  },
+  errorText: {
+    flex: 1,
+    color: colors.error,
+    fontSize: 14,
+  },
+});

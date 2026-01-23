@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { EmptyState } from '../components/EmptyState';
@@ -28,7 +28,7 @@ export function RequestsTab({
 
   return (
     <View className="gap-4">
-      <Text className={`text-[13px] font-semibold text-white/60 uppercase tracking-wide mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+      <Text className="text-[13px] font-semibold text-white/60 uppercase tracking-wide mb-2" style={[isRTL ? styles.textRight : styles.textLeft]}>
         {t('friends.incomingRequests', 'Incoming Requests')}
       </Text>
       {incomingRequests.length === 0 ? (
@@ -51,7 +51,7 @@ export function RequestsTab({
         ))
       )}
 
-      <Text className={`text-[13px] font-semibold text-white/60 uppercase tracking-wide mb-2 mt-6 ${isRTL ? 'text-right' : 'text-left'}`}>
+      <Text className="text-[13px] font-semibold text-white/60 uppercase tracking-wide mb-2 mt-6" style={[isRTL ? styles.textRight : styles.textLeft]}>
         {t('friends.outgoingRequests', 'Outgoing Requests')}
       </Text>
       {outgoingRequests.length === 0 ? (
@@ -82,3 +82,12 @@ export function RequestsTab({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  textRight: {
+    textAlign: 'right',
+  },
+  textLeft: {
+    textAlign: 'left',
+  },
+});

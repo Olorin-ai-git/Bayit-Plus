@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, Pressable, ScrollView, Platform } from 'react-native';
+import { View, Text, Pressable, ScrollView, Platform, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { colors, spacing, borderRadius, fontSize } from '../theme';
+import { colors, spacing } from '../theme';
 
 interface BreadcrumbItem {
   path: string;
@@ -28,34 +28,44 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
 
   const displayItems = items.slice(-maxItems);
   const chevron = isRTL ? '‹' : '›';
-  const flexDirection = isRTL ? 'row-reverse' : 'row';
 
   const renderContent = () => (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ flexDirection, alignItems: 'center', gap: spacing.xs, paddingVertical: spacing.xs }}
+      contentContainerStyle={[
+        styles.scrollContent,
+        isRTL && styles.scrollContentRTL,
+      ]}
     >
       {displayItems.map((item, index) => {
         const isLast = index === displayItems.length - 1;
         const isFirst = index === 0;
 
         return (
-          <View key={`${item.path}-${index}`} className={`flex items-center ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+          <View
+            key={`${item.path}-${index}`}
+            style={[styles.itemContainer, isRTL && styles.itemContainerRTL]}
+          >
             <Pressable
               onPress={() => !isLast && onNavigate(item.path)}
-              className={`flex items-center px-4 py-2 rounded-lg max-w-[180px] ${isRTL ? 'flex-row-reverse' : 'flex-row'} ${
-                isLast ? 'bg-purple-500/20 border border-purple-500/40' : ''
-              }`}
+              style={[
+                styles.itemButton,
+                isRTL && styles.itemButtonRTL,
+                isLast && styles.itemButtonActive,
+              ]}
               disabled={isLast}
             >
               {isFirst && (
-                <Text className={`text-xs ${isRTL ? 'ml-1.5' : 'mr-1.5'}`}>🏠</Text>
+                <Text style={[styles.homeIcon, isRTL ? styles.homeIconRTL : styles.homeIconLTR]}>
+                  🏠
+                </Text>
               )}
               <Text
-                className={`text-sm ${
-                  isLast ? 'text-white font-semibold' : 'text-purple-400 font-medium'
-                }`}
+                style={[
+                  styles.itemText,
+                  isLast ? styles.itemTextActive : styles.itemTextInactive,
+                ]}
                 numberOfLines={1}
               >
                 {item.label}
@@ -63,8 +73,8 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
             </Pressable>
 
             {!isLast && (
-              <View className="px-1">
-                <Text className="text-base text-purple-400 font-semibold opacity-70">{chevron}</Text>
+              <View style={styles.chevronContainer}>
+                <Text style={styles.chevronText}>{chevron}</Text>
               </View>
             )}
           </View>
@@ -78,7 +88,8 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
     return (
       <View
         // @ts-ignore - Web-specific className
-        className="glass-light px-4 py-2 border-b border-white/10 backdrop-blur-xl bg-white/5"
+        className="glass-light"
+        style={styles.containerWeb}
       >
         {renderContent()}
       </View>
@@ -91,12 +102,87 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
       colors={[colors.glass, colors.glassStrong]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
-      className="px-4 py-2 border-b border-white/10"
-      style={{ borderBottomColor: colors.glassBorder }}
+      style={styles.containerNative}
     >
       {renderContent()}
     </LinearGradient>
   );
 };
+
+const styles = StyleSheet.create({
+  containerWeb: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  containerNative: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  scrollContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.xs,
+  },
+  scrollContentRTL: {
+    flexDirection: 'row-reverse',
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  itemContainerRTL: {
+    flexDirection: 'row-reverse',
+  },
+  itemButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    maxWidth: 180,
+  },
+  itemButtonRTL: {
+    flexDirection: 'row-reverse',
+  },
+  itemButtonActive: {
+    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.4)',
+  },
+  homeIcon: {
+    fontSize: 12,
+  },
+  homeIconLTR: {
+    marginRight: 6,
+  },
+  homeIconRTL: {
+    marginLeft: 6,
+  },
+  itemText: {
+    fontSize: 14,
+  },
+  itemTextActive: {
+    color: colors.text,
+    fontWeight: '600',
+  },
+  itemTextInactive: {
+    color: colors.primary,
+    fontWeight: '500',
+  },
+  chevronContainer: {
+    paddingHorizontal: 4,
+  },
+  chevronText: {
+    fontSize: 16,
+    color: colors.primary,
+    fontWeight: '600',
+    opacity: 0.7,
+  },
+});
 
 export default GlassBreadcrumbs;

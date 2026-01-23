@@ -3,7 +3,7 @@
  * Wake word detection settings and testing
  */
 
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '@bayit/shared/ui';
@@ -38,7 +38,7 @@ export function WakeWordSection({
 
   return (
     <GlassView className="p-6 gap-4">
-      <View className={`flex-row items-center gap-2 mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
+      <View style={[styles.titleRow, isRTL && styles.rowReverse]}>
         <Zap size={16} color="#F59E0B" />
         <Text className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-0">
           {t('profile.voice.wakeWord', '"Hi Bayit" Wake Word')}
@@ -70,3 +70,15 @@ export function WakeWordSection({
     </GlassView>
   );
 }
+
+const styles = StyleSheet.create({
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+});

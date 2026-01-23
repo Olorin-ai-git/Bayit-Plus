@@ -1,0 +1,267 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e6]:
+        - 'link "Olorin-Sentinel: The All-Seeing Shield logo OLORIN-SENTINEL" [ref=e7] [cursor=pointer]':
+          - /url: /
+          - generic [ref=e8]:
+            - 'img "Olorin-Sentinel: The All-Seeing Shield logo" [ref=e9]'
+            - generic [ref=e10]: OLORIN-SENTINEL
+        - navigation [ref=e11]:
+          - link "Home" [ref=e12] [cursor=pointer]:
+            - /url: /
+          - link "Domain Agents" [ref=e13] [cursor=pointer]:
+            - /url: /agents
+          - link "Features" [ref=e14] [cursor=pointer]:
+            - /url: /features
+          - button "Solutions" [ref=e16] [cursor=pointer]:
+            - text: Solutions
+            - img [ref=e17]
+          - button "Resources" [ref=e20] [cursor=pointer]:
+            - text: Resources
+            - img [ref=e21]
+          - link "Demo" [ref=e23] [cursor=pointer]:
+            - /url: /demo/live
+        - generic [ref=e24]:
+          - generic [ref=e25]:
+            - img [ref=e26]
+            - combobox "Select language" [ref=e29] [cursor=pointer]:
+              - option "EN" [selected]
+              - option "FR"
+              - option "ES"
+              - option "IT"
+              - option "中文"
+          - link "Deploy Sentinel" [ref=e30] [cursor=pointer]:
+            - /url: /contact
+    - main [ref=e31]:
+      - generic [ref=e32]:
+        - generic [ref=e34]:
+          - img [ref=e36]
+          - heading "FRAUD EVOLVES. SO DO OUR AGENTS." [level=1] [ref=e38]:
+            - text: FRAUD EVOLVES.
+            - text: SO DO OUR AGENTS.
+          - paragraph [ref=e39]: They don't just flag threats—they understand the intent behind them. Location, Network, Bio-Metric, and Transaction Sentinels protect what matters.
+          - generic [ref=e40]:
+            - button "Meet Your Sentinels" [ref=e41] [cursor=pointer]
+            - button "Analyze My Traffic" [ref=e42] [cursor=pointer]
+        - generic [ref=e44]:
+          - generic [ref=e45]:
+            - heading "Meet Your Domain Agents" [level=2] [ref=e46]
+            - paragraph [ref=e47]: Four specialized Sentinels working together to protect your network
+          - generic [ref=e48]:
+            - generic [ref=e49]:
+              - img [ref=e52]
+              - heading "Location Sentinel" [level=3] [ref=e55]
+              - paragraph [ref=e56]: Geographic Guardian
+              - paragraph [ref=e57]: "\"Vigilant and precise. Detects impossible travel and VPN spoofing instantly.\""
+              - paragraph [ref=e58]: The Location Sentinel never sleeps. It patrols your network to detect impossible travel patterns, VPN spoofing, and geographic anomalies that indicate fraudulent activity.
+            - generic [ref=e59]:
+              - img [ref=e62]
+              - heading "Network Sentinel" [level=3] [ref=e67]
+              - paragraph [ref=e68]: Connection Watcher
+              - paragraph [ref=e69]: "\"Analytical and relentless. Maps hidden relationships between seemingly unrelated accounts.\""
+              - paragraph [ref=e70]: The Network Sentinel exposes coordinated attack rings that standard filters miss. It traces the invisible threads connecting fraudulent users.
+            - generic [ref=e71]:
+              - img [ref=e74]
+              - heading "Bio-Metric Sentinel" [level=3] [ref=e77]
+              - paragraph [ref=e78]: Behavioral Analyst
+              - paragraph [ref=e79]: "\"Observant and discerning. Distinguishes between bot clicks and human hesitation.\""
+              - paragraph [ref=e80]: The Bio-Metric Sentinel detects compromised accounts through behavioral analysis. It knows the difference between bots and humans.
+            - generic [ref=e81]:
+              - img [ref=e84]
+              - heading "Transaction Sentinel" [level=3] [ref=e87]
+              - paragraph [ref=e88]: Payment Guardian
+              - paragraph [ref=e89]: "\"Predictive and swift. Predicts chargeback probability before sale completion.\""
+              - paragraph [ref=e90]: The Transaction Sentinel protects revenue and reputation by predicting chargebacks before they happen.
+        - generic [ref=e92]:
+          - generic [ref=e93]:
+            - heading "Sentinel Intelligence Workflow" [level=2] [ref=e94]
+            - paragraph [ref=e95]: How Domain Agents collaborate to prevent fraud
+          - generic [ref=e96]:
+            - generic [ref=e97]:
+              - generic [ref=e98]:
+                - generic [ref=e99]: "1"
+                - img [ref=e101]
+              - heading "Sentinel Patrol" [level=3] [ref=e105]
+              - paragraph [ref=e106]: Domain Agents monitor your transaction sources 24/7
+            - generic [ref=e107]:
+              - generic [ref=e108]:
+                - generic [ref=e109]: "2"
+                - img [ref=e111]
+              - heading "Threat Analysis" [level=3] [ref=e116]
+              - paragraph [ref=e117]: Sentinels collaborate to identify fraud intent patterns
+            - generic [ref=e118]:
+              - generic [ref=e119]:
+                - generic [ref=e120]: "3"
+                - img [ref=e122]
+              - heading "Intent Detection" [level=3] [ref=e124]
+              - paragraph [ref=e125]: Advanced pattern recognition exposes invisible threats
+            - generic [ref=e126]:
+              - generic [ref=e127]:
+                - generic [ref=e128]: "4"
+                - img [ref=e130]
+              - heading "Guardian Response" [level=3] [ref=e133]
+              - paragraph [ref=e134]: Real-time protection with actionable intelligence
+        - generic [ref=e138]:
+          - generic [ref=e139]:
+            - img [ref=e141]
+            - heading "Sentinel Success Story" [level=2] [ref=e143]
+            - paragraph [ref=e144]: 80% Reduction in Chargebacks
+          - generic [ref=e145]:
+            - generic [ref=e146]:
+              - generic [ref=e147]: 0%+
+              - generic [ref=e148]: Fraud Reduction
+            - generic [ref=e149]:
+              - generic [ref=e150]: 0%
+              - generic [ref=e151]: Detection Rate
+            - generic [ref=e152]:
+              - generic [ref=e153]: <1s
+              - generic [ref=e154]: Response Time
+            - generic [ref=e155]:
+              - generic [ref=e156]: 0%
+              - generic [ref=e157]: False Positives Reduced
+          - generic [ref=e158]:
+            - paragraph [ref=e159]: "\"We didn't just block bots; we stopped a coordinated attack on our payment gateway.\""
+            - paragraph [ref=e160]: — CTO, Fintech Giant
+          - paragraph [ref=e161]: Deployed Sentinels at enterprises have achieved significant improvements in fraud detection accuracy and operational efficiency.
+          - button "Deploy Sentinel" [ref=e163] [cursor=pointer]
+        - generic [ref=e165]:
+          - generic [ref=e166]:
+            - heading "Sentinel Protection Capabilities" [level=2] [ref=e167]
+            - generic [ref=e169]:
+              - heading "The Thread of Malice" [level=3] [ref=e170]
+              - paragraph [ref=e171]: Find the Ring. Olorin traces the invisible threads connecting fraudulent users, exposing organized crime rings that standard filters miss.
+              - paragraph [ref=e172]: "\"When a Sentinel Agent raises its shield, it is not guessing. It knows.\""
+          - generic [ref=e173]:
+            - generic [ref=e174]:
+              - img [ref=e177]
+              - heading "Sentinel Threat Detection" [level=3] [ref=e179]
+              - paragraph [ref=e180]: Domain Agents respond to fraud attempts in under 1 second. They see the invisible patterns of malice.
+            - generic [ref=e181]:
+              - img [ref=e184]
+              - heading "Instant Alert Intelligence" [level=3] [ref=e187]
+              - paragraph [ref=e188]: Sentinels prioritize threats and alert your team with actionable intelligence.
+            - generic [ref=e189]:
+              - img [ref=e192]
+              - heading "Predictive Protection" [level=3] [ref=e195]
+              - paragraph [ref=e196]: Prevent fraud before it happens with Sentinel predictive models.
+        - generic [ref=e198]:
+          - heading "Industry-Specific Sentinel Protection" [level=2] [ref=e200]
+          - generic [ref=e201]:
+            - generic [ref=e202]:
+              - heading "Financial Services" [level=3] [ref=e203]
+              - paragraph [ref=e204]: Payment fraud, account takeover, money laundering detection
+            - generic [ref=e205]:
+              - heading "E-Commerce" [level=3] [ref=e206]
+              - paragraph [ref=e207]: Transaction fraud, account abuse, chargeback reduction
+            - generic [ref=e208]:
+              - heading "Insurance" [level=3] [ref=e209]
+              - paragraph [ref=e210]: Claims fraud, application fraud, premium fraud detection
+            - generic [ref=e211]:
+              - heading "Healthcare" [level=3] [ref=e212]
+              - paragraph [ref=e213]: Medical billing fraud, identity verification, prescription fraud
+        - generic [ref=e216]:
+          - img [ref=e217]
+          - heading "Ready to Deploy Sentinel?" [level=2] [ref=e219]
+          - paragraph [ref=e220]: Join enterprises already protected by Domain Agent intelligence
+          - generic [ref=e221]:
+            - button "Deploy Sentinel" [ref=e222] [cursor=pointer]
+            - button "Threat Map" [ref=e223] [cursor=pointer]
+    - contentinfo [ref=e224]:
+      - generic [ref=e225]:
+        - generic [ref=e226]:
+          - generic [ref=e227]:
+            - 'link "Olorin-Sentinel: The All-Seeing Shield logo OLORIN-SENTINEL" [ref=e228] [cursor=pointer]':
+              - /url: /
+              - generic [ref=e229]:
+                - 'img "Olorin-Sentinel: The All-Seeing Shield logo" [ref=e230]'
+                - generic [ref=e231]: OLORIN-SENTINEL
+            - paragraph [ref=e232]: AI-powered fraud detection and prevention with 6 specialized agents working 24/7 to protect your business.
+            - generic [ref=e233]:
+              - link "LinkedIn" [ref=e234] [cursor=pointer]:
+                - /url: https://linkedin.com/company/olorin-ai
+                - img [ref=e235]
+              - link "Twitter" [ref=e239] [cursor=pointer]:
+                - /url: https://twitter.com/olorin_ai
+                - img [ref=e240]
+          - generic [ref=e242]:
+            - heading "Quick Links" [level=3] [ref=e243]
+            - list [ref=e244]:
+              - listitem [ref=e245]:
+                - link "Home" [ref=e246] [cursor=pointer]:
+                  - /url: /
+              - listitem [ref=e247]:
+                - link "Domain Agents" [ref=e248] [cursor=pointer]:
+                  - /url: /agents
+              - listitem [ref=e249]:
+                - link "Features" [ref=e250] [cursor=pointer]:
+                  - /url: /features
+              - listitem [ref=e251]:
+                - link "Pricing" [ref=e252] [cursor=pointer]:
+                  - /url: /pricing
+              - listitem [ref=e253]:
+                - link "Contact" [ref=e254] [cursor=pointer]:
+                  - /url: /contact
+          - generic [ref=e255]:
+            - heading "Contact Info" [level=3] [ref=e256]
+            - list [ref=e257]:
+              - listitem [ref=e258]:
+                - img [ref=e259]
+                - link "contact@olorin.ai" [ref=e262] [cursor=pointer]:
+                  - /url: mailto:contact@olorin.ai
+              - listitem [ref=e263]:
+                - img [ref=e264]
+                - link "+1 (201) 397-9142" [ref=e266] [cursor=pointer]:
+                  - /url: tel:+12013979142
+              - listitem [ref=e267]:
+                - img [ref=e268]
+                - generic [ref=e271]: 185 Madison Ave. Cresskill 07626 USA
+        - generic [ref=e272]:
+          - paragraph [ref=e273]: © 2026 Olorin.ai. All rights reserved.
+          - generic [ref=e274]:
+            - link "Privacy Policy" [ref=e275] [cursor=pointer]:
+              - /url: /privacy
+            - link "Terms of Service" [ref=e276] [cursor=pointer]:
+              - /url: /terms
+  - iframe [ref=e277]:
+    - generic [ref=f1e2]:
+      - generic [ref=f1e3]: "Compiled with problems:"
+      - button "Dismiss" [ref=f1e4] [cursor=pointer]: ×
+      - generic [ref=f1e5]:
+        - generic [ref=f1e6]:
+          - generic [ref=f1e7]: ERROR in src/App.tsx:3:50
+          - generic [ref=f1e8]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 1 | import React from 'react'; 2 | import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; > 3 | import { Header, Footer, LanguageSelector } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 4 | import { useTranslation } from 'react-i18next'; 5 | import HomePage from './pages/HomePage'; 6 | import AgentsPage from './pages/AgentsPage';"
+        - generic [ref=f1e9]:
+          - generic [ref=f1e10]: ERROR in src/pages/AgentsPage.tsx:4:40
+          - generic [ref=f1e11]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { GlassCard, GlassButton } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | import { ParticleEffect } from '../components'; 6 | import { MapPin, Network, Fingerprint, User, Smartphone, Gauge, Shield, CheckCircle, ArrowRight, Cpu } from 'lucide-react'; 7 |"
+        - generic [ref=f1e12]:
+          - generic [ref=f1e13]: ERROR in src/pages/ComparePage.tsx:4:66
+          - generic [ref=f1e14]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { HeroSection, GlassCard, GlowingIcon, GlassButton } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | import { Check, X, Shield, Bot, Clock, Users, Zap, BarChart3, ArrowRight } from 'lucide-react'; 6 | 7 | const ComparePage: React.FC = () => {"
+        - generic [ref=f1e15]:
+          - generic [ref=f1e16]: ERROR in src/pages/ContactPage.tsx:3:68
+          - generic [ref=f1e17]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 1 | import React from 'react'; 2 | import { useTranslation } from 'react-i18next'; > 3 | import { ContactPageTemplate, ContactField, ContactInfoItem } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 4 | import emailjs from '@emailjs/browser'; 5 | 6 | const ContactPage: React.FC = () => {"
+        - generic [ref=f1e18]:
+          - generic [ref=f1e19]: ERROR in src/pages/DemoPage.tsx:4:70
+          - generic [ref=f1e20]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { DemoPageTemplate, DemoStep, DemoFeature, DemoSection } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | import { Shield, Database, RefreshCw, AlertTriangle, Gauge, MapPin, Network, User, Fingerprint, Zap, Bell } from 'lucide-react'; 6 | 7 | const DemoPage: React.FC = () => {"
+        - generic [ref=f1e21]:
+          - generic [ref=f1e22]: ERROR in src/pages/FeaturesPage.tsx:4:65
+          - generic [ref=f1e23]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { FeaturesPageTemplate, FeatureCategory, TechSpec } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | import { Shield, Zap, Bell, BarChart3, Lock, Globe, Database, RefreshCw, AlertTriangle, Gauge, Settings, Cloud } from 'lucide-react'; 6 | 7 | const FeaturesPage: React.FC = () => {"
+        - generic [ref=f1e24]:
+          - generic [ref=f1e25]: ERROR in src/pages/HomePage.tsx:4:40
+          - generic [ref=f1e26]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { GlassCard, GlassButton } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | import { ParticleEffect, CountUpMetric } from '../components'; 6 | import { 7 | Shield,"
+        - generic [ref=f1e27]:
+          - generic [ref=f1e28]: ERROR in src/pages/NotFoundPage.tsx:2:52
+          - generic [ref=f1e29]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 1 | import React from 'react'; > 2 | import { NotFoundPage as SharedNotFoundPage } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 3 | 4 | const NotFoundPage: React.FC = () => { 5 | return ("
+        - generic [ref=f1e30]:
+          - generic [ref=f1e31]: ERROR in src/pages/PricingPage.tsx:4:50
+          - generic [ref=f1e32]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { PricingPageTemplate, PricingTier } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | 6 | const PricingPage: React.FC = () => { 7 | const { t } = useTranslation();"
+        - generic [ref=f1e33]:
+          - generic [ref=f1e34]: ERROR in src/pages/ROIPage.tsx:4:66
+          - generic [ref=f1e35]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { HeroSection, GlassCard, GlowingIcon, GlassButton } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | import { Calculator, DollarSign, TrendingDown, Clock, Shield, CheckCircle, ArrowRight } from 'lucide-react'; 6 | 7 | const ROIPage: React.FC = () => {"
+        - generic [ref=f1e36]:
+          - generic [ref=f1e37]: ERROR in src/pages/UseCasesPage.tsx:4:61
+          - generic [ref=f1e38]: "TS2307: Cannot find module '@olorin/shared' or its corresponding type declarations. 2 | import { useTranslation } from 'react-i18next'; 3 | import { useNavigate } from 'react-router-dom'; > 4 | import { UseCasesPageTemplate, UseCase, IndustryStat } from '@olorin/shared'; | ^^^^^^^^^^^^^^^^ 5 | import { Building2, ShoppingCart, FileText, Heart, Shield } from 'lucide-react'; 6 | 7 | const UseCasesPage: React.FC = () => {"
+```

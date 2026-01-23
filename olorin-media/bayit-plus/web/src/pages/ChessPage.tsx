@@ -2,12 +2,12 @@
  * Chess game page - Multiplayer chess with AI assistance and voice chat.
  */
 import React, { useState, useEffect } from 'react';
-import { View, Text, useWindowDimensions, ScrollView, Image, Animated } from 'react-native';
+import { View, Text, useWindowDimensions, ScrollView, Image, Animated, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { useDirection } from '../hooks/useDirection';
 import { useAuthStore } from '../stores/authStore';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 import { GlassResizablePanel } from '@bayit/shared/ui';
 import { Gamepad2 } from 'lucide-react';
 import axios from 'axios';
@@ -68,7 +68,7 @@ export default function ChessPage() {
       if (navigationState?.startGame && navigationState?.inviteFriend && !inviteProcessed && token) {
         setInviteProcessed(true);
         setInviteStatus(t('chess.sendingInvite', { name: navigationState.inviteFriend }));
-        
+
         try {
           const response = await axios.post('/api/v1/chess/invite', {
             friend_name: navigationState.inviteFriend,
@@ -76,13 +76,13 @@ export default function ChessPage() {
           }, {
             headers: { Authorization: `Bearer ${token}` }
           });
-          
+
           if (response.data.success) {
-            setInviteStatus(t('chess.inviteSent', { 
+            setInviteStatus(t('chess.inviteSent', {
               name: response.data.friend.name,
-              code: response.data.game_code 
+              code: response.data.game_code
             }));
-            
+
             // Connect to the game
             await joinGame(response.data.game_code);
           } else {
@@ -93,12 +93,12 @@ export default function ChessPage() {
           setInviteStatus(errorMessage);
           console.error('[Chess] Failed to send invite:', err);
         }
-        
+
         // Clear status after 5 seconds
         setTimeout(() => setInviteStatus(null), 5000);
       }
     };
-    
+
     handleVoiceInvite();
   }, [navigationState, inviteProcessed, token, t, joinGame]);
 
@@ -157,13 +157,39 @@ export default function ChessPage() {
     setShowCreateModal(true);
   };
 
+  // Dynamic styles based on direction
+  const headerStyle = [
+    styles.header,
+    flexDirection === 'row-reverse' ? styles.headerRTL : styles.headerLTR,
+  ];
+
+  const titleStyle = [
+    styles.title,
+    textAlign === 'right' ? styles.textRight : null,
+  ];
+
+  const welcomeTitleStyle = [
+    styles.welcomeTitle,
+    textAlign === 'right' ? styles.textRight : null,
+  ];
+
+  const subtitleStyle = [
+    styles.subtitle,
+    textAlign === 'right' ? styles.textRight : null,
+  ];
+
+  const layoutStyle = [
+    styles.layout,
+    isMobile ? styles.layoutMobile : styles.layoutDesktop,
+  ];
+
   // Show splash screen on initial load
   if (showSplash) {
     return (
-      <Animated.View className="absolute inset-0 w-full h-full bg-black justify-center items-center z-[9999]" style={{ opacity: fadeAnim }}>
+      <Animated.View style={[styles.splashContainer, { opacity: fadeAnim }]}>
         <Image
           source={{ uri: '/assets/games/chess/splash.png' }}
-          className="w-full h-full"
+          style={styles.splashImage}
           resizeMode="cover"
         />
       </Animated.View>
@@ -173,56 +199,56 @@ export default function ChessPage() {
   // No active game - show lobby
   if (!game) {
     return (
-      <View className="flex-1 bg-black">
+      <View style={styles.container}>
         {/* Header */}
-        <View className={`items-center gap-4 py-6 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : 'flex-row'}`}>
-          <View className="w-15 h-15 rounded-full bg-purple-500/20 justify-center items-center">
+        <View style={headerStyle}>
+          <View style={styles.headerIcon}>
             <Gamepad2 size={32} color={colors.primary} />
           </View>
-          <Text className={`text-white text-3xl font-bold ${textAlign === 'right' ? 'text-right' : ''}`}>
+          <Text style={titleStyle}>
             {t('chess.title')}
           </Text>
         </View>
 
         {/* Voice Invite Status */}
         {inviteStatus && (
-          <View className="bg-purple-500/30 py-2 px-4 rounded-lg mx-6 mb-4">
-            <Text className="text-white text-sm text-center">{inviteStatus}</Text>
+          <View style={styles.inviteStatusContainer}>
+            <Text style={styles.inviteStatusText}>{inviteStatus}</Text>
           </View>
         )}
 
         {/* Lobby */}
-        <View className="flex-1 justify-center items-center px-6">
-          <View className="w-full max-w-[500px] bg-black/50 backdrop-blur-3xl rounded-2xl p-8 items-center">
-            <Text className={`text-white text-3xl font-bold mb-2 ${textAlign === 'right' ? 'text-right' : ''}`}>
+        <View style={styles.lobbyContainer}>
+          <View style={styles.lobbyCard}>
+            <Text style={welcomeTitleStyle}>
               {t('chess.welcome')}
             </Text>
-            <Text className={`text-gray-400 text-base mb-8 ${textAlign === 'right' ? 'text-right' : ''}`}>
+            <Text style={subtitleStyle}>
               {t('chess.subtitle')}
             </Text>
 
-            <View className="w-full gap-4">
+            <View style={styles.buttonGroup}>
               <View
-                className="bg-purple-600 py-4 px-6 rounded-xl items-center"
+                style={styles.createButton}
                 onStartShouldSetResponder={() => true}
                 onResponderRelease={() => setShowCreateModal(true)}
               >
-                <Text className="text-black text-base font-semibold">{t('chess.createGame')}</Text>
+                <Text style={styles.createButtonText}>{t('chess.createGame')}</Text>
               </View>
 
               <View
-                className="bg-white/10 py-4 px-6 rounded-xl items-center"
+                style={styles.joinButton}
                 onStartShouldSetResponder={() => true}
                 onResponderRelease={() => setShowJoinModal(true)}
               >
-                <Text className="text-white text-base font-semibold">
+                <Text style={styles.joinButtonText}>
                   {t('chess.joinGame')}
                 </Text>
               </View>
             </View>
 
             {error && (
-              <Text className="text-red-500 text-sm text-center mt-2">{error}</Text>
+              <Text style={styles.errorText}>{error}</Text>
             )}
           </View>
         </View>
@@ -245,19 +271,22 @@ export default function ChessPage() {
 
   // Active game layout
   return (
-    <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: spacing.md, paddingBottom: spacing.xl }}>
+    <ScrollView
+      style={styles.scrollView}
+      contentContainerStyle={styles.scrollViewContent}
+    >
       {/* Game code display */}
-      <View className="flex-row items-center justify-center gap-2 py-4 bg-purple-500/20 rounded-xl my-4">
-        <Text className="text-gray-400 text-sm">{t('chess.gameCode')}:</Text>
-        <Text className="text-purple-600 text-2xl font-bold tracking-wider">{game.game_code}</Text>
+      <View style={styles.gameCodeContainer}>
+        <Text style={styles.gameCodeLabel}>{t('chess.gameCode')}:</Text>
+        <Text style={styles.gameCode}>{game.game_code}</Text>
         {!isConnected && (
-          <Text className="text-yellow-500 text-xs italic">{t('chess.reconnecting')}</Text>
+          <Text style={styles.reconnectingText}>{t('chess.reconnecting')}</Text>
         )}
       </View>
 
-      <View className={`gap-6 ${isMobile ? 'flex-col' : 'flex-row'}`}>
+      <View style={layoutStyle}>
         {/* Left Panel - Board */}
-        <View className="flex-[2]">
+        <View style={styles.boardPanel}>
           {/* Opponent Card */}
           <PlayerCard
             player={isBoardFlipped() ? game.white_player : game.black_player}
@@ -292,8 +321,8 @@ export default function ChessPage() {
 
           {/* Game status */}
           {game.status !== 'active' && game.status !== 'waiting' && (
-            <View className="mt-4 p-4 bg-purple-500/30 rounded-xl items-center">
-              <Text className="text-white text-lg font-bold">
+            <View style={styles.gameStatusContainer}>
+              <Text style={styles.gameStatusText}>
                 {game.status === 'checkmate' && t('chess.checkmate')}
                 {game.status === 'stalemate' && t('chess.stalemate')}
                 {game.status === 'draw' && t('chess.draw')}
@@ -303,7 +332,7 @@ export default function ChessPage() {
           )}
 
           {error && (
-            <Text className="text-red-500 text-sm text-center mt-2">{error}</Text>
+            <Text style={styles.gameErrorText}>{error}</Text>
           )}
         </View>
 
@@ -326,3 +355,204 @@ export default function ChessPage() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  // Splash screen
+  splashContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: colors.black,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+  splashImage: {
+    width: '100%',
+    height: '100%',
+  },
+
+  // Container
+  container: {
+    flex: 1,
+    backgroundColor: colors.black,
+  },
+
+  // Header
+  header: {
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingVertical: spacing.xl,
+  },
+  headerLTR: {
+    flexDirection: 'row',
+  },
+  headerRTL: {
+    flexDirection: 'row-reverse',
+  },
+  headerIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: borderRadius['2xl'],
+    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    color: colors.white,
+    fontSize: fontSize['3xl'],
+    fontWeight: 'bold',
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+
+  // Voice invite status
+  inviteStatusContainer: {
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.lg,
+    marginHorizontal: spacing.xl,
+    marginBottom: spacing.md,
+  },
+  inviteStatusText: {
+    color: colors.white,
+    fontSize: fontSize.sm,
+    textAlign: 'center',
+  },
+
+  // Lobby
+  lobbyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+  },
+  lobbyCard: {
+    width: '100%',
+    maxWidth: 500,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backdropFilter: 'blur(48px)',
+    borderRadius: borderRadius['2xl'],
+    padding: spacing['2xl'],
+    alignItems: 'center',
+  },
+  welcomeTitle: {
+    color: colors.white,
+    fontSize: fontSize['3xl'],
+    fontWeight: 'bold',
+    marginBottom: spacing.sm,
+  },
+  subtitle: {
+    color: colors.gray[400],
+    fontSize: fontSize.base,
+    marginBottom: spacing['2xl'],
+  },
+  buttonGroup: {
+    width: '100%',
+    gap: spacing.md,
+  },
+  createButton: {
+    backgroundColor: colors.purple[600],
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
+    borderRadius: borderRadius.xl,
+    alignItems: 'center',
+  },
+  createButtonText: {
+    color: colors.black,
+    fontSize: fontSize.base,
+    fontWeight: '600',
+  },
+  joinButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
+    borderRadius: borderRadius.xl,
+    alignItems: 'center',
+  },
+  joinButtonText: {
+    color: colors.white,
+    fontSize: fontSize.base,
+    fontWeight: '600',
+  },
+  errorText: {
+    color: colors.red[500],
+    fontSize: fontSize.sm,
+    textAlign: 'center',
+    marginTop: spacing.sm,
+  },
+
+  // Game layout
+  scrollView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.xl,
+  },
+  gameCodeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.md,
+    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    borderRadius: borderRadius.xl,
+    marginVertical: spacing.md,
+  },
+  gameCodeLabel: {
+    color: colors.gray[400],
+    fontSize: fontSize.sm,
+  },
+  gameCode: {
+    color: colors.purple[600],
+    fontSize: fontSize['2xl'],
+    fontWeight: 'bold',
+    letterSpacing: 2,
+  },
+  reconnectingText: {
+    color: colors.yellow[500],
+    fontSize: fontSize.xs,
+    fontStyle: 'italic',
+  },
+
+  // Layout
+  layout: {
+    gap: spacing.xl,
+  },
+  layoutMobile: {
+    flexDirection: 'column',
+  },
+  layoutDesktop: {
+    flexDirection: 'row',
+  },
+
+  // Board panel
+  boardPanel: {
+    flex: 2,
+  },
+  gameStatusContainer: {
+    marginTop: spacing.md,
+    padding: spacing.md,
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+    borderRadius: borderRadius.xl,
+    alignItems: 'center',
+  },
+  gameStatusText: {
+    color: colors.white,
+    fontSize: fontSize.lg,
+    fontWeight: 'bold',
+  },
+  gameErrorText: {
+    color: colors.red[500],
+    fontSize: fontSize.sm,
+    textAlign: 'center',
+    marginTop: spacing.sm,
+  },
+});
