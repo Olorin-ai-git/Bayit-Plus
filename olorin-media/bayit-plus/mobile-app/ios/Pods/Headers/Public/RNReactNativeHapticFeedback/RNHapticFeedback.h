@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-haptic-feedback/ios/RNHapticFeedback/RNHapticFeedback.h
+../../../../../../node_modules/react-native-haptic-feedback/ios/RNHapticFeedback/RNHapticFeedback.h

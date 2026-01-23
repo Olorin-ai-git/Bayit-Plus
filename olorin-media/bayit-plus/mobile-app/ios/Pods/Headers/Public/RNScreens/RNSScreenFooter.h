@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/RNSScreenFooter.h
+../../../../../../node_modules/react-native-screens/ios/RNSScreenFooter.h

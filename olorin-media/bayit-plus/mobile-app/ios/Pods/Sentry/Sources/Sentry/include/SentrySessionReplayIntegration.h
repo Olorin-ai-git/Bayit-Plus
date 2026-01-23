@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SentrySessionReplayIntegration : SentryBaseIntegration
 
+- (instancetype)initForManualUse:(nonnull SentryOptions *)options;
+
 /**
  * Captures Replay. Used by the Hybrid SDKs.
  */
@@ -22,6 +24,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)configureReplayWith:(nullable id<SentryReplayBreadcrumbConverter>)breadcrumbConverter
          screenshotProvider:(nullable id<SentryViewScreenshotProvider>)screenshotProvider;
+
+- (void)pause;
+
+- (void)resume;
+
+- (void)stop;
+
+- (void)start;
 
 @end
 #endif // SENTRY_TARGET_REPLAY_SUPPORTED

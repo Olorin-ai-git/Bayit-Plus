@@ -8,6 +8,7 @@ import { radioService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassView, GlassBadge, GlassCategoryPill } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
+import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
 
 interface Category {
@@ -135,14 +136,10 @@ export default function RadioPage() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <View style={styles.loadingTitleSkeleton} />
-        <View style={styles.loadingGrid}>
-          {[...Array(8)].map((_, i) => (
-            <SkeletonCard key={i} />
-          ))}
-        </View>
-      </View>
+      <LoadingState
+        message={t('radio.loading', 'Loading stations...')}
+        spinnerColor={colors.secondary}
+      />
     );
   }
 
@@ -217,13 +214,11 @@ export default function RadioPage() {
           </View>
         )}
         ListEmptyComponent={
-          <View style={styles.emptyStateContainer}>
-            <GlassCard style={styles.emptyStateCard}>
-              <Radio size={64} color={colors.textMuted} />
-              <Text style={styles.emptyStateTitle}>{t('radio.noStations')}</Text>
-              <Text style={styles.emptyStateSubtitle}>{t('radio.tryLater')}</Text>
-            </GlassCard>
-          </View>
+          <EmptyState
+            icon={<Radio size={72} color={colors.textMuted} />}
+            title={t('radio.noStations')}
+            description={t('radio.tryLater')}
+          />
         }
       />
     </View>

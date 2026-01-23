@@ -6,20 +6,23 @@ set -e
 
 echo "🚀 Starting Olorin Frontend Development Server..."
 
-# Check if we're in the correct directory
-if [ ! -d "olorin-front" ]; then
-    echo "❌ Error: This script must be run from the project root directory"
+# Source path utilities
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../common/paths.sh"
+
+# Check if frontend directory exists
+if [ ! -d "$FRAUD_FRONTEND" ]; then
+    echo "❌ Error: Frontend directory not found: $FRAUD_FRONTEND"
     echo "   Current directory: $(pwd)"
-    echo "   Expected to find: olorin-front/ subdirectory"
     exit 1
 fi
 
 # Change to the frontend directory
-cd olorin-front
+cd "$FRAUD_FRONTEND"
 
 # Check if package.json exists
 if [ ! -f "package.json" ]; then
-    echo "❌ Error: package.json not found in olorin-front/"
+    echo "❌ Error: package.json not found in $FRAUD_FRONTEND/"
     echo "   Current directory: $(pwd)"
     exit 1
 fi

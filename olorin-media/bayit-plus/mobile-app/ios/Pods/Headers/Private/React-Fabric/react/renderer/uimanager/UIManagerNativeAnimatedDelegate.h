@@ -1,1 +1,1 @@
-../../../../../../../../node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManagerNativeAnimatedDelegate.h
+../../../../../../../../../node_modules/react-native/ReactCommon/react/renderer/uimanager/UIManagerNativeAnimatedDelegate.h

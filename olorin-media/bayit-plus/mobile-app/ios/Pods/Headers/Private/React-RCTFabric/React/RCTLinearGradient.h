@@ -1,1 +1,1 @@
-../../../../../../node_modules/react-native/React/Fabric/Utils/RCTLinearGradient.h
+../../../../../../../node_modules/react-native/React/Fabric/Utils/RCTLinearGradient.h

@@ -13,8 +13,10 @@ from jose import JWTError, jwt
 
 from app.core.config import settings
 from app.models.content import LiveChannel
+from app.models.live_feature_quota import FeatureType, UsageSessionStatus
 from app.models.user import User
 from app.services.live_dubbing_service import LiveDubbingService
+from app.services.live_feature_quota_service import LiveFeatureQuotaService
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -164,10 +166,45 @@ async def websocket_live_dubbing(
         f"channel={channel_id}, target_lang={target_lang}"
     )
 
+    # Step 7.5: Check quota before starting session
+    allowed, error_msg, usage_stats = await LiveFeatureQuotaService.check_quota(
+        user_id=str(user.id),
+        feature_type=FeatureType.DUBBING,
+        estimated_duration_minutes=1.0,
+    )
+
+    if not allowed:
+        await websocket.send_json({
+            "type": "quota_exceeded",
+            "message": error_msg,
+            "usage_stats": usage_stats,
+            "recoverable": False,
+        })
+        await websocket.close(code=4029, reason="Quota exceeded")
+        logger.warning(f"Quota exceeded for user {user.id}: {error_msg}")
+        return
+
+    # Step 7.6: Start quota session tracking
+    quota_session = None
+    try:
+        quota_session = await LiveFeatureQuotaService.start_session(
+            user_id=str(user.id),
+            channel_id=channel_id,
+            feature_type=FeatureType.DUBBING,
+            source_language=channel.dubbing_source_language or "he",
+            target_language=target_lang,
+            platform=platform,
+        )
+        logger.info(f"Started quota session {quota_session.session_id}")
+    except Exception as e:
+        logger.error(f"Failed to start quota session: {e}")
+
     # Step 8: Initialize dubbing service
     dubbing_service: Optional[LiveDubbingService] = None
     pipeline_task: Optional[asyncio.Task] = None
     latency_report_task: Optional[asyncio.Task] = None
+    last_usage_update = asyncio.get_event_loop().time()
+    usage_update_interval = 10.0  # Update usage every 10 seconds
 
     try:
         # Use channel's default voice or provided voice
@@ -228,14 +265,56 @@ async def websocket_live_dubbing(
                 audio_chunk = await websocket.receive_bytes()
                 await dubbing_service.process_audio_chunk(audio_chunk)
 
+                # Update usage periodically (every 10 seconds)
+                current_time = asyncio.get_event_loop().time()
+                if quota_session and current_time - last_usage_update >= usage_update_interval:
+                    try:
+                        await LiveFeatureQuotaService.update_session(
+                            session_id=quota_session.session_id,
+                            audio_seconds_delta=usage_update_interval,
+                            segments_delta=0,
+                        )
+                        # Check if still under quota
+                        allowed, error_msg, _ = await LiveFeatureQuotaService.check_quota(
+                            user_id=str(user.id),
+                            feature_type=FeatureType.DUBBING,
+                            estimated_duration_minutes=0,
+                        )
+                        if not allowed:
+                            await websocket.send_json({
+                                "type": "quota_exceeded",
+                                "message": "Usage limit reached during session",
+                                "recoverable": False,
+                            })
+                            break
+                        last_usage_update = current_time
+                    except Exception as e:
+                        logger.error(f"Error updating usage: {e}")
+
         except WebSocketDisconnect:
             logger.info(
                 f"Live dubbing session ended (disconnect): "
                 f"user={user.id}, session={dubbing_service.session_id}"
             )
+            if quota_session:
+                try:
+                    await LiveFeatureQuotaService.end_session(
+                        session_id=quota_session.session_id,
+                        status=UsageSessionStatus.COMPLETED,
+                    )
+                except Exception as e:
+                    logger.error(f"Error ending quota session: {e}")
 
     except Exception as e:
         logger.error(f"Error in live dubbing stream: {str(e)}")
+        if quota_session:
+            try:
+                await LiveFeatureQuotaService.end_session(
+                    session_id=quota_session.session_id,
+                    status=UsageSessionStatus.ERROR,
+                )
+            except Exception as se:
+                logger.error(f"Error ending quota session: {se}")
         try:
             await websocket.send_json({
                 "type": "error",

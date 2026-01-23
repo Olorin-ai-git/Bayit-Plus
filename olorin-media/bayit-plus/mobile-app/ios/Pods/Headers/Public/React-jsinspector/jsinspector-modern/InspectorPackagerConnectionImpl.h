@@ -1,1 +1,1 @@
-../../../../../../node_modules/react-native/ReactCommon/jsinspector-modern/InspectorPackagerConnectionImpl.h
+../../../../../../../node_modules/react-native/ReactCommon/jsinspector-modern/InspectorPackagerConnectionImpl.h

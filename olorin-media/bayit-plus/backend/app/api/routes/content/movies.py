@@ -54,6 +54,11 @@ async def list_all_movies(
                 "duration": item.duration,
                 "type": "movie",
                 "is_series": False,
+                "available_subtitle_languages": item.available_subtitle_languages or [],
+                "has_subtitles": bool(
+                    item.available_subtitle_languages
+                    and len(item.available_subtitle_languages) > 0
+                ),
             }
             for item in items
         ],

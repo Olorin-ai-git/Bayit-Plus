@@ -1,0 +1,79 @@
+#!/bin/bash
+# Pre-commit hook to prevent hardcoded paths
+# Install: git config core.hooksPath .githooks
+
+set -e
+
+echo "Running pre-commit validation..."
+
+# Patterns to block
+BLOCKED_PATTERNS=(
+    "/Users/olorin/Documents/olorin"
+    "/Users/gklainert"
+    "olorin-server[^/]"  # Match olorin-server but not olorin-server/
+    "olorin-front[^/]"   # Match olorin-front but not olorin-front/
+)
+
+FOUND=0
+BLOCKED_FILES=()
+
+# Check staged changes for blocked patterns
+for pattern in "${BLOCKED_PATTERNS[@]}"; do
+    # Get list of staged files that match the pattern
+    FILES=$(git diff --cached --name-only | xargs grep -l "$pattern" 2>/dev/null || true)
+
+    if [ -n "$FILES" ]; then
+        FOUND=1
+        echo ""
+        echo "❌ COMMIT BLOCKED: Hardcoded path found matching: $pattern"
+        echo "   Affected files:"
+        for file in $FILES; do
+            echo "     - $file"
+            BLOCKED_FILES+=("$file")
+            # Show the actual lines
+            echo "       Lines:"
+            git diff --cached "$file" | grep -E "$pattern" | head -3 | sed 's/^/         /'
+        done
+    fi
+done
+
+if [ $FOUND -eq 1 ]; then
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "Use dynamic path resolution instead:"
+    echo ""
+    echo "  Shell scripts:"
+    echo "    source \"\$OLORIN_ROOT/scripts/common/paths.sh\""
+    echo "    cd \"\$FRAUD_BACKEND\""
+    echo ""
+    echo "  Python scripts:"
+    echo "    from fraud.lib.paths import OLORIN_ROOT, FRAUD_BACKEND"
+    echo "    os.chdir(FRAUD_BACKEND)"
+    echo ""
+    echo "  Configuration files:"
+    echo "    Use: olorin-fraud/backend"
+    echo "    Not: /Users/olorin/Documents/olorin/olorin-fraud/backend"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    exit 1
+fi
+
+echo "✅ No hardcoded paths detected"
+
+# Run structure validation if fraud files changed
+FRAUD_FILES=$(git diff --cached --name-only | grep -E "^fraud/|^olorin-fraud/|^scripts/" || true)
+if [ -n "$FRAUD_FILES" ]; then
+    echo ""
+    echo "Fraud platform files changed, running validation..."
+    if [ -f "./fraud/validate-structure.sh" ]; then
+        ./fraud/validate-structure.sh || {
+            echo ""
+            echo "❌ COMMIT BLOCKED: Structure validation failed"
+            exit 1
+        }
+    fi
+fi
+
+echo ""
+echo "✅ Pre-commit validation passed"
+exit 0

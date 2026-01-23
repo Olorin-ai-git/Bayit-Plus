@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/helpers/RNSViewInteractionManager.h
+../../../../../../node_modules/react-native-screens/ios/helpers/RNSViewInteractionManager.h

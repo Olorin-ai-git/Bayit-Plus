@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-gesture-handler/apple/RNGestureHandlerRegistry.h
+../../../../../../node_modules/react-native-gesture-handler/apple/RNGestureHandlerRegistry.h

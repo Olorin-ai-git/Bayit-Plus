@@ -8,6 +8,7 @@ import { liveService } from '@/services/api';
 import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassCard, GlassCategoryPill, GlassLiveChannelCard } from '@bayit/shared/ui';
 import AnimatedCard from '@/components/common/AnimatedCard';
+import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
 
 interface Channel {
@@ -53,16 +54,10 @@ export default function LivePage() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <View style={styles.skeletonHeader} />
-        <View style={styles.gridContainer}>
-          {[...Array(10)].map((_, index) => (
-            <View key={`skeleton-${index}`} style={{ width: `${100 / numColumns}%`, padding: spacing.xs }}>
-              <View style={styles.skeletonCard} />
-            </View>
-          ))}
-        </View>
-      </View>
+      <LoadingState
+        message={t('live.loading', 'Loading live channels...')}
+        spinnerColor={colors.error}
+      />
     );
   }
 
@@ -150,13 +145,11 @@ export default function LivePage() {
             ))}
           </View>
         ) : (
-          <View style={styles.emptyState}>
-            <GlassCard style={styles.emptyCard}>
-              <Radio size={64} color={colors.textMuted} />
-              <Text style={styles.emptyTitle}>{t('live.noChannels')}</Text>
-              <Text style={styles.emptySubtitle}>{t('live.tryLater')}</Text>
-            </GlassCard>
-          </View>
+          <EmptyState
+            icon={<Radio size={72} color={colors.textMuted} />}
+            title={t('live.noChannels')}
+            description={t('live.tryLater')}
+          />
         )}
       </View>
     </ScrollView>

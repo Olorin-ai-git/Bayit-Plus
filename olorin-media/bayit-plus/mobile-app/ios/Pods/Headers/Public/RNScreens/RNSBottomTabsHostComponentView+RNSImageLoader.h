@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/bottom-tabs/extensions/RNSBottomTabsHostComponentView+RNSImageLoader.h
+../../../../../../node_modules/react-native-screens/ios/bottom-tabs/extensions/RNSBottomTabsHostComponentView+RNSImageLoader.h

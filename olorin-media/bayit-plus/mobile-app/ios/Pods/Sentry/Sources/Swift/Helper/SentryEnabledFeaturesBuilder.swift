@@ -35,10 +35,12 @@ import Foundation
         if options.swiftAsyncStacktraces {
             features.append("swiftAsyncStacktraces")
         }
-        
-        if options.enableMetrics {
-            features.append("metrics")
+
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+        if options.enableAppHangTrackingV2 {
+            features.append("appHangTrackingV2")
         }
+#endif //os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
         
         return features
     }

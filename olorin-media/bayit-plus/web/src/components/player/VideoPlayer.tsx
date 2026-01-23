@@ -27,7 +27,9 @@ import PlayerControls from './PlayerControls'
 import ProgressBar from './ProgressBar'
 import SettingsPanel from './SettingsPanel'
 import TriviaOverlay from './TriviaOverlay'
+import LiveFeatureUsageIndicator from './LiveFeatureUsageIndicator'
 import { useVideoPlayer, useSubtitles, useLiveSubtitles, useWatchParty, useLiveDubbing, useTrivia } from './hooks'
+import { useLiveFeatureQuota } from '@/hooks/useLiveFeatureQuota'
 import { VideoPlayerProps } from './types'
 
 export default function VideoPlayer({
@@ -48,6 +50,9 @@ export default function VideoPlayer({
 }: VideoPlayerProps) {
   const { t } = useTranslation()
   const user = useAuthStore((s) => s.user)
+
+  // Live feature quota tracking
+  const { usageStats, checkAvailability } = useLiveFeatureQuota()
 
   // Video player state and controls
   const { videoRef, containerRef, state, controls } = useVideoPlayer({
@@ -210,6 +215,24 @@ export default function VideoPlayer({
           onDismiss={trivia.dismissFact}
           isRTL={t('app.lang') === 'he'}
           isTTSPlaying={isTTSPlaying}
+        />
+      )}
+
+      {/* Live Subtitle Usage Indicator (Premium) */}
+      {isLive && usageStats && liveSubtitleService.isServiceConnected() && (
+        <LiveFeatureUsageIndicator
+          featureType="subtitle"
+          usageStats={usageStats}
+          isVisible={true}
+        />
+      )}
+
+      {/* Live Dubbing Usage Indicator (Premium) */}
+      {isLive && usageStats && dubbing.isConnected && (
+        <LiveFeatureUsageIndicator
+          featureType="dubbing"
+          usageStats={usageStats}
+          isVisible={true}
         />
       )}
 

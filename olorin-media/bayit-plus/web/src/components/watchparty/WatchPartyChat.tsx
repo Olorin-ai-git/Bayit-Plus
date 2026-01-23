@@ -1,8 +1,13 @@
+/**
+ * WatchPartyChat Component
+ * Chat interface for Watch Party with message bubbles
+ */
+
 import { useEffect, useRef } from 'react'
-import { View, Text, ScrollView, StyleSheet } from 'react-native'
+import { View, Text, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { colors } from '@bayit/shared/theme'
 import WatchPartyChatInput from './WatchPartyChatInput'
+import { styles } from './WatchPartyChat.styles'
 
 interface Message {
   id?: string
@@ -31,28 +36,28 @@ function ChatMessage({ message, isOwnMessage }: { message: Message; isOwnMessage
 
   if (isSystem) {
     return (
-      <View className="items-center py-2">
-        <Text className="text-xs text-gray-400 bg-white/5 px-4 py-2 rounded-full">{message.content}</Text>
+      <View style={styles.systemMessageContainer}>
+        <Text style={styles.systemMessageText}>{message.content}</Text>
       </View>
     )
   }
 
   const getBubbleStyle = () => {
-    if (isEmoji) return styles.bubbleEmoji
-    return isOwnMessage ? styles.bubbleOwn : styles.bubbleOther
+    if (isEmoji) return [styles.bubble, styles.bubbleEmoji]
+    return [styles.bubble, isOwnMessage ? styles.bubbleOwn : styles.bubbleOther]
   }
 
   return (
-    <View className="flex-row" style={[isOwnMessage && styles.rowReverse]}>
-      <View className="max-w-[80%] rounded-2xl px-4 py-3" style={[getBubbleStyle()]}>
+    <View style={isOwnMessage ? styles.messageRowReverse : styles.messageRow}>
+      <View style={getBubbleStyle()}>
         {!isOwnMessage && !isEmoji && (
-          <Text className="text-xs font-medium text-purple-400 mb-0.5">{message.user_name}</Text>
+          <Text style={styles.userName}>{message.user_name}</Text>
         )}
-        <Text style={[isEmoji ? styles.textEmoji : styles.textNormal]}>
+        <Text style={isEmoji ? styles.textEmoji : styles.textNormal}>
           {message.content}
         </Text>
         {!isEmoji && (
-          <Text className="text-[10px] mt-2 opacity-0" style={[isOwnMessage ? styles.timeOwn : styles.timeOther]}>
+          <Text style={[styles.timestamp, isOwnMessage ? styles.timestampOwn : styles.timestampOther]}>
             {formatTime(message.created_at)}
           </Text>
         )}
@@ -75,17 +80,17 @@ export default function WatchPartyChat({
   }, [messages])
 
   return (
-    <View className="flex-1">
-      <Text className="text-sm font-medium text-gray-400 px-2 mb-3">{t('watchParty.chat')}</Text>
+    <View style={styles.container}>
+      <Text style={styles.header}>{t('watchParty.chat')}</Text>
 
       <ScrollView
         ref={scrollViewRef}
-        className="flex-1 min-h-0"
-        contentContainerClassName="gap-3 px-2"
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
       >
         {messages.length === 0 ? (
-          <View className="items-center py-16">
-            <Text className="text-sm text-gray-400">{t('watchParty.typeMessage')}</Text>
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>{t('watchParty.typeMessage')}</Text>
           </View>
         ) : (
           messages.map((msg, idx) => (
@@ -98,7 +103,7 @@ export default function WatchPartyChat({
         )}
       </ScrollView>
 
-      <View className="pt-4 mt-3 border-t border-white/10">
+      <View style={styles.inputContainer}>
         <WatchPartyChatInput
           onSend={onSendMessage}
           disabled={!chatEnabled}
@@ -107,33 +112,3 @@ export default function WatchPartyChat({
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  rowReverse: {
-    flexDirection: 'row-reverse',
-  },
-  bubbleEmoji: {
-    backgroundColor: 'transparent',
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-  },
-  bubbleOwn: {
-    backgroundColor: 'rgba(109, 40, 217, 0.3)',
-  },
-  bubbleOther: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  textEmoji: {
-    fontSize: 30,
-  },
-  textNormal: {
-    fontSize: 14,
-    color: '#fff',
-  },
-  timeOwn: {
-    color: 'rgba(192, 132, 252, 0.6)',
-  },
-  timeOther: {
-    color: '#9ca3af',
-  },
-})

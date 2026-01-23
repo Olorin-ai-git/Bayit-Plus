@@ -14,12 +14,19 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-# Configuration
+# Configuration - Source path utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-BACKEND_DIR="$PROJECT_ROOT/olorin-server"
-FRONTEND_DIR="$PROJECT_ROOT/olorin-front"
-LOG_DIR="$PROJECT_ROOT/logs"
+source "$SCRIPT_DIR/../common/paths.sh" 2>/dev/null || {
+    # Fallback if paths.sh not found
+    PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+    OLORIN_ROOT="$PROJECT_ROOT"
+    FRAUD_BACKEND="$PROJECT_ROOT/olorin-fraud/backend"
+    FRAUD_FRONTEND="$PROJECT_ROOT/olorin-fraud/frontend"
+}
+
+BACKEND_DIR="$FRAUD_BACKEND"
+FRONTEND_DIR="$FRAUD_FRONTEND"
+LOG_DIR="$OLORIN_ROOT/logs"
 
 # Default ports
 BACKEND_PORT=8090

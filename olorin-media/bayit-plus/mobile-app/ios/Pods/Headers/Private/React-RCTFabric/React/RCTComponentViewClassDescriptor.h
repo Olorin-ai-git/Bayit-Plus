@@ -1,1 +1,1 @@
-../../../../../../node_modules/react-native/React/Fabric/Mounting/RCTComponentViewClassDescriptor.h
+../../../../../../../node_modules/react-native/React/Fabric/Mounting/RCTComponentViewClassDescriptor.h

@@ -44,7 +44,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 cultures, device_pairing, direct_messages,
                                 downloads, epg, family_controls, favorites,
                                 friends, health, history, jerusalem,
-                                judaism, librarian, live, live_dubbing, news,
+                                judaism, librarian, live, live_dubbing, live_quota, news,
                                 onboarding, party, password_reset, podcasts,
                                 profile_stats, profiles, radio, recordings,
                                 ritual, search, stats, subscriptions,
@@ -102,6 +102,7 @@ def register_all_routers(app: FastAPI) -> None:
         content_taxonomy.router, prefix=prefix, tags=["content-taxonomy"]
     )
     app.include_router(live.router, prefix=f"{prefix}/live", tags=["live"])
+    app.include_router(live_quota.router, prefix=prefix, tags=["live-quota"])
     app.include_router(radio.router, prefix=f"{prefix}/radio", tags=["radio"])
     app.include_router(podcasts.router, prefix=f"{prefix}/podcasts", tags=["podcasts"])
     app.include_router(epg.router, prefix=f"{prefix}/epg", tags=["epg"])

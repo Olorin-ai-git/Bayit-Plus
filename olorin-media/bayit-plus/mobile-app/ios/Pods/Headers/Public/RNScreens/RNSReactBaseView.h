@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/bridging/RNSReactBaseView.h
+../../../../../../node_modules/react-native-screens/ios/bridging/RNSReactBaseView.h

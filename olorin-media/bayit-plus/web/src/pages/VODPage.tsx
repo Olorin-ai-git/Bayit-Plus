@@ -206,22 +206,74 @@ export default function VODPage() {
           </GlassView>
         </View>
 
-        {/* Search Input and Filters */}
+        {/* Search Input with Filter and Voice Buttons */}
         <View style={styles.searchContainer}>
-          <GlassInput
-            placeholder={t('vod.searchPlaceholder')}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            icon={<Search size={20} color={colors.textMuted} />}
-            containerStyle={styles.searchInput}
-          />
-          <View style={styles.filterRow}>
-            <GlassCheckbox
-              label={t('vod.showOnlyWithSubtitles', 'Show only with subtitles')}
-              checked={showOnlyWithSubtitles}
-              onChange={setShowOnlyWithSubtitles}
-            />
+          <View style={[styles.searchRow, { flexDirection }]}>
+            {/* Search Input */}
+            <View style={styles.searchInputWrapper}>
+              <GlassInput
+                placeholder={t('vod.searchPlaceholder')}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                icon={<Search size={20} color={colors.textMuted} />}
+                containerStyle={styles.searchInput}
+              />
+            </View>
+
+            {/* Voice Search Button */}
+            <Pressable
+              onPress={() => {
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                  const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+                  const recognition = new SpeechRecognition();
+                  recognition.lang = i18n.language === 'he' ? 'he-IL' : i18n.language === 'es' ? 'es-ES' : 'en-US';
+                  recognition.continuous = false;
+                  recognition.interimResults = false;
+
+                  recognition.onstart = () => setIsListening(true);
+                  recognition.onend = () => setIsListening(false);
+                  recognition.onresult = (event: any) => {
+                    const transcript = event.results[0][0].transcript;
+                    setSearchQuery(transcript);
+                  };
+                  recognition.onerror = () => setIsListening(false);
+
+                  recognition.start();
+                }
+              }}
+              style={[styles.iconButton, isListening && styles.iconButtonActive]}
+            >
+              <Mic size={20} color={isListening ? colors.primary : colors.textMuted} />
+            </Pressable>
+
+            {/* Filter Button */}
+            <Pressable
+              onPress={() => setShowFilterPanel(!showFilterPanel)}
+              style={[styles.iconButton, showFilterPanel && styles.iconButtonActive, showOnlyWithSubtitles && styles.iconButtonWithBadge]}
+            >
+              <SlidersHorizontal size={20} color={showFilterPanel ? colors.primary : colors.textMuted} />
+              {showOnlyWithSubtitles && <View style={styles.filterActiveBadge} />}
+            </Pressable>
           </View>
+
+          {/* Filter Panel Overlay */}
+          {showFilterPanel && (
+            <GlassCard style={styles.filterPanel}>
+              <View style={[styles.filterPanelHeader, { flexDirection }]}>
+                <Text style={[styles.filterPanelTitle, { textAlign }]}>{t('vod.filters', 'Filters')}</Text>
+                <Pressable onPress={() => setShowFilterPanel(false)} style={styles.filterCloseButton}>
+                  <X size={16} color={colors.textMuted} />
+                </Pressable>
+              </View>
+              <View style={styles.filterPanelContent}>
+                <GlassCheckbox
+                  label={t('vod.showOnlyWithSubtitles', 'Show only with subtitles')}
+                  checked={showOnlyWithSubtitles}
+                  onChange={setShowOnlyWithSubtitles}
+                />
+              </View>
+            </GlassCard>
+          )}
         </View>
 
         {/* Category Filter */}
@@ -395,14 +447,73 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     marginBottom: spacing.lg,
+    position: 'relative',
+    zIndex: 10,
+  },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  searchInputWrapper: {
+    flex: 1,
   },
   searchInput: {
     marginBottom: 0,
   },
-  filterRow: {
-    marginTop: spacing.md,
+  iconButton: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.glass,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconButtonActive: {
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    borderColor: colors.primary,
+  },
+  iconButtonWithBadge: {
+    position: 'relative',
+  },
+  filterActiveBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.primary,
+  },
+  filterPanel: {
+    position: 'absolute',
+    top: 60,
+    right: 0,
+    left: 0,
+    padding: spacing.md,
+    zIndex: 20,
+  },
+  filterPanelHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+    paddingBottom: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+  },
+  filterPanelTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  filterCloseButton: {
+    padding: spacing.xs,
+  },
+  filterPanelContent: {
+    gap: spacing.md,
   },
   categoriesScroll: {
     marginBottom: spacing.lg,

@@ -1,9 +1,16 @@
+/**
+ * WatchPartyHeader Component
+ * Header section for Watch Party panel with room code and controls
+ */
+
 import { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Copy, Check, LogOut, X, Share2 } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
+import { isTV } from '@bayit/shared/utils/platform'
 import WatchPartySyncIndicator from './WatchPartySyncIndicator'
+import { styles } from './WatchPartyHeader.styles'
 
 interface WatchPartyHeaderProps {
   roomCode: string
@@ -46,9 +53,9 @@ export default function WatchPartyHeader({
   }
 
   return (
-    <View className="gap-4">
-      <View className="flex-row items-center justify-between">
-        <Text className="text-lg font-semibold text-white">{t('watchParty.title')}</Text>
+    <View style={styles.container}>
+      <View style={styles.headerRow}>
+        <Text style={styles.title}>{t('watchParty.title')}</Text>
         <WatchPartySyncIndicator
           isHost={isHost}
           isSynced={isSynced}
@@ -56,47 +63,61 @@ export default function WatchPartyHeader({
         />
       </View>
 
-      <View className="flex-row items-center gap-3">
-        <View className="flex-1 flex-row items-center gap-3 bg-white/5 border border-white/10 rounded-lg px-4 py-3">
-          <Text className="text-xs text-gray-400">{t('watchParty.roomCode')}:</Text>
-          <Text className="text-sm font-semibold font-mono text-white tracking-widest">{roomCode}</Text>
+      <View style={styles.codeRow}>
+        <View style={styles.codeCard}>
+          <Text style={styles.codeLabel}>{t('watchParty.roomCode')}:</Text>
+          <Text style={styles.codeText}>{roomCode}</Text>
         </View>
 
         <Pressable
           onPress={handleCopyCode}
-          className="w-9 h-9 items-center justify-center rounded-md hover:bg-white/10"
+          style={({ hovered }) => [
+            styles.iconButton,
+            hovered && styles.iconButtonHovered,
+          ]}
         >
           {copied ? (
-            <Check size={16} color="#34D399" />
+            <Check size={isTV ? 18 : 16} color="#34D399" />
           ) : (
-            <Copy size={16} color={colors.textSecondary} />
+            <Copy size={isTV ? 18 : 16} color={colors.textSecondary} />
           )}
         </Pressable>
 
         <Pressable
           onPress={handleShare}
-          className="w-9 h-9 items-center justify-center rounded-md hover:bg-white/10"
+          style={({ hovered }) => [
+            styles.iconButton,
+            hovered && styles.iconButtonHovered,
+          ]}
         >
-          <Share2 size={16} color={colors.textSecondary} />
+          <Share2 size={isTV ? 18 : 16} color={colors.textSecondary} />
         </Pressable>
       </View>
 
-      <View className="flex-row gap-3">
+      <View style={styles.buttonsRow}>
         {isHost ? (
           <Pressable
             onPress={onEnd}
-            className="flex-1 flex-row items-center justify-center gap-3 py-3 rounded-md bg-red-500/10 border border-red-500/20 hover:bg-red-500/20"
+            style={({ hovered }) => [
+              styles.actionButton,
+              styles.endButton,
+              hovered && styles.endButtonHovered,
+            ]}
           >
-            <X size={16} color={colors.error} />
-            <Text className="text-sm font-medium text-red-400">{t('watchParty.end')}</Text>
+            <X size={isTV ? 18 : 16} color={colors.error} />
+            <Text style={styles.endButtonText}>{t('watchParty.end')}</Text>
           </Pressable>
         ) : (
           <Pressable
             onPress={onLeave}
-            className="flex-1 flex-row items-center justify-center gap-3 py-3 rounded-md bg-white/5 border border-white/10 hover:bg-white/10"
+            style={({ hovered }) => [
+              styles.actionButton,
+              styles.leaveButton,
+              hovered && styles.leaveButtonHovered,
+            ]}
           >
-            <LogOut size={16} color={colors.textSecondary} />
-            <Text className="text-sm font-medium text-gray-300">{t('watchParty.leave')}</Text>
+            <LogOut size={isTV ? 18 : 16} color={colors.textSecondary} />
+            <Text style={styles.leaveButtonText}>{t('watchParty.leave')}</Text>
           </Pressable>
         )}
       </View>

@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/RNSScreenStackHeaderSubview.h
+../../../../../../node_modules/react-native-screens/ios/RNSScreenStackHeaderSubview.h

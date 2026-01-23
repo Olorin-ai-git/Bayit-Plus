@@ -13,7 +13,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, Pressable, Platform } from 'react-native';
 import Video, { VideoRef } from 'react-native-video';
-import { GlassCard } from '@bayit/glass';
+import { GlassCard } from '@bayit/shared/ui';
 import { ASSET_PATHS } from '../config/assetPaths';
 
 export interface WizardAvatarProps {

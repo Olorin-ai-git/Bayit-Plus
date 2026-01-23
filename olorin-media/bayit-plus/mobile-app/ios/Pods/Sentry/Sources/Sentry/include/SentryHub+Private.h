@@ -17,8 +17,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface
-SentryHub ()
+@interface SentryHub ()
 
 @property (nullable, nonatomic, strong) SentrySession *session;
 
@@ -60,6 +59,7 @@ SentryHub ()
 - (void)captureTransaction:(SentryTransaction *)transaction
                   withScope:(SentryScope *)scope
     additionalEnvelopeItems:(NSArray<SentryEnvelopeItem *> *)additionalEnvelopeItems;
+- (void)saveCrashTransaction:(SentryTransaction *)transaction;
 
 - (void)storeEnvelope:(SentryEnvelope *)envelope;
 - (void)captureEnvelope:(SentryEnvelope *)envelope;

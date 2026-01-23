@@ -1,7 +1,14 @@
-import { View, Text, StyleSheet } from 'react-native'
+/**
+ * WatchPartyParticipants Component
+ * List of participants in Watch Party with host indicator and audio status
+ */
+
+import { View, Text } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Crown, Mic, MicOff, User } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
+import { isTV } from '@bayit/shared/utils/platform'
+import { styles } from './WatchPartyParticipants.styles'
 
 interface Participant {
   user_id: string
@@ -28,11 +35,11 @@ export default function WatchPartyParticipants({ participants, hostId, currentUs
   })
 
   return (
-    <View className="gap-3">
-      <Text className="text-sm font-medium text-gray-400 px-2">
+    <View style={styles.container}>
+      <Text style={styles.header}>
         {t('watchParty.participants')} ({participants.length})
       </Text>
-      <View className="gap-2">
+      <View style={styles.list}>
         {sortedParticipants.map((participant) => {
           const isHost = participant.user_id === hostId
           const isCurrentUser = participant.user_id === currentUserId
@@ -40,44 +47,48 @@ export default function WatchPartyParticipants({ participants, hostId, currentUs
           return (
             <View
               key={participant.user_id}
-              className="flex-row items-center gap-4 p-3 rounded-lg bg-white/5 border"
-              style={[participant.is_speaking ? styles.participantSpeaking : styles.participantNormal]}
+              style={[
+                styles.participantCard,
+                participant.is_speaking ? styles.participantSpeaking : styles.participantNormal
+              ]}
             >
               <View
-                className="w-8 h-8 rounded-full items-center justify-center"
-                style={[isHost ? styles.avatarHost : styles.avatarNormal]}
+                style={[
+                  styles.avatar,
+                  isHost ? styles.avatarHost : styles.avatarNormal
+                ]}
               >
                 {isHost ? (
-                  <Crown size={16} color="#FBBF24" />
+                  <Crown size={isTV ? 18 : 16} color="#FBBF24" />
                 ) : (
-                  <User size={16} color={colors.textMuted} />
+                  <User size={isTV ? 18 : 16} color={colors.textMuted} />
                 )}
               </View>
 
-              <View className="flex-1 min-w-0">
-                <View className="flex-row items-center gap-3">
-                  <Text className="text-sm font-medium text-white" numberOfLines={1}>
+              <View style={styles.infoContainer}>
+                <View style={styles.nameRow}>
+                  <Text style={styles.userName} numberOfLines={1}>
                     {participant.user_name}
                   </Text>
                   {isCurrentUser && (
-                    <Text className="text-xs text-gray-400">
+                    <Text style={styles.youLabel}>
                       ({t('watchParty.you')})
                     </Text>
                   )}
                 </View>
                 {isHost && (
-                  <Text className="text-xs text-amber-400">
+                  <Text style={styles.hostLabel}>
                     {t('watchParty.host')}
                   </Text>
                 )}
               </View>
 
-              <View className="w-6 items-center">
+              <View style={styles.micContainer}>
                 {participant.is_muted ? (
-                  <MicOff size={16} color="#F87171" />
+                  <MicOff size={isTV ? 18 : 16} color="#F87171" />
                 ) : (
                   <Mic
-                    size={16}
+                    size={isTV ? 18 : 16}
                     color={participant.is_speaking ? '#34D399' : colors.textMuted}
                   />
                 )}
@@ -89,19 +100,3 @@ export default function WatchPartyParticipants({ participants, hostId, currentUs
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  participantSpeaking: {
-    borderColor: 'rgba(16, 185, 129, 0.5)',
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-  },
-  participantNormal: {
-    borderColor: 'transparent',
-  },
-  avatarHost: {
-    backgroundColor: 'rgba(251, 191, 36, 0.2)',
-  },
-  avatarNormal: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-})

@@ -15,6 +15,7 @@ import {
   CommunityDirectory,
   ShabbatEveSection,
 } from '@/components/judaism';
+import { LoadingState } from '@bayit/shared/components/states';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
@@ -370,9 +371,10 @@ export default function JudaismPage() {
         {showSpecialView ? (
           renderSpecialView()
         ) : isLoading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.primary} />
-          </View>
+          <LoadingState
+            message={t('judaism.loading', 'Loading content...')}
+            spinnerColor={colors.primary}
+          />
         ) : content.length > 0 ? (
           <>
             {/* Show Shabbat Eve Section at top when viewing content */}

@@ -485,3 +485,62 @@ ENABLE_AI_AGENTS=true
 5. **Integration**: Test with frontend via WebSocket connections
 
 This backend follows the SYSTEM MANDATE requirements with configuration-driven design, dependency injection, and production-grade code standards.
+---
+
+## Associated Root Assets
+
+While the fraud platform's main code lives in `olorin-fraud/`, related assets live at the monorepo root:
+
+- **Specifications**: `/fraud/specs/` - Feature specifications for all fraud features
+- **Integration Tests**: `/fraud/tests/` - Cross-service integration tests
+- **Scripts**: `/fraud/scripts/` - Fraud-specific automation
+- **Shared Utilities**: `/fraud/lib/` - Python utilities (paths.py)
+
+### Working with Root Assets
+
+When working on fraud platform:
+
+**Feature specs** are documented in `/fraud/specs/[feature-name]/`
+```bash
+cd /fraud/specs/001-arranging-investigation-files/
+```
+
+**Integration tests** are in `/fraud/tests/`
+```bash
+cd /fraud/tests/
+poetry run pytest integration/
+```
+
+**Backend code** is in `olorin-fraud/backend/` (current directory)
+```bash
+cd olorin-fraud/backend/
+poetry run uvicorn app.main:app --reload
+```
+
+**Import shared utilities**:
+```python
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "fraud" / "lib"))
+from paths import OLORIN_ROOT, FRAUD_BACKEND
+```
+
+### Path Resolution
+
+Use the shared path resolution utilities for consistent paths:
+
+```python
+# Option 1: Import from fraud.lib
+from fraud.lib.paths import OLORIN_ROOT, FRAUD_BACKEND, FRAUD_SPECS
+
+# Option 2: Use environment variable
+import os
+from pathlib import Path
+OLORIN_ROOT = Path(os.environ.get("OLORIN_ROOT", Path.cwd().parent.parent))
+```
+
+### Organization Rationale
+
+This organization maintains git subtree integrity while providing clear fraud platform boundaries. Assets outside the subtree cannot be moved in without breaking git history and sync capabilities.
+
+See `/MONOREPO_STRUCTURE.md` for complete monorepo organization details.

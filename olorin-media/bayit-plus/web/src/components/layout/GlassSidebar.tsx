@@ -20,8 +20,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import { GlassButton } from '@bayit/shared/ui';
-import { CultureClock } from '@bayit/shared';
-import { useCultureStore } from '@bayit/shared-contexts/CultureContext';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@/stores/authStore';
@@ -100,7 +98,6 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   const location = useLocation();
   const { user, isAuthenticated } = useAuthStore();
   const { isUIInteractionEnabled } = useModeEnforcement();
-  const { currentCulture } = useCultureStore();
 
   // User display info
   const displayName = user?.name || t('account.guest', 'Guest');
@@ -523,27 +520,6 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
             ))}
           </ScrollView>
 
-          {/* Compact Time Clocks (when expanded) */}
-          {showLabels && (
-            <Animated.View style={[styles.clockSection, { opacity: opacityAnim }]}>
-              <View style={[styles.clockRow, isRTL && styles.clockRowRTL]}>
-                <CultureClock
-                  cultureId={currentCulture?.culture_id}
-                  variant="small"
-                  showTimezoneLabel={false}
-                  style={styles.sidebarClock}
-                />
-                <View style={styles.clockDivider} />
-                <CultureClock
-                  cultureId="usa"
-                  variant="small"
-                  showTimezoneLabel={false}
-                  style={styles.sidebarClock}
-                />
-              </View>
-            </Animated.View>
-          )}
-
           {/* App Version (when expanded) */}
           {showLabels && (
             <Animated.View style={[styles.versionContainer, { opacity: opacityAnim }]}>
@@ -787,29 +763,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.glassBorder,
     marginVertical: spacing.md,
     marginHorizontal: spacing.md,
-  },
-  clockSection: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: colors.glassBorder,
-  },
-  clockRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  clockRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  clockDivider: {
-    width: 1,
-    height: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  sidebarClock: {
-    alignItems: 'center',
   },
   versionContainer: {
     paddingHorizontal: spacing.lg,

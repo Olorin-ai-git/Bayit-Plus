@@ -210,18 +210,18 @@ create_docker_compose_override() {
 version: '3.8'
 
 services:
-  olorin-server:
+  fraud-backend:
     env_file:
       - .env.docker.secrets
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/app/service-account.json
     volumes:
       - ${GOOGLE_APPLICATION_CREDENTIALS:-./service-account.json}:/app/service-account.json:ro
-  
+
   postgres:
     env_file:
       - .env.docker.secrets
-  
+
   redis:
     env_file:
       - .env.docker.secrets
@@ -233,8 +233,8 @@ services:
         redis-server
       fi
       '
-  
-  olorin-front:
+
+  fraud-frontend:
     env_file:
       - .env.docker.secrets
   

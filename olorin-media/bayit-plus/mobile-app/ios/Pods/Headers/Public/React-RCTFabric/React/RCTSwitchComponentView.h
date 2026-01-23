@@ -1,1 +1,1 @@
-../../../../../../node_modules/react-native/React/Fabric/Mounting/ComponentViews/Switch/RCTSwitchComponentView.h
+../../../../../../../node_modules/react-native/React/Fabric/Mounting/ComponentViews/Switch/RCTSwitchComponentView.h

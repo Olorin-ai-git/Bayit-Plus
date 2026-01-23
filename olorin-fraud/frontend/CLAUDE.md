@@ -597,3 +597,50 @@ export const ConfigSchema = z.object({
 - **Solution**: Event-driven architecture with proper boundaries
 
 This frontend follows the SYSTEM MANDATE with configuration-driven design, no hardcoded values, and production-grade architecture suitable for enterprise fraud detection workflows.
+---
+
+## Associated Root Assets
+
+While the fraud platform's frontend code lives in `olorin-fraud/frontend/`, related assets live at the monorepo root:
+
+- **Specifications**: `/fraud/specs/` - Feature specifications for all fraud features
+- **Integration Tests**: `/fraud/tests/` - Cross-service integration tests
+- **Scripts**: `/fraud/scripts/` - Fraud-specific automation
+- **Shared Utilities**: `/fraud/lib/` - Path resolution utilities
+
+### Working with Root Assets
+
+When working on fraud platform:
+
+**Feature specs** are documented in `/fraud/specs/[feature-name]/`
+```bash
+cd /fraud/specs/001-arranging-investigation-files/
+```
+
+**Integration tests** are in `/fraud/tests/`
+```bash
+cd /fraud/tests/
+npm run test:integration
+```
+
+**Frontend code** is in `olorin-fraud/frontend/` (current directory)
+```bash
+cd olorin-fraud/frontend/
+npm start
+```
+
+### Path Resolution
+
+For frontend scripts that need monorepo paths, use environment variables:
+
+```javascript
+// In scripts or build tools
+const OLORIN_ROOT = process.env.OLORIN_ROOT || path.resolve(__dirname, '../../..');
+const FRAUD_SPECS = path.join(OLORIN_ROOT, 'fraud', 'specs');
+```
+
+### Organization Rationale
+
+This organization maintains git subtree integrity while providing clear fraud platform boundaries. Assets outside the subtree cannot be moved in without breaking git history and sync capabilities.
+
+See `/MONOREPO_STRUCTURE.md` for complete monorepo organization details.

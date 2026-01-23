@@ -1,1 +1,1 @@
-../../../../../../../node_modules/react-native/ReactCommon/jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h
+../../../../../../../../node_modules/react-native/ReactCommon/jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h

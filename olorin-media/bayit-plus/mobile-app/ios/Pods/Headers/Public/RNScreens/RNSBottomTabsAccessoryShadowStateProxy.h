@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/bottom-tabs/accessory/RNSBottomTabsAccessoryShadowStateProxy.h
+../../../../../../node_modules/react-native-screens/ios/bottom-tabs/accessory/RNSBottomTabsAccessoryShadowStateProxy.h

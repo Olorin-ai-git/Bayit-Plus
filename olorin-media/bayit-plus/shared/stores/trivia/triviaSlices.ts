@@ -36,9 +36,16 @@ export const createPreferencesSlice: TriviaStateCreator = (set, get) => ({
       const prefs = await triviaApi.getPreferences()
       set({ preferences: { ...DEFAULT_TRIVIA_PREFERENCES, ...prefs }, isLoading: false })
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load preferences'
-      console.error('[TriviaStore] Failed to load preferences:', err)
-      set({ isLoading: false, error: errorMessage })
+      // Handle 401 gracefully - user not authenticated, use defaults
+      const isUnauthorized = (err as any)?.response?.status === 401 || (err as any)?.status === 401
+      if (isUnauthorized) {
+        console.log('[TriviaStore] User not authenticated, using default preferences')
+        set({ preferences: DEFAULT_TRIVIA_PREFERENCES, isLoading: false, error: null })
+      } else {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load preferences'
+        console.error('[TriviaStore] Failed to load preferences:', err)
+        set({ isLoading: false, error: errorMessage })
+      }
     }
   },
 

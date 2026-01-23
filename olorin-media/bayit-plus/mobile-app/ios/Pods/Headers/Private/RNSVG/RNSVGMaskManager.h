@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-svg/apple/ViewManagers/RNSVGMaskManager.h
+../../../../../../node_modules/react-native-svg/apple/ViewManagers/RNSVGMaskManager.h

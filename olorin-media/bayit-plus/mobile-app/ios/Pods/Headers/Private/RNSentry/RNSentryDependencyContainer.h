@@ -1,1 +1,1 @@
-../../../../../node_modules/@sentry/react-native/ios/RNSentryDependencyContainer.h
+../../../../../../node_modules/@sentry/react-native/ios/RNSentryDependencyContainer.h

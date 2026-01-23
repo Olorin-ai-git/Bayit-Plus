@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/safe-area/paper/RNSSafeAreaViewLocalData.h
+../../../../../../node_modules/react-native-screens/ios/safe-area/paper/RNSSafeAreaViewLocalData.h

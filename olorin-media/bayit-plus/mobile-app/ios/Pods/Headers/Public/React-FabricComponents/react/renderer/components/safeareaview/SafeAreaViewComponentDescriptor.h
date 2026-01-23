@@ -1,1 +1,1 @@
-../../../../../../../../../node_modules/react-native/ReactCommon/react/renderer/components/safeareaview/SafeAreaViewComponentDescriptor.h
+../../../../../../../../../../node_modules/react-native/ReactCommon/react/renderer/components/safeareaview/SafeAreaViewComponentDescriptor.h

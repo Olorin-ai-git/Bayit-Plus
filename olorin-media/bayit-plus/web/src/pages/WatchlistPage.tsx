@@ -8,6 +8,7 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { watchlistService } from '@/services/api';
 import { useDirection } from '@/hooks/useDirection';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
+import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
 
 interface WatchlistItem {
@@ -181,10 +182,10 @@ export default function WatchlistPage() {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
-      </View>
+      <LoadingState
+        message={t('watchlist.loading', 'Loading watchlist...')}
+        spinnerColor={colors.primary}
+      />
     );
   }
 

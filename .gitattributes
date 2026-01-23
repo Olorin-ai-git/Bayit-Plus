@@ -1,0 +1,55 @@
+# Olorin Monorepo Git Attributes
+# Ensures consistent line endings across platforms
+
+# Auto-detect text files
+* text=auto
+
+# Shell scripts always use LF (Unix line endings)
+*.sh text eol=lf
+
+# Python files always use LF
+*.py text eol=lf
+
+# JavaScript/TypeScript files always use LF
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+
+# Configuration files always use LF
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+.env* text eol=lf
+
+# Markdown files always use LF
+*.md text eol=lf
+
+# Ensure critical path resolution files are never modified
+scripts/common/paths.sh text eol=lf
+fraud/lib/paths.py text eol=lf
+
+# Binary files (do not convert)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.pyc binary
+*.pyo binary
+*.pyd binary
+*.so binary
+*.dylib binary
+*.dll binary
+*.exe binary

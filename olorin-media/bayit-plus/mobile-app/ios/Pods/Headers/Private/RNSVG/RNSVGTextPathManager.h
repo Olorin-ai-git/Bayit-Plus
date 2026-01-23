@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-svg/apple/ViewManagers/RNSVGTextPathManager.h
+../../../../../../node_modules/react-native-svg/apple/ViewManagers/RNSVGTextPathManager.h

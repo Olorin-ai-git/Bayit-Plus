@@ -8,10 +8,15 @@ Olorin is built as a comprehensive monorepo with multiple specialized platforms:
 
 ```
 olorin/
-├── olorin-core/            # Shared packages (@olorin/*)
+├── fraud/                  # Fraud platform assets (specs, tests, scripts)
+│   ├── specs/              # Feature specifications
+│   ├── tests/              # Integration tests
+│   ├── scripts/            # Platform automation
+│   └── lib/                # Shared utilities (paths.py)
 ├── olorin-fraud/           # Fraud Detection Platform (git subtree)
 │   ├── backend/            # Python FastAPI + AI/ML agents
 │   └── frontend/           # React TypeScript microservices
+├── olorin-core/            # Shared packages (@olorin/*)
 ├── olorin-media/           # Media Platforms (git subtrees)
 │   ├── bayit-plus/         # Bayit+ Streaming Platform
 │   └── israeli-radio-manager/  # Radio Management Platform
@@ -25,7 +30,11 @@ olorin/
 │   ├── portal-radio/       # Radio Manager Marketing
 │   └── portal-main/        # Main Olorin.ai Portal
 ├── docs/                   # Comprehensive documentation
-└── scripts/                # Build and deployment scripts
+├── scripts/                # Ecosystem-wide scripts
+│   ├── common/             # Shared utilities
+│   ├── deployment/         # Multi-platform deployment
+│   └── development/        # Dev environment
+└── deployment/             # Infrastructure and CI/CD
 ```
 
 ## 🚀 Quick Start

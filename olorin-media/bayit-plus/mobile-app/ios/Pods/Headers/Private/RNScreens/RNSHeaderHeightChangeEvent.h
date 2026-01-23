@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/events/RNSHeaderHeightChangeEvent.h
+../../../../../../node_modules/react-native-screens/ios/events/RNSHeaderHeightChangeEvent.h

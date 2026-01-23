@@ -1,1 +1,1 @@
-../../../../../../node_modules/react-native/React/Fabric/Mounting/ComponentViews/Text/RCTAccessibilityElement.h
+../../../../../../../node_modules/react-native/React/Fabric/Mounting/ComponentViews/Text/RCTAccessibilityElement.h

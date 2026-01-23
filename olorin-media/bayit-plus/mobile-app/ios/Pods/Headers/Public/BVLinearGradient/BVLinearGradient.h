@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-linear-gradient/ios/BVLinearGradient.h
+../../../../../../node_modules/react-native-linear-gradient/ios/BVLinearGradient.h

@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-svg/apple/Filters/MetalCI/RNSVGArithmeticFilter.h
+../../../../../../node_modules/react-native-svg/apple/Filters/MetalCI/RNSVGArithmeticFilter.h

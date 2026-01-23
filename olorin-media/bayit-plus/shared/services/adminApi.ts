@@ -751,6 +751,99 @@ export const adminPodcastsService = {
     adminApi.delete(`/admin/podcasts/${podcastId}`),
 };
 
+// ============================================
+// Live Quotas Service
+// ============================================
+
+export interface LiveQuotaData {
+  user_id: string;
+  subtitle_minutes_per_hour: number;
+  subtitle_minutes_per_day: number;
+  subtitle_minutes_per_month: number;
+  dubbing_minutes_per_hour: number;
+  dubbing_minutes_per_day: number;
+  dubbing_minutes_per_month: number;
+  subtitle_usage_current_hour: number;
+  subtitle_usage_current_day: number;
+  subtitle_usage_current_month: number;
+  dubbing_usage_current_hour: number;
+  dubbing_usage_current_day: number;
+  dubbing_usage_current_month: number;
+  accumulated_subtitle_minutes: number;
+  accumulated_dubbing_minutes: number;
+  estimated_cost_current_month: number;
+  warning_threshold_percentage: number;
+  notes?: string;
+  limit_extended_by?: string;
+  limit_extended_at?: string;
+}
+
+export interface LiveUsageSession {
+  session_id: string;
+  user_id: string;
+  channel_id: string;
+  feature_type: 'subtitle' | 'dubbing';
+  started_at: string;
+  ended_at?: string;
+  duration_seconds: number;
+  audio_seconds_processed: number;
+  estimated_total_cost: number;
+  status: string;
+}
+
+export interface TopUser {
+  user_id: string;
+  user_name: string;
+  user_email: string;
+  subtitle_minutes: number;
+  dubbing_minutes: number;
+  total_cost: number;
+}
+
+export const liveQuotasService = {
+  getUserQuota: (userId: string): Promise<{ quota: LiveQuotaData; usage: LiveQuotaData }> =>
+    adminApi.get(`/admin/live-quotas/users/${userId}`),
+
+  updateUserLimits: (
+    userId: string,
+    limits: Partial<LiveQuotaData>,
+    notes?: string
+  ): Promise<{ success: boolean }> =>
+    adminApi.patch(`/admin/live-quotas/users/${userId}`, { limits, notes }),
+
+  resetUserQuota: (userId: string): Promise<{ success: boolean }> =>
+    adminApi.post(`/admin/live-quotas/users/${userId}/reset`),
+
+  getUsageReport: (params: {
+    start_date: string;
+    end_date: string;
+    feature_type?: 'subtitle' | 'dubbing';
+  }): Promise<{
+    total_sessions: number;
+    total_minutes: number;
+    total_cost: number;
+    sessions: LiveUsageSession[];
+  }> =>
+    adminApi.get('/admin/live-quotas/usage-report', { params }),
+
+  getTopUsers: (params: {
+    start_date: string;
+    end_date: string;
+    limit?: number;
+  }): Promise<TopUser[]> =>
+    adminApi.get('/admin/live-quotas/top-users', { params }),
+
+  getSystemStats: (): Promise<{
+    total_users_with_quotas: number;
+    active_sessions: number;
+    total_subtitle_minutes_today: number;
+    total_dubbing_minutes_today: number;
+    total_cost_today: number;
+    total_cost_month: number;
+  }> =>
+    adminApi.get('/admin/live-quotas/system-stats'),
+};
+
 // Export all services
 export default {
   dashboard: dashboardService,
@@ -764,4 +857,5 @@ export default {
   content: adminContentService,
   widgets: adminWidgetsService,
   podcasts: adminPodcastsService,
+  liveQuotas: liveQuotasService,
 };

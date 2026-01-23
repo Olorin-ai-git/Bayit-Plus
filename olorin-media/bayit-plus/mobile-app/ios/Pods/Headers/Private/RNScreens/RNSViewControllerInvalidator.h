@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/RNSViewControllerInvalidator.h
+../../../../../../node_modules/react-native-screens/ios/RNSViewControllerInvalidator.h

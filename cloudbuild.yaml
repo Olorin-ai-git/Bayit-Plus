@@ -23,7 +23,7 @@ steps:
   - name: 'python:3.11-slim'
     id: 'install-dependencies'
     entrypoint: 'bash'
-    dir: 'olorin-server'
+    dir: 'olorin-fraud/backend'
     args:
       - '-c'
       - |
@@ -44,7 +44,7 @@ steps:
   - name: 'python:3.11-slim'
     id: 'code-quality'
     entrypoint: 'bash'
-    dir: 'olorin-server'
+    dir: 'olorin-fraud/backend'
     args:
       - '-c'
       - |
@@ -73,7 +73,7 @@ steps:
   - name: 'python:3.11-slim'
     id: 'run-tests'
     entrypoint: 'bash'
-    dir: 'olorin-server'
+    dir: 'olorin-fraud/backend'
     env:
       - 'APP_ENV=test'
       - 'DB_HOST=localhost'
@@ -99,7 +99,7 @@ steps:
   - name: 'python:3.11-slim'
     id: 'security-scan'
     entrypoint: 'bash'
-    dir: 'olorin-server'
+    dir: 'olorin-fraud/backend'
     args:
       - '-c'
       - |
@@ -126,7 +126,7 @@ steps:
   # Step 6: Build Application Image
   - name: 'gcr.io/cloud-builders/docker'
     id: 'build-image'
-    dir: 'olorin-server'
+    dir: 'olorin-fraud/backend'
     args:
       - 'build'
       - '-t'
@@ -190,7 +190,7 @@ artifacts:
   objects:
     location: 'gs://$PROJECT_ID-build-artifacts'
     paths:
-      - 'olorin-server/bandit-report.json'
+      - 'olorin-fraud/backend/bandit-report.json'
 
 # Build triggers configuration
 availableSecrets:

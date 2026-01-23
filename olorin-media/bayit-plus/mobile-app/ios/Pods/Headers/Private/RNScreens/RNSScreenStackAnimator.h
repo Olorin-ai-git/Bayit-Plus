@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/RNSScreenStackAnimator.h
+../../../../../../node_modules/react-native-screens/ios/RNSScreenStackAnimator.h

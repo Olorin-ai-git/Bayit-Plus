@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-gesture-handler/apple/Handlers/RNTapHandler.h
+../../../../../../node_modules/react-native-gesture-handler/apple/Handlers/RNTapHandler.h

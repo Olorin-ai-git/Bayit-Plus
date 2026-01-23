@@ -12,6 +12,7 @@ import { recordingApi, Recording } from '@/services/recordingApi'
 import { colors } from '@bayit/shared/theme'
 import { GlassView } from '@bayit/shared/ui'
 import { RecordingCard } from '@/components/recordings/RecordingCard'
+import { LoadingState, EmptyState } from '@bayit/shared/components/states'
 import logger from '@/utils/logger'
 
 export default function MyRecordingsPage() {
@@ -149,16 +150,16 @@ export default function MyRecordingsPage() {
 
       {/* Recordings List */}
       {loading ? (
-        <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loadingText}>{t('common.loading')}</Text>
-        </View>
+        <LoadingState
+          message={t('recordings.loading', 'Loading recordings...')}
+          spinnerColor={colors.primary}
+        />
       ) : recordings.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Circle size={64} color={colors.textSecondary} strokeWidth={1.5} />
-          <Text style={styles.emptyStateTitle}>{t('recordings.noRecordings')}</Text>
-          <Text style={styles.emptyStateSubtitle}>{t('recordings.noRecordingsHint')}</Text>
-        </View>
+        <EmptyState
+          icon={<Circle size={72} color={colors.textSecondary} strokeWidth={1.5} />}
+          title={t('recordings.noRecordings')}
+          description={t('recordings.noRecordingsHint')}
+        />
       ) : (
         <FlatList
           data={recordings}

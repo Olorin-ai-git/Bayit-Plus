@@ -11,7 +11,7 @@
  */
 
 import React, { useRef, useEffect, useState } from 'react';
-import { GlassCard } from '@bayit/glass';
+import { GlassCard } from '@bayit/shared/ui';
 import { ASSET_PATHS } from '../config/assetPaths';
 
 export interface WizardAvatarProps {

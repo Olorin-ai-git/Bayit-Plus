@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/utils/NSString+RNSUtility.h
+../../../../../../node_modules/react-native-screens/ios/utils/NSString+RNSUtility.h

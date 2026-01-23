@@ -1,52 +1,18 @@
 import { useState } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Trash2, Eye, EyeOff, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { z } from 'zod';
-import { GlassCard } from '@bayit/shared/ui';
+import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { colors } from '@bayit/shared/theme';
+import { Widget } from '@/types/widget';
 
-const WidgetContentSchema = z.object({
-  content_type: z.enum(['live_channel', 'iframe', 'live', 'vod', 'podcast', 'radio', 'custom']),
-  live_channel_id: z.string().optional(),
-  iframe_url: z.string().optional(),
-  iframe_title: z.string().optional(),
-});
-
-const WidgetSchema = z.object({
-  id: z.string(),
-  type: z.enum(['personal', 'system']),
-  title: z.string(),
-  description: z.string().optional(),
-  icon: z.string().optional(),
-  content: WidgetContentSchema.optional(),
-  position: z.object({
-    x: z.number(),
-    y: z.number(),
-    width: z.number(),
-    height: z.number(),
-    z_index: z.number(),
-  }).optional(),
-  is_active: z.boolean(),
-  is_muted: z.boolean(),
-  is_visible: z.boolean(),
-  is_closable: z.boolean(),
-  is_draggable: z.boolean(),
-  created_at: z.string(),
-  updated_at: z.string(),
-});
-
-type Widget = z.infer<typeof WidgetSchema>;
-
-const WidgetCardPropsSchema = z.object({
-  widget: WidgetSchema,
-  onDelete: z.function().args(z.string()).returns(z.void()),
-  isHidden: z.boolean(),
-  onToggleVisibility: z.function().args(z.string()).returns(z.void()),
-  onResetPosition: z.function().args(z.string()).returns(z.void()),
-});
-
-type WidgetCardProps = z.infer<typeof WidgetCardPropsSchema>;
+interface WidgetCardProps {
+  widget: Widget;
+  onDelete: (id: string) => void;
+  isHidden: boolean;
+  onToggleVisibility: (id: string) => void;
+  onResetPosition: (id: string) => void;
+}
 
 function getContentTypeLabel(contentType?: string): string {
   const labels: Record<string, string> = {
@@ -130,25 +96,30 @@ export default function WidgetCard({
 
         {isHovered && (
           <View className="flex-row items-center gap-1">
-            <Pressable
+            <GlassButton
               onPress={() => onResetPosition(widget.id)}
-              className="w-8 h-8 rounded-full justify-center items-center bg-white/10"
+              variant="secondary"
+              size="icon"
+              style={styles.iconButton}
             >
               <RotateCcw size={16} color={colors.text} />
-            </Pressable>
-            <Pressable
+            </GlassButton>
+            <GlassButton
               onPress={() => onToggleVisibility(widget.id)}
-              className="w-8 h-8 rounded-full justify-center items-center"
-              style={[isHidden ? styles.visibilityButtonHidden : styles.visibilityButtonVisible]}
+              variant="secondary"
+              size="icon"
+              style={[styles.iconButton, isHidden ? styles.visibilityButtonHidden : styles.visibilityButtonVisible]}
             >
               {isHidden ? <Eye size={16} color={colors.text} /> : <EyeOff size={16} color={colors.text} />}
-            </Pressable>
-            <Pressable
+            </GlassButton>
+            <GlassButton
               onPress={() => onDelete(widget.id)}
-              className="w-8 h-8 rounded-full justify-center items-center bg-red-500/90"
+              variant="destructive"
+              size="icon"
+              style={styles.iconButton}
             >
               <Trash2 size={16} color={colors.text} />
-            </Pressable>
+            </GlassButton>
           </View>
         )}
       </GlassCard>
@@ -168,6 +139,13 @@ const styles = StyleSheet.create({
   },
   statusInactive: {
     color: '#f59e0b',
+  },
+  iconButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   visibilityButtonHidden: {
     backgroundColor: 'rgba(252, 211, 77, 0.3)',

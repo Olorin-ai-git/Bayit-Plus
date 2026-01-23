@@ -49,6 +49,10 @@ services:
       - LOG_LEVEL=DEBUG
       - API_V1_PREFIX=/api/v1
       - STORAGE_TYPE=local
+      # Podcast Translation
+      - PODCAST_TRANSLATION_ENABLED=true
+      - PODCAST_TRANSLATION_POLL_INTERVAL=300
+      - PODCAST_TRANSLATION_MAX_CONCURRENT=2
       # Optional: Add your API keys here or use .env file
       # - OPENAI_API_KEY=${OPENAI_API_KEY}
       # - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}

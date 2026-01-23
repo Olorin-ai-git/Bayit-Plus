@@ -127,6 +127,7 @@ async def get_featured(
     for item in featured_content:
         category_name = item.get("category_name")
         is_series = item.get("is_series", False) or is_series_by_category(category_name)
+        subtitle_langs = item.get("available_subtitle_languages") or []
         spotlight_items.append(
             {
                 "id": str(item.get("_id")),
@@ -142,6 +143,8 @@ async def get_featured(
                 "rating": item.get("rating"),
                 "is_series": is_series,
                 "total_episodes": item.get("total_episodes") if is_series else None,
+                "available_subtitle_languages": subtitle_langs,
+                "has_subtitles": len(subtitle_langs) > 0,
             }
         )
 
@@ -190,6 +193,7 @@ async def get_featured(
                 "category_id": 1,
                 "is_series": 1,
                 "total_episodes": 1,
+                "available_subtitle_languages": 1,
             }
         },
         {"$sort": {"_id": -1}},
@@ -207,6 +211,7 @@ async def get_featured(
                         "year": "$year",
                         "is_series": "$is_series",
                         "total_episodes": "$total_episodes",
+                        "available_subtitle_languages": "$available_subtitle_languages",
                     }
                 },
             }
@@ -232,6 +237,7 @@ async def get_featured(
                 or item.get("thumbnail")
                 or item.get("poster_url")
             )
+            subtitle_langs = item.get("available_subtitle_languages") or []
             item_data = {
                 "id": str(item["_id"]),
                 "title": item.get("title"),
@@ -243,6 +249,8 @@ async def get_featured(
                 "category_name_es": cat_info.get("name_es"),
                 "type": "series" if is_series else "movie",
                 "is_series": is_series,
+                "available_subtitle_languages": subtitle_langs,
+                "has_subtitles": len(subtitle_langs) > 0,
             }
             if is_series:
                 item_data["total_episodes"] = item.get("total_episodes") or 0

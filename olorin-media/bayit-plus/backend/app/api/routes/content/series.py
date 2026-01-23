@@ -53,6 +53,11 @@ async def list_all_series(
                 "total_seasons": item.total_seasons,
                 "type": "series",
                 "is_series": True,
+                "available_subtitle_languages": item.available_subtitle_languages or [],
+                "has_subtitles": bool(
+                    item.available_subtitle_languages
+                    and len(item.available_subtitle_languages) > 0
+                ),
             }
             for item in items
         ],

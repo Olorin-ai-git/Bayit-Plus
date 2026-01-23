@@ -1,1 +1,1 @@
-../../../../../../node_modules/react-native/React/Base/RCTBridgeModuleDecorator.h
+../../../../../../../node_modules/react-native/React/Base/RCTBridgeModuleDecorator.h

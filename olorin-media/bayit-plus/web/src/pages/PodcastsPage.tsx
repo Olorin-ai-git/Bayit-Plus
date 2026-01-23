@@ -7,6 +7,7 @@ import { Podcast, Headphones, Clock, Search, X, RefreshCw } from 'lucide-react';
 import { podcastService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassCard, GlassCategoryPill, GlassInput } from '@bayit/shared/ui';
+import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
 
 interface Category {
@@ -191,14 +192,10 @@ export default function PodcastsPage() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <View style={styles.skeletonHeader} />
-        <View style={styles.grid}>
-          {[...Array(10)].map((_, i) => (
-            <SkeletonCard key={i} />
-          ))}
-        </View>
-      </View>
+      <LoadingState
+        message={t('podcasts.loading', 'Loading podcasts...')}
+        spinnerColor={colors.success}
+      />
     );
   }
 
@@ -294,22 +291,11 @@ export default function PodcastsPage() {
           </View>
         )}
         ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <GlassCard style={styles.emptyCard}>
-              <Podcast size={64} color={colors.textMuted} />
-              {searchQuery ? (
-                <>
-                  <Text style={styles.emptyTitle}>{t('common.noResults')}</Text>
-                  <Text style={styles.emptyDescription}>{t('common.tryDifferentSearch')}</Text>
-                </>
-              ) : (
-                <>
-                  <Text style={styles.emptyTitle}>{t('podcasts.noPodcasts')}</Text>
-                  <Text style={styles.emptyDescription}>{t('podcasts.tryLater')}</Text>
-                </>
-              )}
-            </GlassCard>
-          </View>
+          <EmptyState
+            icon={<Podcast size={72} color={colors.textMuted} />}
+            title={searchQuery ? t('common.noResults') : t('podcasts.noPodcasts')}
+            description={searchQuery ? t('common.tryDifferentSearch') : t('podcasts.tryLater')}
+          />
         }
       />
     </View>

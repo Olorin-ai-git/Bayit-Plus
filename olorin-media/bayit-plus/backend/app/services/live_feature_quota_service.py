@@ -8,45 +8,13 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Dict, Optional, Tuple
 
+from app.core.config import settings
 from app.models.live_feature_quota import (FeatureType, LiveFeatureQuota,
                                              LiveFeatureUsageSession,
                                              UsageSessionStatus, UsageStats)
 from app.models.user import User
 
 logger = logging.getLogger(__name__)
-
-# Cost estimation constants (USD per unit)
-# Based on typical cloud AI service pricing
-COST_STT_PER_MINUTE = 0.006  # ElevenLabs Scribe: ~$0.36/hour
-COST_TRANSLATION_PER_1K_CHARS = 0.020  # Google Translate
-COST_TTS_PER_1K_CHARS = 0.016  # ElevenLabs TTS
-
-# Average character counts per minute of audio
-AVG_CHARS_PER_MINUTE = {
-    "he": 600,  # Hebrew: ~150 words/min * 4 chars/word
-    "en": 750,  # English: ~150 words/min * 5 chars/word
-    "es": 700,  # Spanish: similar to English
-}
-
-# Default quota values by subscription tier (minutes)
-QUOTA_DEFAULTS = {
-    "premium": {
-        "subtitle_minutes_per_hour": 60,
-        "subtitle_minutes_per_day": 240,
-        "subtitle_minutes_per_month": 2000,
-        "dubbing_minutes_per_hour": 30,
-        "dubbing_minutes_per_day": 120,
-        "dubbing_minutes_per_month": 1000,
-    },
-    "family": {
-        "subtitle_minutes_per_hour": 120,
-        "subtitle_minutes_per_day": 480,
-        "subtitle_minutes_per_month": 4000,
-        "dubbing_minutes_per_hour": 60,
-        "dubbing_minutes_per_day": 240,
-        "dubbing_minutes_per_month": 2000,
-    },
-}
 
 
 class LiveFeatureQuotaService:
@@ -60,11 +28,32 @@ class LiveFeatureQuotaService:
         if not quota:
             user = await User.get(user_id)
             tier = user.subscription_tier if user else "premium"
-            defaults = QUOTA_DEFAULTS.get(tier, QUOTA_DEFAULTS["premium"])
+
+            # Get defaults from configuration based on subscription tier
+            if tier == "family":
+                defaults = {
+                    "subtitle_minutes_per_hour": settings.LIVE_QUOTA_FAMILY_SUBTITLE_MINUTES_PER_HOUR,
+                    "subtitle_minutes_per_day": settings.LIVE_QUOTA_FAMILY_SUBTITLE_MINUTES_PER_DAY,
+                    "subtitle_minutes_per_month": settings.LIVE_QUOTA_FAMILY_SUBTITLE_MINUTES_PER_MONTH,
+                    "dubbing_minutes_per_hour": settings.LIVE_QUOTA_FAMILY_DUBBING_MINUTES_PER_HOUR,
+                    "dubbing_minutes_per_day": settings.LIVE_QUOTA_FAMILY_DUBBING_MINUTES_PER_DAY,
+                    "dubbing_minutes_per_month": settings.LIVE_QUOTA_FAMILY_DUBBING_MINUTES_PER_MONTH,
+                }
+            else:  # Default to premium
+                defaults = {
+                    "subtitle_minutes_per_hour": settings.LIVE_QUOTA_PREMIUM_SUBTITLE_MINUTES_PER_HOUR,
+                    "subtitle_minutes_per_day": settings.LIVE_QUOTA_PREMIUM_SUBTITLE_MINUTES_PER_DAY,
+                    "subtitle_minutes_per_month": settings.LIVE_QUOTA_PREMIUM_SUBTITLE_MINUTES_PER_MONTH,
+                    "dubbing_minutes_per_hour": settings.LIVE_QUOTA_PREMIUM_DUBBING_MINUTES_PER_HOUR,
+                    "dubbing_minutes_per_day": settings.LIVE_QUOTA_PREMIUM_DUBBING_MINUTES_PER_DAY,
+                    "dubbing_minutes_per_month": settings.LIVE_QUOTA_PREMIUM_DUBBING_MINUTES_PER_MONTH,
+                }
 
             quota = LiveFeatureQuota(
                 user_id=user_id,
                 **defaults,
+                max_rollover_multiplier=settings.LIVE_QUOTA_MAX_ROLLOVER_MULTIPLIER,
+                warning_threshold_percentage=settings.LIVE_QUOTA_WARNING_THRESHOLD_PERCENTAGE,
             )
             await quota.insert()
             logger.info(f"Created quota for user {user_id} with tier {tier}")
@@ -312,16 +301,26 @@ class LiveFeatureQuotaService:
         target_lang: str,
         feature_type: FeatureType,
     ) -> Dict[str, float]:
-        """Estimate costs for a session"""
-        stt_cost = minutes * COST_STT_PER_MINUTE
+        """Estimate costs for a session using configuration values"""
+        stt_cost = minutes * settings.LIVE_QUOTA_COST_STT_PER_MINUTE
 
-        chars_processed = minutes * AVG_CHARS_PER_MINUTE.get(source_lang, 700)
-        translation_cost = (chars_processed / 1000) * COST_TRANSLATION_PER_1K_CHARS
+        # Get average chars per minute based on source language
+        if source_lang == "he":
+            avg_chars = settings.LIVE_QUOTA_AVG_CHARS_PER_MINUTE_HEBREW
+        elif source_lang == "en":
+            avg_chars = settings.LIVE_QUOTA_AVG_CHARS_PER_MINUTE_ENGLISH
+        else:
+            # Default to average of Hebrew and English
+            avg_chars = (settings.LIVE_QUOTA_AVG_CHARS_PER_MINUTE_HEBREW +
+                        settings.LIVE_QUOTA_AVG_CHARS_PER_MINUTE_ENGLISH) // 2
+
+        chars_processed = minutes * avg_chars
+        translation_cost = (chars_processed / 1000) * settings.LIVE_QUOTA_COST_TRANSLATION_PER_1K_CHARS
 
         # TTS only for dubbing, not subtitles
         tts_cost = 0.0
         if feature_type == FeatureType.DUBBING:
-            tts_cost = (chars_processed / 1000) * COST_TTS_PER_1K_CHARS
+            tts_cost = (chars_processed / 1000) * settings.LIVE_QUOTA_COST_TTS_PER_1K_CHARS
 
         return {
             "stt_cost": round(stt_cost, 4),

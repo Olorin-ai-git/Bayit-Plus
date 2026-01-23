@@ -1,1 +1,1 @@
-../../../../../../../node_modules/react-native/ReactCommon/jsinspector-modern/tracing/TraceEventSerializer.h
+../../../../../../../../node_modules/react-native/ReactCommon/jsinspector-modern/tracing/TraceEventSerializer.h

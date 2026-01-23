@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/bottom-tabs/accessory/RNSBottomAccessoryHelper.h
+../../../../../../node_modules/react-native-screens/ios/bottom-tabs/accessory/RNSBottomAccessoryHelper.h

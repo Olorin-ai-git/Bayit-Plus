@@ -38,7 +38,11 @@
     "clean": "turbo run clean && rm -rf node_modules",
     "subtree:pull": "./scripts/sync-subtrees.sh pull",
     "subtree:push": "./scripts/sync-subtrees.sh push",
-    "olorin": "./scripts/development/start_olorin.sh"
+    "olorin": "./scripts/development/start_olorin.sh",
+    "fraud:test": "cd fraud/tests && poetry run pytest",
+    "fraud:validate": "./fraud/validate-structure.sh",
+    "fraud:paths": "./scripts/common/inventory-hardcoded-paths-fast.sh",
+    "hooks:install": "git config core.hooksPath .githooks"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
