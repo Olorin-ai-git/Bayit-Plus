@@ -13,7 +13,9 @@ from pymongo import MongoClient
 def setup_podcast_cover(source_image_path: str):
     """Copy podcast cover image and update database"""
 
-    dest_dir = Path("/Users/olorin/Documents/olorin/backend/uploads/podcasts")
+    # Use environment variable or default to project-relative path
+    project_root = os.getenv("PROJECT_ROOT", str(Path(__file__).parent.parent.parent.parent))
+    dest_dir = Path(os.getenv("UPLOADS_PODCASTS_DIR", f"{project_root}/backend/uploads/podcasts"))
     dest_file = dest_dir / "segal-barko-cover.jpg"
 
     # Create destination if it doesn't exist
@@ -63,8 +65,8 @@ if __name__ == "__main__":
         source_path = sys.argv[1]
         setup_podcast_cover(source_path)
     else:
+        project_root = os.getenv("PROJECT_ROOT", str(Path(__file__).parent.parent.parent.parent))
+        uploads_dir = os.getenv("UPLOADS_PODCASTS_DIR", f"{project_root}/backend/uploads/podcasts")
         print("Usage: python setup_segal_barko_cover.py <path-to-image>")
         print("\nOr save the image directly to:")
-        print(
-            "   /Users/olorin/Documents/olorin/backend/uploads/podcasts/segal-barko-cover.jpg"
-        )
+        print(f"   {uploads_dir}/segal-barko-cover.jpg")

@@ -17,7 +17,11 @@ import logging
 import sys
 
 # Add parent directory to path for imports
-sys.path.insert(0, "/Users/olorin/Documents/olorin/backend")
+# Add parent directory to path for imports
+from pathlib import Path
+import os
+project_root = os.getenv("PROJECT_ROOT", str(Path(__file__).parent.parent.parent.parent))
+sys.path.insert(0, f"{project_root}/backend")
 
 from datetime import datetime
 

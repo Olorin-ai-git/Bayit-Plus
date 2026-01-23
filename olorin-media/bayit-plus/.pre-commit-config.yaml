@@ -167,6 +167,22 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
+      - id: check-hardcoded-paths
+        name: Check for hardcoded absolute paths
+        entry: bash -c
+        args:
+          - -c
+          - |
+            if git diff --cached --diff-filter=ACMR | grep -E '^\+.*(/Users/|/home/|/root/|C:\\Users\\|C:\\\\Users\\\\)' | grep -v '^\+\s*#'; then
+              echo "ERROR: Hardcoded absolute path detected in commit."
+              echo "Please use environment variables or relative paths instead."
+              echo "Example: Use os.environ.get('PROJECT_ROOT') or Path(__file__).parent"
+              exit 1
+            fi
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
 # Configuration for specific hooks
 default_language_version:
   python: python3.13

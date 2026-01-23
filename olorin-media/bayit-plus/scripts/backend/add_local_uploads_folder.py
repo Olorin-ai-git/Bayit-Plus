@@ -2,6 +2,7 @@
 """Add local uploads/vod folder as a monitored folder"""
 
 import asyncio
+import os
 import sys
 from pathlib import Path
 
@@ -17,7 +18,9 @@ async def main():
     await connect_to_mongo()
 
     # Check if already exists
-    local_vod_path = "/Users/olorin/Documents/olorin/backend/uploads/vod"
+    # Use environment variable or default to project-relative path
+    project_root = os.getenv("PROJECT_ROOT", str(Path(__file__).parent.parent.parent))
+    local_vod_path = os.getenv("UPLOADS_VOD_DIR", f"{project_root}/backend/uploads/vod")
     existing = await MonitoredFolder.find_one(MonitoredFolder.path == local_vod_path)
 
     if existing:

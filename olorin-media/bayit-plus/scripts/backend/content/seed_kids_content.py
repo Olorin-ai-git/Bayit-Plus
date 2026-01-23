@@ -17,10 +17,13 @@ Usage:
 import asyncio
 import argparse
 import logging
+import os
 import sys
+from pathlib import Path
 
 # Add parent directory to path for imports
-sys.path.insert(0, "/Users/olorin/Documents/olorin/backend")
+project_root = os.getenv("PROJECT_ROOT", str(Path(__file__).parent.parent.parent.parent))
+sys.path.insert(0, f"{project_root}/backend")
 
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
