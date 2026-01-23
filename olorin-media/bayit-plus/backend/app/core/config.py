@@ -131,7 +131,7 @@ class Settings(BaseSettings):
             import os
 
             if os.getenv("DEBUG", "").lower() == "true":
-                return ["http://localhost:3000", "http://localhost:8000"]
+                return ["http://localhost:3200", "http://localhost:3211", "http://localhost:8000"]
             raise ValueError(
                 "BACKEND_CORS_ORIGINS must be configured in production. "
                 "Set it as JSON array or comma-separated URLs."

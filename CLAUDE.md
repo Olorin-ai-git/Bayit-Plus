@@ -40,9 +40,12 @@ See individual service CLAUDE.md files for language-specific implementation deta
 
 2. **ALWAYS Search for Existing Scripts**:
    - Before performing ANY task (cleanup, migration, data fixes, etc.), search for existing scripts in `/scripts/` directory
+   - **NEW:** Use the monorepo-wide discovery utility: `./scripts/find-all-scripts.sh [keyword]`
+   - Scripts organized by platform: backend, web, mobile, tv-platforms, infrastructure, shared
    - Use glob patterns like `**/clean*.py`, `**/reset*.py`, `**/fix*.py` to find relevant scripts
    - Prefer using existing scripts over writing inline code
    - This applies to: database operations, file cleanup, data migrations, testing utilities
+   - See `scripts/README.md` for complete script organization and `scripts/DEVELOPER_MIGRATION_GUIDE.md` for migration guidance
 
 3. **Verify Infrastructure**:
    - Each task must reference existing infrastructure

@@ -8,7 +8,8 @@
 import { useEffect, useState } from 'react'
 import { View, Text } from 'react-native'
 import { StyleSheet } from 'react-native'
-import { GlassModal, GlassButton } from '@bayit/glass'
+import { GlassModal } from '@bayit/shared/components/ui/GlassModal'
+import { GlassButton } from '@bayit/shared/components/ui/GlassButton'
 import { useTranslation } from 'react-i18next'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 

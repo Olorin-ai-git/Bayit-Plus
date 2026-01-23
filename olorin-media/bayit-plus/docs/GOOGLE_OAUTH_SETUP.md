@@ -2,7 +2,7 @@
 
 ## Issue: Google Login Failing
 
-The Google login was failing because the redirect URI was hardcoded to `http://localhost:3000/auth/google/callback`, but the application is deployed at `https://bayit.tv`.
+The Google login was failing because the redirect URI was hardcoded to `http://localhost:3200/auth/google/callback`, but the application is deployed at `https://bayit.tv`.
 
 ## Solution Implemented
 
@@ -42,7 +42,7 @@ To fix the Google login, you need to add the production redirect URI to your Goo
 5. Under **Authorized redirect URIs**, add the following URIs:
    - `https://bayit.tv/auth/google/callback` (production)
    - `https://www.bayit.tv/auth/google/callback` (production with www)
-   - `http://localhost:3000/auth/google/callback` (development)
+   - `http://localhost:3200/auth/google/callback` (development)
    - `http://localhost:8000/auth/google/callback` (alternative local port)
 
 6. Click **Save**
@@ -86,7 +86,7 @@ If Google login still fails after updating:
    ```
 
 4. **Test Locally**:
-   - Try logging in with Google on localhost:3000 first
+   - Try logging in with Google on localhost:3200 first
    - If it works locally but not in production, it's likely a redirect URI mismatch
 
 ## Security Considerations

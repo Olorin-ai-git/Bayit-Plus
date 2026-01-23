@@ -156,7 +156,7 @@ Add the new Firebase URL to your backend CORS origins:
 gcloud secrets versions access latest --secret="bayit-cors-origins" --project=israeli-radio-475c9
 
 # Update to include Firebase URL
-echo '["http://localhost:3000","https://bayit-plus-web.web.app","https://bayit-plus-backend-624470113582.us-east1.run.app"]' | gcloud secrets versions add bayit-cors-origins --data-file=- --project=israeli-radio-475c9
+echo '["http://localhost:3200","https://bayit-plus-web.web.app","https://bayit-plus-backend-624470113582.us-east1.run.app"]' | gcloud secrets versions add bayit-cors-origins --data-file=- --project=israeli-radio-475c9
 ```
 
 ### 3. Update Google OAuth Redirect URIs

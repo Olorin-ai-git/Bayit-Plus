@@ -36,7 +36,7 @@ The backend now allows requests from the Firebase hosting URLs:
 [
   "https://bayit.tv",
   "https://www.bayit.tv",
-  "http://localhost:3000",
+  "http://localhost:3200",
   "https://bayit-plus-web.web.app",
   "https://bayit-plus-web.firebaseapp.com"
 ]

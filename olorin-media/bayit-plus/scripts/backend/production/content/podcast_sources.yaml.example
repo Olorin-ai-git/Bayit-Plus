@@ -1,0 +1,32 @@
+# Podcast Sources Configuration
+# Copy this file to podcast_sources.yaml and customize
+
+podcasts:
+  # RSS Feed Example
+  - name: "Echad Beyom"
+    source: "rss"
+    feed_url: "https://feeds.example.com/echad-beyom"
+    category: "news"
+    auto_publish: true
+
+  - name: "Hashavoua"
+    source: "rss"
+    feed_url: "https://feeds.example.com/hashavoua"
+    category: "current-events"
+    auto_publish: true
+
+  # Apple Podcasts Example
+  - name: "Tech Podcast"
+    source: "apple"
+    apple_url: "https://podcasts.apple.com/us/podcast/tech-podcast/id123456789"
+    category: "technology"
+    auto_publish: false
+
+  # 103FM Example
+  - name: "103FM Morning Show"
+    source: "103fm"
+    feed_url: "https://103fm.maariv.co.il/podcast-url"
+    category: "radio"
+    auto_publish: true
+
+# Add more podcasts as needed

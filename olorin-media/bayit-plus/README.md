@@ -65,7 +65,8 @@ docker-compose up
 This starts:
 - MongoDB on port 27017
 - Backend API on port 8000
-- Frontend on port 3000
+- Frontend (Web) on port 3200
+- Frontend (Partner Portal) on port 3211
 
 ### 4. Or Run Manually
 
