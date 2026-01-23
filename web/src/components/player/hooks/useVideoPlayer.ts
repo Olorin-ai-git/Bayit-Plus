@@ -265,6 +265,14 @@ export function useVideoPlayer({
       }
     },
 
+    setVolume: (value: number) => {
+      const clampedVolume = Math.max(0, Math.min(1, value))
+      setState((prev) => ({ ...prev, volume: clampedVolume, isMuted: clampedVolume === 0 }))
+      if (videoRef.current) {
+        videoRef.current.volume = clampedVolume
+      }
+    },
+
     handleSeek: (e: React.MouseEvent<HTMLDivElement>) => {
       const rect = e.currentTarget.getBoundingClientRect()
       const pos = (e.clientX - rect.left) / rect.width

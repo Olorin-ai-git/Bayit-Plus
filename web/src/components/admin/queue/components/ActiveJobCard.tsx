@@ -39,16 +39,15 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
   };
 
   return (
-    <View className="mb-6 pt-4 border-t" style={{ borderTopColor: colors.glassBorder }}>
+    <View style={[styles.container, { borderTopColor: colors.glassBorder }]}>
       <View style={[styles.headerRow, isRTL && styles.rowReverse]}>
-        <Text className="text-lg font-semibold" style={{ textAlign, color: colors.text }}>
+        <Text style={[styles.headerText, { textAlign, color: colors.text }]}>
           {t('admin.uploads.activeUpload', 'Active Upload')}
         </Text>
         {onCancelJob && (
           <Pressable
             onPress={handleCancel}
-            className="flex-row items-center gap-1 py-1 px-2 rounded-sm"
-            style={{ backgroundColor: colors.error + '15' }}
+            style={[styles.cancelButton, { backgroundColor: colors.error + '15' }]}
             disabled={cancellingJob}
           >
             {cancellingJob ? (
@@ -56,16 +55,16 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
             ) : (
               <XCircle size={20} color={colors.error} />
             )}
-            <Text className="text-sm font-medium" style={{ color: colors.error }}>
+            <Text style={[styles.cancelText, { color: colors.error }]}>
               {t('admin.uploads.cancelUpload', 'Cancel')}
             </Text>
           </Pressable>
         )}
       </View>
-      <View className="rounded-lg p-4 border" style={{ backgroundColor: colors.backgroundLight, borderColor: colors.glassBorder }}>
+      <View style={[styles.jobCard, { backgroundColor: colors.backgroundLight, borderColor: colors.glassBorder }]}>
         <View style={[styles.jobRow, isRTL && styles.rowReverse]}>
           <StatusIcon status={job.status} job={job} />
-          <Text className="flex-1 text-base font-semibold" style={{ textAlign, color: colors.text }} numberOfLines={1}>
+          <Text style={[styles.filename, { textAlign, color: colors.text }]} numberOfLines={1}>
             {job.filename}
           </Text>
           <GlassBadge
@@ -83,28 +82,28 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
         />
 
         {job.current_stage && (
-          <Text className="text-sm italic mt-1 mb-1" style={{ textAlign, color: colors.primary }}>
+          <Text style={[styles.currentStage, { textAlign, color: colors.primary }]}>
             {job.current_stage}
           </Text>
         )}
 
-        <View className="h-2 rounded-sm overflow-hidden mb-2" style={{ backgroundColor: colors.glassBorder }}>
-          <View className="h-full rounded-sm" style={{ width: `${job.progress}%`, backgroundColor: colors.primary }} />
+        <View style={[styles.progressBarBg, { backgroundColor: colors.glassBorder }]}>
+          <View style={[styles.progressBarFill, { width: `${job.progress}%`, backgroundColor: colors.primary }]} />
         </View>
 
         <StageError job={job} />
 
         <View style={[styles.statsRow, isRTL && styles.rowReverse]}>
-          <Text className="text-sm" style={{ color: colors.textSecondary }}>
+          <Text style={[styles.statsText, { color: colors.textSecondary }]}>
             {formatFileSize(job.bytes_uploaded)} / {formatFileSize(job.file_size)}
           </Text>
           {job.upload_speed && job.upload_speed > 0 && (
-            <Text className="text-sm" style={{ color: colors.textSecondary }}>
+            <Text style={[styles.statsText, { color: colors.textSecondary }]}>
               {formatSpeed(job.upload_speed)}
             </Text>
           )}
           {job.eta_seconds && job.eta_seconds > 0 && (
-            <Text className="text-sm" style={{ color: colors.textSecondary }}>
+            <Text style={[styles.statsText, { color: colors.textSecondary }]}>
               ETA: {formatETA(job.eta_seconds)}
             </Text>
           )}
@@ -115,11 +114,37 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: 24,
+    paddingTop: 16,
+    borderTopWidth: 1,
+  },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 16,
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  cancelButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 4,
+  },
+  cancelText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  jobCard: {
+    borderRadius: 8,
+    padding: 16,
+    borderWidth: 1,
   },
   jobRow: {
     flexDirection: 'row',
@@ -127,10 +152,34 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 8,
   },
+  filename: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  currentStage: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  progressBarBg: {
+    height: 8,
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginBottom: 8,
+  },
+  progressBarFill: {
+    height: 8,
+    borderRadius: 4,
+  },
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 16,
+  },
+  statsText: {
+    fontSize: 14,
   },
   rowReverse: {
     flexDirection: 'row-reverse',

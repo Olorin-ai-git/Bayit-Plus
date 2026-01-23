@@ -43,10 +43,10 @@ export function useContentLoader(
             liveService.getStreamUrl(contentId),
           ]);
           if ((data as any).available_translation_languages) {
-            console.log('🌐 [useContentLoader] Channel available_translation_languages:', (data as any).available_translation_languages);
+            logger.debug('Channel available_translation_languages', 'useContentLoader', (data as any).available_translation_languages);
             setAvailableSubtitleLanguages((data as any).available_translation_languages);
           } else {
-            console.log('⚠️ [useContentLoader] No available_translation_languages in channel data');
+            logger.debug('No available_translation_languages in channel data', 'useContentLoader');
           }
           break;
         case 'radio':

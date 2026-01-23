@@ -254,6 +254,7 @@ class FolderMonitorService:
 
             # Get database connection for duplicate checks
             from motor.motor_asyncio import AsyncIOMotorClient
+            from beanie.operators import In
 
             client = AsyncIOMotorClient(settings.MONGODB_URL)
             db = client[settings.MONGODB_DB_NAME]
@@ -323,8 +324,6 @@ class FolderMonitorService:
                                 continue
 
                             # Check if already queued with this hash
-                            from beanie.operators import In
-
                             existing_job = await UploadJob.find_one(
                                 UploadJob.file_hash == file_hash,
                                 In(
@@ -345,7 +344,29 @@ class FolderMonitorService:
                                 self._known_files[folder_id].add(file_path)
                                 continue
 
-                        # TIER 3: Enqueue file (hash will be calculated in background during processing)
+                        # TIER 4: Check if file is already in upload queue by filename
+                        # (handles service restarts where in-memory cache is cleared)
+                        existing_job_by_filename = await UploadJob.find_one(
+                            UploadJob.filename == filename,
+                            In(
+                                UploadJob.status,
+                                [
+                                    UploadStatus.QUEUED,
+                                    UploadStatus.PROCESSING,
+                                    UploadStatus.UPLOADING,
+                                ],
+                            ),
+                        )
+
+                        if existing_job_by_filename:
+                            logger.debug(
+                                f"⏭️  Skipping (already in queue by filename): {filename}"
+                            )
+                            skipped_by_queue += 1
+                            self._known_files[folder_id].add(file_path)
+                            continue
+
+                        # TIER 5: Enqueue file (hash will be calculated in background during processing)
                         # Pass cached hash if available, otherwise will calculate during upload
                         await upload_service.enqueue_upload(
                             source_path=file_path,

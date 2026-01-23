@@ -21,11 +21,9 @@ import {
   Check,
   Video,
   Upload,
-  Star,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassView } from '@bayit/shared/ui'
 
 const LANGUAGE_OPTIONS = [
   { code: 'en', flag: '🇺🇸', label: 'English' },
@@ -42,30 +40,10 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  {
-    key: 'dashboard',
-    labelKey: 'admin.nav.dashboard',
-    icon: LayoutDashboard,
-    route: '/admin',
-  },
-  {
-    key: 'users',
-    labelKey: 'admin.nav.users',
-    icon: Users,
-    route: '/admin/users',
-  },
-  {
-    key: 'librarian',
-    labelKey: 'admin.nav.librarian',
-    icon: Bot,
-    route: '/admin/librarian',
-  },
-  {
-    key: 'campaigns',
-    labelKey: 'admin.nav.campaigns',
-    icon: Tag,
-    route: '/admin/campaigns',
-  },
+  { key: 'dashboard', labelKey: 'admin.nav.dashboard', icon: LayoutDashboard, route: '/admin' },
+  { key: 'users', labelKey: 'admin.nav.users', icon: Users, route: '/admin/users' },
+  { key: 'librarian', labelKey: 'admin.nav.librarian', icon: Bot, route: '/admin/librarian' },
+  { key: 'campaigns', labelKey: 'admin.nav.campaigns', icon: Tag, route: '/admin/campaigns' },
   {
     key: 'billing',
     labelKey: 'admin.nav.billing',
@@ -109,30 +87,10 @@ const NAV_ITEMS: NavItem[] = [
       { key: 'widgets', labelKey: 'admin.nav.widgets', route: '/admin/widgets' },
     ],
   },
-  {
-    key: 'recordings',
-    labelKey: 'admin.nav.recordings',
-    icon: Video,
-    route: '/admin/recordings',
-  },
-  {
-    key: 'uploads',
-    labelKey: 'admin.nav.uploads',
-    icon: Upload,
-    route: '/admin/uploads',
-  },
-  {
-    key: 'settings',
-    labelKey: 'admin.nav.settings',
-    icon: Settings,
-    route: '/admin/settings',
-  },
-  {
-    key: 'logs',
-    labelKey: 'admin.nav.auditLogs',
-    icon: FileText,
-    route: '/admin/logs',
-  },
+  { key: 'recordings', labelKey: 'admin.nav.recordings', icon: Video, route: '/admin/recordings' },
+  { key: 'uploads', labelKey: 'admin.nav.uploads', icon: Upload, route: '/admin/uploads' },
+  { key: 'settings', labelKey: 'admin.nav.settings', icon: Settings, route: '/admin/settings' },
+  { key: 'logs', labelKey: 'admin.nav.auditLogs', icon: FileText, route: '/admin/logs' },
 ]
 
 interface AdminSidebarProps {
@@ -156,9 +114,10 @@ export default function AdminSidebar({
 }: AdminSidebarProps) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
-  const { user, logout } = useAuthStore()
-  const [expandedItems, setExpandedItems] = useState<string[]>([]) // Collapsed by default
+  const { logout } = useAuthStore()
+  const [expandedItems, setExpandedItems] = useState<string[]>([])
   const [showLanguageMenu, setShowLanguageMenu] = useState(false)
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null)
 
   const toggleExpand = (key: string) => {
     setExpandedItems((prev) =>
@@ -189,47 +148,31 @@ export default function AdminSidebar({
     const hasChildren = item.children && item.children.length > 0
     const isExpanded = expandedItems.includes(item.key)
     const Icon = item.icon
-
-    // Dynamic styles for RTL and child indentation
-    const navItemContainerStyle = [
-      isRTL ? styles.flexRowReverse : styles.flexRow,
-    ];
-
-    const navItemContentStyle = (hovered: boolean) => [
-      styles.navItemContent,
-      isRTL ? styles.flexRowReverse : null,
-      hovered ? styles.navItemHovered : null,
-    ];
-
-    const childIndentStyle = isChild ? (isRTL ? styles.childIndentRTL : styles.childIndentLTR) : null;
+    const isHovered = hoveredItem === item.key
 
     if (hasChildren) {
       return (
         <View key={item.key}>
           <Pressable
             onPress={() => toggleExpand(item.key)}
-            style={navItemContainerStyle}
+            onHoverIn={() => setHoveredItem(item.key)}
+            onHoverOut={() => setHoveredItem(null)}
+            style={[
+              styles.navItem,
+              isRTL && styles.navItemRTL,
+              isHovered && styles.navItemHovered,
+            ]}
           >
-            {({ hovered }: any) => (
-              <View
-                className="flex-row items-center gap-2 px-4 py-3 rounded-lg"
-                style={navItemContentStyle(hovered)}
-              >
-                {Icon && <Icon size={18} color={colors.textSecondary} />}
-                <Text className="flex-1 text-sm" style={[{ color: colors.textSecondary }, isRTL && styles.textRight]}>
-                  {t(item.labelKey, item.key)}
-                </Text>
-                <View
-                  className={isRTL ? 'rotate-180' : ''}
-                  style={{ transform: [{ rotate: isExpanded ? '90deg' : '0deg' }], transition: 'transform 0.3s ease' } as any}
-                >
-                  <ChevronRight size={16} color={colors.textSecondary} />
-                </View>
-              </View>
-            )}
+            {Icon && <Icon size={18} color={colors.textSecondary} style={styles.navIcon} />}
+            <Text style={[styles.navText, isRTL && styles.textRTL]}>
+              {t(item.labelKey, item.key)}
+            </Text>
+            <View style={[styles.chevron, isExpanded && styles.chevronExpanded]}>
+              <ChevronRight size={16} color={colors.textSecondary} />
+            </View>
           </Pressable>
           {isExpanded && (
-            <View className={`gap-1 mt-1`} style={isRTL ? styles.childIndentRTL : styles.childIndentLTR}>
+            <View style={[styles.childContainer, isRTL ? styles.childContainerRTL : styles.childContainerLTR]}>
               {item.children!.map((child) => renderNavItem(child, true))}
             </View>
           )}
@@ -246,25 +189,34 @@ export default function AdminSidebar({
         onClick={handleNavClick}
       >
         {({ isActive }) => (
-          <View
-            className="flex-row items-center gap-2 px-4 py-3 rounded-lg"
+          <Pressable
+            onHoverIn={() => setHoveredItem(item.key)}
+            onHoverOut={() => setHoveredItem(null)}
             style={[
-              isRTL ? styles.flexRowReverse : null,
-              childIndentStyle,
-              { backgroundColor: isActive ? colors.glassPurple : 'transparent' }
+              styles.navItem,
+              isRTL && styles.navItemRTL,
+              isChild && (isRTL ? styles.navItemChildRTL : styles.navItemChildLTR),
+              isActive && styles.navItemActive,
+              !isActive && hoveredItem === item.key && styles.navItemHovered,
             ]}
           >
-            {Icon && <Icon size={18} color={isActive ? colors.primary : colors.textSecondary} />}
+            {Icon && (
+              <Icon
+                size={18}
+                color={isActive ? colors.primary : colors.textSecondary}
+                style={styles.navIcon}
+              />
+            )}
             <Text
-              className="flex-1 text-sm"
               style={[
-                { color: isActive ? colors.primary : colors.textSecondary },
-                isRTL && styles.textRight
+                styles.navText,
+                isRTL && styles.textRTL,
+                isActive && styles.navTextActive,
               ]}
             >
               {t(item.labelKey, item.key)}
             </Text>
-          </View>
+          </Pressable>
         )}
       </NavLink>
     )
@@ -274,69 +226,20 @@ export default function AdminSidebar({
     return null
   }
 
-  // Dynamic styles for sidebar positioning and dragging
-  const sidebarContainerStyle = [
-    styles.sidebarContainer,
-    isRTL ? styles.sidebarRTL : styles.sidebarLTR,
-    isMobile ? styles.sidebarMobile : null,
-    isDragging ? styles.sidebarDragging : null,
-  ];
-
-  const sidebarStyle = {
-    width: isMobile ? '85%' : width,
-    borderRadius: 0,
-    transition: isDragging ? 'none' : 'width 0.3s ease',
-  };
-
-  const dragHandleStyle = [
-    styles.dragHandle,
-    isRTL ? styles.dragHandleRTL : styles.dragHandleLTR,
-  ];
-
-  const languageSelectorStyle = [
-    isRTL ? styles.flexRowReverse : styles.flexRow,
-  ];
-
-  const languageButtonContentStyle = (hovered: boolean) => [
-    styles.languageButtonContent,
-    isRTL ? styles.flexRowReverse : null,
-    { backgroundColor: hovered ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)' },
-  ];
-
-  const languageMenuItemStyle = (isSelected: boolean, hovered: boolean) => [
-    styles.languageMenuItem,
-    isRTL ? styles.flexRowReverse : null,
-    {
-      backgroundColor: isSelected ? colors.glassPurpleLight : (hovered ? 'rgba(255, 255, 255, 0.05)' : 'transparent')
-    },
-  ];
-
-  const footerLinkStyle = [
-    isRTL ? styles.flexRowReverse : styles.flexRow,
-  ];
-
-  const footerButtonContentStyle = (hovered: boolean, isLogout = false) => [
-    styles.footerButtonContent,
-    isRTL ? styles.flexRowReverse : null,
-    {
-      backgroundColor: hovered
-        ? (isLogout ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255, 255, 255, 0.05)')
-        : 'transparent'
-    },
-  ];
-
   return (
-    <GlassView
-      className="fixed top-0 bottom-0 border-r-0 z-100"
-      style={[sidebarContainerStyle, sidebarStyle] as any}
-      intensity="high"
-      noBorder
+    <View
+      style={[
+        styles.sidebar,
+        isRTL ? styles.sidebarRTL : styles.sidebarLTR,
+        isMobile && styles.sidebarMobile,
+        isDragging && styles.sidebarDragging,
+        { width: isMobile ? '85%' : width, maxWidth: isMobile ? 320 : undefined },
+      ]}
     >
       {/* Drag Handle */}
       {!isMobile && onDragStart && (
         <View
-          className="absolute top-0 bottom-0 w-3 justify-center items-center z-102 bg-transparent"
-          style={[dragHandleStyle, { cursor: 'ew-resize' }] as any}
+          style={[styles.dragHandle, isRTL ? styles.dragHandleRTL : styles.dragHandleLTR]}
           // @ts-ignore - Web mouse events
           onMouseDown={onDragStart}
         >
@@ -345,53 +248,48 @@ export default function AdminSidebar({
       )}
 
       {/* Language Selector */}
-      <View className="p-4 border-b border-b-white/5">
+      <View style={styles.languageSection}>
         <Pressable
           onPress={() => setShowLanguageMenu(!showLanguageMenu)}
-          style={languageSelectorStyle}
+          onHoverIn={() => setHoveredItem('language')}
+          onHoverOut={() => setHoveredItem(null)}
+          style={[
+            styles.languageButton,
+            isRTL && styles.languageButtonRTL,
+            hoveredItem === 'language' && styles.languageButtonHovered,
+          ]}
         >
-          {({ hovered }: any) => (
-            <View
-              className="flex-row items-center gap-2 px-4 py-2 rounded-lg"
-              style={languageButtonContentStyle(hovered)}
-            >
-              <Languages size={18} color={colors.textSecondary} />
-              <Text className="text-lg">{currentLanguage.flag}</Text>
-              <Text className="flex-1 text-sm font-medium" style={[{ color: colors.text }, isRTL && styles.textRight]}>
-                {currentLanguage.label}
-              </Text>
-              <View
-                className={isRTL ? 'rotate-180' : ''}
-                style={{ transform: [{ rotate: showLanguageMenu ? '90deg' : '0deg' }], transition: 'transform 0.3s ease' } as any}
-              >
-                <ChevronRight size={16} color={colors.textSecondary} />
-              </View>
-            </View>
-          )}
+          <Languages size={18} color={colors.textSecondary} />
+          <Text style={styles.languageFlag}>{currentLanguage.flag}</Text>
+          <Text style={[styles.languageLabel, isRTL && styles.textRTL]}>
+            {currentLanguage.label}
+          </Text>
+          <View style={[styles.chevron, showLanguageMenu && styles.chevronExpanded]}>
+            <ChevronRight size={16} color={colors.textSecondary} />
+          </View>
         </Pressable>
 
         {showLanguageMenu && (
-          <View className="mt-2 rounded-lg overflow-hidden border border-white/10" style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
+          <View style={styles.languageMenu}>
             {LANGUAGE_OPTIONS.map((lang) => (
               <Pressable
                 key={lang.code}
                 onPress={() => handleLanguageChange(lang.code)}
-                className="border-b border-b-white/5"
-                style={isRTL ? styles.flexRowReverse : styles.flexRow}
+                onHoverIn={() => setHoveredItem(`lang-${lang.code}`)}
+                onHoverOut={() => setHoveredItem(null)}
+                style={[
+                  styles.languageMenuItem,
+                  isRTL && styles.languageMenuItemRTL,
+                  lang.code === i18n.language && styles.languageMenuItemActive,
+                  hoveredItem === `lang-${lang.code}` && styles.languageMenuItemHovered,
+                ]}
               >
-                {({ hovered }: any) => (
-                  <View
-                    className="flex-row items-center gap-2 px-4 py-3"
-                    style={languageMenuItemStyle(lang.code === i18n.language, hovered)}
-                  >
-                    <Text className="text-lg">{lang.flag}</Text>
-                    <Text className="flex-1 text-sm" style={[{ color: colors.text }, isRTL && styles.textRight]}>
-                      {lang.label}
-                    </Text>
-                    {lang.code === i18n.language && (
-                      <Check size={16} color={colors.primary} />
-                    )}
-                  </View>
+                <Text style={styles.languageFlag}>{lang.flag}</Text>
+                <Text style={[styles.languageMenuLabel, isRTL && styles.textRTL]}>
+                  {lang.label}
+                </Text>
+                {lang.code === i18n.language && (
+                  <Check size={16} color={colors.primary} />
                 )}
               </Pressable>
             ))}
@@ -400,54 +298,60 @@ export default function AdminSidebar({
       </View>
 
       {/* Navigation */}
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.sm, gap: spacing.xs }}>
+      <ScrollView style={styles.navContainer} contentContainerStyle={styles.navContent}>
         {NAV_ITEMS.map((item) => renderNavItem(item))}
       </ScrollView>
 
       {/* Footer */}
-      <View className="p-2 border-t border-t-white/5 gap-1">
+      <View style={styles.footer}>
         <Link to="/" style={{ textDecoration: 'none' }} onClick={handleNavClick}>
-          <Pressable style={footerLinkStyle}>
-            {({ hovered }: any) => (
-              <View
-                className="flex-row items-center gap-2 px-4 py-3 rounded-lg"
-                style={footerButtonContentStyle(hovered)}
-              >
-                <Home size={18} color={colors.textSecondary} />
-                <Text className="text-sm" style={[{ color: colors.textSecondary }, isRTL && styles.textRight]}>
-                  {t('admin.backToApp', 'Back to App')}
-                </Text>
-              </View>
-            )}
+          <Pressable
+            onHoverIn={() => setHoveredItem('home')}
+            onHoverOut={() => setHoveredItem(null)}
+            style={[
+              styles.footerButton,
+              isRTL && styles.footerButtonRTL,
+              hoveredItem === 'home' && styles.footerButtonHovered,
+            ]}
+          >
+            <Home size={18} color={colors.textSecondary} />
+            <Text style={[styles.footerText, isRTL && styles.textRTL]}>
+              {t('admin.backToApp', 'Back to App')}
+            </Text>
           </Pressable>
         </Link>
         <Pressable
           onPress={handleLogout}
-          style={footerLinkStyle}
+          onHoverIn={() => setHoveredItem('logout')}
+          onHoverOut={() => setHoveredItem(null)}
+          style={[
+            styles.footerButton,
+            isRTL && styles.footerButtonRTL,
+            hoveredItem === 'logout' && styles.footerButtonLogoutHovered,
+          ]}
         >
-          {({ hovered }: any) => (
-            <View
-              className="flex-row items-center gap-2 px-4 py-3 rounded-lg"
-              style={footerButtonContentStyle(hovered, true)}
-            >
-              <LogOut size={18} color={colors.error} />
-              <Text className="text-sm" style={[{ color: colors.error }, isRTL && styles.textRight]}>
-                {t('account.logout', 'Logout')}
-              </Text>
-            </View>
-          )}
+          <LogOut size={18} color={colors.error} />
+          <Text style={[styles.footerTextLogout, isRTL && styles.textRTL]}>
+            {t('account.logout', 'Logout')}
+          </Text>
         </Pressable>
       </View>
-    </GlassView>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
-  sidebarContainer: {
-    position: 'fixed',
+  sidebar: {
+    position: 'fixed' as any,
     top: 0,
     bottom: 0,
     zIndex: 100,
+    backgroundColor: colors.glassStrong,
+    // @ts-ignore - Web-specific CSS
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    display: 'flex',
+    flexDirection: 'column',
   },
   sidebarLTR: {
     left: 0,
@@ -463,15 +367,19 @@ const styles = StyleSheet.create({
     maxWidth: 320,
   },
   sidebarDragging: {
+    // @ts-ignore
     userSelect: 'none',
-  } as any,
+  },
   dragHandle: {
     position: 'absolute',
     top: 0,
     bottom: 0,
     width: 12,
     zIndex: 102,
-    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // @ts-ignore
+    cursor: 'ew-resize',
   },
   dragHandleLTR: {
     right: 0,
@@ -479,34 +387,160 @@ const styles = StyleSheet.create({
   dragHandleRTL: {
     left: 0,
   },
-  flexRow: {
-    flexDirection: 'row',
+  languageSection: {
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
   },
-  flexRowReverse: {
+  languageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  },
+  languageButtonRTL: {
     flexDirection: 'row-reverse',
   },
-  navItemContent: {
+  languageButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  languageFlag: {
+    fontSize: 18,
+  },
+  languageLabel: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  languageMenu: {
+    marginTop: 8,
+    borderRadius: borderRadius.md,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  languageMenuItem: {
     flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  languageMenuItemRTL: {
+    flexDirection: 'row-reverse',
+  },
+  languageMenuItemActive: {
+    backgroundColor: colors.glassPurpleLight,
+  },
+  languageMenuItemHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  languageMenuLabel: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.text,
+  },
+  navContainer: {
+    flex: 1,
+  },
+  navContent: {
+    padding: spacing.sm,
+    gap: 4,
+  },
+  navItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: borderRadius.md,
+  },
+  navItemRTL: {
+    flexDirection: 'row-reverse',
+  },
+  navItemChildLTR: {
+    marginLeft: 0,
+  },
+  navItemChildRTL: {
+    marginRight: 0,
+  },
+  navItemActive: {
+    backgroundColor: colors.glassPurple,
   },
   navItemHovered: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
-  childIndentLTR: {
-    marginLeft: 32,
+  navIcon: {
+    width: 18,
+    height: 18,
   },
-  childIndentRTL: {
-    marginRight: 32,
+  navText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.textSecondary,
   },
-  languageButtonContent: {
-    flexDirection: 'row',
+  navTextActive: {
+    color: colors.primary,
+    fontWeight: '500',
   },
-  languageMenuItem: {
-    flexDirection: 'row',
-  },
-  footerButtonContent: {
-    flexDirection: 'row',
-  },
-  textRight: {
+  textRTL: {
     textAlign: 'right',
   },
-});
+  chevron: {
+    // @ts-ignore
+    transition: 'transform 0.2s ease',
+  },
+  chevronExpanded: {
+    transform: [{ rotate: '90deg' }],
+  },
+  childContainer: {
+    marginTop: 4,
+    gap: 2,
+  },
+  childContainerLTR: {
+    marginLeft: 32,
+  },
+  childContainerRTL: {
+    marginRight: 32,
+  },
+  footer: {
+    padding: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    gap: 4,
+  },
+  footerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: borderRadius.md,
+  },
+  footerButtonRTL: {
+    flexDirection: 'row-reverse',
+  },
+  footerButtonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  footerButtonLogoutHovered: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+  },
+  footerText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  footerTextLogout: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.error,
+  },
+})

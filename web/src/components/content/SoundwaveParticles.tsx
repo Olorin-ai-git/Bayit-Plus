@@ -3,6 +3,7 @@ import { View, StyleSheet, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing } from '@bayit/shared/theme';
 import type { AudioLevel } from '@bayit/shared-utils/vadDetector';
+import logger from '@/utils/logger';
 
 interface SoundwaveParticlesProps {
   isListening?: boolean;

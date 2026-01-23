@@ -1,13 +1,12 @@
-import React, { useRef } from 'react'
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
-import { Upload } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
-import { z } from 'zod'
-import { GlassView } from '@bayit/shared/ui'
-import { colors } from '@bayit/shared/theme'
-import { useDirection } from '@/hooks/useDirection'
+import React, { useRef } from 'react';
+import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import { Upload } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { z } from 'zod';
+import { GlassView } from '@bayit/shared/ui';
+import { colors, borderRadius } from '@bayit/shared/theme';
+import { useDirection } from '@/hooks/useDirection';
 
-// Zod schema for props validation
 const ImageDropZonePropsSchema = z.object({
   isDragging: z.boolean(),
   isUploading: z.boolean(),
@@ -16,16 +15,16 @@ const ImageDropZonePropsSchema = z.object({
   onDragLeave: z.function().returns(z.void()),
   onDrop: z.function().args(z.any()).returns(z.void()),
   onFileSelect: z.function().args(z.any()).returns(z.void()),
-})
+});
 
 export interface ImageDropZoneProps {
-  isDragging: boolean
-  isUploading: boolean
-  maxSizeMB: number
-  onDragOver: (e: React.DragEvent) => void
-  onDragLeave: () => void
-  onDrop: (e: React.DragEvent) => void
-  onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void
+  isDragging: boolean;
+  isUploading: boolean;
+  maxSizeMB: number;
+  onDragOver: (e: React.DragEvent) => void;
+  onDragLeave: () => void;
+  onDrop: (e: React.DragEvent) => void;
+  onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function ImageDropZone({
@@ -37,20 +36,19 @@ export function ImageDropZone({
   onDrop,
   onFileSelect,
 }: ImageDropZoneProps) {
-  const { t } = useTranslation()
-  const { textAlign } = useDirection()
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { t } = useTranslation();
+  const { textAlign } = useDirection();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <>
-      {/* Hidden file input */}
       <input
         ref={fileInputRef}
         type="file"
         accept="image/*"
         onChange={onFileSelect}
         disabled={isUploading}
-        className="absolute w-0 h-0 opacity-0 overflow-hidden pointer-events-none"
+        style={inputStyles}
       />
 
       <Pressable
@@ -70,24 +68,18 @@ export function ImageDropZone({
           intensity={isDragging ? 'high' : 'medium'}
           borderColor={isDragging ? colors.primary : undefined}
         >
-          <View className="p-8 items-center justify-center gap-4">
+          <View style={styles.content}>
             <Upload size={32} color={colors.primary} />
-            <Text
-              className="text-sm font-medium text-white"
-              style={{ textAlign }}
-            >
+            <Text style={[styles.primaryText, { textAlign }]}>
               {t('admin.content.editor.imageUpload.dropHere')}
             </Text>
-            <Text
-              className="text-xs text-gray-400"
-              style={{ textAlign }}
-            >
+            <Text style={[styles.secondaryText, { textAlign }]}>
               {t('admin.content.editor.imageUpload.formats', { maxSize: maxSizeMB })}
             </Text>
             {isUploading && (
-              <View className="flex-row items-center gap-2 mt-2">
+              <View style={styles.uploadingRow}>
                 <ActivityIndicator size="small" color={colors.primary} />
-                <Text className="text-xs" style={{ color: colors.primary }}>
+                <Text style={styles.uploadingText}>
                   {t('admin.content.editor.imageUpload.uploading')}
                 </Text>
               </View>
@@ -96,12 +88,21 @@ export function ImageDropZone({
         </GlassView>
       </Pressable>
     </>
-  )
+  );
 }
+
+const inputStyles: React.CSSProperties = {
+  position: 'absolute',
+  width: 0,
+  height: 0,
+  opacity: 0,
+  overflow: 'hidden',
+  pointerEvents: 'none',
+};
 
 const styles = StyleSheet.create({
   dropZone: {
-    borderRadius: 16,
+    borderRadius: borderRadius.xl,
     borderWidth: 2,
     borderStyle: 'dashed',
     borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -114,4 +115,39 @@ const styles = StyleSheet.create({
   dropZoneUploading: {
     opacity: 0.5,
   },
+  content: {
+    padding: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 16,
+  },
+  primaryText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  secondaryText: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  uploadingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 8,
+  },
+  uploadingText: {
+    fontSize: 12,
+    color: colors.primary,
+  },
 });
+
+if (process.env.NODE_ENV === 'development') {
+  const originalComponent = ImageDropZone;
+  (ImageDropZone as any) = (props: any) => {
+    ImageDropZonePropsSchema.parse(props);
+    return originalComponent(props);
+  };
+}
+
+export default ImageDropZone;

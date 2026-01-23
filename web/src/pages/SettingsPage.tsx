@@ -6,6 +6,7 @@ import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassToggle } from '@bayit/shared/ui';
 import { useAuthStore } from '@bayit/shared-stores/authStore';
 import { Globe, Bell, Moon, Volume2, Shield, ChevronRight, Languages } from 'lucide-react';
+import logger from '@/utils/logger';
 import api from '@/services/api';
 
 export default function SettingsPage() {
@@ -27,7 +28,7 @@ export default function SettingsPage() {
         const prefs = response.data?.preferences || {};
         setAutoTranslate(prefs.auto_translate_enabled !== false);
       } catch (error) {
-        console.error('Failed to load preferences:', error);
+        logger.error('Failed to load preferences', 'SettingsPage', error);
       } finally {
         setIsLoadingPrefs(false);
       }
@@ -40,7 +41,7 @@ export default function SettingsPage() {
     try {
       await api.patch('/users/me/preferences', { auto_translate_enabled: value });
     } catch (error) {
-      console.error('Failed to update auto-translate preference:', error);
+      logger.error('Failed to update auto-translate preference', 'SettingsPage', error);
       // Revert on error
       setAutoTranslate(!value);
     }

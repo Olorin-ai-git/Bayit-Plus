@@ -1,29 +1,10 @@
-/**
- * CategoryPickerList Component
- *
- * Scrollable dropdown list of categories with search and create option
- * Part of CategoryPicker migration from StyleSheet to TailwindCSS
- *
- * Features:
- * - Search input with icon
- * - Scrollable category list (max 240px height)
- * - Category item with primary/secondary names
- * - Selected state indicator (left border + dot)
- * - Create new category button
- * - Loading, error, and empty states
- * - RTL-aware text alignment
- * - Glass morphism styling
- *
- * Props validated with Zod schema
- */
-
-import { View, Text, Pressable, ScrollView } from 'react-native'
-import { Search, Plus, AlertCircle } from 'lucide-react'
-import { z } from 'zod'
-import { GlassView, GlassInput } from '@bayit/shared/ui'
-import { platformClass } from '../../../utils/platformClass'
-import { CategoryItem } from './CategoryItem'
-import type { Category } from '../../../types/content'
+import React from 'react';
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Search, Plus, AlertCircle } from 'lucide-react';
+import { z } from 'zod';
+import { GlassView, GlassInput } from '@bayit/shared/ui';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { CategoryItem } from './CategoryItem';
 
 const CategoryPickerListPropsSchema = z.object({
   categories: z.array(z.object({
@@ -49,9 +30,9 @@ const CategoryPickerListPropsSchema = z.object({
   onSearchChange: z.function().args(z.string()).returns(z.void()),
   onSelectCategory: z.function().args(z.string()).returns(z.void()),
   onCreateClick: z.function().returns(z.void()),
-})
+});
 
-export type CategoryPickerListProps = z.infer<typeof CategoryPickerListPropsSchema>
+export type CategoryPickerListProps = z.infer<typeof CategoryPickerListPropsSchema>;
 
 export function CategoryPickerList({
   categories,
@@ -70,16 +51,9 @@ export function CategoryPickerList({
   onSelectCategory,
   onCreateClick,
 }: CategoryPickerListProps) {
-  const centerClass = 'p-6 items-center'
-  const mutedTextClass = 'text-sm text-white/60'
-
   return (
-    <GlassView
-      className="mt-2 rounded-lg max-h-[400px] overflow-hidden"
-      intensity="high"
-    >
-      {/* Search Input */}
-      <View className="p-2 border-b border-white/10">
+    <GlassView style={styles.container} intensity="high">
+      <View style={styles.searchContainer}>
         <GlassInput
           value={search}
           onChangeText={onSearchChange}
@@ -89,33 +63,29 @@ export function CategoryPickerList({
         />
       </View>
 
-      {/* Loading State */}
       {isLoading && (
-        <View className={centerClass}>
-          <Text className={mutedTextClass}>{loadingText}</Text>
+        <View style={styles.centerContainer}>
+          <Text style={styles.mutedText}>{loadingText}</Text>
         </View>
       )}
 
-      {/* Error State */}
       {error && !isLoading && (
-        <View className="flex-row items-center p-4" style={{ gap: 8 }}>
-          <AlertCircle size={16} color="#ef4444" />
-          <Text className="text-sm text-red-500">{error}</Text>
+        <View style={styles.errorContainer}>
+          <AlertCircle size={16} color={colors.error} />
+          <Text style={styles.errorText}>{error}</Text>
         </View>
       )}
 
-      {/* Empty State */}
       {!isLoading && !error && categories.length === 0 && (
-        <View className={centerClass}>
-          <Text className={mutedTextClass}>
+        <View style={styles.centerContainer}>
+          <Text style={styles.mutedText}>
             {search ? noResultsText : noCategoriesText}
           </Text>
         </View>
       )}
 
-      {/* Category List */}
       {!isLoading && !error && categories.length > 0 && (
-        <ScrollView className="max-h-[240px]">
+        <ScrollView style={styles.list}>
           {categories.map((category) => (
             <CategoryItem
               key={category.id}
@@ -128,19 +98,77 @@ export function CategoryPickerList({
         </ScrollView>
       )}
 
-      {/* Create New Category Button */}
       {allowCreate && (
         <Pressable onPress={onCreateClick}>
-          <View className="border-t border-white/10">
-            <GlassView className="flex-row items-center px-4 py-3" intensity="medium" style={{ gap: 8 }}>
-              <Plus size={16} color="#a855f7" />
-              <Text className="text-sm text-purple-500 font-medium">
-                {createNewText}
-              </Text>
+          <View style={styles.createButtonContainer}>
+            <GlassView style={styles.createButton} intensity="medium">
+              <Plus size={16} color={colors.primary} />
+              <Text style={styles.createButtonText}>{createNewText}</Text>
             </GlassView>
           </View>
         </Pressable>
       )}
     </GlassView>
-  )
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: 8,
+    borderRadius: borderRadius.md,
+    maxHeight: 400,
+    overflow: 'hidden',
+  },
+  searchContainer: {
+    padding: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  centerContainer: {
+    padding: 24,
+    alignItems: 'center',
+  },
+  mutedText: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    gap: 8,
+  },
+  errorText: {
+    fontSize: 14,
+    color: colors.error,
+  },
+  list: {
+    maxHeight: 240,
+  },
+  createButtonContainer: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  createButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 8,
+  },
+  createButtonText: {
+    fontSize: 14,
+    color: colors.primary,
+    fontWeight: '500',
+  },
+});
+
+if (process.env.NODE_ENV === 'development') {
+  const originalComponent = CategoryPickerList;
+  (CategoryPickerList as any) = (props: any) => {
+    CategoryPickerListPropsSchema.parse(props);
+    return originalComponent(props);
+  };
+}
+
+export default CategoryPickerList;

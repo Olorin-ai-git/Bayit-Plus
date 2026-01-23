@@ -9,6 +9,7 @@
 
 import React, { useEffect } from 'react';
 import { GrowthBook, GrowthBookProvider } from '@growthbook/growthbook-react';
+import logger from '@/utils/logger';
 
 // Initialize GrowthBook instance
 const growthbook = new GrowthBook({
@@ -17,7 +18,7 @@ const growthbook = new GrowthBook({
   enableDevMode: process.env.NODE_ENV === 'development',
   // Track feature usage for analytics
   trackingCallback: (experiment, result) => {
-    console.log('[GrowthBook] Experiment:', {
+    logger.debug('Experiment viewed', 'FeatureFlagProvider', {
       experimentId: experiment.key,
       variationId: result.variationId,
       value: result.value,

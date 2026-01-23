@@ -15,6 +15,7 @@ import { GlassView, GlassCategoryPill } from '../components/ui';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
+import { useYouTubeThumbnail } from '../hooks/useYouTubeThumbnail';
 import { getLocalizedName, getLocalizedDescription } from '../utils/contentLocalization';
 import { judaismService } from '../services/api';
 import { JerusalemRow } from '../components/JerusalemRow';
@@ -62,6 +63,7 @@ const JudaismCard: React.FC<{
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const { isRTL, textAlign } = useDirection();
+  const { thumbnailUrl, handleError } = useYouTubeThumbnail(item.thumbnail);
 
   const handleFocus = () => {
     setIsFocused(true);
@@ -95,11 +97,12 @@ const JudaismCard: React.FC<{
         style={{ transform: [{ scale: scaleAnim }] }}
         className={`bg-white/10 rounded-2xl overflow-hidden border-[3px] ${isFocused ? 'border-purple-500' : 'border-transparent'}`}
       >
-        {item.thumbnail ? (
+        {thumbnailUrl ? (
           <Image
-            source={{ uri: item.thumbnail }}
+            source={{ uri: thumbnailUrl }}
             className="w-full aspect-video"
             resizeMode="cover"
+            onError={handleError}
           />
         ) : (
           <View className="w-full aspect-video bg-white/20 justify-center items-center">

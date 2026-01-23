@@ -32,7 +32,7 @@ export type GestureState =
 /**
  * Support portal tabs
  */
-export type SupportTab = 'docs' | 'faq' | 'contact' | 'tickets';
+export type SupportTab = 'docs' | 'faq' | 'contact' | 'tickets' | 'videos';
 
 /**
  * Support ticket status

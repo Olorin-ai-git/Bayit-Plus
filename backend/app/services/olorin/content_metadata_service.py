@@ -5,8 +5,10 @@ Adapter service for cross-database Content access. Provides Olorin services
 with read-only access to Bayit+ Content metadata while maintaining database separation.
 """
 
+import asyncio
 import logging
-from typing import List, Optional
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Tuple
 
 from beanie import PydanticObjectId
 from beanie.odm.queries.find import FindMany
@@ -15,6 +17,12 @@ from app.core.config import settings
 from app.models.content import Content
 
 logger = logging.getLogger(__name__)
+
+# Query timeout in seconds
+QUERY_TIMEOUT_SECONDS = 10
+
+# Cache TTL for series episodes (5 minutes)
+SERIES_CACHE_TTL_SECONDS = 300
 
 
 class ContentMetadataService:
@@ -28,27 +36,43 @@ class ContentMetadataService:
     def __init__(self):
         """Initialize content metadata service."""
         self._initialized = False
+        self._init_lock = asyncio.Lock()
+        self._series_cache: Dict[str, Tuple[List[Content], datetime]] = {}
 
     async def initialize(self) -> None:
         """
         Initialize service and verify Content model access.
 
         Called during application startup to ensure Content model is available.
+        Uses asyncio.Lock to prevent race conditions during concurrent initialization.
         """
         if self._initialized:
             return
 
-        # Verify Content model is accessible
-        try:
-            # Test query to ensure Content is registered with Beanie
-            await Content.find_one()
-            logger.info("ContentMetadataService initialized - Content model accessible")
-            self._initialized = True
-        except Exception as e:
-            logger.error(f"ContentMetadataService initialization failed: {e}")
-            raise RuntimeError(
-                "Content model not accessible. Ensure database connection is established."
-            ) from e
+        async with self._init_lock:
+            # Double-check after acquiring lock
+            if self._initialized:
+                return
+
+            # Verify Content model is accessible
+            try:
+                # Test query to ensure Content is registered with Beanie
+                await asyncio.wait_for(
+                    Content.find_one(),
+                    timeout=QUERY_TIMEOUT_SECONDS,
+                )
+                logger.info("ContentMetadataService initialized - Content model accessible")
+                self._initialized = True
+            except asyncio.TimeoutError:
+                logger.error("ContentMetadataService initialization timed out")
+                raise RuntimeError(
+                    "Content model initialization timed out. Check database connection."
+                )
+            except Exception as e:
+                logger.error(f"ContentMetadataService initialization failed: {e}")
+                raise RuntimeError(
+                    "Content model not accessible. Ensure database connection is established."
+                ) from e
 
     async def get_content(
         self, content_id: str | PydanticObjectId
@@ -196,7 +220,7 @@ class ContentMetadataService:
         self, series_id: str
     ) -> List[Content]:
         """
-        Get all episodes for a series.
+        Get all episodes for a series with caching and timeout protection.
 
         Args:
             series_id: The series ID to fetch episodes for
@@ -207,13 +231,54 @@ class ContentMetadataService:
         if not self._initialized:
             await self.initialize()
 
+        # Check cache first
+        cached = self._series_cache.get(series_id)
+        if cached:
+            episodes, cached_at = cached
+            if datetime.utcnow() - cached_at < timedelta(seconds=SERIES_CACHE_TTL_SECONDS):
+                logger.debug(f"Cache hit for series episodes: {series_id}")
+                return episodes
+
         try:
-            return await Content.find(
-                {"series_id": series_id, "content_type": "episode"}
-            ).sort([("season", 1), ("episode", 1)]).to_list()
+            # Use projection to only fetch needed fields for scene search
+            episodes = await asyncio.wait_for(
+                Content.find(
+                    {"series_id": series_id, "content_type": "episode"},
+                    projection_model=None,  # Full document for now
+                ).sort([("season", 1), ("episode", 1)]).to_list(),
+                timeout=QUERY_TIMEOUT_SECONDS,
+            )
+
+            # Update cache
+            self._series_cache[series_id] = (episodes, datetime.utcnow())
+
+            # Clean old cache entries (simple LRU-like cleanup)
+            if len(self._series_cache) > 100:
+                oldest_key = min(
+                    self._series_cache.keys(),
+                    key=lambda k: self._series_cache[k][1],
+                )
+                del self._series_cache[oldest_key]
+
+            return episodes
+        except asyncio.TimeoutError:
+            logger.error(f"Timeout fetching series episodes for {series_id}")
+            return []
         except Exception as e:
             logger.error(f"Error fetching series episodes for {series_id}: {e}")
             return []
+
+    def clear_series_cache(self, series_id: Optional[str] = None) -> None:
+        """
+        Clear series episode cache.
+
+        Args:
+            series_id: Optional specific series to clear. If None, clears all.
+        """
+        if series_id:
+            self._series_cache.pop(series_id, None)
+        else:
+            self._series_cache.clear()
 
     async def text_search(
         self,

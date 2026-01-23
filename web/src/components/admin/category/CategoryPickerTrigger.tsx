@@ -1,27 +1,9 @@
-/**
- * CategoryPickerTrigger Component
- *
- * Displays selected category with dropdown trigger button
- * Part of CategoryPicker migration from StyleSheet to TailwindCSS
- *
- * Features:
- * - Selected category display with primary/secondary names
- * - Placeholder state for no selection
- * - Chevron icon with rotation animation
- * - Error state styling
- * - RTL-aware text alignment
- * - Loading/disabled state support
- * - Glass morphism styling
- *
- * Props validated with Zod schema
- */
-
-import { View, Text, Pressable } from 'react-native'
-import { ChevronDown } from 'lucide-react'
-import { z } from 'zod'
-import { GlassView } from '@bayit/shared/ui'
-import { platformClass } from '../../../utils/platformClass'
-import type { Category } from '../../../types/content'
+import React from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { ChevronDown } from 'lucide-react';
+import { z } from 'zod';
+import { GlassView } from '@bayit/shared/ui';
+import { colors, borderRadius } from '@bayit/shared/theme';
 
 const CategoryPickerTriggerPropsSchema = z.object({
   selectedCategory: z.object({
@@ -39,9 +21,9 @@ const CategoryPickerTriggerPropsSchema = z.object({
   hasError: z.boolean(),
   textAlign: z.enum(['left', 'right', 'center']),
   onPress: z.function().returns(z.void()),
-})
+});
 
-export type CategoryPickerTriggerProps = z.infer<typeof CategoryPickerTriggerPropsSchema>
+export type CategoryPickerTriggerProps = z.infer<typeof CategoryPickerTriggerPropsSchema>;
 
 export function CategoryPickerTrigger({
   selectedCategory,
@@ -55,44 +37,67 @@ export function CategoryPickerTrigger({
   return (
     <Pressable onPress={onPress} disabled={isLoading}>
       <GlassView
-        className={platformClass(
-          `flex-row items-center justify-between px-4 py-3 rounded-lg min-h-[48px] ${
-            hasError ? 'border border-red-500' : ''
-          }`,
-          `flex-row items-center justify-between px-4 py-3 rounded-lg min-h-[48px] ${
-            hasError ? 'border border-red-500' : ''
-          }`
-        )}
+        style={[
+          styles.container,
+          hasError && styles.containerError,
+        ]}
         intensity="medium"
       >
         <Text
-          className={platformClass(
-            `flex-1 text-sm ${
-              selectedCategory ? 'text-white' : 'text-white/60'
-            }`,
-            `flex-1 text-sm ${
-              selectedCategory ? 'text-white' : 'text-white/60'
-            }`
-          )}
-          style={{ textAlign }}
+          style={[
+            styles.text,
+            !selectedCategory && styles.textPlaceholder,
+            { textAlign },
+          ]}
         >
           {selectedCategory ? selectedCategory.name : placeholder}
         </Text>
         <View
-          className={platformClass(
-            'transition-transform duration-200',
-            ''
-          )}
-          style={{
-            transform: [{ rotate: isOpen ? '180deg' : '0deg' }],
-          }}
+          style={[
+            styles.iconContainer,
+            { transform: [{ rotate: isOpen ? '180deg' : '0deg' }] },
+          ]}
         >
-          <ChevronDown
-            size={16}
-            color="rgba(255, 255, 255, 0.6)"
-          />
+          <ChevronDown size={16} color="rgba(255, 255, 255, 0.6)" />
         </View>
       </GlassView>
     </Pressable>
-  )
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: borderRadius.md,
+    minHeight: 48,
+  },
+  containerError: {
+    borderWidth: 1,
+    borderColor: colors.error,
+  },
+  text: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.text,
+  },
+  textPlaceholder: {
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  iconContainer: {
+    // Transform handled inline for rotation
+  },
+});
+
+if (process.env.NODE_ENV === 'development') {
+  const originalComponent = CategoryPickerTrigger;
+  (CategoryPickerTrigger as any) = (props: any) => {
+    CategoryPickerTriggerPropsSchema.parse(props);
+    return originalComponent(props);
+  };
+}
+
+export default CategoryPickerTrigger;

@@ -1,6 +1,7 @@
 /**
  * RightControls Component
  * Action buttons for chapters, search, settings, fullscreen with TV focus support
+ * For live channels, uses the GlassLiveControlsPanel for Language Settings
  */
 
 import { View, Pressable } from 'react-native'
@@ -11,11 +12,13 @@ import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 import { isTV } from '@bayit/shared/utils/platform'
 import { PlayerState } from '../types'
 import { controlStyles as styles } from './playerControlsStyles'
+import { GlassLiveControlsPanel } from './GlassLiveControlsPanel'
 
 interface RightControlsProps {
   state: PlayerState
   toggleFullscreen: () => void
   isLive?: boolean
+  liveSubtitleLang?: string
   showChaptersPanel?: boolean
   showSceneSearchPanel?: boolean
   showSettings?: boolean
@@ -32,12 +35,23 @@ interface RightControlsProps {
 }
 
 export default function RightControls({
-  state, toggleFullscreen, isLive = false,
-  showChaptersPanel = false, showSceneSearchPanel = false, showSettings = false,
-  hasChapters = false, hasSceneSearch = false,
-  onChaptersPanelToggle, onSceneSearchToggle, onSettingsToggle,
-  renderWatchPartyButton, renderSubtitleControls, renderLiveSubtitleControls,
-  renderDubbingControls, renderRecordButton,
+  state,
+  toggleFullscreen,
+  isLive = false,
+  liveSubtitleLang = 'en',
+  showChaptersPanel = false,
+  showSceneSearchPanel = false,
+  showSettings = false,
+  hasChapters = false,
+  hasSceneSearch = false,
+  onChaptersPanelToggle,
+  onSceneSearchToggle,
+  onSettingsToggle,
+  renderWatchPartyButton,
+  renderSubtitleControls,
+  renderLiveSubtitleControls,
+  renderDubbingControls,
+  renderRecordButton,
 }: RightControlsProps) {
   const { t } = useTranslation()
   const chaptersFocus = useTVFocus({ styleType: 'button' })
@@ -54,12 +68,16 @@ export default function RightControls({
       {/* Chapters */}
       {!isLive && hasChapters && onChaptersPanelToggle && (
         <Pressable
-          onPress={(e) => { e.stopPropagation?.(); onChaptersPanelToggle() }}
+          onPress={(e) => {
+            e.stopPropagation?.()
+            onChaptersPanelToggle()
+          }}
           onFocus={chaptersFocus.handleFocus}
           onBlur={chaptersFocus.handleBlur}
           focusable={true}
           style={({ hovered }) => [
-            styles.controlButton, hovered && styles.controlButtonHovered,
+            styles.controlButton,
+            hovered && styles.controlButtonHovered,
             showChaptersPanel && styles.controlButtonActive,
             chaptersFocus.isFocused && chaptersFocus.focusStyle,
           ]}
@@ -67,19 +85,26 @@ export default function RightControls({
           accessibilityLabel={t('player.chapters')}
           accessibilityState={{ expanded: showChaptersPanel }}
         >
-          <List size={smallIconSize} color={showChaptersPanel ? colors.primary : colors.text} />
+          <List
+            size={smallIconSize}
+            color={showChaptersPanel ? colors.primary : colors.text}
+          />
         </Pressable>
       )}
 
       {/* Scene Search */}
       {hasSceneSearch && onSceneSearchToggle && (
         <Pressable
-          onPress={(e) => { e.stopPropagation?.(); onSceneSearchToggle() }}
+          onPress={(e) => {
+            e.stopPropagation?.()
+            onSceneSearchToggle()
+          }}
           onFocus={searchFocus.handleFocus}
           onBlur={searchFocus.handleBlur}
           focusable={true}
           style={({ hovered }) => [
-            styles.controlButton, hovered && styles.controlButtonHovered,
+            styles.controlButton,
+            hovered && styles.controlButtonHovered,
             showSceneSearchPanel && styles.controlButtonActive,
             searchFocus.isFocused && searchFocus.focusStyle,
           ]}
@@ -87,50 +112,85 @@ export default function RightControls({
           accessibilityLabel={t('player.sceneSearch.title')}
           accessibilityState={{ expanded: showSceneSearchPanel }}
         >
-          <Search size={smallIconSize} color={showSceneSearchPanel ? colors.primary : colors.text} />
+          <Search
+            size={smallIconSize}
+            color={showSceneSearchPanel ? colors.primary : colors.text}
+          />
         </Pressable>
       )}
 
       {renderSubtitleControls && renderSubtitleControls()}
-      {renderLiveSubtitleControls && renderLiveSubtitleControls()}
-      {renderDubbingControls && renderDubbingControls()}
       {renderRecordButton && renderRecordButton()}
 
-      {/* Settings */}
-      {onSettingsToggle && (
-        <Pressable
-          onPress={(e) => { e.stopPropagation?.(); onSettingsToggle() }}
-          onFocus={settingsFocus.handleFocus}
-          onBlur={settingsFocus.handleBlur}
-          focusable={true}
-          style={({ hovered }) => [
-            styles.controlButton, hovered && styles.controlButtonHovered,
-            showSettings && styles.controlButtonActive,
-            settingsFocus.isFocused && settingsFocus.focusStyle,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={t('player.settings')}
-          accessibilityState={{ expanded: showSettings }}
-        >
-          <Settings size={smallIconSize} color={showSettings ? colors.primary : colors.text} />
-        </Pressable>
-      )}
+      {/* Live Channel Controls Panel - includes fullscreen button */}
+      {isLive && onSettingsToggle && renderLiveSubtitleControls && renderDubbingControls ? (
+        <GlassLiveControlsPanel
+          isExpanded={showSettings}
+          onToggleExpand={onSettingsToggle}
+          currentLanguage={liveSubtitleLang}
+          isFullscreen={state.isFullscreen}
+          onToggleFullscreen={toggleFullscreen}
+          renderLiveSubtitleControls={renderLiveSubtitleControls}
+          renderDubbingControls={renderDubbingControls}
+        />
+      ) : (
+        <>
+          {/* Regular Settings button for VOD */}
+          {onSettingsToggle && (
+            <Pressable
+              onPress={(e) => {
+                e.stopPropagation?.()
+                onSettingsToggle()
+              }}
+              onFocus={settingsFocus.handleFocus}
+              onBlur={settingsFocus.handleBlur}
+              focusable={true}
+              style={({ hovered }) => [
+                styles.controlButton,
+                hovered && styles.controlButtonHovered,
+                showSettings && styles.controlButtonActive,
+                settingsFocus.isFocused && settingsFocus.focusStyle,
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel={t('player.settings')}
+              accessibilityState={{ expanded: showSettings }}
+            >
+              <Settings
+                size={smallIconSize}
+                color={showSettings ? colors.primary : colors.text}
+              />
+            </Pressable>
+          )}
 
-      {/* Fullscreen */}
-      <Pressable
-        onPress={(e) => { e.stopPropagation?.(); toggleFullscreen() }}
-        onFocus={fullscreenFocus.handleFocus}
-        onBlur={fullscreenFocus.handleBlur}
-        focusable={true}
-        style={({ hovered }) => [
-          styles.controlButton, hovered && styles.controlButtonHovered,
-          fullscreenFocus.isFocused && fullscreenFocus.focusStyle,
-        ]}
-        accessibilityRole="button"
-        accessibilityLabel={state.isFullscreen ? t('player.exitFullscreen') : t('player.enterFullscreen')}
-      >
-        {state.isFullscreen ? <Minimize size={smallIconSize} color={colors.text} /> : <Maximize size={smallIconSize} color={colors.text} />}
-      </Pressable>
+          {/* Fullscreen for VOD */}
+          <Pressable
+            onPress={(e) => {
+              e.stopPropagation?.()
+              toggleFullscreen()
+            }}
+            onFocus={fullscreenFocus.handleFocus}
+            onBlur={fullscreenFocus.handleBlur}
+            focusable={true}
+            style={({ hovered }) => [
+              styles.controlButton,
+              hovered && styles.controlButtonHovered,
+              fullscreenFocus.isFocused && fullscreenFocus.focusStyle,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={
+              state.isFullscreen
+                ? t('player.exitFullscreen')
+                : t('player.enterFullscreen')
+            }
+          >
+            {state.isFullscreen ? (
+              <Minimize size={smallIconSize} color={colors.text} />
+            ) : (
+              <Maximize size={smallIconSize} color={colors.text} />
+            )}
+          </Pressable>
+        </>
+      )}
     </View>
   )
 }

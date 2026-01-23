@@ -15,6 +15,7 @@ import AudioPlayer from '@/components/player/AudioPlayer';
 import { YnetMivzakimWidget } from './YnetMivzakimWidget';
 import { useDirection } from '@/hooks/useDirection';
 import type { Widget, WidgetPosition } from '@/types/widget';
+import logger from '@/utils/logger';
 
 interface WidgetContainerProps {
   widget: Widget;
@@ -383,7 +384,7 @@ export default function WidgetContainer({
           return renderError('No content configured');
       }
     } catch (err) {
-      console.error('[Widget] Error rendering content:', err);
+      logger.error('Error rendering content', { error: err, component: 'WidgetContainer' });
       return renderError('Error loading content');
     }
   };

@@ -1,4 +1,5 @@
 import { init, setKeyMap } from '@noriginmedia/norigin-spatial-navigation';
+import logger from '@/utils/logger';
 
 // Detect if running on LG webOS TV
 export function isWebOS(): boolean {
@@ -34,7 +35,7 @@ export function isTV(): boolean {
 export function initSpatialNav(): void {
   if (typeof window === 'undefined') return;
 
-  console.log('[TV] Initializing spatial navigation...');
+  logger.debug('Initializing spatial navigation', 'spatialNavigation');
 
   init({
     debug: true, // Enable debug for troubleshooting
@@ -82,7 +83,7 @@ export function initSpatialNav(): void {
         });
       }
     } catch (e) {
-      console.warn('Failed to register Tizen remote keys:', e);
+      logger.warn('Failed to register Tizen remote keys', 'spatialNavigation', e);
     }
   }
 }
@@ -92,7 +93,7 @@ export function setupTVEnvironment(): void {
   if (typeof document === 'undefined') return;
 
   if (isTV()) {
-    console.log('[TV] Setting up TV environment...');
+    logger.debug('Setting up TV environment', 'spatialNavigation');
     document.body.classList.add('tv-mode');
 
     // Disable scrollbars and text selection for TV
@@ -104,11 +105,11 @@ export function setupTVEnvironment(): void {
     // Platform-specific classes
     if (isWebOS()) {
       document.body.classList.add('webOS');
-      console.log('[TV] Detected webOS');
+      logger.debug('Detected webOS', 'spatialNavigation');
     }
     if (isTizen()) {
       document.body.classList.add('tizen');
-      console.log('[TV] Detected Tizen');
+      logger.debug('Detected Tizen', 'spatialNavigation');
     }
 
     // Make all links and buttons focusable for native TV navigation
@@ -162,5 +163,5 @@ function handleTVKeyDown(event: KeyboardEvent): void {
     }
   }
 
-  console.log('[TV] Key pressed:', keyCode);
+  logger.debug('Key pressed', 'spatialNavigation', { keyCode });
 }

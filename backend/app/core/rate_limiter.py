@@ -28,6 +28,16 @@ try:
         "subtitle_import": "10/hour",  # Database writes for subtitle import
         "subtitle_delete": "20/hour",  # Destructive operations
         "subtitle_general": "30/minute",  # Other endpoints (languages, cache stats)
+
+        # Trivia - Protection for AI-generated content and playback endpoints
+        "trivia_get": "60/minute",  # Standard trivia fetch during playback
+        "trivia_enriched": "3/hour",  # AI-enriched bundle (expensive operation)
+        "trivia_preferences": "10/minute",  # Preference updates
+        "trivia_generate": "5/hour",  # Admin force regenerate
+
+        # Live Dubbing - Protection for admin configuration endpoints
+        "dubbing_config_update": "10/hour",  # Channel dubbing configuration updates
+        "dubbing_stats": "30/minute",  # Dubbing statistics queries
     }
 
     RATE_LIMITING_ENABLED = True

@@ -4,11 +4,11 @@
  */
 
 import React from 'react'
-import { View, Text, Pressable } from 'react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { ChevronLeft, AlertCircle } from 'lucide-react'
 import { z } from 'zod'
 import { GlassButton } from '@bayit/shared/ui'
-import { platformClass } from '../../../utils/platformClass'
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme'
 
 // Zod schema for prop validation
 const CategorySchema = z.object({
@@ -56,86 +56,141 @@ export function WizardStepConfirm({
   const selectedCategory = categories.find((c) => c.id === categoryId)
 
   return (
-    <View className={platformClass('flex flex-col gap-4')}>
+    <View style={styles.container}>
       {/* Back button */}
-      <Pressable
-        onPress={onBack}
-        className={platformClass('flex flex-row items-center gap-1 mb-4 hover:opacity-70 cursor-pointer')}
-      >
+      <Pressable onPress={onBack} style={styles.backButton}>
         <ChevronLeft size={16} color="#9333ea" />
-        <Text className={platformClass('text-sm text-purple-600')}>Back</Text>
+        <Text style={styles.backText}>Back</Text>
       </Pressable>
 
-      <Text className={platformClass('text-base font-semibold text-white mb-2')}>
-        Ready to import?
-      </Text>
+      <Text style={styles.title}>Ready to import?</Text>
 
       {/* Confirmation box */}
-      <View
-        className={platformClass(
-          'p-6 rounded-2xl bg-purple-900/20 border border-purple-900/30'
-        )}
-      >
-        <Text className={platformClass('text-sm text-white mb-2')}>
+      <View style={styles.confirmBox}>
+        <Text style={styles.confirmText}>
           You are about to import {importAll ? 'all' : selectedItemsCount} item(s) from{' '}
-          <Text className={platformClass('font-semibold text-purple-600')}>
-            {currentSource.name}
-          </Text>
-          .
+          <Text style={styles.sourceName}>{currentSource.name}</Text>.
         </Text>
 
         {sourceType === 'vod' && selectedCategory && (
-          <Text className={platformClass('text-sm text-white mb-2')}>
-            Category:{' '}
-            <Text className={platformClass('font-semibold text-purple-600')}>
-              {selectedCategory.name}
-            </Text>
+          <Text style={styles.categoryText}>
+            Category: <Text style={styles.categoryName}>{selectedCategory.name}</Text>
           </Text>
         )}
 
         {/* Notes */}
-        <View className={platformClass('mt-4 flex flex-col gap-1')}>
-          <Text className={platformClass('text-[13px] text-white/60')}>
-            • Items will be added to your content library
-          </Text>
-          <Text className={platformClass('text-[13px] text-white/60')}>
-            • You can edit them after import
-          </Text>
-          <Text className={platformClass('text-[13px] text-white/60')}>
-            • This action cannot be undone
-          </Text>
+        <View style={styles.notesContainer}>
+          <Text style={styles.noteText}>• Items will be added to your content library</Text>
+          <Text style={styles.noteText}>• You can edit them after import</Text>
+          <Text style={styles.noteText}>• This action cannot be undone</Text>
         </View>
       </View>
 
       {/* Error display */}
       {error && (
-        <View
-          className={platformClass(
-            'flex flex-row items-center gap-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20'
-          )}
-        >
+        <View style={styles.errorContainer}>
           <AlertCircle size={20} color="#ef4444" />
-          <Text className={platformClass('flex-1 text-sm text-red-500')}>{error}</Text>
+          <Text style={styles.errorText}>{error}</Text>
         </View>
       )}
 
       {/* Actions */}
-      <View className={platformClass('flex flex-row gap-4 mt-6')}>
+      <View style={styles.actionsContainer}>
         <GlassButton
           title="Cancel"
           variant="secondary"
           onPress={onBack}
           disabled={isLoading}
-          className={platformClass('flex-1')}
+          style={styles.actionButton}
         />
         <GlassButton
           title={isLoading ? 'Importing...' : 'Import Now'}
           variant="primary"
           onPress={onImport}
           disabled={isLoading}
-          className={platformClass('flex-1')}
+          style={styles.actionButton}
         />
       </View>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'column',
+    gap: spacing.md,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.md,
+  },
+  backText: {
+    fontSize: fontSize.sm,
+    color: '#9333ea',
+  },
+  title: {
+    fontSize: fontSize.base,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  confirmBox: {
+    padding: spacing.lg,
+    borderRadius: borderRadius.xl,
+    backgroundColor: 'rgba(147, 51, 234, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(147, 51, 234, 0.3)',
+  },
+  confirmText: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  sourceName: {
+    fontWeight: '600',
+    color: '#9333ea',
+  },
+  categoryText: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  categoryName: {
+    fontWeight: '600',
+    color: '#9333ea',
+  },
+  notesContainer: {
+    marginTop: spacing.md,
+    flexDirection: 'column',
+    gap: spacing.xs,
+  },
+  noteText: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.2)',
+  },
+  errorText: {
+    flex: 1,
+    fontSize: fontSize.sm,
+    color: '#ef4444',
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginTop: spacing.lg,
+  },
+  actionButton: {
+    flex: 1,
+  },
+})

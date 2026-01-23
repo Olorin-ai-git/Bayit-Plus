@@ -3,14 +3,14 @@
  * Renders content items (movies/series) and episodes with appropriate styling
  */
 
-import { View, Text, Pressable, StyleSheet } from 'react-native'
-import { Link } from 'react-router-dom'
-import { Star, Eye, Trash2, Film, Tv } from 'lucide-react'
-import { GlassTableCell, GlassCheckbox } from '@bayit/shared/ui/web'
-import { platformClass } from '@/utils/platformClass'
-import { z } from 'zod'
+import React from 'react';
+import { View, Text, Pressable, StyleSheet, ImageBackground } from 'react-native';
+import { Link } from 'react-router-dom';
+import { Star, Eye, Trash2, Film, Tv } from 'lucide-react';
+import { GlassTableCell, GlassCheckbox } from '@bayit/shared/ui/web';
+import { colors, borderRadius } from '@bayit/shared/theme';
+import { z } from 'zod';
 
-// Schema for content items
 const ContentItemSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -25,9 +25,8 @@ const ContentItemSchema = z.object({
   view_count: z.number().optional(),
   avg_rating: z.number().optional(),
   available_subtitles: z.array(z.string()).optional(),
-})
+});
 
-// Schema for episodes
 const EpisodeSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -38,27 +37,28 @@ const EpisodeSchema = z.object({
   is_published: z.boolean(),
   is_featured: z.boolean(),
   view_count: z.number().optional(),
-})
+});
 
-export type ContentItem = z.infer<typeof ContentItemSchema>
-export type Episode = z.infer<typeof EpisodeSchema>
+export type ContentItem = z.infer<typeof ContentItemSchema>;
+export type Episode = z.infer<typeof EpisodeSchema>;
 
 interface ThumbnailCellProps {
-  item: ContentItem
-  isRTL: boolean
+  item: ContentItem;
+  isRTL: boolean;
 }
 
 function ContentThumbnail({ item, isRTL }: ThumbnailCellProps) {
   return (
-    <View className={platformClass('w-[60px] px-1 cursor-pointer')}>
-      <View className="w-[45px] h-[65px] rounded-sm overflow-hidden relative">
+    <View style={styles.thumbnailContainer}>
+      <View style={styles.contentThumbnailWrapper}>
         {item.thumbnail ? (
-          <View
-            className="w-full h-full bg-cover bg-center"
-            style={{ backgroundImage: `url(${item.thumbnail})` } as any}
+          <ImageBackground
+            source={{ uri: item.thumbnail }}
+            style={styles.thumbnailImage}
+            resizeMode="cover"
           />
         ) : (
-          <View className="w-full h-full bg-white/5 items-center justify-center">
+          <View style={styles.thumbnailPlaceholder}>
             {item.is_series ? (
               <Tv size={20} color="rgba(255,255,255,0.4)" />
             ) : (
@@ -68,39 +68,39 @@ function ContentThumbnail({ item, isRTL }: ThumbnailCellProps) {
         )}
       </View>
     </View>
-  )
+  );
 }
 
 interface EpisodeThumbnailProps {
-  episode: Episode
-  isRTL: boolean
+  episode: Episode;
+  isRTL: boolean;
 }
 
 function EpisodeThumbnail({ episode, isRTL }: EpisodeThumbnailProps) {
   return (
-    <View className="w-[60px] px-1">
+    <View style={styles.thumbnailContainer}>
       {episode.thumbnail ? (
-        <View
-          className="w-[50px] h-[30px] rounded-sm bg-cover bg-center"
-          style={{ backgroundImage: `url(${episode.thumbnail})` } as any}
+        <ImageBackground
+          source={{ uri: episode.thumbnail }}
+          style={styles.episodeThumbnailImage}
+          resizeMode="cover"
         />
       ) : (
-        <View className="w-[50px] h-[30px] bg-white/5 rounded-sm items-center justify-center">
+        <View style={styles.episodeThumbnailPlaceholder}>
           <Film size={14} color="rgba(255,255,255,0.4)" />
         </View>
       )}
     </View>
-  )
+  );
 }
 
 interface ContentTitleCellProps {
-  item: ContentItem
-  isRTL: boolean
-  t: (key: string, options?: any) => string
+  item: ContentItem;
+  isRTL: boolean;
+  t: (key: string, options?: any) => string;
 }
 
 export function ContentTitleCell({ item, isRTL, t }: ContentTitleCellProps) {
-  // Dynamic text alignment style
   const titleTextStyle = [
     styles.titleText,
     isRTL ? styles.textRight : styles.textLeft,
@@ -117,17 +117,14 @@ export function ContentTitleCell({ item, isRTL, t }: ContentTitleCellProps) {
   ];
 
   return (
-    <View className="flex-1 px-4 min-w-[200px]">
+    <View style={styles.titleCellContainer}>
       <View style={containerStyle}>
-        <Text
-          style={titleTextStyle}
-          numberOfLines={1}
-        >
+        <Text style={titleTextStyle} numberOfLines={1}>
           {item.title}
         </Text>
         {item.is_series && (
-          <View className="bg-purple-700/30 backdrop-blur-md px-2 py-0.5 rounded-full">
-            <Text className="text-[11px] text-purple-300 font-medium">
+          <View style={styles.seriesBadge}>
+            <Text style={styles.seriesBadgeText}>
               {item.episode_count || 0} {t('admin.content.episodes', { count: item.episode_count || 0 })}
             </Text>
           </View>
@@ -137,16 +134,15 @@ export function ContentTitleCell({ item, isRTL, t }: ContentTitleCellProps) {
         {item.is_series ? t('admin.content.type.series') : t('admin.content.type.movie')}
       </Text>
     </View>
-  )
+  );
 }
 
 interface EpisodeTitleCellProps {
-  episode: Episode
-  isRTL: boolean
+  episode: Episode;
+  isRTL: boolean;
 }
 
 export function EpisodeTitleCell({ episode, isRTL }: EpisodeTitleCellProps) {
-  // Dynamic text alignment style
   const episodeCodeStyle = [
     styles.episodeCode,
     isRTL ? styles.textRight : styles.textLeft,
@@ -158,7 +154,7 @@ export function EpisodeTitleCell({ episode, isRTL }: EpisodeTitleCellProps) {
   ];
 
   return (
-    <View className="flex-1 px-4 flex flex-row items-center gap-2">
+    <View style={styles.episodeTitleContainer}>
       <Text style={episodeCodeStyle}>
         S{String(episode.season || 1).padStart(2, '0')}E{String(episode.episode || 1).padStart(2, '0')}
       </Text>
@@ -166,21 +162,21 @@ export function EpisodeTitleCell({ episode, isRTL }: EpisodeTitleCellProps) {
         {episode.title}
       </Text>
       {episode.duration && (
-        <Text className="text-xs text-gray-400">{episode.duration}</Text>
+        <Text style={styles.durationText}>{episode.duration}</Text>
       )}
     </View>
-  )
+  );
 }
 
 interface ActionButtonsProps {
-  id: string
-  is_published: boolean
-  is_featured: boolean
-  isEpisode: boolean
-  onTogglePublish: (id: string) => void
-  onToggleFeatured: (id: string) => void
-  onDelete: (id: string) => void
-  t: (key: string) => string
+  id: string;
+  is_published: boolean;
+  is_featured: boolean;
+  isEpisode: boolean;
+  onTogglePublish: (id: string) => void;
+  onToggleFeatured: (id: string) => void;
+  onDelete: (id: string) => void;
+  t: (key: string) => string;
 }
 
 export function ActionButtons({
@@ -193,22 +189,15 @@ export function ActionButtons({
   onDelete,
   t,
 }: ActionButtonsProps) {
-  const buttonSize = isEpisode ? 12 : 14
-  const buttonClass = isEpisode
-    ? 'p-1 rounded-sm justify-center items-center backdrop-blur-md'
-    : 'p-2 rounded-md justify-center items-center backdrop-blur-md'
-
-  // Dynamic button background styles
-  const featuredButtonStyle = is_featured ? styles.featuredActive : styles.featuredInactive;
-  const publishButtonStyle = is_published ? styles.publishActive : styles.publishInactive;
+  const buttonSize = isEpisode ? 12 : 14;
+  const buttonStyle = isEpisode ? styles.actionButtonSmall : styles.actionButton;
 
   return (
     <GlassTableCell.Actions>
       {!isEpisode && (
         <Pressable
           onPress={() => onToggleFeatured(id)}
-          className={platformClass(buttonClass)}
-          style={featuredButtonStyle}
+          style={[buttonStyle, is_featured ? styles.featuredActive : styles.featuredInactive]}
         >
           <Star
             size={buttonSize}
@@ -219,70 +208,67 @@ export function ActionButtons({
       )}
       <Pressable
         onPress={() => onTogglePublish(id)}
-        className={platformClass(buttonClass)}
-        style={publishButtonStyle}
+        style={[buttonStyle, is_published ? styles.publishActive : styles.publishInactive]}
       >
         <Eye size={buttonSize} color={is_published ? '#10b981' : '#6b7280'} />
       </Pressable>
       <Link to={`/admin/content/${id}/edit`} style={{ textDecoration: 'none' }}>
-        <Pressable className={platformClass(buttonClass)} style={styles.editButton}>
-          <Text className="text-purple-300 font-medium" style={[isEpisode ? styles.editTextSmall : styles.editTextNormal]}>
+        <Pressable style={[buttonStyle, styles.editButton]}>
+          <Text style={[styles.editText, isEpisode && styles.editTextSmall]}>
             {t('common.edit')}
           </Text>
         </Pressable>
       </Link>
       <Pressable
         onPress={() => onDelete(id)}
-        className={platformClass(buttonClass)}
-        style={styles.deleteButton}
+        style={[buttonStyle, styles.deleteButton]}
       >
         <Trash2 size={buttonSize} color="#ef4444" />
       </Pressable>
     </GlassTableCell.Actions>
-  )
+  );
 }
 
 interface SubtitlesCellProps {
-  subtitles: string[]
-  isRTL: boolean
-  getLanguageFlag: (lang: string) => string
-  getLanguageName: (lang: string) => string
+  subtitles: string[];
+  isRTL: boolean;
+  getLanguageFlag: (lang: string) => string;
+  getLanguageName: (lang: string) => string;
 }
 
 export function SubtitlesCell({ subtitles, isRTL, getLanguageFlag, getLanguageName }: SubtitlesCellProps) {
-  // Dynamic text alignment style
   const textStyle = [
     styles.noSubtitlesText,
     isRTL ? styles.textRight : styles.textLeft,
   ];
 
   if (subtitles.length === 0) {
-    return <Text style={textStyle}>-</Text>
+    return <Text style={textStyle}>-</Text>;
   }
 
   return (
-    <View className="flex flex-row items-center gap-1 flex-wrap">
+    <View style={styles.subtitlesContainer}>
       {subtitles.map((lang) => (
-        <Text key={lang} className={platformClass('text-lg cursor-pointer')} title={getLanguageName(lang)}>
+        <Text key={lang} style={styles.flagText} title={getLanguageName(lang)}>
           {getLanguageFlag(lang)}
         </Text>
       ))}
     </View>
-  )
+  );
 }
 
 interface SelectionCellProps {
-  id: string
-  checked: boolean
-  onChange: (id: string) => void
+  id: string;
+  checked: boolean;
+  onChange: (id: string) => void;
 }
 
 export function SelectionCell({ id, checked, onChange }: SelectionCellProps) {
   return (
-    <View className="items-center justify-center min-h-[40px]">
+    <View style={styles.selectionCell}>
       <GlassCheckbox checked={checked} onChange={() => onChange(id)} />
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -297,6 +283,45 @@ const styles = StyleSheet.create({
   },
   textRight: {
     textAlign: 'right',
+  },
+  thumbnailContainer: {
+    width: 60,
+    paddingHorizontal: 4,
+  },
+  contentThumbnailWrapper: {
+    width: 45,
+    height: 65,
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  thumbnailImage: {
+    width: '100%',
+    height: '100%',
+  },
+  thumbnailPlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  episodeThumbnailImage: {
+    width: 50,
+    height: 30,
+    borderRadius: 2,
+  },
+  episodeThumbnailPlaceholder: {
+    width: 50,
+    height: 30,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleCellContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
+    minWidth: 200,
   },
   titleContainer: {
     flexDirection: 'row',
@@ -313,6 +338,24 @@ const styles = StyleSheet.create({
     color: 'rgb(156, 163, 175)',
     marginTop: 2,
   },
+  seriesBadge: {
+    backgroundColor: 'rgba(126, 34, 206, 0.3)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 100,
+  },
+  seriesBadgeText: {
+    fontSize: 11,
+    color: 'rgb(216, 180, 254)',
+    fontWeight: '500',
+  },
+  episodeTitleContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   episodeCode: {
     fontSize: 12,
     fontWeight: '600',
@@ -323,6 +366,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'rgb(229, 229, 229)',
     flex: 1,
+  },
+  durationText: {
+    fontSize: 12,
+    color: 'rgb(156, 163, 175)',
+  },
+  actionButton: {
+    padding: 8,
+    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  actionButtonSmall: {
+    padding: 4,
+    borderRadius: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   featuredActive: {
     backgroundColor: 'rgba(245, 158, 11, 0.5)',
@@ -342,16 +401,32 @@ const styles = StyleSheet.create({
   deleteButton: {
     backgroundColor: 'rgba(239, 68, 68, 0.5)',
   },
-  noSubtitlesText: {
-    fontSize: 14,
-    color: 'rgb(156, 163, 175)',
+  editText: {
+    fontSize: 12,
+    color: 'rgb(216, 180, 254)',
+    fontWeight: '500',
   },
   editTextSmall: {
     fontSize: 10,
   },
-  editTextNormal: {
-    fontSize: 12,
+  noSubtitlesText: {
+    fontSize: 14,
+    color: 'rgb(156, 163, 175)',
+  },
+  subtitlesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    flexWrap: 'wrap',
+  },
+  flagText: {
+    fontSize: 18,
+  },
+  selectionCell: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 40,
   },
 });
 
-export { ContentThumbnail, EpisodeThumbnail }
+export { ContentThumbnail, EpisodeThumbnail };

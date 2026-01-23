@@ -52,7 +52,7 @@ class VoiceSupportService extends EventEmitter {
   private getApiEndpoint(): string {
     // Check for browser environment with location (web only)
     if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
-      return 'http://localhost:8000/api/v1/support';
+      return 'http://localhost:8001/api/v1/support';
     }
     // For React Native, use relative path or configured API URL
     return '/api/v1/support';

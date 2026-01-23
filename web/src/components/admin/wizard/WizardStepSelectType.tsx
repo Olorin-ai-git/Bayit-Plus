@@ -4,10 +4,10 @@
  */
 
 import React from 'react'
-import { View, Text, Pressable } from 'react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { ChevronRight } from 'lucide-react'
 import { z } from 'zod'
-import { platformClass } from '../../../utils/platformClass'
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme'
 
 // Zod schema for prop validation
 const SourceTypeSchema = z.object({
@@ -26,39 +26,70 @@ type WizardStepSelectTypeProps = z.infer<typeof WizardStepSelectTypePropsSchema>
 
 export function WizardStepSelectType({ sourceTypes, onSelectType }: WizardStepSelectTypeProps) {
   return (
-    <View className={platformClass('flex flex-col gap-4')}>
-      <Text
-        className={platformClass(
-          'text-base font-semibold text-white mb-2'
-        )}
-      >
-        What would you like to import?
-      </Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>What would you like to import?</Text>
 
-      <View className={platformClass('flex flex-col gap-4')}>
+      <View style={styles.typesList}>
         {sourceTypes.map((type) => (
           <Pressable
             key={type.id}
             onPress={() => onSelectType(type.id)}
-            className={platformClass(
-              'p-6 rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-white/10 cursor-pointer transition-colors'
-            )}
+            style={styles.typeItem}
           >
-            <View className={platformClass('flex flex-row justify-between items-center mb-2')}>
-              <Text className={platformClass('text-[28px]')}>{type.icon}</Text>
+            <View style={styles.typeHeader}>
+              <Text style={styles.typeIcon}>{type.icon}</Text>
               <ChevronRight size={20} color="rgba(255, 255, 255, 0.4)" />
             </View>
 
-            <Text className={platformClass('text-[15px] font-semibold text-white')}>
-              {type.label}
-            </Text>
+            <Text style={styles.typeLabel}>{type.label}</Text>
 
-            <Text className={platformClass('text-xs text-white/60 mt-1')}>
-              {type.description}
-            </Text>
+            <Text style={styles.typeDescription}>{type.description}</Text>
           </Pressable>
         ))}
       </View>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'column',
+    gap: spacing.md,
+  },
+  title: {
+    fontSize: fontSize.base,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  typesList: {
+    flexDirection: 'column',
+    gap: spacing.md,
+  },
+  typeItem: {
+    padding: spacing.lg,
+    borderRadius: borderRadius.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  },
+  typeHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  typeIcon: {
+    fontSize: 28,
+  },
+  typeLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  typeDescription: {
+    fontSize: fontSize.xs,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: spacing.xs,
+  },
+})

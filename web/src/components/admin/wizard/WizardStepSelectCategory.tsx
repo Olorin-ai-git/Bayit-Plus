@@ -4,10 +4,10 @@
  */
 
 import React from 'react'
-import { View, Text, Pressable, ActivityIndicator, ScrollView } from 'react-native'
+import { View, Text, Pressable, ActivityIndicator, ScrollView, StyleSheet } from 'react-native'
 import { ChevronRight, AlertCircle, ChevronLeft } from 'lucide-react'
 import { z } from 'zod'
-import { platformClass } from '../../../utils/platformClass'
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme'
 
 // Zod schema for prop validation
 const CategorySchema = z.object({
@@ -34,71 +34,52 @@ export function WizardStepSelectCategory({
   onBack,
 }: WizardStepSelectCategoryProps) {
   return (
-    <View className={platformClass('flex flex-col gap-4')}>
+    <View style={styles.container}>
       {/* Back button */}
-      <Pressable
-        onPress={onBack}
-        className={platformClass('flex flex-row items-center gap-1 mb-4 hover:opacity-70 cursor-pointer')}
-      >
+      <Pressable onPress={onBack} style={styles.backButton}>
         <ChevronLeft size={16} color="#9333ea" />
-        <Text className={platformClass('text-sm text-purple-600')}>Back</Text>
+        <Text style={styles.backText}>Back</Text>
       </Pressable>
 
-      <Text className={platformClass('text-base font-semibold text-white mb-2')}>
-        Select a category for imported movies
-      </Text>
+      <Text style={styles.title}>Select a category for imported movies</Text>
 
-      <Text className={platformClass('text-sm text-white/60 mb-4')}>
+      <Text style={styles.subtitle}>
         Imported movies will be added to the selected category.
       </Text>
 
       {/* Loading state */}
       {isLoading ? (
-        <View className={platformClass('flex flex-row items-center justify-center gap-4 py-12')}>
+        <View style={styles.loadingContainer}>
           <ActivityIndicator color="#9333ea" />
-          <Text className={platformClass('text-sm text-white/60')}>Loading categories...</Text>
+          <Text style={styles.loadingText}>Loading categories...</Text>
         </View>
       ) : error ? (
         /* Error state */
-        <View
-          className={platformClass(
-            'flex flex-row items-center gap-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20'
-          )}
-        >
+        <View style={styles.errorContainer}>
           <AlertCircle size={20} color="#ef4444" />
-          <Text className={platformClass('flex-1 text-sm text-red-500')}>{error}</Text>
+          <Text style={styles.errorText}>{error}</Text>
         </View>
       ) : categories.length === 0 ? (
         /* No categories warning */
-        <View
-          className={platformClass(
-            'flex flex-col items-center gap-4 p-6 rounded-xl bg-yellow-500/10 border border-yellow-500/20'
-          )}
-        >
+        <View style={styles.warningContainer}>
           <AlertCircle size={24} color="#eab308" />
-          <Text className={platformClass('text-sm text-yellow-500 text-center')}>
+          <Text style={styles.warningText}>
             No categories found. Please create a category first in the Categories section.
           </Text>
         </View>
       ) : (
         /* Categories list */
-        <ScrollView className={platformClass('max-h-[250px]')}>
+        <ScrollView style={styles.scrollView}>
           {categories.map((category) => (
             <Pressable
               key={category.id}
               onPress={() => onSelectCategory(category.id)}
-              className={platformClass(
-                'flex flex-row items-center p-4 rounded-2xl border border-white/10 bg-white/[0.03] mb-2 hover:bg-white/10 cursor-pointer transition-colors'
-              )}
+              style={styles.categoryItem}
             >
-              <View className={platformClass('flex-1')}>
-                <Text className={platformClass('text-[15px] font-semibold text-white')}>
-                  {category.name}
-                </Text>
+              <View style={styles.categoryContent}>
+                <Text style={styles.categoryName}>{category.name}</Text>
                 {category.description && (
-                  <Text className={platformClass('text-xs text-white/60 mt-1')}>
-                    {category.description}
-                  </Text>
+                  <Text style={styles.categoryDescription}>{category.description}</Text>
                 )}
               </View>
               <ChevronRight size={20} color="rgba(255, 255, 255, 0.4)" />
@@ -109,3 +90,98 @@ export function WizardStepSelectCategory({
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'column',
+    gap: spacing.md,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.md,
+  },
+  backText: {
+    fontSize: fontSize.sm,
+    color: '#9333ea',
+  },
+  title: {
+    fontSize: fontSize.base,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  subtitle: {
+    fontSize: fontSize.sm,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginBottom: spacing.md,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.md,
+    paddingVertical: 48,
+  },
+  loadingText: {
+    fontSize: fontSize.sm,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.2)',
+  },
+  errorText: {
+    flex: 1,
+    fontSize: fontSize.sm,
+    color: '#ef4444',
+  },
+  warningContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(234, 179, 8, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(234, 179, 8, 0.2)',
+  },
+  warningText: {
+    fontSize: fontSize.sm,
+    color: '#eab308',
+    textAlign: 'center',
+  },
+  scrollView: {
+    maxHeight: 250,
+  },
+  categoryItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.md,
+    borderRadius: borderRadius.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    marginBottom: spacing.sm,
+  },
+  categoryContent: {
+    flex: 1,
+  },
+  categoryName: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  categoryDescription: {
+    fontSize: fontSize.xs,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: spacing.xs,
+  },
+})

@@ -11,12 +11,15 @@ Provides comprehensive search endpoints for:
 """
 
 import logging
+import re
 from typing import List, Optional
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
-from pydantic import BaseModel, Field
+from beanie import PydanticObjectId
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, Request, status
+from pydantic import BaseModel, Field, field_validator
 
 from app.core.config import settings
+from app.core.rate_limiter import RATE_LIMITING_ENABLED, RATE_LIMITS, limiter
 from app.core.security import get_current_premium_user, get_optional_user
 from app.models.search_analytics import SearchQuery
 from app.models.user import User
@@ -28,6 +31,9 @@ from app.services.vod_llm_search_service import VODLLMSearchService
 
 router = APIRouter(prefix="/search", tags=["search"])
 logger = logging.getLogger(__name__)
+
+# ObjectId validation regex (24 hex characters)
+OBJECT_ID_PATTERN = re.compile(r"^[0-9a-fA-F]{24}$")
 
 # Service instances
 unified_search = UnifiedSearchService()
@@ -62,6 +68,16 @@ class SceneSearchRequest(BaseModel):
     language: str = Field("he", description="Content language")
     limit: int = Field(20, ge=1, le=100, description="Maximum results")
     min_score: float = Field(0.5, ge=0.0, le=1.0, description="Minimum relevance score")
+
+    @field_validator("content_id", "series_id")
+    @classmethod
+    def validate_object_id(cls, v: Optional[str]) -> Optional[str]:
+        """Validate that content_id and series_id are valid MongoDB ObjectIds."""
+        if v is not None and not OBJECT_ID_PATTERN.match(v):
+            raise ValueError(
+                f"Invalid ObjectId format: '{v}'. Must be a 24-character hex string."
+            )
+        return v
 
 
 class SceneSearchResponse(BaseModel):
@@ -208,8 +224,10 @@ async def search_in_subtitles(
 
 
 @router.post("/scene", response_model=SceneSearchResponse)
+@limiter.limit("30/minute")
 async def search_scenes(
     request: SceneSearchRequest,
+    http_request: Request,
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
@@ -217,6 +235,8 @@ async def search_scenes(
 
     Returns results with timestamps for deep-linking to specific moments.
     Useful for finding specific quotes, moments, or topics in videos.
+
+    Rate limit: 30 requests per minute per IP address.
 
     Examples:
     - Search "Marty burns almanac" in Back to the Future → Exact scene timestamp
@@ -229,6 +249,15 @@ async def search_scenes(
     - Episode info for series content (S2E5 format)
     """
     try:
+        # Feature flag check - semantic search must be enabled
+        olorin_settings = getattr(settings, "olorin", None)
+        if olorin_settings and hasattr(olorin_settings, "semantic_search_enabled"):
+            if not olorin_settings.semantic_search_enabled:
+                raise HTTPException(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail="Scene search is currently disabled. Contact support if this persists.",
+                )
+
         # Build scene search query
         query = SceneSearchQuery(
             query=request.query,
@@ -261,11 +290,20 @@ async def search_scenes(
             total_results=len(results),
         )
 
+    except HTTPException:
+        raise
+    except ValueError as e:
+        # Handle validation errors
+        logger.warning(f"Scene search validation error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
     except Exception as e:
         logger.error(f"Scene search failed: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Scene search failed: {str(e)}",
+            detail="Scene search failed. Please try again later.",
         )
 
 

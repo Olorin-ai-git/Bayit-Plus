@@ -111,6 +111,18 @@ async def get_current_premium_user(
     return current_user
 
 
+async def get_current_admin_user(
+    current_user: User = Depends(get_current_active_user),
+) -> User:
+    """Get current user and verify they have admin access."""
+    if not current_user.is_admin_user():
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required",
+        )
+    return current_user
+
+
 def require_role(allowed_roles: List[str]) -> Callable:
     """
     Create a dependency that requires the user to have one of the specified roles.

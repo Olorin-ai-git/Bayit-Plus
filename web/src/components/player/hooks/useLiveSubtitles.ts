@@ -11,45 +11,34 @@ export function useLiveSubtitles() {
   const [subtitleTick, setSubtitleTick] = useState(0)
 
   // Memoize visible live subtitles to avoid filtering on every render
+  // Show only the MOST RECENT subtitle (1 at a time) to prevent stacking
   const visibleLiveSubtitles = useMemo(() => {
     const now = Date.now()
     return liveSubtitleCues
       .filter((cue) => (cue as any).displayUntil > now)
-      .slice(-3)
+      .slice(-1) // Only show the most recent subtitle
   }, [liveSubtitleCues, subtitleTick])
 
-  // Update display when subtitles expire
+  // Aggressive cleanup: Poll every 500ms to remove expired subtitles
   useEffect(() => {
-    if (liveSubtitleCues.length === 0) return
+    const interval = setInterval(() => {
+      const now = Date.now()
+      setLiveSubtitleCues((prev) => {
+        const active = prev.filter((cue) => (cue as any).displayUntil > now)
+        if (active.length !== prev.length) {
+          setSubtitleTick((t) => t + 1)
+        }
+        return active
+      })
+    }, 500)
 
-    const now = Date.now()
-    const activeCues = liveSubtitleCues.filter((cue) => (cue as any).displayUntil > now)
-
-    if (activeCues.length === 0) return
-
-    // Find when the next subtitle expires
-    const nextExpiry = Math.min(...activeCues.map((cue) => (cue as any).displayUntil))
-    const timeUntilExpiry = nextExpiry - now
-
-    // Schedule update slightly after expiry
-    if (timeUntilExpiry > 0 && timeUntilExpiry < 60000) {
-      const timer = setTimeout(() => {
-        setSubtitleTick((t) => t + 1)
-      }, timeUntilExpiry + 100)
-
-      return () => clearTimeout(timer)
-    }
-  }, [liveSubtitleCues, subtitleTick])
+    return () => clearInterval(interval)
+  }, [])
 
   // Live subtitle handler (Premium feature)
   const handleLiveSubtitleCue = (cue: LiveSubtitleCue) => {
-    console.log('🎬 [useLiveSubtitles] Received live subtitle cue:', cue.text)
-    const newCue = { ...cue, displayUntil: Date.now() + 5000 }
-    setLiveSubtitleCues((prev) => {
-      const updated = [...prev.slice(-50), newCue]
-      console.log('🎬 [useLiveSubtitles] Updated liveSubtitleCues, count:', updated.length)
-      return updated
-    })
+    const newCue = { ...cue, displayUntil: Date.now() + 3000 }
+    setLiveSubtitleCues((prev) => [...prev.slice(-50), newCue])
   }
 
   return {

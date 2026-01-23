@@ -44,16 +44,16 @@ def register_all_routers(app: FastAPI) -> None:
                                 cultures, device_pairing, direct_messages,
                                 downloads, epg, family_controls, favorites,
                                 friends, health, history, jerusalem,
-                                judaism, librarian, live, news, onboarding,
-                                party, password_reset, podcasts, profile_stats,
-                                profiles, radio, recordings, ritual, search,
-                                stats, subscriptions, subtitle_preferences,
-                                subtitles, support, tel_aviv, trending,
-                                user_system_widgets, users, verification,
-                                watchlist, webauthn, websocket,
+                                judaism, librarian, live, live_dubbing, news,
+                                onboarding, party, password_reset, podcasts,
+                                profile_stats, profiles, radio, recordings,
+                                ritual, search, stats, subscriptions,
+                                subtitle_preferences, subtitles, support,
+                                tel_aviv, trending, trivia, user_system_widgets, users,
+                                verification, watchlist, webauthn, websocket,
                                 websocket_chess, websocket_dm,
-                                websocket_live_subtitles, widgets, youngsters,
-                                zman)
+                                websocket_live_dubbing, websocket_live_subtitles,
+                                widgets, youngsters, zman)
     from app.api.endpoints import tts_router, wake_word_router, analytics_router, voice_router
     from app.api.routes.admin.recordings import \
         router as admin_recordings_router
@@ -173,6 +173,7 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(news.router, prefix=f"{prefix}/news", tags=["news"])
     app.include_router(support.router, prefix=f"{prefix}/support", tags=["support"])
+    app.include_router(trivia.router, prefix=f"{prefix}/trivia", tags=["trivia"])
     logger.debug("Registered feature routes")
 
     # ============================================
@@ -262,12 +263,25 @@ def register_all_routers(app: FastAPI) -> None:
         tags=["websocket", "live-subtitles"],
     )
     app.include_router(
+        websocket_live_dubbing.router,
+        prefix=prefix,
+        tags=["websocket", "live-dubbing"],
+    )
+    app.include_router(
         websocket_chess.router, prefix=prefix, tags=["websocket", "chess"]
     )
     app.include_router(
         websocket_dm.router, prefix=prefix, tags=["websocket", "direct-messages"]
     )
     logger.debug("Registered websocket routes")
+
+    # ============================================
+    # Live Dubbing Routes (REST)
+    # ============================================
+    app.include_router(
+        live_dubbing.router, prefix=prefix, tags=["live-dubbing"]
+    )
+    logger.debug("Registered live dubbing routes")
 
     # ============================================
     # Olorin.ai Platform Routes

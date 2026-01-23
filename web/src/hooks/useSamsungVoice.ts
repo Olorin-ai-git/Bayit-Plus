@@ -12,6 +12,7 @@
  */
 
 import { useEffect, useCallback, useRef, useState } from 'react';
+import logger from '@/utils/logger';
 
 // Samsung WebAPIs type declarations
 declare global {
@@ -84,26 +85,26 @@ export function useSamsungVoice(options: UseSamsungVoiceOptions = {}): UseSamsun
   // Check if Samsung VoiceInteraction API is available
   useEffect(() => {
     const checkAvailability = () => {
-      console.log('[SamsungVoice] Checking API availability...');
-      console.log('[SamsungVoice] window.webapis:', typeof window.webapis, window.webapis);
+      logger.debug('Checking API availability...', 'useSamsungVoice');
+      logger.debug('window.webapis:', 'useSamsungVoice', { type: typeof window.webapis, value: window.webapis });
 
       try {
         if (window.webapis) {
-          console.log('[SamsungVoice] webapis keys:', Object.keys(window.webapis));
+          logger.debug('webapis keys:', 'useSamsungVoice', { keys: Object.keys(window.webapis) });
         }
 
         if (window.webapis?.voiceinteraction) {
           const version = window.webapis.voiceinteraction.getVersion();
-          console.log('[SamsungVoice] VoiceInteraction API available, version:', version);
+          logger.debug('VoiceInteraction API available', 'useSamsungVoice', { version });
           setIsAvailable(true);
           setError(null);
           return true;
         } else {
-          console.log('[SamsungVoice] voiceinteraction not in webapis');
+          logger.debug('voiceinteraction not in webapis', 'useSamsungVoice');
           setError('VoiceInteraction API not found');
         }
       } catch (err: any) {
-        console.log('[SamsungVoice] VoiceInteraction API error:', err?.message || err);
+        logger.debug('VoiceInteraction API error', 'useSamsungVoice', { error: err?.message || err });
         setError(err?.message || 'API check failed');
       }
       setIsAvailable(false);
@@ -129,18 +130,18 @@ export function useSamsungVoice(options: UseSamsungVoiceOptions = {}): UseSamsun
     }
 
     try {
-      console.log('[SamsungVoice] Setting up voice callbacks...');
+      logger.debug('Setting up voice callbacks...', 'useSamsungVoice');
 
       const callbacks: VoiceInteractionCallbacks = {
         // Report current app state
         onupdatestate: () => {
-          console.log('[SamsungVoice] onupdatestate called, returning:', currentStateRef.current);
+          logger.debug('onupdatestate called', 'useSamsungVoice', { returning: currentStateRef.current });
           return currentStateRef.current;
         },
 
         // Handle search queries - this is the main one for free-form voice!
         onsearch: (searchTerm) => {
-          console.log('[SamsungVoice] onsearch received:', searchTerm);
+          logger.debug('onsearch received', 'useSamsungVoice', { searchTerm });
           try {
             // Extract the utterance (what the user actually said)
             const utterance = window.webapis!.voiceinteraction!.getDataFromSearchTerm(
@@ -153,21 +154,21 @@ export function useSamsungVoice(options: UseSamsungVoiceOptions = {}): UseSamsun
             );
 
             const query = utterance || title || '';
-            console.log('[SamsungVoice] Search query:', query);
+            logger.debug('Search query', 'useSamsungVoice', { query });
 
             if (query && onSearch) {
               onSearch(query);
             }
             return true;
           } catch (err) {
-            console.error('[SamsungVoice] Error processing search:', err);
+            logger.error('Error processing search', 'useSamsungVoice', err);
             return false;
           }
         },
 
         // Handle custom commands (JSON format)
         oncustom: (jsonString) => {
-          console.log('[SamsungVoice] oncustom received:', jsonString);
+          logger.debug('oncustom received', 'useSamsungVoice', { jsonString });
           try {
             const data = JSON.parse(jsonString);
             if (onCommand) {
@@ -175,14 +176,14 @@ export function useSamsungVoice(options: UseSamsungVoiceOptions = {}): UseSamsun
             }
             return true;
           } catch (err) {
-            console.error('[SamsungVoice] Error parsing custom command:', err);
+            logger.error('Error parsing custom command', 'useSamsungVoice', err);
             return false;
           }
         },
 
         // Handle navigation commands
         onnavigation: (direction) => {
-          console.log('[SamsungVoice] onnavigation:', direction);
+          logger.debug('onnavigation', 'useSamsungVoice', { direction });
           if (onNavigation) {
             onNavigation(direction);
           }
@@ -191,59 +192,59 @@ export function useSamsungVoice(options: UseSamsungVoiceOptions = {}): UseSamsun
 
         // Media controls
         onplay: () => {
-          console.log('[SamsungVoice] onplay');
+          logger.debug('onplay', 'useSamsungVoice');
           onCommand?.('play');
           return true;
         },
         onpause: () => {
-          console.log('[SamsungVoice] onpause');
+          logger.debug('onpause', 'useSamsungVoice');
           onCommand?.('pause');
           return true;
         },
         onstop: () => {
-          console.log('[SamsungVoice] onstop');
+          logger.debug('onstop', 'useSamsungVoice');
           onCommand?.('stop');
           return true;
         },
         onfastforward: () => {
-          console.log('[SamsungVoice] onfastforward');
+          logger.debug('onfastforward', 'useSamsungVoice');
           onCommand?.('fastforward');
           return true;
         },
         onrewind: () => {
-          console.log('[SamsungVoice] onrewind');
+          logger.debug('onrewind', 'useSamsungVoice');
           onCommand?.('rewind');
           return true;
         },
         onchangeprevioustrack: () => {
-          console.log('[SamsungVoice] onchangeprevioustrack');
+          logger.debug('onchangeprevioustrack', 'useSamsungVoice');
           onCommand?.('previous');
           return true;
         },
         onchangenexttrack: () => {
-          console.log('[SamsungVoice] onchangenexttrack');
+          logger.debug('onchangenexttrack', 'useSamsungVoice');
           onCommand?.('next');
           return true;
         },
 
         // Item selection
         onselection: (index) => {
-          console.log('[SamsungVoice] onselection:', index);
+          logger.debug('onselection', 'useSamsungVoice', { index });
           onCommand?.('select', { index });
           return true;
         },
         ontitleselection: (title) => {
-          console.log('[SamsungVoice] ontitleselection:', title);
+          logger.debug('ontitleselection', 'useSamsungVoice', { title });
           onCommand?.('select', { title });
           return true;
         },
       };
 
       window.webapis.voiceinteraction.setCallback(callbacks);
-      console.log('[SamsungVoice] Voice callbacks registered successfully');
+      logger.debug('Voice callbacks registered successfully', 'useSamsungVoice');
 
     } catch (err: any) {
-      console.error('[SamsungVoice] Failed to set callbacks:', err);
+      logger.error('Failed to set callbacks', 'useSamsungVoice', err);
       setError(err?.message || 'Failed to initialize voice');
     }
   }, [enabled, isAvailable, onSearch, onCommand, onNavigation]);
@@ -251,16 +252,16 @@ export function useSamsungVoice(options: UseSamsungVoiceOptions = {}): UseSamsun
   // Start listening for voice commands
   const startListening = useCallback(() => {
     if (!isAvailable || !window.webapis?.voiceinteraction) {
-      console.log('[SamsungVoice] Cannot start listening - API not available');
+      logger.debug('Cannot start listening - API not available', 'useSamsungVoice');
       return;
     }
 
     try {
       window.webapis.voiceinteraction.listen();
       setIsListening(true);
-      console.log('[SamsungVoice] Started listening for voice commands');
+      logger.debug('Started listening for voice commands', 'useSamsungVoice');
     } catch (err: any) {
-      console.error('[SamsungVoice] Failed to start listening:', err);
+      logger.error('Failed to start listening', 'useSamsungVoice', err);
       setError(err?.message || 'Failed to start voice listening');
     }
   }, [isAvailable]);

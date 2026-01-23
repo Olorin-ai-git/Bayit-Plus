@@ -11,6 +11,7 @@ import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassView, GlassInput } from '@bayit/shared/ui'
+import logger from '@/utils/logger'
 import axios from 'axios'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
@@ -73,7 +74,7 @@ export default function RecordingsManagementPage() {
       setRecordings(response.data.items)
       setTotalPages(response.data.total_pages)
     } catch (error) {
-      console.error('Failed to load recordings:', error)
+      logger.error('Failed to load recordings', 'RecordingsManagementPage', error)
       showError(t('admin.recordings.loadFailed'))
     } finally {
       setLoading(false)
@@ -93,7 +94,7 @@ export default function RecordingsManagementPage() {
 
       setStats(response.data)
     } catch (error) {
-      console.error('Failed to load stats:', error)
+      logger.error('Failed to load stats', 'RecordingsManagementPage', error)
     }
   }
 
@@ -115,7 +116,7 @@ export default function RecordingsManagementPage() {
           await loadRecordings()
           await loadStats()
         } catch (error) {
-          console.error('Failed to delete recording:', error)
+          logger.error('Failed to delete recording', 'RecordingsManagementPage', error)
           showError(t('admin.recordings.deleteFailed'))
         }
       },

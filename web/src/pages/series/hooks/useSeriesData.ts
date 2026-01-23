@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { contentService } from '@/services/api';
 import type { SeriesData, Episode } from '../types';
+import logger from '@/utils/logger';
 
 interface UseSeriesDataParams {
   seriesId: string | undefined;
@@ -37,7 +38,7 @@ export function useSeriesData({ seriesId }: UseSeriesDataParams): UseSeriesDataR
         setSelectedSeason(data.seasons[0].season_number);
       }
     } catch (error) {
-      console.error('Failed to load series details:', error);
+      logger.error('Failed to load series details', 'useSeriesData', error);
     } finally {
       setLoading(false);
     }
@@ -55,7 +56,7 @@ export function useSeriesData({ seriesId }: UseSeriesDataParams): UseSeriesDataR
         setSelectedEpisode(data.episodes[0]);
       }
     } catch (error) {
-      console.error('Failed to load episodes:', error);
+      logger.error('Failed to load episodes', 'useSeriesData', error);
     } finally {
       setEpisodesLoading(false);
     }

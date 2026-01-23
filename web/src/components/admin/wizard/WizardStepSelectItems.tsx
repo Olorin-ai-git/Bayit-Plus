@@ -4,11 +4,11 @@
  */
 
 import React from 'react'
-import { View, Text, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { ChevronLeft } from 'lucide-react'
 import { z } from 'zod'
 import { GlassCheckbox, GlassButton } from '@bayit/shared/ui'
-import { platformClass } from '../../../utils/platformClass'
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme'
 
 // Zod schema for prop validation
 const ItemSchema = z.object({
@@ -45,22 +45,17 @@ export function WizardStepSelectItems({
   const selectedCount = importAll ? items.length : selectedItems.length
 
   return (
-    <View className={platformClass('flex flex-col gap-4')}>
+    <View style={styles.container}>
       {/* Back button */}
-      <Pressable
-        onPress={onBack}
-        className={platformClass('flex flex-row items-center gap-1 mb-4 hover:opacity-70 cursor-pointer')}
-      >
+      <Pressable onPress={onBack} style={styles.backButton}>
         <ChevronLeft size={16} color="#9333ea" />
-        <Text className={platformClass('text-sm text-purple-600')}>Back</Text>
+        <Text style={styles.backText}>Back</Text>
       </Pressable>
 
       {/* Header with select all */}
-      <View className={platformClass('flex flex-row justify-between items-center mb-4')}>
-        <Text className={platformClass('text-base font-semibold text-white')}>
-          Select items to import
-        </Text>
-        <View className={platformClass('flex flex-row items-center')}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Select items to import</Text>
+        <View style={styles.selectAllContainer}>
           <GlassCheckbox
             checked={importAll}
             onCheckedChange={onSelectAll}
@@ -70,33 +65,23 @@ export function WizardStepSelectItems({
       </View>
 
       {/* Items list */}
-      <ScrollView className={platformClass('max-h-[250px]')}>
+      <ScrollView style={styles.scrollView}>
         {items.map((item) => (
-          <View
-            key={item.id}
-            className={platformClass(
-              'flex flex-row items-start gap-4 py-2 px-2 rounded-xl mb-1'
-            )}
-          >
+          <View key={item.id} style={styles.itemContainer}>
             <GlassCheckbox
               checked={importAll || selectedItems.includes(item.id)}
               onCheckedChange={(checked) => onSelectItem(item.id, checked)}
               disabled={importAll}
             />
-            <View className={platformClass('flex-1')}>
-              <Text className={platformClass('text-sm font-medium text-white')}>
-                {item.title || item.name}
-              </Text>
+            <View style={styles.itemContent}>
+              <Text style={styles.itemTitle}>{item.title || item.name}</Text>
               {item.description && (
-                <Text
-                  className={platformClass('text-xs text-white/60 mt-0.5')}
-                  numberOfLines={1}
-                >
+                <Text style={styles.itemDescription} numberOfLines={1}>
                   {item.description}
                 </Text>
               )}
               {(item.year || item.author || item.genre) && (
-                <Text className={platformClass('text-[11px] text-white/60 mt-0.5')}>
+                <Text style={styles.itemMeta}>
                   {[item.year, item.author, item.genre].filter(Boolean).join(' • ')}
                 </Text>
               )}
@@ -111,8 +96,73 @@ export function WizardStepSelectItems({
         variant="primary"
         onPress={onContinue}
         disabled={!importAll && selectedItems.length === 0}
-        className={platformClass('mt-6')}
+        style={styles.continueButton}
       />
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'column',
+    gap: spacing.md,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.md,
+  },
+  backText: {
+    fontSize: fontSize.sm,
+    color: '#9333ea',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  title: {
+    fontSize: fontSize.base,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  selectAllContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  scrollView: {
+    maxHeight: 250,
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.md,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.xs,
+  },
+  itemContent: {
+    flex: 1,
+  },
+  itemTitle: {
+    fontSize: fontSize.sm,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  itemDescription: {
+    fontSize: fontSize.xs,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: 2,
+  },
+  itemMeta: {
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: 2,
+  },
+  continueButton: {
+    marginTop: spacing.lg,
+  },
+})

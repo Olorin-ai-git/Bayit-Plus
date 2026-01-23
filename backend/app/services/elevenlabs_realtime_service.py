@@ -39,3 +39,12 @@ class ElevenLabsRealtimeService(_ExtractedService):
             stacklevel=2,
         )
         super().__init__(config=_SettingsVoiceConfigAdapter())
+
+    def verify_service_availability(self) -> bool:
+        """
+        Verify ElevenLabs API service is available.
+
+        Returns:
+            True if service is available (API key configured), False otherwise.
+        """
+        return bool(settings.ELEVENLABS_API_KEY)

@@ -4,10 +4,10 @@
  */
 
 import React, { ReactNode } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { usePermissions } from '@/hooks/usePermissions';
 import { Permission, Role } from '@/types/rbac';
-import { colors } from '@bayit/shared/theme';
+import { colors, spacing } from '@bayit/shared/theme';
 
 interface PermissionGateProps {
   permission?: Permission;
@@ -57,10 +57,10 @@ export const PermissionGate: React.FC<PermissionGateProps> = ({
 
   if (showDenied) {
     return (
-      <View className="flex-1 justify-center items-center p-12" style={{ backgroundColor: colors.background }}>
-        <Text className="text-6xl mb-6">🔒</Text>
-        <Text className="text-2xl font-bold mb-2" style={{ color: colors.text }}>Access Denied</Text>
-        <Text className="text-base text-center" style={{ color: colors.textSecondary }}>
+      <View style={styles.deniedContainer}>
+        <Text style={styles.lockIcon}>🔒</Text>
+        <Text style={styles.deniedTitle}>Access Denied</Text>
+        <Text style={styles.deniedText}>
           You don't have permission to view this content
         </Text>
       </View>
@@ -89,5 +89,30 @@ export const SuperAdminGate: React.FC<{
     {children}
   </PermissionGate>
 );
+
+const styles = StyleSheet.create({
+  deniedContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+    backgroundColor: colors.background,
+  },
+  lockIcon: {
+    fontSize: 48,
+    marginBottom: spacing.md,
+  },
+  deniedTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: colors.text,
+  },
+  deniedText: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: colors.textSecondary,
+  },
+});
 
 export default PermissionGate;

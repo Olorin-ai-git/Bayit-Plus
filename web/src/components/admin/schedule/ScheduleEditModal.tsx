@@ -1,6 +1,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { z } from 'zod';
 import { GlassModal, GlassInput, GlassButton } from '@bayit/shared/ui';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 
 /**
  * Zod schema for ScheduleEditModal props
@@ -69,45 +70,41 @@ const ScheduleEditModal: React.FC<ScheduleEditModalProps> = ({
       title={t('admin.librarian.schedules.editTitle')}
       onClose={onClose}
     >
-      <View className="p-6 gap-4">
+      <View style={styles.container}>
         {/* Cron Expression Input */}
-        <Text className="text-sm font-semibold text-white mb-1">
+        <Text style={styles.label}>
           {t('admin.librarian.schedules.cronExpression')}
         </Text>
         <GlassInput
           value={cronValue}
           onChangeText={onCronChange}
           placeholder="0 2 * * *"
-          className="mb-2"
+          style={styles.inputMargin}
         />
-        <Text className="text-xs -mt-2" style={{ color: 'rgb(115, 115, 115)' }}>
+        <Text style={styles.hint}>
           {t('admin.librarian.schedules.cronHint')}
         </Text>
 
         {/* Status Toggle */}
-        <Text className="text-sm font-semibold text-white mb-1">
+        <Text style={[styles.label, styles.statusLabel]}>
           {t('admin.librarian.schedules.status')}
         </Text>
-        <View className="flex-row gap-2">
+        <View style={styles.statusRow}>
           <Pressable
-            className="flex-1 py-2 px-4 rounded items-center border"
             style={getStatusButtonStyle('ENABLED')}
             onPress={() => onStatusChange('ENABLED')}
           >
             <Text
-              className="text-sm"
               style={getStatusTextStyle('ENABLED')}
             >
               {t('admin.librarian.status.enabled')}
             </Text>
           </Pressable>
           <Pressable
-            className="flex-1 py-2 px-4 rounded items-center border"
             style={getStatusButtonStyle('DISABLED')}
             onPress={() => onStatusChange('DISABLED')}
           >
             <Text
-              className="text-sm"
               style={getStatusTextStyle('DISABLED')}
             >
               {t('admin.librarian.status.disabled')}
@@ -116,19 +113,19 @@ const ScheduleEditModal: React.FC<ScheduleEditModalProps> = ({
         </View>
 
         {/* Action Buttons */}
-        <View className="flex-row gap-4 mt-4">
+        <View style={styles.actionRow}>
           <GlassButton
             title={t('common.cancel')}
             variant="secondary"
             onPress={onClose}
-            className="flex-1"
+            style={styles.actionButton}
           />
           <GlassButton
             title={t('common.save')}
             variant="primary"
             onPress={onSave}
             loading={saving}
-            className="flex-1"
+            style={styles.actionButton}
           />
         </View>
       </View>
@@ -137,16 +134,41 @@ const ScheduleEditModal: React.FC<ScheduleEditModalProps> = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  label: {
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  inputMargin: {
+    marginBottom: spacing.sm,
+  },
+  hint: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+    marginTop: -spacing.sm,
+  },
+  statusLabel: {
+    marginTop: spacing.sm,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
   statusButton: {
     flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 4,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.sm,
     alignItems: 'center',
     borderWidth: 1,
   },
   statusButtonActive: {
-    borderColor: 'rgb(168, 85, 247)',
+    borderColor: colors.primary,
     backgroundColor: 'rgba(168, 85, 247, 0.2)',
   },
   statusButtonInactive: {
@@ -154,14 +176,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   statusButtonText: {
-    fontSize: 14,
+    fontSize: fontSize.sm,
   },
   statusTextActive: {
-    color: 'rgb(168, 85, 247)',
+    color: colors.primary,
     fontWeight: '600',
   },
   statusTextInactive: {
-    color: 'rgb(156, 163, 175)',
+    color: colors.textSecondary,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginTop: spacing.md,
+  },
+  actionButton: {
+    flex: 1,
   },
 });
 

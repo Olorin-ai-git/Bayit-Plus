@@ -1,5 +1,6 @@
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { GlassView } from '@bayit/shared/ui';
+import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 
 interface StatCardProps {
   icon: any;
@@ -17,12 +18,40 @@ export function StatCard({
   loading,
 }: StatCardProps) {
   return (
-    <GlassView className="flex-1 min-w-[120px] p-4 items-center gap-2">
-      <View className="w-10 h-10 rounded-lg justify-center items-center mb-2" style={{ backgroundColor: `${iconColor}15` }}>
+    <GlassView style={styles.container} intensity="medium">
+      <View style={[styles.iconContainer, { backgroundColor: `${iconColor}15` }]}>
         <Icon size={20} color={iconColor} />
       </View>
-      <Text className="text-xl font-bold text-white">{loading ? '...' : value}</Text>
-      <Text className="text-xs text-white/60 text-center">{label}</Text>
+      <Text style={styles.value}>{loading ? '...' : value}</Text>
+      <Text style={styles.label}>{label}</Text>
     </GlassView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    minWidth: 120,
+    padding: spacing.md,
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: spacing.xs,
+  },
+  value: {
+    fontSize: fontSize.xl,
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  label: {
+    fontSize: fontSize.xs,
+    color: 'rgba(255, 255, 255, 0.6)',
+    textAlign: 'center',
+  },
+});

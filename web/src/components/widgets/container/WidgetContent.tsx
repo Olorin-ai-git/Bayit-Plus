@@ -12,6 +12,7 @@ import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
 import { YnetMivzakimWidget } from '../YnetMivzakimWidget';
 import type { Widget } from '@/types/widget';
+import logger from '@/utils/logger';
 
 interface WidgetContentProps {
   widget: Widget;
@@ -171,7 +172,7 @@ export function WidgetContent({
         );
     }
   } catch (err) {
-    console.error('[Widget] Error rendering content:', err);
+    logger.error('Error rendering content', { error: err, component: 'WidgetContent' });
     return (
       <View className="flex-1 justify-center items-center bg-black/80">
         <Text className="text-xs text-neutral-400">Error loading content</Text>

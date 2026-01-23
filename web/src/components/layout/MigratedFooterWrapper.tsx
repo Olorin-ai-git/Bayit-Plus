@@ -17,6 +17,7 @@
 import React, { Suspense, lazy } from 'react';
 import { useFeature } from '@/providers/FeatureFlagProvider';
 import { ErrorBoundary } from 'react-error-boundary';
+import logger from '@/utils/logger';
 
 // Lazy load components for code splitting
 const LegacyFooter = lazy(() => import('./Footer.legacy'));
@@ -28,7 +29,7 @@ const MigratedFooter = lazy(() => import('./Footer/Footer'));
  * If the migrated Footer crashes, show legacy Footer
  */
 function ErrorFallback({ error, resetErrorBoundary }: any) {
-  console.error('[MigratedFooter] Error occurred, falling back to legacy:', error);
+  logger.error('Error occurred, falling back to legacy', 'MigratedFooter', error);
 
   // Report to Sentry
   if (typeof window !== 'undefined' && (window as any).Sentry) {
@@ -89,7 +90,7 @@ export default function MigratedFooterWrapper() {
 
   // Log which version is being used (for debugging)
   React.useEffect(() => {
-    console.log('[Footer] Version:', migratedFooterEnabled ? 'Migrated (Tailwind)' : 'Legacy (StyleSheet)');
+    logger.debug('Version', 'MigratedFooterWrapper', migratedFooterEnabled ? 'Migrated (Tailwind)' : 'Legacy (StyleSheet)');
   }, [migratedFooterEnabled]);
 
   return (
@@ -97,7 +98,7 @@ export default function MigratedFooterWrapper() {
       FallbackComponent={ErrorFallback}
       onReset={() => {
         // Reset app state if needed
-        console.log('[MigratedFooter] Error boundary reset');
+        logger.debug('Error boundary reset', 'MigratedFooterWrapper');
       }}
     >
       <Suspense fallback={<FooterSkeleton />}>

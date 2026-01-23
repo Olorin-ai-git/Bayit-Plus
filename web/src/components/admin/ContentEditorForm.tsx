@@ -6,6 +6,7 @@ import { ImageUploader } from './ImageUploader'
 import { StreamUrlInput } from './StreamUrlInput'
 import { CategoryPicker } from './CategoryPicker'
 import type { Content, LiveChannel, RadioStation, Podcast, PodcastEpisode } from '../../types/content'
+import logger from '@/utils/logger'
 
 type ContentType = 'vod' | 'live' | 'radio' | 'podcast' | 'episode'
 type FormData = Partial<Content & LiveChannel & RadioStation & Podcast & PodcastEpisode>
@@ -37,7 +38,7 @@ export function ContentEditorForm({
     try {
       await onSubmit(data)
     } catch (error) {
-      console.error('Form submission error:', error)
+      logger.error('Form submission error', 'ContentEditorForm', error)
     }
   }
 

@@ -8,23 +8,12 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, get_current_admin_user
 from app.models.recording import Recording, RecordingSession
 from app.models.user import User
 from app.services.recording_cleanup_service import RecordingCleanupService
 
 router = APIRouter()
-
-
-def get_current_admin_user(
-    current_user: User = Depends(get_current_active_user),
-) -> User:
-    """Dependency to ensure user has admin access"""
-    if current_user.role != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
-        )
-    return current_user
 
 
 class RecordingStatsResponse(BaseModel):

@@ -1,22 +1,13 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
-import {
-  Image,
-  FileText,
-  Tag,
-  Link as LinkIcon,
-  Type,
-  RotateCcw,
-} from 'lucide-react';
-import { colors } from '@bayit/shared/theme';
-import { platformClass } from '../../../utils/platformClass';
+import { Image, FileText, Tag, Link as LinkIcon, Type, RotateCcw } from 'lucide-react';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { LibrarianAction } from '@/services/librarianService';
 import { format } from 'date-fns';
 import { StateDiffView } from './StateDiffView';
 
-// Zod schema for props validation
 const ActivityLogItemPropsSchema = z.object({
   action: z.custom<LibrarianAction>(),
   color: z.string(),
@@ -29,35 +20,26 @@ const ActivityLogItemPropsSchema = z.object({
 
 export type ActivityLogItemProps = z.infer<typeof ActivityLogItemPropsSchema>;
 
-// Helper to convert snake_case to camelCase for translation keys
 const toCamelCase = (str: string) => {
   if (!str) return '';
   return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
 };
 
-// Render icon component
 const renderIcon = (icon?: string) => {
   if (!icon) return null;
   const iconProps = { size: 16, color: colors.background };
   switch (icon) {
-    case 'Image':
-      return <Image {...iconProps} />;
-    case 'FileText':
-      return <FileText {...iconProps} />;
-    case 'Tag':
-      return <Tag {...iconProps} />;
-    case 'Link':
-      return <LinkIcon {...iconProps} />;
-    case 'Type':
-      return <Type {...iconProps} />;
-    default:
-      return null;
+    case 'Image': return <Image {...iconProps} />;
+    case 'FileText': return <FileText {...iconProps} />;
+    case 'Tag': return <Tag {...iconProps} />;
+    case 'Link': return <LinkIcon {...iconProps} />;
+    case 'Type': return <Type {...iconProps} />;
+    default: return null;
   }
 };
 
-// Get state diff summary
 const getStateDiff = (action: LibrarianAction) => {
-  const diffs: Array<{key: string; before: any; after: any}> = [];
+  const diffs: Array<{ key: string; before: any; after: any }> = [];
   const allKeys = [...new Set([
     ...Object.keys(action.before_state),
     ...Object.keys(action.after_state)
@@ -74,10 +56,6 @@ const getStateDiff = (action: LibrarianAction) => {
   return diffs;
 };
 
-/**
- * ActivityLogItem - Individual activity entry
- * Displays a single librarian action with expandable state changes.
- */
 const ActivityLogItem: React.FC<ActivityLogItemProps> = ({
   action,
   color,
@@ -91,14 +69,12 @@ const ActivityLogItem: React.FC<ActivityLogItemProps> = ({
   const [expanded, setExpanded] = useState(false);
   const formattedDate = format(new Date(action.timestamp), 'MMM d, yyyy HH:mm:ss');
 
-  // Get translated action type
   const actionType = action.action_type || 'unknown';
   const actionTypeLabel = t(
     `admin.librarian.activityLog.actionTypes.${toCamelCase(actionType)}`,
     actionType.replace(/_/g, ' ')
   );
 
-  // Generate description
   const getDescription = () => {
     if (action.description) return action.description;
     const changes = Object.keys({ ...action.before_state, ...action.after_state })
@@ -111,90 +87,62 @@ const ActivityLogItem: React.FC<ActivityLogItemProps> = ({
 
   const stateDiff = getStateDiff(action);
 
-  // Dynamic styles for RTL/LTR alignment
-  const headerRowStyle = [
-    styles.headerRow,
-    isRTL ? styles.flexRowReverse : null,
-  ];
-
-  const contentAlignStyle = {
-    alignItems: isRTL ? 'flex-end' : 'flex-start' as const,
-  };
-
-  const metadataRowStyle = [
-    styles.metadataRow,
-    isRTL ? styles.flexRowReverse : null,
-  ];
-
   return (
     <Pressable
       onPress={() => setExpanded(!expanded)}
-      className={platformClass('flex-row py-4 px-2 border-b gap-4 items-start')}
-      style={{ borderBottomColor: colors.glassBorder }}
+      style={[styles.container, isRTL && styles.containerRTL]}
     >
-      <View className={platformClass('w-8 h-8 rounded-full justify-center items-center')} style={{ backgroundColor: color }}>
+      <View style={[styles.iconContainer, { backgroundColor: color }]}>
         {renderIcon(icon)}
       </View>
 
-      <View className={platformClass('flex-1 gap-1')} style={contentAlignStyle}>
-        {/* Header with badges */}
-        <View className={platformClass('flex-row gap-2 items-center flex-wrap mb-1')} style={headerRowStyle}>
-          <View className={platformClass('px-2 py-0.5 rounded-sm border')} style={{ backgroundColor: `${color}20`, borderColor: color }}>
-            <Text className={platformClass('text-[11px] font-semibold')} style={{ color }}>{actionTypeLabel}</Text>
+      <View style={[styles.content, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+        <View style={[styles.headerRow, isRTL && styles.rowReverse]}>
+          <View style={[styles.badge, { backgroundColor: `${color}20`, borderColor: color }]}>
+            <Text style={[styles.badgeText, { color }]}>{actionTypeLabel}</Text>
           </View>
-          <Text className={platformClass('text-xs font-mono')} style={{ color: colors.textMuted }}>{formattedDate}</Text>
+          <Text style={styles.dateText}>{formattedDate}</Text>
           {action.rolled_back && (
-            <View className={platformClass('px-2 py-0.5 rounded-sm border')} style={{ backgroundColor: `${colors.error}20`, borderColor: colors.error }}>
-              <Text className={platformClass('text-[11px] font-semibold')} style={{ color: colors.error }}>
+            <View style={[styles.badge, { backgroundColor: `${colors.error}20`, borderColor: colors.error }]}>
+              <Text style={[styles.badgeText, { color: colors.error }]}>
                 {t('admin.librarian.activityLog.rolledBack')}
               </Text>
             </View>
           )}
         </View>
 
-        {/* Title */}
         {action.content_title && (
-          <Text className={platformClass('text-base font-semibold leading-5 mb-1')} style={{ textAlign, color: colors.text }}>
-            {action.content_title}
-          </Text>
+          <Text style={[styles.title, { textAlign }]}>{action.content_title}</Text>
         )}
 
-        {/* Description */}
-        <Text className={platformClass('text-sm leading-5 mb-1')} style={{ textAlign, color: colors.textSecondary }}>
-          {getDescription()}
-        </Text>
+        <Text style={[styles.description, { textAlign }]}>{getDescription()}</Text>
 
-        {/* Metadata */}
-        <View className={platformClass('flex-row gap-4 flex-wrap mb-1')} style={metadataRowStyle}>
-          <Text className={platformClass('text-xs')} style={{ textAlign, color: colors.textMuted }}>
+        <View style={[styles.metadataRow, isRTL && styles.rowReverse]}>
+          <Text style={[styles.metadataText, { textAlign }]}>
             {t('admin.librarian.activityLog.issueType')}: {action.issue_type.replace(/_/g, ' ')}
           </Text>
           {action.confidence_score && (
-            <Text className={platformClass('text-xs')} style={{ textAlign, color: colors.textMuted }}>
+            <Text style={[styles.metadataText, { textAlign }]}>
               {t('admin.librarian.activityLog.confidence')}: {(action.confidence_score * 100).toFixed(0)}%
             </Text>
           )}
           {action.auto_approved && (
-            <Text className={platformClass('text-xs')} style={{ textAlign, color: colors.success }}>
+            <Text style={[styles.autoApprovedText, { textAlign }]}>
               {t('admin.librarian.activityLog.autoApproved')}
             </Text>
           )}
         </View>
 
-        {/* State changes */}
         {expanded && <StateDiffView diffs={stateDiff} textAlign={textAlign} />}
 
-        {/* Content ID */}
-        <Text className={platformClass('text-[11px] font-mono mt-1')} style={{ textAlign, color: colors.textMuted }}>
+        <Text style={[styles.idText, { textAlign }]}>
           ID: {action.content_id.substring(0, idTruncateLength)}...
         </Text>
       </View>
 
-      {/* Rollback button */}
       {onRollback && !action.rolled_back && (
         <Pressable
-          className={platformClass('p-2 rounded-sm border')}
-          style={{ borderColor: colors.warning }}
+          style={styles.rollbackButton}
           onPress={(e) => {
             if (e?.stopPropagation) e.stopPropagation();
             onRollback();
@@ -208,14 +156,95 @@ const ActivityLogItem: React.FC<ActivityLogItemProps> = ({
 };
 
 const styles = StyleSheet.create({
-  headerRow: {},
-  flexRowReverse: {
+  container: {
+    flexDirection: 'row',
+    paddingVertical: spacing.md,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+    gap: spacing.md,
+    alignItems: 'flex-start',
+  },
+  containerRTL: {
     flexDirection: 'row-reverse',
   },
-  metadataRow: {},
+  iconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  content: {
+    flex: 1,
+    gap: 4,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    marginBottom: 4,
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  badge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 2,
+    borderWidth: 1,
+  },
+  badgeText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  dateText: {
+    fontSize: 12,
+    fontFamily: 'monospace',
+    color: colors.textMuted,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '600',
+    lineHeight: 20,
+    marginBottom: 4,
+    color: colors.text,
+  },
+  description: {
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 4,
+    color: colors.textSecondary,
+  },
+  metadataRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    flexWrap: 'wrap',
+    marginBottom: 4,
+  },
+  metadataText: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  autoApprovedText: {
+    fontSize: 12,
+    color: colors.success,
+  },
+  idText: {
+    fontSize: 11,
+    fontFamily: 'monospace',
+    marginTop: 4,
+    color: colors.textMuted,
+  },
+  rollbackButton: {
+    padding: 8,
+    borderRadius: 2,
+    borderWidth: 1,
+    borderColor: colors.warning,
+  },
 });
 
-// Validate props at runtime in development
 if (process.env.NODE_ENV === 'development') {
   const originalComponent = ActivityLogItem;
   (ActivityLogItem as any) = (props: any) => {

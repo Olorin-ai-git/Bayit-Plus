@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useChatbotStore, type ChatbotAction } from '@/stores/chatbotStore'
 import { useWidgetStore, type VoiceContentItem } from '@/stores/widgetStore'
 import { chatService } from '@/services/api'
+import logger from '@/utils/logger'
 
 interface UseChatActionsOptions {
   onClose?: () => void
@@ -56,7 +57,7 @@ export function useChatActions(options: UseChatActionsOptions = {}) {
       case 'chess_invite':
         return { type: 'chess_invite', payload: { friendName: payload?.friend_name || payload?.friendName } }
       default:
-        console.warn(`[useChatActions] Unknown action type: ${type}`)
+        logger.warn(`Unknown action type: ${type}`, 'useChatActions')
         return null
     }
   }
@@ -100,53 +101,53 @@ export function useChatActions(options: UseChatActionsOptions = {}) {
     })
 
     registerActionHandler('pause', () => {
-      console.log('[useChatActions] Pause action triggered')
+      logger.debug('Pause action triggered', 'useChatActions')
     })
 
     registerActionHandler('resume', () => {
-      console.log('[useChatActions] Resume action triggered')
+      logger.debug('Resume action triggered', 'useChatActions')
     })
 
     registerActionHandler('skip', () => {
-      console.log('[useChatActions] Skip action triggered')
+      logger.debug('Skip action triggered', 'useChatActions')
     })
 
     // Watchlist/Favorites
     registerActionHandler('add_to_watchlist', () => {
-      console.log('[useChatActions] Added to watchlist')
+      logger.debug('Added to watchlist', 'useChatActions')
     })
 
     registerActionHandler('add_to_favorites', () => {
-      console.log('[useChatActions] Added to favorites')
+      logger.debug('Added to favorites', 'useChatActions')
     })
 
     // Settings
     registerActionHandler('volume', (payload) => {
-      console.log('[useChatActions] Volume', payload.change)
+      logger.debug('Volume', 'useChatActions', payload.change)
     })
 
     registerActionHandler('language', (payload) => {
-      console.log('[useChatActions] Switching to language:', payload.language)
+      logger.debug('Switching to language', 'useChatActions', payload.language)
     })
 
     registerActionHandler('subtitles', (payload) => {
-      console.log('[useChatActions] Subtitles', payload.enabled ? 'enabled' : 'disabled')
+      logger.debug('Subtitles', 'useChatActions', payload.enabled ? 'enabled' : 'disabled')
     })
 
     // Info
     registerActionHandler('info', (payload) => {
-      console.log('[useChatActions] Getting info for:', payload.query)
+      logger.debug('Getting info for', 'useChatActions', payload.query)
     })
 
     // Help
     registerActionHandler('help', () => {
-      console.log('[useChatActions] Help requested')
+      logger.debug('Help requested', 'useChatActions')
     })
 
     // Show Multiple
     registerActionHandler('show_multiple', async (payload) => {
       if (!payload.items || payload.items.length === 0) {
-        console.warn('[useChatActions] show_multiple called with no items')
+        logger.warn('show_multiple called with no items', 'useChatActions')
         return
       }
 
@@ -182,7 +183,7 @@ export function useChatActions(options: UseChatActionsOptions = {}) {
           }))
         }
       } catch (error) {
-        console.error('[useChatActions] Error resolving content:', error)
+        logger.error('Error resolving content', 'useChatActions', error)
         optionsRef.current.onError?.(t('chatbot.errors.general'))
       }
 

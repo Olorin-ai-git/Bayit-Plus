@@ -52,6 +52,7 @@ export interface PlayerControls {
   toggleMute: () => void
   toggleFullscreen: () => void
   handleVolumeChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  setVolume: (value: number) => void
   handleSeek: (e: React.MouseEvent<HTMLDivElement>) => void
   skip: (seconds: number) => void
   seekToTime: (time: number) => void

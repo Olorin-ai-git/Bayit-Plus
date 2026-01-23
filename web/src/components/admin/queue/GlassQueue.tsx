@@ -8,7 +8,7 @@ import React from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassCard } from '@bayit/shared/ui';
-import { colors, spacing, fontSize } from '@bayit/shared/theme';
+import { colors, spacing } from '@bayit/shared/theme';
 import { useDirection } from '@/hooks/useDirection';
 import {
   QueueHeader,
@@ -44,14 +44,16 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
 
   if (loading) {
     const loadingContent = (
-      <View className="p-8 items-center justify-center">
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text className="mt-4 text-gray-400 text-base">{t('common.loading')}</Text>
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+          {t('common.loading')}
+        </Text>
       </View>
     );
 
     if (noCard) return loadingContent;
-    return <GlassCard className="p-6">{loadingContent}</GlassCard>;
+    return <GlassCard style={styles.cardPadding}>{loadingContent}</GlassCard>;
   }
 
   const queueContent = (
@@ -102,10 +104,22 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
   );
 
   if (noCard) return queueContent;
-  return <GlassCard className="p-6">{queueContent}</GlassCard>;
+  return <GlassCard style={styles.cardPadding}>{queueContent}</GlassCard>;
 };
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    padding: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+  },
+  cardPadding: {
+    padding: 24,
+  },
   contentPadding: {
     padding: 24,
   },

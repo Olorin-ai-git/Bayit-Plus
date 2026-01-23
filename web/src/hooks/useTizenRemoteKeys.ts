@@ -9,6 +9,7 @@
  */
 
 import { useEffect, useCallback } from 'react';
+import logger from '@/utils/logger';
 
 // Tizen TV Input Device API types
 declare global {
@@ -76,7 +77,7 @@ export function useTizenRemoteKeys(options: UseTizenRemoteKeysOptions) {
 
     const tizen = window.tizen;
     if (!tizen?.tvinputdevice) {
-      console.log('[TizenRemoteKeys] Not running on Tizen TV');
+      logger.debug('Not running on Tizen TV', 'useTizenRemoteKeys');
       return;
     }
 
@@ -93,9 +94,9 @@ export function useTizenRemoteKeys(options: UseTizenRemoteKeysOptions) {
     keysToRegister.forEach(key => {
       try {
         tizen.tvinputdevice.registerKey(key);
-        console.log(`[TizenRemoteKeys] Registered key: ${key}`);
+        logger.debug('Registered key', 'useTizenRemoteKeys', { key });
       } catch (err) {
-        console.warn(`[TizenRemoteKeys] Failed to register key ${key}:`, err);
+        logger.warn('Failed to register key', 'useTizenRemoteKeys', { key, error: err });
       }
     });
 
@@ -119,32 +120,32 @@ export function useTizenRemoteKeys(options: UseTizenRemoteKeysOptions) {
 
     switch (keyCode) {
       case TIZEN_KEY_CODES.ColorF0Red:
-        console.log('[TizenRemoteKeys] Red button pressed');
+        logger.debug('Red button pressed', 'useTizenRemoteKeys');
         event.preventDefault();
         onRedButton?.();
         break;
       case TIZEN_KEY_CODES.ColorF1Green:
-        console.log('[TizenRemoteKeys] Green button pressed');
+        logger.debug('Green button pressed', 'useTizenRemoteKeys');
         event.preventDefault();
         onGreenButton?.();
         break;
       case TIZEN_KEY_CODES.ColorF2Yellow:
-        console.log('[TizenRemoteKeys] Yellow button pressed');
+        logger.debug('Yellow button pressed', 'useTizenRemoteKeys');
         event.preventDefault();
         onYellowButton?.();
         break;
       case TIZEN_KEY_CODES.ColorF3Blue:
-        console.log('[TizenRemoteKeys] Blue button pressed');
+        logger.debug('Blue button pressed', 'useTizenRemoteKeys');
         event.preventDefault();
         onBlueButton?.();
         break;
       case TIZEN_KEY_CODES.MediaPlayPause:
-        console.log('[TizenRemoteKeys] Play/Pause pressed');
+        logger.debug('Play/Pause pressed', 'useTizenRemoteKeys');
         event.preventDefault();
         onPlayPause?.();
         break;
       case TIZEN_KEY_CODES.Back:
-        console.log('[TizenRemoteKeys] Back button pressed');
+        logger.debug('Back button pressed', 'useTizenRemoteKeys');
         // Don't prevent default for back - let navigation handle it
         onBack?.();
         break;
@@ -156,7 +157,7 @@ export function useTizenRemoteKeys(options: UseTizenRemoteKeysOptions) {
     if (!enabled) return;
 
     document.addEventListener('keydown', handleKeyDown);
-    console.log('[TizenRemoteKeys] Key listener registered');
+    logger.debug('Key listener registered', 'useTizenRemoteKeys');
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);

@@ -9,6 +9,7 @@ import { profilesService } from '@/services/api';
 import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { StatCard } from './StatCard';
 import type { UserStats } from '../types';
+import logger from '@/utils/logger';
 
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
@@ -59,7 +60,7 @@ export function HeroSection({ isRTL, stats, statsLoading, onAvatarUploadSuccess 
         onAvatarUploadSuccess(t('profile.uploadSuccess', 'Avatar updated successfully!'), 'success');
       }
     } catch (error) {
-      console.error('Failed to upload avatar:', error);
+      logger.error('Failed to upload avatar', 'HeroSection', error);
       onAvatarUploadSuccess(t('profile.uploadFailed', 'Failed to upload avatar. Please try again.'), 'error');
     } finally {
       setAvatarUploading(false);

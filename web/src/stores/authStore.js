@@ -100,11 +100,14 @@ export const useAuthStore = create(
       },
 
       handleGoogleCallback: async (code, state) => {
+        console.log('[AuthStore] handleGoogleCallback called:', { codePreview: code?.substring(0, 20), hasState: !!state })
         set({ isLoading: true, error: null })
         try {
           // Build redirect URI dynamically based on current origin
           const redirectUri = `${window.location.origin}/auth/google/callback`
+          console.log('[AuthStore] Calling authService.googleCallback with redirectUri:', redirectUri)
           const response = await authService.googleCallback(code, redirectUri, state)
+          console.log('[AuthStore] googleCallback response received:', { hasUser: !!response?.user, hasToken: !!response?.access_token })
 
           // Update state
           set({
@@ -126,9 +129,11 @@ export const useAuthStore = create(
             version: 0,
           }
           localStorage.setItem('bayit-auth', JSON.stringify(authData))
+          console.log('[AuthStore] Auth data saved to localStorage')
 
           return response
         } catch (error) {
+          console.error('[AuthStore] handleGoogleCallback error:', error)
           set({ error: error.message, isLoading: false })
           throw error
         }

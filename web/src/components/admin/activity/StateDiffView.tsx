@@ -1,7 +1,7 @@
-import { View, Text } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors } from '@bayit/shared/theme';
-import { platformClass } from '../../../utils/platformClass';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 
 interface StateDiff {
   key: string;
@@ -14,36 +14,25 @@ interface StateDiffViewProps {
   textAlign: 'left' | 'right';
 }
 
-/**
- * StateDiffView - Displays before/after state changes
- *
- * Renders a list of field changes showing old values (strikethrough)
- * and new values with color coding.
- */
 export const StateDiffView: React.FC<StateDiffViewProps> = ({ diffs, textAlign }) => {
   const { t } = useTranslation();
 
   if (diffs.length === 0) return null;
 
   return (
-    <View
-      className={platformClass('mt-2 p-2 rounded-sm border-l-2')}
-      style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)', borderLeftColor: colors.primary }}
-    >
-      <Text className={platformClass('text-xs font-semibold mb-1')} style={{ textAlign, color: colors.textSecondary }}>
+    <View style={styles.container}>
+      <Text style={[styles.title, { textAlign }]}>
         {t('admin.librarian.activityLog.changes')}:
       </Text>
       {diffs.map((diff, idx) => (
-        <View key={idx} className={platformClass('mb-1')}>
-          <Text className={platformClass('text-[11px] font-semibold mb-0.5')} style={{ color: colors.primary }}>
-            {diff.key}:
-          </Text>
-          <View className={platformClass('flex-row gap-1 items-center flex-wrap')}>
-            <Text className={platformClass('text-[11px] font-mono line-through')} style={{ color: colors.error }}>
+        <View key={idx} style={styles.diffItem}>
+          <Text style={styles.keyText}>{diff.key}:</Text>
+          <View style={styles.valueRow}>
+            <Text style={styles.beforeText}>
               {typeof diff.before === 'object' ? JSON.stringify(diff.before) : String(diff.before || 'null')}
             </Text>
-            <Text className={platformClass('text-[11px]')} style={{ color: colors.textMuted }}>→</Text>
-            <Text className={platformClass('text-[11px] font-mono')} style={{ color: colors.success }}>
+            <Text style={styles.arrowText}>→</Text>
+            <Text style={styles.afterText}>
               {typeof diff.after === 'object' ? JSON.stringify(diff.after) : String(diff.after || 'null')}
             </Text>
           </View>
@@ -52,5 +41,52 @@ export const StateDiffView: React.FC<StateDiffViewProps> = ({ diffs, textAlign }
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: 8,
+    padding: 8,
+    borderRadius: borderRadius.sm,
+    borderLeftWidth: 2,
+    borderLeftColor: colors.primary,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  title: {
+    fontSize: 12,
+    fontWeight: '600',
+    marginBottom: 4,
+    color: colors.textSecondary,
+  },
+  diffItem: {
+    marginBottom: 4,
+  },
+  keyText: {
+    fontSize: 11,
+    fontWeight: '600',
+    marginBottom: 2,
+    color: colors.primary,
+  },
+  valueRow: {
+    flexDirection: 'row',
+    gap: 4,
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  },
+  beforeText: {
+    fontSize: 11,
+    fontFamily: 'monospace',
+    textDecorationLine: 'line-through',
+    color: colors.error,
+  },
+  arrowText: {
+    fontSize: 11,
+    color: colors.textMuted,
+  },
+  afterText: {
+    fontSize: 11,
+    fontFamily: 'monospace',
+    color: colors.success,
+  },
+});
 
 export default StateDiffView;

@@ -12,6 +12,7 @@ import { recordingApi, Recording } from '@/services/recordingApi'
 import { colors } from '@bayit/shared/theme'
 import { GlassView } from '@bayit/shared/ui'
 import { RecordingCard } from '@/components/recordings/RecordingCard'
+import logger from '@/utils/logger'
 
 export default function MyRecordingsPage() {
   const { t } = useTranslation()
@@ -35,7 +36,7 @@ export default function MyRecordingsPage() {
       setRecordings(data.items)
       setTotalPages(data.total_pages)
     } catch (error) {
-      console.error('Failed to load recordings:', error)
+      logger.error('Failed to load recordings', 'MyRecordingsPage', error)
     } finally {
       setLoading(false)
     }
@@ -46,7 +47,7 @@ export default function MyRecordingsPage() {
       const quotaData = await recordingApi.getQuota()
       setQuota(quotaData)
     } catch (error) {
-      console.error('Failed to load quota:', error)
+      logger.error('Failed to load quota', 'MyRecordingsPage', error)
     }
   }
 
@@ -56,7 +57,7 @@ export default function MyRecordingsPage() {
       await loadRecordings()
       await loadQuota()
     } catch (error) {
-      console.error('Failed to delete recording:', error)
+      logger.error('Failed to delete recording', 'MyRecordingsPage', error)
       // Error handling is in RecordingCard via useModal
     }
   }

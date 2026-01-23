@@ -7,7 +7,7 @@ import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { X, Play } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { PlaylistItem } from '../types/watch.types';
-import { colors } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 
 interface PlaylistPanelProps {
   playlist: PlaylistItem[];
@@ -27,41 +27,35 @@ export function PlaylistPanel({
   const { t } = useTranslation();
 
   return (
-    <View
-      className="absolute top-[120px] w-[300px] max-h-[400px] bg-black/80 backdrop-blur-xl rounded-2xl border border-white/10 z-[100]"
-      style={[
-        // @ts-ignore
-        { boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)' },
-        isRTL ? styles.panelRight : styles.panelLeft,
-      ]}
-    >
-      <View className="flex-row justify-between items-center p-4 border-b border-white/10">
-        <Text className="text-base font-semibold text-white">{t('watch.playlist') || 'Playlist'}</Text>
+    <View style={[styles.panel, isRTL ? styles.panelRight : styles.panelLeft]}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>{t('watch.playlist') || 'Playlist'}</Text>
         <Pressable onPress={onClose}>
           <X size={20} color={colors.textMuted} />
         </Pressable>
       </View>
-      <ScrollView className="max-h-[320px]">
+      <ScrollView style={styles.scrollView}>
         {playlist.map((item, index) => (
           <Pressable
             key={`${item.content_id}-${index}`}
-            className="flex-row items-center p-3 px-4 gap-3 border-b border-white/5"
-            style={[index === playlistIndex && styles.itemActive]}
+            style={[styles.playlistItem, index === playlistIndex && styles.itemActive]}
             onPress={() => onSelectItem(index)}
           >
-            <Text className="w-6 text-xs text-gray-400 text-center">{index + 1}</Text>
-            <View className="flex-1">
+            <Text style={styles.itemNumber}>{index + 1}</Text>
+            <View style={styles.itemContent}>
               <Text
-                className="text-sm"
-                style={[index === playlistIndex ? styles.textActive : styles.textInactive]}
+                style={[
+                  styles.itemTitle,
+                  index === playlistIndex ? styles.textActive : styles.textInactive,
+                ]}
                 numberOfLines={1}
               >
                 {item.title}
               </Text>
-              <Text className="text-[11px] text-gray-400 capitalize">{item.content_type}</Text>
+              <Text style={styles.itemType}>{item.content_type}</Text>
             </View>
             {index === playlistIndex && (
-              <View className="w-6 h-6 justify-center items-center">
+              <View style={styles.playIcon}>
                 <Play size={14} color={colors.primary} fill={colors.primary} />
               </View>
             )}
@@ -73,20 +67,79 @@ export function PlaylistPanel({
 }
 
 const styles = StyleSheet.create({
+  panel: {
+    position: 'absolute',
+    top: 120,
+    width: 300,
+    maxHeight: 400,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    borderRadius: borderRadius['2xl'],
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    zIndex: 100,
+  },
   panelLeft: {
-    left: 16,
+    left: spacing.md,
   },
   panelRight: {
-    right: 16,
+    right: spacing.md,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  headerTitle: {
+    fontSize: fontSize.base,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  scrollView: {
+    maxHeight: 320,
+  },
+  playlistItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.sm,
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
   },
   itemActive: {
     backgroundColor: 'rgba(34, 197, 94, 0.15)',
+  },
+  itemNumber: {
+    width: 24,
+    fontSize: fontSize.xs,
+    color: 'rgba(156, 163, 175, 1)',
+    textAlign: 'center',
+  },
+  itemContent: {
+    flex: 1,
+  },
+  itemTitle: {
+    fontSize: fontSize.sm,
   },
   textActive: {
     color: '#22c55e',
     fontWeight: '600',
   },
   textInactive: {
-    color: '#ffffff',
+    color: colors.text,
+  },
+  itemType: {
+    fontSize: 11,
+    color: 'rgba(156, 163, 175, 1)',
+    textTransform: 'capitalize',
+  },
+  playIcon: {
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

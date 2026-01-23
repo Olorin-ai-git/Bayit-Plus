@@ -54,7 +54,8 @@
     "expand": "Expand",
     "collapse": "Collapse",
     "upgrade": "Upgrade to Premium",
-    "skip": "Skip"
+    "skip": "Skip",
+    "dismiss": "Dismiss"
   },
   "demo": {
     "banner": "DEMO MODE",
@@ -1169,6 +1170,14 @@
       "saving": "Saving...",
       "cancel": "Cancel",
       "change": "Change"
+    },
+    "intro": {
+      "title": "Welcome to Widgets",
+      "description": "Discover powerful floating widgets to customize your viewing experience",
+      "watchVideo": "Watch Introduction",
+      "skip": "Skip",
+      "dismiss": "Don't show again",
+      "videoUnavailable": "Video temporarily unavailable"
     }
   },
   "trending": {
@@ -3084,7 +3093,22 @@
     "premiumRequired": "Premium subscription required for live dubbing",
     "unavailable": "Dubbing unavailable for this channel",
     "error": "Dubbing error",
-    "reconnecting": "Reconnecting..."
+    "reconnecting": "Reconnecting...",
+    "premium": "Premium",
+    "tapToEnable": "Tap to enable live dubbing",
+    "tapToDisable": "Tap to disable live dubbing",
+    "tapToChangeLanguage": "Tap to change target language",
+    "currentlySelected": "Currently selected",
+    "tapToSelect": "Tap to select",
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "ar": "العربية",
+      "ru": "Русский",
+      "fr": "Français",
+      "de": "Deutsch",
+      "he": "עברית"
+    }
   },
   "video": {
     "watchTrailer": "Watch Trailer",
@@ -3243,6 +3267,7 @@
     "tabs": {
       "docs": "Documentation",
       "faq": "FAQ",
+      "videos": "Videos",
       "contact": "Contact",
       "tickets": "My Tickets"
     },
@@ -3277,6 +3302,12 @@
         "technical": "Technical",
         "features": "Features"
       }
+    },
+    "videos": {
+      "title": "Tutorial Videos",
+      "subtitle": "Learn how to use Bayit+ features",
+      "widgetsIntro": "Getting Started with Widgets",
+      "widgetsDescription": "Learn how to create, customize, and manage floating widgets"
     },
     "contact": {
       "voiceTitle": "Voice Support",
@@ -3693,6 +3724,41 @@
       "create_session_failed": "Failed to create session",
       "add_transcript_failed": "Failed to add transcript",
       "generate_recap_failed": "Failed to generate recap"
+    }
+  },
+  "trivia": {
+    "didYouKnow": "Did You Know?",
+    "dismissHint": "Tap to dismiss this trivia fact",
+    "settings": {
+      "title": "Trivia & Fun Facts",
+      "enabled": "Show Trivia",
+      "enabledDescription": "Display interesting facts during playback",
+      "frequency": "Frequency",
+      "frequencyHint": "Change trivia display frequency",
+      "categories": "Categories",
+      "category": "category",
+      "selectCategory": "Tap to select this category",
+      "deselectCategory": "Tap to deselect this category",
+      "displayDuration": "Display Duration",
+      "durationHint": "Change how long trivia is displayed",
+      "seconds": "seconds"
+    },
+    "categories": {
+      "cast": "Cast",
+      "production": "Production",
+      "location": "Location",
+      "cultural": "Cultural",
+      "historical": "Historical"
+    },
+    "frequency": {
+      "off": "Off",
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High"
+    },
+    "errors": {
+      "loadFailed": "Failed to load trivia",
+      "saveFailed": "Failed to save trivia preferences"
     }
   }
 }

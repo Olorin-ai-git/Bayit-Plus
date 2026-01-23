@@ -14,6 +14,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { recordingApi } from '@/services/recordingApi'
 import { useModal } from '@/contexts/ModalContext'
 import { GlassButton } from '@bayit/shared'
+import logger from '@/utils/logger'
 
 const EPGPage: React.FC = () => {
   const { t } = useTranslation()
@@ -78,7 +79,7 @@ const EPGPage: React.FC = () => {
       setChannels(response.channels)
       setPrograms(response.programs)
     } catch (err: any) {
-      console.error('Failed to fetch EPG data:', err)
+      logger.error('Failed to fetch EPG data', 'EPGPage', err)
       setError(err.message || t('epg.errorLoading'))
     } finally {
       setLoading(false)
@@ -128,7 +129,7 @@ const EPGPage: React.FC = () => {
       const activeIds = new Set(sessions.map(s => s.channel_id))
       setActiveRecordings(activeIds)
     } catch (err) {
-      console.error('Failed to fetch active recordings:', err)
+      logger.error('Failed to fetch active recordings', 'EPGPage', err)
     }
   }, [])
 
@@ -155,7 +156,7 @@ const EPGPage: React.FC = () => {
     // Program detail modal not yet implemented
     // Would show: full description, cast, genres, trailer, related programs
     // For now, users can see program info in the EPG cell tooltip
-    console.log('Program clicked:', program)
+    logger.debug('Program clicked', 'EPGPage', program)
   }, [])
 
   // Recording handlers
@@ -191,7 +192,7 @@ const EPGPage: React.FC = () => {
         // Add to active recordings
         setActiveRecordings(prev => new Set([...prev, program.channel_id]))
 
-        console.log('Started recording:', program.title)
+        logger.debug('Started recording', 'EPGPage', program.title)
       } else if (program.is_future) {
         // Future recording scheduling is not yet implemented on backend
         // Implementation requires: Backend endpoint to store scheduled recordings
@@ -207,7 +208,7 @@ const EPGPage: React.FC = () => {
         channelName: ''
       })
     } catch (err: any) {
-      console.error('Failed to start/schedule recording:', err)
+      logger.error('Failed to start/schedule recording', 'EPGPage', err)
       showError(err.message || t('epg.recordingFailed'), t('common.error'))
     }
   }, [recordModal, t])

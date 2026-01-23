@@ -1,50 +1,48 @@
-/**
- * CategoryPickerStateMessages Component
- *
- * Error and validation message display for CategoryPicker
- * Part of CategoryPicker migration from StyleSheet to TailwindCSS
- *
- * Features:
- * - Error icon with message
- * - RTL support
- * - Glass morphism styling
- *
- * Props validated with Zod schema
- */
-
-import { View, Text } from 'react-native'
-import { AlertCircle } from 'lucide-react'
-import { z } from 'zod'
-import { platformClass } from '../../../utils/platformClass'
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { AlertCircle } from 'lucide-react';
+import { z } from 'zod';
+import { colors } from '@bayit/shared/theme';
 
 const CategoryPickerStateMessagesPropsSchema = z.object({
   error: z.string().nullable(),
-})
+});
 
-export type CategoryPickerStateMessagesProps = z.infer<typeof CategoryPickerStateMessagesPropsSchema>
+export type CategoryPickerStateMessagesProps = z.infer<typeof CategoryPickerStateMessagesPropsSchema>;
 
 export function CategoryPickerStateMessages({
   error,
 }: CategoryPickerStateMessagesProps) {
-  if (!error) return null
+  if (!error) return null;
 
   return (
-    <View
-      className={platformClass(
-        'flex-row items-center gap-1 mt-1 px-2',
-        'flex-row items-center mt-1 px-2'
-      )}
-      style={{ gap: 4 }}
-    >
-      <AlertCircle size={14} color="#ef4444" />
-      <Text
-        className={platformClass(
-          'text-xs text-red-500',
-          'text-xs text-red-500'
-        )}
-      >
-        {error}
-      </Text>
+    <View style={styles.container}>
+      <AlertCircle size={14} color={colors.error} />
+      <Text style={styles.errorText}>{error}</Text>
     </View>
-  )
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+    paddingHorizontal: 8,
+    gap: 4,
+  },
+  errorText: {
+    fontSize: 12,
+    color: colors.error,
+  },
+});
+
+if (process.env.NODE_ENV === 'development') {
+  const originalComponent = CategoryPickerStateMessages;
+  (CategoryPickerStateMessages as any) = (props: any) => {
+    CategoryPickerStateMessagesPropsSchema.parse(props);
+    return originalComponent(props);
+  };
+}
+
+export default CategoryPickerStateMessages;

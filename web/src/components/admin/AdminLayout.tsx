@@ -4,7 +4,7 @@ import { Outlet, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Menu } from 'lucide-react'
 import AdminSidebar from './AdminSidebar'
-import { colors, spacing } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { useAuthStore } from '@/stores/authStore'
 
 const SIDEBAR_DEFAULT_WIDTH = 280
@@ -21,8 +21,8 @@ export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile)
   const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_DEFAULT_WIDTH)
   const [isDragging, setIsDragging] = useState(false)
+  const [toggleHovered, setToggleHovered] = useState(false)
 
-  // Sidebar drag handler
   const handleSidebarDragStart = useCallback((e: any) => {
     e.preventDefault()
     setIsDragging(true)
@@ -55,28 +55,25 @@ export default function AdminLayout() {
     setSidebarOpen(!isMobile)
   }, [isMobile])
 
-  // Show loading while checking auth state
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center h-screen" style={{ backgroundColor: colors.background }}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text className="mt-4 text-gray-400 text-base">Loading...</Text>
+        <Text style={styles.loadingText}>Loading...</Text>
       </View>
     )
   }
 
-  // Redirect to login if not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
 
-  // Redirect to home if not admin
   if (!isAdmin()) {
     return <Navigate to="/" replace />
   }
 
   return (
-    <View className="flex-1 h-full flex-row relative" style={{ backgroundColor: colors.background }}>
+    <View style={styles.container}>
       {/* Main Content */}
       <View
         style={[
@@ -89,8 +86,9 @@ export default function AdminLayout() {
           {
             paddingRight: isRTL ? 56 : spacing.lg,
             paddingLeft: isRTL ? spacing.lg : 56,
+            // @ts-ignore - Web transition
             transition: isDragging ? 'none' : 'margin 0.3s ease',
-          } as any
+          },
         ]}
       >
         {/* Mobile Menu Toggle */}
@@ -109,33 +107,35 @@ export default function AdminLayout() {
         <Outlet />
       </View>
 
-      {/* Sidebar Toggle Button - Matches main sidebar style */}
+      {/* Sidebar Toggle Button */}
       {!isMobile && (
         <Pressable
-          className="fixed top-6 z-150"
-          style={{
-            left: isRTL ? 'auto' : (sidebarOpen ? sidebarWidth - 22 : spacing.md),
-            right: isRTL ? (sidebarOpen ? sidebarWidth - 22 : spacing.md) : 'auto',
-            transition: 'left 0.3s ease, right 0.3s ease',
-          } as any}
           onPress={() => setSidebarOpen(!sidebarOpen)}
+          onHoverIn={() => setToggleHovered(true)}
+          onHoverOut={() => setToggleHovered(false)}
+          style={[
+            styles.sidebarToggle,
+            {
+              left: isRTL ? 'auto' : (sidebarOpen ? sidebarWidth - 22 : spacing.md),
+              right: isRTL ? (sidebarOpen ? sidebarWidth - 22 : spacing.md) : 'auto',
+              // @ts-ignore - Web transition
+              transition: 'left 0.3s ease, right 0.3s ease',
+            },
+          ]}
         >
-          {({ hovered }: any) => (
-            <View
-              className="w-11 h-11 rounded-lg justify-center items-center border-2"
-              style={{
-                borderColor: colors.primary,
-                backgroundColor: hovered ? colors.primary + '30' : 'transparent',
-                opacity: hovered ? 1 : 0.6,
-              }}
-            >
-              <Text className="text-base font-bold" style={{ color: colors.primary }}>
-                {isRTL
-                  ? (sidebarOpen ? '▶' : '◀')
-                  : (sidebarOpen ? '◀' : '▶')}
-              </Text>
-            </View>
-          )}
+          <View
+            style={[
+              styles.toggleButton,
+              { opacity: toggleHovered ? 1 : 0.6 },
+              toggleHovered && styles.toggleButtonHovered,
+            ]}
+          >
+            <Text style={styles.toggleIcon}>
+              {isRTL
+                ? (sidebarOpen ? '▶' : '◀')
+                : (sidebarOpen ? '◀' : '▶')}
+            </Text>
+          </View>
         </Pressable>
       )}
 
@@ -153,8 +153,7 @@ export default function AdminLayout() {
       {/* Mobile Overlay */}
       {isMobile && sidebarOpen && (
         <Pressable
-          className="fixed top-0 left-0 right-0 bottom-0 z-99"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
+          style={styles.mobileOverlay}
           onPress={() => setSidebarOpen(false)}
         />
       )}
@@ -163,6 +162,25 @@ export default function AdminLayout() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    height: '100%',
+    flexDirection: 'row',
+    position: 'relative',
+    backgroundColor: colors.background,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    backgroundColor: colors.background,
+  },
+  loadingText: {
+    marginTop: 16,
+    color: colors.textSecondary,
+    fontSize: 16,
+  },
   mainContent: {
     flex: 1,
     height: '100%',
@@ -171,6 +189,7 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   mainContentDragging: {
+    // @ts-ignore - Web property
     userSelect: 'none',
   },
   mobileMenuToggle: {
@@ -190,4 +209,36 @@ const styles = StyleSheet.create({
   mobileMenuToggleRTL: {
     right: 16,
   },
-});
+  sidebarToggle: {
+    position: 'fixed' as any,
+    top: 24,
+    zIndex: 150,
+  },
+  toggleButton: {
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: colors.primary,
+    backgroundColor: 'transparent',
+  },
+  toggleButtonHovered: {
+    backgroundColor: colors.primary + '30',
+  },
+  toggleIcon: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  mobileOverlay: {
+    position: 'fixed' as any,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 99,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+})

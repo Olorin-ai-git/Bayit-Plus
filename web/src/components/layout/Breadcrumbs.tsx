@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { GlassBreadcrumbs } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
+import logger from '@/utils/logger';
 
 interface BreadcrumbItem {
   path: string;
@@ -118,7 +119,7 @@ export default function Breadcrumbs() {
         setHistory(initialHistory);
       }
     } catch (e) {
-      console.warn('Failed to load breadcrumb history:', e);
+      logger.warn('Failed to load breadcrumb history', 'Breadcrumbs', e);
     }
   }, []);
 
@@ -160,7 +161,7 @@ export default function Breadcrumbs() {
       try {
         sessionStorage.setItem(BREADCRUMB_STORAGE_KEY, JSON.stringify(newHistory));
       } catch (e) {
-        console.warn('Failed to save breadcrumb history:', e);
+        logger.warn('Failed to save breadcrumb history', 'Breadcrumbs', e);
       }
 
       return newHistory;

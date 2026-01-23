@@ -76,7 +76,7 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
     try {
       const language = i18n.language || supportConfig.documentation.defaultLanguage;
       const apiUrl = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-        ? 'http://localhost:8000/api/v1/support'
+        ? 'http://localhost:8001/api/v1/support'
         : '/api/v1/support';
 
       const response = await fetch(`${apiUrl}/docs/search/popular?lang=${language}&limit=5`);
@@ -100,7 +100,7 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
       setLoading(true);
       const language = i18n.language || supportConfig.documentation.defaultLanguage;
       const apiUrl = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-        ? 'http://localhost:8000/api/v1/support'
+        ? 'http://localhost:8001/api/v1/support'
         : '/api/v1/support';
 
       const response = await fetch(

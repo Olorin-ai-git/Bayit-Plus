@@ -13,7 +13,9 @@ from jose import JWTError, jwt
 
 from app.core.config import settings
 from app.models.content import LiveChannel
+from app.models.live_feature_quota import FeatureType, UsageSessionStatus
 from app.models.user import User
+from app.services.live_feature_quota_service import LiveFeatureQuotaService
 from app.services.live_translation_service import LiveTranslationService
 
 router = APIRouter()
@@ -78,11 +80,45 @@ async def websocket_live_subtitles(
         await websocket.close(code=4004, reason="Channel not found")
         return
 
+    # Step 3.5: Check quota before accepting connection
+    allowed, error_msg, usage_stats = await LiveFeatureQuotaService.check_quota(
+        user_id=str(user.id),
+        feature_type=FeatureType.SUBTITLE,
+        estimated_duration_minutes=1.0,
+    )
+
+    if not allowed:
+        await websocket.accept()
+        await websocket.send_json({
+            "type": "quota_exceeded",
+            "message": error_msg,
+            "usage_stats": usage_stats,
+            "recoverable": False,
+        })
+        await websocket.close(code=4029, reason="Quota exceeded")
+        logger.warning(f"Quota exceeded for user {user.id}: {error_msg}")
+        return
+
     # Step 4: Accept connection
     await websocket.accept()
     logger.info(
         f"Live subtitle connection established: user={user.id}, channel={channel_id}"
     )
+
+    # Step 4.5: Start session tracking
+    session = None
+    try:
+        session = await LiveFeatureQuotaService.start_session(
+            user_id=str(user.id),
+            channel_id=channel_id,
+            feature_type=FeatureType.SUBTITLE,
+            source_language=channel.primary_language or "he",
+            target_language=target_lang,
+            platform="web",
+        )
+        logger.info(f"Started quota session {session.session_id}")
+    except Exception as e:
+        logger.error(f"Failed to start quota session: {e}")
 
     # Step 5: Initialize translation service
     try:
@@ -124,8 +160,12 @@ async def websocket_live_subtitles(
         )
 
         # Step 6: Create audio stream from WebSocket
+        last_usage_update = asyncio.get_event_loop().time()
+        usage_update_interval = 10.0  # Update usage every 10 seconds
+
         async def audio_stream_generator():
             """Generator that yields audio chunks from WebSocket."""
+            nonlocal last_usage_update
             chunk_count = 0
             total_bytes = 0
             try:
@@ -139,6 +179,32 @@ async def websocket_live_subtitles(
                         logger.info(
                             f"📦 Received {chunk_count} audio chunks ({total_bytes} bytes total)"
                         )
+
+                    # Update usage periodically (every 10 seconds)
+                    current_time = asyncio.get_event_loop().time()
+                    if session and current_time - last_usage_update >= usage_update_interval:
+                        try:
+                            await LiveFeatureQuotaService.update_session(
+                                session_id=session.session_id,
+                                audio_seconds_delta=usage_update_interval,
+                                segments_delta=0,
+                            )
+                            # Check if still under quota
+                            allowed, error_msg, _ = await LiveFeatureQuotaService.check_quota(
+                                user_id=str(user.id),
+                                feature_type=FeatureType.SUBTITLE,
+                                estimated_duration_minutes=0,
+                            )
+                            if not allowed:
+                                await websocket.send_json({
+                                    "type": "quota_exceeded",
+                                    "message": "Usage limit reached during session",
+                                    "recoverable": False,
+                                })
+                                raise WebSocketDisconnect(code=4029, reason="Quota exceeded")
+                            last_usage_update = current_time
+                        except Exception as e:
+                            logger.error(f"Error updating usage: {e}")
 
                     yield audio_chunk
             except WebSocketDisconnect:
@@ -166,9 +232,25 @@ async def websocket_live_subtitles(
             logger.info(
                 f"Live subtitle session ended: user={user.id}, channel={channel_id}"
             )
+            if session:
+                try:
+                    await LiveFeatureQuotaService.end_session(
+                        session_id=session.session_id,
+                        status=UsageSessionStatus.COMPLETED,
+                    )
+                except Exception as e:
+                    logger.error(f"Error ending session: {e}")
 
         except Exception as e:
             logger.error(f"Error in live subtitle stream: {str(e)}")
+            if session:
+                try:
+                    await LiveFeatureQuotaService.end_session(
+                        session_id=session.session_id,
+                        status=UsageSessionStatus.ERROR,
+                    )
+                except Exception as se:
+                    logger.error(f"Error ending session: {se}")
             try:
                 await websocket.send_json(
                     {"type": "error", "message": "Translation service error"}
@@ -178,6 +260,14 @@ async def websocket_live_subtitles(
 
     except Exception as e:
         logger.error(f"Failed to initialize translation service: {str(e)}")
+        if session:
+            try:
+                await LiveFeatureQuotaService.end_session(
+                    session_id=session.session_id,
+                    status=UsageSessionStatus.ERROR,
+                )
+            except Exception as se:
+                logger.error(f"Error ending session: {se}")
         try:
             await websocket.send_json(
                 {"type": "error", "message": "Service unavailable"}

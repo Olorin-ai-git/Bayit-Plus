@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
 import { sceneSearchService } from '@/services/api'
 import logger from '@/utils/logger'
 import { ttsService } from '@bayit/shared/services/ttsService'
-import { useVoiceSettingsStore } from '@bayit/shared/stores/voiceSettingsStore'
+import { useVoiceSettingsStore } from '@bayit/shared-stores/voiceSettingsStore'
 
 // Scene search configuration
 const SCENE_SEARCH_CONFIG = {

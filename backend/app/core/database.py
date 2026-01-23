@@ -37,6 +37,7 @@ from app.models.integration_partner import (DubbingSession, IntegrationPartner,
 from app.models.jerusalem_content import (JerusalemContentItem,
                                           JerusalemContentSource)
 from app.models.jewish_calendar import JewishCalendarCache
+from app.models.live_dubbing import LiveDubbingSession
 from app.models.jewish_community import (CommunityEvent, JewishOrganization,
                                          ScrapingJob)
 from app.models.jewish_news import JewishNewsItem, JewishNewsSource
@@ -58,6 +59,7 @@ from app.models.support import (FAQEntry, SupportAnalytics,
 from app.models.tel_aviv_content import (TelAvivContentItem,
                                          TelAvivContentSource)
 from app.models.trending import ContentTrendMatch, TrendingSnapshot
+from app.models.trivia import ContentTrivia
 from app.models.upload import (BrowserUploadSession, MonitoredFolder,
                                UploadHashLock, UploadJob, UploadStats)
 # Models
@@ -114,6 +116,8 @@ async def connect_to_mongo():
         ContentTrendMatch,
         # Chapter models
         VideoChapters,
+        # Trivia models
+        ContentTrivia,
         # Subtitle models
         SubtitleTrackDoc,
         TranslationCacheDoc,
@@ -200,6 +204,8 @@ async def connect_to_mongo():
         FamilyControls,
         # MCP Content Discovery models
         ContentDiscoveryQueue,
+        # Live Dubbing models
+        LiveDubbingSession,
     ]
 
     # Conditionally add Olorin models based on database separation setting

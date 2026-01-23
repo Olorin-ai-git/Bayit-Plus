@@ -14,6 +14,7 @@ import { adminContentService } from '@/services/adminApi';
 import { useAuthStore } from '@/stores/authStore';
 import WidgetContainer from './WidgetContainer';
 import type { Widget, WidgetPosition } from '@/types/widget';
+import logger from '@/utils/logger';
 
 // Cache for stream URLs to avoid repeated API calls
 const streamUrlCache: Record<string, string> = {};
@@ -42,7 +43,7 @@ export default function WidgetManager() {
       const response = await adminWidgetsService.getMyWidgets(location.pathname);
       setWidgets(response.items || []);
     } catch (err) {
-      console.error('[WidgetManager] Failed to load widgets:', err);
+      logger.error('Failed to load widgets', { error: err, pathname: location.pathname, component: 'WidgetManager' });
       setError('Failed to load widgets');
     } finally {
       setLoading(false);
@@ -124,7 +125,12 @@ export default function WidgetManager() {
         return streamUrl;
       }
     } catch (err) {
-      console.error(`[WidgetManager] Failed to get ${widget.content.content_type} stream URL:`, err);
+      logger.error(`Failed to get stream URL`, {
+        error: err,
+        contentType: widget.content.content_type,
+        widgetId: widget.id,
+        component: 'WidgetManager'
+      });
     }
 
     return undefined;
@@ -140,7 +146,7 @@ export default function WidgetManager() {
         height: position.height,
       });
     } catch (err) {
-      console.error('[WidgetManager] Failed to save position:', err);
+      logger.error('Failed to save position', { error: err, widgetId, position, component: 'WidgetManager' });
     }
   }, []);
 
@@ -164,7 +170,7 @@ export default function WidgetManager() {
     try {
       await adminWidgetsService.closeWidget(widgetId);
     } catch (err) {
-      console.error('[WidgetManager] Failed to close widget:', err);
+      logger.error('Failed to close widget', { error: err, widgetId, component: 'WidgetManager' });
     }
   }, [closeWidget]);
 

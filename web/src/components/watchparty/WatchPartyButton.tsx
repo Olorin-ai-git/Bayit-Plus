@@ -1,12 +1,19 @@
+/**
+ * WatchPartyButton Component
+ * Entry point for Watch Party feature with 3 states: Idle, Active, Host
+ */
+
 import { useState, useRef, useEffect } from 'react'
-import { View, Text, Pressable, Animated } from 'react-native'
+import { View, Text, Pressable, Animated, StyleSheet, I18nManager } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Users, Plus, UserPlus, ChevronDown } from 'lucide-react'
-import { colors } from '@bayit/shared/theme'
-import { GlassView } from '@bayit/shared/ui'
+import { Users, Plus, UserPlus, ChevronDown, Crown } from 'lucide-react'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { isTV } from '@bayit/shared/utils/platform'
+import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 
 interface WatchPartyButtonProps {
   hasActiveParty: boolean
+  isHost?: boolean
   onCreateClick: () => void
   onJoinClick: () => void
   onPanelToggle: () => void
@@ -14,15 +21,19 @@ interface WatchPartyButtonProps {
 
 export default function WatchPartyButton({
   hasActiveParty,
+  isHost = false,
   onCreateClick,
   onJoinClick,
   onPanelToggle,
 }: WatchPartyButtonProps) {
   const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef<View>(null)
+  const [isHovered, setIsHovered] = useState(false)
   const rotateAnim = useRef(new Animated.Value(0)).current
+  const pulseAnim = useRef(new Animated.Value(0)).current
+  const tvFocus = useTVFocus({ styleType: 'button' })
 
+  // Chevron rotation animation
   useEffect(() => {
     Animated.timing(rotateAnim, {
       toValue: isOpen ? 1 : 0,
@@ -31,11 +42,29 @@ export default function WatchPartyButton({
     }).start()
   }, [isOpen])
 
+  // Pulse animation for active state
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      // Close dropdown on outside click
-      setIsOpen(false)
+    if (hasActiveParty) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 0,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start()
     }
+  }, [hasActiveParty])
+
+  // Click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = () => setIsOpen(false)
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside)
     }
@@ -44,62 +73,244 @@ export default function WatchPartyButton({
 
   const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '180deg'],
+    outputRange: I18nManager.isRTL ? ['180deg', '0deg'] : ['0deg', '180deg'],
   })
 
+  const pulseOpacity = pulseAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.3, 0.8],
+  })
+
+  const pulseScale = pulseAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.5],
+  })
+
+  // Active Party State (Host or Participant)
   if (hasActiveParty) {
     return (
       <Pressable
         onPress={onPanelToggle}
-        className="flex-row items-center gap-3 px-3 py-3 rounded-lg border border-emerald-400/30 bg-emerald-400/10 hover:bg-emerald-400/20"
+        onHoverIn={() => setIsHovered(true)}
+        onHoverOut={() => setIsHovered(false)}
+        onFocus={tvFocus.handleFocus}
+        onBlur={tvFocus.handleBlur}
+        focusable={true}
+        style={({ pressed }) => [
+          styles.activeButton,
+          isHost && styles.hostButton,
+          (isHovered || pressed) && styles.activeButtonHovered,
+          tvFocus.isFocused && tvFocus.focusStyle,
+        ]}
+        accessibilityRole="button"
+        accessibilityLabel={
+          isHost
+            ? t('watchParty.hostActiveLabel', 'Watch Party - You are hosting')
+            : t('watchParty.activeLabel', 'Watch Party - Active')
+        }
+        accessibilityState={{ expanded: false }}
       >
-        <Users size={18} color="#34D399" />
-        <Text className="text-sm font-medium text-emerald-400">{t('watchParty.active')}</Text>
-        <View className="relative w-2 h-2">
-          <View className="absolute w-2 h-2 rounded-full bg-emerald-600" />
-          <View className="absolute w-2 h-2 rounded-full bg-emerald-400 opacity-75" />
+        {isHost ? (
+          <Crown size={isTV ? 22 : 18} color="#F59E0B" />
+        ) : (
+          <Users size={isTV ? 22 : 18} color="#A855F7" />
+        )}
+        <Text style={[styles.activeText, isHost && styles.hostText]}>
+          {isHost ? t('watchParty.hosting', 'Hosting') : t('watchParty.active', 'Active')}
+        </Text>
+        <View style={styles.pulseContainer}>
+          <View style={[styles.pulseDot, isHost && styles.hostPulseDot]} />
+          <Animated.View
+            style={[
+              styles.pulseRing,
+              isHost && styles.hostPulseRing,
+              {
+                opacity: pulseOpacity,
+                transform: [{ scale: pulseScale }],
+              },
+            ]}
+          />
         </View>
       </Pressable>
     )
   }
 
+  // Idle State with Dropdown
   return (
-    <View className="relative" ref={dropdownRef}>
+    <View style={styles.container}>
       <Pressable
         onPress={() => setIsOpen(!isOpen)}
-        className="flex-row items-center gap-3 px-3 py-3 rounded-lg hover:bg-white/10"
+        onHoverIn={() => setIsHovered(true)}
+        onHoverOut={() => setIsHovered(false)}
+        onFocus={tvFocus.handleFocus}
+        onBlur={tvFocus.handleBlur}
+        focusable={true}
+        style={({ pressed }) => [
+          styles.button,
+          (isHovered || pressed) && styles.buttonHovered,
+          tvFocus.isFocused && tvFocus.focusStyle,
+        ]}
+        accessibilityRole="button"
+        accessibilityLabel={t('watchParty.title', 'Watch Party')}
+        accessibilityState={{ expanded: isOpen }}
+        accessibilityHint={t('watchParty.buttonHint', 'Create or join a watch party')}
       >
-        <Users size={18} color={colors.text} />
-        <Text className="text-sm font-medium text-white">{t('watchParty.title')}</Text>
+        <Users size={isTV ? 22 : 18} color={colors.text} />
+        <Text style={styles.buttonText}>{t('watchParty.title', 'Watch Party')}</Text>
         <Animated.View style={{ transform: [{ rotate }] }}>
-          <ChevronDown size={14} color={colors.textSecondary} />
+          <ChevronDown size={isTV ? 18 : 14} color={colors.textSecondary} />
         </Animated.View>
       </Pressable>
 
       {isOpen && (
-        <GlassView className="absolute left-0 bottom-full mb-3 w-48 py-2 z-50" intensity="high">
+        <View style={styles.dropdown}>
           <Pressable
             onPress={() => {
               setIsOpen(false)
               onCreateClick()
             }}
-            className="flex-row items-center gap-3 px-4 py-3 text-right hover:bg-white/10"
+            style={({ hovered, pressed }) => [
+              styles.dropdownItem,
+              (hovered || pressed) && styles.dropdownItemHovered,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={t('watchParty.create', 'Create Watch Party')}
           >
-            <Plus size={18} color={colors.primary} />
-            <Text className="text-sm text-white">{t('watchParty.create')}</Text>
+            <Plus size={isTV ? 22 : 18} color={colors.primary} />
+            <Text style={styles.dropdownText}>{t('watchParty.create', 'Create')}</Text>
           </Pressable>
           <Pressable
             onPress={() => {
               setIsOpen(false)
               onJoinClick()
             }}
-            className="flex-row items-center gap-3 px-4 py-3 text-right hover:bg-white/10"
+            style={({ hovered, pressed }) => [
+              styles.dropdownItem,
+              (hovered || pressed) && styles.dropdownItemHovered,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={t('watchParty.join', 'Join Watch Party')}
           >
-            <UserPlus size={18} color="#3B82F6" />
-            <Text className="text-sm text-white">{t('watchParty.join')}</Text>
+            <UserPlus size={isTV ? 22 : 18} color="#3B82F6" />
+            <Text style={styles.dropdownText}>{t('watchParty.join', 'Join')}</Text>
           </Pressable>
-        </GlassView>
+        </View>
       )}
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: isTV ? spacing.md : spacing.sm,
+    paddingVertical: isTV ? spacing.sm : spacing.xs,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.glass,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  buttonHovered: {
+    backgroundColor: colors.glassLight,
+    borderColor: colors.primary,
+  },
+  buttonText: {
+    fontSize: isTV ? 16 : 13,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  activeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: isTV ? spacing.md : spacing.sm,
+    paddingVertical: isTV ? spacing.sm : spacing.xs,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.glassPurpleLight,
+    borderWidth: 1.5,
+    borderColor: 'rgba(168, 85, 247, 0.5)',
+  },
+  hostButton: {
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    borderColor: 'rgba(245, 158, 11, 0.5)',
+  },
+  activeButtonHovered: {
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+    borderColor: colors.primary,
+  },
+  activeText: {
+    fontSize: isTV ? 16 : 13,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+  hostText: {
+    color: '#F59E0B',
+  },
+  pulseContainer: {
+    position: 'relative',
+    width: isTV ? 12 : 10,
+    height: isTV ? 12 : 10,
+  },
+  pulseDot: {
+    position: 'absolute',
+    width: isTV ? 12 : 10,
+    height: isTV ? 12 : 10,
+    borderRadius: isTV ? 6 : 5,
+    backgroundColor: '#A855F7',
+  },
+  hostPulseDot: {
+    backgroundColor: '#F59E0B',
+  },
+  pulseRing: {
+    position: 'absolute',
+    width: isTV ? 12 : 10,
+    height: isTV ? 12 : 10,
+    borderRadius: isTV ? 6 : 5,
+    backgroundColor: '#A855F7',
+  },
+  hostPulseRing: {
+    backgroundColor: '#F59E0B',
+  },
+  dropdown: {
+    position: 'absolute',
+    left: I18nManager.isRTL ? 'auto' : 0,
+    right: I18nManager.isRTL ? 0 : 'auto',
+    bottom: '100%',
+    marginBottom: spacing.sm,
+    width: isTV ? 240 : 192,
+    paddingVertical: spacing.xs,
+    backgroundColor: 'rgba(17, 17, 34, 0.95)',
+    backdropFilter: 'blur(20px)',
+    borderRadius: borderRadius.lg,
+    borderWidth: 1.5,
+    borderColor: 'rgba(168, 85, 247, 0.4)',
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+    zIndex: 50,
+  },
+  dropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: isTV ? spacing.md : spacing.sm,
+    borderRadius: borderRadius.sm,
+    marginHorizontal: spacing.xs,
+  },
+  dropdownItemHovered: {
+    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+  },
+  dropdownText: {
+    fontSize: isTV ? 16 : 14,
+    fontWeight: '500',
+    color: colors.text,
+  },
+})

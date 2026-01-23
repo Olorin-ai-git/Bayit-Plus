@@ -306,8 +306,8 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
         f"Google OAuth callback - code: {auth_data.code[:20]}..., redirect_uri: {final_redirect_uri}, state: {auth_data.state[:10]}..."
     )
 
-    # Exchange code for tokens
-    async with httpx.AsyncClient() as client:
+    # Exchange code for tokens (with timeout to prevent hanging)
+    async with httpx.AsyncClient(timeout=30.0) as client:
         token_response = await client.post(
             "https://oauth2.googleapis.com/token",
             data={

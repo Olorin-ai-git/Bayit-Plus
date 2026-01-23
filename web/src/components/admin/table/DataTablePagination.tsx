@@ -1,8 +1,8 @@
-import { View, Text, Pressable } from 'react-native';
-import clsx from 'clsx';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { z } from 'zod';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 
 const PaginationSchema = z.object({
   page: z.number(),
@@ -54,65 +54,55 @@ export default function DataTablePagination({
   };
 
   return (
-    <View
-      className={clsx(
-        'flex flex-row items-center justify-between p-4 border-t border-white/5',
-        isRTL && 'flex-row-reverse'
-      )}
-    >
-      <Text className="text-sm text-gray-400">
+    <View style={[styles.container, isRTL && styles.containerRTL]}>
+      <Text style={styles.infoText}>
         {t('common.showing', 'Showing')} {startItem}-{endItem}{' '}
         {t('common.of', 'of')} {pagination.total}
       </Text>
 
-      <View
-        className={clsx(
-          'flex flex-row items-center gap-2',
-          isRTL && 'flex-row-reverse'
-        )}
-      >
+      <View style={[styles.controls, isRTL && styles.controlsRTL]}>
         <Pressable
           onPress={handlePrevious}
           disabled={isFirstPage}
-          className={clsx(
-            'p-1 rounded-sm bg-white/10',
-            isFirstPage && 'opacity-50'
-          )}
+          style={[
+            styles.button,
+            isFirstPage && styles.buttonDisabled
+          ]}
         >
           {isRTL ? (
             <ChevronRight
               size={16}
-              color={isFirstPage ? '#6B7280' : '#FFFFFF'}
+              color={isFirstPage ? colors.textMuted : colors.text}
             />
           ) : (
             <ChevronLeft
               size={16}
-              color={isFirstPage ? '#6B7280' : '#FFFFFF'}
+              color={isFirstPage ? colors.textMuted : colors.text}
             />
           )}
         </Pressable>
 
-        <Text className="text-sm text-white">
+        <Text style={styles.pageText}>
           {pagination.page} / {totalPages}
         </Text>
 
         <Pressable
           onPress={handleNext}
           disabled={isLastPage}
-          className={clsx(
-            'p-1 rounded-sm bg-white/10',
-            isLastPage && 'opacity-50'
-          )}
+          style={[
+            styles.button,
+            isLastPage && styles.buttonDisabled
+          ]}
         >
           {isRTL ? (
             <ChevronLeft
               size={16}
-              color={isLastPage ? '#6B7280' : '#FFFFFF'}
+              color={isLastPage ? colors.textMuted : colors.text}
             />
           ) : (
             <ChevronRight
               size={16}
-              color={isLastPage ? '#6B7280' : '#FFFFFF'}
+              color={isLastPage ? colors.textMuted : colors.text}
             />
           )}
         </Pressable>
@@ -120,3 +110,41 @@ export default function DataTablePagination({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.glassBorderWhite,
+  },
+  containerRTL: {
+    flexDirection: 'row-reverse',
+  },
+  infoText: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
+  controls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  controlsRTL: {
+    flexDirection: 'row-reverse',
+  },
+  button: {
+    padding: spacing.xs,
+    borderRadius: borderRadius.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  buttonDisabled: {
+    opacity: 0.5,
+  },
+  pageText: {
+    fontSize: 14,
+    color: colors.text,
+  },
+});

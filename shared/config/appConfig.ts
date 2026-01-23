@@ -65,6 +65,12 @@ export const config = {
     defaultMinScore: 0.5,
     minQueryLength: 2,
   },
+
+  // Media assets
+  media: {
+    widgetsIntroVideo: '/media/widgets-intro.mp4',
+    olorinAvatarIntro: '/media/olorin-avatar-intro.mp4',
+  },
 };
 
 // API Base URL - from environment variable or default

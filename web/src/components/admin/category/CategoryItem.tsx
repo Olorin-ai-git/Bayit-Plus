@@ -1,22 +1,8 @@
-/**
- * CategoryItem Component
- *
- * Individual category item for dropdown list
- * Part of CategoryPicker migration from StyleSheet to TailwindCSS
- *
- * Features:
- * - Primary and secondary category names
- * - Selected state indicator (left border + dot)
- * - Glass morphism styling
- * - RTL-aware text alignment
- *
- * Props validated with Zod schema
- */
-
-import { View, Text, Pressable } from 'react-native'
-import { z } from 'zod'
-import { GlassView } from '@bayit/shared/ui'
-import { platformClass } from '../../../utils/platformClass'
+import React from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { z } from 'zod';
+import { GlassView } from '@bayit/shared/ui';
+import { colors, borderRadius } from '@bayit/shared/theme';
 
 const CategoryItemPropsSchema = z.object({
   category: z.object({
@@ -31,9 +17,9 @@ const CategoryItemPropsSchema = z.object({
   isSelected: z.boolean(),
   textAlign: z.enum(['left', 'right', 'center']),
   onPress: z.function().args(z.string()).returns(z.void()),
-})
+});
 
-export type CategoryItemProps = z.infer<typeof CategoryItemPropsSchema>
+export type CategoryItemProps = z.infer<typeof CategoryItemPropsSchema>;
 
 export function CategoryItem({
   category,
@@ -46,55 +32,74 @@ export function CategoryItem({
       key={category.id}
       onPress={() => onPress(category.id)}
     >
-      <View
-        className={platformClass(
-          'border-b border-white/10',
-          'border-b border-white/10'
-        )}
-      >
+      <View style={styles.itemContainer}>
         <GlassView
-          className={platformClass(
-            `flex-row items-center justify-between px-4 py-3 ${
-              isSelected ? 'border-l-[3px] border-l-purple-500' : ''
-            }`,
-            `flex-row items-center justify-between px-4 py-3 ${
-              isSelected ? 'border-l-[3px] border-l-purple-500' : ''
-            }`
-          )}
+          style={[
+            styles.glassContainer,
+            isSelected && styles.glassContainerSelected,
+          ]}
           intensity={isSelected ? 'high' : 'low'}
         >
-          <View className={platformClass('flex-1', 'flex-1')}>
-            <Text
-              className={platformClass(
-                'text-sm font-medium text-white',
-                'text-sm font-medium text-white'
-              )}
-              style={{ textAlign }}
-            >
+          <View style={styles.textContainer}>
+            <Text style={[styles.primaryText, { textAlign }]}>
               {category.name}
             </Text>
             {category.name_en && (
-              <Text
-                className={platformClass(
-                  'text-xs text-white/60 mt-1',
-                  'text-xs text-white/60 mt-1'
-                )}
-                style={{ textAlign }}
-              >
+              <Text style={[styles.secondaryText, { textAlign }]}>
                 {category.name_en}
               </Text>
             )}
           </View>
-          {isSelected && (
-            <View
-              className={platformClass(
-                'w-2 h-2 rounded-full bg-purple-500',
-                'w-2 h-2 rounded-full bg-purple-500'
-              )}
-            />
-          )}
+          {isSelected && <View style={styles.selectedDot} />}
         </GlassView>
       </View>
     </Pressable>
-  )
+  );
 }
+
+const styles = StyleSheet.create({
+  itemContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  glassContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  glassContainerSelected: {
+    borderLeftWidth: 3,
+    borderLeftColor: colors.primary,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  primaryText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  secondaryText: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: 4,
+  },
+  selectedDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.primary,
+  },
+});
+
+if (process.env.NODE_ENV === 'development') {
+  const originalComponent = CategoryItem;
+  (CategoryItem as any) = (props: any) => {
+    CategoryItemPropsSchema.parse(props);
+    return originalComponent(props);
+  };
+}
+
+export default CategoryItem;

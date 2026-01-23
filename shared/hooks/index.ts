@@ -11,6 +11,9 @@ export type { UseWakeWordListeningOptions, UseWakeWordListeningReturn } from './
 export { useSearch } from './useSearch';
 export { useVoiceSupport } from './useVoiceSupport';
 export { useWakeWordSupport } from './useWakeWordSupport';
+export { useLiveDubbing } from './useLiveDubbing';
+export type { UseLiveDubbingOptions, UseLiveDubbingState, UseLiveDubbingReturn } from './useLiveDubbing';
+export { useYouTubeThumbnail } from './useYouTubeThumbnail';
 
 // Voice-first conversational interface hooks (Phases 4-10)
 // These hooks depend on react-router-dom and are in a separate export for TV apps

@@ -1,7 +1,7 @@
-import { View, Text } from 'react-native';
-import clsx from 'clsx';
+import { View, Text, StyleSheet } from 'react-native';
 import { z } from 'zod';
 import { useDirection } from '@/hooks/useDirection';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 
 const ColumnSchema = z.object({
   key: z.string(),
@@ -33,23 +33,17 @@ export default function DataTableHeader({ columns, isRTL }: DataTableHeaderProps
   const displayColumns = isRTL ? [...columns].reverse() : columns;
 
   return (
-    <View
-      className={clsx(
-        'flex flex-row border-b border-white/5 w-full'
-      )}
-    >
+    <View style={styles.container}>
       {displayColumns.map((col) => (
         <View
           key={col.key}
-          className={clsx(
-            'px-4 py-2 min-w-[80px]',
-            col.className
-          )}
-          style={col.width ? { width: col.width as any } : { flex: 1 }}
+          style={[
+            styles.column,
+            col.width ? { width: col.width as any } : { flex: 1 }
+          ]}
         >
           <Text
-            className="text-sm font-semibold text-gray-400"
-            style={{ textAlign }}
+            style={[styles.label, { textAlign }]}
           >
             {col.label}
           </Text>
@@ -58,3 +52,22 @@ export default function DataTableHeader({ columns, isRTL }: DataTableHeaderProps
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorderWhite,
+    width: '100%',
+  },
+  column: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    minWidth: 80,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.textMuted,
+  },
+});

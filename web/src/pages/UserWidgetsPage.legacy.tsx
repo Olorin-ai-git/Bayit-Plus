@@ -205,7 +205,7 @@ export default function UserWidgetsPage() {
   const numColumns = width >= 1280 ? 4 : width >= 1024 ? 3 : width >= 768 ? 2 : 1;
 
   const handleCreateWidget = () => {
-    console.log('[UserWidgetsPage] Create button clicked');
+    logger.debug('Create button clicked', 'UserWidgetsPage');
     setShowWidgetForm(true);
   };
 

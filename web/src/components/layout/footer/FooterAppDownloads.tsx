@@ -2,7 +2,7 @@
  * FooterAppDownloads Component
  *
  * App Store and Google Play download buttons
- * Part of Footer migration from StyleSheet to TailwindCSS
+ * Part of Footer - StyleSheet implementation for RN Web compatibility
  *
  * Features:
  * - App Store button (iOS)
@@ -14,12 +14,11 @@
  * - i18n support for button labels
  */
 
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { Smartphone } from 'lucide-react';
 import { GlassView } from '@bayit/shared';
-import { platformClass } from '../../../utils/platformClass';
 
 // Zod schema for prop validation
 const AppStoreSchema = z.object({
@@ -63,38 +62,25 @@ export default function FooterAppDownloads({
   };
 
   return (
-    <View className={platformClass('gap-2')}>
+    <View style={styles.container}>
       {/* App Buttons */}
-      <View className={platformClass('flex-row gap-2')}>
+      <View style={styles.appButtons}>
         {appStores.map((store) => (
           <Pressable
             key={store.key}
             onPress={() => handleStorePress(store.url)}
-            className={platformClass(
-              'active:opacity-80 active:scale-[0.98]',
-              ''
-            )}
+            style={({ pressed }) => [
+              styles.appButton,
+              pressed && styles.appButtonPressed,
+            ]}
             accessibilityLabel={t(store.label)}
             accessibilityRole="button"
             // Touch target: 44x44pt (iOS), 48x48dp (Android) ✓
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
           >
-            <GlassView
-              className={platformClass(
-                'flex-row items-center gap-2 py-2 px-3 rounded',
-                'flex-row items-center gap-2 py-2 px-3 rounded'
-              )}
-              intensity="low"
-            >
+            <GlassView style={styles.appButtonContent} intensity="low">
               <Smartphone size={14} color="rgba(255, 255, 255, 0.9)" />
-              <Text
-                className={platformClass(
-                  'text-[11px] font-semibold text-white',
-                  'text-[11px] font-semibold text-white'
-                )}
-              >
-                {t(store.label)}
-              </Text>
+              <Text style={styles.appButtonText}>{t(store.label)}</Text>
             </GlassView>
           </Pressable>
         ))}
@@ -102,6 +88,36 @@ export default function FooterAppDownloads({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 8,
+  },
+  appButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  appButton: {
+    // Pressable wrapper doesn't need base styles
+  },
+  appButtonPressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.98 }],
+  },
+  appButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+  },
+  appButtonText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.9)',
+  },
+});
 
 // Export default app stores for reuse
 export { DEFAULT_APP_STORES };

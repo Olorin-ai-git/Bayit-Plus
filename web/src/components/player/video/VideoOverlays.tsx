@@ -1,5 +1,5 @@
 /**
- * VideoOverlays - Loading, subtitles, and recording status overlays
+ * VideoOverlays - Loading, subtitles, trivia, and recording status overlays
  *
  * Migration Status: ✅ StyleSheet → TailwindCSS
  * File Size: Under 200 lines ✓
@@ -12,6 +12,8 @@ import { platformClass } from '@/utils/platformClass'
 import { RecordingStatusIndicator } from '../RecordingStatusIndicator'
 import SubtitleOverlay from '../SubtitleOverlay'
 import LiveSubtitleOverlay from '../LiveSubtitleOverlay'
+import TriviaOverlay from '../TriviaOverlay'
+import { TriviaFact } from '@bayit/shared-types/trivia'
 
 // Zod schema for prop validation
 const VideoOverlaysPropsSchema = z.object({
@@ -24,11 +26,17 @@ const VideoOverlaysPropsSchema = z.object({
   currentTime: z.number(),
   currentSubtitleLang: z.string().optional().nullable(),
   subtitleSettings: z.any(), // SubtitleSettings type
+  triviaEnabled: z.boolean().optional(),
+  currentTriviaFact: z.any().optional().nullable(), // TriviaFact type
+  onDismissTrivia: z.function().optional(),
+  isRTL: z.boolean().optional(),
 })
 
 export type VideoOverlaysProps = z.infer<typeof VideoOverlaysPropsSchema> & {
   currentCues: any[]
   visibleLiveSubtitles: any[]
+  currentTriviaFact?: TriviaFact | null
+  onDismissTrivia?: () => void
 }
 
 export default function VideoOverlays({
@@ -43,6 +51,10 @@ export default function VideoOverlays({
   currentSubtitleLang,
   subtitleSettings,
   visibleLiveSubtitles,
+  triviaEnabled = false,
+  currentTriviaFact,
+  onDismissTrivia,
+  isRTL = false,
 }: VideoOverlaysProps) {
   return (
     <>
@@ -65,6 +77,15 @@ export default function VideoOverlays({
 
       {/* Live Subtitle Overlay (Premium) */}
       {isLive && <LiveSubtitleOverlay cues={visibleLiveSubtitles} />}
+
+      {/* Trivia Overlay (VOD only) */}
+      {!isLive && triviaEnabled && onDismissTrivia && (
+        <TriviaOverlay
+          fact={currentTriviaFact || null}
+          onDismiss={onDismissTrivia}
+          isRTL={isRTL}
+        />
+      )}
 
       {/* Loading Spinner */}
       {loading && (
