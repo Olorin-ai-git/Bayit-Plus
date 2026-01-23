@@ -3,15 +3,18 @@
 Script to add Tagad series videos to VOD collection
 """
 import asyncio
+import os
 from pathlib import Path
 from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
-from app.models.content import Content, 
+from app.models.content import Content,
 from app.models.content_taxonomy import ContentSection
 from app.core.config import settings
 
-UPLOADS_DIR = Path("/Users/olorin/Documents/olorin/backend/uploads/vod")
+# Use environment variable or default to project-relative path
+project_root = os.getenv("PROJECT_ROOT", str(Path(__file__).parent.parent.parent.parent))
+UPLOADS_DIR = Path(os.getenv("UPLOADS_VOD_DIR", f"{project_root}/backend/uploads/vod"))
 
 
 async def add_tagad_series():

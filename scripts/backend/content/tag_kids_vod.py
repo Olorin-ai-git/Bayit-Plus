@@ -19,7 +19,11 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 
 # Add parent directory to path for imports
-sys.path.insert(0, "/Users/olorin/Documents/olorin/backend")
+# Add parent directory to path for imports
+from pathlib import Path
+import os
+project_root = os.getenv("PROJECT_ROOT", str(Path(__file__).parent.parent.parent.parent))
+sys.path.insert(0, f"{project_root}/backend")
 
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient

@@ -125,7 +125,8 @@ def main():
     print("=" * 80)
 
     # Paths
-    shared_i18n = Path("/Users/olorin/Documents/olorin/shared/i18n/locales")
+    project_root = os.getenv("PROJECT_ROOT", str(Path(__file__).parent.parent.parent.parent))
+    shared_i18n = Path(os.getenv("SHARED_I18N_DIR", f"{project_root}/shared/i18n/locales"))
     en_path = shared_i18n / "en.json"
     es_path = shared_i18n / "es.json"
 

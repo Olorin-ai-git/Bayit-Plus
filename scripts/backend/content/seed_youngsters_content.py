@@ -15,10 +15,13 @@ Usage:
 import argparse
 import asyncio
 import logging
+import os
 import sys
+from pathlib import Path
 
 # Add parent directory to path for imports
-sys.path.insert(0, "/Users/olorin/Documents/olorin/backend")
+project_root = os.getenv("PROJECT_ROOT", str(Path(__file__).parent.parent.parent.parent))
+sys.path.insert(0, f"{project_root}/backend")
 
 from app.core.config import settings
 from app.core.database import document_models
