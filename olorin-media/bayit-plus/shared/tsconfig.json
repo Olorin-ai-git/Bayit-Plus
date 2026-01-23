@@ -1,0 +1,38 @@
+{
+  "extends": "../web/tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "types": ["react", "react-native"],
+    "paths": {
+      "@/*": ["../web/src/*"]
+    }
+  },
+  "include": [
+    "components/**/*",
+    "screens/**/*",
+    "services/**/*",
+    "stores/**/*",
+    "hooks/**/*",
+    "contexts/**/*",
+    "i18n/**/*",
+    "config/**/*",
+    "types/**/*",
+    "utils/**/*",
+    "assets/**/*",
+    "theme/**/*"
+  ],
+  "exclude": ["node_modules", "dist", "build"]
+}
