@@ -50,7 +50,7 @@ main() {
     # Try to set project (this will fail if auth tokens are expired)
     PROJECT_ID="${GCP_PROJECT_ID:-bayit-plus}"
     log_substep "Setting project to $PROJECT_ID..."
-    if ! gcloud config set project "$PROJECT_ID" 2>&1 | grep -v "Updated property"; then
+    if ! gcloud config set project "$PROJECT_ID" > /dev/null 2>&1; then
         print_error "Failed to set project. Authentication tokens may be expired."
         echo ""
         log_info "Please re-authenticate:"
