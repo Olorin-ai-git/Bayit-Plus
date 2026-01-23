@@ -44,3 +44,26 @@ export {
   reorderSection,
   toggleSectionVisibility,
 } from './homePageConfig';
+
+export type {
+  TriviaFact,
+  TriviaCategory,
+  TriviaResponse,
+  TriviaEnrichedResponse,
+  TriviaFrequency,
+  TriviaPreferences,
+  TriviaSettings,
+  TriviaState,
+  TriviaHealthResponse,
+  TriviaCategoryInfo,
+  TriviaFrequencyInfo,
+} from './trivia';
+
+export {
+  DEFAULT_TRIVIA_PREFERENCES,
+  TRIVIA_CATEGORIES,
+  TRIVIA_FREQUENCIES,
+  getCategoryInfo,
+  getFrequencyInfo,
+  getIntervalForFrequency,
+} from './trivia';

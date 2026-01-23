@@ -472,6 +472,51 @@ class Settings(BaseSettings):
     KIDS_CONTENT_SAFE_SEARCH_ENABLED: bool = True
     KIDS_CONTENT_DEFAULT_AGE_MAX: int = 12
 
+    # Trivia Feature Configuration
+    TRIVIA_ENABLED: bool = Field(default=True, description="Enable trivia feature globally")
+    TRIVIA_DEFAULT_DISPLAY_DURATION_SECONDS: int = Field(
+        default=10, ge=5, le=30, description="Default trivia display duration in seconds"
+    )
+    TRIVIA_MIN_INTERVAL_SECONDS: int = Field(
+        default=300, ge=60, le=1800, description="Minimum interval between trivia facts"
+    )
+    TRIVIA_MAX_FACTS_PER_CONTENT: int = Field(
+        default=50, ge=10, le=100, description="Maximum trivia facts per content item"
+    )
+    TRIVIA_ROLLOUT_PERCENTAGE: int = Field(
+        default=100, ge=0, le=100, description="Percentage of users to show trivia"
+    )
+    TRIVIA_AI_MAX_TOKENS: int = Field(
+        default=1024, ge=256, le=4096, description="Max tokens for AI trivia generation"
+    )
+    TRIVIA_SANITIZE_TITLE_MAX_LEN: int = Field(
+        default=200, ge=50, le=500, description="Max length for title sanitization"
+    )
+    TRIVIA_SANITIZE_DESCRIPTION_MAX_LEN: int = Field(
+        default=500, ge=100, le=2000, description="Max length for description sanitization"
+    )
+    TRIVIA_SANITIZE_FIELD_MAX_LEN: int = Field(
+        default=100, ge=50, le=500, description="Max length for other field sanitization"
+    )
+
+    @field_validator("TRIVIA_MIN_INTERVAL_SECONDS")
+    @classmethod
+    def validate_trivia_interval(cls, v: int) -> int:
+        """Validate trivia interval is reasonable."""
+        if v < 60:
+            raise ValueError("TRIVIA_MIN_INTERVAL_SECONDS must be at least 60 seconds")
+        if v > 1800:
+            raise ValueError("TRIVIA_MIN_INTERVAL_SECONDS must not exceed 1800 seconds")
+        return v
+
+    @field_validator("TRIVIA_ROLLOUT_PERCENTAGE")
+    @classmethod
+    def validate_trivia_rollout(cls, v: int) -> int:
+        """Validate rollout percentage is valid."""
+        if v < 0 or v > 100:
+            raise ValueError("TRIVIA_ROLLOUT_PERCENTAGE must be between 0 and 100")
+        return v
+
     # Kids Educational Sites Configuration (JSON mapping subcategory -> URLs)
     # Example: '{"learning-hebrew": ["https://site1.com", "https://site2.com"]}'
     KIDS_EDUCATIONAL_SITES_CONFIG: str = ""

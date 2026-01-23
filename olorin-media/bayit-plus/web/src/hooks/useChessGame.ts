@@ -5,6 +5,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuthStore } from '../stores/authStore';
 import axios from 'axios';
+import logger from '@/utils/logger';
 
 interface ChessPlayer {
   user_id: string;
@@ -90,18 +91,18 @@ export default function useChessGame() {
 
     try {
       const wsUrl = getWebSocketUrl(gameCode);
-      console.log('[Chess] Connecting to WebSocket:', wsUrl.replace(token, 'TOKEN_HIDDEN'));
+      logger.debug('Connecting to WebSocket', 'useChessGame', { url: wsUrl.replace(token, 'TOKEN_HIDDEN') });
       ws.current = new WebSocket(wsUrl);
 
       ws.current.onopen = () => {
-        console.log('[Chess] WebSocket connected successfully');
+        logger.debug('WebSocket connected successfully', 'useChessGame');
         setIsConnected(true);
         setError(null);
         reconnectAttempts.current = 0;
       };
 
       ws.current.onclose = (event) => {
-        console.log('[Chess] WebSocket disconnected. Code:', event.code, 'Reason:', event.reason);
+        logger.debug('WebSocket disconnected', 'useChessGame', { code: event.code, reason: event.reason });
         setIsConnected(false);
 
         // Attempt reconnection if not intentional disconnect
@@ -109,7 +110,7 @@ export default function useChessGame() {
           reconnectAttempts.current += 1;
           const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 10000);
 
-          console.log(`[Chess] Reconnecting in ${delay}ms (attempt ${reconnectAttempts.current})`);
+          logger.debug('Reconnecting', 'useChessGame', { delay, attempt: reconnectAttempts.current });
 
           reconnectTimeout.current = setTimeout(() => {
             connectWebSocket(gameCode);
@@ -118,9 +119,7 @@ export default function useChessGame() {
       };
 
       ws.current.onerror = (event) => {
-        console.error('[Chess] WebSocket error:', event);
-        console.error('[Chess] WebSocket readyState:', ws.current?.readyState);
-        console.error('[Chess] Game code:', gameCode);
+        logger.error('WebSocket error', 'useChessGame', { event, readyState: ws.current?.readyState, gameCode });
         setError('Connection error - check console for details');
       };
 
@@ -163,10 +162,10 @@ export default function useChessGame() {
               break;
 
             default:
-              console.warn('[Chess] Unknown message type:', message.type);
+              logger.warn('Unknown message type', 'useChessGame', { type: message.type });
           }
         } catch (err) {
-          console.error('[Chess] Failed to parse message:', err);
+          logger.error('Failed to parse message', 'useChessGame', err);
         }
       };
 
@@ -183,7 +182,7 @@ export default function useChessGame() {
       });
 
     } catch (err) {
-      console.error('[Chess] Failed to connect:', err);
+      logger.error('Failed to connect', 'useChessGame', err);
       setError('Failed to connect to game');
     }
   }, [token, game, getWebSocketUrl]);

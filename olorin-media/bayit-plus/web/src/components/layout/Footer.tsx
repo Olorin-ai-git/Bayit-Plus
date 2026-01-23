@@ -1,5 +1,5 @@
 /**
- * Footer Component (Migrated to TailwindCSS)
+ * Footer Component (StyleSheet Implementation)
  *
  * Main footer with expand/collapse functionality and drag-to-resize
  * Orchestrates 5 sub-components:
@@ -9,7 +9,7 @@
  * - FooterLanguageSelector (i18n picker)
  * - FooterAppDownloads (App Store/Play Store buttons)
  *
- * Migration Status: ✅ StyleSheet → TailwindCSS
+ * Migration Status: ✅ TailwindCSS → StyleSheet (RN Web Compatible)
  * File Size: Under 200 lines ✓
  * Touch Targets: 44x44pt (iOS), 48x48dp (Android) ✓
  * Cross-Platform: Web, iOS, Android, tvOS ✓
@@ -21,12 +21,12 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp, GripHorizontal } from 'lucide-react';
 import { GlassView, AnimatedLogo } from '@bayit/shared';
-import { platformClass } from '../../utils/platformClass';
 import FooterBrand from './footer/FooterBrand';
 import FooterLinks from './footer/FooterLinks';
 import FooterNewsletter from './footer/FooterNewsletter';
 import FooterLanguageSelector from './footer/FooterLanguageSelector';
 import FooterAppDownloads from './footer/FooterAppDownloads';
+import { footerStyles as styles } from './Footer.styles';
 
 const COLLAPSED_HEIGHT = 48;
 const EXPANDED_HEIGHT = 320;
@@ -97,48 +97,43 @@ export default function Footer() {
 
   return (
     <GlassView
-      className={platformClass('mt-auto border-t border-white/[0.08] overflow-hidden')}
-      style={{
-        height,
-        transition: isDragging ? 'none' : 'height 0.3s ease',
-        userSelect: isDragging ? 'none' : 'auto',
-      }}
+      style={[
+        styles.container,
+        {
+          height,
+          transition: isDragging ? 'none' : 'height 0.3s ease',
+          userSelect: isDragging ? 'none' : 'auto',
+        } as any,
+      ]}
       intensity="high"
     >
       {/* Splitter Handle */}
       <Pressable
-        className={platformClass(
-          `h-12 border-b border-white/[0.05] ${isDragging ? 'bg-purple-500/10' : ''}`,
-          `h-12 border-b border-white/[0.05] ${isDragging ? 'bg-purple-500/10' : ''}`
-        )}
-        style={{ cursor: 'ns-resize' }}
+        style={[
+          styles.splitterHandle,
+          isDragging && styles.splitterHandleDragging,
+          { cursor: 'ns-resize' } as any,
+        ]}
         onPress={toggleExpanded}
         onPressIn={handleDragStart as any}
       >
-        <View
-          className={platformClass(
-            'absolute top-0 left-1/2 -translate-x-1/2 py-1 px-4 opacity-60'
-          )}
-        >
+        <View style={styles.gripIconContainer}>
           <GripHorizontal size={20} color="rgba(255, 255, 255, 0.4)" />
         </View>
-        <View className={platformClass('flex-1 flex-row items-center justify-between px-6 h-full')}>
+        <View style={styles.handleContent}>
           {!isExpanded && (
             <>
-              <View className={platformClass('flex-row items-center gap-2')}>
+              <View style={styles.logoContainer}>
                 <AnimatedLogo size="small" hideHouse={true} />
               </View>
-              <Text className={platformClass('text-xs text-white/40')}>
+              <Text style={styles.copyrightCollapsed}>
                 {t('footer.copyright', '© {{year}} Bayit+. All rights reserved.', {
                   year: new Date().getFullYear(),
                 })}
               </Text>
             </>
           )}
-          <Pressable
-            className={platformClass('p-2 rounded-full bg-white/[0.05] border border-white/10')}
-            onPress={toggleExpanded}
-          >
+          <Pressable style={styles.toggleButton} onPress={toggleExpanded}>
             {isExpanded ? (
               <ChevronDown size={18} color="rgba(255, 255, 255, 0.6)" />
             ) : (
@@ -150,19 +145,11 @@ export default function Footer() {
 
       {/* Expanded Content */}
       {isExpanded && (
-        <View className={platformClass('flex-1 max-w-[1400px] mx-auto w-full')}>
-          <View
-            className={platformClass(
-              `flex-1 ${isMobile ? 'flex-col' : 'flex-row'} p-4 pt-2 gap-6`
-            )}
-          >
+        <View style={styles.expandedContainer}>
+          <View style={[styles.mainContent, isMobile && styles.mainContentMobile]}>
             <FooterBrand isMobile={isMobile} isRTL={isRTL} />
             <FooterLinks isMobile={isMobile} isRTL={isRTL} />
-            <View
-              className={platformClass(
-                `min-w-[200px] gap-4 ${isMobile ? 'items-center' : 'items-start'}`
-              )}
-            >
+            <View style={[styles.rightColumn, isMobile && styles.rightColumnMobile]}>
               <FooterNewsletter isRTL={isRTL} />
               <FooterLanguageSelector />
               <FooterAppDownloads />
@@ -170,43 +157,32 @@ export default function Footer() {
           </View>
 
           {/* Bottom Bar */}
-          <View className={platformClass('border-t border-white/[0.05] px-4 py-2')}>
-            <View className={platformClass('flex-row items-center justify-between gap-4')}>
-              <View className={platformClass('flex-row items-center gap-3')}>
-                <Text className={platformClass('text-[10px] text-white/40')}>
+          <View style={styles.bottomBar}>
+            <View style={styles.bottomBarContent}>
+              <View style={styles.leftBottomSection}>
+                <Text style={styles.copyrightText}>
                   {t('footer.copyright', '© {{year}} Bayit+. All rights reserved.', {
                     year: new Date().getFullYear(),
                   })}
                 </Text>
-                <View className={platformClass('flex-row items-center')}>
-                  <Text className={platformClass('text-[10px] text-white/40')}>
-                    Powered by{' '}
-                  </Text>
+                <View style={styles.poweredBySection}>
+                  <Text style={styles.poweredByText}>Powered by </Text>
                   <Pressable
                     onPress={() =>
                       window.open('https://marketing.radio.olorin.ai', '_blank')
                     }
                   >
-                    <Text
-                      className={platformClass(
-                        'text-[10px] text-purple-400 font-medium hover:text-purple-300',
-                        'text-[10px] text-purple-400 font-medium'
-                      )}
-                    >
-                      Olorin.ai LLC
-                    </Text>
+                    <Text style={styles.olorinLink}>Olorin.ai LLC</Text>
                   </Pressable>
                 </View>
               </View>
-              <View className={platformClass('flex-row items-center gap-2')}>
-                <Link to="/sitemap" style={{ textDecoration: 'none' }}>
-                  <Text className={platformClass('text-[10px] text-white/40')}>
-                    {t('footer.sitemap', 'Sitemap')}
-                  </Text>
+              <View style={styles.rightBottomSection}>
+                <Link to="/sitemap" style={styles.link}>
+                  <Text style={styles.linkText}>{t('footer.sitemap', 'Sitemap')}</Text>
                 </Link>
-                <View className={platformClass('w-1 h-1 rounded-full bg-white/40 mx-1')} />
-                <Link to="/accessibility" style={{ textDecoration: 'none' }}>
-                  <Text className={platformClass('text-[10px] text-white/40')}>
+                <View style={styles.separator} />
+                <Link to="/accessibility" style={styles.link}>
+                  <Text style={styles.linkText}>
                     {t('footer.accessibility', 'Accessibility')}
                   </Text>
                 </Link>

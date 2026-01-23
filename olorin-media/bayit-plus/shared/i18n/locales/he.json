@@ -53,7 +53,8 @@
     "expand": "הרחב",
     "collapse": "כווץ",
     "upgrade": "שדרג לפרימיום",
-    "skip": "דלג"
+    "skip": "דלג",
+    "dismiss": "סגור"
   },
   "demo": {
     "banner": "מצב הדמו",
@@ -1175,6 +1176,14 @@
       "saving": "שומר...",
       "cancel": "ביטול",
       "change": "שנה"
+    },
+    "intro": {
+      "title": "ברוכים הבאים לוידג'טים",
+      "description": "גלה וידג'טים צפים עוצמתיים להתאמה אישית של חוויית הצפייה שלך",
+      "watchVideo": "צפה בהקדמה",
+      "skip": "דלג",
+      "dismiss": "אל תציג שוב",
+      "videoUnavailable": "וידאו זמינית באופן זמני"
     }
   },
   "trending": {
@@ -3083,7 +3092,22 @@
     "premiumRequired": "נדרש מנוי פרימיום לדיבוב חי",
     "unavailable": "דיבוב לא זמין לערוץ זה",
     "error": "שגיאת דיבוב",
-    "reconnecting": "מתחבר מחדש..."
+    "reconnecting": "מתחבר מחדש...",
+    "premium": "פרימיום",
+    "tapToEnable": "הקש להפעלת דיבוב חי",
+    "tapToDisable": "הקש לכיבוי דיבוב חי",
+    "tapToChangeLanguage": "הקש לשינוי שפת יעד",
+    "currentlySelected": "נבחר כעת",
+    "tapToSelect": "הקש לבחירה",
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "ar": "العربية",
+      "ru": "Русский",
+      "fr": "Français",
+      "de": "Deutsch",
+      "he": "עברית"
+    }
   },
   "video": {
     "watchTrailer": "צפה בטריילר",
@@ -3242,6 +3266,7 @@
     "tabs": {
       "docs": "תיעוד",
       "faq": "שאלות נפוצות",
+      "videos": "סרטונים",
       "contact": "צור קשר",
       "tickets": "הפניות שלי"
     },
@@ -3276,6 +3301,12 @@
         "technical": "טכני",
         "features": "תכונות"
       }
+    },
+    "videos": {
+      "title": "סרטוני הדרכה",
+      "subtitle": "למד כיצד להשתמש בתכונות של Bayit+",
+      "widgetsIntro": "תחילת העבודה עם וידג'טים",
+      "widgetsDescription": "למד כיצד ליצור, להתאים אישית ולנהל וידג'טים צפים"
     },
     "contact": {
       "voiceTitle": "תמיכה קולית",
@@ -3692,6 +3723,41 @@
       "create_session_failed": "יצירת הפעילות נכשלה",
       "add_transcript_failed": "הוספת התמלול נכשלה",
       "generate_recap_failed": "יצירת הסיכום נכשלה"
+    }
+  },
+  "trivia": {
+    "didYouKnow": "הידעת?",
+    "dismissHint": "הקש לסגירת הטריוויה",
+    "settings": {
+      "title": "טריוויה ועובדות מעניינות",
+      "enabled": "הצג טריוויה",
+      "enabledDescription": "הצג עובדות מעניינות בזמן הצפייה",
+      "frequency": "תדירות",
+      "frequencyHint": "שנה תדירות הצגת טריוויה",
+      "categories": "קטגוריות",
+      "category": "קטגוריה",
+      "selectCategory": "הקש לבחירת קטגוריה זו",
+      "deselectCategory": "הקש לביטול בחירת קטגוריה זו",
+      "displayDuration": "משך הצגה",
+      "durationHint": "שנה את משך זמן הצגת הטריוויה",
+      "seconds": "שניות"
+    },
+    "categories": {
+      "cast": "שחקנים",
+      "production": "הפקה",
+      "location": "מיקום",
+      "cultural": "תרבות",
+      "historical": "היסטורי"
+    },
+    "frequency": {
+      "off": "כבוי",
+      "low": "נמוך",
+      "normal": "רגיל",
+      "high": "גבוה"
+    },
+    "errors": {
+      "loadFailed": "טעינת הטריוויה נכשלה",
+      "saveFailed": "שמירת ההעדפות נכשלה"
     }
   }
 }

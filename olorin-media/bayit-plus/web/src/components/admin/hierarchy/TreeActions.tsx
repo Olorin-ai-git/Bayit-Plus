@@ -3,10 +3,11 @@
  * Handles selection, language mapping, and batch operations
  */
 
-import { useState, useCallback, useMemo } from 'react'
-import { View } from 'react-native'
-import { GlassCheckbox } from '@bayit/shared/ui/web'
-import { z } from 'zod'
+import React, { useState, useCallback, useMemo } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { GlassCheckbox } from '@bayit/shared/ui/web';
+import { z } from 'zod';
+import { colors } from '@bayit/shared/theme';
 
 // Language flag mapping
 export const getLanguageFlag = (lang: string): string => {
@@ -23,9 +24,9 @@ export const getLanguageFlag = (lang: string): string => {
     'zh': '🇨🇳',
     'ja': '🇯🇵',
     'ko': '🇰🇷',
-  }
-  return flags[lang] || '🌐'
-}
+  };
+  return flags[lang] || '🌐';
+};
 
 // Language name mapping
 export const getLanguageName = (lang: string): string => {
@@ -42,33 +43,31 @@ export const getLanguageName = (lang: string): string => {
     'zh': 'Chinese',
     'ja': 'Japanese',
     'ko': 'Korean',
-  }
-  return names[lang] || lang
-}
+  };
+  return names[lang] || lang;
+};
 
 interface SelectionHeaderProps {
-  allSelected: boolean
-  someSelected: boolean
-  onSelectAll: () => void
+  allSelected: boolean;
+  someSelected: boolean;
+  onSelectAll: () => void;
 }
 
 export function SelectionHeader({ allSelected, someSelected, onSelectAll }: SelectionHeaderProps) {
   return (
-    <View className="items-center justify-center min-h-[40px] relative">
+    <View style={styles.selectionHeaderContainer}>
       <GlassCheckbox checked={allSelected} onChange={onSelectAll} />
-      {someSelected && (
-        <View className="absolute bottom-1 w-3 h-0.5 bg-blue-500 rounded-sm" />
-      )}
+      {someSelected && <View style={styles.partialIndicator} />}
     </View>
-  )
+  );
 }
 
 interface UseSelectionResult {
-  selectedSet: Set<string>
-  allPageSelected: boolean
-  somePageSelected: boolean
-  handleSelectRow: (id: string) => void
-  handleSelectAll: () => void
+  selectedSet: Set<string>;
+  allPageSelected: boolean;
+  somePageSelected: boolean;
+  handleSelectRow: (id: string) => void;
+  handleSelectAll: () => void;
 }
 
 /**
@@ -79,49 +78,47 @@ export function useSelection(
   selectedIds: string[],
   onSelectionChange?: (selectedIds: string[]) => void
 ): UseSelectionResult {
-  const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds])
+  const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
 
   const handleSelectRow = useCallback(
     (id: string) => {
-      if (!onSelectionChange) return
+      if (!onSelectionChange) return;
 
-      const newSelected = new Set(selectedSet)
+      const newSelected = new Set(selectedSet);
       if (newSelected.has(id)) {
-        newSelected.delete(id)
+        newSelected.delete(id);
       } else {
-        newSelected.add(id)
+        newSelected.add(id);
       }
-      onSelectionChange(Array.from(newSelected))
+      onSelectionChange(Array.from(newSelected));
     },
     [selectedSet, onSelectionChange]
-  )
+  );
 
   const handleSelectAll = useCallback(() => {
-    if (!onSelectionChange) return
+    if (!onSelectionChange) return;
 
-    const contentIds = items.map((item) => item.id)
-    const allSelected = contentIds.every((id) => selectedSet.has(id))
+    const contentIds = items.map((item) => item.id);
+    const allSelected = contentIds.every((id) => selectedSet.has(id));
 
     if (allSelected) {
-      // Deselect all content items from this page
-      const newSelected = new Set(selectedSet)
-      contentIds.forEach((id) => newSelected.delete(id))
-      onSelectionChange(Array.from(newSelected))
+      const newSelected = new Set(selectedSet);
+      contentIds.forEach((id) => newSelected.delete(id));
+      onSelectionChange(Array.from(newSelected));
     } else {
-      // Select all content items on this page
-      const newSelected = new Set([...selectedSet, ...contentIds])
-      onSelectionChange(Array.from(newSelected))
+      const newSelected = new Set([...selectedSet, ...contentIds]);
+      onSelectionChange(Array.from(newSelected));
     }
-  }, [items, selectedSet, onSelectionChange])
+  }, [items, selectedSet, onSelectionChange]);
 
   const allPageSelected = useMemo(() => {
-    if (items.length === 0) return false
-    return items.every((item) => selectedSet.has(item.id))
-  }, [items, selectedSet])
+    if (items.length === 0) return false;
+    return items.every((item) => selectedSet.has(item.id));
+  }, [items, selectedSet]);
 
   const somePageSelected = useMemo(() => {
-    return items.some((item) => selectedSet.has(item.id)) && !allPageSelected
-  }, [items, selectedSet, allPageSelected])
+    return items.some((item) => selectedSet.has(item.id)) && !allPageSelected;
+  }, [items, selectedSet, allPageSelected]);
 
   return {
     selectedSet,
@@ -129,7 +126,7 @@ export function useSelection(
     somePageSelected,
     handleSelectRow,
     handleSelectAll,
-  }
+  };
 }
 
 // Validation schemas for type safety
@@ -137,6 +134,23 @@ export const SelectionStateSchema = z.object({
   selectedIds: z.array(z.string()),
   allSelected: z.boolean(),
   someSelected: z.boolean(),
-})
+});
 
-export type SelectionState = z.infer<typeof SelectionStateSchema>
+export type SelectionState = z.infer<typeof SelectionStateSchema>;
+
+const styles = StyleSheet.create({
+  selectionHeaderContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 40,
+    position: 'relative',
+  },
+  partialIndicator: {
+    position: 'absolute',
+    bottom: 4,
+    width: 12,
+    height: 2,
+    backgroundColor: colors.primary,
+    borderRadius: 1,
+  },
+});

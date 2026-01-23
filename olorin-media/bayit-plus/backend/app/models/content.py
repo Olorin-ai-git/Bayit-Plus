@@ -304,6 +304,15 @@ class LiveChannel(Document):
         ]
     )
 
+    # Real-time dubbing support (Premium feature)
+    supports_live_dubbing: bool = False
+    dubbing_source_language: str = "he"  # Source language for dubbing
+    available_dubbing_languages: List[str] = Field(
+        default_factory=lambda: ["en", "es", "ar", "ru"]
+    )
+    default_dubbing_voice_id: Optional[str] = None  # Override default ElevenLabs voice
+    dubbing_sync_delay_ms: int = 600  # Default sync delay for this channel
+
     # Visibility
     is_active: bool = True
     order: int = 0
@@ -321,6 +330,8 @@ class LiveChannel(Document):
             "culture_id",
             ("culture_id", "is_active"),
             ("culture_id", "category"),
+            # Compound index covering all common query patterns
+            ("is_active", "culture_id", "category", "order"),
         ]
 
 

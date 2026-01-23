@@ -3,10 +3,9 @@
  * Displays when content is not found
  */
 
-import { View, Text } from 'react-native';
-import { Link } from 'react-router-dom';
-import { GlassCard } from '@bayit/shared/ui';
-import { colors } from '@bayit/shared/theme';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useNavigate } from 'react-router-dom';
+import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 
 interface NotFoundStateProps {
   notFoundLabel: string;
@@ -17,14 +16,42 @@ export function NotFoundState({
   notFoundLabel,
   backToHomeLabel,
 }: NotFoundStateProps) {
+  const navigate = useNavigate();
+
   return (
-    <View className="flex-1 justify-center items-center py-16 px-4">
-      <GlassCard className="p-9 items-center">
-        <Text className="text-2xl font-bold text-white mb-4">{notFoundLabel}</Text>
-        <Link to="/" style={{ textDecoration: 'none' }}>
-          <Text className="text-base" style={{ color: colors.primary }}>{backToHomeLabel}</Text>
-        </Link>
-      </GlassCard>
+    <View style={styles.container}>
+      <View style={styles.card}>
+        <Text style={styles.title}>{notFoundLabel}</Text>
+        <Pressable onPress={() => navigate('/')}>
+          <Text style={styles.link}>{backToHomeLabel}</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 64,
+    paddingHorizontal: spacing.md,
+  },
+  card: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    padding: 36,
+    borderRadius: borderRadius['2xl'],
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  link: {
+    fontSize: fontSize.base,
+    color: colors.primary,
+  },
+});

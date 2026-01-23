@@ -1045,6 +1045,14 @@
       "saving": "Guardando...",
       "cancel": "Cancelar",
       "change": "Cambiar"
+    },
+    "intro": {
+      "title": "Bienvenido a Widgets",
+      "description": "Descubre potentes widgets flotantes para personalizar tu experiencia de visualización",
+      "watchVideo": "Ver Introducción",
+      "skip": "Omitir",
+      "dismiss": "No mostrar de nuevo",
+      "videoUnavailable": "Video temporalmente no disponible"
     }
   },
   "trending": {
@@ -2866,7 +2874,22 @@
     "premiumRequired": "Se requiere suscripción premium para doblaje en vivo",
     "unavailable": "Doblaje no disponible para este canal",
     "error": "Error de doblaje",
-    "reconnecting": "Reconectando..."
+    "reconnecting": "Reconectando...",
+    "premium": "Premium",
+    "tapToEnable": "Toca para activar el doblaje en vivo",
+    "tapToDisable": "Toca para desactivar el doblaje en vivo",
+    "tapToChangeLanguage": "Toca para cambiar el idioma de destino",
+    "currentlySelected": "Seleccionado actualmente",
+    "tapToSelect": "Toca para seleccionar",
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "ar": "العربية",
+      "ru": "Русский",
+      "fr": "Français",
+      "de": "Deutsch",
+      "he": "עברית"
+    }
   },
   "video": {
     "watchTrailer": "Ver Tráiler",
@@ -3096,6 +3119,7 @@
     "tabs": {
       "docs": "Documentación",
       "faq": "Preguntas Frecuentes",
+      "videos": "Videos",
       "contact": "Contacto",
       "tickets": "Mis Tickets"
     },
@@ -3130,6 +3154,12 @@
         "technical": "Técnico",
         "features": "Funciones"
       }
+    },
+    "videos": {
+      "title": "Videos Tutoriales",
+      "subtitle": "Aprende a usar las funciones de Bayit+",
+      "widgetsIntro": "Comenzando con Widgets",
+      "widgetsDescription": "Aprende a crear, personalizar y gestionar widgets flotantes"
     },
     "contact": {
       "voiceTitle": "Soporte por Voz",

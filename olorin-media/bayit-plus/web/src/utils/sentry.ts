@@ -8,6 +8,7 @@
 import * as Sentry from '@sentry/react';
 import { initLoggerSentry } from '@bayit/shared-utils/logger';
 import { initErrorBoundarySentry } from '@bayit/shared/components/ErrorBoundary';
+import logger from '@/utils/logger';
 
 /**
  * Sensitive fields to scrub from events.
@@ -57,7 +58,7 @@ export const initSentry = (): boolean => {
   const dsn = import.meta.env.VITE_SENTRY_DSN;
 
   if (!dsn) {
-    console.info('[Sentry] DSN not configured - error tracking disabled');
+    logger.debug('DSN not configured - error tracking disabled', 'Sentry');
     return false;
   }
 
@@ -127,12 +128,13 @@ export const initSentry = (): boolean => {
       },
     });
 
-    console.info(
-      `[Sentry] Initialized - environment: ${import.meta.env.VITE_SENTRY_ENVIRONMENT || 'development'}`
+    logger.debug(
+      `Initialized - environment: ${import.meta.env.VITE_SENTRY_ENVIRONMENT || 'development'}`,
+      'Sentry'
     );
     return true;
   } catch (error) {
-    console.error('[Sentry] Failed to initialize:', error);
+    logger.error('Failed to initialize', 'Sentry', error);
     return false;
   }
 };

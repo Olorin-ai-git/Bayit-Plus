@@ -39,6 +39,9 @@ from app.models.user_system_widget import (UserSystemWidget,
                                            UserSystemWidgetPreferencesUpdate,
                                            UserSystemWidgetResponse)
 from app.models.watchlist import Conversation, WatchHistory, WatchlistItem
+from app.models.live_feature_quota import (FeatureType, LiveFeatureQuota,
+                                             LiveFeatureUsageSession,
+                                             UsageSessionStatus, UsageStats)
 
 __all__ = [
     # User
@@ -122,4 +125,10 @@ __all__ = [
     "PasskeyCredential",
     "PasskeySession",
     "PasskeyChallenge",
+    # Live Feature Quota
+    "LiveFeatureQuota",
+    "LiveFeatureUsageSession",
+    "FeatureType",
+    "UsageSessionStatus",
+    "UsageStats",
 ]

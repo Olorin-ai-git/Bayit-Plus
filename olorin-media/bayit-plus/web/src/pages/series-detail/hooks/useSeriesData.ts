@@ -6,6 +6,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { contentService, watchlistService } from '@/services/api';
 import type { SeriesData, Episode } from '../types/series.types';
+import logger from '@/utils/logger';
 
 interface UseSeriesDataProps {
   seriesId: string | undefined;
@@ -45,7 +46,7 @@ export function useSeriesData({ seriesId }: UseSeriesDataProps): UseSeriesDataRe
         setSelectedSeason(data.seasons[0].season_number);
       }
     } catch (error) {
-      console.error('Failed to load series details:', error);
+      logger.error('Failed to load series details', 'useSeriesData', error);
     } finally {
       setLoading(false);
     }
@@ -63,7 +64,7 @@ export function useSeriesData({ seriesId }: UseSeriesDataProps): UseSeriesDataRe
         setSelectedEpisode(data.episodes[0]);
       }
     } catch (error) {
-      console.error('Failed to load episodes:', error);
+      logger.error('Failed to load episodes', 'useSeriesData', error);
     } finally {
       setEpisodesLoading(false);
     }
@@ -71,7 +72,7 @@ export function useSeriesData({ seriesId }: UseSeriesDataProps): UseSeriesDataRe
 
   const toggleWatchlist = useCallback(async () => {
     if (!series || !series.id) {
-      console.warn('Cannot toggle watchlist: series or series.id is missing');
+      logger.warn('Cannot toggle watchlist: series or series.id is missing', 'useSeriesData');
       return;
     }
     try {
@@ -82,7 +83,7 @@ export function useSeriesData({ seriesId }: UseSeriesDataProps): UseSeriesDataRe
         setInWatchlist(!inWatchlist);
       }
     } catch (error) {
-      console.error('Failed to toggle watchlist:', error);
+      logger.error('Failed to toggle watchlist', 'useSeriesData', error);
       setInWatchlist(!inWatchlist);
     }
   }, [series, inWatchlist]);

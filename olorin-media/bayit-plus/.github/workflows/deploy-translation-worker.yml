@@ -1,0 +1,186 @@
+name: Deploy Podcast Translation Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/app/services/podcast_translation_*.py'
+      - 'backend/app/services/audio_processing_service.py'
+      - 'backend/Dockerfile.translation-worker'
+      - 'infrastructure/terraform/**'
+      - '.github/workflows/deploy-translation-worker.yml'
+  workflow_dispatch:
+    inputs:
+      terraform_action:
+        description: 'Terraform action to perform'
+        required: true
+        default: 'apply'
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+
+env:
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_REGION: ${{ secrets.GCP_REGION }}
+  DEVOPS_EMAIL: ${{ secrets.DEVOPS_EMAIL }}
+  BACKEND_SERVICE_ACCOUNT: ${{ secrets.BACKEND_SERVICE_ACCOUNT }}
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.inputs.terraform_action != 'destroy'
+
+    outputs:
+      image_tag: ${{ steps.image.outputs.tag }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          export_default_credentials: true
+
+      - name: Configure Docker for GCR
+        run: |
+          gcloud auth configure-docker
+
+      - name: Generate image tag
+        id: image
+        run: |
+          IMAGE_TAG="${GITHUB_SHA::8}-$(date +%s)"
+          echo "tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+          echo "Building image with tag: ${IMAGE_TAG}"
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -f backend/Dockerfile.translation-worker \
+            -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/podcast-translation-worker:${{ steps.image.outputs.tag }} \
+            -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/podcast-translation-worker:latest \
+            .
+
+      - name: Push Docker image
+        run: |
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/podcast-translation-worker:${{ steps.image.outputs.tag }}
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/podcast-translation-worker:latest
+
+      - name: Image build summary
+        run: |
+          echo "### Docker Image Built Successfully ✅" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** gcr.io/${{ secrets.GCP_PROJECT_ID }}/podcast-translation-worker" >> $GITHUB_STEP_SUMMARY
+          echo "**Tag:** ${{ steps.image.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+
+  terraform:
+    name: Terraform ${{ github.event.inputs.terraform_action || 'apply' }}
+    runs-on: ubuntu-latest
+    needs: [build-and-push]
+    if: always() && (needs.build-and-push.result == 'success' || github.event.inputs.terraform_action == 'destroy')
+
+    defaults:
+      run:
+        working-directory: infrastructure/terraform
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          export_default_credentials: true
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.0
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Format Check
+        run: terraform fmt -check
+        continue-on-error: true
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan \
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="region=${{ secrets.GCP_REGION }}" \
+            -var="image_tag=${{ needs.build-and-push.outputs.image_tag || 'latest' }}" \
+            -var="devops_email=${{ secrets.DEVOPS_EMAIL }}" \
+            -var="backend_service_account=${{ secrets.BACKEND_SERVICE_ACCOUNT }}" \
+            -out=tfplan
+
+      - name: Terraform Apply
+        if: github.event.inputs.terraform_action != 'plan' && github.event.inputs.terraform_action != 'destroy'
+        run: terraform apply -auto-approve tfplan
+
+      - name: Terraform Destroy
+        if: github.event.inputs.terraform_action == 'destroy'
+        run: |
+          terraform destroy -auto-approve \
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="region=${{ secrets.GCP_REGION }}" \
+            -var="image_tag=latest" \
+            -var="devops_email=${{ secrets.DEVOPS_EMAIL }}" \
+            -var="backend_service_account=${{ secrets.BACKEND_SERVICE_ACCOUNT }}"
+
+      - name: Terraform summary
+        if: github.event.inputs.terraform_action != 'destroy'
+        run: |
+          echo "### Terraform Infrastructure Deployed ✅" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Action:** ${{ github.event.inputs.terraform_action || 'apply' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Region:** ${{ secrets.GCP_REGION }}" >> $GITHUB_STEP_SUMMARY
+
+  verify-deployment:
+    name: Verify Deployment
+    runs-on: ubuntu-latest
+    needs: [build-and-push, terraform]
+    if: github.event.inputs.terraform_action != 'plan' && github.event.inputs.terraform_action != 'destroy'
+
+    steps:
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Verify Cloud Run Job
+        run: |
+          gcloud run jobs describe podcast-translation-job \
+            --region=${{ secrets.GCP_REGION }} \
+            --format="value(status.conditions[0].message)"
+
+      - name: Verify Cloud Tasks Queue
+        run: |
+          gcloud tasks queues describe podcast-translation-queue \
+            --location=${{ secrets.GCP_REGION }} \
+            --format="value(state)"
+
+      - name: Verify GCS Bucket
+        run: |
+          gsutil ls gs://${{ secrets.GCP_PROJECT_ID }}-podcast-translations
+
+      - name: Deployment verification summary
+        run: |
+          echo "### Deployment Verified Successfully ✅" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All infrastructure components are operational:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Cloud Run Job: podcast-translation-job" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Cloud Tasks Queue: podcast-translation-queue" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ GCS Bucket: ${{ secrets.GCP_PROJECT_ID }}-podcast-translations" >> $GITHUB_STEP_SUMMARY

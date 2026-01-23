@@ -4,8 +4,8 @@
  */
 
 import React from 'react';
-import { View, Text } from 'react-native';
-import { colors, spacing } from '@bayit/shared/theme';
+import { View, Text, StyleSheet } from 'react-native';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { UPLOAD_STAGES } from '../constants';
 import { getStageDescription, getEstimatedTime } from '../utils';
 
@@ -20,19 +20,53 @@ export const StageTooltip: React.FC<StageTooltipProps> = ({ stage, status, fileS
   if (!visible) return null;
 
   return (
-    <View className="bg-black/95 backdrop-blur-xl rounded-xl p-4 mt-1 mb-3 border border-white/10">
-      <Text className="text-sm font-semibold text-white mb-2">
+    <View style={styles.container}>
+      <Text style={styles.title}>
         {stage.label}
       </Text>
-      <Text className="text-xs text-white/80 mb-2 leading-4">
+      <Text style={styles.description}>
         {getStageDescription(stage.key)}
       </Text>
-      <Text className="text-[11px] text-purple-500 mb-1">
+      <Text style={styles.estimated}>
         Estimated: {getEstimatedTime(stage.key, fileSize)}
       </Text>
-      <Text className="text-[11px] text-gray-500">
+      <Text style={styles.status}>
         Status: {status || 'pending'}
       </Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+    backdropFilter: 'blur(20px)',
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 4,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginBottom: 8,
+    lineHeight: 16,
+  },
+  estimated: {
+    fontSize: 11,
+    color: '#a855f7',
+    marginBottom: 4,
+  },
+  status: {
+    fontSize: 11,
+    color: '#6b7280',
+  },
+});

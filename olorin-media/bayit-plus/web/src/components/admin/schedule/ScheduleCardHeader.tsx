@@ -2,6 +2,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Calendar, Brain, Edit2 } from 'lucide-react';
 import { z } from 'zod';
 import { GlassBadge } from '@bayit/shared/ui';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 
 /**
  * Zod schema for ScheduleCardHeader props
@@ -61,8 +62,8 @@ const ScheduleCardHeader: React.FC<ScheduleCardHeaderProps> = ({
   return (
     <>
       {/* Icon + Status Badge Row */}
-      <View className="flex-row justify-between items-center mb-4">
-        <View className="w-12 h-12 rounded-md justify-center items-center" style={iconBgStyle}>
+      <View style={styles.headerRow}>
+        <View style={[styles.iconContainer, iconBgStyle]}>
           <Icon size={24} color="#000000" />
         </View>
         <GlassBadge
@@ -72,19 +73,18 @@ const ScheduleCardHeader: React.FC<ScheduleCardHeaderProps> = ({
       </View>
 
       {/* Title + Edit Button Row */}
-      <View className="flex-row items-center justify-between mb-4">
+      <View style={styles.titleRow}>
         <Text
-          className="text-xl font-semibold text-white flex-1"
-          style={{ textAlign }}
+          style={[styles.title, { textAlign }]}
         >
           {title}
         </Text>
         {onEdit && (
           <Pressable
             onPress={onEdit}
-            className="p-2 rounded bg-white/5"
+            style={styles.editButton}
           >
-            <Edit2 size={16} color="#a855f7" />
+            <Edit2 size={16} color={colors.primary} />
           </Pressable>
         )}
       </View>
@@ -93,11 +93,41 @@ const ScheduleCardHeader: React.FC<ScheduleCardHeaderProps> = ({
 };
 
 const styles = StyleSheet.create({
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   iconBgAI: {
-    backgroundColor: 'rgb(192, 38, 211)',
+    backgroundColor: colors.secondary,
   },
   iconBgRuleBased: {
-    backgroundColor: 'rgb(168, 85, 247)',
+    backgroundColor: colors.primary,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.text,
+    flex: 1,
+  },
+  editButton: {
+    padding: spacing.sm,
+    borderRadius: borderRadius.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
 });
 

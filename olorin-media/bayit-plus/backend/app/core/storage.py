@@ -584,5 +584,114 @@ def get_storage_provider() -> StorageProvider:
         return LocalStorageProvider(settings.UPLOAD_DIR)
 
 
+class StorageService:
+    """High-level storage service for general file operations."""
+
+    def __init__(self, provider: Optional[StorageProvider] = None):
+        """Initialize storage service with optional provider."""
+        self._provider = provider
+
+    @property
+    def provider(self) -> StorageProvider:
+        """Lazy-load storage provider."""
+        if self._provider is None:
+            self._provider = get_storage_provider()
+        return self._provider
+
+    async def upload_file(self, local_path: str, remote_path: str) -> str:
+        """
+        Upload a file to cloud storage.
+
+        Args:
+            local_path: Path to local file
+            remote_path: Destination path in storage (e.g., 'podcasts/audio.mp3')
+
+        Returns:
+            URL of uploaded file
+        """
+        file_path = Path(local_path)
+        if not file_path.exists():
+            raise FileNotFoundError(f"File not found: {local_path}")
+
+        content = file_path.read_bytes()
+
+        # Determine content type from extension
+        ext = file_path.suffix.lower()
+        content_types = {
+            ".mp3": "audio/mpeg",
+            ".wav": "audio/wav",
+            ".m4a": "audio/mp4",
+            ".ogg": "audio/ogg",
+            ".flac": "audio/flac",
+            ".aac": "audio/aac",
+            ".jpg": "image/jpeg",
+            ".jpeg": "image/jpeg",
+            ".png": "image/png",
+            ".webp": "image/webp",
+            ".gif": "image/gif",
+            ".json": "application/json",
+            ".txt": "text/plain",
+        }
+        content_type = content_types.get(ext, "application/octet-stream")
+
+        # Upload based on provider type
+        if isinstance(self.provider, GCSStorageProvider):
+            return await self._upload_to_gcs(content, remote_path, content_type)
+        elif isinstance(self.provider, S3StorageProvider):
+            return await self._upload_to_s3(content, remote_path, content_type)
+        else:
+            return await self._upload_to_local(content, remote_path)
+
+    async def _upload_to_gcs(
+        self, content: bytes, remote_path: str, content_type: str
+    ) -> str:
+        """Upload file to GCS."""
+        provider = self.provider
+        if not isinstance(provider, GCSStorageProvider):
+            raise TypeError("Provider is not GCS")
+
+        blob = provider.bucket.blob(remote_path)
+        blob.cache_control = "public, max-age=31536000"
+        blob.upload_from_string(content, content_type=content_type, timeout=120)
+
+        if provider.cdn_base:
+            return f"{provider.cdn_base}/{remote_path}"
+        return f"https://storage.googleapis.com/{provider.bucket_name}/{remote_path}"
+
+    async def _upload_to_s3(
+        self, content: bytes, remote_path: str, content_type: str
+    ) -> str:
+        """Upload file to S3."""
+        provider = self.provider
+        if not isinstance(provider, S3StorageProvider):
+            raise TypeError("Provider is not S3")
+
+        provider.s3_client.put_object(
+            Bucket=provider.bucket,
+            Key=remote_path,
+            Body=content,
+            ContentType=content_type,
+            CacheControl="max-age=31536000",
+        )
+
+        if provider.cdn_base:
+            return f"{provider.cdn_base}/{remote_path}"
+        return (
+            f"https://{provider.bucket}.s3."
+            f"{settings.AWS_S3_REGION}.amazonaws.com/{remote_path}"
+        )
+
+    async def _upload_to_local(self, content: bytes, remote_path: str) -> str:
+        """Upload file to local storage."""
+        provider = self.provider
+        if not isinstance(provider, LocalStorageProvider):
+            raise TypeError("Provider is not local")
+
+        file_path = provider.upload_dir / remote_path
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        file_path.write_bytes(content)
+        return f"/uploads/{remote_path}"
+
+
 # Default instance
 storage = get_storage_provider()

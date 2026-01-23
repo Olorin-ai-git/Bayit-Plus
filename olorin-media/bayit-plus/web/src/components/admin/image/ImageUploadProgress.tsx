@@ -1,13 +1,12 @@
-import React from 'react'
-import { View, Text, Pressable } from 'react-native'
-import { X, AlertCircle } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
-import { z } from 'zod'
-import { GlassView, GlassInput, GlassButton } from '@bayit/shared/ui'
-import { colors } from '@bayit/shared/theme'
-import { useDirection } from '@/hooks/useDirection'
+import React from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { X, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { z } from 'zod';
+import { GlassView, GlassInput, GlassButton } from '@bayit/shared/ui';
+import { colors, borderRadius, spacing } from '@bayit/shared/theme';
+import { useDirection } from '@/hooks/useDirection';
 
-// Zod schema for props validation
 const ImageUploadProgressPropsSchema = z.object({
   allowUrl: z.boolean(),
   isUploading: z.boolean(),
@@ -18,18 +17,18 @@ const ImageUploadProgressPropsSchema = z.object({
   onUrlInputChange: z.function().args(z.string()).returns(z.void()),
   onUrlSubmit: z.function().returns(z.void().or(z.promise(z.void()))),
   onClearError: z.function().returns(z.void()),
-})
+});
 
 export interface ImageUploadProgressProps {
-  allowUrl: boolean
-  isUploading: boolean
-  showUrlInput: boolean
-  urlInput: string
-  error: string | null
-  onShowUrlInput: (show: boolean) => void
-  onUrlInputChange: (value: string) => void
-  onUrlSubmit: () => void | Promise<void>
-  onClearError: () => void
+  allowUrl: boolean;
+  isUploading: boolean;
+  showUrlInput: boolean;
+  urlInput: string;
+  error: string | null;
+  onShowUrlInput: (show: boolean) => void;
+  onUrlInputChange: (value: string) => void;
+  onUrlSubmit: () => void | Promise<void>;
+  onClearError: () => void;
 }
 
 export function ImageUploadProgress({
@@ -43,14 +42,13 @@ export function ImageUploadProgress({
   onUrlSubmit,
   onClearError,
 }: ImageUploadProgressProps) {
-  const { t } = useTranslation()
-  const { textAlign } = useDirection()
+  const { t } = useTranslation();
+  const { textAlign } = useDirection();
 
   return (
     <>
-      {/* URL Input Section */}
       {allowUrl && (
-        <View className="mt-4">
+        <View style={styles.urlSection}>
           {!showUrlInput ? (
             <GlassButton
               title={t('admin.content.editor.imageUpload.orPasteUrl')}
@@ -60,17 +58,16 @@ export function ImageUploadProgress({
               fullWidth
             />
           ) : (
-            <GlassView className="rounded-2xl p-6 gap-4" intensity="medium">
-              <View className="w-full">
+            <GlassView style={styles.urlInputContainer} intensity="medium">
+              <View style={styles.inputWrapper}>
                 <GlassInput
                   value={urlInput}
                   onChangeText={onUrlInputChange}
                   placeholder={t('admin.content.editor.imageUpload.urlPlaceholder')}
                   editable={!isUploading}
-                  className="w-full"
                 />
               </View>
-              <View className="flex-row items-center gap-2">
+              <View style={styles.buttonRow}>
                 <GlassButton
                   title={
                     isUploading
@@ -85,14 +82,14 @@ export function ImageUploadProgress({
                 />
                 <Pressable
                   onPress={() => {
-                    onShowUrlInput(false)
-                    onUrlInputChange('')
-                    onClearError()
+                    onShowUrlInput(false);
+                    onUrlInputChange('');
+                    onClearError();
                   }}
                   disabled={isUploading}
-                  className="ml-2"
+                  style={styles.closeButtonWrapper}
                 >
-                  <GlassView className="p-3 rounded-2xl items-center justify-center" intensity="high">
+                  <GlassView style={styles.closeButton} intensity="high">
                     <X size={20} color={colors.textMuted} />
                   </GlassView>
                 </Pressable>
@@ -102,22 +99,71 @@ export function ImageUploadProgress({
         </View>
       )}
 
-      {/* Error Display */}
       {error && (
         <GlassView
-          className="flex-row items-center gap-2 p-4 mt-4 rounded-2xl border"
+          style={styles.errorContainer}
           intensity="low"
-          style={{
-            backgroundColor: `${colors.error}10`,
-            borderColor: `${colors.error}40`,
-          }}
         >
           <AlertCircle size={16} color={colors.error} />
-          <Text className="flex-1 text-xs" style={{ color: colors.error, textAlign }}>
+          <Text style={[styles.errorText, { textAlign }]}>
             {error}
           </Text>
         </GlassView>
       )}
     </>
-  )
+  );
 }
+
+const styles = StyleSheet.create({
+  urlSection: {
+    marginTop: 16,
+  },
+  urlInputContainer: {
+    borderRadius: borderRadius.xl,
+    padding: 24,
+    gap: 16,
+  },
+  inputWrapper: {
+    width: '100%',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  closeButtonWrapper: {
+    marginLeft: 8,
+  },
+  closeButton: {
+    padding: 12,
+    borderRadius: borderRadius.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 16,
+    marginTop: 16,
+    borderRadius: borderRadius.xl,
+    borderWidth: 1,
+    backgroundColor: `${colors.error}10`,
+    borderColor: `${colors.error}40`,
+  },
+  errorText: {
+    flex: 1,
+    fontSize: 12,
+    color: colors.error,
+  },
+});
+
+if (process.env.NODE_ENV === 'development') {
+  const originalComponent = ImageUploadProgress;
+  (ImageUploadProgress as any) = (props: any) => {
+    ImageUploadProgressPropsSchema.parse(props);
+    return originalComponent(props);
+  };
+}
+
+export default ImageUploadProgress;

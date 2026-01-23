@@ -2,7 +2,7 @@
  * FooterLanguageSelector Component
  *
  * Language picker dropdown for i18n
- * Part of Footer migration from StyleSheet to TailwindCSS
+ * Part of Footer - StyleSheet implementation for RN Web compatibility
  *
  * Features:
  * - Globe icon + current language display
@@ -15,11 +15,10 @@
  */
 
 import { useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { Globe, ChevronUp } from 'lucide-react';
-import { platformClass } from '../../../utils/platformClass';
 
 // Zod schema for language codes
 const LanguageCodeSchema = z.object({
@@ -60,13 +59,10 @@ export default function FooterLanguageSelector({
   };
 
   return (
-    <View className={platformClass('relative')}>
+    <View style={styles.container}>
       {/* Language Button */}
       <Pressable
-        className={platformClass(
-          'flex-row items-center gap-1 bg-white/[0.05] py-2 px-3 rounded border border-white/10',
-          'flex-row items-center gap-1 bg-white/[0.05] py-2 px-3 rounded border border-white/10'
-        )}
+        style={styles.languageButton}
         onPress={() => setShowMenu(!showMenu)}
         accessibilityLabel={t(
           'footer.languageSelector.label',
@@ -77,12 +73,7 @@ export default function FooterLanguageSelector({
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
         <Globe size={14} color="rgba(255, 255, 255, 0.6)" />
-        <Text
-          className={platformClass(
-            'text-[11px] text-white/60',
-            'text-[11px] text-white/60'
-          )}
-        >
+        <Text style={styles.languageButtonText}>
           {currentLanguage.flag} {currentLanguageLabel}
         </Text>
         <ChevronUp size={12} color="rgba(255, 255, 255, 0.6)" />
@@ -90,25 +81,16 @@ export default function FooterLanguageSelector({
 
       {/* Language Menu (Dropdown) */}
       {showMenu && (
-        <View
-          className={platformClass(
-            'absolute bottom-full right-0 mb-2 bg-[rgba(20,20,30,0.95)] rounded-lg border border-white/10 overflow-hidden min-w-[120px] backdrop-blur-xl shadow-2xl z-[100]',
-            'absolute bottom-full right-0 mb-2 bg-[rgba(20,20,30,0.95)] rounded-lg border border-white/10 overflow-hidden min-w-[120px] z-[100]'
-          )}
-        >
+        <View style={styles.languageMenu}>
           {languageCodes.map((lang) => {
             const isActive = lang.code === i18n.language;
             return (
               <Pressable
                 key={lang.code}
-                className={platformClass(
-                  `flex-row items-center gap-2 py-2 px-3 ${
-                    isActive ? 'bg-purple-500/30' : ''
-                  }`,
-                  `flex-row items-center gap-2 py-2 px-3 ${
-                    isActive ? 'bg-purple-500/30' : ''
-                  }`
-                )}
+                style={[
+                  styles.languageOption,
+                  isActive && styles.languageOptionActive,
+                ]}
                 onPress={() => handleLanguageChange(lang.code)}
                 accessibilityLabel={t(`settings.languages.${lang.code}`)}
                 accessibilityRole="button"
@@ -116,20 +98,12 @@ export default function FooterLanguageSelector({
                 // Touch target: 44x44pt minimum
                 hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
               >
-                <Text className={platformClass('text-sm')}>{lang.flag}</Text>
+                <Text style={styles.languageOptionFlag}>{lang.flag}</Text>
                 <Text
-                  className={platformClass(
-                    `text-[11px] ${
-                      isActive
-                        ? 'text-purple-400 font-semibold'
-                        : 'text-white/60'
-                    }`,
-                    `text-[11px] ${
-                      isActive
-                        ? 'text-purple-400 font-semibold'
-                        : 'text-white/60'
-                    }`
-                  )}
+                  style={[
+                    styles.languageOptionText,
+                    isActive && styles.languageOptionTextActive,
+                  ]}
                 >
                   {t(`settings.languages.${lang.code}`)}
                 </Text>
@@ -141,6 +115,64 @@ export default function FooterLanguageSelector({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+  },
+  languageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  languageButtonText: {
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  languageMenu: {
+    position: 'absolute',
+    bottom: '100%',
+    right: 0,
+    marginBottom: 8,
+    backgroundColor: 'rgba(20, 20, 30, 0.95)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    overflow: 'hidden',
+    minWidth: 120,
+    // @ts-ignore - Web CSS property
+    backdropFilter: 'blur(20px)',
+    boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.5)',
+    zIndex: 100,
+  },
+  languageOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  languageOptionActive: {
+    backgroundColor: 'rgba(168, 85, 247, 0.3)', // purple-500/30
+  },
+  languageOptionFlag: {
+    fontSize: 14,
+  },
+  languageOptionText: {
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  languageOptionTextActive: {
+    color: '#a855f7', // purple-400
+    fontWeight: '600',
+  },
+});
 
 // Export default language codes for reuse
 export { DEFAULT_LANGUAGE_CODES };

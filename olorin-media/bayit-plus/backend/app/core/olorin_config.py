@@ -115,6 +115,40 @@ class DubbingConfig(BaseSettings):
         description="STT provider for dubbing: 'elevenlabs' (default)",
     )
 
+    # Live channel dubbing settings
+    live_dubbing_enabled: bool = Field(
+        default=True,
+        description="Enable live channel dubbing feature",
+    )
+    live_dubbing_default_sync_delay_ms: int = Field(
+        default=600,
+        ge=0,
+        le=3000,
+        description="Default video sync delay to match dubbing latency",
+    )
+    live_dubbing_max_buffer_seconds: int = Field(
+        default=5,
+        ge=1,
+        le=30,
+        description="Maximum audio buffer size before dropping frames",
+    )
+    live_dubbing_fallback_to_subtitles: bool = Field(
+        default=True,
+        description="Fall back to subtitles if dubbing fails",
+    )
+    live_dubbing_silence_threshold_db: float = Field(
+        default=-40.0,
+        ge=-60.0,
+        le=-20.0,
+        description="Audio level threshold for silence detection (dB)",
+    )
+    live_dubbing_min_speech_duration_ms: int = Field(
+        default=300,
+        ge=100,
+        le=1000,
+        description="Minimum speech duration to trigger processing",
+    )
+
     class Config:
         env_prefix = "DUBBING_"
 

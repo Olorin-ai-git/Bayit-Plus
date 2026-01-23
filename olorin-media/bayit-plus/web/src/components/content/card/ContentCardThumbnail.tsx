@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { View, Text, Image } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Play } from 'lucide-react';
@@ -46,17 +47,40 @@ export function ContentCardThumbnail(props: ContentCardThumbnailProps) {
   const { content, isHovered, showProgress, showActions, isRTL } = validatedProps;
   const { t } = useTranslation();
 
+  // YouTube thumbnail fallback: maxresdefault (1280x720) isn't always available
+  // Fall back to hqdefault (480x360) which is always available
+  const [thumbnailError, setThumbnailError] = useState(false);
+
+  const getThumbnailUrl = (): string | undefined => {
+    if (!content.thumbnail) return undefined;
+
+    // If maxresdefault failed, use hqdefault
+    if (thumbnailError && content.thumbnail.includes('maxresdefault')) {
+      return content.thumbnail.replace('maxresdefault', 'hqdefault');
+    }
+
+    return content.thumbnail;
+  };
+
+  const handleThumbnailError = () => {
+    // Only retry once with fallback quality
+    if (!thumbnailError && content.thumbnail?.includes('maxresdefault')) {
+      setThumbnailError(true);
+    }
+  };
+
   return (
     <View className={platformClass(
       'aspect-[2/3] relative rounded-t-lg overflow-hidden bg-[#0A0A14]',
       'aspect-[2/3] relative rounded-t-lg overflow-hidden bg-[#0A0A14]'
     )}>
       {/* Thumbnail Image or Placeholder */}
-      {content.thumbnail ? (
+      {getThumbnailUrl() ? (
         <Image
-          source={{ uri: content.thumbnail }}
+          source={{ uri: getThumbnailUrl() }}
           className="w-full h-full"
           resizeMode="contain"
+          onError={handleThumbnailError}
         />
       ) : (
         <View className="w-full h-full bg-white/5" />

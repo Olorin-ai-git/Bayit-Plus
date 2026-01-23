@@ -1,19 +1,19 @@
-import React, { useState, useEffect, StyleSheet } from 'react'
-import { View, Text, Pressable } from 'react-native'
-import { useTranslation } from 'react-i18next'
-import { AlertCircle, CheckCircle, Copy } from 'lucide-react'
-import { GlassView, GlassInput, GlassButton } from '@bayit/shared/ui'
-import { colors } from '@bayit/shared/theme'
-import { useDirection } from '@/hooks/useDirection'
+import React, { useState, useEffect } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { AlertCircle, CheckCircle, Copy } from 'lucide-react';
+import { GlassView, GlassInput } from '@bayit/shared/ui';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { useDirection } from '@/hooks/useDirection';
 
 interface StreamUrlInputProps {
-  value?: string
-  onChange: (url: string) => void
-  onStreamTypeChange?: (type: 'hls' | 'dash' | 'audio') => void
-  label?: string
-  placeholder?: string
-  required?: boolean
-  onError?: (error: string | null) => void
+  value?: string;
+  onChange: (url: string) => void;
+  onStreamTypeChange?: (type: 'hls' | 'dash' | 'audio') => void;
+  label?: string;
+  placeholder?: string;
+  required?: boolean;
+  onError?: (error: string | null) => void;
 }
 
 export function StreamUrlInput({
@@ -25,110 +25,85 @@ export function StreamUrlInput({
   required = true,
   onError,
 }: StreamUrlInputProps) {
-  const { t } = useTranslation()
-  const { textAlign } = useDirection()
-  const [url, setUrl] = useState(value)
-  const [streamType, setStreamType] = useState<'hls' | 'dash' | 'audio'>('hls')
-  const [error, setError] = useState<string | null>(null)
-  const [isValid, setIsValid] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const { t } = useTranslation();
+  const { isRTL } = useDirection();
+  const [url, setUrl] = useState(value);
+  const [streamType, setStreamType] = useState<'hls' | 'dash' | 'audio'>('hls');
+  const [error, setError] = useState<string | null>(null);
+  const [isValid, setIsValid] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    setUrl(value)
-  }, [value])
+    setUrl(value);
+  }, [value]);
 
-  // Auto-detect stream type from URL
   const detectStreamType = (urlString: string): 'hls' | 'dash' | 'audio' => {
-    const lower = urlString.toLowerCase()
-    if (lower.includes('.m3u8') || lower.includes('hls')) return 'hls'
-    if (lower.includes('.mpd') || lower.includes('dash')) return 'dash'
-    if (lower.includes('.mp3') || lower.includes('.aac') || lower.includes('audio')) return 'audio'
-    return 'hls' // default
-  }
+    const lower = urlString.toLowerCase();
+    if (lower.includes('.m3u8') || lower.includes('hls')) return 'hls';
+    if (lower.includes('.mpd') || lower.includes('dash')) return 'dash';
+    if (lower.includes('.mp3') || lower.includes('.aac') || lower.includes('audio')) return 'audio';
+    return 'hls';
+  };
 
   const validateUrl = (urlString: string) => {
-    setError(null)
-    setIsValid(false)
+    setError(null);
+    setIsValid(false);
 
     if (!urlString.trim()) {
       if (required) {
-        const msg = t('admin.content.streamUrlInput.errors.required')
-        setError(msg)
-        onError?.(msg)
+        const msg = t('admin.content.streamUrlInput.errors.required');
+        setError(msg);
+        onError?.(msg);
       }
-      return
+      return;
     }
 
     try {
-      new URL(urlString)
+      new URL(urlString);
     } catch {
-      const msg = t('admin.content.streamUrlInput.errors.invalidFormat')
-      setError(msg)
-      onError?.(msg)
-      return
+      const msg = t('admin.content.streamUrlInput.errors.invalidFormat');
+      setError(msg);
+      onError?.(msg);
+      return;
     }
 
-    const detected = detectStreamType(urlString)
-    setStreamType(detected)
-    onStreamTypeChange?.(detected)
-    setIsValid(true)
-    onError?.(null)
-  }
+    const detected = detectStreamType(urlString);
+    setStreamType(detected);
+    onStreamTypeChange?.(detected);
+    setIsValid(true);
+    onError?.(null);
+  };
 
   const handleChange = (newUrl: string) => {
-    setUrl(newUrl)
-    onChange(newUrl)
-    validateUrl(newUrl)
-  }
+    setUrl(newUrl);
+    onChange(newUrl);
+    validateUrl(newUrl);
+  };
 
   const handleTypeChange = (type: 'hls' | 'dash' | 'audio') => {
-    setStreamType(type)
-    onStreamTypeChange?.(type)
-  }
+    setStreamType(type);
+    onStreamTypeChange?.(type);
+  };
 
   const handleCopy = () => {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(url)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
-  }
+  };
 
   const getStreamTypeIcon = (type: string) => {
     switch (type) {
-      case 'hls':
-        return '📺'
-      case 'dash':
-        return '🎬'
-      case 'audio':
-        return '🎵'
-      default:
-        return '📡'
+      case 'hls': return '📺';
+      case 'dash': return '🎬';
+      case 'audio': return '🎵';
+      default: return '📡';
     }
-  }
-
-  // Dynamic styles for stream type selection
-  const getTypeButtonStyle = (type: 'hls' | 'dash' | 'audio') => [
-    styles.typeButton,
-    streamType === type ? styles.typeButtonActive : null,
-  ];
-
-  const getTypeTextStyle = (type: 'hls' | 'dash' | 'audio') => ({
-    color: streamType === type ? colors.primary : colors.textMuted,
-  });
-
-  const errorContainerStyle = {
-    backgroundColor: `${colors.error}10`,
-    borderColor: `${colors.error}40`,
-  };
-
-  const successContainerStyle = {
-    backgroundColor: `${colors.success}10`,
-    borderColor: `${colors.success}40`,
   };
 
   return (
-    <View className="w-full mb-4">
+    <View style={styles.container}>
       <GlassInput
         label={label}
         value={url}
@@ -140,36 +115,38 @@ export function StreamUrlInput({
       />
 
       {copied && (
-        <View className="mt-1 px-2">
-          <Text className="text-xs" style={{ color: colors.success }}>
+        <View style={styles.copiedContainer}>
+          <Text style={styles.copiedText}>
             {t('admin.content.streamUrlInput.copied')}
           </Text>
         </View>
       )}
 
       {url && (
-        <View className="mt-4">
-          <Text className="text-xs font-medium mb-2" style={{ textAlign, color: colors.text }}>
+        <View style={styles.typeSection}>
+          <Text style={[styles.typeLabel, isRTL && styles.textRTL]}>
             {t('admin.content.streamUrlInput.streamType')}
           </Text>
-          <View className="flex-row gap-2">
+          <View style={styles.typeButtons}>
             {(['hls', 'dash', 'audio'] as const).map((type) => (
               <Pressable
                 key={type}
                 onPress={() => handleTypeChange(type)}
-                className="flex-1"
+                style={styles.typeButtonWrapper}
               >
                 <GlassView
-                  className="flex-row items-center justify-center gap-1 py-2 px-4 rounded-lg"
-                  style={getTypeButtonStyle(type)}
+                  style={[
+                    styles.typeButton,
+                    streamType === type && styles.typeButtonActive,
+                  ]}
                   intensity={streamType === type ? 'high' : 'low'}
                   borderColor={streamType === type ? colors.primary : undefined}
                 >
-                  <Text className="text-base">{getStreamTypeIcon(type)}</Text>
-                  <Text
-                    className="text-xs font-medium"
-                    style={getTypeTextStyle(type)}
-                  >
+                  <Text style={styles.typeIcon}>{getStreamTypeIcon(type)}</Text>
+                  <Text style={[
+                    styles.typeText,
+                    { color: streamType === type ? colors.primary : colors.textMuted },
+                  ]}>
                     {type.toUpperCase()}
                   </Text>
                 </GlassView>
@@ -180,44 +157,140 @@ export function StreamUrlInput({
       )}
 
       {error && (
-        <GlassView className="flex-row items-center gap-2 p-4 mt-2 rounded-lg border" intensity="low" style={errorContainerStyle}>
+        <GlassView style={styles.errorContainer} intensity="low">
           <AlertCircle size={16} color={colors.error} />
-          <Text className="flex-1 text-xs" style={{ color: colors.error }}>{error}</Text>
+          <Text style={styles.errorText}>{error}</Text>
         </GlassView>
       )}
 
       {isValid && url && (
-        <GlassView className="flex-row items-center gap-2 p-4 mt-2 rounded-lg border" intensity="low" style={successContainerStyle}>
+        <GlassView style={styles.successContainer} intensity="low">
           <CheckCircle size={16} color={colors.success} />
-          <Text className="flex-1 text-xs" style={{ color: colors.success }}>
+          <Text style={styles.successText}>
             {t('admin.content.streamUrlInput.validUrl', { type: streamType.toUpperCase() })}
           </Text>
         </GlassView>
       )}
 
-      <GlassView className="mt-4 p-4 rounded-lg" intensity="low">
-        <Text className="text-xs mb-1" style={{ textAlign, color: colors.textMuted }}>
+      <GlassView style={styles.helpContainer} intensity="low">
+        <Text style={[styles.helpTitle, isRTL && styles.textRTL]}>
           {t('admin.content.streamUrlInput.supportedFormats.title')}
         </Text>
-        <View className="gap-1">
-          <Text className="text-xs leading-[18px]" style={{ textAlign, color: colors.textMuted }}>
+        <View style={styles.helpList}>
+          <Text style={[styles.helpItem, isRTL && styles.textRTL]}>
             • {t('admin.content.streamUrlInput.supportedFormats.hls')}
           </Text>
-          <Text className="text-xs leading-[18px]" style={{ textAlign, color: colors.textMuted }}>
+          <Text style={[styles.helpItem, isRTL && styles.textRTL]}>
             • {t('admin.content.streamUrlInput.supportedFormats.dash')}
           </Text>
-          <Text className="text-xs leading-[18px]" style={{ textAlign, color: colors.textMuted }}>
+          <Text style={[styles.helpItem, isRTL && styles.textRTL]}>
             • {t('admin.content.streamUrlInput.supportedFormats.audio')}
           </Text>
         </View>
       </GlassView>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  typeButton: {},
+  container: {
+    width: '100%',
+    marginBottom: spacing.md,
+  },
+  copiedContainer: {
+    marginTop: 4,
+    paddingHorizontal: 8,
+  },
+  copiedText: {
+    fontSize: 12,
+    color: colors.success,
+  },
+  typeSection: {
+    marginTop: spacing.md,
+  },
+  typeLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginBottom: 8,
+    color: colors.text,
+  },
+  typeButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  typeButtonWrapper: {
+    flex: 1,
+  },
+  typeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: borderRadius.md,
+  },
   typeButtonActive: {
     borderWidth: 2,
+  },
+  typeIcon: {
+    fontSize: 16,
+  },
+  typeText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: spacing.md,
+    marginTop: 8,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderColor: 'rgba(239, 68, 68, 0.4)',
+  },
+  errorText: {
+    flex: 1,
+    fontSize: 12,
+    color: colors.error,
+  },
+  successContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: spacing.md,
+    marginTop: 8,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+    borderColor: 'rgba(34, 197, 94, 0.4)',
+  },
+  successText: {
+    flex: 1,
+    fontSize: 12,
+    color: colors.success,
+  },
+  helpContainer: {
+    marginTop: spacing.md,
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+  },
+  helpTitle: {
+    fontSize: 12,
+    marginBottom: 4,
+    color: colors.textMuted,
+  },
+  helpList: {
+    gap: 4,
+  },
+  helpItem: {
+    fontSize: 12,
+    lineHeight: 18,
+    color: colors.textMuted,
+  },
+  textRTL: {
+    textAlign: 'right',
   },
 });

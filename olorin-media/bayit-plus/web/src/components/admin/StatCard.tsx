@@ -1,7 +1,6 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
-import { colors } from '@bayit/shared/theme';
-import { GlassCard } from '@bayit/shared/ui';
+import { colors, borderRadius, spacing } from '@bayit/shared/theme';
 
 interface Trend {
   value: number;
@@ -37,58 +36,110 @@ export default function StatCard({
 }: StatCardProps) {
   const colorStyle = colorMap[color];
 
-  // Dynamic trend badge style
-  const trendBadgeStyle = [
-    styles.trendBadge,
-    trend?.isPositive ? styles.trendPositive : styles.trendNegative,
-  ];
-
-  const trendTextStyle = {
-    color: trend?.isPositive ? '#22C55E' : '#EF4444',
-  };
-
   const content = (
-    <GlassCard className="p-4 h-full">
-      <View className="flex-row items-start gap-2 mb-2">
+    <View style={styles.card}>
+      <View style={styles.header}>
         {icon && (
-          <View className="w-11 h-11 rounded-lg justify-center items-center" style={{ backgroundColor: colorStyle.bg }}>
-            <Text className="text-xl">{icon}</Text>
+          <View style={[styles.iconContainer, { backgroundColor: colorStyle.bg }]}>
+            <Text style={styles.icon}>{icon}</Text>
           </View>
         )}
-        <View className="flex-1">
-          <Text className="text-sm" numberOfLines={1} style={{ color: colors.textMuted }}>{title}</Text>
-          {subtitle && <Text className="text-xs opacity-70" numberOfLines={1} style={{ color: colors.textMuted }}>{subtitle}</Text>}
+        <View style={styles.titleContainer}>
+          <Text style={styles.title} numberOfLines={1}>{title}</Text>
+          {subtitle && (
+            <Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text>
+          )}
         </View>
       </View>
 
-      <View className="flex-row items-center justify-between">
-        <Text className="text-2xl font-bold" style={{ color: colorStyle.text }}>{value}</Text>
+      <View style={styles.valueRow}>
+        <Text style={[styles.value, { color: colorStyle.text }]}>{value}</Text>
 
         {trend && (
-          <View className="px-2 py-1 rounded" style={trendBadgeStyle}>
-            <Text className="text-xs font-semibold" style={trendTextStyle}>
+          <View style={[
+            styles.trendBadge,
+            trend.isPositive ? styles.trendPositive : styles.trendNegative,
+          ]}>
+            <Text style={[
+              styles.trendText,
+              { color: trend.isPositive ? '#22C55E' : '#EF4444' },
+            ]}>
               {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}%
             </Text>
           </View>
         )}
       </View>
-    </GlassCard>
+    </View>
   );
 
   if (to) {
     return (
-      <View className="flex-[1_1_23%] min-w-[200px] max-w-[300px]">
-        <Link to={to} style={{ textDecoration: 'none', flex: 1 }}>
+      <View style={styles.wrapper}>
+        <Link to={to} style={{ textDecoration: 'none', flex: 1, display: 'flex' }}>
           {content}
         </Link>
       </View>
     );
   }
 
-  return <View className="flex-[1_1_23%] min-w-[200px] max-w-[300px]">{content}</View>;
+  return <View style={styles.wrapper}>{content}</View>;
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    flexBasis: '23%',
+    minWidth: 200,
+    maxWidth: 300,
+  },
+  card: {
+    flex: 1,
+    padding: spacing.md,
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    // @ts-ignore - Web-specific CSS
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    marginBottom: 12,
+  },
+  iconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  icon: {
+    fontSize: 20,
+  },
+  titleContainer: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
+  subtitle: {
+    fontSize: 12,
+    color: colors.textMuted,
+    opacity: 0.7,
+  },
+  valueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  value: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
   trendBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -99,5 +150,9 @@ const styles = StyleSheet.create({
   },
   trendNegative: {
     backgroundColor: 'rgba(239, 68, 68, 0.2)',
+  },
+  trendText: {
+    fontSize: 12,
+    fontWeight: '600',
   },
 });

@@ -4,6 +4,8 @@
  * This file exports the processor code as a string for inline registration.
  */
 
+import logger from '@/utils/logger';
+
 // Configuration for AudioWorklet processor from environment variables
 // Note: AudioWorklet runs in a separate context and cannot access environment variables
 // directly, so config is read here and injected via processorOptions at instantiation.
@@ -18,7 +20,7 @@ const parseIntEnv = (key: string, defaultValue: number): number => {
   if (value === undefined || value === '') return defaultValue
   const parsed = parseInt(value, 10)
   if (isNaN(parsed)) {
-    console.warn(`[DubbingProcessor] Invalid ${key}: "${value}", using default ${defaultValue}`)
+    logger.warn(`Invalid ${key}: "${value}", using default ${defaultValue}`, 'DubbingCaptureProcessor')
     return defaultValue
   }
   return parsed
@@ -29,7 +31,7 @@ const parseFloatEnv = (key: string, defaultValue: number): number => {
   if (value === undefined || value === '') return defaultValue
   const parsed = parseFloat(value)
   if (isNaN(parsed)) {
-    console.warn(`[DubbingProcessor] Invalid ${key}: "${value}", using default ${defaultValue}`)
+    logger.warn(`Invalid ${key}: "${value}", using default ${defaultValue}`, 'DubbingCaptureProcessor')
     return defaultValue
   }
   return parsed

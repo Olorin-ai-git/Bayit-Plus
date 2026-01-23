@@ -6,6 +6,7 @@ import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@/stores/authStore';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard } from '@bayit/shared/ui';
+import logger from '@/utils/logger';
 
 export default function GoogleCallbackPage() {
   const { t } = useTranslation();
@@ -21,6 +22,7 @@ export default function GoogleCallbackPage() {
   useEffect(() => {
     // Skip if already processed (StrictMode runs effects twice in dev)
     if (hasProcessedRef.current) {
+      logger.debug('Skipping - already processed', 'GoogleCallbackPage');
       return;
     }
 
@@ -28,13 +30,22 @@ export default function GoogleCallbackPage() {
     const state = searchParams.get('state');
     const errorParam = searchParams.get('error');
 
+    logger.debug('Processing callback', 'GoogleCallbackPage', {
+      hasCode: !!code,
+      hasState: !!state,
+      hasError: !!errorParam,
+      codePreview: code?.substring(0, 20) + '...',
+    });
+
     if (errorParam) {
+      logger.debug('Error from Google', 'GoogleCallbackPage', errorParam);
       setError(t('googleLogin.cancelledError'));
       setTimeout(() => navigate('/login'), 3000);
       return;
     }
 
     if (!code) {
+      logger.debug('Missing code parameter', 'GoogleCallbackPage');
       setError(t('googleLogin.missingCode'));
       setTimeout(() => navigate('/login'), 3000);
       return;
@@ -42,9 +53,11 @@ export default function GoogleCallbackPage() {
 
     // Mark as processed before making the API call
     hasProcessedRef.current = true;
+    logger.debug('Calling handleGoogleCallback', 'GoogleCallbackPage');
 
     handleGoogleCallback(code, state || undefined)
-      .then(() => {
+      .then((response) => {
+        logger.debug('Success! Navigating to home', 'GoogleCallbackPage', response);
         // Wait to ensure localStorage write completes
         // This prevents race condition where HomePage API calls happen before token is saved
         setTimeout(() => {
@@ -52,6 +65,7 @@ export default function GoogleCallbackPage() {
         }, 500);
       })
       .catch((err: any) => {
+        logger.error('Google callback error', 'GoogleCallbackPage', err);
         const errorMessage = err.detail || err.message || t('googleLogin.loginError');
         setError(errorMessage);
         setTimeout(() => navigate('/login'), 3000);
@@ -89,29 +103,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.md,
     position: 'relative',
+    backgroundColor: colors.background,
+    overflow: 'hidden',
   },
   blurCircleTop: {
     position: 'absolute',
-    width: 320,
-    height: 320,
-    top: -160,
-    right: -160,
-    borderRadius: 160,
-    backgroundColor: '#9333ea',
-    opacity: 0.5,
-    // Note: blur effect requires platform-specific implementation
-    // Web: filter: 'blur(100px)', React Native: shadow workaround
+    width: 600,
+    height: 600,
+    borderRadius: 300,
+    backgroundColor: 'rgba(147, 51, 234, 0.08)',
+    top: -200,
+    right: -200,
+    filter: 'blur(120px)',
   },
   blurCircleBottom: {
     position: 'absolute',
-    width: 256,
-    height: 256,
-    bottom: 80,
-    left: -128,
-    borderRadius: 128,
-    backgroundColor: '#7c3aed',
-    opacity: 0.4,
-    // Note: blur effect requires platform-specific implementation
+    width: 400,
+    height: 400,
+    borderRadius: 200,
+    backgroundColor: 'rgba(192, 132, 252, 0.06)',
+    bottom: -100,
+    left: -100,
+    filter: 'blur(100px)',
   },
   card: {
     padding: spacing.lg,

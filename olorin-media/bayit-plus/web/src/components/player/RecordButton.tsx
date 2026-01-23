@@ -4,12 +4,14 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react'
-import { Text, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { Circle, Square } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme'
 import { recordingApi, RecordingSession } from '../../services/recordingApi'
 import { useAuthStore } from '../../store/authStore'
 import { useModal } from '../../contexts/ModalContext'
+import logger from '@/utils/logger'
 
 interface RecordButtonProps {
   channelId: string
@@ -29,11 +31,11 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
   const { t } = useTranslation()
   const { showError, showSuccess, showConfirm } = useModal()
   const [isRecording, setIsRecording] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
   const [session, setSession] = useState<RecordingSession | null>(null)
   const [duration, setDuration] = useState(0)
   const durationInterval = useRef<NodeJS.Timeout | null>(null)
 
-  // Cleanup timer on unmount
   useEffect(() => {
     return () => {
       if (durationInterval.current) {
@@ -42,7 +44,6 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
     }
   }, [])
 
-  // Notify parent of recording state changes
   useEffect(() => {
     onRecordingStateChange?.(isRecording, duration)
   }, [isRecording, duration, onRecordingStateChange])
@@ -56,17 +57,15 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
         setSession(activeSession)
         setIsRecording(true)
 
-        // Calculate duration from started_at
         const startedAt = new Date(activeSession.started_at).getTime()
         const now = Date.now()
         const elapsedSeconds = Math.floor((now - startedAt) / 1000)
         setDuration(elapsedSeconds)
 
-        // Start duration timer
         startDurationTimer()
       }
     } catch (err) {
-      console.error('Failed to check active session:', err)
+      logger.error('Failed to check active session', 'RecordButton', { error: err })
     }
   }
 
@@ -106,9 +105,9 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
       setDuration(0)
       startDurationTimer()
 
-      console.log('✅ Recording started:', newSession.recording_id)
+      logger.debug('Recording started', 'RecordButton', { recordingId: newSession.recording_id })
     } catch (err: any) {
-      console.error('Failed to start recording:', err)
+      logger.error('Failed to start recording', 'RecordButton', { error: err })
       const errorMessage = err?.detail || err?.message || t('recordings.startFailed')
       showError(errorMessage, t('recordings.error'))
     }
@@ -129,9 +128,8 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
       setSession(null)
       setDuration(0)
 
-      console.log('✅ Recording stopped:', recording.id)
+      logger.debug('Recording stopped', 'RecordButton', { recordingId: recording.id })
 
-      // Show success notification
       showSuccess(
         t('recordings.savedSuccess', {
           duration: formatDuration(recording.duration_seconds)
@@ -139,7 +137,7 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
         t('recordings.recordingSaved')
       )
     } catch (err: any) {
-      console.error('Failed to stop recording:', err)
+      logger.error('Failed to stop recording', 'RecordButton', { error: err })
       const errorMessage = err?.detail || err?.message || t('recordings.stopFailed')
       showError(errorMessage, t('recordings.error'))
     }
@@ -156,26 +154,28 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  // Don't render if not live
   if (!isLive) return null
 
   return (
     <Pressable
       onPress={handlePress}
-      className="flex-row items-center gap-2 px-4 py-2 rounded-full backdrop-blur-[40px]"
-      style={[isRecording ? styles.buttonRecording : styles.buttonIdle]}
+      onHoverIn={() => setIsHovered(true)}
+      onHoverOut={() => setIsHovered(false)}
+      style={[
+        styles.button,
+        isRecording ? styles.buttonRecording : styles.buttonIdle,
+        isHovered && !isRecording && styles.buttonHovered,
+      ]}
     >
       {isRecording ? (
         <>
           <Square size={16} color="white" fill="white" />
-          <Text className="text-white text-sm font-medium">
-            {formatDuration(duration)}
-          </Text>
+          <Text style={styles.buttonText}>{formatDuration(duration)}</Text>
         </>
       ) : (
         <>
           <Circle size={16} color="white" />
-          <Text className="text-white text-sm font-medium">{t('recordings.record')}</Text>
+          <Text style={styles.buttonText}>{t('recordings.record')}</Text>
         </>
       )}
     </Pressable>
@@ -183,10 +183,26 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
 }
 
 const styles = StyleSheet.create({
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: 999,
+  },
   buttonRecording: {
     backgroundColor: 'rgba(239, 68, 68, 0.9)',
   },
   buttonIdle: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
-});
+  buttonHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  buttonText: {
+    color: colors.text,
+    fontSize: fontSize.sm,
+    fontWeight: '500',
+  },
+})

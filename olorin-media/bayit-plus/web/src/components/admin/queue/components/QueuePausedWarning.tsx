@@ -8,7 +8,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Pause, Play } from 'lucide-react';
 import { GlassButton } from '@bayit/shared/ui';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 
 interface QueuePausedWarningProps {
   pauseReason?: string | null;
@@ -24,14 +24,14 @@ export const QueuePausedWarning: React.FC<QueuePausedWarningProps> = ({
   const { t } = useTranslation();
 
   return (
-    <View className="rounded-lg p-4 mb-6 border" style={{ backgroundColor: colors.error + '15', borderColor: colors.error + '40' }}>
+    <View style={[styles.container, { backgroundColor: colors.error + '15', borderColor: colors.error + '40' }]}>
       <View style={[styles.contentRow, isRTL && styles.rowReverse]}>
         <Pause size={20} color={colors.error} />
-        <View className="flex-1">
-          <Text className="text-base font-semibold mb-1" style={{ color: colors.error }}>
+        <View style={styles.textContainer}>
+          <Text style={[styles.title, { color: colors.error }]}>
             {t('admin.uploads.queuePaused', 'Queue Paused')}
           </Text>
-          <Text className="text-sm" style={{ color: colors.textSecondary }}>{pauseReason}</Text>
+          <Text style={[styles.reason, { color: colors.textSecondary }]}>{pauseReason}</Text>
         </View>
         {onResumeQueue && (
           <GlassButton
@@ -48,10 +48,27 @@ export const QueuePausedWarning: React.FC<QueuePausedWarningProps> = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+  },
   contentRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  reason: {
+    fontSize: 14,
   },
   rowReverse: {
     flexDirection: 'row-reverse',

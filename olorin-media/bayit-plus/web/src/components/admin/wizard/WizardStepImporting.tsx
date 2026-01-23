@@ -4,10 +4,10 @@
  */
 
 import React from 'react'
-import { View, Text, ActivityIndicator } from 'react-native'
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native'
 import { CheckCircle } from 'lucide-react'
 import { z } from 'zod'
-import { platformClass } from '../../../utils/platformClass'
+import { colors, spacing, fontSize } from '@bayit/shared/theme'
 
 // Zod schema for prop validation
 const WizardStepImportingPropsSchema = z.object({
@@ -20,45 +20,63 @@ export function WizardStepImporting({ progress }: WizardStepImportingProps) {
   const isComplete = progress === 100
 
   return (
-    <View
-      className={platformClass(
-        'flex flex-col items-center justify-center py-24 gap-6'
-      )}
-    >
+    <View style={styles.container}>
       {isComplete ? (
         <>
           <CheckCircle size={64} color="#22c55e" />
-          <Text className={platformClass('text-lg font-semibold text-white')}>
-            Import Complete!
-          </Text>
-          <Text className={platformClass('text-sm text-white/60 text-center')}>
+          <Text style={styles.title}>Import Complete!</Text>
+          <Text style={styles.subtitle}>
             Your content has been successfully imported to the library.
           </Text>
         </>
       ) : (
         <>
           <ActivityIndicator size="large" color="#9333ea" />
-          <Text className={platformClass('text-lg font-semibold text-white')}>
-            Importing Content...
-          </Text>
+          <Text style={styles.title}>Importing Content...</Text>
 
           {/* Progress bar */}
-          <View
-            className={platformClass(
-              'w-[200px] h-2 rounded bg-white/10 overflow-hidden'
-            )}
-          >
-            <View
-              className={platformClass('h-full bg-purple-600')}
-              style={{ width: `${progress}%` }}
-            />
+          <View style={styles.progressBarContainer}>
+            <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
           </View>
 
-          <Text className={platformClass('text-sm text-white/60')}>
-            {progress}% complete
-          </Text>
+          <Text style={styles.progressText}>{progress}% complete</Text>
         </>
       )}
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 96,
+    gap: spacing.lg,
+  },
+  title: {
+    fontSize: fontSize.lg,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  subtitle: {
+    fontSize: fontSize.sm,
+    color: 'rgba(255, 255, 255, 0.6)',
+    textAlign: 'center',
+  },
+  progressBarContainer: {
+    width: 200,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: '#9333ea',
+  },
+  progressText: {
+    fontSize: fontSize.sm,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+})

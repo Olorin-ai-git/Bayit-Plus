@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { QueueJob } from '../types';
 import { formatFileSize } from '../utils';
 import { StatusIcon } from './StatusIcon';
@@ -24,12 +24,12 @@ export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue, isRTL, 
   const [showQueue, setShowQueue] = useState(true);
 
   return (
-    <View className="mb-6 pt-4 border-t" style={{ borderTopColor: colors.glassBorder }}>
+    <View style={[styles.container, { borderTopColor: colors.glassBorder }]}>
       <Pressable
         style={[styles.headerRow, isRTL && styles.rowReverse]}
         onPress={() => setShowQueue(!showQueue)}
       >
-        <Text className="flex-1 text-lg font-semibold" style={{ textAlign, color: colors.text }}>
+        <Text style={[styles.headerText, { textAlign, color: colors.text }]}>
           {t('admin.uploads.queuedItems', 'Queued')} ({queue.length})
         </Text>
         {showQueue ? (
@@ -41,25 +41,25 @@ export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue, isRTL, 
 
       {showQueue && (
         <ScrollView
-          className="max-h-[600px]"
+          style={styles.scrollView}
           nestedScrollEnabled
           showsVerticalScrollIndicator={false}
         >
           {queue.length === 0 ? (
-            <Text className="text-sm text-center py-6" style={{ textAlign, color: colors.textMuted }}>
+            <Text style={[styles.emptyText, { textAlign, color: colors.textMuted }]}>
               {t('admin.uploads.noQueuedItems', 'No items in queue')}
             </Text>
           ) : (
             queue.map((job) => (
-              <View key={job.job_id} className="rounded-sm p-4 mb-2 border" style={{ backgroundColor: colors.backgroundLight, borderColor: colors.glassBorder }}>
+              <View key={job.job_id} style={[styles.jobCard, { backgroundColor: colors.backgroundLight, borderColor: colors.glassBorder }]}>
                 <View style={[styles.jobRow, isRTL && styles.rowReverse]}>
                   <StatusIcon status={job.status} job={job} />
-                  <Text className="flex-1 text-base font-semibold" style={{ textAlign, color: colors.text }} numberOfLines={1}>
+                  <Text style={[styles.filename, { textAlign, color: colors.text }]} numberOfLines={1}>
                     {job.filename}
                   </Text>
-                  <Text className="text-sm" style={{ color: colors.textMuted }}>{formatFileSize(job.file_size)}</Text>
+                  <Text style={[styles.fileSize, { color: colors.textMuted }]}>{formatFileSize(job.file_size)}</Text>
                 </View>
-                <Text className="text-xs mt-1" style={{ textAlign, color: colors.textMuted }}>
+                <Text style={[styles.timestamp, { textAlign, color: colors.textMuted }]}>
                   {t('admin.uploads.addedAt', 'Added')}: {format(new Date(job.created_at), 'MMM d, HH:mm')}
                 </Text>
               </View>
@@ -72,6 +72,11 @@ export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue, isRTL, 
 };
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: 24,
+    paddingTop: 16,
+    borderTopWidth: 1,
+  },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -79,11 +84,42 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     gap: 8,
   },
+  headerText: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  scrollView: {
+    maxHeight: 600,
+  },
+  emptyText: {
+    fontSize: 14,
+    textAlign: 'center',
+    paddingVertical: 24,
+  },
+  jobCard: {
+    borderRadius: 4,
+    padding: 16,
+    marginBottom: 8,
+    borderWidth: 1,
+  },
   jobRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     marginBottom: 8,
+  },
+  filename: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  fileSize: {
+    fontSize: 14,
+  },
+  timestamp: {
+    fontSize: 12,
+    marginTop: 4,
   },
   rowReverse: {
     flexDirection: 'row-reverse',

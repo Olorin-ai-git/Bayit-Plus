@@ -9,6 +9,7 @@
  */
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import logger from '@/utils/logger';
 import type {
   Widget,
   WidgetPosition,
@@ -371,7 +372,7 @@ export const useWidgetStore = create<WidgetState>()(
           voiceWidgetIds: newVoiceWidgetIds,
         });
 
-        console.log(`[WidgetStore] Created ${newWidgets.length} voice widgets`);
+        logger.debug(`Created ${newWidgets.length} voice widgets`, 'widgetStore');
       },
 
       // Clear all voice-created widgets
@@ -395,7 +396,7 @@ export const useWidgetStore = create<WidgetState>()(
           voiceWidgetIds: [],
         });
 
-        console.log(`[WidgetStore] Cleared ${voiceWidgetIds.length} voice widgets`);
+        logger.debug(`Cleared ${voiceWidgetIds.length} voice widgets`, 'widgetStore');
       },
 
       // Check if there are any voice widgets active

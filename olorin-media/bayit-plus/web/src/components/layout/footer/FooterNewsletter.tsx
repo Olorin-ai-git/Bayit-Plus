@@ -2,7 +2,7 @@
  * FooterNewsletter Component
  *
  * Email newsletter subscription form
- * Part of Footer migration from StyleSheet to TailwindCSS
+ * Part of Footer - StyleSheet implementation for RN Web compatibility
  *
  * Features:
  * - GlassInput from @bayit/shared for email entry
@@ -15,12 +15,11 @@
  */
 
 import { useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { Mail, Send } from 'lucide-react';
 import { GlassInput } from '@bayit/shared';
-import { platformClass } from '../../../utils/platformClass';
 
 // Zod schema for prop validation
 const FooterNewsletterPropsSchema = z.object({
@@ -57,32 +56,22 @@ export default function FooterNewsletter({
   };
 
   return (
-    <View className={platformClass('gap-2')}>
+    <View style={styles.container}>
       {/* Title */}
-      <Text
-        className={platformClass(
-          `text-xs font-semibold text-white ${isRTL ? 'text-right' : 'text-left'}`,
-          `text-xs font-semibold text-white ${isRTL ? 'text-right' : 'text-left'}`
-        )}
-      >
+      <Text style={[styles.title, isRTL && styles.textRTL]}>
         {t('footer.newsletter.title', 'Stay Updated')}
       </Text>
 
       {/* Success Message */}
       {subscribed ? (
-        <Text
-          className={platformClass(
-            'text-[11px] text-green-400 font-medium',
-            'text-[11px] text-green-400 font-medium'
-          )}
-        >
+        <Text style={styles.successText}>
           {t('footer.newsletter.success', 'Thanks for subscribing!')}
         </Text>
       ) : (
         /* Newsletter Form */
-        <View className={platformClass('flex-row gap-2 items-center')}>
+        <View style={styles.form}>
           {/* Email Input */}
-          <View className={platformClass('w-40')}>
+          <View style={styles.inputWrapper}>
             <GlassInput
               value={email}
               onChangeText={setEmail}
@@ -105,10 +94,10 @@ export default function FooterNewsletter({
           {/* Subscribe Button */}
           <Pressable
             onPress={handleSubscribe}
-            className={platformClass(
-              'w-11 h-11 rounded-lg bg-purple-500 justify-center items-center active:opacity-90 active:scale-95',
-              'w-11 h-11 rounded-lg bg-purple-500 justify-center items-center'
-            )}
+            style={({ pressed }) => [
+              styles.subscribeButton,
+              pressed && styles.subscribeButtonPressed,
+            ]}
             accessibilityLabel={t('footer.newsletter.submit', 'Subscribe')}
             accessibilityRole="button"
             // Touch target: 44x44pt (iOS), 48x48dp (Android) ✓
@@ -121,3 +110,42 @@ export default function FooterNewsletter({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 8,
+  },
+  title: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.9)',
+  },
+  textRTL: {
+    textAlign: 'right',
+  },
+  successText: {
+    fontSize: 11,
+    color: '#4ade80', // green-400
+    fontWeight: '500',
+  },
+  form: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+  },
+  inputWrapper: {
+    width: 160,
+  },
+  subscribeButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    backgroundColor: '#a855f7', // purple-500
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  subscribeButtonPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.95 }],
+  },
+});

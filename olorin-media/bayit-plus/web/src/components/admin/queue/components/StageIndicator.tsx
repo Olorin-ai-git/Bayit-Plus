@@ -33,8 +33,7 @@ export const StageIndicator: React.FC<StageIndicatorProps> = ({
 
   return (
     <View>
-      <View className="flex-row items-center my-3 justify-center"
-        style={[isRTL && styles.flexRowReverse]}>
+      <View style={[styles.stageRow, isRTL && styles.flexRowReverse]}>
         {UPLOAD_STAGES.map((stage, index) => {
           const stageStatus = stages[stage.key as keyof UploadStages];
           const isActive = stageStatus === 'in_progress';
@@ -73,19 +72,21 @@ export const StageIndicator: React.FC<StageIndicatorProps> = ({
             <React.Fragment key={stage.key}>
               {index > 0 && !showSeparator && (
                 <View
-                  className="w-5 h-0.5 mx-0.5"
-                  style={{ backgroundColor: isCompleted ? colors.success : colors.glassBorder }}
+                  style={[
+                    styles.connector,
+                    { backgroundColor: isCompleted ? colors.success : colors.glassBorder }
+                  ]}
                 />
               )}
               {showSeparator && (
-                <View className="items-center justify-center" style={{ marginHorizontal: spacing.sm }}>
-                  <View className="w-1 h-1 rounded-full bg-gray-500" />
+                <View style={[styles.separatorContainer, { marginHorizontal: spacing.sm }]}>
+                  <View style={styles.separatorDot} />
                 </View>
               )}
               <Pressable
                 onPress={() => setSelectedStage(selectedStage === stage.key ? null : stage.key)}
-                className="items-center justify-center border relative"
                 style={[
+                  styles.stageButton,
                   isEnrichmentStage ? styles.enrichmentStage : styles.criticalStage,
                   {
                     backgroundColor: bgColor,
@@ -95,7 +96,7 @@ export const StageIndicator: React.FC<StageIndicatorProps> = ({
               >
                 <Icon size={isEnrichmentStage ? 10 : 12} color={iconColor} />
                 {isActive && (
-                  <View className="absolute -top-1 -right-1">
+                  <View style={styles.activityIndicator}>
                     <ActivityIndicator size={8} color={colors.primary} />
                   </View>
                 )}
@@ -117,8 +118,35 @@ export const StageIndicator: React.FC<StageIndicatorProps> = ({
 };
 
 const styles = StyleSheet.create({
+  stageRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 12,
+    justifyContent: 'center',
+  },
   flexRowReverse: {
     flexDirection: 'row-reverse',
+  },
+  connector: {
+    width: 20,
+    height: 2,
+    marginHorizontal: 2,
+  },
+  separatorContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  separatorDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#6b7280',
+  },
+  stageButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    position: 'relative',
   },
   enrichmentStage: {
     width: 24,
@@ -130,5 +158,10 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
+  },
+  activityIndicator: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
   },
 });

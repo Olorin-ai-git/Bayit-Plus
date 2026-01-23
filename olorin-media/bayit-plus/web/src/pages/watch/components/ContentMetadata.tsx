@@ -3,8 +3,8 @@
  * Displays badges with content metadata (year, duration, rating, etc.)
  */
 
-import { View, Text } from 'react-native';
-import { GlassView } from '@bayit/shared/ui';
+import { View, Text, StyleSheet } from 'react-native';
+import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 
 interface ContentMetadataProps {
   year?: string;
@@ -24,34 +24,60 @@ export function ContentMetadata({
   episodesLabel = 'episodes',
 }: ContentMetadataProps) {
   return (
-    <View className="flex-row flex-wrap gap-3 mb-4">
+    <View style={styles.container}>
       {year && (
-        <GlassView className="px-3 py-1 rounded">
-          <Text className="text-sm text-gray-400">{year}</Text>
-        </GlassView>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{year}</Text>
+        </View>
       )}
       {duration && (
-        <GlassView className="px-3 py-1 rounded">
-          <Text className="text-sm text-gray-400">{duration}</Text>
-        </GlassView>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{duration}</Text>
+        </View>
       )}
       {rating && (
-        <GlassView className="px-3 py-1 rounded bg-purple-600/30">
-          <Text className="text-sm text-purple-400">{rating}</Text>
-        </GlassView>
+        <View style={[styles.badge, styles.ratingBadge]}>
+          <Text style={styles.ratingText}>{rating}</Text>
+        </View>
       )}
       {genre && (
-        <GlassView className="px-3 py-1 rounded">
-          <Text className="text-sm text-gray-400">{genre}</Text>
-        </GlassView>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{genre}</Text>
+        </View>
       )}
       {episodeCount && (
-        <GlassView className="px-3 py-1 rounded">
-          <Text className="text-sm text-gray-400">
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>
             {episodeCount} {episodesLabel}
           </Text>
-        </GlassView>
+        </View>
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  badge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.sm,
+  },
+  badgeText: {
+    fontSize: fontSize.sm,
+    color: 'rgba(156, 163, 175, 1)',
+  },
+  ratingBadge: {
+    backgroundColor: 'rgba(147, 51, 234, 0.3)',
+  },
+  ratingText: {
+    fontSize: fontSize.sm,
+    color: 'rgba(192, 132, 252, 1)',
+  },
+});

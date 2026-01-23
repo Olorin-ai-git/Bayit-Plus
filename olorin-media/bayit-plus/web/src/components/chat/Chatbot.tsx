@@ -155,7 +155,7 @@ export default function Chatbot() {
       lastTranscriptRef.current.text === transcript &&
       now - lastTranscriptRef.current.timestamp < 2000
     ) {
-      console.log('[Chatbot] Skipping duplicate transcript:', transcript)
+      logger.debug('Skipping duplicate transcript', 'Chatbot', transcript)
       return
     }
 
@@ -180,7 +180,7 @@ export default function Chatbot() {
       const response = await chatService.transcribeAudio(audioBlob, transcriptionLanguage)
       return response
     } catch (error) {
-      console.error('[Chatbot] Transcription error:', error)
+      logger.error('Transcription error', 'Chatbot', error)
       throw error
     }
   }, [i18n.language])

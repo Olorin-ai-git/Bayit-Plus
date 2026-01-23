@@ -137,7 +137,7 @@ const apiAuthService = {
     }
     return response;
   },
-  googleCallback: (code, redirectUri, state) => {
+  googleCallback: async (code, redirectUri, state) => {
     // Retrieve state from sessionStorage if not provided
     let finalState = state;
     if (!finalState) {
@@ -147,7 +147,10 @@ const apiAuthService = {
         sessionStorage.removeItem('oauth_state');
       }
     }
-    return api.post('/auth/google/callback', { code, redirect_uri: redirectUri, state: finalState });
+    console.log('[API] googleCallback request:', { redirectUri, hasState: !!finalState, statePreview: finalState?.substring(0, 10) });
+    const response = await api.post('/auth/google/callback', { code, redirect_uri: redirectUri, state: finalState });
+    console.log('[API] googleCallback response:', { hasUser: !!response?.user, hasToken: !!response?.access_token });
+    return response;
   },
 }
 

@@ -3,6 +3,7 @@ import { Star, Bookmark } from 'lucide-react';
 import { z } from 'zod';
 import { platformClass } from '@/utils/platformClass';
 import { favoritesService, watchlistService } from '@/services/api';
+import logger from '@/utils/logger';
 
 /**
  * Zod schema for ContentCardActions props
@@ -52,7 +53,7 @@ export function ContentCardActions(props: ContentCardActionsProps) {
       const result = await favoritesService.toggleFavorite(contentId, contentType);
       setIsFavorite(result.is_favorite);
     } catch (error) {
-      console.error('Failed to toggle favorite:', error);
+      logger.error('Failed to toggle favorite', 'ContentCardActions', { contentId, error });
     } finally {
       setFavoriteLoading(false);
     }
@@ -69,7 +70,7 @@ export function ContentCardActions(props: ContentCardActionsProps) {
       const result = await watchlistService.toggleWatchlist(contentId, contentType);
       setInWatchlist(result.in_watchlist);
     } catch (error) {
-      console.error('Failed to toggle watchlist:', error);
+      logger.error('Failed to toggle watchlist', 'ContentCardActions', { contentId, error });
     } finally {
       setWatchlistLoading(false);
     }

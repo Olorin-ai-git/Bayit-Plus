@@ -6,7 +6,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, fontSize } from '@bayit/shared/theme';
+import { colors, spacing } from '@bayit/shared/theme';
 import { QueueStats } from '../types';
 
 interface QueueHeaderProps {
@@ -29,38 +29,38 @@ export const QueueHeader: React.FC<QueueHeaderProps> = ({
   const { t } = useTranslation();
 
   return (
-    <View className="mb-6">
-      <View className="flex-row justify-between items-start gap-6 mb-4" style={{ flexDirection: directionFlex }}>
-        <Text className="text-2xl font-bold" style={{ textAlign, color: colors.text }}>
+    <View style={styles.container}>
+      <View style={[styles.headerRow, { flexDirection: directionFlex }]}>
+        <Text style={[styles.title, { textAlign, color: colors.text }]}>
           {t('admin.uploads.queueStatus', 'Upload Queue')}
         </Text>
         <View style={[styles.statsRow, isRTL && styles.rowReverse]}>
-          <View className="items-center">
-            <Text className="text-lg font-bold" style={{ color: colors.text }}>{stats.total_jobs}</Text>
-            <Text className="text-xs mt-1" style={{ color: colors.textMuted }}>{t('admin.uploads.totalJobs', 'Total')}</Text>
+          <View style={styles.statItem}>
+            <Text style={[styles.statValue, { color: colors.text }]}>{stats.total_jobs}</Text>
+            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('admin.uploads.totalJobs', 'Total')}</Text>
           </View>
-          <View className="items-center">
-            <Text className="text-lg font-bold" style={{ color: colors.warning }}>{stats.queued}</Text>
-            <Text className="text-xs mt-1" style={{ color: colors.textMuted }}>{t('admin.uploads.queued', 'Queued')}</Text>
+          <View style={styles.statItem}>
+            <Text style={[styles.statValue, { color: colors.warning }]}>{stats.queued}</Text>
+            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('admin.uploads.queued', 'Queued')}</Text>
           </View>
-          <View className="items-center">
-            <Text className="text-lg font-bold" style={{ color: colors.primary }}>{stats.processing}</Text>
-            <Text className="text-xs mt-1" style={{ color: colors.textMuted }}>{t('admin.uploads.processing', 'Active')}</Text>
+          <View style={styles.statItem}>
+            <Text style={[styles.statValue, { color: colors.primary }]}>{stats.processing}</Text>
+            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('admin.uploads.processing', 'Active')}</Text>
           </View>
-          <View className="items-center">
-            <Text className="text-lg font-bold" style={{ color: colors.success }}>{stats.completed}</Text>
-            <Text className="text-xs mt-1" style={{ color: colors.textMuted }}>{t('admin.uploads.completed', 'Done')}</Text>
+          <View style={styles.statItem}>
+            <Text style={[styles.statValue, { color: colors.success }]}>{stats.completed}</Text>
+            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('admin.uploads.completed', 'Done')}</Text>
           </View>
           {skippedCount > 0 && (
-            <View className="items-center">
-              <Text className="text-lg font-bold" style={{ color: colors.info }}>{skippedCount}</Text>
-              <Text className="text-xs mt-1" style={{ color: colors.textMuted }}>{t('admin.uploads.skipped', 'Skipped')}</Text>
+            <View style={styles.statItem}>
+              <Text style={[styles.statValue, { color: colors.info }]}>{skippedCount}</Text>
+              <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('admin.uploads.skipped', 'Skipped')}</Text>
             </View>
           )}
           {actualFailures > 0 && (
-            <View className="items-center">
-              <Text className="text-lg font-bold" style={{ color: colors.error }}>{actualFailures}</Text>
-              <Text className="text-xs mt-1" style={{ color: colors.textMuted }}>{t('admin.uploads.failed', 'Failed')}</Text>
+            <View style={styles.statItem}>
+              <Text style={[styles.statValue, { color: colors.error }]}>{actualFailures}</Text>
+              <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('admin.uploads.failed', 'Failed')}</Text>
             </View>
           )}
         </View>
@@ -70,9 +70,34 @@ export const QueueHeader: React.FC<QueueHeaderProps> = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: 24,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 24,
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
   statsRow: {
     flexDirection: 'row',
     gap: 24,
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  statLabel: {
+    fontSize: 12,
+    marginTop: 4,
   },
   rowReverse: {
     flexDirection: 'row-reverse',

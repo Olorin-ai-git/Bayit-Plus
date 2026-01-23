@@ -11,6 +11,7 @@ import { useDirection } from '@/hooks/useDirection';
 import { favoritesService, watchlistService } from '@/services/api';
 import { getLocalizedCategory } from '@bayit/shared-utils/contentLocalization';
 import LinearGradient from 'react-native-linear-gradient';
+import logger from '@/utils/logger';
 
 interface Content {
   id: string;
@@ -41,6 +42,28 @@ export default function ContentCard({ content, showProgress = false, showActions
   const { isRTL, textAlign, flexDirection } = useDirection();
   const [isHovered, setIsHovered] = useState(false);
   const { isUIInteractionEnabled } = useModeEnforcement();
+
+  // YouTube thumbnail fallback: maxresdefault (1280x720) isn't always available
+  // Fall back to hqdefault (480x360) which is always available
+  const [thumbnailError, setThumbnailError] = useState(false);
+
+  const getThumbnailUrl = (): string | undefined => {
+    if (!content.thumbnail) return undefined;
+
+    // If maxresdefault failed, use hqdefault
+    if (thumbnailError && content.thumbnail.includes('maxresdefault')) {
+      return content.thumbnail.replace('maxresdefault', 'hqdefault');
+    }
+
+    return content.thumbnail;
+  };
+
+  const handleThumbnailError = () => {
+    // Only retry once with fallback quality
+    if (!thumbnailError && content.thumbnail?.includes('maxresdefault')) {
+      setThumbnailError(true);
+    }
+  };
 
   // Get localized category name based on current language
   const localizedCategory = getLocalizedCategory(content, i18n.language);
@@ -75,7 +98,7 @@ export default function ContentCard({ content, showProgress = false, showActions
       const result = await favoritesService.toggleFavorite(content.id, content.type || 'vod');
       setIsFavorite(result.is_favorite);
     } catch (error) {
-      console.error('Failed to toggle favorite:', error);
+      logger.error('Failed to toggle favorite', 'ContentCard', { contentId: content.id, contentType: content.type, error });
     } finally {
       setFavoriteLoading(false);
     }
@@ -92,7 +115,7 @@ export default function ContentCard({ content, showProgress = false, showActions
       const result = await watchlistService.toggleWatchlist(content.id, content.type || 'vod');
       setInWatchlist(result.in_watchlist);
     } catch (error) {
-      console.error('Failed to toggle watchlist:', error);
+      logger.error('Failed to toggle watchlist', 'ContentCard', { contentId: content.id, contentType: content.type, error });
     } finally {
       setWatchlistLoading(false);
     }
@@ -113,11 +136,12 @@ export default function ContentCard({ content, showProgress = false, showActions
       ]}>
           {/* Thumbnail */}
           <View style={styles.thumbnailContainer}>
-            {content.thumbnail ? (
+            {getThumbnailUrl() ? (
               <Image
-                source={{ uri: content.thumbnail }}
+                source={{ uri: getThumbnailUrl() }}
                 style={styles.thumbnail}
                 resizeMode="contain"
+                onError={handleThumbnailError}
               />
             ) : (
               <View style={styles.thumbnailPlaceholder} />

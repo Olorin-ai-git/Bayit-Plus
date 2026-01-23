@@ -17,6 +17,7 @@ import {
 import { RefreshCw, ExternalLink, AlertCircle } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import axios from 'axios';
+import logger from '@/utils/logger';
 
 // Refresh interval: 2 minutes
 const REFRESH_INTERVAL = 2 * 60 * 1000;
@@ -57,7 +58,7 @@ export function YnetMivzakimWidget({
       setNews(response.data.items || []);
       setLastUpdate(new Date());
     } catch (err) {
-      console.error('Failed to fetch Ynet mivzakim:', err);
+      logger.error('Failed to fetch Ynet mivzakim', { error: err, maxItems, component: 'YnetMivzakimWidget' });
       setError('Failed to load news');
     } finally {
       setLoading(false);

@@ -10,6 +10,7 @@ import { Chess } from 'chess.js';
 import { colors, spacing } from '@bayit/shared/theme';
 import { useTranslation } from 'react-i18next';
 import { isRTL as checkIsRTL } from '@bayit/shared-i18n';
+import logger from '@/utils/logger';
 
 interface ChessBoardProps {
   game: any;
@@ -206,7 +207,7 @@ export default function ChessBoard({
       }
     }
 
-    console.log('[Chess] Check detected! King at', kingSquare, 'attacked by', attackingSquares);
+    logger.debug('Check detected! King at', 'ChessBoard', { kingSquare, attackingSquares });
     setCheckState({ isInCheck: true, kingSquare, attackingSquares });
   }, [chess, canPieceAttackSquare]);
 
@@ -217,7 +218,7 @@ export default function ChessBoard({
         chess.load(game.board_fen);
         updateCheckState();
       } catch (err) {
-        console.error('[ChessBoard] Failed to load FEN:', err);
+        logger.error('Failed to load FEN', 'ChessBoard', { error: err });
       }
     }
   }, [game?.board_fen, chess, updateCheckState]);
@@ -236,7 +237,7 @@ export default function ChessBoard({
   // Log check state changes for debugging
   useEffect(() => {
     if (checkState.isInCheck) {
-      console.log('[Chess] Check detected! King at', checkState.kingSquare, 'attacked by', checkState.attackingSquares);
+      logger.debug('Check detected! King at', 'ChessBoard', { kingSquare: checkState.kingSquare, attackingSquares: checkState.attackingSquares });
     }
   }, [checkState]);
 

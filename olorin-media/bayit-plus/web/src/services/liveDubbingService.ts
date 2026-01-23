@@ -7,6 +7,7 @@
  */
 
 import { createProcessorBlobUrl, PROCESSOR_CONFIG } from './audio/dubbing-capture-processor'
+import logger from '@/utils/logger'
 
 // API configuration from environment - no fallback allowed per coding standards
 const API_BASE_URL = import.meta.env.VITE_API_URL
@@ -30,7 +31,7 @@ function validateConfiguration(): void {
 // Log warning at load time for development feedback, but don't crash
 // (fail-fast happens when attempting to use the service)
 if (!API_BASE_URL) {
-  console.warn('[LiveDubbing] VITE_API_URL not configured - dubbing features will fail')
+  logger.warn('VITE_API_URL not configured - dubbing features will fail', 'liveDubbingService')
 }
 
 // Audio configuration - can be overridden via environment variables
@@ -156,7 +157,7 @@ class LiveDubbingService {
       this.ws = new WebSocket(wsUrl)
 
       this.ws.onopen = async () => {
-        console.log('✅ [LiveDubbing] WebSocket connected, authenticating...')
+        logger.debug('WebSocket connected, authenticating...', 'liveDubbingService')
 
         // Send authentication message first (secure - not in URL)
         this.ws?.send(JSON.stringify({
@@ -171,41 +172,40 @@ class LiveDubbingService {
       this.ws.onmessage = async (event) => {
         try {
           const msg = JSON.parse(event.data)
-          console.log('📨 [LiveDubbing] Message received:', msg.type)
+          logger.debug('Message received', 'liveDubbingService', { type: msg.type })
 
           if (msg.type === 'connected') {
             this.syncDelayMs = msg.sync_delay_ms || AUDIO_CONFIG.defaultSyncDelayMs
-            console.log(
-              `🌍 [LiveDubbing] Connected - Session: ${msg.session_id}, ` +
-              `Source: ${msg.source_lang}, Target: ${msg.target_lang}, ` +
-              `Sync delay: ${this.syncDelayMs}ms`
+            logger.debug(
+              `Connected - Session: ${msg.session_id}, Source: ${msg.source_lang}, Target: ${msg.target_lang}, Sync delay: ${this.syncDelayMs}ms`,
+              'liveDubbingService'
             )
             onConnected(msg as DubbingConnectionInfo)
           } else if (msg.type === 'dubbed_audio') {
             const audioMsg = msg.data as DubbedAudioMessage
-            console.log(`🔊 [LiveDubbing] Dubbed audio #${audioMsg?.sequence}: "${audioMsg?.translated_text?.substring(0, 30)}..."`)
+            logger.debug(`Dubbed audio #${audioMsg?.sequence}: "${audioMsg?.translated_text?.substring(0, 30)}..."`, 'liveDubbingService')
             await this.playDubbedAudio(audioMsg?.data)
             onDubbedAudio(audioMsg)
           } else if (msg.type === 'latency_report') {
-            console.log(`📊 [LiveDubbing] Latency: ${msg.avg_total_ms}ms (STT: ${msg.avg_stt_ms}ms, Trans: ${msg.avg_translation_ms}ms, TTS: ${msg.avg_tts_ms}ms)`)
+            logger.debug(`Latency: ${msg.avg_total_ms}ms (STT: ${msg.avg_stt_ms}ms, Trans: ${msg.avg_translation_ms}ms, TTS: ${msg.avg_tts_ms}ms)`, 'liveDubbingService')
             onLatency(msg as LatencyReport)
           } else if (msg.type === 'error') {
-            console.error('❌ [LiveDubbing] Server error:', msg.error || msg.message)
+            logger.error('Server error', 'liveDubbingService', msg.error || msg.message)
             onError(msg.error || msg.message, msg.recoverable ?? true)
           }
         } catch (error) {
-          console.error('❌ [LiveDubbing] WebSocket parse error:', error)
+          logger.error('WebSocket parse error', 'liveDubbingService', error)
         }
       }
 
       this.ws.onerror = (error) => {
-        console.error('❌ [LiveDubbing] WebSocket error:', error)
+        logger.error('WebSocket error', 'liveDubbingService', error)
         onError('Connection error', true)
         this.isConnected = false
       }
 
       this.ws.onclose = (event) => {
-        console.log(`🔌 [LiveDubbing] WebSocket closed: ${event.code} - ${event.reason}`)
+        logger.debug(`WebSocket closed: ${event.code} - ${event.reason}`, 'liveDubbingService')
         this.isConnected = false
         this.stopAudioCapture()
       }
@@ -223,7 +223,12 @@ class LiveDubbingService {
       // Create single audio context for both capture (resampled) and playback
       // Sample rate from config (default 48kHz for high quality playback)
       this.audioContext = new AudioContext({ sampleRate: AUDIO_CONFIG.contextSampleRate })
-      console.log(`🎤 [LiveDubbing] AudioContext created at ${AUDIO_CONFIG.contextSampleRate}Hz`)
+      logger.debug(`AudioContext created at ${AUDIO_CONFIG.contextSampleRate}Hz`, 'liveDubbingService')
+
+      // Validate AudioContext was created successfully
+      if (!this.audioContext) {
+        throw new Error('Failed to create AudioContext')
+      }
 
       // Create gain nodes for volume control
       this.originalGain = this.audioContext.createGain()
@@ -245,7 +250,7 @@ class LiveDubbingService {
 
       const stream = captureMethod.call(videoElement)
       const audioTracks = stream.getAudioTracks()
-      console.log(`📹 [LiveDubbing] Video stream captured with ${audioTracks.length} audio track(s)`)
+      logger.debug(`Video stream captured with ${audioTracks.length} audio track(s)`, 'liveDubbingService')
 
       if (audioTracks.length === 0) {
         throw new Error('No audio tracks available from video element')
@@ -260,8 +265,29 @@ class LiveDubbingService {
       await this.audioContext.audioWorklet.addModule(processorUrl)
       URL.revokeObjectURL(processorUrl) // Clean up blob URL
 
+      // Validate AudioContext state before creating AudioWorkletNode
+      if (!this.audioContext || this.audioContext.state === 'closed') {
+        throw new Error('AudioContext is not available or has been closed')
+      }
+
+      // Resume AudioContext if it's suspended (required by browser security policy)
+      if (this.audioContext.state === 'suspended') {
+        logger.debug('AudioContext is suspended, resuming...', 'liveDubbingService')
+        await this.audioContext.resume()
+        logger.debug('AudioContext resumed', 'liveDubbingService')
+      }
+
+      // Verify AudioContext is now running
+      if (this.audioContext.state !== 'running') {
+        throw new Error(`AudioContext state is ${this.audioContext.state}, expected 'running'`)
+      }
+
       // Create worklet node for audio capture with configuration
       // Note: AudioWorklet runs at context sample rate, downsampling done on main thread
+      if (!this.audioContext) {
+        throw new Error('AudioContext lost before creating AudioWorkletNode')
+      }
+
       this.workletNode = new AudioWorkletNode(this.audioContext, 'dubbing-capture-processor', {
         processorOptions: PROCESSOR_CONFIG,
       })
@@ -278,10 +304,10 @@ class LiveDubbingService {
 
           if (this.chunkCount % AUDIO_CONFIG.chunkLogInterval === 0) {
             const dbLevel = amplitude > 0 ? 20 * Math.log10(amplitude) : -100
-            console.log(`📦 [LiveDubbing] Sent ${this.chunkCount} chunks, level: ${dbLevel.toFixed(1)}dB`)
+            logger.debug(`Sent ${this.chunkCount} chunks, level: ${dbLevel.toFixed(1)}dB`, 'liveDubbingService')
           }
         } else if (type === 'warning') {
-          console.warn(`⚠️ [LiveDubbing] ${message}`)
+          logger.warn(message, 'liveDubbingService')
         }
       }
 
@@ -290,9 +316,9 @@ class LiveDubbingService {
       captureSource.connect(this.workletNode)
       // Don't connect worklet to destination - it's just for capture
 
-      console.log('✅ [LiveDubbing] AudioWorklet pipeline ready')
+      logger.debug('AudioWorklet pipeline ready', 'liveDubbingService')
     } catch (error) {
-      console.error('❌ [LiveDubbing] Audio pipeline setup error:', error)
+      logger.error('Audio pipeline setup error', 'liveDubbingService', error)
       onError(error instanceof Error ? error.message : 'Audio setup failed', false)
       throw error
     }
@@ -355,7 +381,7 @@ class LiveDubbingService {
    */
   private async playDubbedAudio(base64Audio: string): Promise<void> {
     if (!this.audioContext || !this.dubbedGain) {
-      console.warn('⚠️ [LiveDubbing] Audio context not ready')
+      logger.warn('Audio context not ready', 'liveDubbingService')
       return
     }
 
@@ -376,9 +402,9 @@ class LiveDubbingService {
       source.connect(this.dubbedGain)
       source.start()
 
-      console.log(`🔊 [LiveDubbing] Playing dubbed audio (${audioBuffer.duration.toFixed(2)}s)`)
+      logger.debug(`Playing dubbed audio (${audioBuffer.duration.toFixed(2)}s)`, 'liveDubbingService')
     } catch (error) {
-      console.error('❌ [LiveDubbing] Error playing dubbed audio:', error)
+      logger.error('Error playing dubbed audio', 'liveDubbingService', error)
     }
   }
 
@@ -394,7 +420,7 @@ class LiveDubbingService {
         AUDIO_CONFIG.volumeTransitionTime
       )
     }
-    console.log(`🔊 [LiveDubbing] Original volume: ${(this.originalVolume * 100).toFixed(0)}%`)
+    logger.debug(`Original volume: ${(this.originalVolume * 100).toFixed(0)}%`, 'liveDubbingService')
   }
 
   /**
@@ -409,7 +435,7 @@ class LiveDubbingService {
         AUDIO_CONFIG.volumeTransitionTime
       )
     }
-    console.log(`🔊 [LiveDubbing] Dubbed volume: ${(this.dubbedVolume * 100).toFixed(0)}%`)
+    logger.debug(`Dubbed volume: ${(this.dubbedVolume * 100).toFixed(0)}%`, 'liveDubbingService')
   }
 
   /**
@@ -432,7 +458,7 @@ class LiveDubbingService {
 
     this.isConnected = false
     this.chunkCount = 0
-    console.log('🔌 [LiveDubbing] Disconnected')
+    logger.debug('Disconnected', 'liveDubbingService')
   }
 
   /**
@@ -498,7 +524,7 @@ class LiveDubbingService {
 
       return await response.json()
     } catch (error) {
-      console.error('Error checking dubbing availability:', error)
+      logger.error('Error checking dubbing availability', 'liveDubbingService', error)
       return { available: false, error: 'Check failed' }
     }
   }
@@ -526,7 +552,7 @@ class LiveDubbingService {
 
       return await response.json()
     } catch (error) {
-      console.error('Error fetching dubbing voices:', error)
+      logger.error('Error fetching dubbing voices', 'liveDubbingService', error)
       return []
     }
   }

@@ -15,6 +15,7 @@
  */
 
 import { StyleSheet as RNStyleSheet } from 'react-native';
+import logger from '@/utils/logger';
 
 // Store the original StyleSheet.create for legacy components
 const originalCreate = RNStyleSheet.create;
@@ -26,8 +27,9 @@ export const StyleSheet = {
     try {
       return originalCreate(styles);
     } catch (error) {
-      console.warn(
-        '[StyleSheet Polyfill] StyleSheet.create failed, returning empty styles',
+      logger.warn(
+        'StyleSheet.create failed, returning empty styles',
+        'StyleSheetPolyfill',
         error
       );
       // Return empty object to prevent crashes

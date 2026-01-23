@@ -1,12 +1,16 @@
 /**
  * DubbingControls Component
  * Premium feature for real-time audio dubbing of live streams
+ * Uses GlassLiveControlButton for consistent styling
  */
 
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Languages, MessageSquare } from 'lucide-react'
-import { colors } from '@bayit/shared/theme'
+import { MessageSquare, Languages } from 'lucide-react'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { isTV } from '@bayit/shared/utils/platform'
+import { GlassLiveControlButton } from '../controls/GlassLiveControlButton'
+import logger from '@/utils/logger'
 
 interface DubbingControlsProps {
   isEnabled: boolean
@@ -20,6 +24,7 @@ interface DubbingControlsProps {
   onToggle: () => void
   onLanguageChange: (lang: string) => void
   onShowUpgrade?: () => void
+  onDisableSubtitles?: () => void
 }
 
 const LANGUAGE_NAMES: Record<string, string> = {
@@ -43,10 +48,10 @@ export default function DubbingControls({
   onToggle,
   onLanguageChange,
   onShowUpgrade,
+  onDisableSubtitles,
 }: DubbingControlsProps) {
   const { t } = useTranslation()
 
-  // Don't render if dubbing not available for this channel
   if (!isAvailable) return null
 
   const handlePress = () => {
@@ -54,41 +59,53 @@ export default function DubbingControls({
       onShowUpgrade?.()
       return
     }
+
+    // Disable subtitles before enabling dubbing (mutual exclusivity)
+    if (!isEnabled && onDisableSubtitles) {
+      logger.debug('Disabling subtitles for mutual exclusivity', 'DubbingControls', {});
+      onDisableSubtitles()
+    }
+
     onToggle()
   }
 
   return (
     <View style={styles.container}>
       {/* Main Toggle Button */}
-      <Pressable
+      <GlassLiveControlButton
+        icon={
+          <MessageSquare
+            size={18}
+            color={isEnabled ? colors.primary : colors.textSecondary}
+          />
+        }
+        label={t('dubbing.liveDubbing', 'Live Dubbing')}
+        isEnabled={isEnabled}
+        isConnecting={isConnecting}
+        isPremium={isPremium}
         onPress={handlePress}
-        style={[
-          styles.button,
-          isEnabled ? styles.buttonEnabled : !isPremium ? styles.buttonPremium : styles.buttonDefault,
-        ]}
-      >
-        <MessageSquare
-          size={20}
-          color={isEnabled ? colors.primary : colors.textSecondary}
-        />
-        <Text style={[styles.buttonText, isEnabled ? styles.textEnabled : styles.textDisabled]}>
-          {isPremium ? t('dubbing.liveDubbing', 'Live Dubbing') : '⭐ Premium'}
-        </Text>
-        {isConnecting && <ActivityIndicator size="small" color={colors.primary} />}
-        {isEnabled && !isConnecting && <View style={styles.connectedDot} />}
-      </Pressable>
+      />
 
       {/* Language Selector (only when enabled) */}
       {isEnabled && availableLanguages.length > 0 && (
         <View style={styles.languageSelector}>
-          <Languages size={16} color={colors.textSecondary} />
+          <Languages size={14} color={colors.textSecondary} />
           {availableLanguages.map((lang) => (
             <Pressable
               key={lang}
               onPress={() => onLanguageChange(lang)}
-              style={[styles.langButton, targetLanguage === lang && styles.langButtonActive]}
+              style={({ hovered }) => [
+                styles.langButton,
+                targetLanguage === lang && styles.langButtonActive,
+                hovered && styles.langButtonHovered,
+              ]}
             >
-              <Text style={[styles.langText, targetLanguage === lang && styles.langTextActive]}>
+              <Text
+                style={[
+                  styles.langText,
+                  targetLanguage === lang && styles.langTextActive,
+                ]}
+              >
                 {LANGUAGE_NAMES[lang] || lang.toUpperCase()}
               </Text>
             </Pressable>
@@ -117,96 +134,69 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: spacing.sm,
     position: 'relative',
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderWidth: 1,
-  },
-  buttonEnabled: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderColor: '#9333ea',
-  },
-  buttonPremium: {
-    borderColor: '#eab308',
-  },
-  buttonDefault: {
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  buttonText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  textEnabled: {
-    color: '#fff',
-  },
-  textDisabled: {
-    color: '#9ca3af',
-  },
-  connectedDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#22c55e',
   },
   languageSelector: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(168, 85, 247, 0.2)',
   },
   langButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.md,
   },
   langButtonActive: {
-    backgroundColor: 'rgba(147, 51, 234, 0.3)',
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+  },
+  langButtonHovered: {
+    backgroundColor: 'rgba(168, 85, 247, 0.15)',
   },
   langText: {
-    color: '#9ca3af',
-    fontSize: 12,
+    color: colors.textSecondary,
+    fontSize: isTV ? 14 : 12,
     fontWeight: '500',
   },
   langTextActive: {
-    color: '#fff',
+    color: colors.text,
   },
   latencyBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(59, 130, 246, 0.15)',
     borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.4)',
+    borderColor: 'rgba(59, 130, 246, 0.3)',
   },
   latencyText: {
     color: '#93c5fd',
-    fontSize: 11,
-    fontWeight: '500',
+    fontSize: isTV ? 12 : 11,
+    fontWeight: '600',
   },
   errorContainer: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 52,
+    left: 0,
     right: 0,
-    backgroundColor: 'rgba(220, 38, 38, 0.9)',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    maxWidth: 250,
+    backgroundColor: 'rgba(220, 38, 38, 0.95)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(248, 113, 113, 0.3)',
+    maxWidth: 220,
   },
   errorText: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 12,
     fontWeight: '500',
+    textAlign: 'center',
   },
 })

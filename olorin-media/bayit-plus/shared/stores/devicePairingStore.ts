@@ -9,12 +9,12 @@ const getWsBaseUrl = () => {
     return 'wss://api.bayit.tv/api/v1';
   }
   if (Platform.OS === 'web') {
-    return 'ws://localhost:8000/api/v1';
+    return 'ws://localhost:8001/api/v1';
   }
   if (Platform.OS === 'android') {
-    return 'ws://10.0.2.2:8000/api/v1';
+    return 'ws://10.0.2.2:8001/api/v1';
   }
-  return 'ws://localhost:8000/api/v1';
+  return 'ws://localhost:8001/api/v1';
 };
 
 const WS_BASE_URL = getWsBaseUrl();

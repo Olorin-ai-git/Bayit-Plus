@@ -13,6 +13,7 @@ export { GlassSelect } from './GlassSelect';
 export { GlassTextarea } from './GlassTextarea';
 export { GlassCheckbox } from './GlassCheckbox';
 export { GlassToggle } from './GlassToggle';
+export { GlassSlider } from './GlassSlider';
 export { TVSwitch } from './TVSwitch';
 
 // UI components
@@ -30,6 +31,7 @@ export { GlassResizablePanel } from './GlassResizablePanel';
 export { GlassSplitterHandle } from './GlassSplitterHandle';
 export { GlassTooltip } from './GlassTooltip';
 export { GlassChevron } from './GlassChevron';
+export { GlassSlideContainer } from './GlassSlideContainer';
 
 // Voice-first conversational interface components (Phases 10)
 export { GlassParticleLayer } from './GlassParticleLayer';
@@ -45,6 +47,7 @@ export type { AnalogClockProps } from './AnalogClock';
 export type { GlassAvatarProps } from './GlassAvatar';
 export type { GlassToggleProps } from './GlassToggle';
 export type { GlassStatCardProps } from './GlassStatCard';
+export type { GlassSliderProps } from './GlassSlider';
 
 // Web-only components (depend on lucide-react) are in a separate export
 // Import from '@bayit/shared/ui/web' for web-only usage:

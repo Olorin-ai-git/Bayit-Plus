@@ -84,7 +84,10 @@ export default function SettingsPanel({
                       styles.optionFull,
                       isActive && styles.optionActive,
                     ]}
-                    onPress={() => onLiveSubtitleLangChange(langCode)}
+                    onPress={() => {
+                      onLiveSubtitleLangChange(langCode)
+                      onClose() // Close panel after selecting language
+                    }}
                   >
                     <View style={styles.optionContent}>
                       <Text style={styles.optionIcon}>{lang.flag}</Text>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { favoritesService, downloadsService, historyService } from '@/services/api';
 import type { UserStats, RecentActivity } from '../types';
+import logger from '@/utils/logger';
 
 export function useProfileData() {
   const [stats, setStats] = useState<UserStats>({ favorites: 0, downloads: 0 });

@@ -18,6 +18,7 @@ import { useDirection } from '@/hooks/useDirection';
 import { VoiceAvatarFAB, VoiceChatModal } from '@bayit/shared/components/support';
 import { useVoiceSupport } from '@bayit/shared-hooks';
 import { supportConfig } from '@bayit/shared-config/supportConfig';
+import logger from '@/utils/logger';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
@@ -42,7 +43,7 @@ export default function Layout() {
 
   const handleVoiceAvatarPress = useCallback(() => {
     // Dispatch custom event to toggle topbar microphone button state
-    console.log('[Layout] Wizard avatar pressed - activating voice assistant');
+    logger.debug('Wizard avatar pressed - activating voice assistant', 'Layout');
     window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
 
     // Activate voice assistant (handles intro + modal + listening)
@@ -51,7 +52,7 @@ export default function Layout() {
 
   // Handle closing the voice modal - must also toggle the microphone button back
   const handleCloseVoiceModal = useCallback(() => {
-    console.log('[Layout] Voice modal closing - toggling microphone button off');
+    logger.debug('Voice modal closing - toggling microphone button off', 'Layout');
     // Dispatch custom event to toggle topbar microphone button state back off
     window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
     // Close the modal
@@ -64,7 +65,7 @@ export default function Layout() {
 
   // Handle Red button on TV remote to toggle voice listening
   const handleRedButton = useCallback(() => {
-    console.log('[Layout] Red button pressed - toggling voice');
+    logger.debug('Red button pressed - toggling voice', 'Layout');
     // Dispatch custom event that VoiceSearchButton listens for
     window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
   }, []);
@@ -81,13 +82,13 @@ export default function Layout() {
   const { sendMessage, toggleOpen } = useChatbotStore();
 
   const handleBixbySearch = useCallback((query: string) => {
-    console.log('[Layout] Bixby search received:', query);
+    logger.debug('Bixby search received', 'Layout', query);
     toggleOpen(); // Open chatbot
     sendMessage(query); // Send the voice query to chatbot
   }, [sendMessage, toggleOpen]);
 
   const handleBixbyCommand = useCallback((command: string, data?: any) => {
-    console.log('[Layout] Bixby command:', command, data);
+    logger.debug('Bixby command', 'Layout', { command, data });
     // Could handle play/pause/etc commands here
   }, []);
 
@@ -104,7 +105,7 @@ export default function Layout() {
   // Log Bixby availability
   useEffect(() => {
     if (IS_TV_BUILD) {
-      console.log('[Layout] Bixby voice integration available:', bixbyAvailable);
+      logger.debug('Bixby voice integration available', 'Layout', bixbyAvailable);
     }
   }, [bixbyAvailable]);
 
@@ -114,7 +115,7 @@ export default function Layout() {
   // Debug: Log when processing state is received
   useEffect(() => {
     if (isProcessing || isAwake) {
-      console.log('[Layout] 📊 CONTEXT RECEIVED - Processing:', {
+      logger.debug('CONTEXT RECEIVED - Processing', 'Layout', {
         isProcessing,
         isAwake,
         isListening,
@@ -146,10 +147,10 @@ export default function Layout() {
 
   // Listen for TTS events to track response speaking state
   useEffect(() => {
-    console.log('[Layout] Setting up TTS event listeners');
+    logger.debug('Setting up TTS event listeners', 'Layout');
 
     const handlePlaying = (item: any) => {
-      console.log('[Layout] TTS playing event fired:', item.text?.substring(0, 50));
+      logger.debug('TTS playing event fired', 'Layout', item.text?.substring(0, 50));
       // Delay setting isResponding to allow Processing state to be visible first
       setTimeout(() => {
         setIsResponding(true);
@@ -159,7 +160,7 @@ export default function Layout() {
     };
 
     const handleCompleted = () => {
-      console.log('[Layout] TTS completed event fired');
+      logger.debug('TTS completed event fired', 'Layout');
       setIsResponding(false);
       setIsTTSSpeaking(false);
       // Keep response text for a moment before clearing
@@ -167,7 +168,7 @@ export default function Layout() {
     };
 
     const handleError = (data: any) => {
-      console.error('[Layout] TTS error event fired:', data?.error);
+      logger.error('TTS error event fired', 'Layout', data?.error);
       setVoiceError(true);
       setIsResponding(false);
       setIsTTSSpeaking(false);
@@ -175,13 +176,13 @@ export default function Layout() {
     };
 
     // Listen to TTS events
-    console.log('[Layout] Registering TTS event listeners - playing, completed, error');
+    logger.debug('Registering TTS event listeners - playing, completed, error', 'Layout');
     ttsService.on('playing', handlePlaying);
     ttsService.on('completed', handleCompleted);
     ttsService.on('error', handleError);
 
     return () => {
-      console.log('[Layout] Cleanup: removing TTS event listeners');
+      logger.debug('Cleanup: removing TTS event listeners', 'Layout');
       ttsService.off('playing', handlePlaying);
       ttsService.off('completed', handleCompleted);
       ttsService.off('error', handleError);

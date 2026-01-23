@@ -3,6 +3,8 @@
  * Captures audio from video element and streams to WebSocket for real-time translation
  */
 
+import logger from '@/utils/logger'
+
 // API configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
 
@@ -47,7 +49,7 @@ class LiveSubtitleService {
       this.ws = new WebSocket(wsUrl)
 
       this.ws.onopen = async () => {
-        console.log('✅ [LiveSubtitle] WebSocket connected')
+        logger.debug('WebSocket connected', 'liveSubtitleService')
         this.isConnected = true
         await this.startAudioCapture(videoElement)
       }
@@ -55,23 +57,25 @@ class LiveSubtitleService {
       this.ws.onmessage = (event) => {
         try {
           const msg = JSON.parse(event.data)
-          console.log('📨 [LiveSubtitle] Message received:', msg.type)
+          logger.debug('Message received', 'liveSubtitleService', { type: msg.type, msg })
           if (msg.type === 'connected') {
-            console.log(`🌍 [LiveSubtitle] Connected - Source: ${msg.source_lang}, Target: ${msg.target_lang}`)
+            logger.debug(`Connected - Source: ${msg.source_lang}, Target: ${msg.target_lang}`, 'liveSubtitleService')
           } else if (msg.type === 'subtitle') {
-            console.log('📝 [LiveSubtitle] Subtitle received:', msg.data.text)
+            logger.debug('Subtitle received', 'liveSubtitleService', { text: msg.data.text, data: msg.data })
+            logger.debug('Calling onSubtitle callback', 'liveSubtitleService', msg.data)
             onSubtitle(msg.data)
+            logger.debug('onSubtitle callback completed', 'liveSubtitleService')
           } else if (msg.type === 'error') {
-            console.error('❌ [LiveSubtitle] Server error:', msg.message)
+            logger.error('Server error', 'liveSubtitleService', msg.message)
             onError(msg.message)
           }
         } catch (error) {
-          console.error('❌ [LiveSubtitle] WebSocket parse error:', error)
+          logger.error('WebSocket parse error', 'liveSubtitleService', error)
         }
       }
 
       this.ws.onerror = (error) => {
-        console.error('❌ [LiveSubtitle] WebSocket error:', error)
+        logger.error('WebSocket error', 'liveSubtitleService', error)
         onError('Connection error')
         this.isConnected = false
       }
@@ -93,7 +97,7 @@ class LiveSubtitleService {
     try {
       // Use 16kHz sample rate for ElevenLabs Scribe
       this.audioContext = new AudioContext({ sampleRate: 16000 })
-      console.log('🎤 [LiveSubtitle] AudioContext created with sampleRate: 16000Hz')
+      logger.debug('AudioContext created with sampleRate: 16000Hz', 'liveSubtitleService')
 
       // IMPORTANT: captureStream() gets audio DIRECTLY from video element
       // This does NOT use the microphone - it captures the video's audio track
@@ -109,20 +113,18 @@ class LiveSubtitleService {
 
       // Verify we have audio tracks from the video
       const audioTracks = stream.getAudioTracks()
-      console.log(`📹 [LiveSubtitle] Video stream captured with ${audioTracks.length} audio track(s)`)
+      logger.debug(`Video stream captured with ${audioTracks.length} audio track(s)`, 'liveSubtitleService')
 
       if (audioTracks.length === 0) {
-        console.error('❌ [LiveSubtitle] No audio tracks in video stream!')
-        console.error('   This usually means:')
-        console.error('   1. The video has no audio, OR')
-        console.error('   2. CORS is blocking audio capture (cross-origin video)')
-        console.error('   3. The video element is muted')
+        logger.error('No audio tracks in video stream', 'liveSubtitleService', {
+          message: 'This usually means: 1. The video has no audio, OR 2. CORS is blocking audio capture (cross-origin video) 3. The video element is muted'
+        })
         throw new Error('No audio tracks available from video element')
       }
 
       // Log audio track details for debugging
       audioTracks.forEach((track, i) => {
-        console.log(`   Track ${i}: ${track.label || 'unnamed'}, enabled=${track.enabled}, muted=${track.muted}`)
+        logger.debug(`Track ${i}: ${track.label || 'unnamed'}, enabled=${track.enabled}, muted=${track.muted}`, 'liveSubtitleService')
       })
 
       this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream)
@@ -130,7 +132,7 @@ class LiveSubtitleService {
       // Use smaller buffer (2048) for lower latency (~128ms vs ~256ms)
       // 2048 samples at 16kHz = 128ms per chunk
       this.processor = this.audioContext.createScriptProcessor(2048, 1, 1)
-      console.log('🔧 [LiveSubtitle] Audio processor created (buffer size: 2048, ~128ms latency)')
+      logger.debug('Audio processor created (buffer size: 2048, ~128ms latency)', 'liveSubtitleService')
 
       let chunkCount = 0
       let silentChunks = 0
@@ -138,7 +140,7 @@ class LiveSubtitleService {
       this.processor.onaudioprocess = (e) => {
         if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
           if (chunkCount % 100 === 0) {
-            console.warn('⚠️ [LiveSubtitle] WebSocket not ready, skipping audio chunk')
+            logger.warn('WebSocket not ready, skipping audio chunk', 'liveSubtitleService')
           }
           return
         }
@@ -155,8 +157,7 @@ class LiveSubtitleService {
           silentChunks++
           // Warn if we're getting only silence
           if (silentChunks === 100) {
-            console.warn('⚠️ [LiveSubtitle] 100 consecutive silent chunks detected!')
-            console.warn('   Audio may be blocked by CORS or video is muted')
+            logger.warn('100 consecutive silent chunks detected - Audio may be blocked by CORS or video is muted', 'liveSubtitleService')
           }
         } else {
           silentChunks = 0
@@ -175,15 +176,15 @@ class LiveSubtitleService {
         // Log every 100 chunks with audio level info
         if (chunkCount % 100 === 0) {
           const dbLevel = maxAmplitude > 0 ? 20 * Math.log10(maxAmplitude) : -100
-          console.log(`📦 [LiveSubtitle] Sent ${chunkCount} chunks, level: ${dbLevel.toFixed(1)}dB`)
+          logger.debug(`Sent ${chunkCount} chunks, level: ${dbLevel.toFixed(1)}dB`, 'liveSubtitleService')
         }
       }
 
       this.mediaStreamSource.connect(this.processor)
       this.processor.connect(this.audioContext.destination)
-      console.log('✅ [LiveSubtitle] Audio capture started - capturing DIRECTLY from video (not microphone)')
+      logger.debug('Audio capture started - capturing DIRECTLY from video (not microphone)', 'liveSubtitleService')
     } catch (error) {
-      console.error('❌ [LiveSubtitle] Audio capture error:', error)
+      logger.error('Audio capture error', 'liveSubtitleService', error)
       throw error
     }
   }
@@ -256,7 +257,7 @@ class LiveSubtitleService {
 
       return await response.json()
     } catch (error) {
-      console.error('Error checking subtitle availability:', error)
+      logger.error('Error checking subtitle availability', 'liveSubtitleService', error)
       return { available: false, error: 'Check failed' }
     }
   }

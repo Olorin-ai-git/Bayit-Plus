@@ -3,7 +3,7 @@
  * Displays live subtitle cues with automatic expiration
  */
 
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { LiveSubtitleCue } from '@/services/liveSubtitleService'
 
 interface LiveSubtitleOverlayProps {
@@ -11,20 +11,15 @@ interface LiveSubtitleOverlayProps {
 }
 
 export default function LiveSubtitleOverlay({ cues }: LiveSubtitleOverlayProps) {
-  if (cues.length === 0) return null
+  if (cues.length === 0) {
+    return null
+  }
 
   return (
-    <View className="absolute bottom-24 left-4 right-4 items-center z-[100]">
+    <View style={styles.container}>
       {cues.map((cue, idx) => (
-        <View key={`${cue.timestamp}-${idx}`} className="bg-black/85 px-4 py-2 rounded-lg my-1 max-w-[90%] border border-white/10">
-          <Text
-            className="text-white text-2xl font-bold text-center leading-8"
-            style={{
-              textShadowColor: 'rgba(0, 0, 0, 1)',
-              textShadowOffset: { width: 2, height: 2 },
-              textShadowRadius: 4,
-            }}
-          >
+        <View key={`${cue.timestamp}-${idx}`} style={styles.cueContainer}>
+          <Text style={styles.cueText}>
             {cue.text}
           </Text>
         </View>
@@ -32,3 +27,35 @@ export default function LiveSubtitleOverlay({ cues }: LiveSubtitleOverlayProps) 
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 96, // 24 * 4 (bottom-24 in Tailwind)
+    left: 16,
+    right: 16,
+    alignItems: 'center',
+    zIndex: 100,
+    pointerEvents: 'none',
+  },
+  cueContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
+    marginVertical: 4,
+    maxWidth: '90%',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  cueText: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    lineHeight: 32,
+    textShadowColor: 'rgba(0, 0, 0, 1)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+  },
+})

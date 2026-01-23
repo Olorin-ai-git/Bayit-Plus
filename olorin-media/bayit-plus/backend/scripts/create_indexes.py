@@ -14,6 +14,7 @@ from app.models.admin import AuditLog
 from app.models.realtime import WatchParty, ChatMessage
 from app.models.chapters import VideoChapters
 from app.models.subtitles import SubtitleTrackDoc
+from app.models.trivia import ContentTrivia
 
 
 async def create_indexes():
@@ -115,6 +116,17 @@ async def create_indexes():
         print("  - Subtitle indexes")
         await SubtitleTrackDoc.get_pymongo_collection().create_index("content_id")
         await SubtitleTrackDoc.get_pymongo_collection().create_index([("content_id", 1), ("language", 1)])
+
+        # Trivia indexes
+        print("  - Trivia indexes")
+        await ContentTrivia.get_pymongo_collection().create_index("content_id")
+        await ContentTrivia.get_pymongo_collection().create_index("tmdb_id")
+        await ContentTrivia.get_pymongo_collection().create_index("is_enriched")
+        await ContentTrivia.get_pymongo_collection().create_index(
+            [("content_id", 1), ("content_type", 1)],
+            unique=True,
+            name="content_trivia_unique_content"
+        )
 
         print("\n✅ All indexes created successfully!")
 

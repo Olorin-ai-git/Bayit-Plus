@@ -40,6 +40,7 @@ import { apiZmanService, apiTrendingService, apiRitualService, apiJudaismService
 import { apiChatService, apiPartyService, apiRecordingService, apiDownloadsService } from './socialServices';
 import { apiJerusalemService, apiTelAvivService, apiCultureService } from './cultureServices';
 import { securityService } from './securityService';
+import { triviaApi } from './triviaServices';
 
 // Import demo services
 import {
@@ -121,6 +122,9 @@ export const cultureService = isDemo ? demoCultureService : apiCultureService;
 
 // Security services - No demo mode (requires real auth)
 export { securityService };
+
+// Trivia services - No demo mode
+export { triviaApi };
 
 // Re-export API services for direct access
 export {

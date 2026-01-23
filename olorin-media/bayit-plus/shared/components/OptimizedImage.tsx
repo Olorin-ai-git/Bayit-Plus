@@ -89,10 +89,21 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [isVisible, setIsVisible] = useState(!lazy);
   const [hasError, setHasError] = useState(false);
+  const [youtubeRetried, setYoutubeRetried] = useState(false);
   const viewRef = useRef<View>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
-  const uri = typeof source === 'object' ? source.uri : '';
+  const originalUri = typeof source === 'object' ? source.uri : '';
+
+  // YouTube thumbnail fallback: maxresdefault isn't always available
+  // Fall back to hqdefault which is always available
+  const uri = (() => {
+    if (!originalUri) return '';
+    if (youtubeRetried && originalUri.includes('maxresdefault')) {
+      return originalUri.replace('maxresdefault', 'hqdefault');
+    }
+    return originalUri;
+  })();
 
   // Check cache on mount
   useEffect(() => {
@@ -146,6 +157,12 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   };
 
   const handleError = () => {
+    // Try YouTube fallback before showing error
+    if (!youtubeRetried && originalUri?.includes('maxresdefault')) {
+      setYoutubeRetried(true);
+      return; // Don't set hasError yet, retry with hqdefault
+    }
+
     setHasError(true);
     if (uri) {
       imageCache.set(uri, false);
@@ -182,7 +199,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
       {/* Actual image */}
       <Image
         {...props}
-        source={source}
+        source={{ uri }}
         style={style}
         onLoad={handleLoad}
         onError={handleError}

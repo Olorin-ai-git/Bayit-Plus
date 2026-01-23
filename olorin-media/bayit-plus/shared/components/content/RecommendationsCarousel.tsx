@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius } from '../../theme';
 import { isTV } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
+import { useYouTubeThumbnail } from '../../hooks/useYouTubeThumbnail';
 
 export interface RecommendedContent {
   id: string;
@@ -36,6 +37,7 @@ const RecommendationCard: React.FC<{
   const { textAlign } = useDirection();
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const { thumbnailUrl, handleError } = useYouTubeThumbnail(item.thumbnail);
 
   const handleFocus = () => {
     setIsFocused(true);
@@ -70,11 +72,12 @@ const RecommendationCard: React.FC<{
         }`}
       >
         <View className="aspect-video relative bg-white/5 overflow-hidden">
-          {item.thumbnail ? (
+          {thumbnailUrl ? (
             <Image
-              source={{ uri: item.thumbnail }}
+              source={{ uri: thumbnailUrl }}
               className="w-full h-full"
               resizeMode="cover"
+              onError={handleError}
             />
           ) : (
             <View className="flex-1 justify-center items-center bg-white/5">

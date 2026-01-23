@@ -13,6 +13,7 @@ import { useConstantListening } from '@bayit/shared-hooks';
 import { ProfileDropdown } from '@bayit/shared/ProfileDropdown';
 import { colors, spacing } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
+import logger from '@/utils/logger';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
@@ -64,7 +65,7 @@ export default function Header() {
           }
         }
       } catch (e) {
-        console.warn('Failed to check localStorage auth:', e);
+        logger.warn('Failed to check localStorage auth', 'Header.legacy', e);
       }
       setLocalAuthChecked(true);
     }
@@ -89,7 +90,7 @@ export default function Header() {
   // Handle voice transcript - send to chatbot
   const handleVoiceTranscript = useCallback((text: string) => {
     if (text) {
-      console.log('[TV Voice] Transcript received:', text);
+      logger.debug('Transcript received', 'Header.legacy', text);
       // Open chatbot and send message
       toggleOpen();
       sendMessage(text);
@@ -98,7 +99,7 @@ export default function Header() {
 
   // Handle voice errors
   const handleVoiceError = useCallback((error: Error) => {
-    console.warn('[TV Voice] Error:', error.message);
+    logger.warn('Voice error', 'Header.legacy', error.message);
   }, []);
 
   // Wake word listening hook for TV

@@ -4,27 +4,24 @@
  *
  * Features:
  * - Mute/unmute toggle button
- * - Volume slider (0.0 - 1.0)
- * - TailwindCSS styling
- * - Web-only volume slider (HTML5 input)
+ * - Volume slider (0.0 - 1.0) using GlassSlider
+ * - Cross-platform support (web, iOS, tvOS, Android)
  */
 
-import { View, Pressable } from 'react-native'
+import { View, Pressable, StyleSheet } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Volume2, VolumeX } from 'lucide-react'
-import { z } from 'zod'
-import { colors } from '@bayit/shared/theme'
-import { platformClass } from '../../../utils/platformClass'
+import { colors, borderRadius } from '@bayit/shared/theme'
+import { GlassSlider } from '@bayit/shared/ui'
+import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
+import { isTV } from '@bayit/shared/utils/platform'
 
-const VolumeControlsPropsSchema = z.object({
-  isMuted: z.boolean(),
-  volume: z.number().min(0).max(1),
-  onToggleMute: z.function().returns(z.void()),
-  onVolumeChange: z.function()
-    .args(z.any())
-    .returns(z.void()),
-})
-
-type VolumeControlsProps = z.infer<typeof VolumeControlsPropsSchema>
+interface VolumeControlsProps {
+  isMuted: boolean
+  volume: number
+  onToggleMute: () => void
+  onVolumeChange: (value: number) => void
+}
 
 export default function VolumeControls({
   isMuted,
@@ -32,40 +29,56 @@ export default function VolumeControls({
   onToggleMute,
   onVolumeChange,
 }: VolumeControlsProps) {
+  const { t } = useTranslation()
+  const muteFocus = useTVFocus({ styleType: 'button' })
+  const smallIconSize = isTV ? 24 : 18
+
   return (
-    <View className="flex-row items-center gap-1">
+    <View style={styles.container}>
       <Pressable
-        onPress={(e) => {
-          e.stopPropagation?.()
-          onToggleMute()
-        }}
-        className={platformClass(
-          'w-9 h-9 rounded-lg items-center justify-center hover:bg-white/10',
-          'w-9 h-9 rounded-lg items-center justify-center'
-        )}
-        accessibilityLabel={isMuted ? 'Unmute' : 'Mute'}
+        onPress={(e) => { e.stopPropagation?.(); onToggleMute() }}
+        onFocus={muteFocus.handleFocus}
+        onBlur={muteFocus.handleBlur}
+        focusable={true}
+        style={[styles.muteButton, muteFocus.isFocused && muteFocus.focusStyle]}
+        accessibilityLabel={isMuted ? t('player.unmute') : t('player.mute')}
         accessibilityRole="button"
       >
         {isMuted ? (
-          <VolumeX size={18} color={colors.text} />
+          <VolumeX size={smallIconSize} color={colors.text} />
         ) : (
-          <Volume2 size={18} color={colors.text} />
+          <Volume2 size={smallIconSize} color={colors.text} />
         )}
       </Pressable>
-      <input
-        type="range"
-        min="0"
-        max="1"
-        step="0.1"
-        value={isMuted ? 0 : volume}
-        onChange={onVolumeChange}
-        onClick={(e) => e.stopPropagation()}
-        className="w-20"
-        style={{
-          accentColor: colors.primary,
-        }}
-        aria-label="Volume"
-      />
+      <View style={styles.sliderContainer}>
+        <GlassSlider
+          value={isMuted ? 0 : volume}
+          min={0}
+          max={1}
+          step={0.1}
+          onValueChange={onVolumeChange}
+          accessibilityLabel={t('player.volume')}
+          testID="volume-slider"
+        />
+      </View>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  muteButton: {
+    width: isTV ? 56 : 36,
+    height: isTV ? 56 : 36,
+    borderRadius: borderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sliderContainer: {
+    width: isTV ? 120 : 80,
+  },
+})

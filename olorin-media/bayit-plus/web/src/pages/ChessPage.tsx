@@ -10,6 +10,7 @@ import { useAuthStore } from '../stores/authStore';
 import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 import { GlassResizablePanel } from '@bayit/shared/ui';
 import { Gamepad2 } from 'lucide-react';
+import logger from '@/utils/logger';
 import axios from 'axios';
 
 // Chess components
@@ -91,7 +92,7 @@ export default function ChessPage() {
         } catch (err: any) {
           const errorMessage = err.response?.data?.detail || t('chess.inviteFailed');
           setInviteStatus(errorMessage);
-          console.error('[Chess] Failed to send invite:', err);
+          logger.error('Failed to send invite', 'ChessPage', err);
         }
 
         // Clear status after 5 seconds

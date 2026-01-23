@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { MessageSquare, Mic, CreditCard } from 'lucide-react';
 import { GlassView } from '@bayit/shared/ui';
+import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 import type { TabId } from '../types';
 
 interface QuickActionsProps {
@@ -19,12 +20,12 @@ interface ActionButtonProps {
 
 function ActionButton({ icon: Icon, iconColor = '#6B21A8', label, onPress }: ActionButtonProps) {
   return (
-    <Pressable onPress={onPress} className="flex-1 min-w-[140px]">
-      <GlassView className="p-4 items-center gap-2">
-        <View className="w-12 h-12 rounded-lg justify-center items-center" style={{ backgroundColor: `${iconColor}20` }}>
+    <Pressable onPress={onPress} style={styles.actionButtonPressable}>
+      <GlassView style={styles.actionButton} intensity="medium">
+        <View style={[styles.iconContainer, { backgroundColor: `${iconColor}20` }]}>
           <Icon size={24} color={iconColor} />
         </View>
-        <Text className="text-[13px] font-medium text-white text-center">{label}</Text>
+        <Text style={styles.actionLabel}>{label}</Text>
       </GlassView>
     </Pressable>
   );
@@ -35,7 +36,7 @@ export function QuickActions({ isRTL, onTabChange }: QuickActionsProps) {
   const navigate = useNavigate();
 
   return (
-    <View className="gap-4 mb-6 flex-wrap" style={[isRTL ? styles.rowReverse : styles.row]}>
+    <View style={[styles.container, isRTL && styles.containerRTL]}>
       <ActionButton
         icon={MessageSquare}
         iconColor="#6B21A8"
@@ -59,10 +60,35 @@ export function QuickActions({ isRTL, onTabChange }: QuickActionsProps) {
 }
 
 const styles = StyleSheet.create({
-  row: {
+  container: {
     flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+    flexWrap: 'wrap',
   },
-  rowReverse: {
+  containerRTL: {
     flexDirection: 'row-reverse',
+  },
+  actionButtonPressable: {
+    flex: 1,
+    minWidth: 140,
+  },
+  actionButton: {
+    padding: spacing.md,
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  actionLabel: {
+    fontSize: fontSize.sm,
+    fontWeight: '500',
+    color: colors.text,
+    textAlign: 'center',
   },
 });

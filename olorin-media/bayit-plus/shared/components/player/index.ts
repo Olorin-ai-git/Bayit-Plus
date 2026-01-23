@@ -20,3 +20,9 @@ export {
   isPlaybackSpeedSupported,
 } from './PlaybackSpeedControl';
 export type { PlaybackSpeed, PlaybackSpeedControlProps } from './PlaybackSpeedControl';
+
+// Live Dubbing
+export { LiveDubbingControls } from './LiveDubbingControls';
+export type { LiveDubbingControlsProps } from './LiveDubbingControls';
+export { LiveDubbingOverlay } from './LiveDubbingOverlay';
+export type { LiveDubbingOverlayProps } from './LiveDubbingOverlay';

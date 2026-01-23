@@ -32,3 +32,18 @@ export {
 } from "./gazeDetectionService";
 
 // Recording service is exported from api.ts (recordingService)
+
+// Live dubbing service
+export {
+  liveDubbingService,
+  LiveDubbingService,
+  default as liveDubbingServiceDefault,
+} from './liveDubbingService';
+export type {
+  DubbedAudioMessage,
+  LatencyReport,
+  DubbingConnectionInfo,
+  DubbingAvailability,
+  DubbingVoice,
+  IAudioPlayer,
+} from './liveDubbingService';

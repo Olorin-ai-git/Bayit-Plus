@@ -12,6 +12,7 @@ interface PlayerControlsProps {
   state: PlayerState
   controls: PlayerControlsType
   isLive?: boolean
+  liveSubtitleLang?: string
   showChaptersPanel?: boolean
   showSceneSearchPanel?: boolean
   showSettings?: boolean
@@ -32,6 +33,7 @@ export default function PlayerControls({
   state,
   controls,
   isLive = false,
+  liveSubtitleLang = 'en',
   showChaptersPanel = false,
   showSceneSearchPanel = false,
   showSettings = false,
@@ -60,6 +62,7 @@ export default function PlayerControls({
         state={state}
         toggleFullscreen={controls.toggleFullscreen}
         isLive={isLive}
+        liveSubtitleLang={liveSubtitleLang}
         showChaptersPanel={showChaptersPanel}
         showSceneSearchPanel={showSceneSearchPanel}
         showSettings={showSettings}

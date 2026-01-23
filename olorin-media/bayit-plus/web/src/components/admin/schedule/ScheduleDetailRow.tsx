@@ -1,5 +1,6 @@
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { z } from 'zod';
+import { colors, fontSize } from '@bayit/shared/theme';
 
 /**
  * Zod schema for ScheduleDetailRow props
@@ -35,27 +36,44 @@ const ScheduleDetailRow: React.FC<ScheduleDetailRowProps> = ({ label, value, isR
   }
 
   return (
-    <View className="flex-row justify-between items-center">
+    <View style={styles.row}>
       <Text
-        className="text-sm flex-1"
-        style={{
-          textAlign: isRTL ? 'right' : 'left',
-          color: 'rgb(115, 115, 115)', // colors.textMuted equivalent
-        }}
+        style={[
+          styles.label,
+          { textAlign: isRTL ? 'right' : 'left' }
+        ]}
       >
         {label}:
       </Text>
       <Text
-        className="text-sm font-medium flex-[2]"
-        style={{
-          textAlign: isRTL ? 'right' : 'left',
-          color: '#ffffff', // colors.text
-        }}
+        style={[
+          styles.value,
+          { textAlign: isRTL ? 'right' : 'left' }
+        ]}
       >
         {value}
       </Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  label: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+    flex: 1,
+  },
+  value: {
+    fontSize: fontSize.sm,
+    fontWeight: '500',
+    color: colors.text,
+    flex: 2,
+  },
+});
 
 export default ScheduleDetailRow;

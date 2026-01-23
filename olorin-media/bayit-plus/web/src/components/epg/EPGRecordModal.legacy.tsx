@@ -9,6 +9,7 @@ import { EPGProgram } from '@/services/epgApi'
 import { recordingApi } from '@/services/recordingApi'
 import { useAuthStore } from '@/stores/authStore'
 import { useDirection } from '@/hooks/useDirection'
+import logger from '@/utils/logger'
 
 interface EPGRecordModalProps {
   program: EPGProgram
@@ -63,7 +64,7 @@ const EPGRecordModal: React.FC<EPGRecordModalProps> = ({
       const quota = await recordingApi.getQuotaStatus()
       setQuotaInfo(quota)
     } catch (err) {
-      console.error('Failed to fetch quota:', err)
+      logger.error('Failed to fetch quota', 'EPGRecordModal', err)
     }
   }
 
@@ -86,7 +87,7 @@ const EPGRecordModal: React.FC<EPGRecordModalProps> = ({
       })
       onClose()
     } catch (err) {
-      console.error('Failed to schedule recording:', err)
+      logger.error('Failed to schedule recording', 'EPGRecordModal', err)
     } finally {
       setLoading(false)
     }

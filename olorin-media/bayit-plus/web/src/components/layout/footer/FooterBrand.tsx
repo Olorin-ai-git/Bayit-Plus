@@ -2,7 +2,7 @@
  * FooterBrand Component
  *
  * Displays brand identity, contact information, and social media links
- * Part of Footer migration from StyleSheet to TailwindCSS
+ * Part of Footer - StyleSheet implementation for RN Web compatibility
  *
  * Features:
  * - AnimatedLogo from @bayit/shared
@@ -13,7 +13,7 @@
  * - Accessibility labels for screen readers
  */
 
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
@@ -26,7 +26,6 @@ import {
   Phone,
 } from 'lucide-react';
 import { AnimatedLogo } from '@bayit/shared';
-import { platformClass } from '../../../utils/platformClass';
 
 // Zod schema for prop validation
 const SocialPlatformSchema = z.object({
@@ -61,26 +60,16 @@ export default function FooterBrand({
   FooterBrandPropsSchema.partial().parse({ isMobile, isRTL, socialPlatforms });
 
   return (
-    <View
-      className={platformClass(
-        `min-w-[180px] gap-2 ${isMobile ? 'items-center' : ''}`,
-        `min-w-[180px] gap-2 ${isMobile ? 'items-center' : ''}`
-      )}
-    >
+    <View style={[styles.container, isMobile && styles.containerMobile]}>
       {/* Logo */}
       <Link to="/" style={{ textDecoration: 'none' }}>
-        <View className={platformClass('mb-2')}>
+        <View style={styles.logoContainer}>
           <AnimatedLogo size="medium" hideHouse={true} />
         </View>
       </Link>
 
       {/* Brand Description */}
-      <Text
-        className={platformClass(
-          `text-xs text-white/60 leading-[18px] ${isRTL ? 'text-right' : 'text-left'}`,
-          `text-xs text-white/60 leading-[18px] ${isRTL ? 'text-right' : 'text-left'}`
-        )}
-      >
+      <Text style={[styles.description, isRTL && styles.textRTL]}>
         {t(
           'footer.brandDescription',
           'Your home in the USA. TV broadcasts, VOD, radio and podcasts in Hebrew.'
@@ -88,46 +77,32 @@ export default function FooterBrand({
       </Text>
 
       {/* Contact Info */}
-      <View className={platformClass('gap-1 mt-2')}>
+      <View style={styles.contactInfo}>
         {/* Email */}
-        <View className={platformClass('flex-row items-center gap-2')}>
+        <View style={styles.contactItem}>
           <Mail size={14} color="rgba(255, 255, 255, 0.4)" />
-          <Text
-            className={platformClass(
-              'text-[11px] text-white/40',
-              'text-[11px] text-white/40'
-            )}
-          >
-            support@bayitplus.com
-          </Text>
+          <Text style={styles.contactText}>support@bayitplus.com</Text>
         </View>
 
         {/* Phone */}
-        <View className={platformClass('flex-row items-center gap-2')}>
+        <View style={styles.contactItem}>
           <Phone size={14} color="rgba(255, 255, 255, 0.4)" />
-          <Text
-            className={platformClass(
-              'text-[11px] text-white/40',
-              'text-[11px] text-white/40'
-            )}
-          >
-            1-800-BAYIT-TV
-          </Text>
+          <Text style={styles.contactText}>1-800-BAYIT-TV</Text>
         </View>
       </View>
 
       {/* Social Links */}
-      <View className={platformClass('flex-row gap-2 mt-4')}>
+      <View style={styles.socialLinks}>
         {socialPlatforms.map((social) => {
           const IconComponent = social.icon;
           return (
             <Pressable
               key={social.key}
               onPress={() => window.open(social.url, '_blank')}
-              className={platformClass(
-                'w-11 h-11 rounded-full bg-white/[0.05] border border-white/10 justify-center items-center active:bg-white/[0.15] active:scale-95',
-                'w-11 h-11 rounded-full bg-white/[0.05] border border-white/10 justify-center items-center'
-              )}
+              style={({ pressed }) => [
+                styles.socialButton,
+                pressed && styles.socialButtonPressed,
+              ]}
               accessibilityLabel={t(`footer.social.${social.key}`)}
               accessibilityRole="button"
               // Touch target: 44x44pt (iOS), 48x48dp (Android) ✓
@@ -141,6 +116,59 @@ export default function FooterBrand({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    minWidth: 180,
+    gap: 8,
+  },
+  containerMobile: {
+    alignItems: 'center',
+  },
+  logoContainer: {
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+    lineHeight: 18,
+  },
+  textRTL: {
+    textAlign: 'right',
+  },
+  contactInfo: {
+    gap: 4,
+    marginTop: 8,
+  },
+  contactItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  contactText: {
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.4)',
+  },
+  socialLinks: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 16,
+  },
+  socialButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 9999,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  socialButtonPressed: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    transform: [{ scale: 0.95 }],
+  },
+});
 
 // Export default platforms for reuse
 export { SOCIAL_PLATFORMS };

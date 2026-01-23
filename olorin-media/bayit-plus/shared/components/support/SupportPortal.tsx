@@ -10,6 +10,7 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui';
@@ -17,6 +18,7 @@ import { colors, spacing, borderRadius } from '../../theme';
 import { useDirection } from '../../hooks/useDirection';
 import { useSupportStore, SupportTab } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
+import { config } from '../../config/appConfig';
 import { SupportCategories } from './SupportCategories';
 import { SupportDocViewer } from './SupportDocViewer';
 import { SupportSearch } from './SupportSearch';
@@ -33,6 +35,7 @@ interface TabConfig {
 const tabs: TabConfig[] = [
   { id: 'docs', labelKey: 'support.tabs.docs', icon: '📚' },
   { id: 'faq', labelKey: 'support.tabs.faq', icon: '❓' },
+  { id: 'videos', labelKey: 'support.tabs.videos', icon: '🎬' },
   { id: 'contact', labelKey: 'support.tabs.contact', icon: '💬' },
   { id: 'tickets', labelKey: 'support.tabs.tickets', icon: '🎫' },
 ];
@@ -59,6 +62,46 @@ export const SupportPortal: React.FC = () => {
 
       case 'faq':
         return <SupportFAQ />;
+
+      case 'videos':
+        return (
+          <View className="gap-4">
+            <GlassView className="p-4 rounded-2xl">
+              <Text className={`text-3xl mb-3 ${isTV ? 'text-4xl' : ''} text-center`}>
+                🎬
+              </Text>
+              <Text className={`text-white text-xl font-bold mb-2 ${isTV ? 'text-2xl' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
+                {t('support.videos.widgetsIntro')}
+              </Text>
+              <Text className={`text-text-secondary text-sm mb-4 ${isTV ? 'text-base' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
+                {t('support.videos.widgetsDescription')}
+              </Text>
+
+              <GlassView className="w-full rounded-xl overflow-hidden"
+                    style={{ aspectRatio: 16/9, maxWidth: isTV ? '100%' : 800, marginHorizontal: 'auto' }}>
+                {Platform.OS === 'web' ? (
+                  <video
+                    src={config.media.widgetsIntroVideo}
+                    aria-label={t('support.videos.widgetsIntro')}
+                    title={t('support.videos.widgetsIntro')}
+                    controls
+                    playsInline
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                      backgroundColor: colors.background,
+                    } as React.CSSProperties}
+                  />
+                ) : (
+                  <Text className="text-center text-white p-4">
+                    {t('widgets.intro.videoUnavailable')}
+                  </Text>
+                )}
+              </GlassView>
+            </GlassView>
+          </View>
+        );
 
       case 'contact':
         return (

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, ScrollView, useWindowDimensions, Pres
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
-import { Film, Tv, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Film, Tv, Search, ChevronLeft, ChevronRight, SlidersHorizontal, Mic, X } from 'lucide-react';
 import ContentCard from '@/components/content/ContentCard';
 import AnimatedCard from '@/components/common/AnimatedCard';
 import { contentService } from '@/services/api';
@@ -52,6 +52,8 @@ export default function VODPage() {
   const [totalMovies, setTotalMovies] = useState(0);
   const [totalSeries, setTotalSeries] = useState(0);
   const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false);
+  const [showFilterPanel, setShowFilterPanel] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const { width } = useWindowDimensions();
 
   // Track previous category to detect changes and prevent duplicate API calls

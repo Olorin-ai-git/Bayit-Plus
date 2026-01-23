@@ -120,10 +120,10 @@ export default function WatchlistPage() {
     try {
       setIsLoading(true);
       const data = await watchlistService.getWatchlist();
-      console.log('Watchlist API response:', data);
+      logger.debug('Watchlist API response', 'WatchlistPage', data);
       setWatchlist(data?.items || []);
     } catch (err) {
-      console.error('Watchlist load error:', err);
+      logger.error('Watchlist load error', 'WatchlistPage', err);
       logger.error('Failed to load watchlist', 'WatchlistPage', err);
     } finally {
       setIsLoading(false);

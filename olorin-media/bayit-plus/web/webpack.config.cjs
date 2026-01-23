@@ -275,6 +275,15 @@ module.exports = (env, argv) => {
             to: path.resolve(getOutputPath(), 'porcupine'),
             noErrorOnMissing: true,
           },
+          {
+            // Copy media files from web/public to dist (videos, etc.)
+            from: path.resolve(__dirname, 'public'),
+            to: path.resolve(getOutputPath()),
+            noErrorOnMissing: true,
+            globOptions: {
+              ignore: ['**/index.html'], // HTML is handled by HtmlWebpackPlugin
+            },
+          },
         ],
       }),
     ],

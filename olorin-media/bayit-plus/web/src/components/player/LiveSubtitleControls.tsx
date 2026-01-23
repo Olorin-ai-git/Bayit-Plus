@@ -1,15 +1,17 @@
 /**
  * LiveSubtitleControls Component
  * Premium feature for real-time subtitle translation of live streams
+ * Uses GlassLiveControlButton for consistent styling
  */
 
 import { useState, useEffect, useRef } from 'react'
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Globe } from 'lucide-react'
-import { colors } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { GlassLiveControlButton } from './controls/GlassLiveControlButton'
 import liveSubtitleService, { LiveSubtitleCue } from '@/services/liveSubtitleService'
-import { AVAILABLE_LANGUAGES } from './LiveSubtitleControls.styles'
+import logger from '@/utils/logger'
 
 interface LiveSubtitleControlsProps {
   channelId: string
@@ -20,6 +22,7 @@ interface LiveSubtitleControlsProps {
   onShowUpgrade?: () => void
   targetLang: string
   onLanguageChange: (lang: string) => void
+  onDisableDubbing?: () => void
 }
 
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error'
@@ -33,68 +36,82 @@ export default function LiveSubtitleControls({
   onShowUpgrade,
   targetLang,
   onLanguageChange,
+  onDisableDubbing,
 }: LiveSubtitleControlsProps) {
   const { t } = useTranslation()
-  const [enabled, setEnabled] = useState(false)
-  const [status, setStatus] = useState<ConnectionStatus>('disconnected')
+  // Initialize enabled state by checking actual service connection
+  const [enabled, setEnabled] = useState(() => liveSubtitleService.isServiceConnected())
+  const [status, setStatus] = useState<ConnectionStatus>(() =>
+    liveSubtitleService.isServiceConnected() ? 'connected' : 'disconnected'
+  )
   const [error, setError] = useState<string | null>(null)
   const prevLangRef = useRef<string>(targetLang)
 
-  // Don't render if not a live stream
   if (!isLive) return null
 
-  // Reconnect when language changes while connected
+  // Sync UI state with actual service connection state on mount and periodically
   useEffect(() => {
-    // Only reconnect if language actually changed and we're connected
-    if (enabled && videoElement && prevLangRef.current !== targetLang) {
-      console.log('🔄 [LiveSubtitleControls] Language changed, reconnecting:', prevLangRef.current, '->', targetLang)
-      prevLangRef.current = targetLang
+    const syncConnectionState = () => {
+      const isConnected = liveSubtitleService.isServiceConnected()
+      setEnabled(isConnected)
+      setStatus(isConnected ? 'connected' : 'disconnected')
+    }
 
+    // Initial sync
+    syncConnectionState()
+
+    // Periodic sync every second to detect disconnections
+    const interval = setInterval(syncConnectionState, 1000)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    if (enabled && videoElement && prevLangRef.current !== targetLang) {
+      prevLangRef.current = targetLang
       liveSubtitleService.disconnect()
       setStatus('connecting')
 
-      liveSubtitleService.connect(
-        channelId,
-        targetLang,
-        videoElement,
-        onSubtitleCue,
-        (err) => {
+      liveSubtitleService
+        .connect(channelId, targetLang, videoElement, onSubtitleCue, (err) => {
           setError(err)
           setStatus('error')
           setEnabled(false)
-        }
-      ).then(() => {
-        setStatus('connected')
-        setEnabled(true)
-      }).catch((err) => {
-        console.error('❌ [LiveSubtitleControls] Reconnection failed:', err)
-        setError(err instanceof Error ? err.message : 'Reconnection failed')
-        setStatus('error')
-      })
+        })
+        .then(() => {
+          setStatus('connected')
+          setEnabled(true)
+        })
+        .catch((err) => {
+          setError(err instanceof Error ? err.message : 'Reconnection failed')
+          setStatus('error')
+        })
     } else {
-      // Update ref even if not reconnecting
       prevLangRef.current = targetLang
     }
   }, [targetLang, enabled, videoElement, channelId])
 
   const handleToggle = async () => {
-    // Check premium access
     if (!isPremium) {
       onShowUpgrade?.()
       return
     }
 
     if (enabled) {
-      // Disconnect
       liveSubtitleService.disconnect()
       setStatus('disconnected')
       setEnabled(false)
       setError(null)
     } else {
-      // Connect
       if (!videoElement) {
         setError('Video not ready')
         return
+      }
+
+      // Disable dubbing before enabling subtitles (mutual exclusivity)
+      if (onDisableDubbing) {
+        logger.debug('Disabling dubbing for mutual exclusivity', 'LiveSubtitleControls', {});
+        onDisableDubbing()
       }
 
       setStatus('connecting')
@@ -105,9 +122,7 @@ export default function LiveSubtitleControls({
           channelId,
           targetLang,
           videoElement,
-          (cue) => {
-            onSubtitleCue(cue)
-          },
+          onSubtitleCue,
           (err) => {
             setError(err)
             setStatus('error')
@@ -125,33 +140,25 @@ export default function LiveSubtitleControls({
     }
   }
 
-
   return (
-    <View className="flex-row items-center gap-2 relative">
-      {/* Main Toggle Button */}
-      <Pressable
+    <View style={styles.container}>
+      <GlassLiveControlButton
+        icon={
+          <Globe
+            size={18}
+            color={enabled ? colors.primary : colors.textSecondary}
+          />
+        }
+        label={t('subtitles.liveTranslate')}
+        isEnabled={enabled}
+        isConnecting={status === 'connecting'}
+        isPremium={isPremium}
         onPress={handleToggle}
-        className="flex-row items-center gap-1 px-4 py-2 rounded-lg bg-black/30 border"
-        style={[
-          enabled
-            ? styles.buttonEnabled
-            : !isPremium
-            ? styles.buttonPremium
-            : styles.buttonDefault,
-        ]}
-      >
-        <Globe size={20} color={enabled ? colors.primary : colors.textSecondary} />
-        <Text className="text-sm font-medium" style={[enabled ? styles.textEnabled : styles.textDisabled]}>
-          {isPremium ? t('subtitles.liveTranslate') : '⭐ Premium'}
-        </Text>
-        {status === 'connecting' && <ActivityIndicator size="small" color={colors.primary} />}
-        {enabled && status === 'connected' && <View className="w-2 h-2 rounded-full" style={{ backgroundColor: colors.success }} />}
-      </Pressable>
+      />
 
-      {/* Error Message */}
       {error && (
-        <View className="absolute bottom-[60px] right-0 bg-red-600/90 px-4 py-2 rounded-lg max-w-[250px]">
-          <Text className="text-white text-xs font-medium">{error}</Text>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
         </View>
       )}
     </View>
@@ -159,20 +166,26 @@ export default function LiveSubtitleControls({
 }
 
 const styles = StyleSheet.create({
-  buttonEnabled: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderColor: '#9333ea',
+  container: {
+    position: 'relative',
   },
-  buttonPremium: {
-    borderColor: '#eab308',
+  errorContainer: {
+    position: 'absolute',
+    bottom: 52,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(220, 38, 38, 0.95)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(248, 113, 113, 0.3)',
+    maxWidth: 220,
   },
-  buttonDefault: {
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+  errorText: {
+    color: colors.text,
+    fontSize: 12,
+    fontWeight: '500',
+    textAlign: 'center',
   },
-  textEnabled: {
-    color: '#fff',
-  },
-  textDisabled: {
-    color: '#9ca3af',
-  },
-});
+})

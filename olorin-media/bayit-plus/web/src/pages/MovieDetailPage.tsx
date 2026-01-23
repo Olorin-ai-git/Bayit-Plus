@@ -12,8 +12,13 @@ import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
 import { getLanguageInfo, SubtitleTrack } from '@/types/subtitle';
 import { GlassCard, GlassButton, GlassView, GlassBadge, GlassTooltip } from '@bayit/shared/ui';
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
+import logger from '@/utils/logger';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+// IMDB brand colors
+const IMDB_YELLOW = '#f5c518';
+const IMDB_TEXT = '#000000';
 
 interface MovieData {
   id: string;
@@ -121,7 +126,7 @@ export default function MovieDetailPage() {
       const data = await contentService.getMovieDetails(movieId!);
       setMovie(data);
     } catch (error) {
-      console.error('Failed to load movie details:', error);
+      logger.error('Failed to load movie details', 'MovieDetailPage', error);
     } finally {
       setLoading(false);
     }
@@ -225,7 +230,7 @@ export default function MovieDetailPage() {
       const result = await watchlistService.toggleWatchlist(movie.id, 'movie');
       setInWatchlist(result.in_watchlist);
     } catch (error) {
-      console.error('Failed to toggle watchlist:', error);
+      logger.error('Failed to toggle watchlist', 'MovieDetailPage', error);
     }
   };
 
@@ -350,7 +355,7 @@ export default function MovieDetailPage() {
                 <Text style={styles.imdbLogoText}>IMDb</Text>
               </View>
               <View style={styles.imdbRatingRow}>
-                <Star size={18} color={colors.imdb.primary} fill={colors.imdb.primary} />
+                <Star size={18} color={IMDB_YELLOW} fill={IMDB_YELLOW} />
                 <Text style={styles.imdbRating}>
                   {movie.imdb_rating.toFixed(1)}
                 </Text>
@@ -394,7 +399,7 @@ export default function MovieDetailPage() {
               onPress={handlePlay}
               variant="primary"
               size="lg"
-              icon={<Play size={20} color={colors.text.primary} fill={colors.text.primary} />}
+              icon={<Play size={20} color={colors.text} fill={colors.text} />}
               title={t('content.play')}
             />
 
@@ -402,7 +407,7 @@ export default function MovieDetailPage() {
               onPress={toggleWatchlist}
               variant="ghost"
               size="lg"
-              icon={inWatchlist ? <Check size={20} color={colors.text.primary} /> : <Plus size={20} color={colors.text.primary} />}
+              icon={inWatchlist ? <Check size={20} color={colors.text} /> : <Plus size={20} color={colors.text} />}
               title={inWatchlist ? t('content.inList') : t('content.addToList')}
             />
 
@@ -509,20 +514,20 @@ export default function MovieDetailPage() {
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.background.primary,
+    backgroundColor: colors.background,
   },
   loadingText: {
-    color: colors.text.secondary,
+    color: colors.textSecondary,
     fontSize: fontSize.base,
   },
   notFoundText: {
-    color: colors.text.secondary,
+    color: colors.textSecondary,
     fontSize: fontSize.lg,
   },
   heroSection: {
@@ -576,13 +581,13 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: fontSize.sm,
-    color: colors.text.primary,
+    color: colors.text,
     fontWeight: '500',
   },
   movieTitle: {
     fontSize: 42,
     fontWeight: 'bold',
-    color: colors.text.primary,
+    color: colors.text,
     marginBottom: spacing.sm,
   },
   metadataRow: {
@@ -594,7 +599,7 @@ const styles = StyleSheet.create({
   },
   metadataText: {
     fontSize: fontSize.base,
-    color: colors.text.secondary,
+    color: colors.textSecondary,
   },
   imdbContainer: {
     flexDirection: 'row',
@@ -608,7 +613,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   imdbBadge: {
-    backgroundColor: colors.imdb.primary,
+    backgroundColor: IMDB_YELLOW,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     borderRadius: borderRadius.sm,
@@ -616,7 +621,7 @@ const styles = StyleSheet.create({
   imdbLogoText: {
     fontSize: fontSize.sm,
     fontWeight: '900',
-    color: colors.imdb.text,
+    color: IMDB_TEXT,
     letterSpacing: -0.5,
   },
   imdbRatingRow: {
@@ -627,15 +632,15 @@ const styles = StyleSheet.create({
   imdbRating: {
     fontSize: fontSize.xl,
     fontWeight: 'bold',
-    color: colors.imdb.primary,
+    color: IMDB_YELLOW,
   },
   imdbMaxRating: {
     fontSize: fontSize.base,
-    color: colors.text.secondary,
+    color: colors.textSecondary,
   },
   imdbVotes: {
     fontSize: fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.textSecondary,
   },
   subtitlesContainer: {
     flexDirection: 'row',
@@ -650,7 +655,7 @@ const styles = StyleSheet.create({
   },
   subtitlesLabel: {
     fontSize: fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   subtitlesFlagRow: {
@@ -690,11 +695,11 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.status.error,
+    backgroundColor: colors.error,
   },
   previewIndicatorText: {
     fontSize: fontSize.sm,
-    color: colors.text.primary,
+    color: colors.text,
     fontWeight: '500',
   },
   factsSection: {
@@ -704,7 +709,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: fontSize.lg,
     fontWeight: '600',
-    color: colors.text.primary,
+    color: colors.text,
     marginBottom: spacing.md,
   },
   factsCard: {
@@ -717,12 +722,12 @@ const styles = StyleSheet.create({
   factLabel: {
     width: 100,
     fontSize: fontSize.base,
-    color: colors.text.secondary,
+    color: colors.textSecondary,
   },
   factValue: {
     flex: 1,
     fontSize: fontSize.base,
-    color: colors.text.primary,
+    color: colors.text,
     fontWeight: '500',
   },
   synopsisSection: {
@@ -731,7 +736,7 @@ const styles = StyleSheet.create({
   },
   synopsisText: {
     fontSize: fontSize.base,
-    color: colors.text.secondary,
+    color: colors.textSecondary,
     lineHeight: 26,
   },
 });

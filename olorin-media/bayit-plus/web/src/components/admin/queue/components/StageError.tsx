@@ -4,9 +4,9 @@
  */
 
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { AlertCircle } from 'lucide-react';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { QueueJob } from '../types';
 
 interface StageErrorProps {
@@ -21,16 +21,39 @@ export const StageError: React.FC<StageErrorProps> = ({ job }) => {
   if (failedStages.length === 0 || !job.error_message) return null;
 
   return (
-    <View className="bg-red-500/10 border-l-[3px] border-red-500 rounded-lg p-3 mt-3">
-      <View className="flex-row items-center mb-2">
+    <View style={[styles.container, { backgroundColor: colors.error + '10', borderLeftColor: colors.error }]}>
+      <View style={styles.headerRow}>
         <AlertCircle size={14} color={colors.error} />
-        <Text className="text-xs font-semibold text-red-500 ml-2">
+        <Text style={[styles.headerText, { color: colors.error }]}>
           Failed at: {failedStages.join(', ')}
         </Text>
       </View>
-      <Text className="text-[11px] text-gray-500 leading-4">
+      <Text style={[styles.errorText, { color: colors.textMuted }]}>
         {job.error_message}
       </Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    borderLeftWidth: 3,
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 12,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  headerText: {
+    fontSize: 12,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  errorText: {
+    fontSize: 11,
+    lineHeight: 16,
+  },
+});

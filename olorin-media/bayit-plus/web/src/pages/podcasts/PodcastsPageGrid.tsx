@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Podcast, Headphones, Clock } from 'lucide-react';
 import { GlassCard } from '@bayit/shared/ui';
+import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
 import { colors } from '@bayit/shared/theme';
 import { z } from 'zod';
 
@@ -14,6 +15,7 @@ const ShowSchema = z.object({
   author: z.string().optional(),
   episodeCount: z.number().optional(),
   latestEpisode: z.string().optional(),
+  availableLanguages: z.array(z.string()).optional(),
 });
 
 const PodcastsPageGridPropsSchema = z.object({
@@ -28,6 +30,8 @@ export type Show = z.infer<typeof ShowSchema>;
 // Show Card Component
 function ShowCard({ show, episodesLabel }: { show: Show; episodesLabel: string }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { i18n } = useTranslation();
+  const isRTL = i18n.dir() === 'rtl';
 
   return (
     <Link to={`/podcasts/${show.id}`} style={{ textDecoration: 'none', flex: 1 }}>
@@ -51,6 +55,16 @@ function ShowCard({ show, episodesLabel }: { show: Show; episodesLabel: string }
               <View className="w-full h-full bg-white/5 justify-center items-center">
                 <Podcast size={32} color={colors.success} />
               </View>
+            )}
+
+            {/* Language indicator - reuse SubtitleFlags pattern for consistency */}
+            {show.availableLanguages && show.availableLanguages.length > 1 && (
+              <SubtitleFlags
+                languages={show.availableLanguages}
+                position="bottom-right"
+                isRTL={isRTL}
+                size="small"
+              />
             )}
           </GlassCard>
 

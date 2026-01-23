@@ -7,6 +7,7 @@ import { colors, spacing } from '@bayit/shared/theme';
 import { useTranslation } from 'react-i18next';
 import { GlassModal } from '@bayit/shared/ui';
 import { Users, Bot } from 'lucide-react';
+import logger from '@/utils/logger';
 
 type GameMode = 'pvp' | 'bot';
 type BotDifficulty = 'easy' | 'medium' | 'hard';
@@ -40,7 +41,7 @@ export default function CreateGameModal({ visible, onClose, onCreate }: CreateGa
       );
       onClose();
     } catch (err) {
-      console.error('Failed to create game:', err);
+      logger.error('Failed to create game', 'CreateGameModal', err);
     } finally {
       setCreating(false);
     }
