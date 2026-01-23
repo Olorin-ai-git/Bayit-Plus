@@ -887,6 +887,28 @@
       "requiredTitle": "Suscripción Requerida",
       "upgrade": "Actualizar Ahora",
       "upgradeInfo": "Mejora tu suscripción para acceder al contenido premium"
+    },
+    "chapters": "Capítulos",
+    "sceneSearch": {
+      "title": "Buscar Escenas",
+      "placeholder": "Buscar una escena...",
+      "inputLabel": "Campo de búsqueda de escenas",
+      "searching": "Buscando...",
+      "noResults": "No se encontraron escenas",
+      "resultsFound": "Se encontraron {{count}} escenas",
+      "searchError": "Error en la búsqueda. Por favor intenta de nuevo.",
+      "hint": "Escribe al menos 2 caracteres para buscar",
+      "voiceReceived": "Buscando: {{query}}",
+      "seekingTo": "Saltando a {{time}}",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "result": {
+        "jumpTo": "Saltar a {{title}} en {{time}}",
+        "hint": "Presiona para saltar a esta escena"
+      },
+      "panelOpened": "Panel de búsqueda de escenas abierto",
+      "navigation": "Navegación de búsqueda de escenas",
+      "position": "Resultado {{current}} de {{total}}"
     }
   },
   "empty": {
@@ -2831,6 +2853,20 @@
     "selectLanguage": "Seleccionar Idioma de Subtítulos",
     "liveTranslate": "Traducción en Vivo",
     "translateTo": "Traducir a"
+  },
+  "dubbing": {
+    "liveDubbing": "Doblaje en Vivo",
+    "connecting": "Conectando...",
+    "connected": "Conectado",
+    "disconnected": "Desconectado",
+    "latency": "Latencia",
+    "targetLanguage": "Idioma de Destino",
+    "originalAudio": "Audio Original",
+    "dubbedAudio": "Audio Doblado",
+    "premiumRequired": "Se requiere suscripción premium para doblaje en vivo",
+    "unavailable": "Doblaje no disponible para este canal",
+    "error": "Error de doblaje",
+    "reconnecting": "Reconectando..."
   },
   "video": {
     "watchTrailer": "Ver Tráiler",

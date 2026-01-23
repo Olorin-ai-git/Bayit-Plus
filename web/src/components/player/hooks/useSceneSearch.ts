@@ -3,11 +3,22 @@
  *
  * Enables searching for specific scenes/moments within a video or series
  * using natural language queries. Returns timestamped results for deep-linking.
+ * Includes TTS audio feedback for accessibility.
  */
 
 import { useState, useCallback, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { sceneSearchService } from '@/services/api'
 import logger from '@/utils/logger'
+import { ttsService } from '@bayit/shared/services/ttsService'
+import { useVoiceSettingsStore } from '@bayit/shared/stores/voiceSettingsStore'
+
+// Scene search configuration
+const SCENE_SEARCH_CONFIG = {
+  minQueryLength: 2,
+  defaultLimit: 20,
+  defaultMinScore: 0.3,
+}
 
 export interface SceneSearchResult {
   content_id: string
@@ -40,6 +51,7 @@ export function useSceneSearch({
   seriesId,
   language = 'he',
 }: UseSceneSearchOptions) {
+  const { t } = useTranslation()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SceneSearchResult[]>([])
   const [loading, setLoading] = useState(false)
@@ -47,10 +59,28 @@ export function useSceneSearch({
   const [currentIndex, setCurrentIndex] = useState(0)
   const metricsRef = useRef<SearchMetrics>({ startTime: 0, endTime: 0, resultCount: 0 })
 
+  // Get voice settings for TTS feedback
+  const { preferences } = useVoiceSettingsStore()
+  const isTTSEnabled = preferences.tts_enabled && preferences.voice_feedback_enabled
+
+  /**
+   * Announce text via TTS if voice feedback is enabled
+   */
+  const announceWithTTS = useCallback(
+    (text: string, priority: 'high' | 'normal' | 'low' = 'normal') => {
+      if (!isTTSEnabled) return
+
+      ttsService.speak(text, priority).catch((err) => {
+        logger.warn('TTS announcement failed', 'useSceneSearch', { error: err.message })
+      })
+    },
+    [isTTSEnabled]
+  )
+
   const search = useCallback(
     async (searchQuery?: string) => {
       const queryToSearch = searchQuery ?? query
-      if (!queryToSearch.trim() || queryToSearch.length < 2) {
+      if (!queryToSearch.trim() || queryToSearch.length < SCENE_SEARCH_CONFIG.minQueryLength) {
         setError(null)
         setResults([])
         return
@@ -66,8 +96,8 @@ export function useSceneSearch({
           contentId,
           seriesId,
           language,
-          20,
-          0.5
+          SCENE_SEARCH_CONFIG.defaultLimit,
+          SCENE_SEARCH_CONFIG.defaultMinScore
         )
 
         metricsRef.current.endTime = performance.now()
@@ -82,16 +112,27 @@ export function useSceneSearch({
 
         setResults(response.results || [])
         setCurrentIndex(0)
+
+        // TTS audio feedback for results
+        const resultCount = response.results?.length || 0
+        if (resultCount > 0) {
+          announceWithTTS(t('player.sceneSearch.resultsFound', { count: resultCount }))
+        } else {
+          announceWithTTS(t('player.sceneSearch.noResults'), 'high')
+        }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Search failed'
         logger.error('Scene search failed', 'useSceneSearch', err)
         setError(errorMessage)
         setResults([])
+
+        // TTS audio feedback for errors
+        announceWithTTS(t('player.sceneSearch.searchError'), 'high')
       } finally {
         setLoading(false)
       }
     },
-    [query, contentId, seriesId, language]
+    [query, contentId, seriesId, language, announceWithTTS, t]
   )
 
   const goToResult = useCallback(
@@ -104,16 +145,15 @@ export function useSceneSearch({
   )
 
   const goToNext = useCallback(() => {
-    if (currentIndex < results.length - 1) {
-      setCurrentIndex((prev) => prev + 1)
-    }
-  }, [currentIndex, results.length])
+    setCurrentIndex((prev) => {
+      const maxIndex = results.length - 1
+      return prev < maxIndex ? prev + 1 : prev
+    })
+  }, [results.length])
 
   const goToPrevious = useCallback(() => {
-    if (currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1)
-    }
-  }, [currentIndex])
+    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : prev))
+  }, [])
 
   const clearResults = useCallback(() => {
     setQuery('')

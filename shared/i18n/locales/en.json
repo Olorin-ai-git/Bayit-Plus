@@ -402,7 +402,48 @@
       "educational": "Educational"
     },
     "noPodcasts": "No podcasts available",
-    "tryLater": "Try again later"
+    "tryLater": "Try again later",
+    "selectLanguage": "Audio Language",
+    "switchToLanguage": "Switch to {{language}}",
+    "languageSwitched": "Now playing in {{language}}",
+    "availableInLanguage": "Available in {{language}}",
+    "availableLanguages": "Available in multiple languages",
+    "downloadForOffline": "Download for offline listening",
+    "downloadProgress": "Downloading {{progress}}%",
+    "downloaded": "Downloaded",
+    "downloadFailed": "Download failed",
+    "retryDownload": "Retry download",
+    "deleteDownload": "Delete download",
+    "confirmDelete": "Delete downloaded audio?",
+    "quality": {
+      "label": "Audio Quality",
+      "low": "Low (64 kbps) - Save data",
+      "medium": "Medium (96 kbps) - Balanced",
+      "high": "High (128 kbps) - Best quality"
+    },
+    "languages": {
+      "he": {
+        "short": "Hebrew",
+        "full": "Hebrew"
+      },
+      "en": {
+        "short": "English",
+        "full": "English"
+      }
+    },
+    "player": {
+      "switchingLanguage": "Switching audio language...",
+      "languageSwitchError": "Could not switch language",
+      "loadingTranslation": "Loading translated audio...",
+      "translationUnavailable": "Translation not available yet"
+    },
+    "onboarding": {
+      "multiLanguageTitle": "Multi-Language Audio",
+      "multiLanguageDescription": "This podcast is available in Hebrew and English. Tap the language selector to switch.",
+      "downloadTitle": "Listen Offline",
+      "downloadDescription": "Download episodes to listen without internet connection.",
+      "gotIt": "Got it"
+    }
   },
   "vod": {
     "title": "Movies & Series",
@@ -976,6 +1017,8 @@
       "inputLabel": "Scene search input",
       "searching": "Searching...",
       "noResults": "No scenes found",
+      "resultsFound": "Found {{count}} scenes",
+      "searchError": "Search failed. Please try again.",
       "hint": "Type at least 2 characters to search",
       "voiceReceived": "Searching for: {{query}}",
       "seekingTo": "Jumping to {{time}}",
@@ -984,7 +1027,10 @@
       "result": {
         "jumpTo": "Jump to {{title}} at {{time}}",
         "hint": "Press to jump to this scene"
-      }
+      },
+      "panelOpened": "Scene search panel opened",
+      "navigation": "Scene search navigation",
+      "position": "Result {{current}} of {{total}}"
     }
   },
   "empty": {
@@ -3025,6 +3071,20 @@
     "opensubtitlesSource": "From OpenSubtitles.com",
     "downloadSuccess": "Downloaded {{count}} subtitle(s)",
     "noSubtitlesFound": "No subtitles found for this content"
+  },
+  "dubbing": {
+    "liveDubbing": "Live Dubbing",
+    "connecting": "Connecting...",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "latency": "Latency",
+    "targetLanguage": "Target Language",
+    "originalAudio": "Original Audio",
+    "dubbedAudio": "Dubbed Audio",
+    "premiumRequired": "Premium subscription required for live dubbing",
+    "unavailable": "Dubbing unavailable for this channel",
+    "error": "Dubbing error",
+    "reconnecting": "Reconnecting..."
   },
   "video": {
     "watchTrailer": "Watch Trailer",

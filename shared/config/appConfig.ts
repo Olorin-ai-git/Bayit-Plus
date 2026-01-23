@@ -56,6 +56,14 @@ export const config = {
     dualClock: true,
     aiChapters: true,
     hebronicsVoice: true,
+    sceneSearch: true,
+  },
+
+  // Scene search settings
+  sceneSearch: {
+    defaultLimit: 20,
+    defaultMinScore: 0.5,
+    minQueryLength: 2,
   },
 };
 
