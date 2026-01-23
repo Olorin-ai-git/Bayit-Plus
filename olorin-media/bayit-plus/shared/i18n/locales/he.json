@@ -397,7 +397,48 @@
       "educational": "חינוכי"
     },
     "noPodcasts": "אין פודקאסטים זמינים",
-    "tryLater": "נסה שוב מאוחר יותר"
+    "tryLater": "נסה שוב מאוחר יותר",
+    "selectLanguage": "שפת השמע",
+    "switchToLanguage": "עבור ל{{language}}",
+    "languageSwitched": "מושמע כעת ב{{language}}",
+    "availableInLanguage": "זמין ב{{language}}",
+    "availableLanguages": "זמין במספר שפות",
+    "downloadForOffline": "הורד להאזנה לא מקוונת",
+    "downloadProgress": "מוריד {{progress}}%",
+    "downloaded": "הורד",
+    "downloadFailed": "ההורדה נכשלה",
+    "retryDownload": "נסה שוב",
+    "deleteDownload": "מחק הורדה",
+    "confirmDelete": "למחוק את האודיו שהורד?",
+    "quality": {
+      "label": "איכות אודיו",
+      "low": "נמוכה (64 kbps) - חיסכון בנתונים",
+      "medium": "בינונית (96 kbps) - מאוזן",
+      "high": "גבוהה (128 kbps) - איכות מיטבית"
+    },
+    "languages": {
+      "he": {
+        "short": "עברית",
+        "full": "עברית"
+      },
+      "en": {
+        "short": "English",
+        "full": "אנגלית"
+      }
+    },
+    "player": {
+      "switchingLanguage": "מחליף שפת אודיו...",
+      "languageSwitchError": "לא ניתן להחליף שפה",
+      "loadingTranslation": "טוען אודיו מתורגם...",
+      "translationUnavailable": "התרגום עדיין לא זמין"
+    },
+    "onboarding": {
+      "multiLanguageTitle": "אודיו מרובה שפות",
+      "multiLanguageDescription": "הפודקאסט זמין בעברית ובאנגלית. הקש על בורר השפה כדי להחליף.",
+      "downloadTitle": "האזנה לא מקוונת",
+      "downloadDescription": "הורד פרקים להאזנה ללא חיבור לאינטרנט.",
+      "gotIt": "הבנתי"
+    }
   },
   "vod": {
     "title": "סרטים וסדרות",
@@ -982,6 +1023,8 @@
       "inputLabel": "שדה חיפוש סצנות",
       "searching": "מחפש...",
       "noResults": "לא נמצאו סצנות",
+      "resultsFound": "נמצאו {{count}} סצנות",
+      "searchError": "החיפוש נכשל. אנא נסה שוב.",
       "hint": "הקלד לפחות 2 תווים לחיפוש",
       "voiceReceived": "מחפש: {{query}}",
       "seekingTo": "קופץ ל-{{time}}",
@@ -990,7 +1033,10 @@
       "result": {
         "jumpTo": "קפוץ ל-{{title}} ב-{{time}}",
         "hint": "לחץ כדי לקפוץ לסצנה זו"
-      }
+      },
+      "panelOpened": "חלונית חיפוש סצנות נפתחה",
+      "navigation": "ניווט חיפוש סצנות",
+      "position": "תוצאה {{current}} מתוך {{total}}"
     }
   },
   "empty": {
@@ -3024,6 +3070,20 @@
     "opensubtitlesSource": "מ-OpenSubtitles.com",
     "downloadSuccess": "הורדו {{count}} כתוביות",
     "noSubtitlesFound": "לא נמצאו כתוביות לתוכן זה"
+  },
+  "dubbing": {
+    "liveDubbing": "דיבוב חי",
+    "connecting": "מתחבר...",
+    "connected": "מחובר",
+    "disconnected": "מנותק",
+    "latency": "השהייה",
+    "targetLanguage": "שפת יעד",
+    "originalAudio": "שמע מקורי",
+    "dubbedAudio": "שמע מדובב",
+    "premiumRequired": "נדרש מנוי פרימיום לדיבוב חי",
+    "unavailable": "דיבוב לא זמין לערוץ זה",
+    "error": "שגיאת דיבוב",
+    "reconnecting": "מתחבר מחדש..."
   },
   "video": {
     "watchTrailer": "צפה בטריילר",

@@ -5,12 +5,15 @@
  * and episode info for series content.
  */
 
-import { View, Text, Pressable, StyleSheet, I18nManager } from 'react-native'
+import { View, Text, Pressable, I18nManager } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Play, Clock } from 'lucide-react'
+import { Clock, Play } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
 import { GlassView } from '@bayit/shared/ui'
+import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
+import { isTV } from '@bayit/shared/utils/platform'
 import type { SceneSearchResult } from './hooks/useSceneSearch'
+import { resultCardStyles as styles } from './panel/sceneSearchResultStyles'
 
 interface SceneSearchResultCardProps {
   result: SceneSearchResult
@@ -23,18 +26,29 @@ export default function SceneSearchResultCard({
   isActive = false,
   onPress,
 }: SceneSearchResultCardProps) {
-  const { t } = useTranslation()
-  const isRTL = I18nManager.isRTL
+  const { t, i18n } = useTranslation()
+  const isRTL = I18nManager.isRTL || i18n.language === 'he' || i18n.language === 'ar'
+  const { isFocused, handleFocus, handleBlur, focusStyle } = useTVFocus({ styleType: 'card' })
+
+  // Format score for RTL locales
+  const formattedScore = isRTL
+    ? Math.round(result.relevance_score * 100).toLocaleString('he-IL')
+    : Math.round(result.relevance_score * 100)
 
   return (
     <Pressable
       onPress={onPress}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      focusable={true}
+      testID={`scene-search-result-${result.content_id}-${result.timestamp_seconds}`}
       accessibilityRole="button"
       accessibilityLabel={t('player.sceneSearch.result.jumpTo', {
         title: result.title,
         time: result.timestamp_formatted,
       })}
       accessibilityHint={t('player.sceneSearch.result.hint')}
+      accessibilityState={{ selected: isActive }}
     >
       {({ hovered }) => (
         <GlassView
@@ -42,14 +56,17 @@ export default function SceneSearchResultCard({
             styles.card,
             isActive && styles.cardActive,
             hovered && !isActive && styles.cardHovered,
+            isFocused && focusStyle,
           ]}
           intensity={isActive ? 'high' : 'medium'}
         >
           <View style={[styles.content, isRTL && styles.contentRTL]}>
             {/* Timestamp badge */}
-            <View style={styles.timestampContainer}>
-              <Clock size={12} color={colors.primary} />
-              <Text style={styles.timestamp}>{result.timestamp_formatted}</Text>
+            <View style={[styles.timestampContainer, isTV && styles.timestampContainerTV]}>
+              <Clock size={isTV ? 16 : 12} color={colors.primary} />
+              <Text style={[styles.timestamp, isTV && styles.timestampTV]}>
+                {result.timestamp_formatted}
+              </Text>
             </View>
 
             {/* Main content */}
@@ -57,20 +74,26 @@ export default function SceneSearchResultCard({
               {/* Title with episode info */}
               <View style={[styles.titleRow, isRTL && styles.titleRowRTL]}>
                 <Text
-                  style={[styles.title, isActive && styles.titleActive]}
+                  style={[
+                    styles.title,
+                    isTV && styles.titleTV,
+                    isActive && styles.titleActive,
+                  ]}
                   numberOfLines={1}
                 >
                   {result.title}
                 </Text>
                 {result.episode_info && (
-                  <View style={styles.episodeBadge}>
-                    <Text style={styles.episodeText}>{result.episode_info}</Text>
+                  <View style={[styles.episodeBadge, isTV && styles.episodeBadgeTV]}>
+                    <Text style={[styles.episodeText, isTV && styles.episodeTextTV]}>
+                      {result.episode_info}
+                    </Text>
                   </View>
                 )}
               </View>
 
               {/* Matched text */}
-              <Text style={styles.matchedText} numberOfLines={2}>
+              <Text style={[styles.matchedText, isTV && styles.matchedTextTV]} numberOfLines={2}>
                 {result.matched_text}
               </Text>
 
@@ -78,14 +101,17 @@ export default function SceneSearchResultCard({
               <View style={[styles.scoreRow, isRTL && styles.scoreRowRTL]}>
                 <View style={styles.scoreBarContainer}>
                   <View
-                    style={[
-                      styles.scoreBar,
-                      { width: `${result.relevance_score * 100}%` },
-                    ]}
+                    style={[styles.scoreBar, { width: `${result.relevance_score * 100}%` }]}
                   />
                 </View>
-                <Text style={styles.scoreText}>
-                  {Math.round(result.relevance_score * 100)}%
+                <Text
+                  style={[
+                    styles.scoreText,
+                    isTV && styles.scoreTextTV,
+                    isRTL ? styles.scoreTextRTL : styles.scoreTextLTR,
+                  ]}
+                >
+                  {formattedScore}%
                 </Text>
               </View>
             </View>
@@ -94,15 +120,12 @@ export default function SceneSearchResultCard({
             <View
               style={[
                 styles.playButton,
+                isTV && styles.playButtonTV,
                 isActive && styles.playButtonActive,
                 hovered && !isActive && styles.playButtonHovered,
               ]}
             >
-              <Play
-                size={14}
-                fill={isActive ? colors.text : 'none'}
-                color={isActive ? colors.text : colors.textMuted}
-              />
+              <Play size={isTV ? 20 : 14} color={isActive ? colors.text : colors.textMuted} />
             </View>
           </View>
         </GlassView>
@@ -110,125 +133,3 @@ export default function SceneSearchResultCard({
     </Pressable>
   )
 }
-
-const styles = StyleSheet.create({
-  card: {
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  cardActive: {
-    borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.5)',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  cardHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  contentRTL: {
-    flexDirection: 'row-reverse',
-  },
-  timestampContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  timestamp: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.primary,
-    fontVariant: ['tabular-nums'],
-  },
-  textContainer: {
-    flex: 1,
-    minWidth: 0,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
-  },
-  titleRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#fff',
-    flex: 1,
-  },
-  titleActive: {
-    color: '#c084fc',
-  },
-  episodeBadge: {
-    backgroundColor: 'rgba(99, 102, 241, 0.3)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  episodeText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#818cf8',
-  },
-  matchedText: {
-    fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.7)',
-    lineHeight: 18,
-  },
-  scoreRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 6,
-  },
-  scoreRowRTL: {
-    flexDirection: 'row-reverse',
-  },
-  scoreBarContainer: {
-    flex: 1,
-    height: 3,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  scoreBar: {
-    height: '100%',
-    backgroundColor: colors.primary,
-    borderRadius: 2,
-  },
-  scoreText: {
-    fontSize: 10,
-    color: 'rgba(255, 255, 255, 0.5)',
-    fontVariant: ['tabular-nums'],
-    minWidth: 28,
-    textAlign: 'right',
-  },
-  playButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  playButtonActive: {
-    backgroundColor: colors.primary,
-  },
-  playButtonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-})
