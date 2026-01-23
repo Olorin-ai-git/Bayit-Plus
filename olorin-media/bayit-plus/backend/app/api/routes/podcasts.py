@@ -130,6 +130,22 @@ async def get_podcasts(
         skip = (page - 1) * limit
         shows = unique_shows[skip : skip + limit]
 
+        # Aggregate available languages per show from episodes
+        show_languages = {}
+        for show in shows:
+            show_id = str(show.id)
+            episodes = await PodcastEpisode.find(
+                PodcastEpisode.podcast_id == show_id
+            ).to_list()
+            # Collect all unique languages across episodes
+            languages = set()
+            for ep in episodes:
+                if ep.available_languages:
+                    languages.update(ep.available_languages)
+                elif ep.original_language:
+                    languages.add(ep.original_language)
+            show_languages[show_id] = sorted(list(languages))
+
         # Get unique categories (filtered by culture if specified)
         category_query = {"is_active": True}
         if culture_id:
@@ -152,6 +168,7 @@ async def get_podcasts(
                         if show.latest_episode_date
                         else None
                     ),
+                    "availableLanguages": show_languages.get(str(show.id), []),
                 }
                 for show in shows
             ],

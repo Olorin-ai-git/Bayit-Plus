@@ -7,6 +7,7 @@ import { Podcast, Headphones, Clock, Search, X, RefreshCw } from 'lucide-react';
 import { podcastService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassView, GlassCard, GlassCategoryPill, GlassInput } from '@bayit/shared/ui';
+import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
 import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
 
@@ -22,9 +23,10 @@ interface Show {
   author?: string;
   episodeCount?: number;
   latestEpisode?: string;
+  availableLanguages?: string[];
 }
 
-function ShowCard({ show, episodesLabel }: { show: Show; episodesLabel: string }) {
+function ShowCard({ show, episodesLabel, isRTL }: { show: Show; episodesLabel: string; isRTL: boolean }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -45,6 +47,16 @@ function ShowCard({ show, episodesLabel }: { show: Show; episodesLabel: string }
               <View style={styles.coverPlaceholder}>
                 <Podcast size={32} color={colors.success} />
               </View>
+            )}
+
+            {/* Language flags */}
+            {show.availableLanguages && show.availableLanguages.length > 0 && (
+              <SubtitleFlags
+                languages={show.availableLanguages}
+                position="bottom-right"
+                isRTL={isRTL}
+                size="small"
+              />
             )}
           </GlassCard>
           <Text style={[styles.showTitle, isHovered && styles.showTitleHovered]} numberOfLines={1}>
@@ -287,7 +299,7 @@ export default function PodcastsPage() {
         columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
         renderItem={({ item }) => (
           <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
-            <ShowCard show={item} episodesLabel={episodesLabel} />
+            <ShowCard show={item} episodesLabel={episodesLabel} isRTL={isRTL} />
           </View>
         )}
         ListEmptyComponent={

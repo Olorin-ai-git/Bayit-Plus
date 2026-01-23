@@ -193,6 +193,13 @@ def start_background_tasks() -> None:
             f"{settings.PODCAST_TRANSLATION_MAX_CONCURRENT} concurrent workers"
         )
 
+    # Live feature session monitor (always runs)
+    from app.services.session_monitor import get_session_monitor
+
+    task = asyncio.create_task(get_session_monitor())
+    _running_tasks.append(task)
+    logger.info("Started live feature session monitor (checks every 5 minutes)")
+
 
 async def stop_background_tasks() -> None:
     """Stop all running background tasks gracefully."""
@@ -203,6 +210,11 @@ async def stop_background_tasks() -> None:
         logger.info("Stopping podcast translation worker...")
         await _translation_worker.stop()
         _translation_worker = None
+
+    # Stop session monitor
+    from app.services.session_monitor import shutdown_session_monitor
+
+    await shutdown_session_monitor()
 
     if not _running_tasks:
         return

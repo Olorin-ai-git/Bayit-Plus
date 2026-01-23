@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
   header: {
     fontSize: isTV ? 16 : 14,
     fontWeight: '500',
-    color: '#9CA3AF',
+    color: colors.textSecondary,
     paddingHorizontal: spacing.xs,
   },
   list: {
@@ -65,11 +65,11 @@ export const styles = StyleSheet.create({
   },
   youLabel: {
     fontSize: isTV ? 14 : 12,
-    color: '#9CA3AF',
+    color: colors.textSecondary,
   },
   hostLabel: {
     fontSize: isTV ? 14 : 12,
-    color: '#FBBF24',
+    color: colors.gold,
   },
   micContainer: {
     width: isTV ? 28 : 24,

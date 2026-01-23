@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, Music } from 'lucide-react'
-import { GlassInput } from '@bayit/shared/ui'
+import { GlassInput, GlassButton, GlassCheckbox } from '@bayit/shared/ui'
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web'
+import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags'
 import { adminContentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassButton } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
@@ -136,6 +136,25 @@ export default function PodcastsPage() {
       render: (count: number | undefined) => <Text className="text-sm text-white">{count || 0}</Text>,
     },
     {
+      key: 'available_languages',
+      label: t('admin.content.columns.languages', { defaultValue: 'Languages' }),
+      width: 120,
+      render: (languages: string[] | undefined) => (
+        languages && languages.length > 0 ? (
+          <View style={styles.languagesCell}>
+            <SubtitleFlags
+              languages={languages}
+              size="small"
+              showTooltip={true}
+              isRTL={isRTL}
+            />
+          </View>
+        ) : (
+          <Text className="text-sm text-gray-500">-</Text>
+        )
+      ),
+    },
+    {
       key: 'is_active',
       label: t('admin.content.columns.status', { defaultValue: 'Status' }),
       render: (isActive: boolean) => (
@@ -153,23 +172,31 @@ export default function PodcastsPage() {
       render: (_: any, item: Podcast) => (
         <View style={[styles.actionsCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <Link to={`/admin/podcasts/${item.id}/episodes`} style={{ textDecoration: 'none' }}>
-            <Pressable style={[styles.actionButton, { backgroundColor: '#8b5cf680' }]}>
-              <Music size={14} color="#8b5cf6" />
-            </Pressable>
+            <GlassButton
+              variant="ghost"
+              size="sm"
+              icon={<Music size={16} color="#8b5cf6" />}
+              style={styles.actionButton}
+              accessibilityLabel={t('admin.podcasts.viewEpisodes', { defaultValue: 'View episodes' })}
+            />
           </Link>
-          <Pressable
+          <GlassButton
+            variant="ghost"
+            size="sm"
             onPress={() => handleEdit(item)}
-            style={[styles.actionButton, { backgroundColor: '#a855f780' }]}
-          >
-            <Edit size={14} color="#a855f7" />
-          </Pressable>
-          <Pressable
+            icon={<Edit size={16} color="#a855f7" />}
+            style={styles.actionButton}
+            accessibilityLabel={t('admin.podcasts.editPodcast', { defaultValue: 'Edit podcast' })}
+          />
+          <GlassButton
+            variant="ghost"
+            size="sm"
             onPress={() => handleDelete(item.id)}
             disabled={deleting === item.id}
-            style={[styles.actionButton, { backgroundColor: '#ef444480', opacity: deleting === item.id ? 0.5 : 1 }]}
-          >
-            <Trash2 size={14} color="#ef4444" />
-          </Pressable>
+            icon={<Trash2 size={16} color="#ef4444" />}
+            style={[styles.actionButton, deleting === item.id && styles.disabledButton]}
+            accessibilityLabel={t('admin.podcasts.deletePodcast', { defaultValue: 'Delete podcast' })}
+          />
         </View>
       ),
     },
@@ -184,25 +211,30 @@ export default function PodcastsPage() {
             {t('admin.podcasts.subtitle', { defaultValue: 'Manage podcasts and episodes' })}
           </Text>
         </View>
-        <Pressable
+        <GlassButton
+          variant="primary"
           onPress={() => {
             setEditingId('new')
             setEditData({ is_active: true })
           }}
-          style={styles.addButton}
+          icon={<Plus size={18} color={colors.text} />}
+          accessibilityLabel={t('admin.actions.newPodcast', { defaultValue: 'Create new podcast' })}
         >
-          <Plus size={18} color={colors.text} />
-          <Text style={styles.addButtonText}>{t('admin.actions.new', { defaultValue: 'New' })}</Text>
-        </Pressable>
+          {t('admin.actions.new', { defaultValue: 'New' })}
+        </GlassButton>
       </View>
 
       {error && (
         <View style={[styles.errorContainer, { marginBottom: spacing.lg }]}>
           <AlertCircle size={18} color="#ef4444" />
           <Text className="flex-1 text-red-500 text-sm">{error}</Text>
-          <Pressable onPress={() => setError(null)}>
-            <X size={18} color="#ef4444" />
-          </Pressable>
+          <GlassButton
+            variant="ghost"
+            size="sm"
+            onPress={() => setError(null)}
+            icon={<X size={18} color="#ef4444" />}
+            accessibilityLabel={t('common.dismissError', { defaultValue: 'Dismiss error' })}
+          />
         </View>
       )}
 
@@ -255,22 +287,27 @@ export default function PodcastsPage() {
             onChangeText={(value) => setEditData({ ...editData, website: value })}
           />
           <View style={styles.checkboxRow}>
-            <input
-              type="checkbox"
-              id="is_active"
+            <GlassCheckbox
+              label={t('admin.common.active')}
               checked={editData.is_active || false}
-              onChange={(e) => setEditData({ ...editData, is_active: e.target.checked })}
-              style={styles.checkbox}
+              onChange={(checked) => setEditData({ ...editData, is_active: checked })}
             />
-            <Text style={styles.checkboxLabel}>{t('admin.common.active')}</Text>
           </View>
           <View style={styles.formActions}>
-            <Pressable onPress={() => setEditingId(null)} style={styles.cancelBtn}>
-              <Text style={styles.cancelBtnText}>{t('admin.common.cancel')}</Text>
-            </Pressable>
-            <Pressable onPress={handleSaveEdit} style={styles.saveBtn}>
-              <Text style={styles.saveBtnText}>{t('admin.common.save')}</Text>
-            </Pressable>
+            <GlassButton
+              variant="secondary"
+              onPress={() => setEditingId(null)}
+              accessibilityLabel={t('admin.common.cancel')}
+            >
+              {t('admin.common.cancel')}
+            </GlassButton>
+            <GlassButton
+              variant="primary"
+              onPress={handleSaveEdit}
+              accessibilityLabel={t('admin.common.savePodcast', { defaultValue: 'Save podcast' })}
+            >
+              {t('admin.common.save')}
+            </GlassButton>
           </View>
         </View>
       )}
@@ -287,4 +324,94 @@ export default function PodcastsPage() {
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.lg,
+  },
+  pageTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+  },
+  editForm: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  formTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  input: {
+    marginBottom: spacing.md,
+  },
+  checkboxRow: {
+    marginBottom: spacing.lg,
+  },
+  formActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.sm,
+  },
+  itemTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  itemSubtext: {
+    fontSize: 12,
+    color: colors.textMuted,
+    marginTop: 2,
+  },
+  badge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: borderRadius.sm,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  actionsCell: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+  },
+  actionButton: {
+    minWidth: 44,
+    minHeight: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  languagesCell: {
+    position: 'relative',
+    minWidth: 60,
+    height: 24,
+  },
+})
 

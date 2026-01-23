@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
   header: {
     fontSize: isTV ? 16 : 14,
     fontWeight: '500',
-    color: '#9CA3AF',
+    color: colors.textSecondary,
     paddingHorizontal: spacing.xs,
     marginBottom: spacing.sm,
   },
@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: isTV ? 16 : 14,
-    color: '#9CA3AF',
+    color: colors.textSecondary,
   },
   inputContainer: {
     paddingTop: spacing.md,
@@ -46,7 +46,7 @@ export const styles = StyleSheet.create({
   },
   systemMessageText: {
     fontSize: isTV ? 14 : 12,
-    color: '#9CA3AF',
+    color: colors.textSecondary,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
@@ -78,7 +78,7 @@ export const styles = StyleSheet.create({
   userName: {
     fontSize: isTV ? 14 : 12,
     fontWeight: '500',
-    color: '#C084FC',
+    color: colors.primaryLight,
     marginBottom: 2,
   },
   textEmoji: {
@@ -94,9 +94,9 @@ export const styles = StyleSheet.create({
     opacity: 0.6,
   },
   timestampOwn: {
-    color: '#C084FC',
+    color: colors.primaryLight,
   },
   timestampOther: {
-    color: '#9CA3AF',
+    color: colors.textSecondary,
   },
 })

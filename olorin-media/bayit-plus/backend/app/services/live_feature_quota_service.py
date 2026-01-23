@@ -1,136 +1,49 @@
 """
 Live Feature Quota Service
-Manages and enforces usage limits for live subtitles and dubbing features
+Facade for managing and enforcing usage limits for live subtitles and dubbing features
+
+This service delegates to modular components for maintainability:
+- QuotaManager: Quota creation and window resets
+- QuotaChecker: Quota validation
+- SessionManager: Session lifecycle
+- AdminOperations: Admin functions
 """
 
 import logging
-import uuid
-from datetime import datetime, timedelta
 from typing import Dict, Optional, Tuple
 
-from app.core.config import settings
-from app.models.live_feature_quota import (FeatureType, LiveFeatureQuota,
+from app.models.live_feature_quota import (FeatureType,
                                              LiveFeatureUsageSession,
-                                             UsageSessionStatus, UsageStats)
-from app.models.user import User
+                                             UsageSessionStatus)
+from app.services.quota import (AdminOperations, QuotaChecker, QuotaManager,
+                                 SessionManager)
 
 logger = logging.getLogger(__name__)
 
 
 class LiveFeatureQuotaService:
-    """Service for managing and enforcing live feature quotas"""
+    """
+    Service for managing and enforcing live feature quotas
 
-    @staticmethod
-    async def get_or_create_quota(user_id: str) -> LiveFeatureQuota:
+    Delegates operations to specialized modules:
+    - QuotaManager for creation and window management
+    - QuotaChecker for validation
+    - SessionManager for session lifecycle
+    - AdminOperations for admin functions
+    """
+
+    def __init__(self):
+        self.quota_manager = QuotaManager()
+        self.quota_checker = QuotaChecker()
+        self.session_manager = SessionManager()
+        self.admin_operations = AdminOperations()
+
+    async def get_or_create_quota(self, user_id: str):
         """Get quota for user, create with defaults if doesn't exist"""
-        quota = await LiveFeatureQuota.find_one(LiveFeatureQuota.user_id == user_id)
+        return await self.quota_manager.get_or_create_quota(user_id)
 
-        if not quota:
-            user = await User.get(user_id)
-            tier = user.subscription_tier if user else "premium"
-
-            # Get defaults from configuration based on subscription tier
-            if tier == "family":
-                defaults = {
-                    "subtitle_minutes_per_hour": settings.LIVE_QUOTA_FAMILY_SUBTITLE_MINUTES_PER_HOUR,
-                    "subtitle_minutes_per_day": settings.LIVE_QUOTA_FAMILY_SUBTITLE_MINUTES_PER_DAY,
-                    "subtitle_minutes_per_month": settings.LIVE_QUOTA_FAMILY_SUBTITLE_MINUTES_PER_MONTH,
-                    "dubbing_minutes_per_hour": settings.LIVE_QUOTA_FAMILY_DUBBING_MINUTES_PER_HOUR,
-                    "dubbing_minutes_per_day": settings.LIVE_QUOTA_FAMILY_DUBBING_MINUTES_PER_DAY,
-                    "dubbing_minutes_per_month": settings.LIVE_QUOTA_FAMILY_DUBBING_MINUTES_PER_MONTH,
-                }
-            else:  # Default to premium
-                defaults = {
-                    "subtitle_minutes_per_hour": settings.LIVE_QUOTA_PREMIUM_SUBTITLE_MINUTES_PER_HOUR,
-                    "subtitle_minutes_per_day": settings.LIVE_QUOTA_PREMIUM_SUBTITLE_MINUTES_PER_DAY,
-                    "subtitle_minutes_per_month": settings.LIVE_QUOTA_PREMIUM_SUBTITLE_MINUTES_PER_MONTH,
-                    "dubbing_minutes_per_hour": settings.LIVE_QUOTA_PREMIUM_DUBBING_MINUTES_PER_HOUR,
-                    "dubbing_minutes_per_day": settings.LIVE_QUOTA_PREMIUM_DUBBING_MINUTES_PER_DAY,
-                    "dubbing_minutes_per_month": settings.LIVE_QUOTA_PREMIUM_DUBBING_MINUTES_PER_MONTH,
-                }
-
-            quota = LiveFeatureQuota(
-                user_id=user_id,
-                **defaults,
-                max_rollover_multiplier=settings.LIVE_QUOTA_MAX_ROLLOVER_MULTIPLIER,
-                warning_threshold_percentage=settings.LIVE_QUOTA_WARNING_THRESHOLD_PERCENTAGE,
-            )
-            await quota.insert()
-            logger.info(f"Created quota for user {user_id} with tier {tier}")
-
-        return quota
-
-    @staticmethod
-    async def _reset_windows_and_rollover(quota: LiveFeatureQuota) -> bool:
-        """
-        Reset time windows if expired and handle rollover accumulation.
-        Returns True if any window was reset.
-        """
-        now = datetime.utcnow()
-        updated = False
-
-        # Hourly reset with rollover
-        if now - quota.last_hour_reset >= timedelta(hours=1):
-            # Calculate unused minutes for rollover
-            unused_subtitle = max(
-                0, quota.subtitle_minutes_per_hour - quota.subtitle_usage_current_hour
-            )
-            unused_dubbing = max(
-                0, quota.dubbing_minutes_per_hour - quota.dubbing_usage_current_hour
-            )
-
-            # Add to accumulated (capped at limit * rollover_multiplier)
-            max_subtitle_rollover = (
-                quota.subtitle_minutes_per_hour * quota.max_rollover_multiplier
-            )
-            max_dubbing_rollover = (
-                quota.dubbing_minutes_per_hour * quota.max_rollover_multiplier
-            )
-
-            quota.accumulated_subtitle_minutes = min(
-                quota.accumulated_subtitle_minutes + unused_subtitle,
-                max_subtitle_rollover,
-            )
-            quota.accumulated_dubbing_minutes = min(
-                quota.accumulated_dubbing_minutes + unused_dubbing,
-                max_dubbing_rollover,
-            )
-
-            # Reset hourly usage
-            quota.subtitle_usage_current_hour = 0.0
-            quota.dubbing_usage_current_hour = 0.0
-            quota.last_hour_reset = now
-            updated = True
-
-            logger.info(
-                f"Hourly reset for user {quota.user_id}: "
-                f"subtitle_rollover={quota.accumulated_subtitle_minutes:.1f}, "
-                f"dubbing_rollover={quota.accumulated_dubbing_minutes:.1f}"
-            )
-
-        # Daily reset (no rollover for daily/monthly)
-        if now - quota.last_day_reset >= timedelta(days=1):
-            quota.subtitle_usage_current_day = 0.0
-            quota.dubbing_usage_current_day = 0.0
-            quota.last_day_reset = now
-            updated = True
-
-        # Monthly reset
-        if now - quota.last_month_reset >= timedelta(days=30):
-            quota.subtitle_usage_current_month = 0.0
-            quota.dubbing_usage_current_month = 0.0
-            quota.estimated_cost_current_month = 0.0
-            quota.last_month_reset = now
-            updated = True
-
-        if updated:
-            quota.updated_at = now
-            await quota.save()
-
-        return updated
-
-    @staticmethod
     async def check_quota(
+        self,
         user_id: str,
         feature_type: FeatureType,
         estimated_duration_minutes: float = 1.0,
@@ -138,136 +51,14 @@ class LiveFeatureQuotaService:
         """
         Check if user has quota available (with rollover support).
 
-        Args:
-            user_id: User ID to check
-            feature_type: Type of feature (subtitle or dubbing)
-            estimated_duration_minutes: Estimated session duration
-
-        Returns:
-            Tuple of (allowed, error_message, usage_stats)
+        Returns: (allowed, error_message, usage_stats)
         """
-        try:
-            quota = await LiveFeatureQuotaService.get_or_create_quota(user_id)
-            await LiveFeatureQuotaService._reset_windows_and_rollover(quota)
+        return await self.quota_checker.check_quota(
+            self.quota_manager, user_id, feature_type, estimated_duration_minutes
+        )
 
-            is_subtitle = feature_type == FeatureType.SUBTITLE
-
-            # Get current usage and limits
-            if is_subtitle:
-                current_hour = quota.subtitle_usage_current_hour
-                current_day = quota.subtitle_usage_current_day
-                current_month = quota.subtitle_usage_current_month
-                limit_hour = quota.subtitle_minutes_per_hour
-                limit_day = quota.subtitle_minutes_per_day
-                limit_month = quota.subtitle_minutes_per_month
-                accumulated = quota.accumulated_subtitle_minutes
-            else:
-                current_hour = quota.dubbing_usage_current_hour
-                current_day = quota.dubbing_usage_current_day
-                current_month = quota.dubbing_usage_current_month
-                limit_hour = quota.dubbing_minutes_per_hour
-                limit_day = quota.dubbing_minutes_per_day
-                limit_month = quota.dubbing_minutes_per_month
-                accumulated = quota.accumulated_dubbing_minutes
-
-            # Calculate total available (limit + rollover)
-            available_hour = limit_hour + accumulated - current_hour
-            available_day = limit_day - current_day
-            available_month = limit_month - current_month
-
-            # Build usage stats
-            usage_stats = LiveFeatureQuotaService._build_usage_stats(quota)
-
-            # Check hourly limit (with rollover)
-            if current_hour + estimated_duration_minutes > limit_hour + accumulated:
-                return (
-                    False,
-                    f"Hourly limit reached for {feature_type.value}. "
-                    f"Used {current_hour:.1f} of {limit_hour + accumulated:.1f} minutes. "
-                    f"Resets in {60 - datetime.utcnow().minute} minutes.",
-                    usage_stats,
-                )
-
-            # Check daily limit
-            if current_day + estimated_duration_minutes > limit_day:
-                hours_until_reset = 24 - datetime.utcnow().hour
-                return (
-                    False,
-                    f"Daily limit reached for {feature_type.value}. "
-                    f"Used {current_day:.1f} of {limit_day} minutes. "
-                    f"Resets in {hours_until_reset} hours.",
-                    usage_stats,
-                )
-
-            # Check monthly limit
-            if current_month + estimated_duration_minutes > limit_month:
-                return (
-                    False,
-                    f"Monthly limit reached for {feature_type.value}. "
-                    f"Used {current_month:.1f} of {limit_month} minutes. "
-                    f"Resets next month.",
-                    usage_stats,
-                )
-
-            # All checks passed
-            return (True, None, usage_stats)
-
-        except Exception as e:
-            logger.error(f"Error checking quota for user {user_id}: {str(e)}")
-            return (
-                False,
-                f"Error checking quota: {str(e)}",
-                {},
-            )
-
-    @staticmethod
-    def _build_usage_stats(quota: LiveFeatureQuota) -> Dict:
-        """Build usage statistics dictionary"""
-        return {
-            "subtitle_usage_current_hour": quota.subtitle_usage_current_hour,
-            "subtitle_usage_current_day": quota.subtitle_usage_current_day,
-            "subtitle_usage_current_month": quota.subtitle_usage_current_month,
-            "subtitle_minutes_per_hour": quota.subtitle_minutes_per_hour,
-            "subtitle_minutes_per_day": quota.subtitle_minutes_per_day,
-            "subtitle_minutes_per_month": quota.subtitle_minutes_per_month,
-            "subtitle_available_hour": max(
-                0,
-                quota.subtitle_minutes_per_hour
-                + quota.accumulated_subtitle_minutes
-                - quota.subtitle_usage_current_hour,
-            ),
-            "subtitle_available_day": max(
-                0, quota.subtitle_minutes_per_day - quota.subtitle_usage_current_day
-            ),
-            "subtitle_available_month": max(
-                0, quota.subtitle_minutes_per_month - quota.subtitle_usage_current_month
-            ),
-            "accumulated_subtitle_minutes": quota.accumulated_subtitle_minutes,
-            "dubbing_usage_current_hour": quota.dubbing_usage_current_hour,
-            "dubbing_usage_current_day": quota.dubbing_usage_current_day,
-            "dubbing_usage_current_month": quota.dubbing_usage_current_month,
-            "dubbing_minutes_per_hour": quota.dubbing_minutes_per_hour,
-            "dubbing_minutes_per_day": quota.dubbing_minutes_per_day,
-            "dubbing_minutes_per_month": quota.dubbing_minutes_per_month,
-            "dubbing_available_hour": max(
-                0,
-                quota.dubbing_minutes_per_hour
-                + quota.accumulated_dubbing_minutes
-                - quota.dubbing_usage_current_hour,
-            ),
-            "dubbing_available_day": max(
-                0, quota.dubbing_minutes_per_day - quota.dubbing_usage_current_day
-            ),
-            "dubbing_available_month": max(
-                0, quota.dubbing_minutes_per_month - quota.dubbing_usage_current_month
-            ),
-            "accumulated_dubbing_minutes": quota.accumulated_dubbing_minutes,
-            "estimated_cost_current_month": quota.estimated_cost_current_month,
-            "warning_threshold_percentage": quota.warning_threshold_percentage,
-        }
-
-    @staticmethod
     async def start_session(
+        self,
         user_id: str,
         channel_id: str,
         feature_type: FeatureType,
@@ -276,206 +67,45 @@ class LiveFeatureQuotaService:
         platform: str = "web",
     ) -> LiveFeatureUsageSession:
         """Start tracking a new usage session"""
-        session = LiveFeatureUsageSession(
-            session_id=str(uuid.uuid4()),
-            user_id=user_id,
-            channel_id=channel_id,
-            feature_type=feature_type,
-            source_language=source_language,
-            target_language=target_language,
-            platform=platform,
-        )
-        await session.insert()
-
-        logger.info(
-            f"Started {feature_type.value} session {session.session_id} "
-            f"for user {user_id} on channel {channel_id}"
+        return await self.session_manager.start_session(
+            user_id, channel_id, feature_type, source_language, target_language, platform
         )
 
-        return session
-
-    @staticmethod
-    def _estimate_session_cost(
-        minutes: float,
-        source_lang: str,
-        target_lang: str,
-        feature_type: FeatureType,
-    ) -> Dict[str, float]:
-        """Estimate costs for a session using configuration values"""
-        stt_cost = minutes * settings.LIVE_QUOTA_COST_STT_PER_MINUTE
-
-        # Get average chars per minute based on source language
-        if source_lang == "he":
-            avg_chars = settings.LIVE_QUOTA_AVG_CHARS_PER_MINUTE_HEBREW
-        elif source_lang == "en":
-            avg_chars = settings.LIVE_QUOTA_AVG_CHARS_PER_MINUTE_ENGLISH
-        else:
-            # Default to average of Hebrew and English
-            avg_chars = (settings.LIVE_QUOTA_AVG_CHARS_PER_MINUTE_HEBREW +
-                        settings.LIVE_QUOTA_AVG_CHARS_PER_MINUTE_ENGLISH) // 2
-
-        chars_processed = minutes * avg_chars
-        translation_cost = (chars_processed / 1000) * settings.LIVE_QUOTA_COST_TRANSLATION_PER_1K_CHARS
-
-        # TTS only for dubbing, not subtitles
-        tts_cost = 0.0
-        if feature_type == FeatureType.DUBBING:
-            tts_cost = (chars_processed / 1000) * settings.LIVE_QUOTA_COST_TTS_PER_1K_CHARS
-
-        return {
-            "stt_cost": round(stt_cost, 4),
-            "translation_cost": round(translation_cost, 4),
-            "tts_cost": round(tts_cost, 4),
-            "total_cost": round(stt_cost + translation_cost + tts_cost, 4),
-        }
-
-    @staticmethod
     async def update_session(
+        self,
         session_id: str,
         audio_seconds_delta: float,
         segments_delta: int = 0,
         chars_processed: int = 0,
     ):
         """Update session with usage increments"""
-        session = await LiveFeatureUsageSession.find_one(
-            LiveFeatureUsageSession.session_id == session_id
+        return await self.session_manager.update_session(
+            self.quota_manager, session_id, audio_seconds_delta, segments_delta, chars_processed
         )
 
-        if not session:
-            logger.error(f"Session {session_id} not found")
-            return
-
-        # Update session metrics
-        session.audio_seconds_processed += audio_seconds_delta
-        session.segments_processed += segments_delta
-        session.duration_seconds = (
-            datetime.utcnow() - session.started_at
-        ).total_seconds()
-        session.last_activity_at = datetime.utcnow()
-
-        # Calculate incremental cost
-        minutes_delta = audio_seconds_delta / 60.0
-        cost_delta = LiveFeatureQuotaService._estimate_session_cost(
-            minutes_delta,
-            session.source_language or "he",
-            session.target_language or "en",
-            session.feature_type,
-        )
-
-        session.estimated_stt_cost += cost_delta["stt_cost"]
-        session.estimated_translation_cost += cost_delta["translation_cost"]
-        session.estimated_tts_cost += cost_delta["tts_cost"]
-        session.estimated_total_cost += cost_delta["total_cost"]
-
-        session.updated_at = datetime.utcnow()
-        await session.save()
-
-        # Update user quota
-        quota = await LiveFeatureQuotaService.get_or_create_quota(session.user_id)
-
-        is_subtitle = session.feature_type == FeatureType.SUBTITLE
-
-        if is_subtitle:
-            quota.subtitle_usage_current_hour += minutes_delta
-            quota.subtitle_usage_current_day += minutes_delta
-            quota.subtitle_usage_current_month += minutes_delta
-            # Deduct from accumulated rollover first
-            if quota.accumulated_subtitle_minutes > 0:
-                deduction = min(minutes_delta, quota.accumulated_subtitle_minutes)
-                quota.accumulated_subtitle_minutes -= deduction
-        else:
-            quota.dubbing_usage_current_hour += minutes_delta
-            quota.dubbing_usage_current_day += minutes_delta
-            quota.dubbing_usage_current_month += minutes_delta
-            # Deduct from accumulated rollover first
-            if quota.accumulated_dubbing_minutes > 0:
-                deduction = min(minutes_delta, quota.accumulated_dubbing_minutes)
-                quota.accumulated_dubbing_minutes -= deduction
-
-        # Update cost tracking
-        quota.estimated_cost_current_month += cost_delta["total_cost"]
-        quota.total_lifetime_cost += cost_delta["total_cost"]
-
-        quota.updated_at = datetime.utcnow()
-        await quota.save()
-
-    @staticmethod
-    async def end_session(session_id: str, status: UsageSessionStatus):
+    async def end_session(self, session_id: str, status: UsageSessionStatus):
         """Finalize session and update totals"""
-        session = await LiveFeatureUsageSession.find_one(
-            LiveFeatureUsageSession.session_id == session_id
-        )
+        return await self.session_manager.end_session(session_id, status)
 
-        if not session:
-            logger.error(f"Session {session_id} not found")
-            return
-
-        session.status = status
-        session.ended_at = datetime.utcnow()
-        session.duration_seconds = (session.ended_at - session.started_at).total_seconds()
-        session.updated_at = datetime.utcnow()
-        await session.save()
-
-        logger.info(
-            f"Ended {session.feature_type.value} session {session_id} "
-            f"with status {status.value}: "
-            f"{session.audio_seconds_processed:.1f}s processed, "
-            f"cost ${session.estimated_total_cost:.4f}"
-        )
-
-    @staticmethod
-    async def get_usage_stats(user_id: str) -> Dict:
+    async def get_usage_stats(self, user_id: str) -> Dict:
         """Get current usage stats for user"""
-        quota = await LiveFeatureQuotaService.get_or_create_quota(user_id)
-        await LiveFeatureQuotaService._reset_windows_and_rollover(quota)
-        return LiveFeatureQuotaService._build_usage_stats(quota)
+        return await self.quota_checker.get_usage_stats(self.quota_manager, user_id)
 
-    @staticmethod
-    async def reset_user_quota(user_id: str):
+    async def reset_user_quota(self, user_id: str):
         """Reset all usage counters (admin action)"""
-        quota = await LiveFeatureQuotaService.get_or_create_quota(user_id)
+        return await self.admin_operations.reset_user_quota(self.quota_manager, user_id)
 
-        quota.subtitle_usage_current_hour = 0.0
-        quota.subtitle_usage_current_day = 0.0
-        quota.subtitle_usage_current_month = 0.0
-
-        quota.dubbing_usage_current_hour = 0.0
-        quota.dubbing_usage_current_day = 0.0
-        quota.dubbing_usage_current_month = 0.0
-
-        quota.accumulated_subtitle_minutes = 0.0
-        quota.accumulated_dubbing_minutes = 0.0
-
-        quota.estimated_cost_current_month = 0.0
-
-        quota.updated_at = datetime.utcnow()
-        await quota.save()
-
-        logger.info(f"Reset quota for user {user_id}")
-
-    @staticmethod
     async def extend_user_limits(
+        self,
         user_id: str,
         admin_id: str,
         new_limits: Dict,
         notes: Optional[str] = None,
     ):
         """Admin extends user limits"""
-        quota = await LiveFeatureQuotaService.get_or_create_quota(user_id)
-
-        # Update limits from dict
-        for key, value in new_limits.items():
-            if hasattr(quota, key):
-                setattr(quota, key, value)
-
-        quota.notes = notes
-        quota.limit_extended_by = admin_id
-        quota.limit_extended_at = datetime.utcnow()
-        quota.updated_at = datetime.utcnow()
-
-        await quota.save()
-
-        logger.info(f"Extended limits for user {user_id} by admin {admin_id}")
+        return await self.admin_operations.extend_user_limits(
+            self.quota_manager, user_id, admin_id, new_limits, notes
+        )
 
 
 # Singleton instance

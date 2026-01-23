@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import List, Optional
+import re
 
 from beanie import Document
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, ValidationError
 
 
 class ParticipantState(BaseModel):
@@ -14,6 +15,38 @@ class ParticipantState(BaseModel):
     is_muted: bool = False
     is_video_on: bool = False
     joined_at: datetime = Field(default_factory=datetime.utcnow)
+
+    @field_validator("user_name")
+    @classmethod
+    def validate_user_name(cls, v: str) -> str:
+        """Validate and sanitize username"""
+        if not v or not isinstance(v, str):
+            raise ValueError("Username must be a non-empty string")
+
+        v = v.strip()
+
+        # Length validation
+        if len(v) == 0:
+            raise ValueError("Username cannot be empty")
+        if len(v) > 50:
+            raise ValueError("Username must be 50 characters or less")
+
+        # Remove dangerous characters
+        if re.search(r'[<>\'\"&]', v):
+            raise ValueError("Username contains invalid characters")
+
+        # Check for XSS patterns
+        xss_patterns = [
+            r'<script',
+            r'javascript:',
+            r'on\w+=',
+            r'data:text/html',
+        ]
+        for pattern in xss_patterns:
+            if re.search(pattern, v, re.IGNORECASE):
+                raise ValueError("Username contains suspicious patterns")
+
+        return v
 
 
 class WatchParty(Document):
@@ -85,6 +118,69 @@ class ChatMessage(Document):
 
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
+    @field_validator("user_name")
+    @classmethod
+    def validate_user_name(cls, v: str) -> str:
+        """Validate and sanitize username"""
+        if not v or not isinstance(v, str):
+            raise ValueError("Username must be a non-empty string")
+
+        v = v.strip()
+
+        if len(v) == 0:
+            raise ValueError("Username cannot be empty")
+        if len(v) > 50:
+            raise ValueError("Username must be 50 characters or less")
+
+        if re.search(r'[<>\'\"&]', v):
+            raise ValueError("Username contains invalid characters")
+
+        xss_patterns = [
+            r'<script',
+            r'javascript:',
+            r'on\w+=',
+            r'data:text/html',
+        ]
+        for pattern in xss_patterns:
+            if re.search(pattern, v, re.IGNORECASE):
+                raise ValueError("Username contains suspicious patterns")
+
+        return v
+
+    @field_validator("message")
+    @classmethod
+    def validate_message(cls, v: str) -> str:
+        """Validate and sanitize chat message"""
+        if not v or not isinstance(v, str):
+            raise ValueError("Message must be a non-empty string")
+
+        v = v.strip()
+
+        # Length validation
+        if len(v) == 0:
+            raise ValueError("Message cannot be empty")
+        if len(v) > 500:
+            raise ValueError("Message must be 500 characters or less")
+
+        # Remove null bytes
+        v = v.replace('\0', '')
+
+        # Remove control characters (except newlines and tabs)
+        v = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', '', v)
+
+        # Check for XSS patterns
+        xss_patterns = [
+            r'<script',
+            r'javascript:',
+            r'on\w+=',
+            r'data:text/html',
+        ]
+        for pattern in xss_patterns:
+            if re.search(pattern, v, re.IGNORECASE):
+                raise ValueError("Message contains suspicious patterns")
+
+        return v
+
     class Settings:
         name = "chat_messages"
         indexes = [
@@ -135,6 +231,49 @@ class ChatMessageCreate(BaseModel):
 
     message: str
     message_type: str = "text"
+
+    @field_validator("message")
+    @classmethod
+    def validate_message(cls, v: str) -> str:
+        """Validate and sanitize chat message"""
+        if not v or not isinstance(v, str):
+            raise ValueError("Message must be a non-empty string")
+
+        v = v.strip()
+
+        # Length validation
+        if len(v) == 0:
+            raise ValueError("Message cannot be empty")
+        if len(v) > 500:
+            raise ValueError("Message must be 500 characters or less")
+
+        # Remove null bytes
+        v = v.replace('\0', '')
+
+        # Remove control characters (except newlines and tabs)
+        v = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', '', v)
+
+        # Check for XSS patterns
+        xss_patterns = [
+            r'<script',
+            r'javascript:',
+            r'on\w+=',
+            r'data:text/html',
+        ]
+        for pattern in xss_patterns:
+            if re.search(pattern, v, re.IGNORECASE):
+                raise ValueError("Message contains suspicious patterns")
+
+        return v
+
+    @field_validator("message_type")
+    @classmethod
+    def validate_message_type(cls, v: str) -> str:
+        """Validate message type"""
+        allowed_types = ["text", "emoji", "system"]
+        if v not in allowed_types:
+            raise ValueError(f"Message type must be one of: {', '.join(allowed_types)}")
+        return v
 
 
 class ChatMessageResponse(BaseModel):

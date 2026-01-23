@@ -40,7 +40,7 @@ export const styles = StyleSheet.create({
   },
   codeLabel: {
     fontSize: isTV ? 14 : 12,
-    color: '#9CA3AF',
+    color: colors.textSecondary,
   },
   codeText: {
     fontSize: isTV ? 16 : 14,
@@ -50,8 +50,8 @@ export const styles = StyleSheet.create({
     letterSpacing: 2,
   },
   iconButton: {
-    width: isTV ? 40 : 36,
-    height: isTV ? 40 : 36,
+    width: isTV ? 80 : 44,
+    height: isTV ? 80 : 44,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: borderRadius.sm,
@@ -69,7 +69,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.sm,
+    minHeight: isTV ? 80 : 44,
     paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
     borderRadius: borderRadius.sm,
     borderWidth: 1,
   },
@@ -83,7 +85,7 @@ export const styles = StyleSheet.create({
   endButtonText: {
     fontSize: isTV ? 16 : 14,
     fontWeight: '500',
-    color: '#FCA5A5',
+    color: colors.error,
   },
   leaveButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -95,6 +97,6 @@ export const styles = StyleSheet.create({
   leaveButtonText: {
     fontSize: isTV ? 16 : 14,
     fontWeight: '500',
-    color: '#D1D5DB',
+    color: colors.textSecondary,
   },
 })

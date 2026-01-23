@@ -149,6 +149,56 @@ class DubbingConfig(BaseSettings):
         description="Minimum speech duration to trigger processing",
     )
 
+    # WebSocket Security Settings
+    require_secure_websocket: bool = Field(
+        default=True,
+        description="Require wss:// (secure WebSocket) in production. Set to False only for local development.",
+    )
+    websocket_auth_timeout_seconds: int = Field(
+        default=10,
+        ge=1,
+        le=60,
+        description="Timeout for WebSocket authentication message (seconds)",
+    )
+    websocket_token_freshness_seconds: int = Field(
+        default=30,
+        ge=1,
+        le=300,
+        description="Maximum age for auth token timestamp (seconds)",
+    )
+    websocket_max_connections_per_user_per_minute: int = Field(
+        default=1,
+        ge=1,
+        le=100,
+        description="Rate limit: max WebSocket connections per user per minute",
+    )
+    websocket_max_chunks_per_second: int = Field(
+        default=50,
+        ge=1,
+        le=1000,
+        description="Rate limit: max audio chunks per session per second",
+    )
+
+    # Redis Configuration for session state management
+    redis_url: str = Field(
+        default="redis://localhost:6379/0",
+        description="Redis connection URL for distributed session state. "
+        "Format: redis://[user:password@]host[:port][/database]",
+    )
+    redis_session_ttl_seconds: int = Field(
+        default=7200,
+        ge=300,
+        le=86400,
+        description="Time-to-live for session state in Redis (seconds). "
+        "Default 7200s = 2 hours. Used for session recovery on reconnect.",
+    )
+    redis_max_connections: int = Field(
+        default=50,
+        ge=1,
+        le=500,
+        description="Maximum connections in Redis connection pool",
+    )
+
     class Config:
         env_prefix = "DUBBING_"
 

@@ -176,6 +176,12 @@ from app.middleware.input_sanitization import InputSanitizationMiddleware
 app.add_middleware(InputSanitizationMiddleware, enable_logging=True)
 logger.info("Input sanitization middleware enabled")
 
+# CSRF protection middleware - protects state-changing endpoints
+from app.core.csrf import CSRFProtectionMiddleware
+
+app.add_middleware(CSRFProtectionMiddleware)
+logger.info("CSRF protection middleware enabled")
+
 # Request timing middleware - tracks request duration
 app.add_middleware(RequestTimingMiddleware)
 logger.info("Request timing middleware enabled")

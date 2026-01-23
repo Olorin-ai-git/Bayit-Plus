@@ -749,6 +749,104 @@ export const adminPodcastsService = {
 
   deletePodcast: (podcastId: string): Promise<void> =>
     adminApi.delete(`/admin/podcasts/${podcastId}`),
+
+  // Bulk translation for all podcast episodes
+  triggerBulkTranslation: (podcastId: string): Promise<{
+    status: string;
+    podcast_id: string;
+    episodes_queued: number;
+    total_eligible: number;
+    message: string;
+  }> =>
+    adminApi.post(`/admin/podcasts/${podcastId}/translate-all`),
+};
+
+// ============================================
+// Podcast Episodes Service
+// ============================================
+
+export interface PodcastEpisodeFilter {
+  translation_status?: 'pending' | 'processing' | 'completed' | 'failed';
+  page?: number;
+  page_size?: number;
+}
+
+export interface PodcastEpisode {
+  id: string;
+  podcast_id: string;
+  title: string;
+  description?: string;
+  audio_url?: string;
+  duration?: string;
+  episode_number?: number;
+  season_number?: number;
+  published_at: string;
+  thumbnail?: string;
+  translation_status?: 'pending' | 'processing' | 'completed' | 'failed';
+  available_languages?: string[];
+  original_language?: string;
+  retry_count?: number;
+}
+
+export interface TranslationStatusResponse {
+  pending: number;
+  processing: number;
+  completed: number;
+  failed: number;
+  total: number;
+}
+
+export interface FailedTranslationItem {
+  id: string;
+  podcast_id: string;
+  podcast_title: string;
+  title: string;
+  retry_count: number;
+  max_retries: number;
+  updated_at: string;
+}
+
+export const adminPodcastEpisodesService = {
+  getEpisodes: (
+    podcastId: string,
+    filters?: PodcastEpisodeFilter
+  ): Promise<PaginatedResponse<PodcastEpisode>> =>
+    adminApi.get(`/admin/podcasts/${podcastId}/episodes`, { params: filters }),
+
+  getEpisode: (podcastId: string, episodeId: string): Promise<PodcastEpisode> =>
+    adminApi.get(`/admin/podcasts/${podcastId}/episodes/${episodeId}`),
+
+  createEpisode: (
+    podcastId: string,
+    data: Partial<PodcastEpisode>
+  ): Promise<{ id: string; title: string; podcast_id: string }> =>
+    adminApi.post(`/admin/podcasts/${podcastId}/episodes`, data),
+
+  updateEpisode: (
+    podcastId: string,
+    episodeId: string,
+    data: Partial<PodcastEpisode>
+  ): Promise<{ message: string; id: string }> =>
+    adminApi.patch(`/admin/podcasts/${podcastId}/episodes/${episodeId}`, data),
+
+  deleteEpisode: (podcastId: string, episodeId: string): Promise<{ message: string }> =>
+    adminApi.delete(`/admin/podcasts/${podcastId}/episodes/${episodeId}`),
+
+  // Translation operations
+  triggerTranslation: (
+    podcastId: string,
+    episodeId: string
+  ): Promise<{ status: string; episode_id: string; message: string }> =>
+    adminApi.post(`/admin/podcasts/${podcastId}/episodes/${episodeId}/translate`),
+
+  getTranslationStatus: (): Promise<TranslationStatusResponse> =>
+    adminApi.get('/admin/translation/status'),
+
+  getFailedTranslations: (params?: {
+    page?: number;
+    page_size?: number;
+  }): Promise<PaginatedResponse<FailedTranslationItem>> =>
+    adminApi.get('/admin/translation/failed', { params }),
 };
 
 // ============================================
@@ -857,5 +955,6 @@ export default {
   content: adminContentService,
   widgets: adminWidgetsService,
   podcasts: adminPodcastsService,
+  podcastEpisodes: adminPodcastEpisodesService,
   liveQuotas: liveQuotasService,
 };

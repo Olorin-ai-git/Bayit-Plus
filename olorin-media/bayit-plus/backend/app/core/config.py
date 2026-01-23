@@ -640,6 +640,27 @@ class Settings(BaseSettings):
     LIVE_QUOTA_CHECK_RATE_LIMIT: int = 20  # Max quota checks per minute
 
     # ============================================
+    # URL MIGRATION CONFIGURATION (for script consolidation)
+    # ============================================
+    # Configuration for URL transformation scripts (bucket upgrades, S3→GCS migration)
+    OLD_BUCKET_NAME: str = Field(
+        default="bayit-plus-media/",
+        description="Old GCS bucket name for URL migration"
+    )
+    NEW_BUCKET_NAME: str = Field(
+        default="bayit-plus-media-new/",
+        description="New GCS bucket name for URL migration"
+    )
+    S3_PATTERN: str = Field(
+        default=r"s3\.amazonaws\.com",
+        description="S3 URL pattern to replace during migration"
+    )
+    GCS_PATTERN: str = Field(
+        default="storage.googleapis.com",
+        description="GCS URL pattern for S3→GCS migration"
+    )
+
+    # ============================================
     # OLORIN.AI PLATFORM CONFIGURATION (NESTED)
     # ============================================
 

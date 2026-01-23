@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react'
-import { View, Text, Pressable } from 'react-native'
+import { View, Text, Pressable, Platform } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Copy, Check, LogOut, X, Share2 } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
@@ -33,21 +33,28 @@ export default function WatchPartyHeader({
   const [copied, setCopied] = useState(false)
 
   const handleCopyCode = async () => {
-    await navigator.clipboard.writeText(roomCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    if (Platform.OS === 'web' && navigator.clipboard) {
+      await navigator.clipboard.writeText(roomCode)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
   }
 
   const handleShare = async () => {
-    const shareData = {
-      title: t('watchParty.title'),
-      text: `${t('watchParty.joinTitle')}: ${roomCode}`,
-      url: `${window.location.origin}/party/${roomCode}`,
-    }
+    if (Platform.OS === 'web') {
+      const shareData = {
+        title: t('watchParty.title'),
+        text: `${t('watchParty.joinTitle')}: ${roomCode}`,
+        url: `${window.location.origin}/party/${roomCode}`,
+      }
 
-    if (navigator.share && navigator.canShare(shareData)) {
-      await navigator.share(shareData)
+      if (navigator.share && navigator.canShare(shareData)) {
+        await navigator.share(shareData)
+      } else {
+        handleCopyCode()
+      }
     } else {
+      // On native platforms, fallback to copy code
       handleCopyCode()
     }
   }
@@ -75,6 +82,9 @@ export default function WatchPartyHeader({
             styles.iconButton,
             hovered && styles.iconButtonHovered,
           ]}
+          accessibilityRole="button"
+          accessibilityLabel={copied ? t('watchParty.copied') : t('watchParty.copyCode')}
+          accessibilityHint={t('watchParty.copyCodeHint')}
         >
           {copied ? (
             <Check size={isTV ? 18 : 16} color="#34D399" />
@@ -89,6 +99,9 @@ export default function WatchPartyHeader({
             styles.iconButton,
             hovered && styles.iconButtonHovered,
           ]}
+          accessibilityRole="button"
+          accessibilityLabel={t('watchParty.share')}
+          accessibilityHint={t('watchParty.shareHint')}
         >
           <Share2 size={isTV ? 18 : 16} color={colors.textSecondary} />
         </Pressable>
@@ -103,6 +116,9 @@ export default function WatchPartyHeader({
               styles.endButton,
               hovered && styles.endButtonHovered,
             ]}
+            accessibilityRole="button"
+            accessibilityLabel={t('watchParty.endParty')}
+            accessibilityHint={t('watchParty.endPartyHint')}
           >
             <X size={isTV ? 18 : 16} color={colors.error} />
             <Text style={styles.endButtonText}>{t('watchParty.end')}</Text>
@@ -115,6 +131,9 @@ export default function WatchPartyHeader({
               styles.leaveButton,
               hovered && styles.leaveButtonHovered,
             ]}
+            accessibilityRole="button"
+            accessibilityLabel={t('watchParty.leaveParty')}
+            accessibilityHint={t('watchParty.leavePartyHint')}
           >
             <LogOut size={isTV ? 18 : 16} color={colors.textSecondary} />
             <Text style={styles.leaveButtonText}>{t('watchParty.leave')}</Text>

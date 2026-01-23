@@ -91,6 +91,10 @@ export default function AudioControls({
         onPress={onToggleMute}
         disabled={isConnecting}
         style={[styles.button, getButtonStyle()]}
+        accessibilityRole="button"
+        accessibilityLabel={isMuted ? t('watchParty.audio.unmute') : t('watchParty.audio.mute')}
+        accessibilityHint={isMuted ? t('watchParty.audio.unmuteHint') : t('watchParty.audio.muteHint')}
+        accessibilityState={{ disabled: isConnecting, checked: !isMuted }}
       >
         {isConnecting ? (
           <Animated.View style={{ transform: [{ rotate: spin }] }}>

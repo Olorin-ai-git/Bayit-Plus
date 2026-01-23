@@ -25,6 +25,9 @@ from app.models.live_dubbing import (
     LiveDubbingSession,
 )
 from app.models.user import User
+from app.services.live_dubbing.channel_stt_manager import get_channel_stt_manager
+from app.services.live_dubbing.session_store import get_session_store
+from app.services.olorin.resilience import circuit_breaker, CircuitBreakerError, ELEVENLABS_BREAKER
 
 logger = logging.getLogger(__name__)
 
@@ -141,9 +144,14 @@ class LiveDubbingService:
         self.sync_delay_ms = channel.dubbing_sync_delay_ms or settings.olorin.dubbing.live_dubbing_default_sync_delay_ms
 
         # Initialize providers (dependency injection)
+        # Note: STT provider is replaced by ChannelSTTManager for cost optimization
         self._stt_provider = stt_provider or get_stt_provider()
         self._tts_provider = tts_provider or get_tts_provider()
         self._translation_provider = translation_provider or get_translation_provider()
+
+        # Channel STT manager (shared per channel - 99% cost reduction)
+        self._channel_stt_manager = None
+        self._transcript_queue: Optional[asyncio.Queue] = None
 
         # Session state
         self._session: Optional[LiveDubbingSession] = None
@@ -164,12 +172,16 @@ class LiveDubbingService:
         logger.info(
             f"LiveDubbingService initialized: session={self.session_id}, "
             f"channel={channel.id}, source={self.source_language}, "
-            f"target={target_language}, voice={self.voice_id}"
+            f"target={target_language}, voice={self.voice_id}, "
+            f"platform={platform}"
         )
 
     async def start(self) -> Dict[str, Any]:
         """
         Start the dubbing session.
+
+        Uses ChannelSTTManager for shared STT connection (99% cost reduction).
+        Each session subscribes to channel's shared STT broadcast.
 
         Returns connection info including session ID and sync delay.
         """
@@ -192,17 +204,53 @@ class LiveDubbingService:
             )
             await self._session.insert()
 
-            # Connect STT provider
-            logger.info(f"Connecting STT provider for session {self.session_id}")
-            await self._stt_provider.connect(self.source_language)
+            # Step 1: Get channel STT manager (creates if needed)
+            # This is the key optimization: ONE STT connection per channel
+            logger.info(
+                f"Getting ChannelSTTManager for channel {self.channel.id} "
+                f"(shared STT, 99% cost reduction)"
+            )
+            self._channel_stt_manager = await get_channel_stt_manager(
+                str(self.channel.id), self.source_language
+            )
 
-            # Connect TTS provider
+            # Step 2: Subscribe to channel's STT broadcast
+            # Each session gets its own transcript queue
+            logger.info(
+                f"Subscribing session {self.session_id} to channel STT broadcast"
+            )
+            self._transcript_queue = await self._channel_stt_manager.subscribe(
+                self.session_id
+            )
+
+            # Step 3: Connect TTS provider (one per session, needed for dubbing)
             logger.info(f"Connecting TTS provider for session {self.session_id}")
             await self._tts_provider.connect(self.voice_id)
 
+            # Step 4: Save initial session state to Redis for recovery on reconnect
+            session_store = await get_session_store()
+            await session_store.save_session_state(
+                self.session_id,
+                {
+                    "user_id": str(self.user.id),
+                    "channel_id": str(self.channel.id),
+                    "source_language": self.source_language,
+                    "target_language": self.target_language,
+                    "voice_id": self.voice_id,
+                    "platform": self.platform,
+                    "status": "active",
+                    "created_at": datetime.utcnow().isoformat(),
+                    "last_activity_at": datetime.utcnow().isoformat(),
+                },
+                ttl_seconds=settings.olorin.dubbing.redis_session_ttl_seconds,
+            )
+
             self._running = True
 
-            logger.info(f"Dubbing session started: {self.session_id}")
+            logger.info(
+                f"Dubbing session started: {self.session_id} "
+                f"(using shared STT for channel {self.channel.id})"
+            )
             return self._get_connection_info()
 
         except Exception as e:
@@ -218,6 +266,8 @@ class LiveDubbingService:
         """
         Stop the dubbing session.
 
+        Unsubscribes from ChannelSTTManager and cleans up resources.
+
         Returns session summary with metrics.
         """
         self._running = False
@@ -230,27 +280,41 @@ class LiveDubbingService:
             except asyncio.CancelledError:
                 pass
 
-        # Close providers
-        try:
-            await self._stt_provider.close()
-        except Exception as e:
-            logger.debug(f"Error closing STT provider: {e}")
+        # Unsubscribe from channel STT manager
+        if self._channel_stt_manager:
+            try:
+                await self._channel_stt_manager.unsubscribe(self.session_id)
+                logger.info(
+                    f"Unsubscribed session {self.session_id} from "
+                    f"channel {self.channel.id} STT broadcast"
+                )
+            except Exception as e:
+                logger.error(f"Error unsubscribing from STT manager: {e}")
 
+        # Close TTS provider (STT provider is managed by ChannelSTTManager)
         try:
             await self._tts_provider.close()
         except Exception as e:
             logger.debug(f"Error closing TTS provider: {e}")
 
-        # Update session record
+        # Update session record and remove from Redis
         if self._session:
             self._session.status = "completed"
             self._session.ended_at = datetime.utcnow()
             self._session.metrics = self._metrics
             await self._session.save()
 
+        # Remove from Redis session store
+        try:
+            session_store = await get_session_store()
+            await session_store.delete_session_state(self.session_id)
+        except Exception as e:
+            logger.warning(f"Error cleaning up Redis session state: {e}")
+
         logger.info(
             f"Dubbing session ended: {self.session_id}, "
-            f"segments={self._metrics.segments_synthesized}"
+            f"segments={self._metrics.segments_synthesized}, "
+            f"audio_seconds={self._metrics.audio_seconds_processed:.1f}s"
         )
 
         return {
@@ -263,107 +327,157 @@ class LiveDubbingService:
         """
         Process incoming audio chunk through the dubbing pipeline.
 
-        Audio is sent to STT provider for transcription.
+        Audio is sent to ChannelSTTManager for shared STT processing.
+        All sessions on the same channel share the same STT transcription.
+
+        Args:
+            audio_data: Binary audio data (16kHz mono LINEAR16 PCM)
         """
         if not self._running:
             logger.warning(f"Session {self.session_id} not running, ignoring audio")
             return
 
-        # Update last activity time
+        # Update last activity time in both database and Redis
         if self._session:
             self._session.last_activity_at = datetime.utcnow()
 
-        # Track audio processing
-        self._metrics.audio_seconds_processed += len(audio_data) / (16000 * 2)  # 16kHz, 16-bit
-
-        # Send to STT provider
+        # Update last activity in Redis for session recovery
         try:
-            await self._stt_provider.send_audio_chunk(audio_data)
+            session_store = await get_session_store()
+            await session_store.update_session_activity(self.session_id)
         except Exception as e:
-            logger.error(f"Error sending audio to STT: {e}")
+            logger.warning(f"Error updating Redis session activity: {e}")
+
+        # Track audio processing
+        # 16kHz sample rate, 2 bytes per sample (16-bit) = 32KB per second
+        self._metrics.audio_seconds_processed += len(audio_data) / (16000 * 2)
+
+        # Send to ChannelSTTManager (shared STT, not direct to provider)
+        if self._channel_stt_manager:
+            try:
+                await self._channel_stt_manager.send_audio_chunk(audio_data)
+            except Exception as e:
+                logger.error(f"Error sending audio to channel STT manager: {e}")
+                self._metrics.errors_count += 1
+        else:
+            logger.error(
+                f"ChannelSTTManager not initialized for session {self.session_id}"
+            )
             self._metrics.errors_count += 1
 
     async def run_pipeline(self) -> None:
         """
         Run the main dubbing pipeline.
 
-        Processes transcripts from STT → Translation → TTS → Output queue.
+        Processes transcripts from channel STT manager → Translation → TTS → Output queue.
+        Consumes from shared ChannelSTTManager's broadcast queue for cost optimization.
         """
         logger.info(f"Starting dubbing pipeline for session {self.session_id}")
 
+        if not self._transcript_queue:
+            logger.error(f"Transcript queue not initialized for session {self.session_id}")
+            return
+
         try:
-            async for transcript, detected_lang in self._stt_provider.receive_transcripts():
-                if not self._running:
-                    break
+            while self._running:
+                try:
+                    # Wait for transcript from channel manager's broadcast queue
+                    transcript_msg = await asyncio.wait_for(
+                        self._transcript_queue.get(),
+                        timeout=1.0
+                    )
 
-                if not transcript.strip():
+                    # Extract from TranscriptMessage
+                    transcript = transcript_msg.text
+                    detected_lang = transcript_msg.language
+
+                    if not transcript.strip():
+                        continue
+
+                    segment_start = time.time()
+                    stt_latency = 0  # STT latency is handled by the provider
+
+                    self._metrics.segments_transcribed += 1
+
+                    # Step 2: Translation
+                    translation_start = time.time()
+                    actual_source = detected_lang if detected_lang != "auto" else self.source_language
+
+                    if actual_source == self.target_language:
+                        translated = transcript
+                    else:
+                        translated = await self._translation_provider.translate_text(
+                            transcript, actual_source, self.target_language
+                        )
+
+                    translation_latency = (time.time() - translation_start) * 1000
+                    self._metrics.segments_translated += 1
+
+                    logger.info(
+                        f"Translated [{actual_source}→{self.target_language}]: "
+                        f"{transcript[:50]}... → {translated[:50]}..."
+                    )
+
+                    # Step 3: TTS with circuit breaker protection
+                    tts_start = time.time()
+                    audio_chunks: list[bytes] = []
+
+                    try:
+                        # Use circuit breaker for TTS calls
+                        await self._synthesize_audio(translated, audio_chunks)
+                    except CircuitBreakerError as e:
+                        logger.warning(f"TTS circuit breaker open: {e}")
+                        self._metrics.errors_count += 1
+                        # Send error message to client
+                        await self._output_queue.put(
+                            DubbingMessage(
+                                type="error",
+                                error=f"Text-to-speech service temporarily unavailable. Please try again."
+                            )
+                        )
+                        continue
+
+                    tts_latency = (time.time() - tts_start) * 1000
+
+                    if audio_chunks:
+                        # Combine audio chunks
+                        combined_audio = b"".join(audio_chunks)
+                        audio_b64 = base64.b64encode(combined_audio).decode("utf-8")
+
+                        total_latency = (time.time() - segment_start) * 1000
+
+                        # Create dubbed audio message
+                        self._sequence += 1
+                        message = DubbedAudioMessage(
+                            data=audio_b64,
+                            original_text=transcript,
+                            translated_text=translated,
+                            sequence=self._sequence,
+                            latency_ms=int(total_latency),
+                        )
+
+                        await self._output_queue.put(
+                            DubbingMessage(type="dubbed_audio", data=message.model_dump())
+                        )
+
+                        self._metrics.segments_synthesized += 1
+
+                        # Update latency metrics
+                        self._update_latency_metrics(stt_latency, translation_latency, tts_latency)
+
+                        logger.debug(
+                            f"Dubbed segment {self._sequence}: latency={total_latency:.0f}ms "
+                            f"(trans={translation_latency:.0f}ms, tts={tts_latency:.0f}ms)"
+                        )
+
+                except asyncio.TimeoutError:
+                    # No transcript available in timeout period - continue waiting
                     continue
-
-                segment_start = time.time()
-                stt_latency = 0  # STT latency is handled by the provider
-
-                self._metrics.segments_transcribed += 1
-
-                # Step 2: Translation
-                translation_start = time.time()
-                actual_source = detected_lang if detected_lang != "auto" else self.source_language
-
-                if actual_source == self.target_language:
-                    translated = transcript
-                else:
-                    translated = await self._translation_provider.translate_text(
-                        transcript, actual_source, self.target_language
-                    )
-
-                translation_latency = (time.time() - translation_start) * 1000
-                self._metrics.segments_translated += 1
-
-                logger.info(
-                    f"Translated [{actual_source}→{self.target_language}]: "
-                    f"{transcript[:50]}... → {translated[:50]}..."
-                )
-
-                # Step 3: TTS
-                tts_start = time.time()
-                audio_chunks: list[bytes] = []
-
-                await self._tts_provider.send_text_chunk(translated, flush=True)
-
-                async for audio_chunk in self._tts_provider.receive_audio():
-                    audio_chunks.append(audio_chunk)
-
-                tts_latency = (time.time() - tts_start) * 1000
-
-                if audio_chunks:
-                    # Combine audio chunks
-                    combined_audio = b"".join(audio_chunks)
-                    audio_b64 = base64.b64encode(combined_audio).decode("utf-8")
-
-                    total_latency = (time.time() - segment_start) * 1000
-
-                    # Create dubbed audio message
-                    self._sequence += 1
-                    message = DubbedAudioMessage(
-                        data=audio_b64,
-                        original_text=transcript,
-                        translated_text=translated,
-                        sequence=self._sequence,
-                        latency_ms=int(total_latency),
-                    )
-
-                    await self._output_queue.put(
-                        DubbingMessage(type="dubbed_audio", data=message.model_dump())
-                    )
-
-                    self._metrics.segments_synthesized += 1
-
-                    # Update latency metrics
-                    self._update_latency_metrics(stt_latency, translation_latency, tts_latency)
-
-                    logger.debug(
-                        f"Dubbed segment {self._sequence}: latency={total_latency:.0f}ms "
-                        f"(trans={translation_latency:.0f}ms, tts={tts_latency:.0f}ms)"
-                    )
+                except Exception as e:
+                    logger.error(f"Error processing transcript: {str(e)}")
+                    self._metrics.errors_count += 1
+                    # Continue processing other transcripts
+                    continue
 
         except asyncio.CancelledError:
             logger.info(f"Pipeline cancelled for session {self.session_id}")
@@ -379,6 +493,24 @@ class LiveDubbingService:
             await self._output_queue.put(
                 DubbingMessage(type="error", error=str(e))
             )
+
+    @circuit_breaker(ELEVENLABS_BREAKER)
+    async def _synthesize_audio(self, text: str, audio_chunks: list[bytes]) -> None:
+        """
+        Synthesize text to speech with circuit breaker protection.
+
+        Args:
+            text: Text to synthesize
+            audio_chunks: List to append audio chunks to
+
+        Raises:
+            CircuitBreakerError: If circuit breaker is open
+            Exception: If TTS service fails
+        """
+        await self._tts_provider.send_text_chunk(text, flush=True)
+
+        async for audio_chunk in self._tts_provider.receive_audio():
+            audio_chunks.append(audio_chunk)
 
     def _update_latency_metrics(
         self, stt_ms: float, translation_ms: float, tts_ms: float

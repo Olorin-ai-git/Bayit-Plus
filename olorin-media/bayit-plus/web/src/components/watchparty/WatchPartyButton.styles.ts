@@ -15,6 +15,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
+    minHeight: isTV ? 80 : 44,
     paddingHorizontal: isTV ? spacing.md : spacing.sm,
     paddingVertical: isTV ? spacing.sm : spacing.xs,
     borderRadius: borderRadius.md,
@@ -35,6 +36,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
+    minHeight: isTV ? 80 : 44,
     paddingHorizontal: isTV ? spacing.md : spacing.sm,
     paddingVertical: isTV ? spacing.sm : spacing.xs,
     borderRadius: borderRadius.md,
@@ -56,7 +58,7 @@ export const styles = StyleSheet.create({
     color: colors.primary,
   },
   hostText: {
-    color: '#F59E0B',
+    color: colors.warning,
   },
   pulseContainer: {
     position: 'relative',
@@ -68,20 +70,20 @@ export const styles = StyleSheet.create({
     width: isTV ? 12 : 10,
     height: isTV ? 12 : 10,
     borderRadius: isTV ? 6 : 5,
-    backgroundColor: '#A855F7',
+    backgroundColor: colors.primary,
   },
   hostPulseDot: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: colors.warning,
   },
   pulseRing: {
     position: 'absolute',
     width: isTV ? 12 : 10,
     height: isTV ? 12 : 10,
     borderRadius: isTV ? 6 : 5,
-    backgroundColor: '#A855F7',
+    backgroundColor: colors.primary,
   },
   hostPulseRing: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: colors.warning,
   },
   dropdown: {
     position: 'absolute',
@@ -107,6 +109,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
+    minHeight: isTV ? 80 : 44,
     paddingHorizontal: spacing.md,
     paddingVertical: isTV ? spacing.md : spacing.sm,
     borderRadius: borderRadius.sm,

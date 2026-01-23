@@ -54,7 +54,11 @@
     "collapse": "כווץ",
     "upgrade": "שדרג לפרימיום",
     "skip": "דלג",
-    "dismiss": "סגור"
+    "dismiss": "סגור",
+    "refresh": "רענן",
+    "refreshing": "מרענן...",
+    "refreshData": "רענן נתונים",
+    "dismissError": "סגור שגיאה"
   },
   "demo": {
     "banner": "מצב הדמו",
@@ -1000,7 +1004,7 @@
     "albumArt": "תמונת אלבום עבור {{title}}",
     "seekBar": "התקדמות ניגון",
     "skipBack": "קפוץ {{seconds}} שניות אחורה",
-    "skipForward": "קפוץ {{seconds}} שניות קדימה",
+    "skipForward": "קפוץ 30 שניות קדימה",
     "noStream": "הזרם אינו זמין",
     "loadError": "שגיאה בטעינת הזרם",
     "settings": "הגדרות",
@@ -1011,7 +1015,6 @@
     "previousChapter": "פרק קודם",
     "nextChapter": "פרק הבא",
     "skipBackward": "קפוץ 30 שניות אחורה",
-    "skipForward": "קפוץ 30 שניות קדימה",
     "restart": "התחל מההתחלה",
     "subtitlesOff": "כבוי",
     "speed": "מהירות",
@@ -1456,6 +1459,9 @@
       "save": "שמור",
       "active": "פעיל",
       "back": "חזרה",
+      "backToPodcasts": "חזרה לפודקאסטים",
+      "savePodcast": "שמור פודקאסט",
+      "saveEpisode": "שמור פרק",
       "filterAction": "פעולה",
       "filterResource": "משאב",
       "filterUser": "משתמש",
@@ -1478,7 +1484,9 @@
       "addUser": "הוסף משתמש",
       "newCampaign": "קמפיין חדש",
       "sendEmail": "שלח אימייל",
-      "viewReports": "צפה בדוחות"
+      "viewReports": "צפה בדוחות",
+      "newPodcast": "צור פודקאסט חדש",
+      "newEpisode": "צור פרק חדש"
     },
     "auditActions": {
       "user_created": "משתמש נוצר",
@@ -1574,7 +1582,8 @@
       "auditLogs": "יומן פעילות",
       "librarian": "סוכן הספרן",
       "liveQuotas": "מכסות שידור חי",
-      "featured": "מובחר"
+      "featured": "מובחר",
+      "translations": "תרגומים"
     },
     "liveQuotas": {
       "title": "ניהול מכסות תכונות חיות",
@@ -2470,6 +2479,16 @@
       "episodesSubtitle": "ניהול פרקים",
       "emptyMessage": "לא נמצאו פודקאסטים",
       "noEpisodes": "לא נמצאו פרקים",
+      "translateAll": "תרגם הכל",
+      "translateAllEpisodes": "תרגם את כל הפרקים",
+      "translateEpisode": "תרגם פרק",
+      "viewEpisodes": "צפה בפרקים",
+      "editPodcast": "ערוך פודקאסט",
+      "deletePodcast": "מחק פודקאסט",
+      "editEpisode": "ערוך פרק",
+      "deleteEpisode": "מחק פרק",
+      "newEpisode": "פרק חדש",
+      "filterByStatus": "סנן לפי סטטוס",
       "form": {
         "title": "שם הפודקאסט",
         "author": "כותב",
@@ -2488,6 +2507,28 @@
           "audioUrl": "כתובת אודיו (נדרש)",
           "publishedDate": "תאריך פרסום (YYYY-MM-DD)"
         }
+      }
+    },
+    "translation": {
+      "title": "לוח בקרת תרגומים",
+      "subtitle": "מעקב אחר תרגום פרקי פודקאסטים",
+      "retry": "נסה שוב",
+      "retryTranslation": "נסה תרגום שוב",
+      "view": "צפה",
+      "viewEpisodes": "צפה בפרקים",
+      "failedEpisodes": "תרגומים שנכשלו",
+      "noFailed": "אין תרגומים שנכשלו",
+      "columns": {
+        "episodeTitle": "פרק",
+        "podcast": "פודקאסט",
+        "retries": "נסיונות חוזרים",
+        "lastAttempt": "נסיון אחרון"
+      },
+      "stats": {
+        "pending": "ממתין",
+        "processing": "בעיבוד",
+        "completed": "הושלם",
+        "failed": "נכשל"
       }
     },
     "users": {
@@ -2728,10 +2769,27 @@
       "unmute": "בטל השתקה",
       "speaking": "מדבר",
       "connecting": "מתחבר לשמע...",
-      "noAudio": "שמע לא זמין"
+      "noAudio": "שמע לא זמין",
+      "muteHint": "משתיק את המיקרופון שלך",
+      "unmuteHint": "מבטל השתקה של המיקרופון כדי לדבר"
     },
     "textOnlyMode": "צ'אט טקסט בלבד",
-    "endParty": "סיים מסיבה"
+    "endParty": "סיים מסיבה",
+    "toggleEmoji": "פתח בורר אמוג'י",
+    "toggleEmojiHint": "פותח בורר אמוג'י מהיר לתגובות",
+    "sendEmoji": "שלח {{emoji}}",
+    "sendEmojiHint": "שולח תגובת אמוג'י לצ'אט",
+    "emojiPicker": "בורר אמוג'י",
+    "chatInput": "שדה הודעת צ'אט",
+    "chatInputHint": "הקלד הודעה לשליחה לצ'אט המסיבה",
+    "sendMessageHint": "שולח את ההודעה שלך לצ'אט המסיבה",
+    "copyCodeHint": "מעתיק את קוד החדר ללוח",
+    "share": "שתף",
+    "shareHint": "שתף קישור למסיבה או העתק קוד",
+    "copied": "הועתק!",
+    "endPartyHint": "מסיים את המסיבה לכל המשתתפים",
+    "leaveParty": "עזוב מסיבה",
+    "leavePartyHint": "עוזב את המסיבה מבלי לסיים אותה"
   },
   "footer": {
     "brandDescription": "הבית שלך בארה״ב. שידורי טלוויזיה, VOD, רדיו ופודקאסטים בעברית.",
@@ -3508,125 +3566,6 @@
     "skip": "דלג לעת עתה"
   },
   "taxonomy": {
-    "title": "סיווג תוכן",
-    "sections": {
-      "title": "מדורים",
-      "description": "קטגוריות ניווט ראשיות",
-      "movies": "סרטים",
-      "series": "סדרות",
-      "kids": "ילדים",
-      "judaism": "יהדות",
-      "documentaries": "דוקומנטריים",
-      "live": "שידור חי"
-    },
-    "formats": {
-      "title": "פורמט",
-      "description": "סוג מבני של התוכן",
-      "movie": "סרט",
-      "series": "סדרה",
-      "documentary": "דוקומנטרי",
-      "short": "סרטון קצר",
-      "clip": "קליפ"
-    },
-    "genres": {
-      "title": "ז'אנרים",
-      "description": "מצב רוח וסגנון",
-      "drama": "דרמה",
-      "comedy": "קומדיה",
-      "action": "אקשן",
-      "thriller": "מותחן",
-      "animation": "אנימציה",
-      "musical": "מחזמר",
-      "romance": "רומנטיקה",
-      "horror": "אימה",
-      "sci-fi": "מדע בדיוני",
-      "documentary": "דוקומנטרי",
-      "family": "משפחה",
-      "adventure": "הרפתקאות",
-      "fantasy": "פנטזיה",
-      "crime": "פשע",
-      "mystery": "מסתורין",
-      "war": "מלחמה",
-      "western": "מערבון",
-      "biography": "ביוגרפיה",
-      "history": "היסטוריה",
-      "sport": "ספורט"
-    },
-    "audiences": {
-      "title": "קהל יעד",
-      "description": "התאמה גילאית",
-      "general": "כללי",
-      "kids": "ילדים",
-      "family": "משפחה",
-      "mature": "מבוגרים"
-    },
-    "topicTags": {
-      "title": "נושאים",
-      "description": "ערכות תוכן",
-      "jewish": "יהודי",
-      "israeli": "ישראלי",
-      "educational": "חינוכי",
-      "historical": "היסטורי",
-      "sports": "ספורט",
-      "nature": "טבע",
-      "science": "מדע",
-      "music": "מוזיקה",
-      "art": "אומנות",
-      "cooking": "בישול",
-      "travel": "טיולים",
-      "technology": "טכנולוגיה"
-    },
-    "subcategories": {
-      "title": "תתי-קטגוריות",
-      "kids": {
-        "cartoons": "סרטונים מצוירים",
-        "educational": "חינוכי",
-        "music": "מוזיקה",
-        "hebrew-learning": "לימוד עברית",
-        "stories": "סיפורים",
-        "jewish": "יהודי",
-        "learning-hebrew": "לימוד עברית",
-        "young-science": "מדע צעיר",
-        "math-fun": "מתמטיקה מהנה",
-        "nature-animals": "טבע וחיות",
-        "interactive": "אינטראקטיבי",
-        "hebrew-songs": "שירים בעברית",
-        "nursery-rhymes": "שירי פעוטות",
-        "kids-movies": "סרטי ילדים",
-        "kids-series": "סדרות לילדים",
-        "jewish-holidays": "חגי ישראל",
-        "torah-stories": "סיפורי תורה",
-        "bedtime-stories": "סיפורי ערב טוב"
-      },
-      "ageGroups": {
-        "title": "קבוצות גיל",
-        "toddlers": "פעוטות (0-3)",
-        "preschool": "גן ילדים (3-5)",
-        "elementary": "יסודי (5-10)",
-        "preteen": "לפני בר/בת מצווה (10-12)"
-      },
-      "judaism": {
-        "shiurim": "שיעורי תורה",
-        "tefila": "תפילה",
-        "jewish-music": "מוזיקה יהודית",
-        "holidays": "חגים",
-        "documentaries": "דוקומנטריים"
-      }
-    },
-    "admin": {
-      "selectSection": "בחר מדור",
-      "selectSections": "בחר מדורים",
-      "primarySection": "מדור ראשי",
-      "selectFormat": "בחר פורמט",
-      "selectAudience": "בחר קהל יעד",
-      "selectGenres": "בחר ז'אנרים",
-      "selectTopics": "בחר נושאים",
-      "selectSubcategories": "בחר תתי-קטגוריות",
-      "crossListing": "פרסום צולב",
-      "crossListingHint": "התוכן יכול להופיע במספר מדורים"
-    }
-  },
-  "taxonomy": {
     "sections": {
       "movies": "סרטים",
       "series": "סדרות",
@@ -3774,6 +3713,67 @@
       "create_session_failed": "יצירת הפעילות נכשלה",
       "add_transcript_failed": "הוספת התמלול נכשלה",
       "generate_recap_failed": "יצירת הסיכום נכשלה"
+    }
+  },
+  "dubbing": {
+    "title": "דיבוב חי",
+    "enabled": "דיבוב חי מופעל",
+    "selectLanguage": "בחר שפה",
+    "originalAudio": "הקול המקורי",
+    "dubbedAudio": "הקול המדובב",
+    "selectVoice": "בחר קול",
+    "adjustVolume": "התאם עוצמה",
+    "tapToSelect": "הקש לבחירת שפה זו",
+    "languages": {
+      "en": "אנגלית",
+      "es": "ספרדית",
+      "he": "עברית",
+      "ar": "ערבית",
+      "ru": "רוסית",
+      "fr": "צרפתית",
+      "de": "גרמנית"
+    },
+    "onboarding": {
+      "title": "הצגת דיבוב חי",
+      "description": "חווה תוכן חי בשפה שלך. בינה מלאכותית שלנו מתרגמת והשמעת קול בזמן אמת בזמן שאתה צופה.",
+      "feature1": "7 שפות נתמכות",
+      "feature2": "עיבוד בזמן אמת",
+      "feature3": "התאם את איזון הקול",
+      "tryNow": "נסה עכשיו",
+      "later": "אולי מאוחר יותר"
+    },
+    "consent": {
+      "title": "הסכמה לעיבוד אודיו",
+      "message": "דיבוב חי מעבד את האודיו שלך בזמן אמת באמצעות שירותי בינה מלאכותית. האודיו מעובד לתרגום בלבד ואינו מאוחסן לתמיד.",
+      "accept": "אני מסכים",
+      "decline": "לא, תודה"
+    },
+    "errors": {
+      "connectionFailed": "כשל בחיבור",
+      "connectionFailedMessage": "לא ניתן להתחבר לשירות דיבוב",
+      "connectionFailedAction": "בדוק את חיבור האינטרנט שלך ונסה שוב",
+      "notAuthenticated": "לא מאומת",
+      "notAuthenticatedMessage": "אנא התחבר שוב",
+      "notAuthenticatedAction": "היכנס כדי להשתמש בדיבוב חי",
+      "premiumRequired": "תכונת Premium",
+      "premiumRequiredMessage": "דיבוב חי דורש מנוי Premium",
+      "premiumRequiredAction": "שדרג ל-Premium כדי לגשת לתכונה זו",
+      "channelUnavailable": "לא זמין",
+      "channelUnavailableMessage": "דיבוב אינו זמין לערוץ זה",
+      "audioCaptureError": "שגיאת מיקרופון",
+      "audioCaptureErrorMessage": "לא ניתן לגשת למיקרופון שלך",
+      "sttServiceError": "שגיאה בזיהוי דיבור",
+      "sttServiceErrorMessage": "כשל בזיהוי הדיבור",
+      "ttsServiceError": "שגיאת דיבוב",
+      "ttsServiceErrorMessage": "כשל בהפקת אודיו מדובב",
+      "translationTimeout": "תרגום קנקן זמן",
+      "translationTimeoutMessage": "התרגום ארך זמן רב מדי, מנסה שוב",
+      "websocketClosed": "חיבור אבוד",
+      "websocketClosedMessage": "חיבור הדיבוב נסגר",
+      "rateLimitExceeded": "יותר מדי ניסיונות",
+      "rateLimitExceededMessage": "אנא חכה לפני ניסיון שוב",
+      "sessionTimeout": "פעילות פג תוקף",
+      "sessionTimeoutMessage": "הפעילות של דיבוב שלך פג תוקף"
     }
   },
   "trivia": {

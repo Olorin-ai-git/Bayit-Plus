@@ -17,7 +17,7 @@ from .admin_content_utils import has_permission, log_audit
 router = APIRouter()
 
 
-def _podcast_dict(p):
+def _podcast_dict(p, available_languages: list = None):
     return {
         "id": str(p.id),
         "title": p.title,
@@ -44,7 +44,60 @@ def _podcast_dict(p):
         "order": p.order,
         "created_at": p.created_at.isoformat(),
         "updated_at": p.updated_at.isoformat(),
+        "available_languages": available_languages or [],
     }
+
+
+async def _get_podcast_languages(podcast_id: str) -> list:
+    """Aggregate available languages from all episodes of a podcast."""
+    pipeline = [
+        {"$match": {"podcast_id": podcast_id}},
+        {
+            "$project": {
+                "langs": {
+                    "$cond": {
+                        "if": {"$gt": [{"$size": {"$ifNull": ["$available_languages", []]}}, 0]},
+                        "then": "$available_languages",
+                        "else": {"$cond": {"if": "$original_language", "then": ["$original_language"], "else": []}}
+                    }
+                }
+            }
+        },
+        {"$unwind": "$langs"},
+        {"$group": {"_id": None, "languages": {"$addToSet": "$langs"}}},
+    ]
+    result = await PodcastEpisode.aggregate(pipeline).to_list()
+    return sorted(result[0]["languages"]) if result else []
+
+
+async def _batch_get_podcast_languages(podcast_ids: list) -> dict:
+    """Batch aggregate available languages for multiple podcasts efficiently."""
+    if not podcast_ids:
+        return {}
+    pipeline = [
+        {"$match": {"podcast_id": {"$in": podcast_ids}}},
+        {
+            "$project": {
+                "podcast_id": 1,
+                "langs": {
+                    "$cond": {
+                        "if": {"$gt": [{"$size": {"$ifNull": ["$available_languages", []]}}, 0]},
+                        "then": "$available_languages",
+                        "else": {"$cond": {"if": "$original_language", "then": ["$original_language"], "else": []}}
+                    }
+                }
+            }
+        },
+        {"$unwind": {"path": "$langs", "preserveNullAndEmptyArrays": True}},
+        {
+            "$group": {
+                "_id": "$podcast_id",
+                "languages": {"$addToSet": "$langs"}
+            }
+        },
+    ]
+    results = await PodcastEpisode.aggregate(pipeline).to_list()
+    return {r["_id"]: sorted([lang for lang in r["languages"] if lang]) for r in results}
 
 
 @router.get("/podcasts")
@@ -79,8 +132,18 @@ async def get_podcasts(
         .limit(page_size)
         .to_list()
     )
+
+    # Batch fetch available languages for all podcasts efficiently (avoid N+1 queries)
+    podcast_ids = [str(item.id) for item in items]
+    languages_by_podcast = await _batch_get_podcast_languages(podcast_ids)
+
+    result_items = [
+        _podcast_dict(item, languages_by_podcast.get(str(item.id), []))
+        for item in items
+    ]
+
     return {
-        "items": [_podcast_dict(item) for item in items],
+        "items": result_items,
         "total": total,
         "page": page,
         "page_size": page_size,
@@ -100,7 +163,8 @@ async def get_podcast(
         raise HTTPException(status_code=404, detail="Podcast not found")
     if not podcast:
         raise HTTPException(status_code=404, detail="Podcast not found")
-    return _podcast_dict(podcast)
+    languages = await _get_podcast_languages(podcast_id)
+    return _podcast_dict(podcast, languages)
 
 
 @router.post("/podcasts")

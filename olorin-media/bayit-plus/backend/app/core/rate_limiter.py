@@ -38,6 +38,11 @@ try:
         # Live Dubbing - Protection for admin configuration endpoints
         "dubbing_config_update": "10/hour",  # Channel dubbing configuration updates
         "dubbing_stats": "30/minute",  # Dubbing statistics queries
+
+        # Podcast Translation - Protection for expensive translation operations
+        "translation_single": "10/minute",  # Single episode translation trigger
+        "translation_bulk": "5/hour",  # Bulk translation (expensive, queues many jobs)
+        "translation_status": "30/minute",  # Translation status queries
     }
 
     RATE_LIMITING_ENABLED = True
