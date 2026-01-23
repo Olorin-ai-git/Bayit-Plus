@@ -7,7 +7,7 @@ set -euo pipefail
 
 # Get repository root and backend path (centralized deployment script)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-OLORIN_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+OLORIN_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 REPO_ROOT="$OLORIN_ROOT/olorin-media/bayit-plus"
 BACKEND_DIR="$REPO_ROOT/backend"
 
@@ -25,6 +25,40 @@ main() {
     # Check prerequisites
     log_step "Checking Prerequisites"
     check_prerequisites "gcloud" "gsutil" "poetry" || exit 1
+
+    # ============================================================
+    # AUTHENTICATION CHECK (mandatory before deployment)
+    # ============================================================
+    log_step "Checking Google Cloud Authentication"
+
+    # Check if user is authenticated
+    if ! gcloud auth list --filter=status:ACTIVE --format="value(account)" 2>/dev/null | grep -q .; then
+        print_error "Not authenticated with Google Cloud"
+        echo ""
+        log_info "Please authenticate with Google Cloud first:"
+        echo "  gcloud auth login"
+        echo ""
+        log_info "If using a service account:"
+        echo "  gcloud auth activate-service-account --key-file=/path/to/key.json"
+        echo ""
+        exit 1
+    fi
+
+    ACTIVE_ACCOUNT=$(gcloud auth list --filter=status:ACTIVE --format="value(account)" 2>/dev/null | head -1)
+    print_success "Authenticated as: $ACTIVE_ACCOUNT"
+
+    # Try to set project (this will fail if auth tokens are expired)
+    PROJECT_ID="${GCP_PROJECT_ID:-bayit-plus}"
+    log_substep "Setting project to $PROJECT_ID..."
+    if ! gcloud config set project "$PROJECT_ID" 2>&1 | grep -v "Updated property"; then
+        print_error "Failed to set project. Authentication tokens may be expired."
+        echo ""
+        log_info "Please re-authenticate:"
+        echo "  gcloud auth login"
+        echo ""
+        exit 1
+    fi
+    print_success "Project set to: $PROJECT_ID"
 
     # ============================================================
     # BUILD VERIFICATION (mandatory before deployment)
@@ -105,7 +139,7 @@ main() {
     # Configuration from environment or defaults
     log_step "Configuration"
 
-    PROJECT_ID="${GCP_PROJECT_ID:-bayit-plus}"
+    # PROJECT_ID already set in authentication check
     REGION="${GCP_REGION:-us-east1}"
     BUCKET_NAME="${GCS_BUCKET_NAME:-bayit-plus-media-new}"
     SERVICE_NAME="${CLOUD_RUN_SERVICE_NAME:-bayit-plus-backend}"
@@ -117,11 +151,6 @@ main() {
     ENABLE_CUSTOM_DOMAIN="${ENABLE_CUSTOM_DOMAIN:-false}"
     ENABLE_CLOUD_BUILD="${ENABLE_CLOUD_BUILD:-false}"
     ENABLE_PUBLIC_BUCKET="${ENABLE_PUBLIC_BUCKET:-false}"
-
-    # Configure gcloud
-    log_substep "Configuring gcloud..."
-    gcloud config set project "$PROJECT_ID"
-    print_success "Project set to: $PROJECT_ID"
 
     # Display configuration
     echo ""
