@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { View, Text, FlatList, Pressable, Image, ActivityIndicator, useWindowDimensions } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, ActivityIndicator, useWindowDimensions, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
 import { Download, Play, Trash2, HardDrive } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { downloadsService } from '@/services/api';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { GlassCard, GlassView } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
@@ -51,63 +51,64 @@ function DownloadCard({ item, onDelete, pausedText }: { item: DownloadItem; onDe
       <Pressable
         onHoverIn={() => setIsHovered(true)}
         onHoverOut={() => setIsHovered(false)}
+        style={[styles.cardPressable, isHovered && styles.cardPressableHovered]}
       >
-        <GlassCard className={`p-0 m-1 overflow-hidden relative ${isHovered ? 'scale-105' : ''}`}>
-          <View className="aspect-video relative">
+        <GlassCard style={styles.cardContainer}>
+          <View style={styles.thumbnailContainer}>
             {item.thumbnail ? (
-              <Image source={{ uri: item.thumbnail }} className="w-full h-full" resizeMode="cover" />
+              <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} resizeMode="cover" />
             ) : (
-              <View className="w-full h-full bg-white/5 justify-center items-center">
-                <Text className="text-3xl">{TYPE_ICONS[item.type] || '⬇️'}</Text>
+              <View style={styles.placeholderContainer}>
+                <Text style={styles.placeholderIcon}>{TYPE_ICONS[item.type] || '⬇️'}</Text>
               </View>
             )}
 
             {/* Progress Bar */}
             {isDownloading && item.progress !== undefined && (
-              <View className="absolute bottom-0 left-0 right-0 h-1 bg-white/5">
-                <View className="h-full bg-purple-600" style={{ width: `${item.progress}%` }} />
+              <View style={styles.progressBarContainer}>
+                <View style={[styles.progressBarFill, { width: `${item.progress}%` }]} />
               </View>
             )}
 
             {/* Type Badge */}
-            <View className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded-lg">
-              <Text className="text-sm">{TYPE_ICONS[item.type]}</Text>
+            <View style={styles.typeBadge}>
+              <Text style={styles.typeBadgeText}>{TYPE_ICONS[item.type]}</Text>
             </View>
 
             {/* Size Badge */}
             {item.size && (
-              <View className="absolute top-2 left-2 bg-purple-500/90 px-2 py-1 rounded-lg">
-                <Text className="text-black text-xs font-bold">{item.size}</Text>
+              <View style={styles.sizeBadge}>
+                <Text style={styles.sizeBadgeText}>{item.size}</Text>
               </View>
             )}
 
             {/* Status Overlay */}
             {(isDownloading || isPaused) && (
-              <View className="absolute inset-0 bg-black/40 justify-center items-center">
+              <View style={styles.statusOverlay}>
                 {isDownloading && (
                   <>
                     <ActivityIndicator size="large" color={colors.primary} />
-                    <Text className="text-white text-sm font-semibold mt-2">{item.progress}%</Text>
+                    <Text style={styles.progressText}>{item.progress}%</Text>
                   </>
                 )}
-                {isPaused && <Text className="text-yellow-500 text-sm font-semibold">{pausedText}</Text>}
+                {isPaused && <Text style={styles.pausedText}>{pausedText}</Text>}
               </View>
             )}
 
             {/* Hover Overlay */}
             {item.status === 'completed' && isHovered && (
-              <View className="absolute inset-0 bg-black/50 justify-center items-center">
-                <View className="w-12 h-12 rounded-full bg-purple-600 justify-center items-center">
+              <View style={styles.hoverOverlay}>
+                <View style={styles.playButton}>
                   <Play size={24} color={colors.background} fill={colors.background} />
                 </View>
               </View>
             )}
           </View>
 
-          <View className="p-2">
-            <Text className="text-white text-base font-semibold" numberOfLines={1}>{getLocalizedText('title')}</Text>
+          <View style={styles.contentContainer}>
+            <Text style={styles.titleText} numberOfLines={1}>{getLocalizedText('title')}</Text>
             {item.subtitle && (
-              <Text className="text-gray-400 text-sm mt-1" numberOfLines={1}>{getLocalizedText('subtitle')}</Text>
+              <Text style={styles.subtitleText} numberOfLines={1}>{getLocalizedText('subtitle')}</Text>
             )}
           </View>
 
@@ -118,7 +119,7 @@ function DownloadCard({ item, onDelete, pausedText }: { item: DownloadItem; onDe
                 e.stopPropagation();
                 onDelete(item.id);
               }}
-              className="absolute top-10 left-2 w-8 h-8 rounded-full bg-red-500/80 justify-center items-center"
+              style={styles.deleteButton}
             >
               <Trash2 size={14} color={colors.text} />
             </Pressable>
@@ -189,31 +190,31 @@ export default function DownloadsPage() {
   };
 
   return (
-    <View className="flex-1 px-4 py-6 max-w-[1400px] mx-auto w-full">
+    <View style={styles.container}>
       {/* Header */}
-      <View className={`flex-row items-center gap-2 mb-4 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
-        <View className="w-14 h-14 rounded-full bg-purple-700/30 justify-center items-center">
+      <View style={[styles.headerContainer, flexDirection === 'row-reverse' && styles.headerContainerRTL]}>
+        <View style={styles.iconContainer}>
           <Download size={28} color={colors.primary} />
         </View>
         <View>
-          <Text className={`text-white text-3xl font-bold ${textAlign === 'right' ? 'text-right' : ''}`}>{t('downloads.title')}</Text>
-          <Text className={`text-gray-400 text-sm ${textAlign === 'right' ? 'text-right' : ''}`}>{downloads.length} {t('downloads.items')}</Text>
+          <Text style={[styles.headerTitle, textAlign === 'right' && styles.textRight]}>{t('downloads.title')}</Text>
+          <Text style={[styles.headerSubtitle, textAlign === 'right' && styles.textRight]}>{downloads.length} {t('downloads.items')}</Text>
         </View>
       </View>
 
       {/* Storage Bar */}
-      <GlassCard className="p-4 mb-6">
-        <View className="flex-row items-center gap-4">
+      <GlassCard style={styles.storageCard}>
+        <View style={styles.storageContent}>
           <HardDrive size={24} color={colors.textMuted} />
-          <View className="flex-1">
-            <View className="flex-row justify-between mb-2">
-              <Text className="text-gray-400 text-sm">{t('downloads.storage')}</Text>
-              <Text className="text-white text-sm">
+          <View style={styles.storageInfo}>
+            <View style={styles.storageLabelRow}>
+              <Text style={styles.storageLabel}>{t('downloads.storage')}</Text>
+              <Text style={styles.storageValue}>
                 {formatSize(storageInfo.used)} / {storageInfo.total} GB
               </Text>
             </View>
-            <View className="h-2 bg-white/5 rounded-full overflow-hidden">
-              <View className="h-full bg-purple-600 rounded-full" style={{ width: `${(storageInfo.used / storageInfo.total) * 100}%` }} />
+            <View style={styles.storageBarBackground}>
+              <View style={[styles.storageBarFill, { width: `${(storageInfo.used / storageInfo.total) * 100}%` }]} />
             </View>
           </View>
         </View>
@@ -221,9 +222,9 @@ export default function DownloadsPage() {
 
       {/* Loading State */}
       {loading ? (
-        <View className="flex-row flex-wrap gap-4">
+        <View style={styles.loadingGrid}>
           {[...Array(12)].map((_, i) => (
-            <View key={i} className="flex-1 min-w-[150px] max-w-[16.66%] aspect-video bg-white/10 rounded-2xl m-1" />
+            <View key={i} style={styles.skeletonCard} />
           ))}
         </View>
       ) : downloads.length > 0 ? (
@@ -241,14 +242,279 @@ export default function DownloadsPage() {
           )}
         />
       ) : (
-        <View className="flex-1 justify-center items-center py-16">
-          <GlassCard className="p-12 items-center">
+        <View style={styles.emptyStateContainer}>
+          <GlassCard style={styles.emptyStateCard}>
             <Download size={64} color="rgba(168, 85, 247, 0.5)" />
-            <Text className="text-white text-xl font-semibold mt-4 mb-2">{t('downloads.empty')}</Text>
-            <Text className="text-gray-400 text-base">{t('downloads.emptyHint')}</Text>
+            <Text style={styles.emptyStateTitle}>{t('downloads.empty')}</Text>
+            <Text style={styles.emptyStateHint}>{t('downloads.emptyHint')}</Text>
           </GlassCard>
         </View>
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  // Main Container
+  container: {
+    flex: 1,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xl,
+    maxWidth: 1400,
+    marginHorizontal: 'auto',
+    width: '100%',
+  },
+
+  // Header
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  headerContainerRTL: {
+    flexDirection: 'row-reverse',
+  },
+  iconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(126, 34, 206, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    color: colors.text,
+    fontSize: fontSize['3xl'],
+    fontWeight: '700',
+  },
+  headerSubtitle: {
+    color: colors.textMuted,
+    fontSize: fontSize.sm,
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+
+  // Storage Card
+  storageCard: {
+    padding: spacing.lg,
+    marginBottom: spacing.xl,
+  },
+  storageContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.lg,
+  },
+  storageInfo: {
+    flex: 1,
+  },
+  storageLabelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: spacing.sm,
+  },
+  storageLabel: {
+    color: colors.textMuted,
+    fontSize: fontSize.sm,
+  },
+  storageValue: {
+    color: colors.text,
+    fontSize: fontSize.sm,
+  },
+  storageBarBackground: {
+    height: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.full,
+    overflow: 'hidden',
+  },
+  storageBarFill: {
+    height: '100%',
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.full,
+  },
+
+  // Loading State
+  loadingGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.lg,
+  },
+  skeletonCard: {
+    flex: 1,
+    minWidth: 150,
+    maxWidth: '16.66%',
+    aspectRatio: 16 / 9,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: borderRadius['2xl'],
+    margin: spacing.xs,
+  },
+
+  // Empty State
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 64,
+  },
+  emptyStateCard: {
+    padding: 48,
+    alignItems: 'center',
+  },
+  emptyStateTitle: {
+    color: colors.text,
+    fontSize: fontSize.xl,
+    fontWeight: '600',
+    marginTop: spacing.lg,
+    marginBottom: spacing.sm,
+  },
+  emptyStateHint: {
+    color: colors.textMuted,
+    fontSize: fontSize.base,
+  },
+
+  // Download Card
+  cardPressable: {
+    transform: [{ scale: 1 }],
+  },
+  cardPressableHovered: {
+    transform: [{ scale: 1.05 }],
+  },
+  cardContainer: {
+    padding: 0,
+    margin: spacing.xs,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  thumbnailContainer: {
+    aspectRatio: 16 / 9,
+    position: 'relative',
+  },
+  thumbnail: {
+    width: '100%',
+    height: '100%',
+  },
+  placeholderContainer: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderIcon: {
+    fontSize: 48,
+  },
+
+  // Progress Bar
+  progressBarContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: colors.primary,
+  },
+
+  // Badges
+  typeBadge: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.lg,
+  },
+  typeBadgeText: {
+    fontSize: fontSize.sm,
+  },
+  sizeBadge: {
+    position: 'absolute',
+    top: spacing.sm,
+    left: spacing.sm,
+    backgroundColor: 'rgba(168, 85, 247, 0.9)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.lg,
+  },
+  sizeBadgeText: {
+    color: colors.background,
+    fontSize: fontSize.xs,
+    fontWeight: '700',
+  },
+
+  // Status Overlay
+  statusOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  progressText: {
+    color: colors.text,
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+    marginTop: spacing.sm,
+  },
+  pausedText: {
+    color: '#EAB308',
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+  },
+
+  // Hover Overlay
+  hoverOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  playButton: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  // Content
+  contentContainer: {
+    padding: spacing.sm,
+  },
+  titleText: {
+    color: colors.text,
+    fontSize: fontSize.base,
+    fontWeight: '600',
+  },
+  subtitleText: {
+    color: colors.textMuted,
+    fontSize: fontSize.sm,
+    marginTop: spacing.xs,
+  },
+
+  // Delete Button
+  deleteButton: {
+    position: 'absolute',
+    top: 40,
+    left: spacing.sm,
+    width: 32,
+    height: 32,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(239, 68, 68, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

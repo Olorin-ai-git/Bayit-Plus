@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, FlatList, Pressable, Image, TextInput, ActivityIndicator, useWindowDimensions } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, TextInput, ActivityIndicator, useWindowDimensions, StyleSheet } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Play, Clock, Baby, Lock } from 'lucide-react';
@@ -92,47 +92,47 @@ function KidsContentCard({ item }: { item: KidsContentItem }) {
         onHoverIn={() => setIsHovered(true)}
         onHoverOut={() => setIsHovered(false)}
       >
-        <View className={`m-1 rounded-2xl overflow-hidden bg-yellow-400/10 ${isHovered ? 'scale-105' : ''}`}>
-          <View className="aspect-video relative">
+        <View style={[styles.contentCard, isHovered && styles.contentCardHovered]}>
+          <View style={styles.thumbnailContainer}>
             {item.thumbnail ? (
-              <Image source={{ uri: item.thumbnail }} className="w-full h-full" resizeMode="cover" />
+              <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} resizeMode="cover" />
             ) : (
-              <View className="w-full h-full bg-yellow-400/10 justify-center items-center">
-                <Text className="text-3xl">{categoryIcon}</Text>
+              <View style={styles.thumbnailPlaceholder}>
+                <Text style={styles.categoryIconLarge}>{categoryIcon}</Text>
               </View>
             )}
-            <View className="absolute top-2 left-2 bg-yellow-400 px-2 py-1 rounded-full">
-              <Text className="text-sm">{categoryIcon}</Text>
+            <View style={styles.categoryBadge}>
+              <Text style={styles.categoryBadgeText}>{categoryIcon}</Text>
             </View>
             {item.age_rating !== undefined && (
-              <View className="absolute top-2 right-2 bg-green-500/90 px-1.5 py-0.5 rounded-sm">
-                <Text className="text-white text-xs font-bold">+{item.age_rating}</Text>
+              <View style={styles.ageRatingBadge}>
+                <Text style={styles.ageRatingText}>+{item.age_rating}</Text>
               </View>
             )}
             {item.duration && (
-              <View className="absolute bottom-2 right-2 flex-row items-center gap-1 bg-black/70 px-1.5 py-0.5 rounded-sm">
+              <View style={styles.durationBadge}>
                 <Clock size={10} color={colors.text} />
-                <Text className="text-white text-xs">{item.duration}</Text>
+                <Text style={styles.durationText}>{item.duration}</Text>
               </View>
             )}
             {isHovered && (
-              <View className="absolute inset-0 bg-black/40 justify-center items-center">
-                <View className="w-14 h-14 rounded-full bg-yellow-400 justify-center items-center">
+              <View style={styles.hoverOverlay}>
+                <View style={styles.playButton}>
                   <Play size={24} color="#854d0e" fill="#854d0e" />
                 </View>
               </View>
             )}
           </View>
-          <View className="p-2">
-            <Text className="text-white text-lg font-semibold" numberOfLines={1}>{item.title}</Text>
+          <View style={styles.contentInfo}>
+            <Text style={styles.contentTitle} numberOfLines={1}>{item.title}</Text>
             {item.description && (
-              <Text className="text-gray-400 text-sm mt-1" numberOfLines={1}>{item.description}</Text>
+              <Text style={styles.contentDescription} numberOfLines={1}>{item.description}</Text>
             )}
             {item.educational_tags && item.educational_tags.length > 0 && (
-              <View className="flex-row gap-1 mt-2">
+              <View style={styles.tagsContainer}>
                 {item.educational_tags.slice(0, 2).map((tag) => (
-                  <View key={tag} className="bg-purple-500/40 px-2 py-0.5 rounded-full">
-                    <Text className="text-blue-300 text-xs">{tag}</Text>
+                  <View key={tag} style={styles.tag}>
+                    <Text style={styles.tagText}>{tag}</Text>
                   </View>
                 ))}
               </View>
@@ -173,29 +173,29 @@ function ExitKidsModeModal({ isOpen, onClose, onVerify }: { isOpen: boolean; onC
       onClose={onClose}
       dismissable={true}
     >
-      <View className="w-16 h-16 rounded-full bg-yellow-400/20 justify-center items-center self-center mb-4">
+      <View style={styles.modalIconContainer}>
         <Lock size={32} color="#facc15" />
       </View>
-      <Text className="text-gray-400 text-sm text-center mb-6">{t('children.exitDescription')}</Text>
+      <Text style={styles.modalDescription}>{t('children.exitDescription')}</Text>
       <TextInput
         value={pin}
         onChangeText={(text) => setPin(text.replace(/\D/g, ''))}
         maxLength={6}
         keyboardType="numeric"
         secureTextEntry
-        className="bg-white/10 border border-white/20 rounded-lg p-4 text-white text-2xl text-center tracking-widest mb-4"
+        style={styles.pinInput}
         autoFocus
       />
-      {error && <Text className="text-red-500 text-sm text-center mb-4">{error}</Text>}
+      {error && <Text style={styles.errorText}>{error}</Text>}
       <Pressable
         onPress={handleSubmit}
         disabled={pin.length < 4 || isLoading}
-        className={`bg-yellow-400 py-4 rounded-lg items-center ${(pin.length < 4 || isLoading) ? 'opacity-50' : ''}`}
+        style={[styles.confirmButton, (pin.length < 4 || isLoading) && styles.confirmButtonDisabled]}
       >
         {isLoading ? (
           <ActivityIndicator color="#854d0e" />
         ) : (
-          <Text className="text-yellow-900 text-base font-bold">{t('children.confirm')}</Text>
+          <Text style={styles.confirmButtonText}>{t('children.confirm')}</Text>
         )}
       </Pressable>
     </GlassModal>
@@ -327,35 +327,35 @@ export default function ChildrenPage() {
   };
 
   return (
-    <View className="flex-1 min-h-screen">
+    <View style={styles.container}>
       <LinearGradient
         colors={['rgba(255, 217, 61, 0.05)', 'transparent']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="absolute inset-0"
+        style={styles.gradient}
       />
-      <View className="flex-1 px-4 py-6 max-w-[1400px] mx-auto w-full">
-        <View className={`flex-row items-center justify-between mb-6 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
-          <View className={`flex-row items-center gap-4 ${flexDirection === 'row-reverse' ? 'flex-row-reverse' : ''}`}>
-            <View className="w-16 h-16 rounded-full bg-yellow-400/20 justify-center items-center">
+      <View style={styles.content}>
+        <View style={[styles.header, flexDirection === 'row-reverse' && styles.headerReversed]}>
+          <View style={[styles.headerLeft, flexDirection === 'row-reverse' && styles.headerLeftReversed]}>
+            <View style={styles.iconContainer}>
               <Baby size={32} color="#facc15" />
             </View>
             <View>
-              <Text className={`text-yellow-400 text-3xl font-bold ${textAlign === 'right' ? 'text-right' : ''}`}>{t('children.title')}</Text>
-              <Text className={`text-gray-400 text-sm ${textAlign === 'right' ? 'text-right' : ''}`}>{content.length} {t('children.items')}</Text>
+              <Text style={[styles.pageTitle, textAlign === 'right' && styles.textRight]}>{t('children.title')}</Text>
+              <Text style={[styles.itemsCount, textAlign === 'right' && styles.textRight]}>{content.length} {t('children.items')}</Text>
             </View>
           </View>
           {isKidsMode && isKidsMode() && (
-            <Pressable onPress={() => setShowExitModal(true)} className="flex-row items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/20">
+            <Pressable onPress={() => setShowExitModal(true)} style={styles.exitButton}>
               <Lock size={16} color={colors.textMuted} />
-              <Text className="text-gray-400 text-sm">{t('children.exitKidsMode')}</Text>
+              <Text style={styles.exitButtonText}>{t('children.exitKidsMode')}</Text>
             </Pressable>
           )}
         </View>
 
         {/* Main Categories */}
         {categories.length > 0 && (
-          <View className="flex-row flex-wrap gap-2 mb-4">
+          <View style={styles.categoriesContainer}>
             {categories.map((category) => (
               <GlassCategoryPill
                 key={category.id}
@@ -376,7 +376,7 @@ export default function ChildrenPage() {
 
         {/* Subcategories (expandable) */}
         {showSubcategories && filteredSubcategories.length > 0 && (
-          <View className="flex-row flex-wrap gap-2 mb-4 px-2 py-2 bg-yellow-400/5 rounded-2xl">
+          <View style={styles.subcategoriesContainer}>
             {filteredSubcategories.map((subcategory) => (
               <GlassCategoryPill
                 key={subcategory.slug}
@@ -391,17 +391,23 @@ export default function ChildrenPage() {
 
         {/* Age Group Filter */}
         {ageGroups.length > 0 && (
-          <View className="mb-6">
-            <Text className="text-gray-400 text-sm font-semibold mb-2">{t('taxonomy.subcategories.ageGroups.title')}</Text>
-            <View className="flex-row flex-wrap gap-2">
+          <View style={styles.ageGroupSection}>
+            <Text style={styles.ageGroupTitle}>{t('taxonomy.subcategories.ageGroups.title')}</Text>
+            <View style={styles.ageGroupsContainer}>
               {ageGroups.map((group) => (
                 <Pressable
                   key={group.slug}
-                  className={`flex-row items-center gap-1 px-4 py-2 rounded-full bg-black/30 border ${selectedAgeGroup === group.slug ? 'bg-yellow-400/30 border-yellow-400' : 'border-white/20'}`}
+                  style={[
+                    styles.ageGroupButton,
+                    selectedAgeGroup === group.slug && styles.ageGroupButtonActive
+                  ]}
                   onPress={() => handleAgeGroupSelect(selectedAgeGroup === group.slug ? '' : group.slug)}
                 >
-                  <Text className="text-sm">{AGE_GROUP_ICONS[group.slug] || '👤'}</Text>
-                  <Text className={`text-xs ${selectedAgeGroup === group.slug ? 'text-yellow-400 font-semibold' : 'text-gray-400'}`}>
+                  <Text style={styles.ageGroupIcon}>{AGE_GROUP_ICONS[group.slug] || '👤'}</Text>
+                  <Text style={[
+                    styles.ageGroupText,
+                    selectedAgeGroup === group.slug && styles.ageGroupTextActive
+                  ]}>
                     {getLocalizedName(group, i18n.language)}
                   </Text>
                 </Pressable>
@@ -411,7 +417,7 @@ export default function ChildrenPage() {
         )}
 
         {isLoading ? (
-          <View className="flex-1 justify-center items-center py-16">
+          <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#facc15" />
           </View>
         ) : content.length > 0 ? (
@@ -429,11 +435,11 @@ export default function ChildrenPage() {
             )}
           />
         ) : (
-          <View className="flex-1 justify-center items-center py-16">
-            <GlassCard className="p-6 items-center bg-yellow-400/10">
-              <Text className="text-6xl mb-4">🌈</Text>
-              <Text className="text-yellow-400 text-xl font-semibold mb-2">{t('children.noContent')}</Text>
-              <Text className="text-gray-400 text-base">{t('children.tryAnotherCategory')}</Text>
+          <View style={styles.emptyContainer}>
+            <GlassCard style={styles.emptyCard}>
+              <Text style={styles.emptyIcon}>🌈</Text>
+              <Text style={styles.emptyTitle}>{t('children.noContent')}</Text>
+              <Text style={styles.emptyDescription}>{t('children.tryAnotherCategory')}</Text>
             </GlassCard>
           </View>
         )}
@@ -447,3 +453,342 @@ export default function ChildrenPage() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  // Main Container
+  container: {
+    flex: 1,
+    minHeight: '100vh' as any,
+  },
+  gradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xl,
+    maxWidth: 1400,
+    marginHorizontal: 'auto' as any,
+    width: '100%',
+  },
+
+  // Header
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.xl,
+  },
+  headerReversed: {
+    flexDirection: 'row-reverse',
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.lg,
+  },
+  headerLeftReversed: {
+    flexDirection: 'row-reverse',
+  },
+  iconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(250, 204, 21, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pageTitle: {
+    color: '#facc15',
+    fontSize: 30,
+    fontWeight: 'bold',
+  },
+  itemsCount: {
+    color: colors.textMuted,
+    fontSize: 14,
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+  exitButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  exitButtonText: {
+    color: colors.textMuted,
+    fontSize: 14,
+  },
+
+  // Categories
+  categoriesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+
+  // Subcategories
+  subcategoriesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+    backgroundColor: 'rgba(250, 204, 21, 0.05)',
+    borderRadius: borderRadius.xl,
+  },
+
+  // Age Groups
+  ageGroupSection: {
+    marginBottom: spacing.xl,
+  },
+  ageGroupTitle: {
+    color: colors.textMuted,
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: spacing.sm,
+  },
+  ageGroupsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  ageGroupButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: 100,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  ageGroupButtonActive: {
+    backgroundColor: 'rgba(250, 204, 21, 0.3)',
+    borderColor: '#facc15',
+  },
+  ageGroupIcon: {
+    fontSize: 14,
+  },
+  ageGroupText: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  ageGroupTextActive: {
+    color: '#facc15',
+    fontWeight: '600',
+  },
+
+  // Content Card
+  contentCard: {
+    margin: 4,
+    borderRadius: borderRadius.xl,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(250, 204, 21, 0.1)',
+  },
+  contentCardHovered: {
+    transform: [{ scale: 1.05 }],
+  },
+  thumbnailContainer: {
+    aspectRatio: 16 / 9,
+    position: 'relative',
+  },
+  thumbnail: {
+    width: '100%',
+    height: '100%',
+  },
+  thumbnailPlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(250, 204, 21, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  categoryIconLarge: {
+    fontSize: 48,
+  },
+  categoryBadge: {
+    position: 'absolute',
+    top: spacing.sm,
+    left: spacing.sm,
+    backgroundColor: '#facc15',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: 100,
+  },
+  categoryBadgeText: {
+    fontSize: 14,
+  },
+  ageRatingBadge: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    backgroundColor: 'rgba(34, 197, 94, 0.9)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: borderRadius.xs,
+  },
+  ageRatingText: {
+    color: colors.text,
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  durationBadge: {
+    position: 'absolute',
+    bottom: spacing.sm,
+    right: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: borderRadius.xs,
+  },
+  durationText: {
+    color: colors.text,
+    fontSize: 12,
+  },
+  hoverOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  playButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#facc15',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  contentInfo: {
+    padding: spacing.sm,
+  },
+  contentTitle: {
+    color: colors.text,
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  contentDescription: {
+    color: colors.textMuted,
+    fontSize: 14,
+    marginTop: 4,
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    gap: 4,
+    marginTop: spacing.sm,
+  },
+  tag: {
+    backgroundColor: 'rgba(168, 85, 247, 0.4)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: 100,
+  },
+  tagText: {
+    color: '#93c5fd',
+    fontSize: 12,
+  },
+
+  // Modal
+  modalIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(250, 204, 21, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginBottom: spacing.lg,
+  },
+  modalDescription: {
+    color: colors.textMuted,
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: spacing.xl,
+  },
+  pinInput: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: borderRadius.md,
+    padding: spacing.lg,
+    color: colors.text,
+    fontSize: 24,
+    textAlign: 'center',
+    letterSpacing: 8,
+    marginBottom: spacing.lg,
+  },
+  errorText: {
+    color: '#ef4444',
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: spacing.lg,
+  },
+  confirmButton: {
+    backgroundColor: '#facc15',
+    paddingVertical: spacing.lg,
+    borderRadius: borderRadius.md,
+    alignItems: 'center',
+  },
+  confirmButtonDisabled: {
+    opacity: 0.5,
+  },
+  confirmButtonText: {
+    color: '#713f12',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
+  // Loading & Empty States
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 64,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 64,
+  },
+  emptyCard: {
+    padding: spacing.xl,
+    alignItems: 'center',
+    backgroundColor: 'rgba(250, 204, 21, 0.1)',
+  },
+  emptyIcon: {
+    fontSize: 60,
+    marginBottom: spacing.lg,
+  },
+  emptyTitle: {
+    color: '#facc15',
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: spacing.sm,
+  },
+  emptyDescription: {
+    color: colors.textMuted,
+    fontSize: 16,
+  },
+});

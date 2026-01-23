@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -190,21 +190,33 @@ export default function AdminSidebar({
     const isExpanded = expandedItems.includes(item.key)
     const Icon = item.icon
 
+    // Dynamic styles for RTL and child indentation
+    const navItemContainerStyle = [
+      isRTL ? styles.flexRowReverse : styles.flexRow,
+    ];
+
+    const navItemContentStyle = (hovered: boolean) => [
+      styles.navItemContent,
+      isRTL ? styles.flexRowReverse : null,
+      hovered ? styles.navItemHovered : null,
+    ];
+
+    const childIndentStyle = isChild ? (isRTL ? styles.childIndentRTL : styles.childIndentLTR) : null;
+
     if (hasChildren) {
       return (
         <View key={item.key}>
           <Pressable
             onPress={() => toggleExpand(item.key)}
-            className={isRTL ? 'flex-row-reverse' : 'flex-row'}
+            style={navItemContainerStyle}
           >
             {({ hovered }: any) => (
               <View
-                className={`flex-row items-center gap-2 px-4 py-3 rounded-lg ${
-                  isRTL ? 'flex-row-reverse' : ''
-                } ${hovered ? 'bg-white/5' : ''}`}
+                className="flex-row items-center gap-2 px-4 py-3 rounded-lg"
+                style={navItemContentStyle(hovered)}
               >
                 {Icon && <Icon size={18} color={colors.textSecondary} />}
-                <Text className={`flex-1 text-sm ${isRTL ? 'text-right' : ''}`} style={{ color: colors.textSecondary }}>
+                <Text className="flex-1 text-sm" style={[{ color: colors.textSecondary }, isRTL && styles.textRight]}>
                   {t(item.labelKey, item.key)}
                 </Text>
                 <View
@@ -217,7 +229,7 @@ export default function AdminSidebar({
             )}
           </Pressable>
           {isExpanded && (
-            <View className={`gap-1 mt-1 ${isRTL ? 'mr-8' : 'ml-8'}`}>
+            <View className={`gap-1 mt-1`} style={isRTL ? styles.childIndentRTL : styles.childIndentLTR}>
               {item.children!.map((child) => renderNavItem(child, true))}
             </View>
           )}
@@ -235,15 +247,20 @@ export default function AdminSidebar({
       >
         {({ isActive }) => (
           <View
-            className={`flex-row items-center gap-2 px-4 py-3 rounded-lg ${
-              isRTL ? 'flex-row-reverse' : ''
-            } ${isChild ? (isRTL ? 'pr-12' : 'pl-12') : ''}`}
-            style={{ backgroundColor: isActive ? colors.glassPurple : 'transparent' }}
+            className="flex-row items-center gap-2 px-4 py-3 rounded-lg"
+            style={[
+              isRTL ? styles.flexRowReverse : null,
+              childIndentStyle,
+              { backgroundColor: isActive ? colors.glassPurple : 'transparent' }
+            ]}
           >
             {Icon && <Icon size={18} color={isActive ? colors.primary : colors.textSecondary} />}
             <Text
-              className={`flex-1 text-sm ${isRTL ? 'text-right' : ''}`}
-              style={{ color: isActive ? colors.primary : colors.textSecondary }}
+              className="flex-1 text-sm"
+              style={[
+                { color: isActive ? colors.primary : colors.textSecondary },
+                isRTL && styles.textRight
+              ]}
             >
               {t(item.labelKey, item.key)}
             </Text>
@@ -257,26 +274,69 @@ export default function AdminSidebar({
     return null
   }
 
+  // Dynamic styles for sidebar positioning and dragging
+  const sidebarContainerStyle = [
+    styles.sidebarContainer,
+    isRTL ? styles.sidebarRTL : styles.sidebarLTR,
+    isMobile ? styles.sidebarMobile : null,
+    isDragging ? styles.sidebarDragging : null,
+  ];
+
+  const sidebarStyle = {
+    width: isMobile ? '85%' : width,
+    borderRadius: 0,
+    transition: isDragging ? 'none' : 'width 0.3s ease',
+  };
+
+  const dragHandleStyle = [
+    styles.dragHandle,
+    isRTL ? styles.dragHandleRTL : styles.dragHandleLTR,
+  ];
+
+  const languageSelectorStyle = [
+    isRTL ? styles.flexRowReverse : styles.flexRow,
+  ];
+
+  const languageButtonContentStyle = (hovered: boolean) => [
+    styles.languageButtonContent,
+    isRTL ? styles.flexRowReverse : null,
+    { backgroundColor: hovered ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)' },
+  ];
+
+  const languageMenuItemStyle = (isSelected: boolean, hovered: boolean) => [
+    styles.languageMenuItem,
+    isRTL ? styles.flexRowReverse : null,
+    {
+      backgroundColor: isSelected ? colors.glassPurpleLight : (hovered ? 'rgba(255, 255, 255, 0.05)' : 'transparent')
+    },
+  ];
+
+  const footerLinkStyle = [
+    isRTL ? styles.flexRowReverse : styles.flexRow,
+  ];
+
+  const footerButtonContentStyle = (hovered: boolean, isLogout = false) => [
+    styles.footerButtonContent,
+    isRTL ? styles.flexRowReverse : null,
+    {
+      backgroundColor: hovered
+        ? (isLogout ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255, 255, 255, 0.05)')
+        : 'transparent'
+    },
+  ];
+
   return (
     <GlassView
-      className={`fixed top-0 bottom-0 border-r-0 z-100 ${
-        isRTL ? 'right-0 border-l border-l-white/10' : 'left-0 border-r border-r-white/10'
-      } ${isMobile ? 'max-w-[320px]' : ''} ${isDragging ? 'select-none' : ''}`}
-      style={{
-        width: isMobile ? '85%' : width,
-        borderRadius: 0,
-        transition: isDragging ? 'none' : 'width 0.3s ease',
-      } as any}
+      className="fixed top-0 bottom-0 border-r-0 z-100"
+      style={[sidebarContainerStyle, sidebarStyle] as any}
       intensity="high"
       noBorder
     >
       {/* Drag Handle */}
       {!isMobile && onDragStart && (
         <View
-          className={`absolute top-0 bottom-0 w-3 justify-center items-center z-102 bg-transparent ${
-            isRTL ? 'left-0' : 'right-0'
-          }`}
-          style={{ cursor: 'ew-resize' } as any}
+          className="absolute top-0 bottom-0 w-3 justify-center items-center z-102 bg-transparent"
+          style={[dragHandleStyle, { cursor: 'ew-resize' }] as any}
           // @ts-ignore - Web mouse events
           onMouseDown={onDragStart}
         >
@@ -288,18 +348,16 @@ export default function AdminSidebar({
       <View className="p-4 border-b border-b-white/5">
         <Pressable
           onPress={() => setShowLanguageMenu(!showLanguageMenu)}
-          className={isRTL ? 'flex-row-reverse' : 'flex-row'}
+          style={languageSelectorStyle}
         >
           {({ hovered }: any) => (
             <View
-              className={`flex-row items-center gap-2 px-4 py-2 rounded-lg ${
-                isRTL ? 'flex-row-reverse' : ''
-              }`}
-              style={{ backgroundColor: hovered ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)' }}
+              className="flex-row items-center gap-2 px-4 py-2 rounded-lg"
+              style={languageButtonContentStyle(hovered)}
             >
               <Languages size={18} color={colors.textSecondary} />
               <Text className="text-lg">{currentLanguage.flag}</Text>
-              <Text className={`flex-1 text-sm font-medium ${isRTL ? 'text-right' : ''}`} style={{ color: colors.text }}>
+              <Text className="flex-1 text-sm font-medium" style={[{ color: colors.text }, isRTL && styles.textRight]}>
                 {currentLanguage.label}
               </Text>
               <View
@@ -313,22 +371,21 @@ export default function AdminSidebar({
         </Pressable>
 
         {showLanguageMenu && (
-          <View className={`mt-2 rounded-lg overflow-hidden border border-white/10 ${isRTL ? '' : ''}`} style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
+          <View className="mt-2 rounded-lg overflow-hidden border border-white/10" style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
             {LANGUAGE_OPTIONS.map((lang) => (
               <Pressable
                 key={lang.code}
                 onPress={() => handleLanguageChange(lang.code)}
-                className={`border-b border-b-white/5 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}
+                className="border-b border-b-white/5"
+                style={isRTL ? styles.flexRowReverse : styles.flexRow}
               >
                 {({ hovered }: any) => (
                   <View
-                    className={`flex-row items-center gap-2 px-4 py-3 ${isRTL ? 'flex-row-reverse' : ''}`}
-                    style={{
-                      backgroundColor: lang.code === i18n.language ? colors.glassPurpleLight : (hovered ? 'rgba(255, 255, 255, 0.05)' : 'transparent')
-                    }}
+                    className="flex-row items-center gap-2 px-4 py-3"
+                    style={languageMenuItemStyle(lang.code === i18n.language, hovered)}
                   >
                     <Text className="text-lg">{lang.flag}</Text>
-                    <Text className={`flex-1 text-sm ${isRTL ? 'text-right' : ''}`} style={{ color: colors.text }}>
+                    <Text className="flex-1 text-sm" style={[{ color: colors.text }, isRTL && styles.textRight]}>
                       {lang.label}
                     </Text>
                     {lang.code === i18n.language && (
@@ -350,14 +407,14 @@ export default function AdminSidebar({
       {/* Footer */}
       <View className="p-2 border-t border-t-white/5 gap-1">
         <Link to="/" style={{ textDecoration: 'none' }} onClick={handleNavClick}>
-          <Pressable className={isRTL ? 'flex-row-reverse' : 'flex-row'}>
+          <Pressable style={footerLinkStyle}>
             {({ hovered }: any) => (
               <View
-                className={`flex-row items-center gap-2 px-4 py-3 rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}
-                style={{ backgroundColor: hovered ? 'rgba(255, 255, 255, 0.05)' : 'transparent' }}
+                className="flex-row items-center gap-2 px-4 py-3 rounded-lg"
+                style={footerButtonContentStyle(hovered)}
               >
                 <Home size={18} color={colors.textSecondary} />
-                <Text className={`text-sm ${isRTL ? 'text-right' : ''}`} style={{ color: colors.textSecondary }}>
+                <Text className="text-sm" style={[{ color: colors.textSecondary }, isRTL && styles.textRight]}>
                   {t('admin.backToApp', 'Back to App')}
                 </Text>
               </View>
@@ -366,15 +423,15 @@ export default function AdminSidebar({
         </Link>
         <Pressable
           onPress={handleLogout}
-          className={isRTL ? 'flex-row-reverse' : 'flex-row'}
+          style={footerLinkStyle}
         >
           {({ hovered }: any) => (
             <View
-              className={`flex-row items-center gap-2 px-4 py-3 rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}
-              style={{ backgroundColor: hovered ? 'rgba(239, 68, 68, 0.1)' : 'transparent' }}
+              className="flex-row items-center gap-2 px-4 py-3 rounded-lg"
+              style={footerButtonContentStyle(hovered, true)}
             >
               <LogOut size={18} color={colors.error} />
-              <Text className={`text-sm ${isRTL ? 'text-right' : ''}`} style={{ color: colors.error }}>
+              <Text className="text-sm" style={[{ color: colors.error }, isRTL && styles.textRight]}>
                 {t('account.logout', 'Logout')}
               </Text>
             </View>
@@ -384,3 +441,72 @@ export default function AdminSidebar({
     </GlassView>
   )
 }
+
+const styles = StyleSheet.create({
+  sidebarContainer: {
+    position: 'fixed',
+    top: 0,
+    bottom: 0,
+    zIndex: 100,
+  },
+  sidebarLTR: {
+    left: 0,
+    borderRightWidth: 1,
+    borderRightColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  sidebarRTL: {
+    right: 0,
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  sidebarMobile: {
+    maxWidth: 320,
+  },
+  sidebarDragging: {
+    userSelect: 'none',
+  } as any,
+  dragHandle: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 12,
+    zIndex: 102,
+    backgroundColor: 'transparent',
+  },
+  dragHandleLTR: {
+    right: 0,
+  },
+  dragHandleRTL: {
+    left: 0,
+  },
+  flexRow: {
+    flexDirection: 'row',
+  },
+  flexRowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  navItemContent: {
+    flexDirection: 'row',
+  },
+  navItemHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  childIndentLTR: {
+    marginLeft: 32,
+  },
+  childIndentRTL: {
+    marginRight: 32,
+  },
+  languageButtonContent: {
+    flexDirection: 'row',
+  },
+  languageMenuItem: {
+    flexDirection: 'row',
+  },
+  footerButtonContent: {
+    flexDirection: 'row',
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+});

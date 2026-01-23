@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { View, Text, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, Mail, Lock, ChevronDown, Globe } from 'lucide-react';
 import { useAuthStore } from '@bayit/shared-stores';
-import { colors } from '@bayit/shared/theme';
+import { colors, spacing } from '@bayit/shared/theme';
 import { AnimatedLogo } from '@bayit/shared';
 import { GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
@@ -79,33 +79,39 @@ export default function LoginPage() {
   };
 
   return (
-    <View className="flex-1 min-h-screen bg-black relative overflow-hidden">
+    <View style={styles.container}>
       {/* Background gradient effects */}
-      <View className="absolute w-[600px] h-[600px] rounded-full bg-purple-600 opacity-8 -top-[200px] -right-[200px] blur-[120px]" />
-      <View className="absolute w-[400px] h-[400px] rounded-full bg-purple-400 opacity-6 -bottom-[100px] -left-[100px] blur-[100px]" />
-      <View className="absolute w-[300px] h-[300px] rounded-full bg-purple-600 opacity-4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 blur-[80px]" />
+      <View style={styles.bgGradient1} />
+      <View style={styles.bgGradient2} />
+      <View style={styles.bgGradient3} />
 
       {/* Language Selector - Top Right */}
-      <View className={`absolute ${isRTL ? 'left-6' : 'right-6'} top-6 z-[100]`}>
+      <View style={[styles.languageSelector, isRTL ? styles.languageSelectorRTL : styles.languageSelectorLTR]}>
         <Pressable
-          className="flex flex-row items-center gap-2 bg-white/5 py-2 px-4 rounded-lg border border-white/10"
+          style={styles.languageButton}
           onPress={() => setShowLanguageMenu(!showLanguageMenu)}
         >
           <Globe size={18} color={colors.textSecondary} />
-          <Text className="text-gray-400 text-sm">{currentLanguage.flag} {currentLanguageLabel}</Text>
+          <Text style={styles.languageButtonText}>{currentLanguage.flag} {currentLanguageLabel}</Text>
           <ChevronDown size={16} color={colors.textSecondary} />
         </Pressable>
 
         {showLanguageMenu && (
-          <View className="absolute top-full right-0 mt-2 bg-gray-900/95 rounded-lg border border-white/10 overflow-hidden min-w-[160px] backdrop-blur-xl shadow-2xl">
+          <View style={styles.languageMenu}>
             {LANGUAGE_CODES.map((lang) => (
               <Pressable
                 key={lang.code}
-                className={`flex flex-row items-center gap-2 py-2 px-4 ${lang.code === i18n.language ? 'bg-purple-600/30' : ''}`}
+                style={[
+                  styles.languageMenuItem,
+                  lang.code === i18n.language && styles.languageMenuItemActive
+                ]}
                 onPress={() => handleLanguageChange(lang.code)}
               >
-                <Text className="text-lg">{lang.flag}</Text>
-                <Text className={`text-sm ${lang.code === i18n.language ? 'text-purple-600 font-semibold' : 'text-gray-400'}`}>
+                <Text style={styles.languageMenuItemFlag}>{lang.flag}</Text>
+                <Text style={[
+                  styles.languageMenuItemText,
+                  lang.code === i18n.language && styles.languageMenuItemTextActive
+                ]}>
                   {t(`settings.languages.${lang.code}`)}
                 </Text>
               </Pressable>
@@ -115,36 +121,36 @@ export default function LoginPage() {
       </View>
 
       {/* Main Content */}
-      <View className="flex-1 justify-center items-center p-6">
+      <View style={styles.mainContent}>
         {/* Logo */}
         <Link to="/" style={{ textDecoration: 'none' }}>
-          <View className="items-center mb-8">
+          <View style={styles.logoContainer}>
             <AnimatedLogo size="large" />
           </View>
         </Link>
 
         {/* Login Card */}
-        <View className="w-full max-w-[420px] bg-white/[0.03] rounded-2xl border border-white/8 p-8 backdrop-blur-xl shadow-2xl">
-          <Text className="text-3xl font-bold text-white text-center mb-2">{t('login.title')}</Text>
-          <Text className="text-[15px] text-gray-400 text-center mb-8">
+        <View style={styles.loginCard}>
+          <Text style={styles.title}>{t('login.title')}</Text>
+          <Text style={styles.subtitle}>
             {t('login.subtitle')}
           </Text>
 
           {/* Error Message */}
           {error && (
-            <View className="bg-red-500/15 border border-red-500/30 rounded-lg p-4 mb-6">
-              <Text className="text-red-400 text-sm text-center">{error}</Text>
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{error}</Text>
             </View>
           )}
 
           {/* Email Input */}
-          <View className={IS_TV_BUILD ? "mb-6" : "mb-6"}>
+          <View style={styles.inputWrapper}>
             <GlassInput
               label={t('login.email')}
               value={email}
               onChangeText={setEmail}
               placeholder={t('login.emailPlaceholder')}
-              leftIcon={<Mail size={20} color={colors.textMuted} />}
+              icon={<Mail size={20} color={colors.textMuted} />}
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
@@ -152,13 +158,13 @@ export default function LoginPage() {
           </View>
 
           {/* Password Input */}
-          <View className={IS_TV_BUILD ? "mb-6" : "mb-6"}>
-            <View className={`flex-row justify-between items-center mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <Text className={IS_TV_BUILD ? "text-xl font-medium text-gray-300" : "text-sm font-medium text-gray-300"}>
+          <View style={styles.inputWrapper}>
+            <View style={[styles.passwordHeader, isRTL && styles.passwordHeaderRTL]}>
+              <Text style={IS_TV_BUILD ? styles.passwordLabelTV : styles.passwordLabel}>
                 {t('login.password')}
               </Text>
               <Link to="/forgot-password" style={{ textDecoration: 'none' }}>
-                <Text className="text-[13px] font-medium" style={{ color: colors.primary }}>
+                <Text style={[styles.forgotPasswordLink, { color: colors.primary }]}>
                   {t('login.forgotPassword')}
                 </Text>
               </Link>
@@ -167,7 +173,7 @@ export default function LoginPage() {
               value={password}
               onChangeText={setPassword}
               placeholder={t('login.passwordPlaceholder')}
-              leftIcon={<Lock size={20} color={colors.textMuted} />}
+              icon={<Lock size={20} color={colors.textMuted} />}
               rightIcon={
                 <Pressable onPress={() => setShowPassword(!showPassword)}>
                   {showPassword ? (
@@ -184,44 +190,32 @@ export default function LoginPage() {
 
           {/* Login Button */}
           <Pressable
-            className={`bg-purple-600 py-4 rounded-lg items-center justify-center mt-3 min-h-[52px] ${isLoading ? 'opacity-70' : ''}`}
+            style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
             onPress={handleSubmit}
             disabled={isLoading}
-            style={({ pressed }) => ({
-              opacity: pressed ? 0.9 : isLoading ? 0.7 : 1,
-              // @ts-ignore
-              transform: pressed ? 'scale(0.98)' : 'scale(1)',
-              transition: 'all 0.2s ease',
-            })}
           >
             {isLoading ? (
               <ActivityIndicator color="#000" size="small" />
             ) : (
-              <Text className="text-black text-base font-semibold">{t('login.submit')}</Text>
+              <Text style={styles.loginButtonText}>{t('login.submit')}</Text>
             )}
           </Pressable>
 
           {/* Divider - hide on TV since Google OAuth doesn't work */}
           {!IS_TV_BUILD && (
-            <View className="flex-row items-center my-6">
-              <View className="flex-1 h-px bg-white/10" />
-              <Text className="text-gray-400 px-4 text-sm">{t('login.or')}</Text>
-              <View className="flex-1 h-px bg-white/10" />
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>{t('login.or')}</Text>
+              <View style={styles.dividerLine} />
             </View>
           )}
 
           {/* Google Sign In Button - hide on TV since OAuth redirects don't work */}
           {!IS_TV_BUILD && (
             <Pressable
-              className={`flex-row items-center justify-center gap-3 bg-white/5 border border-white/15 py-4 rounded-lg min-h-[52px] ${isLoading ? 'opacity-70' : ''}`}
+              style={[styles.googleButton, isLoading && styles.googleButtonDisabled]}
               onPress={handleGoogleLogin}
               disabled={isLoading}
-              style={({ pressed }) => ({
-                backgroundColor: pressed ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                // @ts-ignore
-                transform: pressed ? 'scale(0.98)' : 'scale(1)',
-                transition: 'all 0.2s ease',
-              })}
             >
               <svg width={20} height={20} viewBox="0 0 24 24">
                 <path
@@ -241,7 +235,7 @@ export default function LoginPage() {
                   fill="#EA4335"
                 />
               </svg>
-              <Text className="text-white text-base font-medium">
+              <Text style={styles.googleButtonText}>
                 {t('login.continueWithGoogle')}
               </Text>
             </Pressable>
@@ -249,17 +243,23 @@ export default function LoginPage() {
 
           {/* Sign Up Link */}
           <View
-            className={`flex-row justify-center items-center ${IS_TV_BUILD ? 'gap-3 mt-10 pt-6' : 'gap-2 mt-6 pt-6'} border-t border-white/8 flex-nowrap ${isRTL ? 'flex-row-reverse' : ''}`}
+            style={[
+              styles.signUpContainer,
+              IS_TV_BUILD && styles.signUpContainerTV,
+              isRTL && styles.signUpContainerRTL
+            ]}
           >
             <Text
-              className={IS_TV_BUILD ? "text-xl text-gray-300 leading-7" : "text-sm text-gray-300 leading-5"}
+              style={IS_TV_BUILD ? styles.signUpTextTV : styles.signUpText}
             >
               {t('login.noAccount')}
             </Text>
             <Link to="/register" style={{ textDecoration: 'none' }}>
               <Text
-                className={IS_TV_BUILD ? "text-xl font-semibold leading-7" : "text-sm font-semibold leading-5"}
-                style={{ color: colors.primary }}
+                style={[
+                  IS_TV_BUILD ? styles.signUpLinkTV : styles.signUpLink,
+                  { color: colors.primary }
+                ]}
               >
                 {t('login.signUp')}
               </Text>
@@ -268,10 +268,305 @@ export default function LoginPage() {
         </View>
 
         {/* Footer */}
-        <Text className="text-xs text-gray-400 text-center mt-6 max-w-[320px] leading-[18px]">
+        <Text style={styles.footer}>
           {t('login.termsNotice')}
         </Text>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    minHeight: '100vh',
+    backgroundColor: colors.background,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  // Background gradient effects
+  bgGradient1: {
+    position: 'absolute',
+    width: 600,
+    height: 600,
+    borderRadius: 300,
+    backgroundColor: 'rgba(147, 51, 234, 0.08)',
+    top: -200,
+    right: -200,
+    // Use filter instead of blur for React Native Web compatibility
+    filter: 'blur(120px)',
+  },
+  bgGradient2: {
+    position: 'absolute',
+    width: 400,
+    height: 400,
+    borderRadius: 200,
+    backgroundColor: 'rgba(192, 132, 252, 0.06)',
+    bottom: -100,
+    left: -100,
+    filter: 'blur(100px)',
+  },
+  bgGradient3: {
+    position: 'absolute',
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: 'rgba(147, 51, 234, 0.04)',
+    top: '50%',
+    left: '50%',
+    // Use marginLeft/marginTop for translate
+    marginLeft: -150,
+    marginTop: -150,
+    filter: 'blur(80px)',
+  },
+  // Language Selector
+  languageSelector: {
+    position: 'absolute',
+    top: spacing.lg,
+    zIndex: 100,
+  },
+  languageSelectorLTR: {
+    right: spacing.lg,
+  },
+  languageSelectorRTL: {
+    left: spacing.lg,
+  },
+  languageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  languageButtonText: {
+    color: colors.textSecondary,
+    fontSize: 14,
+  },
+  languageMenu: {
+    position: 'absolute',
+    top: '100%',
+    right: 0,
+    marginTop: spacing.sm,
+    backgroundColor: 'rgba(17, 24, 39, 0.95)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    overflow: 'hidden',
+    minWidth: 160,
+    // Use filter instead of backdrop-blur
+    filter: 'blur(0)',
+    backdropFilter: 'blur(12px)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+  },
+  languageMenuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+  },
+  languageMenuItemActive: {
+    backgroundColor: 'rgba(147, 51, 234, 0.3)',
+  },
+  languageMenuItemFlag: {
+    fontSize: 18,
+  },
+  languageMenuItemText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  languageMenuItemTextActive: {
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  // Main Content
+  mainContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.lg,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: spacing.xl,
+  },
+  // Login Card
+  loginCard: {
+    width: '100%',
+    maxWidth: 420,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    padding: spacing.xl * 1.5,
+    backdropFilter: 'blur(12px)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: '700',
+    color: colors.text,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
+  },
+  subtitle: {
+    fontSize: 15,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: spacing.xl,
+  },
+  // Error Message
+  errorContainer: {
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+    borderRadius: 8,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  errorText: {
+    color: '#fca5a5',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  // Input Wrappers
+  inputWrapper: {
+    marginBottom: spacing.lg,
+  },
+  passwordHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  passwordHeaderRTL: {
+    flexDirection: 'row-reverse',
+  },
+  passwordLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.textMuted,
+  },
+  passwordLabelTV: {
+    fontSize: 20,
+    fontWeight: '500',
+    color: colors.textMuted,
+  },
+  forgotPasswordLink: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  // Login Button
+  loginButton: {
+    backgroundColor: colors.primary,
+    paddingVertical: spacing.md,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.sm,
+    minHeight: 52,
+  },
+  loginButtonDisabled: {
+    opacity: 0.7,
+  },
+  loginButtonText: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  // Divider
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: spacing.lg,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  dividerText: {
+    color: colors.textSecondary,
+    paddingHorizontal: spacing.md,
+    fontSize: 14,
+  },
+  // Google Button
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    paddingVertical: spacing.md,
+    borderRadius: 8,
+    minHeight: 52,
+  },
+  googleButtonDisabled: {
+    opacity: 0.7,
+  },
+  googleButtonText: {
+    color: colors.text,
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  // Sign Up Link
+  signUpContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.lg,
+    paddingTop: spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  signUpContainerTV: {
+    gap: spacing.sm * 1.5,
+    marginTop: spacing.xl * 1.5,
+    paddingTop: spacing.lg,
+  },
+  signUpContainerRTL: {
+    flexDirection: 'row-reverse',
+  },
+  signUpText: {
+    fontSize: 14,
+    color: colors.textMuted,
+    lineHeight: 20,
+  },
+  signUpTextTV: {
+    fontSize: 20,
+    color: colors.textMuted,
+    lineHeight: 28,
+  },
+  signUpLink: {
+    fontSize: 14,
+    fontWeight: '600',
+    lineHeight: 20,
+  },
+  signUpLinkTV: {
+    fontSize: 20,
+    fontWeight: '600',
+    lineHeight: 28,
+  },
+  // Footer
+  footer: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginTop: spacing.lg,
+    maxWidth: 320,
+    lineHeight: 18,
+  },
+});

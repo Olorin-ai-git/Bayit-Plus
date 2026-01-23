@@ -9,7 +9,6 @@ import {
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import clsx from 'clsx';
 import { GlassView } from './ui/GlassView';
 import { trendingService } from '../services/api';
 import { isTV } from '../utils/platform';
@@ -107,29 +106,15 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
         className={isMobilePhone ? "my-2" : "my-4"}
         intensity="light"
       >
-        <View className={clsx(
-          "flex items-center",
-          isMobilePhone ? "mb-2" : "mb-4",
-          isMobilePhone ? "px-4" : "px-6",
-          isRTL ? "flex-row-reverse" : "flex-row"
-        )}>
-          <Text className={clsx(
-            "font-semibold text-white",
-            isMobilePhone ? "text-base" : "text-lg"
-          )}>
+        <View className={`flex items-center mb-${isMobilePhone ? '2' : '4'} px-${isMobilePhone ? '4' : '6'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+          <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
             {t('trending.title')}
           </Text>
-          <Text className={clsx(
-            isMobilePhone ? "text-base" : "text-xl",
-            isRTL ? "mr-2" : "ml-2"
-          )}>
+          <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
             📈
           </Text>
         </View>
-        <View className={clsx(
-          "justify-center items-center",
-          isMobilePhone ? "h-24" : "h-36"
-        )}>
+        <View className={`justify-center items-center ${isMobilePhone ? 'h-24' : 'h-36'}`}>
           <ActivityIndicator color="#a855f7" size="large" />
         </View>
       </GlassView>
@@ -142,33 +127,16 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
         className={isMobilePhone ? "my-2" : "my-4"}
         intensity="light"
       >
-        <View className={clsx(
-          "flex items-center",
-          isMobilePhone ? "mb-2" : "mb-4",
-          isMobilePhone ? "px-4" : "px-6",
-          isRTL ? "flex-row-reverse" : "flex-row"
-        )}>
-          <Text className={clsx(
-            "font-semibold text-white",
-            isMobilePhone ? "text-base" : "text-lg"
-          )}>
+        <View className={`flex items-center mb-${isMobilePhone ? '2' : '4'} px-${isMobilePhone ? '4' : '6'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+          <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
             {t('trending.title')}
           </Text>
-          <Text className={clsx(
-            isMobilePhone ? "text-base" : "text-xl",
-            isRTL ? "mr-2" : "ml-2"
-          )}>
+          <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
             📈
           </Text>
         </View>
-        <View className={clsx(
-          "justify-center items-center px-6",
-          isMobilePhone ? "h-14" : "h-24"
-        )}>
-          <Text className={clsx(
-            "text-white/60 text-center",
-            isMobilePhone ? "text-sm" : "text-base"
-          )}>
+        <View className={`justify-center items-center px-6 ${isMobilePhone ? 'h-14' : 'h-24'}`}>
+          <Text className={`text-${isMobilePhone ? 'sm' : 'base'} text-white/60 text-center`}>
             {t('trending.noTopics')}
           </Text>
         </View>
@@ -197,35 +165,18 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
   return (
     <View className={isMobilePhone ? "my-2" : "my-4"}>
       {/* Header */}
-      <View className={clsx(
-        "flex items-center",
-        isMobilePhone ? "mb-2" : "mb-4",
-        isMobilePhone ? "px-4" : "px-6",
-        isRTL ? "flex-row-reverse" : "flex-row"
-      )}>
-        <Text className={clsx(
-          "font-semibold text-white",
-          isMobilePhone ? "text-base" : "text-lg"
-        )}>
+      <View className={`flex items-center mb-${isMobilePhone ? '2' : '4'} px-${isMobilePhone ? '4' : '6'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+        <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
           {t('trending.title')}
         </Text>
-        <Text className={clsx(
-          isMobilePhone ? "text-base" : "text-xl",
-          isRTL ? "mr-2" : "ml-2"
-        )}>
+        <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
           📈
         </Text>
       </View>
 
       {/* Overall Mood */}
       {data.overall_mood && (
-        <Text className={clsx(
-          "text-white/60",
-          isMobilePhone ? "text-xs" : "text-sm",
-          isMobilePhone ? "px-4" : "px-6",
-          isMobilePhone ? "mb-2" : "mb-4",
-          isRTL ? "text-right" : "text-left"
-        )}>
+        <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/60 px-${isMobilePhone ? '4' : '6'} mb-${isMobilePhone ? '2' : '4'} ${isRTL ? 'text-right' : 'text-left'}`}>
           🇮🇱 {getLocalizedText(data.overall_mood, data.overall_mood_en, data.overall_mood_es)}
         </Text>
       )}
@@ -256,47 +207,24 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
       {/* Top Story */}
       {data.top_story && (
         <GlassView
-          className={clsx(
-            isMobilePhone ? "mx-4" : "mx-6",
-            isMobilePhone ? "mt-2" : "mt-4",
-            isMobilePhone ? "p-4" : "p-6",
-            isMobilePhone ? "rounded-xl" : "rounded-2xl"
-          )}
+          className={`mx-${isMobilePhone ? '4' : '6'} mt-${isMobilePhone ? '2' : '4'} p-${isMobilePhone ? '4' : '6'} rounded-${isMobilePhone ? 'xl' : '2xl'}`}
           intensity="light"
         >
-          <Text className={clsx(
-            "font-semibold text-purple-400 mb-1",
-            isMobilePhone ? "text-xs" : "text-sm",
-            isRTL ? "text-right" : "text-left"
-          )}>
+          <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} font-semibold text-purple-400 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
             {t('trending.topStory')}
           </Text>
-          <Text className={clsx(
-            "text-white",
-            isMobilePhone ? "text-xs" : "text-sm",
-            isRTL ? "text-right" : "text-left"
-          )}>
+          <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white ${isRTL ? 'text-right' : 'text-left'}`}>
             {getLocalizedText(data.top_story, data.top_story_en, data.top_story_es)}
           </Text>
         </GlassView>
       )}
 
       {/* Sources */}
-      <View className={clsx(
-        isMobilePhone ? "px-4" : "px-6",
-        isMobilePhone ? "mt-1" : "mt-2",
-        isRTL ? "flex-row-reverse" : "flex-row"
-      )}>
-        <Text className={clsx(
-          "text-white/40",
-          isMobilePhone ? "text-xs" : "text-sm"
-        )}>
+      <View className={`px-${isMobilePhone ? '4' : '6'} mt-${isMobilePhone ? '1' : '2'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+        <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/40`}>
           {t('trending.sources')}:{' '}
         </Text>
-        <Text className={clsx(
-          "text-white/40",
-          isMobilePhone ? "text-xs" : "text-sm"
-        )}>
+        <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/40`}>
           {data.sources.join(', ')}
         </Text>
       </View>
@@ -356,38 +284,19 @@ const TopicCard: React.FC<TopicCardProps> = ({
           `}
           intensity="medium"
         >
-          <View className={clsx(
-            "flex items-center",
-            isMobilePhone ? "mb-2" : "mb-4",
-            isRTL ? "flex-row-reverse" : "flex-row"
-          )}>
-            <Text className={clsx(
-              isMobilePhone ? "text-base" : "text-3xl",
-              isRTL ? "ml-2" : "mr-2"
-            )}>
+          <View className={`flex items-center mb-${isMobilePhone ? '2' : '4'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+            <Text className={`text-${isMobilePhone ? 'base' : '3xl'} ${isRTL ? 'ml-2' : 'mr-2'}`}>
               {CATEGORY_EMOJIS[topic.category] || '📌'}
             </Text>
-            <View className={clsx(
-              "bg-purple-900/30 py-1 rounded-full border border-purple-400/60",
-              isMobilePhone ? "px-2" : "px-4"
-            )}>
-              <Text className={clsx(
-                "text-purple-400/90 font-semibold",
-                isMobilePhone ? "text-xs" : "text-sm"
-              )}>
+            <View className={`bg-purple-900/30 px-${isMobilePhone ? '2' : '4'} py-1 rounded-full border border-purple-400/60`}>
+              <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-purple-400/90 font-semibold`}>
                 {categoryLabel}
               </Text>
             </View>
           </View>
 
           <Text
-            className={clsx(
-              "font-bold text-white flex-1",
-              isMobilePhone ? "text-sm" : "text-base",
-              isMobilePhone ? "mb-2" : "mb-4",
-              isMobilePhone ? "leading-5" : "leading-6",
-              isRTL ? "text-right" : "text-left"
-            )}
+            className={`text-${isMobilePhone ? 'sm' : 'base'} font-bold text-white mb-${isMobilePhone ? '2' : '4'} leading-${isMobilePhone ? '5' : '6'} flex-1 ${isRTL ? 'text-right' : 'text-left'}`}
             numberOfLines={isMobilePhone ? 2 : 3}
           >
             {title}
@@ -395,13 +304,7 @@ const TopicCard: React.FC<TopicCardProps> = ({
 
           {summary && !isMobilePhone && (
             <Text
-              className={clsx(
-                "text-white/70",
-                isMobilePhone ? "text-xs" : "text-sm",
-                isMobilePhone ? "mb-2" : "mb-4",
-                isMobilePhone ? "leading-4" : "leading-5",
-                isRTL ? "text-right" : "text-left"
-              )}
+              className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/70 mb-${isMobilePhone ? '2' : '4'} leading-${isMobilePhone ? '4' : '5'} ${isRTL ? 'text-right' : 'text-left'}`}
               numberOfLines={3}
             >
               {summary}
@@ -410,18 +313,14 @@ const TopicCard: React.FC<TopicCardProps> = ({
 
           {/* Importance indicator - hide on mobile phones */}
           {!isMobilePhone && (
-            <View className={clsx(
-              "flex mt-auto",
-              isMobilePhone ? "gap-1" : "gap-1.5",
-              isRTL ? "flex-row-reverse" : "flex-row"
-            )}>
+            <View className={`flex gap-${isMobilePhone ? '1' : '1.5'} mt-auto ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
               {[...Array(5)].map((_, i) => (
                 <View
                   key={i}
-                  className={clsx(
-                    isMobilePhone ? "w-1.5 h-1.5 rounded-[3px]" : "w-2 h-2 rounded-[4px]",
-                    i < Math.ceil(topic.importance / 2) ? "bg-purple-500" : "bg-white/20"
-                  )}
+                  className={`
+                    ${isMobilePhone ? 'w-1.5 h-1.5 rounded-[3px]' : 'w-2 h-2 rounded-[4px]'}
+                    ${i < Math.ceil(topic.importance / 2) ? 'bg-purple-500' : 'bg-white/20'}
+                  `}
                 />
               ))}
             </View>

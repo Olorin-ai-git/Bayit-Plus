@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Platform, ViewStyle, StyleProp } from 'react-native';
+import { View, Platform, ViewStyle, StyleProp, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { colors, borderRadius } from '../theme';
 
@@ -29,10 +29,10 @@ export const GlassView: React.FC<GlassViewProps> = ({
 
   // Purple-tinted black glass backgrounds
   const intensityStyles = {
-    subtle: { backgroundColor: 'transparent' },       // No background for subtle blur
-    low: { backgroundColor: colors.glassLight },      // rgba(10, 10, 10, 0.5)
-    medium: { backgroundColor: colors.glass },        // rgba(10, 10, 10, 0.7)
-    high: { backgroundColor: colors.glassStrong },    // rgba(10, 10, 10, 0.85)
+    subtle: { backgroundColor: 'transparent' },
+    low: { backgroundColor: colors.glassLight },
+    medium: { backgroundColor: colors.glass },
+    high: { backgroundColor: colors.glassStrong },
   };
 
   const blurAmount = {
@@ -42,18 +42,15 @@ export const GlassView: React.FC<GlassViewProps> = ({
     high: 20,
   };
 
-  // Web: Use CSS backdrop-filter with className for reliability
+  // Web: Use CSS backdrop-filter
   if (Platform.OS === 'web') {
-    const glassClassName = normalizedIntensity === 'high' ? 'glass-strong' :
-                           normalizedIntensity === 'low' ? 'glass-light' :
-                           normalizedIntensity === 'subtle' ? 'glass-subtle' : 'glass';
     return (
       <View
-        // @ts-ignore - Web-specific className
-        className={`${glassClassName} rounded-2xl overflow-hidden ${!noBorder ? 'border' : ''}`}
         style={[
+          styles.base,
           intensityStyles[normalizedIntensity],
-          !noBorder && { borderWidth: 1, borderColor: borderColor || colors.glassBorder },
+          !noBorder && styles.border,
+          !noBorder && { borderColor: borderColor || colors.glassBorder },
           borderColor && { borderColor },
           {
             // @ts-ignore - Web-specific CSS properties
@@ -68,31 +65,46 @@ export const GlassView: React.FC<GlassViewProps> = ({
     );
   }
 
-  // iOS/tvOS: Native BlurView would go here
-  // For now, using gradient fallback that works on all platforms
-
   // Android/Android TV & iOS fallback: Purple-tinted gradient
   const gradientColors = normalizedIntensity === 'high'
-    ? ['rgba(10, 10, 10, 0.9)', 'rgba(15, 10, 20, 0.95)']  // Stronger with purple tint
+    ? ['rgba(10, 10, 10, 0.9)', 'rgba(15, 10, 20, 0.95)']
     : normalizedIntensity === 'low'
-    ? ['rgba(10, 10, 10, 0.4)', 'rgba(15, 10, 20, 0.5)']   // Lighter with purple tint
+    ? ['rgba(10, 10, 10, 0.4)', 'rgba(15, 10, 20, 0.5)']
     : normalizedIntensity === 'subtle'
-    ? ['rgba(10, 10, 10, 0.1)', 'rgba(15, 10, 20, 0.15)']  // Very subtle with minimal tint
-    : ['rgba(10, 10, 10, 0.7)', 'rgba(15, 10, 20, 0.8)'];  // Medium with purple tint
+    ? ['rgba(10, 10, 10, 0.1)', 'rgba(15, 10, 20, 0.15)']
+    : ['rgba(10, 10, 10, 0.7)', 'rgba(15, 10, 20, 0.8)'];
 
   return (
     <LinearGradient
       colors={gradientColors}
-      className={`rounded-2xl overflow-hidden ${!noBorder ? 'border' : ''}`}
       style={[
-        !noBorder && { borderWidth: 1, borderColor: borderColor || colors.glassBorder },
+        styles.base,
+        !noBorder && styles.border,
+        !noBorder && { borderColor: borderColor || colors.glassBorder },
         borderColor && { borderColor },
         style,
       ]}
     >
-      <View className="flex-1 rounded-2xl border" style={{ borderColor: colors.glassBorderLight }}>{children}</View>
+      <View style={[styles.innerView, { borderColor: colors.glassBorderLight }]}>
+        {children}
+      </View>
     </LinearGradient>
   );
 };
+
+const styles = StyleSheet.create({
+  base: {
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+  },
+  border: {
+    borderWidth: 1,
+  },
+  innerView: {
+    flex: 1,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+  },
+});
 
 export default GlassView;

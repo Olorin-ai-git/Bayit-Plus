@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { Text, Pressable } from 'react-native';
+import { Text, Pressable, StyleSheet } from 'react-native';
 import { Volume2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,16 +19,12 @@ export function WakeWordTestButton() {
 
   return (
     <Pressable
-      className={`flex-row items-center justify-center gap-2 py-4 px-6 rounded-xl mt-4 ${
-        testing
-          ? 'bg-purple-900/30 border border-purple-500/40'
-          : 'bg-white/5'
-      }`}
+      style={[styles.button, testing && styles.buttonTesting]}
       onPress={handleTest}
       disabled={testing}
     >
       <Volume2 size={16} color={testing ? '#A855F7' : '#ffffff'} />
-      <Text className={`text-sm font-medium ${testing ? 'text-purple-500' : 'text-white'}`}>
+      <Text style={[styles.buttonText, testing && styles.buttonTextTesting]}>
         {testing
           ? t('profile.voice.testingWakeWord', 'Say "Hi Bayit"...')
           : t('profile.voice.testWakeWord', 'Test Wake Word')}
@@ -36,3 +32,30 @@ export function WakeWordTestButton() {
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    marginTop: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  buttonTesting: {
+    backgroundColor: 'rgba(147, 51, 234, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(168, 85, 247, 0.4)',
+  },
+  buttonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#ffffff',
+  },
+  buttonTextTesting: {
+    color: '#A855F7',
+  },
+});

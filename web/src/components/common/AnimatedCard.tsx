@@ -12,6 +12,7 @@ interface AnimatedCardProps {
   index: number;
   children: React.ReactNode;
   style?: ViewStyle | ViewStyle[] | any;
+  className?: string;
   variant?: 'grid' | 'carousel' | 'row';
   isRTL?: boolean;
   /** Maximum index for delay calculation (prevents very long delays for large lists) */
@@ -39,6 +40,7 @@ export default function AnimatedCard({
   index,
   children,
   style,
+  className,
   variant = 'grid',
   isRTL = false,
   maxDelayIndex = 50,
@@ -63,7 +65,7 @@ export default function AnimatedCard({
 
   // Only apply animations on web platform
   if (Platform.OS !== 'web') {
-    return <View style={style}>{children}</View>;
+    return <View style={style} className={className}>{children}</View>;
   }
 
   const animationName = getAnimationName();
@@ -80,7 +82,7 @@ export default function AnimatedCard({
   };
 
   return (
-    <div style={webStyle}>
+    <div style={webStyle} className={className}>
       {children}
     </div>
   );

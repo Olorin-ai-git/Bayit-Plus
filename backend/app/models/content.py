@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
+import pymongo
 from beanie import Document
 from pydantic import BaseModel, Field
 
@@ -430,6 +431,34 @@ class Podcast(Document):
         ]
 
 
+class PodcastEpisodeTranslation(BaseModel):
+    """Embedded document for translation data"""
+
+    language: str  # "en" or "he"
+    audio_url: str  # GCS URL to translated MP3
+    transcript: str  # Original transcript
+    translated_text: str  # Translated transcript
+    voice_id: str  # ElevenLabs voice ID used
+    duration: Optional[str] = None  # Duration of translated audio
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    file_size: Optional[int] = None  # Size in bytes
+
+
+class PodcastEpisodeMinimal(BaseModel):
+    """Minimal projection for translation worker queries - reduces network transfer."""
+
+    id: str
+    title: str
+    audio_url: Optional[str]
+    original_language: str
+    translation_status: str
+    retry_count: int
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class PodcastEpisode(Document):
     podcast_id: str
     title: str
@@ -446,12 +475,33 @@ class PodcastEpisode(Document):
     thumbnail: Optional[str] = None
     guid: Optional[str] = None  # RSS feed unique identifier to prevent duplicates
 
+    # Translation fields
+    translations: Dict[str, PodcastEpisodeTranslation] = Field(default_factory=dict)
+    available_languages: List[str] = Field(default_factory=list)  # ["he", "en"]
+    original_language: str = ""  # Populated at runtime from detection or config
+    translation_status: str = "pending"  # pending, processing, completed, failed
+
+    # Retry tracking
+    retry_count: int = 0
+    max_retries: int = 3
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
     class Settings:
         name = "podcast_episodes"
         indexes = [
             "podcast_id",
             ("podcast_id", "published_at"),
             "guid",  # Index GUID for fast duplicate detection
+            # Compound indexes for translation worker queries
+            [
+                ("translation_status", pymongo.ASCENDING),
+                ("published_at", pymongo.DESCENDING),
+            ],
+            [
+                ("translation_status", pymongo.ASCENDING),
+                ("updated_at", pymongo.ASCENDING),
+            ],
+            "available_languages",  # For filtering by language support
         ]
 
 

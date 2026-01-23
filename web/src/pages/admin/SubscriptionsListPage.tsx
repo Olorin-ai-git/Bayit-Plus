@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit, Trash2, Users } from 'lucide-react';
 import { GlassButton, GlassModal, GlassCheckbox, GlassInput } from '@bayit/shared/ui';
@@ -335,7 +335,10 @@ export default function SubscriptionsListPage() {
         </View>
       </View>
 
-      <View className={`flex flex-row items-center gap-2 p-4 bg-purple-700/20 rounded-lg mb-4 min-h-[48px] ${!someSelected ? 'bg-transparent opacity-0' : ''}`}>
+      <View style={[
+        styles.selectionBanner,
+        !someSelected && styles.selectionBannerHidden
+      ]}>
         {someSelected ? (
           <>
             <Users size={16} color={colors.primary} />
@@ -519,3 +522,19 @@ export default function SubscriptionsListPage() {
   );
 }
 
+const styles = StyleSheet.create({
+  selectionBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 16,
+    backgroundColor: 'rgba(126, 34, 206, 0.2)',
+    borderRadius: 8,
+    marginBottom: 16,
+    minHeight: 48,
+  },
+  selectionBannerHidden: {
+    backgroundColor: 'transparent',
+    opacity: 0,
+  },
+});

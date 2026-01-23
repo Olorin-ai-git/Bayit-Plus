@@ -15,6 +15,7 @@ Uses existing news_scraper infrastructure with Tel Aviv keyword filtering.
 
 import asyncio
 import logging
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
@@ -29,6 +30,8 @@ from app.models.tel_aviv_content import (
 )
 from app.services.content_services.base_cache import ContentCache
 from app.services.content_services.tel_aviv_keywords import (
+    DEFAULT_TEL_AVIV_SOURCES,
+    SEED_TEL_AVIV_CONTENT,
     TEL_AVIV_CATEGORY_LABELS,
     TEL_AVIV_KEYWORDS_EN,
     TEL_AVIV_KEYWORDS_HE,
@@ -583,9 +586,5 @@ class TelAvivContentService:
         logger.info("Tel Aviv content cache cleared")
 
 
-# Global service instance
-tel_aviv_content_service = TelAvivContentService()
-
-
-# Singleton instance for backward compatibility
+# Global service instance (singleton)
 tel_aviv_content_service = TelAvivContentService()

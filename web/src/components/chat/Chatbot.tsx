@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { View, Text, Pressable, Animated } from 'react-native'
+import { View, Text, Pressable, Animated, StyleSheet } from 'react-native'
 import { useNavigate } from 'react-router-dom'
 import { X, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -290,7 +290,8 @@ export default function Chatbot() {
       {!isOpen && (
         <Pressable
           onPress={() => setOpen(true)}
-          className={`fixed \${IS_TV_BUILD ? 'bottom-8 left-8 w-20 h-20' : 'bottom-6 left-6 w-14 h-14'} z-50 rounded-full bg-[#8a2be2] shadow-[0_4px_12px_rgba(138,43,226,0.3)] hover:scale-110 hover:shadow-[0_4px_12px_rgba(138,43,226,0.5)]`}
+          className="fixed z-50 rounded-full bg-[#8a2be2]"
+          style={[IS_TV_BUILD ? styles.fabTV : styles.fabMobile]}
           accessibilityLabel={t('chatbot.openChat')}
         >
           <View className="flex-1 items-center justify-center">
@@ -301,19 +302,30 @@ export default function Chatbot() {
 
       {isOpen && (
         <Animated.View
-          className={`fixed \${IS_TV_BUILD ? 'bottom-8 left-8 w-[600px] h-[700px] max-h-[80vh]' : 'bottom-6 left-6 w-96 max-w-[calc(100vw-3rem)] h-[500px] max-h-[70vh]'} z-50`}
-          style={{
-            transform: [{ translateY: slideAnim }],
-            opacity: opacityAnim,
-          }}
+          className="fixed z-50"
+          style={[
+            IS_TV_BUILD ? styles.containerTV : styles.containerMobile,
+            { transform: [{ translateY: slideAnim }], opacity: opacityAnim },
+          ]}
         >
           <GlassView className="flex-1 overflow-hidden" intensity="high">
-            <View className={`flex-row items-center justify-between px-4 \${IS_TV_BUILD ? 'py-3' : 'py-2'} border-b border-white/10 bg-gradient-to-l from-[rgba(107,33,168,0.3)] to-[rgba(138,43,226,0.2)] \${isRTL ? 'flex-row-reverse' : ''}`}>
-              <View className={`flex-row items-center gap-2 \${isRTL ? 'flex-row-reverse' : ''}`}>
-                <View className={`\${IS_TV_BUILD ? 'w-12 h-12 rounded-3xl' : 'w-8 h-8 rounded-2xl'} bg-[#8a2be2] items-center justify-center`}>
+            <View
+              className="flex-row items-center justify-between px-4 border-b border-white/10 bg-gradient-to-l from-[rgba(107,33,168,0.3)] to-[rgba(138,43,226,0.2)]"
+              style={[
+                IS_TV_BUILD ? styles.headerTV : styles.headerMobile,
+                isRTL && styles.rowReverse,
+              ]}
+            >
+              <View className="flex-row items-center gap-2" style={[isRTL && styles.rowReverse]}>
+                <View
+                  className="bg-[#8a2be2] items-center justify-center"
+                  style={[IS_TV_BUILD ? styles.iconTV : styles.iconMobile]}
+                >
                   <Sparkles size={16} color={colors.text} />
                 </View>
-                <Text className={`\${IS_TV_BUILD ? 'text-2xl' : 'text-base'} font-semibold text-white`}>{t('chatbot.title')}</Text>
+                <Text className="font-semibold text-white" style={[IS_TV_BUILD ? styles.titleTV : styles.titleMobile]}>
+                  {t('chatbot.title')}
+                </Text>
               </View>
               <Pressable
                 onPress={() => setOpen(false)}
@@ -353,3 +365,66 @@ export default function Chatbot() {
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  fabTV: {
+    bottom: 32,
+    left: 32,
+    width: 80,
+    height: 80,
+    shadowColor: 'rgba(138, 43, 226, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 12,
+  },
+  fabMobile: {
+    bottom: 24,
+    left: 24,
+    width: 56,
+    height: 56,
+    shadowColor: 'rgba(138, 43, 226, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 12,
+  },
+  containerTV: {
+    bottom: 32,
+    left: 32,
+    width: 600,
+    height: 700,
+    maxHeight: '80vh',
+  },
+  containerMobile: {
+    bottom: 24,
+    left: 24,
+    width: 384,
+    maxWidth: 'calc(100vw - 3rem)',
+    height: 500,
+    maxHeight: '70vh',
+  },
+  headerTV: {
+    paddingVertical: 12,
+  },
+  headerMobile: {
+    paddingVertical: 8,
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  iconTV: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+  },
+  iconMobile: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+  },
+  titleTV: {
+    fontSize: 24,
+  },
+  titleMobile: {
+    fontSize: 16,
+  },
+})

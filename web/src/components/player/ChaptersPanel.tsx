@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, ScrollView, ActivityIndicator, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { List, X } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
@@ -57,9 +57,8 @@ export default function ChaptersPanel({
 
   return (
     <GlassView
-      className={`absolute top-0 right-0 h-full w-72 z-40 rounded-tl-lg rounded-bl-lg transition-transform ${
-        isOpen ? 'translate-x-0' : 'translate-x-72'
-      }`}
+      className="absolute top-0 right-0 h-full w-72 z-40 rounded-tl-lg rounded-bl-lg transition-transform"
+      style={[isOpen ? styles.panelOpen : styles.panelClosed]}
       intensity="high"
     >
       {/* Header */}
@@ -109,4 +108,13 @@ export default function ChaptersPanel({
     </GlassView>
   )
 }
+
+const styles = StyleSheet.create({
+  panelOpen: {
+    transform: [{ translateX: 0 }],
+  },
+  panelClosed: {
+    transform: [{ translateX: 288 }], // 72 * 4 = 288px (w-72 in pixels)
+  },
+});
 

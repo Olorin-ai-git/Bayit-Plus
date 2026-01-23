@@ -29,6 +29,7 @@ export interface VideoPlayerProps {
   autoPlay?: boolean
   chapters?: Chapter[]
   chaptersLoading?: boolean
+  initialSeekTime?: number
   onShowUpgrade?: () => void
 }
 

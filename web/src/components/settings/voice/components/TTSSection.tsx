@@ -3,7 +3,7 @@
  * TTS settings including volume and speed controls
  */
 
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Volume } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '@bayit/shared/ui';
@@ -34,7 +34,7 @@ export function TTSSection({
 
   return (
     <GlassView className="p-6 gap-4">
-      <View className={`flex-row items-center gap-2 mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
+      <View className="flex-row items-center gap-2 mb-1" style={isRTL && styles.rtlRow}>
         <Volume size={16} color="#A855F7" />
         <Text className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-0">
           {t('profile.voice.textToSpeech', 'Voice Responses')}
@@ -67,3 +67,9 @@ export function TTSSection({
     </GlassView>
   );
 }
+
+const styles = StyleSheet.create({
+  rtlRow: {
+    flexDirection: 'row-reverse',
+  },
+});

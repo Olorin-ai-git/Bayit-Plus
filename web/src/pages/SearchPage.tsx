@@ -7,11 +7,11 @@
  * - LLM-powered natural language search (premium)
  * - Recent searches with localStorage persistence
  * - Voice search integration
- * - Glass design system with Tailwind CSS
+ * - Glass design system with StyleSheet
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, Modal, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, ScrollView, StyleSheet } from 'react-native';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
@@ -29,6 +29,9 @@ import {
   LLMSearchButton,
   LLMSearchModal,
 } from '@bayit/shared/search';
+
+// Theme
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
@@ -161,20 +164,20 @@ export default function SearchPage() {
   const showInitialState = !hasQuery && !loading && results.length === 0;
 
   return (
-    <View className="flex-1 bg-black">
+    <View style={styles.container}>
       {/* Main Content Container */}
       <ScrollView
-        className="flex-1"
-        contentContainerClassName={`
-          px-6 py-6 max-w-7xl mx-auto w-full
-          ${IS_TV_BUILD ? 'px-12 py-12' : ''}
-        `}
+        style={styles.scrollView}
+        contentContainerStyle={[
+          styles.scrollContent,
+          IS_TV_BUILD && styles.scrollContentTV
+        ]}
       >
         {/* Search Bar Section */}
-        <View className={`mb-6 ${IS_TV_BUILD ? 'mb-12' : ''}`}>
-          <View className="flex-row items-center gap-4 mb-4">
+        <View style={[styles.searchSection, IS_TV_BUILD && styles.searchSectionTV]}>
+          <View style={styles.searchBarRow}>
             {/* Main Search Bar */}
-            <View className="flex-1">
+            <View style={styles.searchBarContainer}>
               <SearchBar
                 value={query}
                 onChange={setQuery}
@@ -204,19 +207,18 @@ export default function SearchPage() {
             {/* Advanced Filters Button */}
             <TouchableOpacity
               onPress={() => setShowFilters(true)}
-              className={`
-                px-6 py-4 rounded-full
-                bg-white/5 backdrop-blur-xl border border-white/10
-                ${IS_TV_BUILD ? 'px-8 py-5' : ''}
-              `}
+              style={[
+                styles.filtersButton,
+                IS_TV_BUILD && styles.filtersButtonTV
+              ]}
               activeOpacity={0.7}
             >
-              <View className="flex-row items-center gap-2">
-                <Text className={`text-xl ${IS_TV_BUILD ? 'text-3xl' : ''}`}>⚙️</Text>
-                <Text className={`
-                  text-white font-semibold
-                  ${IS_TV_BUILD ? 'text-xl' : 'text-base'}
-                `}>
+              <View style={styles.filtersButtonContent}>
+                <Text style={[styles.filtersEmoji, IS_TV_BUILD && styles.filtersEmojiTV]}>⚙️</Text>
+                <Text style={[
+                  styles.filtersText,
+                  IS_TV_BUILD && styles.filtersTextTV
+                ]}>
                   {t('search.advancedFilters', { defaultValue: 'Filters' })}
                 </Text>
               </View>
@@ -224,27 +226,25 @@ export default function SearchPage() {
           </View>
 
           {/* Content Type Filter Pills */}
-          <View className={`flex-row gap-3 flex-wrap ${IS_TV_BUILD ? 'gap-4' : ''}`}>
+          <View style={[styles.filterPillsRow, IS_TV_BUILD && styles.filterPillsRowTV]}>
             {CONTENT_TYPE_FILTERS.map((filter) => {
               const isActive = activeContentType === filter.id;
               return (
                 <TouchableOpacity
                   key={filter.id}
                   onPress={() => handleContentTypeChange(filter.id)}
-                  className={`
-                    px-5 py-3 rounded-full border-2
-                    ${isActive
-                      ? 'bg-purple-500 border-purple-400'
-                      : 'bg-white/5 border-white/10'}
-                    ${IS_TV_BUILD ? 'px-7 py-4' : ''}
-                  `}
+                  style={[
+                    styles.filterPill,
+                    isActive ? styles.filterPillActive : styles.filterPillInactive,
+                    IS_TV_BUILD && styles.filterPillTV
+                  ]}
                   activeOpacity={0.7}
                 >
-                  <Text className={`
-                    font-medium
-                    ${isActive ? 'text-white' : 'text-white/70'}
-                    ${IS_TV_BUILD ? 'text-lg' : 'text-sm'}
-                  `}>
+                  <Text style={[
+                    styles.filterPillText,
+                    isActive ? styles.filterPillTextActive : styles.filterPillTextInactive,
+                    IS_TV_BUILD && styles.filterPillTextTV
+                  ]}>
                     {t(filter.label, { defaultValue: filter.id.toUpperCase() })}
                   </Text>
                 </TouchableOpacity>
@@ -254,38 +254,38 @@ export default function SearchPage() {
 
           {/* Active Filters Summary */}
           {(filters.genres?.length || filters.yearMin || filters.ratingMin || filters.subtitleLanguages?.length) && (
-            <View className="mt-4 flex-row items-center gap-2 flex-wrap">
-              <Text className="text-white/60 text-sm">
+            <View style={styles.activeFiltersContainer}>
+              <Text style={styles.activeFiltersLabel}>
                 {t('search.activeFilters', { defaultValue: 'Active filters:' })}
               </Text>
               {filters.genres?.map((genre) => (
-                <View key={genre} className="px-3 py-1 bg-blue-500/30 rounded-full">
-                  <Text className="text-blue-300 text-xs">{genre}</Text>
+                <View key={genre} style={[styles.filterBadge, styles.filterBadgeGenre]}>
+                  <Text style={[styles.filterBadgeText, styles.filterBadgeTextGenre]}>{genre}</Text>
                 </View>
               ))}
               {filters.yearMin && (
-                <View className="px-3 py-1 bg-green-500/30 rounded-full">
-                  <Text className="text-green-300 text-xs">
+                <View style={[styles.filterBadge, styles.filterBadgeYear]}>
+                  <Text style={[styles.filterBadgeText, styles.filterBadgeTextYear]}>
                     {filters.yearMin}{filters.yearMax ? `-${filters.yearMax}` : '+'}
                   </Text>
                 </View>
               )}
               {filters.ratingMin && (
-                <View className="px-3 py-1 bg-yellow-500/30 rounded-full">
-                  <Text className="text-yellow-300 text-xs">{filters.ratingMin}+ ⭐</Text>
+                <View style={[styles.filterBadge, styles.filterBadgeRating]}>
+                  <Text style={[styles.filterBadgeText, styles.filterBadgeTextRating]}>{filters.ratingMin}+ ⭐</Text>
                 </View>
               )}
               {filters.subtitleLanguages?.map((lang) => (
-                <View key={lang} className="px-3 py-1 bg-purple-500/30 rounded-full">
-                  <Text className="text-purple-300 text-xs">{lang.toUpperCase()}</Text>
+                <View key={lang} style={[styles.filterBadge, styles.filterBadgeSubtitle]}>
+                  <Text style={[styles.filterBadgeText, styles.filterBadgeTextSubtitle]}>{lang.toUpperCase()}</Text>
                 </View>
               ))}
               <TouchableOpacity
                 onPress={() => setFilters({ contentTypes: filters.contentTypes })}
-                className="px-3 py-1 bg-red-500/30 rounded-full"
+                style={[styles.filterBadge, styles.filterBadgeClear]}
                 activeOpacity={0.7}
               >
-                <Text className="text-red-300 text-xs">✕ Clear All</Text>
+                <Text style={[styles.filterBadgeText, styles.filterBadgeTextClear]}>✕ Clear All</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -293,35 +293,34 @@ export default function SearchPage() {
 
         {/* Search Results or Initial State */}
         {showInitialState ? (
-          <View className="flex-1">
+          <View style={styles.initialStateContainer}>
             {/* Recent Searches */}
             {recentSearches.length > 0 && (
-              <View className={`mb-8 ${IS_TV_BUILD ? 'mb-12' : ''}`}>
-                <View className="flex-row items-center gap-2 mb-4">
-                  <Text className={`text-2xl ${IS_TV_BUILD ? 'text-3xl' : ''}`}>🕐</Text>
-                  <Text className={`
-                    text-white font-semibold
-                    ${IS_TV_BUILD ? 'text-2xl' : 'text-lg'}
-                  `}>
+              <View style={[styles.recentSearchesSection, IS_TV_BUILD && styles.recentSearchesSectionTV]}>
+                <View style={styles.recentSearchesHeader}>
+                  <Text style={[styles.recentSearchesEmoji, IS_TV_BUILD && styles.recentSearchesEmojiTV]}>🕐</Text>
+                  <Text style={[
+                    styles.recentSearchesTitle,
+                    IS_TV_BUILD && styles.recentSearchesTitleTV
+                  ]}>
                     {t('search.recentSearches', { defaultValue: 'Recent Searches' })}
                   </Text>
                 </View>
-                <View className={`flex-row flex-wrap gap-3 ${IS_TV_BUILD ? 'gap-4' : ''}`}>
+                <View style={[styles.recentSearchesGrid, IS_TV_BUILD && styles.recentSearchesGridTV]}>
                   {recentSearches.map((recentQuery, idx) => (
                     <TouchableOpacity
                       key={idx}
                       onPress={() => handleRecentSearchClick(recentQuery)}
-                      className={`
-                        px-5 py-3 rounded-full
-                        bg-white/5 border border-white/10
-                        ${IS_TV_BUILD ? 'px-7 py-4' : ''}
-                      `}
+                      style={[
+                        styles.recentSearchChip,
+                        IS_TV_BUILD && styles.recentSearchChipTV
+                      ]}
                       activeOpacity={0.7}
                     >
-                      <Text className={`
-                        text-white/80
-                        ${IS_TV_BUILD ? 'text-lg' : 'text-sm'}
-                      `}>
+                      <Text style={[
+                        styles.recentSearchChipText,
+                        IS_TV_BUILD && styles.recentSearchChipTextTV
+                      ]}>
                         {recentQuery}
                       </Text>
                     </TouchableOpacity>
@@ -331,21 +330,21 @@ export default function SearchPage() {
             )}
 
             {/* Initial Prompt */}
-            <View className={`
-              items-center justify-center py-20
-              ${IS_TV_BUILD ? 'py-32' : ''}
-            `}>
-              <Text className={`text-8xl mb-6 ${IS_TV_BUILD ? 'text-9xl mb-8' : ''}`}>🔍</Text>
-              <Text className={`
-                text-white text-center font-bold mb-3
-                ${IS_TV_BUILD ? 'text-4xl mb-4' : 'text-2xl'}
-              `}>
+            <View style={[
+              styles.promptContainer,
+              IS_TV_BUILD && styles.promptContainerTV
+            ]}>
+              <Text style={[styles.promptEmoji, IS_TV_BUILD && styles.promptEmojiTV]}>🔍</Text>
+              <Text style={[
+                styles.promptTitle,
+                IS_TV_BUILD && styles.promptTitleTV
+              ]}>
                 {t('search.promptTitle', { defaultValue: 'Search for Content' })}
               </Text>
-              <Text className={`
-                text-white/60 text-center max-w-md
-                ${IS_TV_BUILD ? 'text-xl max-w-2xl' : 'text-base'}
-              `}>
+              <Text style={[
+                styles.promptDescription,
+                IS_TV_BUILD && styles.promptDescriptionTV
+              ]}>
                 {t('search.promptDescription', {
                   defaultValue: 'Search for movies, series, live channels, podcasts, and more. Use advanced filters or smart search for best results.'
                 })}
@@ -374,11 +373,11 @@ export default function SearchPage() {
         animationType="slide"
         onRequestClose={() => setShowFilters(false)}
       >
-        <View className="flex-1 bg-black/80">
-          <View className={`
-            flex-1 mt-20 rounded-t-3xl overflow-hidden
-            ${IS_TV_BUILD ? 'mt-24' : ''}
-          `}>
+        <View style={styles.modalBackground}>
+          <View style={[
+            styles.modalContent,
+            IS_TV_BUILD && styles.modalContentTV
+          ]}>
             <SearchFilters
               filters={filters}
               onFiltersChange={setFilters}
@@ -398,3 +397,284 @@ export default function SearchPage() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  // Container
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+
+  // ScrollView
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
+    maxWidth: 1280,
+    marginHorizontal: 'auto',
+    width: '100%',
+  },
+  scrollContentTV: {
+    paddingHorizontal: spacing.xxl,
+    paddingVertical: spacing.xxl,
+  },
+
+  // Search Bar Section
+  searchSection: {
+    marginBottom: spacing.lg,
+  },
+  searchSectionTV: {
+    marginBottom: spacing.xxl,
+  },
+  searchBarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.md,
+  },
+  searchBarContainer: {
+    flex: 1,
+  },
+
+  // Advanced Filters Button
+  filtersButton: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  filtersButtonTV: {
+    paddingHorizontal: spacing.xl,
+    paddingVertical: 20,
+  },
+  filtersButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  filtersEmoji: {
+    fontSize: fontSize.xl,
+  },
+  filtersEmojiTV: {
+    fontSize: fontSize['3xl'],
+  },
+  filtersText: {
+    color: colors.text,
+    fontWeight: '600',
+    fontSize: fontSize.base,
+  },
+  filtersTextTV: {
+    fontSize: fontSize.xl,
+  },
+
+  // Content Type Filter Pills
+  filterPillsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    flexWrap: 'wrap',
+  },
+  filterPillsRowTV: {
+    gap: spacing.md,
+  },
+  filterPill: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: borderRadius.full,
+    borderWidth: 2,
+  },
+  filterPillTV: {
+    paddingHorizontal: 28,
+    paddingVertical: spacing.md,
+  },
+  filterPillActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primaryLight,
+  },
+  filterPillInactive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  filterPillText: {
+    fontWeight: '500',
+  },
+  filterPillTextTV: {
+    fontSize: fontSize.lg,
+  },
+  filterPillTextActive: {
+    color: colors.text,
+  },
+  filterPillTextInactive: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: fontSize.sm,
+  },
+
+  // Active Filters Summary
+  activeFiltersContainer: {
+    marginTop: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    flexWrap: 'wrap',
+  },
+  activeFiltersLabel: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: fontSize.sm,
+  },
+  filterBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: borderRadius.full,
+  },
+  filterBadgeGenre: {
+    backgroundColor: 'rgba(59, 130, 246, 0.3)',
+  },
+  filterBadgeYear: {
+    backgroundColor: 'rgba(16, 185, 129, 0.3)',
+  },
+  filterBadgeRating: {
+    backgroundColor: 'rgba(245, 158, 11, 0.3)',
+  },
+  filterBadgeSubtitle: {
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+  },
+  filterBadgeClear: {
+    backgroundColor: 'rgba(239, 68, 68, 0.3)',
+  },
+  filterBadgeText: {
+    fontSize: fontSize.xs,
+  },
+  filterBadgeTextGenre: {
+    color: '#93c5fd',
+  },
+  filterBadgeTextYear: {
+    color: '#6ee7b7',
+  },
+  filterBadgeTextRating: {
+    color: '#fcd34d',
+  },
+  filterBadgeTextSubtitle: {
+    color: '#d8b4fe',
+  },
+  filterBadgeTextClear: {
+    color: '#fca5a5',
+  },
+
+  // Initial State
+  initialStateContainer: {
+    flex: 1,
+  },
+
+  // Recent Searches
+  recentSearchesSection: {
+    marginBottom: spacing.xl,
+  },
+  recentSearchesSectionTV: {
+    marginBottom: spacing.xxl,
+  },
+  recentSearchesHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  recentSearchesEmoji: {
+    fontSize: fontSize['2xl'],
+  },
+  recentSearchesEmojiTV: {
+    fontSize: fontSize['3xl'],
+  },
+  recentSearchesTitle: {
+    color: colors.text,
+    fontWeight: '600',
+    fontSize: fontSize.lg,
+  },
+  recentSearchesTitleTV: {
+    fontSize: fontSize['2xl'],
+  },
+  recentSearchesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  recentSearchesGridTV: {
+    gap: spacing.md,
+  },
+  recentSearchChip: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  recentSearchChipTV: {
+    paddingHorizontal: 28,
+    paddingVertical: spacing.md,
+  },
+  recentSearchChipText: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: fontSize.sm,
+  },
+  recentSearchChipTextTV: {
+    fontSize: fontSize.lg,
+  },
+
+  // Initial Prompt
+  promptContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 80,
+  },
+  promptContainerTV: {
+    paddingVertical: 128,
+  },
+  promptEmoji: {
+    fontSize: 96,
+    marginBottom: spacing.lg,
+  },
+  promptEmojiTV: {
+    fontSize: 112,
+    marginBottom: spacing.xl,
+  },
+  promptTitle: {
+    color: colors.text,
+    textAlign: 'center',
+    fontWeight: '700',
+    marginBottom: 12,
+    fontSize: fontSize['2xl'],
+  },
+  promptTitleTV: {
+    fontSize: fontSize['4xl'],
+    marginBottom: spacing.md,
+  },
+  promptDescription: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    textAlign: 'center',
+    maxWidth: 448,
+    fontSize: fontSize.base,
+  },
+  promptDescriptionTV: {
+    fontSize: fontSize.xl,
+    maxWidth: 672,
+  },
+
+  // Modal
+  modalBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+  },
+  modalContent: {
+    flex: 1,
+    marginTop: 80,
+    borderTopLeftRadius: borderRadius.xl,
+    borderTopRightRadius: borderRadius.xl,
+    overflow: 'hidden',
+  },
+  modalContentTV: {
+    marginTop: 96,
+  },
+});

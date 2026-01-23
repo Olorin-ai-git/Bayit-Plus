@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, fontSize } from '@bayit/shared/theme';
 import { QueueStats } from '../types';
@@ -30,11 +30,11 @@ export const QueueHeader: React.FC<QueueHeaderProps> = ({
 
   return (
     <View className="mb-6">
-      <View className={`flex-row justify-between items-start gap-6 mb-4`} style={{ flexDirection: directionFlex }}>
+      <View className="flex-row justify-between items-start gap-6 mb-4" style={{ flexDirection: directionFlex }}>
         <Text className="text-2xl font-bold" style={{ textAlign, color: colors.text }}>
           {t('admin.uploads.queueStatus', 'Upload Queue')}
         </Text>
-        <View className={`flex-row gap-6 ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <View style={[styles.statsRow, isRTL && styles.rowReverse]}>
           <View className="items-center">
             <Text className="text-lg font-bold" style={{ color: colors.text }}>{stats.total_jobs}</Text>
             <Text className="text-xs mt-1" style={{ color: colors.textMuted }}>{t('admin.uploads.totalJobs', 'Total')}</Text>
@@ -68,3 +68,13 @@ export const QueueHeader: React.FC<QueueHeaderProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  statsRow: {
+    flexDirection: 'row',
+    gap: 24,
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+});

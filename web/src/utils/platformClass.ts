@@ -55,8 +55,7 @@ export function filterNativeCompatibleClasses(className: string): string {
 /**
  * Platform-aware className utility
  *
- * Usage:
- * ```tsx
+ * @example
  * import { platformClass } from '@/utils/platformClass';
  *
  * // Simple usage (auto-filters for native)
@@ -71,7 +70,6 @@ export function filterNativeCompatibleClasses(className: string): string {
  * )} />
  * // On web: 'hover:bg-purple-500/20 cursor-pointer backdrop-blur-xl'
  * // On iOS/Android: 'bg-purple-500/20'
- * ```
  *
  * @param webClass - Full className string with web utilities
  * @param nativeClass - Optional native-safe fallback className
@@ -98,16 +96,15 @@ export function platformClass(
  * Platform-specific style object for dynamic values
  *
  * Usage:
- * ```tsx
+ * @example
  * <View
  *   className={platformClass('w-full')}
  *   style={platformStyle({
  *     web: { cursor: isDragging ? 'grabbing' : 'grab' },
- *     ios: { /* iOS-specific styles */ },
- *     android: { /* Android-specific styles */ },
+ *     ios: { },
+ *     android: { },
  *   })}
  * />
- * ```
  */
 export function platformStyle(styles: {
   web?: Record<string, any>;
@@ -161,7 +158,7 @@ export function getPlatformTouchSize(webSize: number = 32): string {
 /**
  * Platform detection utilities
  */
-export const Platform Utils = {
+export const PlatformUtils = {
   isWeb: Platform.OS === 'web',
   isIOS: Platform.OS === 'ios',
   isAndroid: Platform.OS === 'android',

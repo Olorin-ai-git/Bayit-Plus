@@ -1,7 +1,7 @@
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
 import { HelpCircle, Mail, Phone, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
@@ -28,43 +28,42 @@ export default function HelpPage() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-gray-900" contentContainerStyle={{ padding: spacing.lg, paddingBottom: spacing.xl * 2 }}>
-      <Text className="text-3xl font-bold text-white mb-1" style={{ textAlign }}>{t('nav.help')}</Text>
-      <Text className="text-base text-white/60 mb-8" style={{ textAlign }}>{t('help.subtitle', 'How can we help you?')}</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      <Text style={[styles.title, { textAlign }]}>{t('nav.help')}</Text>
+      <Text style={[styles.subtitle, { textAlign }]}>{t('help.subtitle', 'How can we help you?')}</Text>
 
       {/* Contact Options */}
-      <View className={`flex-row flex-wrap gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-        <GlassView className="flex-1 min-w-[200px] p-6 items-center gap-2 rounded-xl">
+      <View style={[styles.contactContainer, isRTL && styles.contactContainerRTL]}>
+        <GlassView style={styles.contactCard}>
           <Mail size={32} color={colors.primary} />
-          <Text className="text-base font-semibold text-white mt-2" style={{ textAlign }}>{t('help.email', 'Email Support')}</Text>
-          <Text className="text-sm text-white/60" style={{ textAlign }}>support@bayitplus.com</Text>
+          <Text style={[styles.contactTitle, { textAlign }]}>{t('help.email', 'Email Support')}</Text>
+          <Text style={[styles.contactInfo, { textAlign }]}>support@bayitplus.com</Text>
         </GlassView>
 
-        <GlassView className="flex-1 min-w-[200px] p-6 items-center gap-2 rounded-xl">
+        <GlassView style={styles.contactCard}>
           <Phone size={32} color={colors.primary} />
-          <Text className="text-base font-semibold text-white mt-2" style={{ textAlign }}>{t('help.phone', 'Phone Support')}</Text>
-          <Text className="text-sm text-white/60" style={{ textAlign }}>+972-3-XXX-XXXX</Text>
+          <Text style={[styles.contactTitle, { textAlign }]}>{t('help.phone', 'Phone Support')}</Text>
+          <Text style={[styles.contactInfo, { textAlign }]}>+972-3-XXX-XXXX</Text>
         </GlassView>
 
-        <GlassView className="flex-1 min-w-[200px] p-6 items-center gap-2 rounded-xl">
+        <GlassView style={styles.contactCard}>
           <MessageCircle size={32} color={colors.primary} />
-          <Text className="text-base font-semibold text-white mt-2" style={{ textAlign }}>{t('help.chat', 'Live Chat')}</Text>
-          <Text className="text-sm text-white/60" style={{ textAlign }}>{t('help.chatAvailable', 'Available 24/7')}</Text>
+          <Text style={[styles.contactTitle, { textAlign }]}>{t('help.chat', 'Live Chat')}</Text>
+          <Text style={[styles.contactInfo, { textAlign }]}>{t('help.chatAvailable', 'Available 24/7')}</Text>
         </GlassView>
       </View>
 
       {/* FAQ Section */}
-      <Text className="text-xl font-semibold text-white mt-8 mb-4" style={{ textAlign }}>{t('help.faq.title', 'Frequently Asked Questions')}</Text>
-      <GlassView className="p-4 rounded-xl">
+      <Text style={[styles.faqSectionTitle, { textAlign }]}>{t('help.faq.title', 'Frequently Asked Questions')}</Text>
+      <GlassView style={styles.faqContainer}>
         {faqItems.map((item, index) => (
           <View key={index}>
             <Pressable
-              className="flex-row items-center gap-4 py-4"
-              style={{ flexDirection }}
+              style={[styles.faqQuestion, { flexDirection }]}
               onPress={() => toggleFaq(index)}
             >
               <HelpCircle size={20} color={colors.primary} />
-              <Text className="flex-1 text-base text-white font-medium" style={{ textAlign }}>
+              <Text style={[styles.faqQuestionText, { textAlign }]}>
                 {t(item.questionKey, `Question ${index + 1}`)}
               </Text>
               {expandedFaq === index ? (
@@ -74,19 +73,114 @@ export default function HelpPage() {
               )}
             </Pressable>
             {expandedFaq === index && (
-              <Text className={`text-sm text-white/70 pb-4 leading-6 ${isRTL ? 'pr-8' : 'pl-8'}`} style={{ textAlign }}>
+              <Text style={[styles.faqAnswer, isRTL ? styles.faqAnswerRTL : styles.faqAnswerLTR, { textAlign }]}>
                 {t(item.answerKey, `Answer ${index + 1}`)}
               </Text>
             )}
-            {index < faqItems.length - 1 && <View className="h-px bg-white/10" />}
+            {index < faqItems.length - 1 && <View style={styles.faqDivider} />}
           </View>
         ))}
       </GlassView>
 
       {/* App Info */}
-      <View className="items-center mt-16">
-        <Text className="text-xs text-white/60">{t('common.appVersion', 'Bayit+ v1.0.0')}</Text>
+      <View style={styles.appInfoContainer}>
+        <Text style={styles.appInfoText}>{t('common.appVersion', 'Bayit+ v1.0.0')}</Text>
       </View>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  contentContainer: {
+    padding: spacing.lg,
+    paddingBottom: spacing.xl * 2,
+  },
+  title: {
+    fontSize: fontSize['3xl'],
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  subtitle: {
+    fontSize: fontSize.base,
+    color: colors.textMuted,
+    marginBottom: spacing.xl,
+  },
+  contactContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+  },
+  contactContainerRTL: {
+    flexDirection: 'row-reverse',
+  },
+  contactCard: {
+    flex: 1,
+    minWidth: 200,
+    padding: spacing.xl,
+    alignItems: 'center',
+    gap: spacing.xs,
+    borderRadius: borderRadius.xl,
+  },
+  contactTitle: {
+    fontSize: fontSize.base,
+    fontWeight: '600',
+    color: colors.text,
+    marginTop: spacing.xs,
+  },
+  contactInfo: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+  },
+  faqSectionTitle: {
+    fontSize: fontSize.xl,
+    fontWeight: '600',
+    color: colors.text,
+    marginTop: spacing.xl,
+    marginBottom: spacing.md,
+  },
+  faqContainer: {
+    padding: spacing.md,
+    borderRadius: borderRadius.xl,
+  },
+  faqQuestion: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingVertical: spacing.md,
+  },
+  faqQuestionText: {
+    flex: 1,
+    fontSize: fontSize.base,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  faqAnswer: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+    paddingBottom: spacing.md,
+    lineHeight: fontSize.sm * 1.5,
+  },
+  faqAnswerLTR: {
+    paddingLeft: spacing.xl,
+  },
+  faqAnswerRTL: {
+    paddingRight: spacing.xl,
+  },
+  faqDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  appInfoContainer: {
+    alignItems: 'center',
+    marginTop: spacing.xl * 2,
+  },
+  appInfoText: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+  },
+});

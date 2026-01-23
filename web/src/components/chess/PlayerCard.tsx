@@ -2,7 +2,7 @@
  * Player card component showing player info and status.
  */
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { colors, spacing } from '@bayit/shared/theme';
 import { User, Crown } from 'lucide-react';
 
@@ -35,14 +35,19 @@ export default function PlayerCard({ player, isCurrentTurn, isHost = false }: Pl
   };
 
   return (
-    <View className={`bg-black/30 backdrop-blur-xl rounded-xl p-4 my-2 border-2 shadow-md ${
-      isCurrentTurn ? 'border-purple-500 shadow-purple-500/40' : 'border-transparent'
-    } ${!player.is_connected ? 'opacity-60' : ''}`}>
+    <View
+      className="bg-black/30 backdrop-blur-xl rounded-xl p-4 my-2 border-2 shadow-md"
+      style={[
+        isCurrentTurn ? styles.cardActive : styles.cardInactive,
+        !player.is_connected && styles.disconnected
+      ]}
+    >
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-3 flex-1">
-          <View className={`w-10 h-10 rounded-full justify-center items-center ${
-            player.color === 'white' ? 'bg-white' : 'bg-black border-2 border-white'
-          }`}>
+          <View
+            className="w-10 h-10 rounded-full justify-center items-center"
+            style={[player.color === 'white' ? styles.colorWhite : styles.colorBlack]}
+          >
             <User size={20} color={player.color === 'white' ? colors.dark : colors.text} />
           </View>
 
@@ -57,9 +62,10 @@ export default function PlayerCard({ player, isCurrentTurn, isHost = false }: Pl
 
         {player.time_remaining_ms !== undefined && (
           <View className="bg-black/30 px-3 py-1.5 rounded-lg">
-            <Text className={`text-base font-semibold tabular-nums ${
-              isCurrentTurn ? 'text-yellow-500' : 'text-white'
-            }`}>
+            <Text
+              className="text-base font-semibold tabular-nums"
+              style={[isCurrentTurn ? styles.timeActive : styles.timeInactive]}
+            >
               {formatTime(player.time_remaining_ms)}
             </Text>
           </View>
@@ -79,3 +85,30 @@ export default function PlayerCard({ player, isCurrentTurn, isHost = false }: Pl
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  cardActive: {
+    borderColor: '#a855f7',
+    shadowColor: 'rgba(168, 85, 247, 0.4)',
+  },
+  cardInactive: {
+    borderColor: 'transparent',
+  },
+  disconnected: {
+    opacity: 0.6,
+  },
+  colorWhite: {
+    backgroundColor: '#ffffff',
+  },
+  colorBlack: {
+    backgroundColor: '#000000',
+    borderWidth: 2,
+    borderColor: '#ffffff',
+  },
+  timeActive: {
+    color: '#eab308',
+  },
+  timeInactive: {
+    color: '#ffffff',
+  },
+});

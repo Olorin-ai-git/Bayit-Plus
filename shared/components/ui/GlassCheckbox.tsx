@@ -4,8 +4,9 @@ import {
   Text,
   TouchableOpacity,
   Animated,
+  StyleSheet,
 } from 'react-native';
-import { colors, borderRadius, spacing } from '../theme';
+import { colors, spacing } from '../theme';
 import { isTV } from '../utils/platform';
 import { useTVFocus } from '../hooks/useTVFocus';
 import { useDirection } from '../../hooks/useDirection';
@@ -38,10 +39,12 @@ export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({
     }
   };
 
+  const checkboxSize = isTV ? 32 : 24;
+
   return (
     <View>
       <TouchableOpacity
-        className={`flex items-center ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}
+        style={[styles.touchable, isRTL && styles.rowReverse]}
         onPress={handlePress}
         onFocus={handleFocus}
         onBlur={handleBlur}
@@ -51,26 +54,21 @@ export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({
         hasTVPreferredFocus={hasTVPreferredFocus}
       >
         <Animated.View
-          className={`rounded-sm border-2 items-center justify-center ${
-            checked ? 'bg-purple-500 border-purple-500' : 'bg-white/10 border-white/20'
-          } ${disabled ? 'opacity-50' : ''} ${isRTL ? 'ml-2' : 'mr-2'}`}
           style={[
+            styles.checkbox,
             {
-              width: isTV ? 32 : 24,
-              height: isTV ? 32 : 24,
+              width: checkboxSize,
+              height: checkboxSize,
             },
+            checked ? styles.checkboxChecked : styles.checkboxUnchecked,
+            disabled && styles.disabled,
+            isRTL ? styles.marginLeft : styles.marginRight,
             focusStyle,
             scaleTransform,
           ]}
         >
           {checked && (
-            <Text
-              className="font-bold"
-              style={{
-                fontSize: isTV ? 18 : 14,
-                color: colors.background,
-              }}
-            >
+            <Text style={[styles.checkmark, { fontSize: isTV ? 18 : 14 }]}>
               ✓
             </Text>
           )}
@@ -78,8 +76,12 @@ export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({
 
         {label && (
           <Text
-            className={`text-white ${isRTL ? 'text-right' : 'text-left'} ${disabled ? 'text-gray-500' : ''}`}
-            style={{ fontSize: isTV ? 18 : 16 }}
+            style={[
+              styles.label,
+              { fontSize: isTV ? 18 : 16 },
+              isRTL ? styles.textRight : styles.textLeft,
+              disabled && styles.labelDisabled,
+            ]}
           >
             {label}
           </Text>
@@ -87,14 +89,66 @@ export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({
       </TouchableOpacity>
 
       {error && (
-        <Text
-          className={`text-xs text-red-500 mt-1 ${isRTL ? 'text-right' : 'text-left'}`}
-        >
+        <Text style={[styles.errorText, isRTL ? styles.textRight : styles.textLeft]}>
           {error}
         </Text>
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  touchable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  checkbox: {
+    borderRadius: 4,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxChecked: {
+    backgroundColor: '#a855f7',
+    borderColor: '#a855f7',
+  },
+  checkboxUnchecked: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  marginLeft: {
+    marginLeft: spacing.sm,
+  },
+  marginRight: {
+    marginRight: spacing.sm,
+  },
+  checkmark: {
+    fontWeight: 'bold',
+    color: colors.background,
+  },
+  label: {
+    color: colors.text,
+  },
+  labelDisabled: {
+    color: '#6b7280',
+  },
+  textLeft: {
+    textAlign: 'left',
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+  errorText: {
+    fontSize: 12,
+    color: colors.error,
+    marginTop: spacing.xs,
+  },
+});
 
 export default GlassCheckbox;

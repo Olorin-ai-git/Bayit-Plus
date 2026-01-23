@@ -204,7 +204,7 @@ export default function Footer() {
                     {t('footer.sitemap', 'Sitemap')}
                   </Text>
                 </Link>
-                <Text className={platformClass('text-[10px] text-white/40')}>•</Text>
+                <View className={platformClass('w-1 h-1 rounded-full bg-white/40 mx-1')} />
                 <Link to="/accessibility" style={{ textDecoration: 'none' }}>
                   <Text className={platformClass('text-[10px] text-white/40')}>
                     {t('footer.accessibility', 'Accessibility')}

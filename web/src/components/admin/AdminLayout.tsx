@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, ActivityIndicator, Pressable, useWindowDimensions } from 'react-native'
+import { View, Text, ActivityIndicator, Pressable, useWindowDimensions, StyleSheet } from 'react-native'
 import { Outlet, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Menu } from 'lucide-react'
@@ -79,23 +79,27 @@ export default function AdminLayout() {
     <View className="flex-1 h-full flex-row relative" style={{ backgroundColor: colors.background }}>
       {/* Main Content */}
       <View
-        className={`flex-1 h-full overflow-auto relative pt-4 ${
-          isDragging ? 'select-none' : ''
-        }`}
-        style={{
-          ...(sidebarOpen && !isMobile && (isRTL ? { marginRight: sidebarWidth } : { marginLeft: sidebarWidth })),
-          paddingRight: isRTL ? 56 : spacing.lg,
-          paddingLeft: isRTL ? spacing.lg : 56,
-          transition: isDragging ? 'none' : 'margin 0.3s ease',
-        } as any}
+        style={[
+          styles.mainContent,
+          isDragging && styles.mainContentDragging,
+          sidebarOpen && !isMobile && (isRTL
+            ? { marginRight: sidebarWidth }
+            : { marginLeft: sidebarWidth }
+          ),
+          {
+            paddingRight: isRTL ? 56 : spacing.lg,
+            paddingLeft: isRTL ? spacing.lg : 56,
+            transition: isDragging ? 'none' : 'margin 0.3s ease',
+          } as any
+        ]}
       >
         {/* Mobile Menu Toggle */}
         {isMobile && (
           <Pressable
-            className={`absolute top-4 w-11 h-11 rounded-xl justify-center items-center z-10 ${
-              isRTL ? 'right-4' : 'left-4'
-            }`}
-            style={{ backgroundColor: colors.glass }}
+            style={[
+              styles.mobileMenuToggle,
+              isRTL ? styles.mobileMenuToggleRTL : styles.mobileMenuToggleLTR
+            ]}
             onPress={() => setSidebarOpen(!sidebarOpen)}
           >
             <Menu size={24} color={colors.text} />
@@ -157,3 +161,33 @@ export default function AdminLayout() {
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  mainContent: {
+    flex: 1,
+    height: '100%',
+    overflow: 'auto',
+    position: 'relative',
+    paddingTop: 16,
+  },
+  mainContentDragging: {
+    userSelect: 'none',
+  },
+  mobileMenuToggle: {
+    position: 'absolute',
+    top: 16,
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+    backgroundColor: colors.glass,
+  },
+  mobileMenuToggleLTR: {
+    left: 16,
+  },
+  mobileMenuToggleRTL: {
+    right: 16,
+  },
+});

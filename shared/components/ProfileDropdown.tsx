@@ -1,27 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Animated,
-  Platform,
-  Image,
-} from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, Modal, Image, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useDirection } from '../hooks/useDirection';
-import { Ionicons } from '@expo/vector-icons';
-import { GlassView } from './ui';
-import { colors, spacing, borderRadius } from '../theme';
-
-// Web-only: createPortal for dropdown positioning
-let createPortal: typeof import('react-dom').createPortal | null = null;
-if (Platform.OS === 'web') {
-  try {
-    createPortal = require('react-dom').createPortal;
-  } catch {
-    // react-dom not available
-  }
-}
+import { User, Star, Download, LogOut, ChevronRight } from 'lucide-react';
+import { colors } from '../theme';
 
 interface ProfileDropdownProps {
   user: {
@@ -42,48 +23,10 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
   onNavigate,
   onLogout,
 }) => {
-  const { t } = useTranslation();
-  const { isRTL } = useDirection();
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, right: 0 });
-  const buttonRef = useRef<View>(null);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: isOpen ? 1 : 0,
-      duration: 200,
-      useNativeDriver: true,
-    }).start();
-  }, [isOpen]);
-
-  const handleOpenDropdown = () => {
-    if (!isOpen && buttonRef.current) {
-      const node = buttonRef.current as any;
-      if (node && node.measure) {
-        node.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
-          setDropdownPosition({
-            top: pageY + height + 8,
-            left: isRTL ? undefined : (pageX - 200 + width),
-            right: isRTL ? window.innerWidth - pageX - width : undefined,
-          });
-        });
-      } else if (typeof document !== 'undefined') {
-        const element = node as HTMLElement;
-        if (element && element.getBoundingClientRect) {
-          const rect = element.getBoundingClientRect();
-          // Position dropdown to align right edge with button
-          setDropdownPosition({
-            top: rect.bottom + 8,
-            left: isRTL ? undefined : (rect.right - 280),
-            right: isRTL ? window.innerWidth - rect.right : undefined,
-          });
-        }
-      }
-    }
-    setIsOpen(!isOpen);
-  };
+  const isRTL = i18n.language === 'he' || i18n.language === 'ar';
 
   const handleNavigate = (path: string) => {
     setIsOpen(false);
@@ -95,7 +38,6 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
     onLogout();
   };
 
-  // Get initials for avatar
   const getInitials = () => {
     if (!user?.name) return 'U';
     return user.name
@@ -106,7 +48,6 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
       .slice(0, 2);
   };
 
-  // Get subscription badge color
   const getBadgeColor = () => {
     const plan = user?.subscription?.plan?.toLowerCase();
     if (plan === 'family') return '#A855F7';
@@ -115,59 +56,53 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
   };
 
   return (
-    <View className="relative justify-center items-center z-[9999]">
+    <View style={styles.container}>
       <TouchableOpacity
-        ref={buttonRef as any}
-        onPress={handleOpenDropdown}
+        onPress={() => setIsOpen(!isOpen)}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        className={`w-10 h-10 justify-center items-center rounded-lg bg-white/5 border ${isFocused ? 'border-purple-500 bg-purple-600/30' : 'border-transparent'} overflow-hidden`}
+        style={[styles.button, isFocused && styles.buttonFocused]}
+        accessibilityLabel={t('profile.dropdown.myProfile', 'My Profile')}
       >
         {user?.avatar ? (
-          <Image source={{ uri: user.avatar }} className="w-9 h-9 rounded" />
+          <Image source={{ uri: user.avatar }} style={styles.avatar} />
         ) : (
-          <Ionicons name="person" size={20} color={colors.text} />
+          <User size={20} color={colors.text} />
         )}
       </TouchableOpacity>
 
-      {isOpen && Platform.OS === 'web' && typeof document !== 'undefined' && createPortal(
-        <>
-          {/* Backdrop */}
-          <TouchableOpacity
-            className="fixed top-0 left-0 right-0 bottom-0 bg-transparent z-[9998]"
-            activeOpacity={1}
-            onPress={() => setIsOpen(false)}
-          />
-          {/* Dropdown */}
-          <Animated.View
-            className="fixed w-[280px] z-[10000]"
-            style={{
-              opacity: fadeAnim,
-              top: dropdownPosition.top,
-              left: dropdownPosition.left,
-              right: dropdownPosition.right,
-            }}
-          >
-            <GlassView intensity="high" className="p-4 rounded-lg">
+      <Modal
+        visible={isOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsOpen(false)}
+      >
+        <TouchableOpacity
+          style={styles.backdrop}
+          activeOpacity={1}
+          onPress={() => setIsOpen(false)}
+        >
+          <View style={[styles.dropdown, isRTL ? styles.dropdownRTL : styles.dropdownLTR]}>
+            <View style={styles.dropdownInner}>
               {/* User Info Section */}
-              <View className="flex-row items-center gap-2 pb-4">
+              <View style={styles.userInfo}>
                 {user?.avatar ? (
-                  <Image source={{ uri: user.avatar }} className="w-12 h-12 rounded-full" />
+                  <Image source={{ uri: user.avatar }} style={styles.userAvatar} />
                 ) : (
-                  <View className="w-12 h-12 rounded-full justify-center items-center" style={{ backgroundColor: getBadgeColor() }}>
-                    <Text className="text-lg font-bold text-white">{getInitials()}</Text>
+                  <View style={[styles.userAvatarPlaceholder, { backgroundColor: getBadgeColor() }]}>
+                    <Text style={styles.userInitials}>{getInitials()}</Text>
                   </View>
                 )}
-                <View className="flex-1 gap-0.5">
-                  <Text className="text-base font-semibold text-white" numberOfLines={1}>
+                <View style={styles.userDetails}>
+                  <Text style={styles.userName} numberOfLines={1}>
                     {user?.name || t('profile.guest', 'Guest')}
                   </Text>
-                  <Text className="text-xs text-white/60" numberOfLines={1}>
+                  <Text style={styles.userEmail} numberOfLines={1}>
                     {user?.email}
                   </Text>
                   {user?.subscription?.plan && (
-                    <View className="self-start px-2 py-0.5 rounded mt-1" style={{ backgroundColor: `${getBadgeColor()}20` }}>
-                      <Text className="text-[10px] font-semibold uppercase" style={{ color: getBadgeColor() }}>
+                    <View style={[styles.badge, { backgroundColor: `${getBadgeColor()}20` }]}>
+                      <Text style={[styles.badgeText, { color: getBadgeColor() }]}>
                         {user.subscription.plan}
                       </Text>
                     </View>
@@ -175,61 +110,223 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
                 </View>
               </View>
 
-              <View className="h-px bg-white/10 my-2" />
+              <View style={styles.divider} />
 
-              {/* Quick Actions */}
+              {/* Menu Items */}
               <TouchableOpacity
-                className="flex-row items-center gap-2 py-2 px-2 rounded-lg"
+                style={styles.menuItem}
                 onPress={() => handleNavigate('/profile')}
               >
-                <Ionicons name="person" size={18} color={colors.textSecondary} />
-                <Text className="flex-1 text-sm text-white">
+                <User size={18} color={colors.textSecondary} />
+                <Text style={styles.menuItemText}>
                   {t('profile.dropdown.myProfile', 'My Profile')}
                 </Text>
-                <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+                <ChevronRight size={16} color={colors.textMuted} />
               </TouchableOpacity>
 
               <TouchableOpacity
-                className="flex-row items-center gap-2 py-2 px-2 rounded-lg"
+                style={styles.menuItem}
                 onPress={() => handleNavigate('/favorites')}
               >
-                <Ionicons name="star" size={18} color={colors.warning} />
-                <Text className="flex-1 text-sm text-white">
+                <Star size={18} color={colors.warning} />
+                <Text style={styles.menuItemText}>
                   {t('profile.dropdown.favorites', 'Favorites')}
                 </Text>
-                <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+                <ChevronRight size={16} color={colors.textMuted} />
               </TouchableOpacity>
 
               <TouchableOpacity
-                className="flex-row items-center gap-2 py-2 px-2 rounded-lg"
+                style={styles.menuItem}
                 onPress={() => handleNavigate('/downloads')}
               >
-                <Ionicons name="download" size={18} color={colors.primary} />
-                <Text className="flex-1 text-sm text-white">
+                <Download size={18} color={colors.primary} />
+                <Text style={styles.menuItemText}>
                   {t('profile.dropdown.downloads', 'Downloads')}
                 </Text>
-                <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+                <ChevronRight size={16} color={colors.textMuted} />
               </TouchableOpacity>
 
-              <View className="h-px bg-white/10 my-2" />
+              <View style={styles.divider} />
 
               {/* Logout */}
               <TouchableOpacity
-                className="flex-row items-center gap-2 py-2 px-2 rounded-lg"
+                style={styles.menuItem}
                 onPress={handleLogout}
               >
-                <Ionicons name="log-out" size={18} color={colors.error} />
-                <Text className="text-sm text-red-500">
+                <LogOut size={18} color={colors.error} />
+                <Text style={[styles.menuItemText, styles.logoutText]}>
                   {t('profile.dropdown.signOut', 'Sign Out')}
                 </Text>
               </TouchableOpacity>
-            </GlassView>
-          </Animated.View>
-        </>,
-        document.body
-      )}
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+  button: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'transparent',
+    overflow: 'hidden',
+  },
+  buttonFocused: {
+    borderColor: colors.primary,
+    backgroundColor: 'rgba(139, 92, 246, 0.3)',
+  },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 4,
+  },
+  backdrop: {
+    ...Platform.select({
+      web: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      },
+      default: {
+        flex: 1,
+      },
+    }),
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  dropdown: {
+    ...Platform.select({
+      web: {
+        position: 'absolute',
+        top: 70,
+        width: 280,
+      },
+      default: {
+        width: 320,
+        maxWidth: '90%',
+        marginTop: 80,
+      },
+    }),
+  },
+  dropdownLTR: {
+    ...Platform.select({
+      web: {
+        right: 90,
+      },
+      default: {
+        alignSelf: 'flex-end',
+        marginRight: 20,
+      },
+    }),
+  },
+  dropdownRTL: {
+    ...Platform.select({
+      web: {
+        left: 90,
+      },
+      default: {
+        alignSelf: 'flex-start',
+        marginLeft: 20,
+      },
+    }),
+  },
+  dropdownInner: {
+    backgroundColor: 'rgba(10, 10, 10, 0.95)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.3)',
+    padding: 16,
+    ...Platform.select({
+      web: {
+        backdropFilter: 'blur(20px)',
+        // @ts-ignore
+        WebkitBackdropFilter: 'blur(20px)',
+      },
+    }),
+  },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 12,
+  },
+  userAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+  },
+  userAvatarPlaceholder: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  userInitials: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  userDetails: {
+    flex: 1,
+    gap: 2,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  userEmail: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  badge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginTop: 4,
+  },
+  badgeText: {
+    fontSize: 10,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    marginVertical: 8,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+  },
+  menuItemText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.text,
+  },
+  logoutText: {
+    color: colors.error,
+  },
+});
 
 export default ProfileDropdown;

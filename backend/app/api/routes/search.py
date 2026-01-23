@@ -20,6 +20,8 @@ from app.core.config import settings
 from app.core.security import get_current_premium_user, get_optional_user
 from app.models.search_analytics import SearchQuery
 from app.models.user import User
+from app.models.content_embedding import SceneSearchQuery, SceneSearchResult
+from app.services.olorin.search.searcher import scene_search
 from app.services.unified_search_service import (SearchFilters, SearchResults,
                                                  UnifiedSearchService)
 from app.services.vod_llm_search_service import VODLLMSearchService
@@ -49,6 +51,25 @@ class ClickTrackingRequest(BaseModel):
     content_id: str = Field(..., description="Clicked content ID")
     position: int = Field(..., ge=1, description="Position in results (1-indexed)")
     time_to_click_ms: int = Field(..., ge=0, description="Time from search to click")
+
+
+class SceneSearchRequest(BaseModel):
+    """Request model for scene search within content or series"""
+
+    query: str = Field(..., min_length=2, max_length=500, description="Scene query")
+    content_id: Optional[str] = Field(None, description="Search within specific content")
+    series_id: Optional[str] = Field(None, description="Search across series episodes")
+    language: str = Field("he", description="Content language")
+    limit: int = Field(20, ge=1, le=100, description="Maximum results")
+    min_score: float = Field(0.5, ge=0.0, le=1.0, description="Minimum relevance score")
+
+
+class SceneSearchResponse(BaseModel):
+    """Response model for scene search"""
+
+    query: str
+    results: List[SceneSearchResult]
+    total_results: int
 
 
 @router.get("/unified", response_model=SearchResults)
@@ -183,6 +204,68 @@ async def search_in_subtitles(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Subtitle search failed: {str(e)}",
+        )
+
+
+@router.post("/scene", response_model=SceneSearchResponse)
+async def search_scenes(
+    request: SceneSearchRequest,
+    current_user: Optional[User] = Depends(get_optional_user),
+):
+    """
+    Search for specific scenes within content or series.
+
+    Returns results with timestamps for deep-linking to specific moments.
+    Useful for finding specific quotes, moments, or topics in videos.
+
+    Examples:
+    - Search "Marty burns almanac" in Back to the Future → Exact scene timestamp
+    - Search across all episodes of a series for a specific quote
+    - Find where a specific topic is discussed in a documentary
+
+    Returns:
+    - Matched text with context
+    - Timestamp for deep-linking
+    - Episode info for series content (S2E5 format)
+    """
+    try:
+        # Build scene search query
+        query = SceneSearchQuery(
+            query=request.query,
+            content_id=request.content_id,
+            series_id=request.series_id,
+            language=request.language,
+            limit=request.limit,
+            min_score=request.min_score,
+        )
+
+        # Execute scene search
+        results = await scene_search(query=query)
+
+        # Log analytics
+        await SearchQuery.log_search(
+            query=request.query,
+            search_type="scene",
+            result_count=len(results),
+            filters={
+                "content_id": request.content_id,
+                "series_id": request.series_id,
+                "language": request.language,
+            },
+            user_id=str(current_user.id) if current_user else None,
+        )
+
+        return SceneSearchResponse(
+            query=request.query,
+            results=results,
+            total_results=len(results),
+        )
+
+    except Exception as e:
+        logger.error(f"Scene search failed: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Scene search failed: {str(e)}",
         )
 
 

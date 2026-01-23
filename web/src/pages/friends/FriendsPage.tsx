@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { ScrollView, View, Text } from 'react-native';
+import { ScrollView, View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassTabs, GlassModal } from '@bayit/shared/ui';
-import { spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@bayit/shared/theme';
 import { StatsHeader } from './components';
 import { FriendsTab, RequestsTab, SearchTab } from './tabs';
 import { useFriendsData } from './hooks';
 import type { TabId } from './types';
+
+declare const __TV__: boolean;
+const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
 export default function FriendsPage() {
   const { t, i18n } = useTranslation();
@@ -48,14 +51,14 @@ export default function FriendsPage() {
   ];
 
   return (
-    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg, paddingBottom: spacing.xl * 2, maxWidth: 1200, marginHorizontal: 'auto', width: '100%' }}>
+    <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
       <StatsHeader
         friendsCount={friends.length}
         pendingCount={incomingRequests.length}
         isRTL={isRTL}
       />
 
-      <View className="mb-4">
+      <View style={styles.tabsContainer}>
         <GlassTabs
           tabs={tabs}
           activeTab={activeTab}
@@ -63,7 +66,7 @@ export default function FriendsPage() {
         />
       </View>
 
-      <View className="gap-4">
+      <View style={styles.contentContainer}>
         {activeTab === 'friends' && (
           <FriendsTab
             friends={friends}
@@ -98,7 +101,7 @@ export default function FriendsPage() {
         )}
       </View>
 
-      {error && <Text className="text-sm text-[#ef4444] text-center mt-4">{error}</Text>}
+      {error && <Text style={styles.errorText}>{error}</Text>}
 
       <GlassModal
         visible={modalVisible}
@@ -117,3 +120,29 @@ export default function FriendsPage() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  page: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  pageContent: {
+    padding: IS_TV_BUILD ? spacing.xl : spacing.lg,
+    paddingBottom: spacing.xl * 2,
+    maxWidth: 1200,
+    marginHorizontal: 'auto',
+    width: '100%',
+  },
+  tabsContainer: {
+    marginBottom: spacing.md,
+  },
+  contentContainer: {
+    gap: spacing.md,
+  },
+  errorText: {
+    fontSize: 14,
+    color: colors.error,
+    textAlign: 'center',
+    marginTop: spacing.md,
+  },
+});

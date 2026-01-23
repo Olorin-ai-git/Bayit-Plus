@@ -117,6 +117,37 @@ class DialogueSearchQuery(BaseModel):
     min_score: float = Field(default=0.6, ge=0.0, le=1.0)
 
 
+class SceneSearchQuery(BaseModel):
+    """Search for scenes within specific content or series."""
+
+    query: str = Field(..., min_length=2, max_length=500)
+    content_id: Optional[str] = Field(
+        default=None, description="Search within specific content"
+    )
+    series_id: Optional[str] = Field(
+        default=None, description="Search across all episodes of series"
+    )
+    language: str = Field(default="he")
+    limit: int = Field(default=20, ge=1, le=100)
+    min_score: float = Field(default=0.5, ge=0.0, le=1.0)
+
+
+class SceneSearchResult(BaseModel):
+    """Scene search result with deep-linking."""
+
+    content_id: str
+    title: str
+    title_en: Optional[str] = None
+    episode_info: Optional[str] = None  # "S2E5" for series
+    thumbnail_url: Optional[str] = None
+    matched_text: str
+    context_text: Optional[str] = None
+    relevance_score: float
+    timestamp_seconds: float
+    timestamp_formatted: str
+    deep_link: str  # "/watch/{content_id}?t={timestamp}"
+
+
 class IndexContentRequest(BaseModel):
     """Request to index content for semantic search."""
 

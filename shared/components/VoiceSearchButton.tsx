@@ -520,32 +520,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
         </View>
       </Modal>
 
-      {/* Voice listening status indicator */}
-      {isListeningToggle && (
-        <View
-          className={`absolute flex-row items-center bg-black/85 px-2 py-1 rounded min-w-[120px] max-w-[200px] ${
-            tvMode ? '-bottom-9 min-w-[150px] max-w-[300px]' : '-bottom-7'
-          }`}
-          style={{ left: '50%', transform: [{ translateX: -100 }] as any }}
-        >
-          <Text className={`text-white flex-shrink ${tvMode ? 'text-xs' : 'text-[10px]'}`}>
-            {error ? `Error: ${error}` :
-             wakeWordError ? `Mic Error: ${wakeWordError.message}` :
-             isConstantListening ? t('voice.active', 'Voice Active') :
-             'Starting...'}
-          </Text>
-          {isConstantListening && !error && !wakeWordError && (
-            <View className="ml-1 w-3 h-3 rounded-full bg-green-500 justify-center items-center">
-              <Text className="text-[8px] text-white font-bold">✓</Text>
-            </View>
-          )}
-          {(error || wakeWordError) && (
-            <View className="ml-1 w-3 h-3 rounded-full bg-red-500 justify-center items-center">
-              <Text className="text-[8px] text-white font-bold">!</Text>
-            </View>
-          )}
-        </View>
-      )}
+      {/* Voice listening status indicator - removed as SoundwaveParticles panel shows status */}
     </>
   );
 };

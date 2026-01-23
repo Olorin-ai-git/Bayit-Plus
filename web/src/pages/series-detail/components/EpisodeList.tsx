@@ -3,8 +3,9 @@
  * Displays list of episodes for selected season
  */
 
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { colors } from '@bayit/shared/theme';
 import { EpisodeCard } from './EpisodeCard';
 import type { Episode } from '../types/series.types';
 
@@ -30,17 +31,17 @@ export function EpisodeList({
   const { t } = useTranslation();
 
   return (
-    <View className="px-12 py-6">
+    <View style={styles.container}>
       {episodes.length > 0 && (
-        <Text className="text-lg font-semibold text-white mb-4">
+        <Text style={styles.title}>
           {t('content.season')} {selectedSeason} • {episodes.length} {t('content.episodes')}
         </Text>
       )}
 
       {episodesLoading ? (
-        <Text className="text-white/70 text-base">{t('common.loading')}</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       ) : episodes.length > 0 ? (
-        <View className="gap-4">
+        <View style={styles.episodesContainer}>
           {episodes.map((episode) => (
             <EpisodeCard
               key={episode.id}
@@ -53,10 +54,39 @@ export function EpisodeList({
           ))}
         </View>
       ) : (
-        <View className="p-8 items-center justify-center">
-          <Text className="text-base text-white/70">{t('content.noEpisodes')}</Text>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>{t('content.noEpisodes')}</Text>
         </View>
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 48,
+    paddingVertical: 24,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginBottom: 16,
+  },
+  loadingText: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 16,
+  },
+  episodesContainer: {
+    gap: 16,
+  },
+  emptyContainer: {
+    padding: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.7)',
+  },
+});

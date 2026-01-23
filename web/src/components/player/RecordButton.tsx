@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react'
-import { Text, Pressable } from 'react-native'
+import { Text, Pressable, StyleSheet } from 'react-native'
 import { Circle, Square } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { recordingApi, RecordingSession } from '../../services/recordingApi'
@@ -162,9 +162,8 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
   return (
     <Pressable
       onPress={handlePress}
-      className={`flex-row items-center gap-2 px-4 py-2 rounded-full backdrop-blur-[40px] ${
-        isRecording ? 'bg-red-500/90' : 'bg-white/10'
-      }`}
+      className="flex-row items-center gap-2 px-4 py-2 rounded-full backdrop-blur-[40px]"
+      style={[isRecording ? styles.buttonRecording : styles.buttonIdle]}
     >
       {isRecording ? (
         <>
@@ -182,3 +181,12 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
     </Pressable>
   )
 }
+
+const styles = StyleSheet.create({
+  buttonRecording: {
+    backgroundColor: 'rgba(239, 68, 68, 0.9)',
+  },
+  buttonIdle: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+});

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView } from 'react-native';;
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { campaignsService } from '@/services/adminApi';
@@ -105,14 +105,14 @@ export default function CampaignEditPage() {
 
   if (loading) {
     return (
-      <View className="flex-1">
-        <Text className="text-sm text-gray-400">{t('common.loading')}</Text>
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
+    <ScrollView style={styles.container} contentContainerStyle={{ padding: spacing.lg }}>
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>
@@ -231,3 +231,73 @@ export default function CampaignEditPage() {
   );
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: spacing.lg,
+  },
+  pageTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  formCard: {
+    padding: spacing.lg,
+    gap: spacing.lg,
+  },
+  formGroup: {
+    gap: spacing.sm,
+  },
+  formLabel: {
+    fontSize: 14,
+    color: colors.text,
+    fontWeight: '500',
+    marginBottom: spacing.xs,
+  },
+  input: {
+    marginBottom: 0,
+  },
+  codeRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    alignItems: 'flex-end',
+  },
+  codeInput: {
+    flex: 1,
+  },
+  formRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  typeButtons: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  typeButton: {
+    flex: 1,
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginTop: spacing.md,
+  },
+});

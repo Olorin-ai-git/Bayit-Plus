@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Image } from 'react-native'
+import { View, Text, Pressable, Image, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { GlassCard } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
@@ -23,7 +23,7 @@ export function ChatRecommendations({
 
   return (
     <View className="w-full">
-      <Text className={`text-[14px] text-gray-400 mb-2 ${isRTL ? 'text-right' : ''}`}>
+      <Text className="text-[14px] text-gray-400 mb-2" style={[isRTL && styles.textRight]}>
         {t('chatbot.recommendations')}
       </Text>
       <View className="flex-row flex-wrap gap-2">
@@ -49,3 +49,9 @@ export function ChatRecommendations({
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  textRight: {
+    textAlign: 'right',
+  },
+})

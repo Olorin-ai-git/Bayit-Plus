@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Check, X } from 'lucide-react';
 import { GlassCard, GlassAvatar } from '@bayit/shared/ui';
 import type { FriendRequest } from '../types';
@@ -20,7 +20,7 @@ export function IncomingRequestCard({
 }: IncomingRequestCardProps) {
   return (
     <GlassCard className="p-4">
-      <View className={`items-center gap-4 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+      <View className="items-center gap-4" style={[isRTL ? styles.rowReverse : styles.row]}>
         <GlassAvatar
           uri={request.sender_avatar}
           name={request.sender_name}
@@ -28,20 +28,20 @@ export function IncomingRequestCard({
         />
 
         <View className="flex-1">
-          <Text className={`text-base font-semibold text-white mb-1 ${isRTL ? 'text-right' : ''}`}>
+          <Text className="text-base font-semibold text-white mb-1" style={[isRTL && styles.textRight]}>
             {request.sender_name}
           </Text>
           {request.message && (
-            <Text className={`text-[13px] text-white/60 italic mb-1 ${isRTL ? 'text-right' : ''}`}>
+            <Text className="text-[13px] text-white/60 italic mb-1" style={[isRTL && styles.textRight]}>
               "{request.message}"
             </Text>
           )}
-          <Text className={`text-xs text-white/60 ${isRTL ? 'text-right' : ''}`}>
+          <Text className="text-xs text-white/60" style={[isRTL && styles.textRight]}>
             {formatTimestamp(request.sent_at)}
           </Text>
         </View>
 
-        <View className={`gap-2 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+        <View className="gap-2" style={[isRTL ? styles.rowReverse : styles.row]}>
           <Pressable
             onPress={() => onAccept(request.id)}
             className="w-11 h-11 rounded-lg justify-center items-center border border-white/10 bg-[#6B21A8]/20 active:opacity-70 active:scale-95"
@@ -59,3 +59,15 @@ export function IncomingRequestCard({
     </GlassCard>
   );
 }
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+});

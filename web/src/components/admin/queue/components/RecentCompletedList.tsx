@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { GlassBadge } from '@bayit/shared/ui';
@@ -36,10 +36,9 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
 
   return (
     <View className="mb-6 pt-4 border-t" style={{ borderTopColor: colors.glassBorder }}>
-      <View className={`flex-row justify-between items-center mb-4 gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+      <View style={[styles.headerRow, isRTL && styles.rowReverse]}>
         <Pressable
-          className={`flex-1 flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}
-          style={{ cursor: 'pointer' }}
+          style={[styles.headerButton, isRTL && styles.rowReverse]}
           onPress={() => setShowCompleted(!showCompleted)}
         >
           <Text className="flex-1 text-lg font-semibold" style={{ textAlign, color: colors.text }}>
@@ -83,7 +82,7 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
 
             return (
               <View key={job.job_id} className="rounded-sm p-4 mb-2 border" style={{ backgroundColor: colors.backgroundLight, borderColor: colors.glassBorder }}>
-                <View className={`flex-row items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <View style={[styles.jobRow, isRTL && styles.rowReverse]}>
                   <StatusIcon status={job.status} job={job} />
                   <Text className="flex-1 text-base font-semibold" style={{ textAlign, color: colors.text }} numberOfLines={1}>
                     {job.filename}
@@ -115,3 +114,27 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    gap: 8,
+  },
+  headerButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  jobRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+});

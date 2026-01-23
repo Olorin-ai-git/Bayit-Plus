@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { Check, Sparkles, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@/stores/authStore';
 import { subscriptionService } from '@/services/api';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassView } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
@@ -56,46 +56,52 @@ function PlanCard({ planId, isSelected, onSelect, billingPeriod }: {
       onPress={onSelect}
       onHoverIn={() => setIsHovered(true)}
       onHoverOut={() => setIsHovered(false)}
-      className={`flex-1 min-w-[280px] max-w-[360px] ${plan.popular ? '-mt-4 mb-4' : ''}`}
+      style={[
+        styles.planCardContainer,
+        plan.popular && styles.planCardContainerPopular,
+      ]}
     >
       <GlassCard
-        className={`p-6 relative ${isSelected ? 'border-2 scale-[1.02]' : ''} ${isHovered ? 'scale-[1.01]' : ''}`}
-        style={isSelected ? { borderColor: colors.primary, transform: [{ scale: 1.02 }] } : undefined}
+        style={[
+          styles.planCard,
+          isSelected && styles.planCardSelected,
+          isHovered && styles.planCardHovered,
+        ]}
       >
         {/* Popular Badge */}
         {plan.popular && (
-          <View className="absolute -top-3 flex-row items-center gap-1 px-4 py-1 rounded-full" style={{ right: spacing.md, backgroundColor: colors.secondary }}>
+          <View style={styles.popularBadge}>
             <Sparkles size={14} color={colors.text} />
-            <Text className="text-xs font-semibold" style={{ color: colors.text }}>{t('subscribe.popular')}</Text>
+            <Text style={styles.popularBadgeText}>{t('subscribe.popular')}</Text>
           </View>
         )}
 
         {/* Plan Header */}
-        <View className="items-center mb-6">
-          <Text className="text-xl font-bold mb-2" style={{ color: colors.text }}>{name}</Text>
-          <View className="flex-row items-baseline gap-1">
-            <Text className="text-4xl font-bold" style={{ color: colors.primary }}>{plan.price}</Text>
-            <Text className="text-sm" style={{ color: colors.textMuted }}>{t('subscribe.period')}</Text>
+        <View style={styles.planHeader}>
+          <Text style={styles.planName}>{name}</Text>
+          <View style={styles.priceContainer}>
+            <Text style={styles.priceAmount}>{plan.price}</Text>
+            <Text style={styles.pricePeriod}>{t('subscribe.period')}</Text>
           </View>
           {billingPeriod === 'yearly' && (
-            <Text className="text-sm mt-1" style={{ color: colors.success }}>${yearlyPrice} {t('subscribe.perYear')}</Text>
+            <Text style={styles.yearlyPrice}>${yearlyPrice} {t('subscribe.perYear')}</Text>
           )}
         </View>
 
         {/* Features */}
-        <View className="mb-6">
+        <View style={styles.featuresContainer}>
           {Array.isArray(features) && features.map((feature, i) => (
-            <View key={i} className="flex-row items-center gap-2 mb-2">
-              <View className="w-5 h-5 rounded-full bg-[#22c55e]/20 justify-center items-center">
+            <View key={i} style={styles.featureRow}>
+              <View style={styles.featureIconContainer}>
                 <Check size={12} color={colors.success} />
               </View>
-              <Text className="text-sm flex-1" style={{ color: colors.text }}>{feature}</Text>
+              <Text style={styles.featureText}>{feature}</Text>
             </View>
           ))}
           {Array.isArray(notIncluded) && notIncluded.map((feature, i) => (
-            <View key={i} className="flex-row items-center gap-2 mb-2">
-              <View className="w-5 h-0.5" style={{ backgroundColor: colors.glass }} />
-              <Text className="text-sm flex-1 line-through" style={{ color: colors.textMuted }}>{feature}</Text>
+            <View key={i} style={styles.featureRow}>
+              <View style={styles.featureLineThrough} />
+              <Text style={styles.featureTextNotIncluded}>{feature}</Text>
             </View>
           ))}
         </View>
@@ -105,7 +111,7 @@ function PlanCard({ planId, isSelected, onSelect, billingPeriod }: {
           title={isSelected ? t('subscribe.selected') : t('subscribe.select')}
           onPress={onSelect}
           variant={isSelected ? 'primary' : 'secondary'}
-          className="w-full"
+          style={styles.selectButton}
         />
       </GlassCard>
     </Pressable>
@@ -139,48 +145,58 @@ export default function SubscribePage() {
   };
 
   return (
-    <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: spacing.md, paddingVertical: spacing.xl, maxWidth: 1200, marginHorizontal: 'auto', width: '100%', position: 'relative' }}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Decorative blur circles */}
-      <View className="absolute w-96 h-96 top-0 right-0 rounded-full opacity-30" style={{ backgroundColor: colors.primary, filter: 'blur(100px)' }} />
-      <View className="absolute w-72 h-72 bottom-0 left-0 rounded-full opacity-30" style={{ backgroundColor: colors.secondary, filter: 'blur(100px)' }} />
+      <View style={styles.blurCircleTop} />
+      <View style={styles.blurCircleBottom} />
 
       {/* Header */}
-      <View className="items-center mb-8 z-10">
-        <Text className="text-4xl font-bold text-center mb-4" style={{ color: colors.text }}>{t('subscribe.title')}</Text>
-        <Text className="text-lg text-center max-w-[600px]" style={{ color: colors.textMuted }}>
+      <View style={styles.header}>
+        <Text style={styles.title}>{t('subscribe.title')}</Text>
+        <Text style={styles.subtitle}>
           {t('subscribe.subtitle')}
         </Text>
       </View>
 
       {/* Billing Toggle */}
-      <View className="items-center mb-8 z-10">
-        <GlassView className="flex-row p-1 rounded-full">
+      <View style={styles.billingToggleContainer}>
+        <GlassView style={styles.billingToggle}>
           <Pressable
             onPress={() => setBillingPeriod('monthly')}
-            className={`flex-row items-center px-6 py-2 rounded-full ${billingPeriod === 'monthly' ? '' : ''}`}
-            style={billingPeriod === 'monthly' ? { backgroundColor: colors.primary } : undefined}
+            style={[
+              styles.billingOption,
+              billingPeriod === 'monthly' && styles.billingOptionSelected,
+            ]}
           >
-            <Text className={`text-sm ${billingPeriod === 'monthly' ? 'font-semibold' : ''}`} style={{ color: billingPeriod === 'monthly' ? colors.text : colors.textMuted }}>
+            <Text style={[
+              styles.billingOptionText,
+              billingPeriod === 'monthly' && styles.billingOptionTextSelected,
+            ]}>
               {t('subscribe.monthly')}
             </Text>
           </Pressable>
           <Pressable
             onPress={() => setBillingPeriod('yearly')}
-            className={`flex-row items-center px-6 py-2 rounded-full gap-2 ${billingPeriod === 'yearly' ? '' : ''}`}
-            style={billingPeriod === 'yearly' ? { backgroundColor: colors.primary } : undefined}
+            style={[
+              styles.billingOption,
+              billingPeriod === 'yearly' && styles.billingOptionSelected,
+            ]}
           >
-            <Text className={`text-sm ${billingPeriod === 'yearly' ? 'font-semibold' : ''}`} style={{ color: billingPeriod === 'yearly' ? colors.text : colors.textMuted }}>
+            <Text style={[
+              styles.billingOptionText,
+              billingPeriod === 'yearly' && styles.billingOptionTextSelected,
+            ]}>
               {t('subscribe.yearly')}
             </Text>
-            <View className="bg-[#22c55e]/20 px-2 py-0.5 rounded">
-              <Text className="text-[10px] font-semibold" style={{ color: colors.success }}>{t('subscribe.save2Months')}</Text>
+            <View style={styles.saveBadge}>
+              <Text style={styles.saveBadgeText}>{t('subscribe.save2Months')}</Text>
             </View>
           </Pressable>
         </GlassView>
       </View>
 
       {/* Plans Grid */}
-      <View className="flex-row flex-wrap justify-center gap-6 mb-8 z-10">
+      <View style={styles.plansGrid}>
         {plansConfig.map((plan) => (
           <PlanCard
             key={plan.id}
@@ -193,18 +209,235 @@ export default function SubscribePage() {
       </View>
 
       {/* CTA */}
-      <View className="items-center z-10">
+      <View style={styles.ctaContainer}>
         <GlassButton
           title={loading ? t('subscribe.processing') : t('subscribe.startTrial')}
           onPress={handleSubscribe}
           disabled={loading}
           variant="primary"
-          style={{ paddingHorizontal: spacing.xl * 1.5, paddingVertical: spacing.md }}
+          style={styles.ctaButton}
         />
-        <Text className="text-sm mt-4" style={{ color: colors.textMuted }}>
+        <Text style={styles.ctaSubtext}>
           {t('subscribe.noCharge')}
         </Text>
       </View>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  contentContainer: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xl,
+    maxWidth: 1200,
+    marginHorizontal: 'auto',
+    width: '100%',
+    position: 'relative',
+  },
+  blurCircleTop: {
+    position: 'absolute',
+    width: 384,
+    height: 384,
+    top: 0,
+    right: 0,
+    borderRadius: 9999,
+    backgroundColor: colors.primary,
+    opacity: 0.3,
+    // Note: blur filter not supported in RN, keeping for web compatibility
+  },
+  blurCircleBottom: {
+    position: 'absolute',
+    width: 288,
+    height: 288,
+    bottom: 0,
+    left: 0,
+    borderRadius: 9999,
+    backgroundColor: colors.secondary,
+    opacity: 0.3,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: spacing.xl,
+    zIndex: 10,
+  },
+  title: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: spacing.md,
+    color: colors.text,
+  },
+  subtitle: {
+    fontSize: 18,
+    textAlign: 'center',
+    maxWidth: 600,
+    color: colors.textMuted,
+  },
+  billingToggleContainer: {
+    alignItems: 'center',
+    marginBottom: spacing.xl,
+    zIndex: 10,
+  },
+  billingToggle: {
+    flexDirection: 'row',
+    padding: spacing.xs,
+    borderRadius: borderRadius.full,
+  },
+  billingOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.full,
+    gap: spacing.sm,
+  },
+  billingOptionSelected: {
+    backgroundColor: colors.primary,
+  },
+  billingOptionText: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
+  billingOptionTextSelected: {
+    color: colors.text,
+    fontWeight: '600',
+  },
+  saveBadge: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+  },
+  saveBadgeText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: colors.success,
+  },
+  plansGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: spacing.lg,
+    marginBottom: spacing.xl,
+    zIndex: 10,
+  },
+  planCardContainer: {
+    flex: 1,
+    minWidth: 280,
+    maxWidth: 360,
+  },
+  planCardContainerPopular: {
+    marginTop: -16,
+    marginBottom: 16,
+  },
+  planCard: {
+    padding: spacing.lg,
+    position: 'relative',
+  },
+  planCardSelected: {
+    borderWidth: 2,
+    borderColor: colors.primary,
+    transform: [{ scale: 1.02 }],
+  },
+  planCardHovered: {
+    transform: [{ scale: 1.01 }],
+  },
+  popularBadge: {
+    position: 'absolute',
+    top: -12,
+    right: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.secondary,
+  },
+  popularBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  planHeader: {
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  planName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: spacing.sm,
+    color: colors.text,
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: spacing.xs,
+  },
+  priceAmount: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  pricePeriod: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
+  yearlyPrice: {
+    fontSize: 14,
+    marginTop: spacing.xs,
+    color: colors.success,
+  },
+  featuresContainer: {
+    marginBottom: spacing.lg,
+  },
+  featureRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  featureIconContainer: {
+    width: 20,
+    height: 20,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  featureText: {
+    fontSize: 14,
+    flex: 1,
+    color: colors.text,
+  },
+  featureLineThrough: {
+    width: 20,
+    height: 2,
+    backgroundColor: colors.glass,
+  },
+  featureTextNotIncluded: {
+    fontSize: 14,
+    flex: 1,
+    textDecorationLine: 'line-through',
+    color: colors.textMuted,
+  },
+  selectButton: {
+    width: '100%',
+  },
+  ctaContainer: {
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  ctaButton: {
+    paddingHorizontal: spacing.xl * 1.5,
+    paddingVertical: spacing.md,
+  },
+  ctaSubtext: {
+    fontSize: 14,
+    marginTop: spacing.md,
+    color: colors.textMuted,
+  },
+});

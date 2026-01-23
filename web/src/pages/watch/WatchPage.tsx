@@ -5,7 +5,7 @@
 
 import React, { useEffect } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
@@ -19,7 +19,6 @@ import {
   ContentActions,
   ContentMetadata,
   EpisodesList,
-  FlowHeader,
   LoadingState,
   NotFoundState,
   PlaylistPanel,
@@ -39,21 +38,26 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
   const { showConfirm } = useModal();
   const params = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Deep link timestamp from ?t= parameter (in seconds)
+  const initialSeekTime = React.useMemo(() => {
+    const timeParam = searchParams.get('t');
+    if (timeParam) {
+      const parsed = parseFloat(timeParam);
+      return isNaN(parsed) ? undefined : parsed;
+    }
+    return undefined;
+  }, [searchParams]);
 
   const {
     playlist,
     playlistIndex,
-    flowName,
     showPlaylistPanel,
-    hasNextItem,
-    hasPrevItem,
     isInFlow,
     setShowPlaylistPanel,
-    playNextItem,
-    playPrevItem,
     playItemAtIndex,
     handleContentEnded,
-    exitFlow,
   } = usePlaylistManager();
 
   const currentPlaylistItem = playlist.length > 0 ? playlist[playlistIndex] : null;
@@ -139,21 +143,6 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
     <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 96 }}>
       <BackButton label={t('common.back')} onPress={() => window.history.back()} />
 
-      {isInFlow && (
-        <FlowHeader
-          flowName={flowName}
-          playlistIndex={playlistIndex}
-          playlistLength={playlist.length}
-          hasPrevItem={hasPrevItem}
-          hasNextItem={hasNextItem}
-          isRTL={isRTL}
-          onTogglePlaylist={() => setShowPlaylistPanel(!showPlaylistPanel)}
-          onPlayPrev={playPrevItem}
-          onPlayNext={playNextItem}
-          onExit={exitFlow}
-        />
-      )}
-
       <View className="px-4 max-w-[1400px] mx-auto w-full aspect-video min-h-[300px] rounded-2xl overflow-hidden">
         {isAudio ? (
           <AudioPlayer
@@ -176,6 +165,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
             availableSubtitleLanguages={availableSubtitleLanguages}
             chapters={chapters}
             chaptersLoading={chaptersLoading}
+            initialSeekTime={initialSeekTime}
             onEnded={handleContentEnded}
             onShowUpgrade={() => navigate('/subscribe')}
           />

@@ -1,9 +1,21 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Image, Animated, Easing } from 'react-native';
+import { View, Text, Image, Animated, Easing, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../hooks/useDirection';
 
-const logo = require('../assets/images/logos/logo.png');
+// Platform-specific logo import
+let logo: any;
+try {
+  // Try ES6 import for web
+  if (Platform.OS === 'web') {
+    logo = require('../assets/images/logos/logo.png').default || require('../assets/images/logos/logo.png');
+  } else {
+    logo = require('../assets/images/logos/logo.png');
+  }
+} catch (e) {
+  console.warn('Logo image could not be loaded:', e);
+  logo = null;
+}
 
 interface AnimatedLogoProps {
   onAnimationComplete?: () => void;
@@ -86,7 +98,7 @@ export const AnimatedLogo: React.FC<AnimatedLogoProps> = ({
   return (
     <View className={`items-center justify-center ${isSmall ? 'flex-row gap-2' : ''}`}>
       {/* Animated Logo Image - appears after text */}
-      {!hideHouse && (
+      {!hideHouse && logo && (
         <Animated.View
           className={isSmall ? 'mb-0' : '-mb-2'}
           style={{ opacity: logoOpacity }}

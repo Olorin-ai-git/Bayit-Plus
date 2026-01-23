@@ -6,8 +6,14 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet, Image, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
+
+// Waving flag images for cultures
+const FLAG_IMAGES: Record<string, any> = {
+  israeli: require('../assets/images/flags/israel-waving.gif'),
+  usa: require('../assets/images/flags/usa-waving.gif'),
+};
 import { colors, spacing, fontSize } from '../theme';
 import { useCultureStore, CultureTime } from '../contexts/CultureContext';
 import { cultureService } from '../services/api';
@@ -39,34 +45,16 @@ export const CultureClock: React.FC<CultureClockProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
   const { isRTL } = useDirection();
-  const { currentCulture, cultureTime: storeTime, getLocalizedName } = useCultureStore();
-
-  const [time, setTime] = useState<CultureTime | null>(storeTime);
-  const [loading, setLoading] = useState(false);
+  const { currentCulture, cultureTime: storeTime } = useCultureStore();
 
   // Determine which culture to use
   const effectiveCultureId = cultureId || currentCulture?.culture_id || 'israeli';
 
-  // Fetch time from API
-  const fetchTime = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await cultureService.getCultureTime(effectiveCultureId);
-      const timeData: CultureTime = response.data || response;
-      setTime(timeData);
-    } catch (err) {
-      console.warn('Failed to fetch culture time:', err);
-      // Fallback to local calculation
-      setTime(calculateLocalTime(effectiveCultureId));
-    } finally {
-      setLoading(false);
-    }
-  }, [effectiveCultureId]);
-
   // Calculate time locally as fallback
-  const calculateLocalTime = (cultId: string): CultureTime => {
+  const calculateLocalTime = useCallback((cultId: string): CultureTime => {
     const timezones: Record<string, string> = {
       israeli: 'Asia/Jerusalem',
+      usa: 'America/New_York',
       chinese: 'Asia/Shanghai',
       japanese: 'Asia/Tokyo',
       korean: 'Asia/Seoul',
@@ -100,7 +88,32 @@ export const CultureClock: React.FC<CultureClockProps> = ({
         ? [5, 6].includes(now.getDay())
         : [0, 6].includes(now.getDay()),
     };
-  };
+  }, []);
+
+  // Initialize with calculated time for THIS clock's culture (not the store's culture)
+  const [time, setTime] = useState<CultureTime | null>(() => calculateLocalTime(effectiveCultureId));
+  const [loading, setLoading] = useState(false);
+
+  // Fetch time from API
+  const fetchTime = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await cultureService.getCultureTime(effectiveCultureId);
+      const timeData: CultureTime = response.data || response;
+      // Validate response has display_time, otherwise use local calculation
+      if (timeData && timeData.display_time) {
+        setTime(timeData);
+      } else {
+        setTime(calculateLocalTime(effectiveCultureId));
+      }
+    } catch (err) {
+      console.warn('Failed to fetch culture time:', err);
+      // Fallback to local calculation
+      setTime(calculateLocalTime(effectiveCultureId));
+    } finally {
+      setLoading(false);
+    }
+  }, [effectiveCultureId, calculateLocalTime]);
 
   // Initial fetch
   useEffect(() => {
@@ -115,32 +128,32 @@ export const CultureClock: React.FC<CultureClockProps> = ({
     }, 60000);
 
     return () => clearInterval(interval);
-  }, [effectiveCultureId]);
+  }, [effectiveCultureId, calculateLocalTime]);
 
   // Get culture display name for timezone label
+  // Uses effectiveCultureId (the clock's culture) not currentCulture (user's selected culture)
   const getCultureLabel = (): string => {
-    if (!currentCulture) {
-      // Fallback labels
-      const labels: Record<string, Record<string, string>> = {
-        israeli: { en: 'Israel', he: 'ישראל', es: 'Israel' },
-        chinese: { en: 'China', he: 'סין', es: 'China' },
-        japanese: { en: 'Japan', he: 'יפן', es: 'Japón' },
-        korean: { en: 'Korea', he: 'קוריאה', es: 'Corea' },
-        indian: { en: 'India', he: 'הודו', es: 'India' },
-      };
-      const cultureLbl = labels[effectiveCultureId];
-      if (cultureLbl) {
-        return cultureLbl[i18n.language] || cultureLbl.en || '';
-      }
-      return '';
+    // Labels for each culture - use city/state for USA timezone
+    const labels: Record<string, Record<string, string>> = {
+      israeli: { en: 'Israel', he: 'ישראל', es: 'Israel' },
+      usa: { en: 'New York, NY', he: 'ניו יורק', es: 'Nueva York, NY' },
+      chinese: { en: 'China', he: 'סין', es: 'China' },
+      japanese: { en: 'Japan', he: 'יפן', es: 'Japón' },
+      korean: { en: 'Korea', he: 'קוריאה', es: 'Corea' },
+      indian: { en: 'India', he: 'הודו', es: 'India' },
+    };
+    const cultureLbl = labels[effectiveCultureId];
+    if (cultureLbl) {
+      return cultureLbl[i18n.language] || cultureLbl.en || '';
     }
-    return getLocalizedName(currentCulture, i18n.language);
+    return '';
   };
 
   // Get culture flag emoji
   const getCultureFlag = (): string => {
     const flags: Record<string, string> = {
       israeli: '🇮🇱',
+      usa: '🇺🇸',
       chinese: '🇨🇳',
       japanese: '🇯🇵',
       korean: '🇰🇷',
@@ -172,44 +185,52 @@ export const CultureClock: React.FC<CultureClockProps> = ({
 
   if (!time) {
     return (
-      <View className="items-center" style={style}>
-        <Text className="font-bold text-white" style={{ fontSize: sizes.time }}>--:--</Text>
+      <View style={[styles.container, style]}>
+        <Text style={[styles.timeText, { fontSize: sizes.time }]}>--:--</Text>
       </View>
     );
   }
 
   return (
-    <View className="items-center" style={style}>
+    <View style={[styles.container, style]}>
       {/* Timezone label */}
       {showTimezoneLabel && (
-        <View className={`items-center mb-1 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-          <Text className={`${isRTL ? 'ml-1' : 'mr-1'}`} style={{ fontSize: sizes.label }}>
-            {getCultureFlag()}
-          </Text>
-          <Text className="text-white/40" style={{ fontSize: sizes.label }}>
+        <View style={[styles.labelContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          {FLAG_IMAGES[effectiveCultureId] ? (
+            <Image
+              source={FLAG_IMAGES[effectiveCultureId]}
+              style={[styles.flagImage, { width: sizes.label * 1.5, height: sizes.label * 1.2 }]}
+              resizeMode="contain"
+            />
+          ) : (
+            <Text style={[styles.flagEmoji, { fontSize: sizes.label }]}>
+              {getCultureFlag()}
+            </Text>
+          )}
+          <Text style={[styles.labelText, { fontSize: sizes.label }]}>
             {t('cultureClock.timeIn', { location: getCultureLabel() })}
           </Text>
         </View>
       )}
 
       {/* Time */}
-      <Text className="font-bold text-white" style={{ fontSize: sizes.time, fontVariant: ['tabular-nums'] }}>
+      <Text style={[styles.timeText, { fontSize: sizes.time }]}>
         {time.display_time}
       </Text>
 
       {/* Date and day of week */}
       {(showDate || showDayOfWeek) && (
-        <View className={`items-center mt-1 gap-1 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+        <View style={[styles.dateContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           {showDayOfWeek && (
-            <Text className="text-white/60" style={{ fontSize: sizes.date }}>
+            <Text style={[styles.dateText, { fontSize: sizes.date }]}>
               {time.day_of_week}
             </Text>
           )}
           {showDate && showDayOfWeek && (
-            <Text className="text-white/40" style={{ fontSize: sizes.date }}>•</Text>
+            <Text style={[styles.dateSeparator, { fontSize: sizes.date }]}>•</Text>
           )}
           {showDate && (
-            <Text className="text-white/60" style={{ fontSize: sizes.date }}>
+            <Text style={[styles.dateText, { fontSize: sizes.date }]}>
               {time.display_date}
             </Text>
           )}
@@ -218,7 +239,7 @@ export const CultureClock: React.FC<CultureClockProps> = ({
 
       {/* Weekend indicator */}
       {time.is_weekend && (
-        <Text className="mt-1 px-2 py-0.5 bg-yellow-400/20 text-yellow-400 rounded overflow-hidden font-semibold" style={{ fontSize: sizes.date }}>
+        <Text style={[styles.weekendBadge, { fontSize: sizes.date }]}>
           {effectiveCultureId === 'israeli'
             ? t('cultureClock.shabbat')
             : t('cultureClock.weekend')}
@@ -227,5 +248,50 @@ export const CultureClock: React.FC<CultureClockProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+  },
+  labelContainer: {
+    alignItems: 'center',
+    marginBottom: spacing.xs,
+  },
+  flagEmoji: {
+    marginRight: spacing.xs,
+  },
+  flagImage: {
+    marginRight: spacing.xs,
+  },
+  labelText: {
+    color: colors.textMuted,
+  },
+  timeText: {
+    fontWeight: 'bold',
+    color: colors.text,
+    fontVariant: ['tabular-nums'],
+  },
+  dateContainer: {
+    alignItems: 'center',
+    marginTop: spacing.xs,
+    gap: spacing.xs,
+  },
+  dateText: {
+    color: colors.textSecondary,
+  },
+  dateSeparator: {
+    color: colors.textMuted,
+  },
+  weekendBadge: {
+    marginTop: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs / 2,
+    backgroundColor: 'rgba(255, 215, 0, 0.2)',
+    color: '#FFD700',
+    borderRadius: 4,
+    overflow: 'hidden',
+    fontWeight: '600',
+  },
+});
 
 export default CultureClock;

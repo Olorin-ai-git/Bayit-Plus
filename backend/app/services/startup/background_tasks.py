@@ -16,6 +16,10 @@ from pathlib import Path
 from typing import Any
 
 from app.core.config import settings
+from app.services.podcast_translation_worker import (
+    PodcastTranslationWorker,
+    set_translation_worker,
+)
 
 
 def _is_running_locally() -> bool:
@@ -28,6 +32,9 @@ logger = logging.getLogger(__name__)
 
 # Track running tasks for graceful shutdown
 _running_tasks: list[asyncio.Task[Any]] = []
+
+# Global translation worker instance
+_translation_worker: PodcastTranslationWorker | None = None
 
 
 async def _scan_monitored_folders_task() -> None:
@@ -174,10 +181,28 @@ def start_background_tasks() -> None:
     _running_tasks.append(task)
     logger.info("Started upload session cleanup background task (every 1 hour)")
 
+    # Podcast translation worker (if enabled)
+    if settings.PODCAST_TRANSLATION_ENABLED:
+        global _translation_worker
+        _translation_worker = PodcastTranslationWorker()
+        task = asyncio.create_task(_translation_worker.start())
+        _running_tasks.append(task)
+        set_translation_worker(_translation_worker)
+        logger.info(
+            f"Started podcast translation worker with "
+            f"{settings.PODCAST_TRANSLATION_MAX_CONCURRENT} concurrent workers"
+        )
+
 
 async def stop_background_tasks() -> None:
     """Stop all running background tasks gracefully."""
-    global _running_tasks
+    global _running_tasks, _translation_worker
+
+    # Stop translation worker first
+    if _translation_worker:
+        logger.info("Stopping podcast translation worker...")
+        await _translation_worker.stop()
+        _translation_worker = None
 
     if not _running_tasks:
         return

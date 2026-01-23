@@ -12,9 +12,13 @@
 // DEMO MODE: Use demo/mock data for development without backend
 export type AppMode = 'demo' | 'production';
 
+// Read from environment variable (NO hardcoded values allowed)
+// Webpack DefinePlugin will replace process.env.VITE_APP_MODE at build time
+declare const process: any;
+
 // Important: keep this typed as AppMode (not the narrowed literal 'production'),
 // otherwise TS can flag comparisons like `APP_MODE === 'demo'` as impossible.
-export const APP_MODE = 'production' as AppMode;
+export const APP_MODE = (process.env.VITE_APP_MODE || 'production') as AppMode;
 
 export const isDemo = APP_MODE === 'demo';
 export const isProduction = APP_MODE === 'production';
@@ -54,6 +58,11 @@ export const config = {
     hebronicsVoice: true,
   },
 };
+
+// API Base URL - from environment variable or default
+export const API_BASE_URL = typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL
+  ? import.meta.env.VITE_API_URL
+  : '/api/v1';
 
 // Log mode on startup
 console.log(`🎬 Bayit+ TV running in ${APP_MODE.toUpperCase()} mode`);

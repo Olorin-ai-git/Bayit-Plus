@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassCard } from '@bayit/shared/ui';
 import { colors, spacing, fontSize } from '@bayit/shared/theme';
@@ -55,7 +55,7 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
   }
 
   const queueContent = (
-    <View className={noCard ? undefined : "p-6"}>
+    <View style={noCard ? undefined : styles.contentPadding}>
       {!hideHeader && (
         <QueueHeader
           stats={stats}
@@ -104,5 +104,11 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
   if (noCard) return queueContent;
   return <GlassCard className="p-6">{queueContent}</GlassCard>;
 };
+
+const styles = StyleSheet.create({
+  contentPadding: {
+    padding: 24,
+  },
+});
 
 export default GlassQueue;

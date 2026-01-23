@@ -3,7 +3,7 @@
  * Voice operation mode selection and information
  */
 
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Radio as RadioIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '@bayit/shared/ui';
@@ -43,14 +43,14 @@ export function VoiceModeSection({ selectedMode, isRTL, onModeChange }: VoiceMod
 
   return (
     <GlassView className="p-6 gap-4">
-      <View className={`flex-row items-center gap-2 mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
+      <View className={`flex-row items-center gap-2 mb-1`} style={isRTL && styles.rowReverse}>
         <RadioIcon size={16} color="#A855F7" />
         <Text className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-0">
           {t('profile.voice.operationMode', 'Voice Operation Mode')}
         </Text>
       </View>
 
-      <Text className={`text-[13px] text-gray-400 mb-4 ${isRTL ? 'text-right' : ''}`}>
+      <Text className="text-[13px] text-gray-400 mb-4" style={isRTL && styles.textRight}>
         {t('profile.voice.operationModeDesc', 'Choose how you interact with the app')}
       </Text>
 
@@ -67,33 +67,33 @@ export function VoiceModeSection({ selectedMode, isRTL, onModeChange }: VoiceMod
         ))}
       </View>
 
-      <View className={`pt-4 border-t border-white/5 mt-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+      <View className="pt-4 border-t border-white/5 mt-4" style={isRTL && styles.rowReverse}>
         {selectedMode === VoiceMode.VOICE_ONLY && (
           <>
-            <Text className={`text-[13px] font-semibold text-purple-500 mb-1 ${isRTL ? 'text-right' : ''}`}>
+            <Text className="text-[13px] font-semibold text-purple-500 mb-1" style={isRTL && styles.textRight}>
               {t('profile.voice.voiceOnlyInfo', 'Voice Only Mode')}
             </Text>
-            <Text className={`text-xs text-gray-400 leading-4 ${isRTL ? 'text-right' : ''}`}>
+            <Text className="text-xs text-gray-400 leading-4" style={isRTL && styles.textRight}>
               {t('profile.voice.voiceOnlyDetails', 'Say "Hey Bayit" to activate. Remote control disabled. Navigate entirely with voice commands.')}
             </Text>
           </>
         )}
         {selectedMode === VoiceMode.HYBRID && (
           <>
-            <Text className={`text-[13px] font-semibold text-purple-500 mb-1 ${isRTL ? 'text-right' : ''}`}>
+            <Text className="text-[13px] font-semibold text-purple-500 mb-1" style={isRTL && styles.textRight}>
               {t('profile.voice.hybridInfo', 'Hybrid Mode')}
             </Text>
-            <Text className={`text-xs text-gray-400 leading-4 ${isRTL ? 'text-right' : ''}`}>
+            <Text className="text-xs text-gray-400 leading-4" style={isRTL && styles.textRight}>
               {t('profile.voice.hybridDetails', 'Use both voice and remote control. Get voice feedback on your button presses and interactions.')}
             </Text>
           </>
         )}
         {selectedMode === VoiceMode.CLASSIC && (
           <>
-            <Text className={`text-[13px] font-semibold text-purple-500 mb-1 ${isRTL ? 'text-right' : ''}`}>
+            <Text className="text-[13px] font-semibold text-purple-500 mb-1" style={isRTL && styles.textRight}>
               {t('profile.voice.classicInfo', 'Classic Mode')}
             </Text>
-            <Text className={`text-xs text-gray-400 leading-4 ${isRTL ? 'text-right' : ''}`}>
+            <Text className="text-xs text-gray-400 leading-4" style={isRTL && styles.textRight}>
               {t('profile.voice.classicDetails', 'Traditional remote-only experience. Voice features disabled.')}
             </Text>
           </>
@@ -102,3 +102,12 @@ export function VoiceModeSection({ selectedMode, isRTL, onModeChange }: VoiceMod
     </GlassView>
   );
 }
+
+const styles = StyleSheet.create({
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+});

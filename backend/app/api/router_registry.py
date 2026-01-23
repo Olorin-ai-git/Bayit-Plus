@@ -43,7 +43,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 chess, children, content, content_taxonomy,
                                 cultures, device_pairing, direct_messages,
                                 downloads, epg, family_controls, favorites,
-                                flows, friends, health, history, jerusalem,
+                                friends, health, history, jerusalem,
                                 judaism, librarian, live, news, onboarding,
                                 party, password_reset, podcasts, profile_stats,
                                 profiles, radio, recordings, ritual, search,
@@ -168,7 +168,6 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(zman.router, prefix=f"{prefix}/zman", tags=["zman"])
     app.include_router(ritual.router, prefix=prefix, tags=["ritual"])
-    app.include_router(flows.router, prefix=f"{prefix}/flows", tags=["flows"])
     app.include_router(
         onboarding.router, prefix=f"{prefix}/onboarding/ai", tags=["ai-onboarding"]
     )

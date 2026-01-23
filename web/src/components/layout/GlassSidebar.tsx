@@ -61,7 +61,6 @@ const baseMenuSections: MenuSection[] = [
   {
     titleKey: 'nav.discover',
     items: [
-      { id: 'flows', icon: '✨', labelKey: 'nav.flows', path: '/flows' },
       { id: 'judaism', icon: '✡️', labelKey: 'nav.judaism', path: '/judaism' },
       { id: 'children', icon: '👶', labelKey: 'nav.children', path: '/children' },
       { id: 'games', icon: '🎮', labelKey: 'nav.games', path: '/games' },
@@ -188,6 +187,14 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
     const isPremium = user?.subscription?.plan === 'premium' || user?.subscription?.plan === 'family';
 
     let sections = baseMenuSections.map(section => {
+      // Filter out games from discover section (admin only)
+      if (section.titleKey === 'nav.discover' && !isAdmin) {
+        return {
+          ...section,
+          items: section.items.filter(item => item.id !== 'games'),
+        };
+      }
+
       // Add My Recordings to favorites section (premium only)
       if (section.titleKey === 'nav.favorites' && isPremium) {
         // Add recordings after downloads

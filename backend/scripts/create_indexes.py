@@ -5,13 +5,12 @@ Run this script after initializing the database to create necessary indexes for 
 
 import asyncio
 from app.core.database import connect_to_mongo, close_mongo_connection
-from app.models.content import Content, , LiveChannel, RadioStation, Podcast, PodcastEpisode
+from app.models.content import Content, LiveChannel, RadioStation, Podcast, PodcastEpisode
 from app.models.content_taxonomy import ContentSection
 from app.models.user import User
 from app.models.subscription import Subscription
 from app.models.watchlist import WatchlistItem, WatchHistory
 from app.models.admin import AuditLog
-from app.models.flow import Flow
 from app.models.realtime import WatchParty, ChatMessage
 from app.models.chapters import VideoChapters
 from app.models.subtitles import SubtitleTrackDoc
@@ -97,11 +96,6 @@ async def create_indexes():
         await AuditLog.get_pymongo_collection().create_index("action")
         await AuditLog.get_pymongo_collection().create_index("resource_type")
         await AuditLog.get_pymongo_collection().create_index([("created_at", -1)])
-
-        # Flow indexes
-        print("  - Flow indexes")
-        await Flow.get_pymongo_collection().create_index("user_id")
-        await Flow.get_pymongo_collection().create_index("flow_type")
 
         # Watch Party indexes
         print("  - Watch Party indexes")

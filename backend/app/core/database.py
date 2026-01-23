@@ -29,7 +29,6 @@ from app.models.documentation import (DocumentationArticle,
                                       DocumentationFeedback,
                                       DocumentationSearchLog)
 from app.models.family_controls import FamilyControls
-from app.models.flow import Flow
 from app.models.friendship import (FriendRequest, GameResult, PlayerStats,
                                    UserFriendship)
 # Olorin.ai Platform models
@@ -107,7 +106,6 @@ async def connect_to_mongo():
         WatchHistory,
         Conversation,
         Profile,
-        Flow,
         # Real-time models
         WatchParty,
         ChatMessage,

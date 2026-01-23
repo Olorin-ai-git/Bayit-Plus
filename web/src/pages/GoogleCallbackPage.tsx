@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
@@ -59,24 +59,80 @@ export default function GoogleCallbackPage() {
   }, [searchParams, handleGoogleCallback, navigate, t]);
 
   return (
-    <View className="flex-1 min-h-screen justify-center items-center px-4 relative">
+    <View style={styles.container}>
       {/* Decorative blur circles */}
-      <View className="absolute w-80 h-80 -top-40 -right-40 rounded-full bg-purple-600 opacity-50 blur-[100px]" />
-      <View className="absolute w-64 h-64 bottom-20 -left-32 rounded-full bg-violet-600 opacity-40 blur-[100px]" />
+      <View style={styles.blurCircleTop} />
+      <View style={styles.blurCircleBottom} />
 
-      <GlassCard className="p-6 items-center z-10">
+      <GlassCard style={styles.card}>
         {error ? (
           <>
-            <Text className="text-lg text-red-500 mb-4 text-center">{error}</Text>
-            <Text className="text-sm text-white/60">{t('googleLogin.redirecting')}</Text>
+            <Text style={styles.errorText}>{error}</Text>
+            <Text style={styles.redirectText}>{t('googleLogin.redirecting')}</Text>
           </>
         ) : (
           <>
-            <ActivityIndicator size="large" color={colors.primary} className="mb-4" />
-            <Text className="text-lg text-white">{t('googleLogin.connecting')}</Text>
+            <ActivityIndicator size="large" color={colors.primary} style={styles.spinner} />
+            <Text style={styles.connectingText}>{t('googleLogin.connecting')}</Text>
           </>
         )}
       </GlassCard>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    minHeight: '100vh' as any,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    position: 'relative',
+  },
+  blurCircleTop: {
+    position: 'absolute',
+    width: 320,
+    height: 320,
+    top: -160,
+    right: -160,
+    borderRadius: 160,
+    backgroundColor: '#9333ea',
+    opacity: 0.5,
+    // Note: blur effect requires platform-specific implementation
+    // Web: filter: 'blur(100px)', React Native: shadow workaround
+  },
+  blurCircleBottom: {
+    position: 'absolute',
+    width: 256,
+    height: 256,
+    bottom: 80,
+    left: -128,
+    borderRadius: 128,
+    backgroundColor: '#7c3aed',
+    opacity: 0.4,
+    // Note: blur effect requires platform-specific implementation
+  },
+  card: {
+    padding: spacing.lg,
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  errorText: {
+    fontSize: 18,
+    color: colors.error,
+    marginBottom: spacing.md,
+    textAlign: 'center',
+  },
+  redirectText: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  spinner: {
+    marginBottom: spacing.md,
+  },
+  connectingText: {
+    fontSize: 18,
+    color: colors.text,
+  },
+});

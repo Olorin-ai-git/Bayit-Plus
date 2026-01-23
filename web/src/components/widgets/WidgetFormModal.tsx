@@ -15,10 +15,9 @@ import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
 import { GlassModal, GlassButton, GlassInput, GlassToggle } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { ContentPickerModal } from '@/pages/flows/components/ContentPickerModal';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
-import type { ContentItem } from '@/pages/flows/types/flows.types';
+import type { ContentItem } from './form/ContentSelectionSection';
 
 interface WidgetFormModalProps {
   visible: boolean;
@@ -82,10 +81,8 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
   const { isRTL, textAlign, flexDirection } = useDirection();
 
   const [formState, setFormState] = useState<FormState>(DEFAULT_FORM_STATE);
-  const [showContentPicker, setShowContentPicker] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null);
 
   // Initialize form
   useEffect(() => {
@@ -114,7 +111,6 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
         setFormState(DEFAULT_FORM_STATE);
       }
       setError(null);
-      setSelectedContent(null);
     }
   }, [visible, initialData]);
 
@@ -123,38 +119,12 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
     setError(null);
   };
 
-  const handleContentSelected = (items: ContentItem[]) => {
-    if (items.length > 0) {
-      const item = items[0];
-      let contentType = item.type as any;
-      let contentId = item.id;
-
-      // Map flow types to widget content types
-      if (contentType === 'live') contentType = 'live_channel';
-
-      setFormState((prev) => ({
-        ...prev,
-        content_type: contentType,
-        content_id: contentId,
-        title: prev.title || item.title,
-        icon: prev.icon || (item.icon || ''),
-      }));
-      setSelectedContent(item);
-    }
-    setShowContentPicker(false);
-  };
-
   const handleSwitchToIframe = () => {
     setFormState((prev) => ({
       ...prev,
       content_type: 'iframe',
       content_id: '',
     }));
-    setSelectedContent(null);
-  };
-
-  const handleSwitchToContent = () => {
-    setShowContentPicker(true);
   };
 
   const validateForm = (): boolean => {
@@ -459,15 +429,6 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
           />
         </View>
       </GlassModal>
-
-      {/* Content Picker Modal */}
-      <ContentPickerModal
-        visible={showContentPicker}
-        onClose={() => setShowContentPicker(false)}
-        onAdd={handleContentSelected}
-        existingItems={[]}
-        defaultType={formState.content_type as any === 'live_channel' ? 'live' : (formState.content_type as any)}
-      />
     </>
   );
 };

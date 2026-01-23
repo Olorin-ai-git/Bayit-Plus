@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
@@ -26,7 +26,7 @@ export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue, isRTL, 
   return (
     <View className="mb-6 pt-4 border-t" style={{ borderTopColor: colors.glassBorder }}>
       <Pressable
-        className={`flex-row justify-between items-center mb-4 gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
+        style={[styles.headerRow, isRTL && styles.rowReverse]}
         onPress={() => setShowQueue(!showQueue)}
       >
         <Text className="flex-1 text-lg font-semibold" style={{ textAlign, color: colors.text }}>
@@ -52,7 +52,7 @@ export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue, isRTL, 
           ) : (
             queue.map((job) => (
               <View key={job.job_id} className="rounded-sm p-4 mb-2 border" style={{ backgroundColor: colors.backgroundLight, borderColor: colors.glassBorder }}>
-                <View className={`flex-row items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <View style={[styles.jobRow, isRTL && styles.rowReverse]}>
                   <StatusIcon status={job.status} job={job} />
                   <Text className="flex-1 text-base font-semibold" style={{ textAlign, color: colors.text }} numberOfLines={1}>
                     {job.filename}
@@ -70,3 +70,22 @@ export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue, isRTL, 
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    gap: 8,
+  },
+  jobRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+});

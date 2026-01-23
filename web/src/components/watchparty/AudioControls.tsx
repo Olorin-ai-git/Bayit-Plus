@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Animated } from 'react-native'
+import { View, Text, Pressable, Animated, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Mic, MicOff, Loader2 } from 'lucide-react'
 import { useRef, useEffect } from 'react'
@@ -69,11 +69,11 @@ export default function AudioControls({
     outputRange: ['0deg', '360deg'],
   })
 
-  const getButtonClass = () => {
-    if (isConnecting) return 'bg-white/5 opacity-50'
-    if (isMuted) return 'bg-white/5'
-    if (isSpeaking) return 'bg-green-500/20'
-    return 'bg-purple-700/30'
+  const getButtonStyle = () => {
+    if (isConnecting) return styles.buttonConnecting
+    if (isMuted) return styles.buttonMuted
+    if (isSpeaking) return styles.buttonSpeaking
+    return styles.buttonActive
   }
 
   return (
@@ -81,7 +81,8 @@ export default function AudioControls({
       <Pressable
         onPress={onToggleMute}
         disabled={isConnecting}
-        className={`relative p-3 rounded-md ${getButtonClass()} ${!isConnecting ? 'hover:bg-white/10' : ''}`}
+        className="relative p-3 rounded-md"
+        style={[getButtonStyle()]}
       >
         {isConnecting ? (
           <Animated.View style={{ transform: [{ rotate: spin }] }}>
@@ -118,3 +119,19 @@ export default function AudioControls({
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  buttonConnecting: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    opacity: 0.5,
+  },
+  buttonMuted: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  buttonSpeaking: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+  },
+  buttonActive: {
+    backgroundColor: 'rgba(109, 40, 217, 0.3)',
+  },
+})

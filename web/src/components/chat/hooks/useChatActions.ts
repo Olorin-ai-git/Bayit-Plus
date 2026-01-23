@@ -143,19 +143,6 @@ export function useChatActions(options: UseChatActionsOptions = {}) {
       console.log('[useChatActions] Help requested')
     })
 
-    // Flows
-    registerActionHandler('create_flow', (payload) => {
-      navigate('/flows', { state: { createFlow: true, template: payload.template } })
-      setOpen(false)
-      optionsRef.current.onClose?.()
-    })
-
-    registerActionHandler('start_flow', (payload) => {
-      navigate('/flows', { state: { startFlowId: payload.flowId } })
-      setOpen(false)
-      optionsRef.current.onClose?.()
-    })
-
     // Show Multiple
     registerActionHandler('show_multiple', async (payload) => {
       if (!payload.items || payload.items.length === 0) {
@@ -220,8 +207,7 @@ export function useChatActions(options: UseChatActionsOptions = {}) {
       const actionTypes = [
         'navigate', 'search', 'play', 'pause', 'resume', 'skip',
         'add_to_watchlist', 'add_to_favorites', 'volume', 'language',
-        'subtitles', 'info', 'help', 'create_flow', 'start_flow',
-        'show_multiple', 'chess_invite'
+        'subtitles', 'info', 'help', 'show_multiple', 'chess_invite'
       ]
       actionTypes.forEach(type => unregisterActionHandler(type))
     }

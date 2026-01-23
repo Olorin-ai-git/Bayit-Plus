@@ -1,13 +1,16 @@
 import { useRef } from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, Platform } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ContentCard from './ContentCard';
 import AnimatedCard from '@/components/common/AnimatedCard';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { GlassView } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
+
+declare const __TV__: boolean;
+const isTV = typeof __TV__ !== 'undefined' && __TV__;
 
 interface ContentItem {
   id: string;
@@ -28,6 +31,7 @@ interface ContentCarouselProps {
   items?: ContentItem[];
   seeAllLink?: string;
   style?: any;
+  className?: string;
 }
 
 export default function ContentCarousel({
@@ -41,10 +45,8 @@ export default function ContentCarousel({
   const scrollRef = useRef<ScrollView>(null);
 
   const scroll = (direction: 'left' | 'right') => {
-    // On web, we can use scrollTo with smooth behavior
     if (scrollRef.current) {
       const scrollAmount = 800;
-      // Flip scroll direction for RTL
       const actualDirection = isRTL ? (direction === 'left' ? 'right' : 'left') : direction;
       // @ts-ignore - Web-specific scrollTo API
       scrollRef.current.scrollTo?.({
@@ -56,18 +58,17 @@ export default function ContentCarousel({
 
   if (!items.length) return null;
 
-  // Determine which chevron to show based on RTL
   const SeeAllChevron = isRTL ? ChevronLeft : ChevronRight;
 
   return (
-    <View className="max-w-[1400px] mx-auto px-4 w-full" style={style}>
+    <View style={[styles.container, style]}>
       {/* Header */}
-      <View className="flex-row items-center justify-between mb-4" style={{ flexDirection }}>
-        <Text className="text-xl font-bold text-white" style={{ textAlign }}>{title}</Text>
+      <View style={[styles.header, { flexDirection }]}>
+        <Text style={[styles.title, { textAlign }]}>{title}</Text>
         {seeAllLink && (
           <Link to={seeAllLink} style={{ textDecoration: 'none' }}>
-            <View className="flex-row items-center gap-2" style={{ flexDirection }}>
-              <Text className="text-sm" style={{ color: colors.primary }}>{t('common.seeAll', 'See All')}</Text>
+            <View style={[styles.seeAllContainer, { flexDirection }]}>
+              <Text style={styles.seeAllText}>{t('common.seeAll', 'See All')}</Text>
               <SeeAllChevron size={16} color={colors.primary} />
             </View>
           </Link>
@@ -75,21 +76,27 @@ export default function ContentCarousel({
       </View>
 
       {/* Carousel Container */}
-      <View className="relative">
+      <View style={styles.carouselContainer}>
         {/* Scroll Buttons */}
         <Pressable
           onPress={() => scroll('right')}
-          className={`absolute top-1/2 z-10 -translate-y-12 opacity-0 hover:opacity-100 ${isRTL ? 'left-0' : 'right-0'}`}
+          style={[
+            styles.scrollButton,
+            isRTL ? styles.scrollButtonLeft : styles.scrollButtonRight,
+          ]}
         >
-          <GlassView className="w-12 h-24 rounded-lg justify-center items-center">
+          <GlassView style={styles.scrollButtonInner}>
             {isRTL ? <ChevronLeft size={28} color={colors.text} /> : <ChevronRight size={28} color={colors.text} />}
           </GlassView>
         </Pressable>
         <Pressable
           onPress={() => scroll('left')}
-          className={`absolute top-1/2 z-10 -translate-y-12 opacity-0 hover:opacity-100 ${isRTL ? 'right-0' : 'left-0'}`}
+          style={[
+            styles.scrollButton,
+            isRTL ? styles.scrollButtonRight : styles.scrollButtonLeft,
+          ]}
         >
-          <GlassView className="w-12 h-24 rounded-lg justify-center items-center">
+          <GlassView style={styles.scrollButtonInner}>
             {isRTL ? <ChevronRight size={28} color={colors.text} /> : <ChevronLeft size={28} color={colors.text} />}
           </GlassView>
         </Pressable>
@@ -99,12 +106,10 @@ export default function ContentCarousel({
           ref={scrollRef}
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: spacing.md,
-            paddingBottom: spacing.md,
-            paddingHorizontal: spacing.md,
-            flexDirection: isRTL ? 'row-reverse' : 'row',
-          }}
+          contentContainerStyle={[
+            styles.scrollContent,
+            { flexDirection: isRTL ? 'row-reverse' : 'row' },
+          ]}
         >
           {items.map((item, index) => (
             <AnimatedCard
@@ -112,9 +117,10 @@ export default function ContentCarousel({
               index={index}
               variant="carousel"
               isRTL={isRTL}
-              className="w-[220px] flex-shrink-0"
             >
-              <ContentCard content={item} />
+              <View style={styles.cardWrapper}>
+                <ContentCard content={item} />
+              </View>
             </AnimatedCard>
           ))}
         </ScrollView>
@@ -122,3 +128,70 @@ export default function ContentCarousel({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    maxWidth: 1400,
+    marginHorizontal: 'auto',
+    paddingHorizontal: spacing.md,
+    width: '100%',
+    minHeight: 400,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+  },
+  title: {
+    fontSize: isTV ? fontSize.xl : fontSize.lg,
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  seeAllContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  seeAllText: {
+    fontSize: fontSize.sm,
+    color: colors.primary,
+  },
+  carouselContainer: {
+    position: 'relative',
+  },
+  scrollButton: {
+    position: 'absolute',
+    top: '50%',
+    zIndex: 10,
+    // @ts-ignore - Web transform
+    transform: [{ translateY: -48 }],
+    opacity: 0,
+    // @ts-ignore - Web hover
+    ':hover': {
+      opacity: 1,
+    },
+  },
+  scrollButtonLeft: {
+    left: 0,
+  },
+  scrollButtonRight: {
+    right: 0,
+  },
+  scrollButtonInner: {
+    width: 48,
+    height: 96,
+    borderRadius: borderRadius.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scrollContent: {
+    gap: spacing.md,
+    paddingBottom: spacing.md,
+    paddingHorizontal: spacing.md,
+  },
+  cardWrapper: {
+    width: isTV ? 280 : 220,
+    flexShrink: 0,
+  },
+});

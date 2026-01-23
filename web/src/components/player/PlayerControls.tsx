@@ -19,6 +19,7 @@ import {
   List,
   ChevronLeft,
   ChevronRight,
+  Search,
 } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { PlayerState, PlayerControls as PlayerControlsType, Chapter } from './types'
@@ -28,10 +29,13 @@ interface PlayerControlsProps {
   controls: PlayerControlsType
   isLive?: boolean
   showChaptersPanel?: boolean
+  showSceneSearchPanel?: boolean
   showSettings?: boolean
   hasChapters?: boolean
+  hasSceneSearch?: boolean
   chapters?: Chapter[]
   onChaptersPanelToggle?: () => void
+  onSceneSearchToggle?: () => void
   onSettingsToggle?: () => void
   renderWatchPartyButton?: () => React.ReactNode
   renderSubtitleControls?: () => React.ReactNode
@@ -44,10 +48,13 @@ export default function PlayerControls({
   controls,
   isLive = false,
   showChaptersPanel = false,
+  showSceneSearchPanel = false,
   showSettings = false,
   hasChapters = false,
+  hasSceneSearch = false,
   chapters = [],
   onChaptersPanelToggle,
+  onSceneSearchToggle,
   onSettingsToggle,
   renderWatchPartyButton,
   renderSubtitleControls,
@@ -168,8 +175,23 @@ export default function PlayerControls({
               hovered && styles.controlButtonHovered,
               showChaptersPanel && styles.controlButtonActive,
             ]}
+            accessibilityLabel={t('player.chapters')}
           >
             <List size={18} color={showChaptersPanel ? colors.primary : colors.text} />
+          </Pressable>
+        )}
+
+        {hasSceneSearch && onSceneSearchToggle && (
+          <Pressable
+            onPress={(e) => { e.stopPropagation?.(); onSceneSearchToggle() }}
+            style={({ hovered }) => [
+              styles.controlButton,
+              hovered && styles.controlButtonHovered,
+              showSceneSearchPanel && styles.controlButtonActive,
+            ]}
+            accessibilityLabel={t('player.sceneSearch.title')}
+          >
+            <Search size={18} color={showSceneSearchPanel ? colors.primary : colors.text} />
           </Pressable>
         )}
 

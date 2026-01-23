@@ -306,6 +306,71 @@ class Settings(BaseSettings):
     CHAT_TRANSLATION_CACHE_TTL_DAYS: int = 7
     TRANSLATION_MEMORY_CACHE_SIZE: int = 1000
 
+    # Podcast Translation Configuration
+    PODCAST_TRANSLATION_ENABLED: bool = Field(
+        default=False, description="Enable automatic podcast translation"
+    )
+    PODCAST_TRANSLATION_POLL_INTERVAL: int = Field(
+        default=300, description="Interval in seconds to check for untranslated episodes"
+    )
+    PODCAST_TRANSLATION_MAX_CONCURRENT: int = Field(
+        default=2, description="Maximum number of concurrent translation workers"
+    )
+    TEMP_AUDIO_DIR: str = Field(
+        default="/tmp/podcast_audio",
+        description="Temporary directory for audio processing",
+    )
+    PODCAST_DEFAULT_ORIGINAL_LANGUAGE: str = Field(
+        default="he", description="Default language for podcasts without detection"
+    )
+    ALLOWED_AUDIO_DOMAINS: list[str] = Field(
+        default_factory=list,
+        description="Whitelisted domains for audio downloads (SSRF protection)",
+    )
+
+    # Audio Processing Settings
+    AUDIO_SEPARATION_MODEL: str = Field(
+        default="htdemucs_6s", description="Demucs model for vocal separation"
+    )
+    AUDIO_SEPARATION_DEVICE: str = Field(
+        default="cpu", description="Device for audio processing (cpu/cuda)"
+    )
+    STT_MODEL: str = Field(default="large-v3", description="Whisper model for STT")
+    STT_DEVICE: str = Field(
+        default="cpu", description="Device for Whisper STT (cpu/cuda)"
+    )
+
+    # Audio Quality Settings
+    TARGET_LUFS: float = Field(default=-16.0, description="Target LUFS for normalization")
+    PEAK_LIMITER: float = Field(default=-1.5, description="Peak limiter in dB")
+    VOCAL_VOLUME_DB: float = Field(default=0.0, description="Vocal volume adjustment")
+    BACKGROUND_VOLUME_DB: float = Field(
+        default=-12.0, description="Background volume ducking"
+    )
+
+    # ElevenLabs Voice Settings
+    ELEVENLABS_STABILITY: float = Field(
+        default=0.75, description="Voice stability (0.7-0.8 for podcast)"
+    )
+    ELEVENLABS_SIMILARITY_BOOST: float = Field(
+        default=0.85, description="Similarity boost for consistent voice"
+    )
+    ELEVENLABS_STYLE: float = Field(
+        default=0.4, description="Style/expressiveness level"
+    )
+    ELEVENLABS_SPEAKER_BOOST: bool = Field(
+        default=True, description="Enable speaker boost for clarity"
+    )
+    ELEVENLABS_MODEL: str = Field(
+        default="eleven_multilingual_v2", description="ElevenLabs TTS model"
+    )
+    ELEVENLABS_HEBREW_VOICE_ID: str = Field(
+        default="", description="ElevenLabs voice ID for Hebrew"
+    )
+    ELEVENLABS_ENGLISH_VOICE_ID: str = Field(
+        default="", description="ElevenLabs voice ID for English"
+    )
+
     # Jewish News Aggregation Configuration
     JEWISH_NEWS_CACHE_TTL_MINUTES: int = 15
     JEWISH_NEWS_SYNC_INTERVAL_MINUTES: int = 30

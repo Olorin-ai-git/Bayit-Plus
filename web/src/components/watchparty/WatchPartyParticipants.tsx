@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Crown, Mic, MicOff, User } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
@@ -40,13 +40,13 @@ export default function WatchPartyParticipants({ participants, hostId, currentUs
           return (
             <View
               key={participant.user_id}
-              className={`flex-row items-center gap-4 p-3 rounded-lg bg-white/5 border ${
-                participant.is_speaking ? 'border-emerald-500/50 bg-emerald-500/10' : 'border-transparent'
-              }`}
+              className="flex-row items-center gap-4 p-3 rounded-lg bg-white/5 border"
+              style={[participant.is_speaking ? styles.participantSpeaking : styles.participantNormal]}
             >
-              <View className={`w-8 h-8 rounded-full items-center justify-center ${
-                isHost ? 'bg-amber-500/20' : 'bg-white/10'
-              }`}>
+              <View
+                className="w-8 h-8 rounded-full items-center justify-center"
+                style={[isHost ? styles.avatarHost : styles.avatarNormal]}
+              >
                 {isHost ? (
                   <Crown size={16} color="#FBBF24" />
                 ) : (
@@ -89,3 +89,19 @@ export default function WatchPartyParticipants({ participants, hostId, currentUs
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  participantSpeaking: {
+    borderColor: 'rgba(16, 185, 129, 0.5)',
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+  },
+  participantNormal: {
+    borderColor: 'transparent',
+  },
+  avatarHost: {
+    backgroundColor: 'rgba(251, 191, 36, 0.2)',
+  },
+  avatarNormal: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+})

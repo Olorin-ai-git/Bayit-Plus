@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Toggle } from './Toggle';
 
 interface SettingRowProps {
@@ -26,7 +26,8 @@ export function SettingRow({
     <Pressable
       onPress={onToggle}
       disabled={disabled || !onToggle}
-      className={`flex-row items-center gap-4 py-2 ${disabled ? 'opacity-50' : ''}`}
+      className="flex-row items-center gap-4 py-2"
+      style={[disabled && styles.disabled]}
     >
       {isRTL ? (
         <>
@@ -62,3 +63,9 @@ export function SettingRow({
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  disabled: {
+    opacity: 0.5,
+  },
+});

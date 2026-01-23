@@ -147,11 +147,13 @@ async def get_featured(
 
     cat_query_start = time.time()
     category_ids = [str(cat.id) for cat in categories]
+    # ContentSection uses name_key for i18n - use slug as fallback display name
     category_info_map = {
         str(cat.id): {
-            "name": cat.name,
-            "name_en": cat.name_en,
-            "name_es": cat.name_es,
+            "name": cat.slug,  # Use slug as display name
+            "name_key": cat.name_key,  # i18n translation key
+            "name_en": cat.slug,  # Fallback to slug
+            "name_es": cat.slug,  # Fallback to slug
         }
         for cat in categories
     }
@@ -262,9 +264,10 @@ async def get_featured(
     category_data = [
         {
             "id": str(cat.id),
-            "name": cat.name,
-            "name_en": cat.name_en,
-            "name_es": cat.name_es,
+            "name": cat.slug,  # Use slug as display name
+            "name_key": cat.name_key,  # i18n translation key for frontend
+            "name_en": cat.slug,  # Fallback to slug
+            "name_es": cat.slug,  # Fallback to slug
             "items": category_items_map.get(str(cat.id), []),
         }
         for cat in categories

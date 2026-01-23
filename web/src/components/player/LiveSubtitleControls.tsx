@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react'
-import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Globe } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
@@ -131,16 +131,17 @@ export default function LiveSubtitleControls({
       {/* Main Toggle Button */}
       <Pressable
         onPress={handleToggle}
-        className={`flex-row items-center gap-1 px-4 py-2 rounded-lg bg-black/30 border ${
+        className="flex-row items-center gap-1 px-4 py-2 rounded-lg bg-black/30 border"
+        style={[
           enabled
-            ? 'bg-white/15 border-purple-500'
+            ? styles.buttonEnabled
             : !isPremium
-            ? 'border-yellow-500'
-            : 'border-white/10 hover:bg-white/5 active:opacity-70'
-        }`}
+            ? styles.buttonPremium
+            : styles.buttonDefault,
+        ]}
       >
         <Globe size={20} color={enabled ? colors.primary : colors.textSecondary} />
-        <Text className={`text-sm font-medium ${enabled ? 'text-white' : 'text-gray-400'}`}>
+        <Text className="text-sm font-medium" style={[enabled ? styles.textEnabled : styles.textDisabled]}>
           {isPremium ? t('subtitles.liveTranslate') : '⭐ Premium'}
         </Text>
         {status === 'connecting' && <ActivityIndicator size="small" color={colors.primary} />}
@@ -156,3 +157,22 @@ export default function LiveSubtitleControls({
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  buttonEnabled: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: '#9333ea',
+  },
+  buttonPremium: {
+    borderColor: '#eab308',
+  },
+  buttonDefault: {
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  textEnabled: {
+    color: '#fff',
+  },
+  textDisabled: {
+    color: '#9ca3af',
+  },
+});

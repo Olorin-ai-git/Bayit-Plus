@@ -13,6 +13,7 @@ import {
 } from '@/components/watchparty'
 import { getLanguageInfo } from '@/types/subtitle'
 import ChaptersPanel from './ChaptersPanel'
+import SceneSearchPanel from './SceneSearchPanel'
 import SubtitleOverlay from './SubtitleOverlay'
 import SubtitleControls from './SubtitleControls'
 import LiveSubtitleControls from './LiveSubtitleControls'
@@ -38,6 +39,7 @@ export default function VideoPlayer({
   autoPlay = false,
   chapters = [],
   chaptersLoading = false,
+  initialSeekTime,
   onShowUpgrade,
 }: VideoPlayerProps) {
   const { t } = useTranslation()
@@ -48,6 +50,7 @@ export default function VideoPlayer({
     src,
     isLive,
     autoPlay,
+    initialSeekTime,
     onProgress,
     onEnded,
     contentId,
@@ -106,6 +109,7 @@ export default function VideoPlayer({
   // Local UI state
   const [isMobile, setIsMobile] = useState(false)
   const [showChaptersPanel, setShowChaptersPanel] = useState(false)
+  const [showSceneSearchPanel, setShowSceneSearchPanel] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [recordingDuration, setRecordingDuration] = useState(0)
@@ -169,6 +173,16 @@ export default function VideoPlayer({
           isLoading={chaptersLoading}
           isOpen={showChaptersPanel}
           onClose={() => setShowChaptersPanel(false)}
+          onSeek={controls.seekToTime}
+        />
+      )}
+
+      {/* Scene Search Panel */}
+      {!isLive && contentId && (
+        <SceneSearchPanel
+          contentId={contentId}
+          isOpen={showSceneSearchPanel}
+          onClose={() => setShowSceneSearchPanel(false)}
           onSeek={controls.seekToTime}
         />
       )}
@@ -297,10 +311,13 @@ export default function VideoPlayer({
             controls={controls}
             isLive={isLive}
             showChaptersPanel={showChaptersPanel}
+            showSceneSearchPanel={showSceneSearchPanel}
             showSettings={showSettings}
             hasChapters={chapters.length > 0}
+            hasSceneSearch={!isLive && !!contentId}
             chapters={chapters}
             onChaptersPanelToggle={() => setShowChaptersPanel(!showChaptersPanel)}
+            onSceneSearchToggle={() => setShowSceneSearchPanel(!showSceneSearchPanel)}
             onSettingsToggle={() => setShowSettings(!showSettings)}
             renderWatchPartyButton={() =>
               user && contentId ? (

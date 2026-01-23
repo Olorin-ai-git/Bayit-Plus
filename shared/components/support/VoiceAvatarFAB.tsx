@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   TouchableOpacity,
+  StyleSheet,
   Animated,
   Easing,
   Image,
@@ -95,14 +96,17 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({
 
   return (
     <Animated.View
-      className={`absolute ${isTV ? 'bottom-24' : 'bottom-16'} ${isRTL ? (isTV ? 'left-24' : 'left-4') : (isTV ? 'right-24' : 'right-4')} z-[1000] items-center justify-center`}
-      style={{
-        opacity: opacityAnim,
-        transform: [
-          { scale: scaleAnim },
-          { translateY: bounceAnim },
-        ],
-      }}
+      style={[
+        styles.container,
+        isRTL ? styles.containerRTL : styles.containerLTR,
+        {
+          opacity: opacityAnim,
+          transform: [
+            { scale: scaleAnim },
+            { translateY: bounceAnim },
+          ],
+        },
+      ]}
     >
       <TouchableOpacity
         onPress={onPress}
@@ -111,21 +115,22 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         activeOpacity={0.9}
-        className={`bg-[#0d0d1a]/90 ${isFocused ? 'border-white border-[3px]' : 'border-purple-500 border-2'} justify-center items-center shadow-lg`}
-        style={{
-          width: fabSize,
-          height: fabSize,
-          borderRadius: fabSize / 2,
-          shadowColor: colors.primary,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 8,
-          elevation: 8,
-        }}
+        style={[
+          styles.fab,
+          {
+            width: fabSize,
+            height: fabSize,
+            borderRadius: fabSize / 2,
+          },
+          isFocused && styles.fabFocused,
+        ]}
       >
         <Image
           source={isTV ? WIZARD_HAT.tv : WIZARD_HAT.mobile}
-          style={{ width: hatSize, height: hatSize }}
+          style={[
+            styles.wizardHat,
+            { width: hatSize, height: hatSize },
+          ]}
           resizeMode="contain"
         />
 
@@ -158,10 +163,56 @@ const ProcessingOverlay: React.FC = () => {
 
   return (
     <Animated.View
-      className={`absolute ${isTV ? 'w-16 h-16 rounded-[32px]' : 'w-11 h-11 rounded-[22px]'} border-2 border-yellow-500 border-t-transparent`}
-      style={{ transform: [{ rotate: spin }] }}
+      style={[
+        styles.processingOverlay,
+        { transform: [{ rotate: spin }] },
+      ]}
     />
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: isTV ? spacing.xl * 2 : spacing.xl,
+    zIndex: 1000,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  containerLTR: {
+    right: isTV ? spacing.xl * 2 : spacing.lg,
+  },
+  containerRTL: {
+    left: isTV ? spacing.xl * 2 : spacing.lg,
+  },
+  fab: {
+    backgroundColor: 'rgba(13, 13, 26, 0.9)',
+    borderWidth: 2,
+    borderColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  fabFocused: {
+    borderColor: colors.text,
+    borderWidth: 3,
+  },
+  wizardHat: {
+    // Wizard hat image
+  },
+  processingOverlay: {
+    position: 'absolute',
+    width: isTV ? 64 : 44,
+    height: isTV ? 64 : 44,
+    borderRadius: isTV ? 32 : 22,
+    borderWidth: 2,
+    borderColor: colors.warning,
+    borderTopColor: 'transparent',
+  },
+});
 
 export default VoiceAvatarFAB;
