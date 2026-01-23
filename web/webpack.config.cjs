@@ -291,7 +291,7 @@ module.exports = (env, argv) => {
       static: {
         directory: path.join(__dirname, 'public'),
       },
-      port: 3000,
+      port: 3200,
       hot: true,
       historyApiFallback: true,
       open: true,

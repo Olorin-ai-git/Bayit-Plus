@@ -23,7 +23,8 @@
 
 ### Services Running
 - ✅ Backend API: port 8000
-- ✅ Frontend: port 3000
+- ✅ Frontend (Web): port 3200
+- ✅ Frontend (Partner Portal): port 3211
 - ✅ MongoDB: localhost:27017
 - ✅ Database indexes: Created (42 total)
 - ✅ Content imported: 13 items
@@ -43,12 +44,12 @@
 
 ### Admin Dashboard
 ```
-Frontend: http://localhost:3000
-Admin: http://localhost:3000/admin
-Content: http://localhost:3000/admin/content
-Live Channels: http://localhost:3000/admin/live-channels
-Radio Stations: http://localhost:3000/admin/radio-stations
-Podcasts: http://localhost:3000/admin/podcasts
+Frontend: http://localhost:3200
+Admin: http://localhost:3200/admin
+Content: http://localhost:3200/admin/content
+Live Channels: http://localhost:3200/admin/live-channels
+Radio Stations: http://localhost:3200/admin/radio-stations
+Podcasts: http://localhost:3200/admin/podcasts
 ```
 
 ### API Documentation
@@ -63,7 +64,7 @@ Health Check: http://localhost:8000/health
 ## Testing Content Access
 
 ### Via Frontend (Recommended)
-1. Open http://localhost:3000/admin/content
+1. Open http://localhost:3200/admin/content
 2. You should see 4 movies (Night of Living Dead, His Girl Friday, Nosferatu, The Great Train Robbery)
 3. Click on any movie to view details
 4. Navigate to other sections:
@@ -295,4 +296,4 @@ For more details, see:
 
 ✅ **Everything is ready to use!**
 
-Start with the admin dashboard at http://localhost:3000/admin/content
+Start with the admin dashboard at http://localhost:3200/admin/content

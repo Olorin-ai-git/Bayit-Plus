@@ -9,9 +9,9 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "dev": "lsof -ti:3011 | xargs kill -9 2>/dev/null || true; webpack serve --mode development --config webpack.config.cjs",
+    "dev": "lsof -ti:3211 | xargs kill -9 2>/dev/null || true; webpack serve --mode development --config webpack.config.cjs",
     "build": "webpack --mode production --config webpack.config.cjs",
-    "preview": "serve -s dist -l 3011",
+    "preview": "serve -s dist -l 3211",
     "lint": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0",
     "deploy": "npm run build && firebase deploy --only hosting:partner-portal",
     "deploy:preview": "npm run build && firebase hosting:channel:deploy partner-preview --only partner-portal"

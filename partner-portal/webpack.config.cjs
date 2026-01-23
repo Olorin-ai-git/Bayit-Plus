@@ -95,7 +95,7 @@ module.exports = {
     }),
   ],
   devServer: {
-    port: 3011,
+    port: 3211,
     hot: true,
     historyApiFallback: true,
     static: {

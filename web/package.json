@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "lsof -ti:3000 | xargs kill -9 2>/dev/null || true; webpack serve --mode development --config webpack.config.cjs",
+    "dev": "lsof -ti:3200 | xargs kill -9 2>/dev/null || true; webpack serve --mode development --config webpack.config.cjs",
     "build": "webpack --mode production --config webpack.config.cjs",
     "dev:vite": "vite",
     "build:vite": "vite build",

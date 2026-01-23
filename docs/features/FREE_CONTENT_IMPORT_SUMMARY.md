@@ -111,7 +111,7 @@ API Docs: http://localhost:8000/docs
 Process: webpack serve
 Port: 3000
 Status: Running
-URL: http://localhost:3000
+URL: http://localhost:3200
 API Proxy: /api → http://localhost:8000
 ```
 
@@ -129,10 +129,10 @@ Status: ✅ Connected
 
 ### Option 1: Via Admin Dashboard
 
-**URL:** http://localhost:3000/admin
+**URL:** http://localhost:3200/admin
 
 **Access:**
-1. Navigate to http://localhost:3000
+1. Navigate to http://localhost:3200
 2. Login with admin credentials (if auth required)
 3. Go to `/admin/content` → View free VOD content
 4. Go to `/admin/live-channels` → View test streams
@@ -186,7 +186,7 @@ curl "http://localhost:8000/api/v1/admin/content?search=living"
 
 **1. View Content Library:**
 ```
-1. Go to http://localhost:3000/admin/content
+1. Go to http://localhost:3200/admin/content
 2. You should see 4 public domain movies
 3. Click on a movie to view details
 4. Verify title, year, director, description
@@ -194,7 +194,7 @@ curl "http://localhost:8000/api/v1/admin/content?search=living"
 
 **2. Test Live Channels:**
 ```
-1. Go to http://localhost:3000/admin/live-channels
+1. Go to http://localhost:3200/admin/live-channels
 2. You should see 3 Apple BipBop test streams
 3. Note the HLS stream URLs
 4. DRM Protected: No (for all)
@@ -202,7 +202,7 @@ curl "http://localhost:8000/api/v1/admin/content?search=living"
 
 **3. Test Radio Stations:**
 ```
-1. Go to http://localhost:3000/admin/radio-stations
+1. Go to http://localhost:3200/admin/radio-stations
 2. You should see 3 stations
 3. Verify genre field (Electronic, Ambient, News)
 4. Click on a station to view details
@@ -210,7 +210,7 @@ curl "http://localhost:8000/api/v1/admin/content?search=living"
 
 **4. Test Podcasts:**
 ```
-1. Go to http://localhost:3000/admin/podcasts
+1. Go to http://localhost:3200/admin/podcasts
 2. You should see 3 podcasts
 3. Verify author and category fields
 4. See episode count (should be 0 initially)
@@ -374,7 +374,7 @@ tail -f logs/api.log
 
 **System Status:** ✅ Fully Operational
 - Backend: Running on port 8000
-- Frontend: Running on port 3000
+- Frontend: Running on port 3200
 - Database: Connected and indexed
 - Content: Imported and verified
 
