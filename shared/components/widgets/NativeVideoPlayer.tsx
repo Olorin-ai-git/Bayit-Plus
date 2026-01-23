@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import Video from 'react-native-video';
+import Video, { TextTrackType, SelectedTrackType } from 'react-native-video';
 import { CaptionUrls } from './WidgetsIntroVideo.types';
 import { styles } from './WidgetsIntroVideo.styles';
 
@@ -40,23 +40,23 @@ export const NativeVideoPlayer: React.FC<NativeVideoPlayerProps> = ({
         {
           title: 'English',
           language: 'en',
-          type: 'text/vtt',
+          type: TextTrackType.VTT,
           uri: captionUrls.en,
         },
         {
           title: 'Español',
           language: 'es',
-          type: 'text/vtt',
+          type: TextTrackType.VTT,
           uri: captionUrls.es,
         },
         {
           title: 'עברית',
           language: 'he',
-          type: 'text/vtt',
+          type: TextTrackType.VTT,
           uri: captionUrls.he,
         },
       ]}
-      selectedTextTrack={{ type: 'language', value: 'en' }}
+      selectedTextTrack={{ type: SelectedTrackType.LANGUAGE, value: 'en' }}
     />
   );
 };

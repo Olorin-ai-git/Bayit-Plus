@@ -8,7 +8,7 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard } from '@bayit/shared/ui';
 import WidgetFormModal from '@/components/widgets/WidgetFormModal';
 import { SystemWidgetGallery } from '@/components/widgets/SystemWidgetGallery';
-import { WidgetsIntroVideo } from '@bayit/shared/components/widgets/WidgetsIntroVideo';
+import { WidgetsIntroVideo } from '@bayit/shared/widgets/WidgetsIntroVideo';
 import { config } from '@bayit/shared-config/appConfig';
 import WidgetCard from '@/components/widgets/WidgetCard';
 import { IntroSection } from '@/components/widgets/IntroSection';

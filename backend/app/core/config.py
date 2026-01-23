@@ -634,6 +634,11 @@ class Settings(BaseSettings):
     # Session cleanup TTL (days)
     LIVE_QUOTA_SESSION_TTL_DAYS: int = 90
 
+    # Rate limiting (requests per minute)
+    LIVE_QUOTA_WEBSOCKET_RATE_LIMIT: int = 5  # Max WebSocket connections per minute
+    LIVE_QUOTA_API_RATE_LIMIT: int = 100  # Max API requests per minute
+    LIVE_QUOTA_CHECK_RATE_LIMIT: int = 20  # Max quota checks per minute
+
     # ============================================
     # OLORIN.AI PLATFORM CONFIGURATION (NESTED)
     # ============================================
