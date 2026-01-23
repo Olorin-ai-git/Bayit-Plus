@@ -98,7 +98,11 @@ class Settings(BaseSettings):
     ELEVENLABS_DEFAULT_VOICE_ID: str = (
         "EXAVITQu4vr4xnSDxMaL"  # Rachel - multilingual female voice for general TTS
     )
-    # Olorin Support Avatar - custom cloned voice for support wizard
+    # Olorin Assistant Avatar - custom cloned voice for AI assistant interactions
+    ELEVENLABS_ASSISTANT_VOICE_ID: str = (
+        "ashjVK50jp28G73AUTnb"  # Olorin - custom cloned voice
+    )
+    # Olorin Support Avatar - custom cloned voice for support wizard (uses same voice as assistant)
     ELEVENLABS_SUPPORT_VOICE_ID: str = (
         "ashjVK50jp28G73AUTnb"  # Olorin - custom cloned voice
     )
