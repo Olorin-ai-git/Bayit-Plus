@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.h
+../../../../../../node_modules/react-native-screens/ios/RNSScreenStackHeaderConfig.h

@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/RNSScreenWindowTraits.h
+../../../../../../node_modules/react-native-screens/ios/RNSScreenWindowTraits.h

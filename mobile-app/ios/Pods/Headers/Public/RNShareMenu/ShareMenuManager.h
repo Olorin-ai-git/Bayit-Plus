@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-share-menu/ios/ShareMenuManager.h
+../../../../../../node_modules/react-native-share-menu/ios/ShareMenuManager.h

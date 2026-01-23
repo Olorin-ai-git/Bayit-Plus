@@ -43,6 +43,7 @@ const NAV_ITEMS: NavItem[] = [
   { key: 'dashboard', labelKey: 'admin.nav.dashboard', icon: LayoutDashboard, route: '/admin' },
   { key: 'users', labelKey: 'admin.nav.users', icon: Users, route: '/admin/users' },
   { key: 'librarian', labelKey: 'admin.nav.librarian', icon: Bot, route: '/admin/librarian' },
+  { key: 'live-quotas', labelKey: 'admin.nav.liveQuotas', icon: Clock, route: '/admin/live-quotas' },
   { key: 'campaigns', labelKey: 'admin.nav.campaigns', icon: Tag, route: '/admin/campaigns' },
   {
     key: 'billing',

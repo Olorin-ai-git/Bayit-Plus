@@ -1,1 +1,1 @@
-../../../../../../node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/Registration.h
+../../../../../../../node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/Registration.h

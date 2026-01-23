@@ -1,1 +1,1 @@
-../../../../../../node_modules/react-native/ReactCommon/jsinspector-modern/StackTrace.h
+../../../../../../../node_modules/react-native/ReactCommon/jsinspector-modern/StackTrace.h

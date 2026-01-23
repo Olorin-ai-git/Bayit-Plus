@@ -1,1 +1,1 @@
-../../../../../../../../node_modules/react-native/ReactCommon/react/renderer/bridging/bridging.h
+../../../../../../../../../node_modules/react-native/ReactCommon/react/renderer/bridging/bridging.h

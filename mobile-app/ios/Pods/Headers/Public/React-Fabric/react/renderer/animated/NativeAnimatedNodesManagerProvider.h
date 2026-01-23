@@ -1,1 +1,1 @@
-../../../../../../../../node_modules/react-native/ReactCommon/react/renderer/animated/NativeAnimatedNodesManagerProvider.h
+../../../../../../../../../node_modules/react-native/ReactCommon/react/renderer/animated/NativeAnimatedNodesManagerProvider.h

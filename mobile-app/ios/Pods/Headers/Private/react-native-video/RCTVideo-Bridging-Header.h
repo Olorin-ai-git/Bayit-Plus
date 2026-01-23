@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-video/ios/Video/RCTVideo-Bridging-Header.h
+../../../../../../node_modules/react-native-video/ios/Video/RCTVideo-Bridging-Header.h

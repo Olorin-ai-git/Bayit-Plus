@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/safe-area/paper/RNSSafeAreaViewManager.h
+../../../../../../node_modules/react-native-screens/ios/safe-area/paper/RNSSafeAreaViewManager.h

@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-svg/apple/ViewManagers/RNSVGSymbolManager.h
+../../../../../../node_modules/react-native-svg/apple/ViewManagers/RNSVGSymbolManager.h

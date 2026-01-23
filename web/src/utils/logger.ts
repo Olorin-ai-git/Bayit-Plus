@@ -46,6 +46,13 @@ const createLogEntry = (
   timestamp: new Date().toISOString(),
 });
 
+interface ScopedLogger {
+  debug: (message: string, data?: unknown) => void;
+  info: (message: string, data?: unknown) => void;
+  warn: (message: string, data?: unknown) => void;
+  error: (message: string, error?: unknown) => void;
+}
+
 export const logger = {
   debug: (message: string, context?: string, data?: unknown): void => {
     if (isDev) {
@@ -77,6 +84,26 @@ export const logger = {
     }
     sendToMonitoring(entry);
   },
+
+  /**
+   * Create a scoped logger with a fixed context prefix
+   * @param context - The context/scope name for this logger
+   * @returns A scoped logger with the context pre-applied
+   */
+  scope: (context: string): ScopedLogger => ({
+    debug: (message: string, data?: unknown): void => {
+      logger.debug(message, context, data);
+    },
+    info: (message: string, data?: unknown): void => {
+      logger.info(message, context, data);
+    },
+    warn: (message: string, data?: unknown): void => {
+      logger.warn(message, context, data);
+    },
+    error: (message: string, error?: unknown): void => {
+      logger.error(message, context, error);
+    },
+  }),
 };
 
 export default logger;

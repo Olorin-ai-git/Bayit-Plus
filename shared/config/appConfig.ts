@@ -66,10 +66,14 @@ export const config = {
     minQueryLength: 2,
   },
 
-  // Media assets
+  // Media assets - from environment variables with fallback
   media: {
-    widgetsIntroVideo: '/media/widgets-intro.mp4',
-    olorinAvatarIntro: '/media/olorin-avatar-intro.mp4',
+    widgetsIntroVideo: (typeof process !== 'undefined' && process.env.REACT_APP_WIDGETS_INTRO_VIDEO_URL)
+      || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_WIDGETS_INTRO_VIDEO_URL)
+      || '/media/widgets-intro.mp4',
+    olorinAvatarIntro: (typeof process !== 'undefined' && process.env.REACT_APP_OLORIN_AVATAR_INTRO_VIDEO_URL)
+      || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_OLORIN_AVATAR_INTRO_VIDEO_URL)
+      || '/media/olorin-avatar-intro.mp4',
   },
 };
 

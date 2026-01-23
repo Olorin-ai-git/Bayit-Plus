@@ -9,6 +9,7 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassCategoryPill, GlassModal } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import { useDirection } from '@/hooks/useDirection';
+import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
@@ -440,9 +441,11 @@ export default function YoungstersPage() {
         )}
 
         {isLoading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#a855f7" />
-          </View>
+          <LoadingState
+            message={t('youngsters.loading', 'Loading content...')}
+            spinnerColor="#a855f7"
+            backgroundColor="rgba(168, 85, 247, 0.1)"
+          />
         ) : content.length > 0 ? (
           <FlatList
             data={content}
@@ -458,13 +461,13 @@ export default function YoungstersPage() {
             )}
           />
         ) : (
-          <View style={styles.emptyState}>
-            <GlassCard style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>🎯</Text>
-              <Text style={styles.emptyTitle}>{t('youngsters.noContent')}</Text>
-              <Text style={styles.emptyDescription}>{t('youngsters.tryAnotherCategory')}</Text>
-            </GlassCard>
-          </View>
+          <EmptyState
+            icon={<Text style={styles.emptyIcon}>🎯</Text>}
+            title={t('youngsters.noContent')}
+            description={t('youngsters.tryAnotherCategory')}
+            titleColor="#a855f7"
+            backgroundColor="rgba(168, 85, 247, 0.1)"
+          />
         )}
       </View>
 

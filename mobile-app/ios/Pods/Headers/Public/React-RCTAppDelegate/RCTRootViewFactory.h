@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native/Libraries/AppDelegate/RCTRootViewFactory.h
+../../../../../../node_modules/react-native/Libraries/AppDelegate/RCTRootViewFactory.h

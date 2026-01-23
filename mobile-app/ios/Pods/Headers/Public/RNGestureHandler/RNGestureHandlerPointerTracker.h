@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-gesture-handler/apple/RNGestureHandlerPointerTracker.h
+../../../../../../node_modules/react-native-gesture-handler/apple/RNGestureHandlerPointerTracker.h

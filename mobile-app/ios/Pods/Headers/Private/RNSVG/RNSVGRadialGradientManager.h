@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-svg/apple/ViewManagers/RNSVGRadialGradientManager.h
+../../../../../../node_modules/react-native-svg/apple/ViewManagers/RNSVGRadialGradientManager.h

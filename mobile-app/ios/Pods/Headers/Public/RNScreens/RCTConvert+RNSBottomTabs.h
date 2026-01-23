@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/bottom-tabs/RCTConvert+RNSBottomTabs.h
+../../../../../../node_modules/react-native-screens/ios/bottom-tabs/RCTConvert+RNSBottomTabs.h

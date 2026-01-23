@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/RNSOrientationProviding.h
+../../../../../../node_modules/react-native-screens/ios/RNSOrientationProviding.h

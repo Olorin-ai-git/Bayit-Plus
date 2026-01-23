@@ -1,1 +1,1 @@
-../../../../../../node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSBottomTabsState.h
+../../../../../../../node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSBottomTabsState.h

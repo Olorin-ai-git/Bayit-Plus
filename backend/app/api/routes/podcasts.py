@@ -93,22 +93,42 @@ async def get_podcasts(
 ):
     """Get podcasts with pagination, optionally filtered by culture and category."""
     try:
-        skip = (page - 1) * limit
-
         query = {"is_active": True}
         if culture_id:
             query["culture_id"] = culture_id
         if category:
             query["category"] = category
 
-        shows = (
+        # Fetch all matching podcasts first to deduplicate
+        all_shows = (
             await Podcast.find(query)
             .sort("-latest_episode_date")
-            .skip(skip)
-            .limit(limit)
             .to_list()
         )
-        total = await Podcast.find(query).count()
+
+        # Deduplicate by title - keep the one with more episodes or most recent
+        seen_titles = {}
+        for show in all_shows:
+            title_key = show.title.lower().strip()
+            if title_key not in seen_titles:
+                seen_titles[title_key] = show
+            else:
+                # Keep the one with more episodes
+                existing = seen_titles[title_key]
+                if (show.episode_count or 0) > (existing.episode_count or 0):
+                    seen_titles[title_key] = show
+
+        unique_shows = list(seen_titles.values())
+        # Re-sort after deduplication
+        unique_shows.sort(
+            key=lambda x: x.latest_episode_date or x.created_at,
+            reverse=True
+        )
+
+        total = len(unique_shows)
+        # Apply pagination to deduplicated list
+        skip = (page - 1) * limit
+        shows = unique_shows[skip : skip + limit]
 
         # Get unique categories (filtered by culture if specified)
         category_query = {"is_active": True}

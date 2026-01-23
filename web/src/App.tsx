@@ -92,6 +92,8 @@ const LibrarianAgentPage = lazy(() => import('./pages/admin/LibrarianAgentPage')
 const RecordingsManagementPage = lazy(() => import('./pages/admin/RecordingsManagementPage'))
 const UploadsPage = lazy(() => import('./pages/admin/UploadsPage'))
 const FeaturedManagementPage = lazy(() => import('./pages/admin/FeaturedManagementPage'))
+const UserLiveQuotaPage = lazy(() => import('./pages/admin/UserLiveQuotaPage'))
+const LiveUsageAnalyticsPage = lazy(() => import('./pages/admin/LiveUsageAnalyticsPage'))
 
 function App() {
   // Set document direction based on language (RTL for Hebrew/Arabic, LTR for others)
@@ -130,6 +132,8 @@ function App() {
           <Route path="push" element={<PushNotificationsPage />} />
           <Route path="logs" element={<AuditLogsPage />} />
           <Route path="librarian" element={<LibrarianAgentPage />} />
+          <Route path="live-quotas" element={<LiveUsageAnalyticsPage />} />
+          <Route path="users/:userId/live-quota" element={<UserLiveQuotaPage />} />
           <Route path="uploads" element={<UploadsPage />} />
           <Route path="settings" element={<AdminSettingsPage />} />
           <Route path="content" element={<ContentLibraryPage />} />

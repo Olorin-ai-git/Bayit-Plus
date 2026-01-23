@@ -100,7 +100,7 @@ class Settings(BaseSettings):
     )
     # Olorin Support Avatar - custom cloned voice for support wizard
     ELEVENLABS_SUPPORT_VOICE_ID: str = (
-        "iwNTMolqpkQ3cGUnKlX8"  # Olorin - custom cloned voice
+        "ashjVK50jp28G73AUTnb"  # Olorin - custom cloned voice
     )
 
     # OpenAI (Whisper speech-to-text)
@@ -592,6 +592,43 @@ class Settings(BaseSettings):
     PASSKEY_CHALLENGE_EXPIRY_SECONDS: int = 300
     # Maximum number of passkeys per user
     PASSKEY_MAX_CREDENTIALS_PER_USER: int = 10
+
+    # ============================================
+    # LIVE FEATURE QUOTAS (Subtitles & Dubbing)
+    # ============================================
+    # Per-user usage limits for live subtitles and live dubbing features
+
+    # Default quota limits for Premium tier (minutes)
+    LIVE_QUOTA_PREMIUM_SUBTITLE_MINUTES_PER_HOUR: int = 60
+    LIVE_QUOTA_PREMIUM_SUBTITLE_MINUTES_PER_DAY: int = 240
+    LIVE_QUOTA_PREMIUM_SUBTITLE_MINUTES_PER_MONTH: int = 2000
+    LIVE_QUOTA_PREMIUM_DUBBING_MINUTES_PER_HOUR: int = 30
+    LIVE_QUOTA_PREMIUM_DUBBING_MINUTES_PER_DAY: int = 120
+    LIVE_QUOTA_PREMIUM_DUBBING_MINUTES_PER_MONTH: int = 1000
+
+    # Default quota limits for Family tier (minutes) - 2x Premium
+    LIVE_QUOTA_FAMILY_SUBTITLE_MINUTES_PER_HOUR: int = 120
+    LIVE_QUOTA_FAMILY_SUBTITLE_MINUTES_PER_DAY: int = 480
+    LIVE_QUOTA_FAMILY_SUBTITLE_MINUTES_PER_MONTH: int = 4000
+    LIVE_QUOTA_FAMILY_DUBBING_MINUTES_PER_HOUR: int = 60
+    LIVE_QUOTA_FAMILY_DUBBING_MINUTES_PER_DAY: int = 240
+    LIVE_QUOTA_FAMILY_DUBBING_MINUTES_PER_MONTH: int = 2000
+
+    # Rollover settings
+    LIVE_QUOTA_MAX_ROLLOVER_MULTIPLIER: float = 2.0
+    LIVE_QUOTA_WARNING_THRESHOLD_PERCENTAGE: int = 80
+
+    # Cost estimation for internal analytics (USD)
+    LIVE_QUOTA_COST_STT_PER_MINUTE: float = 0.006
+    LIVE_QUOTA_COST_TRANSLATION_PER_1K_CHARS: float = 0.020
+    LIVE_QUOTA_COST_TTS_PER_1K_CHARS: float = 0.016
+
+    # Average characters per minute for cost estimation
+    LIVE_QUOTA_AVG_CHARS_PER_MINUTE_HEBREW: int = 600
+    LIVE_QUOTA_AVG_CHARS_PER_MINUTE_ENGLISH: int = 750
+
+    # Session cleanup TTL (days)
+    LIVE_QUOTA_SESSION_TTL_DAYS: int = 90
 
     # ============================================
     # OLORIN.AI PLATFORM CONFIGURATION (NESTED)

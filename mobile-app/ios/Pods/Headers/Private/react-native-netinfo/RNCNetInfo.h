@@ -1,1 +1,1 @@
-../../../../../node_modules/@react-native-community/netinfo/ios/RNCNetInfo.h
+../../../../../../node_modules/@react-native-community/netinfo/ios/RNCNetInfo.h

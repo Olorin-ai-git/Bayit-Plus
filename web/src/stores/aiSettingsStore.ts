@@ -51,8 +51,18 @@ export const useAISettingsStore = create<AISettingsStore>()(
             loading: false,
           });
         } catch (error: any) {
-          logger.error('Failed to load AI preferences', 'aiSettingsStore', error);
-          set({ loading: false, error: error.message || 'Failed to load preferences' });
+          // Handle 401 gracefully - user not authenticated, use defaults
+          if (error?.response?.status === 401 || error?.status === 401) {
+            logger.debug('User not authenticated, using default AI preferences', 'aiSettingsStore');
+            set({
+              preferences: DEFAULT_AI_PREFERENCES,
+              loading: false,
+              error: null, // No error for unauthenticated users
+            });
+          } else {
+            logger.error('Failed to load AI preferences', 'aiSettingsStore', error);
+            set({ loading: false, error: error.message || 'Failed to load preferences' });
+          }
         }
       },
 

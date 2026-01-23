@@ -65,6 +65,10 @@ class LiveSubtitleService {
             logger.debug('Calling onSubtitle callback', 'liveSubtitleService', msg.data)
             onSubtitle(msg.data)
             logger.debug('onSubtitle callback completed', 'liveSubtitleService')
+          } else if (msg.type === 'quota_exceeded') {
+            logger.error('Quota exceeded', 'liveSubtitleService', msg.message)
+            onError(`Usage limit reached: ${msg.message}`)
+            this.disconnect()
           } else if (msg.type === 'error') {
             logger.error('Server error', 'liveSubtitleService', msg.message)
             onError(msg.message)

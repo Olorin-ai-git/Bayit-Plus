@@ -268,7 +268,7 @@ export const supportConfig: SupportConfig = {
 
     // Support System Voice (Olorin) - custom cloned voice for the wizard
     supportVoice: {
-      voiceId: getEnvVar('VITE_ELEVENLABS_SUPPORT_VOICE_ID', 'iwNTMolqpkQ3cGUnKlX8'),
+      voiceId: getEnvVar('VITE_ELEVENLABS_SUPPORT_VOICE_ID', 'ashjVK50jp28G73AUTnb'),
       name: 'Olorin',
       description: 'Custom cloned voice for the Olorin support wizard',
     },

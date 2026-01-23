@@ -1,1 +1,1 @@
-../../../../../../../node_modules/react-native/ReactCommon/react/bridging/Class.h
+../../../../../../../../node_modules/react-native/ReactCommon/react/bridging/Class.h

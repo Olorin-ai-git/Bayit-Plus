@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/RNSModule.h
+../../../../../../node_modules/react-native-screens/ios/RNSModule.h

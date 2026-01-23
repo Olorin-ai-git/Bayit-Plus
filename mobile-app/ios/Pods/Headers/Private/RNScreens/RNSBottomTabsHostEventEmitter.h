@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/bottom-tabs/host/RNSBottomTabsHostEventEmitter.h
+../../../../../../node_modules/react-native-screens/ios/bottom-tabs/host/RNSBottomTabsHostEventEmitter.h

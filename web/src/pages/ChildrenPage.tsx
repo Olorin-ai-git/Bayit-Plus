@@ -9,6 +9,7 @@ import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassCategoryPill, GlassModal } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import { useDirection } from '@/hooks/useDirection';
+import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
@@ -417,9 +418,11 @@ export default function ChildrenPage() {
         )}
 
         {isLoading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#facc15" />
-          </View>
+          <LoadingState
+            message={t('children.loading', 'Loading content...')}
+            spinnerColor="#facc15"
+            backgroundColor="rgba(250, 204, 21, 0.1)"
+          />
         ) : content.length > 0 ? (
           <FlatList
             data={content}
@@ -435,13 +438,13 @@ export default function ChildrenPage() {
             )}
           />
         ) : (
-          <View style={styles.emptyContainer}>
-            <GlassCard style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>🌈</Text>
-              <Text style={styles.emptyTitle}>{t('children.noContent')}</Text>
-              <Text style={styles.emptyDescription}>{t('children.tryAnotherCategory')}</Text>
-            </GlassCard>
-          </View>
+          <EmptyState
+            icon={<Text style={styles.emptyIcon}>🌈</Text>}
+            title={t('children.noContent')}
+            description={t('children.tryAnotherCategory')}
+            titleColor="#facc15"
+            backgroundColor="rgba(250, 204, 21, 0.1)"
+          />
         )}
       </View>
 

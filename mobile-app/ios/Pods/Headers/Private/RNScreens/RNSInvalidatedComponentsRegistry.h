@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/RNSInvalidatedComponentsRegistry.h
+../../../../../../node_modules/react-native-screens/ios/RNSInvalidatedComponentsRegistry.h

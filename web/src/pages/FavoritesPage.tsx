@@ -7,6 +7,7 @@ import { useDirection } from '@/hooks/useDirection';
 import { favoritesService } from '@/services/api';
 import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { GlassCard, GlassView } from '@bayit/shared/ui';
+import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
 
 const TYPE_ICONS: Record<string, string> = {
@@ -159,11 +160,10 @@ export default function FavoritesPage() {
 
       {/* Loading State */}
       {loading ? (
-        <View style={styles.loadingGrid}>
-          {[...Array(12)].map((_, i) => (
-            <View key={i} style={styles.skeletonCard} />
-          ))}
-        </View>
+        <LoadingState
+          message={t('favorites.loading', 'Loading favorites...')}
+          spinnerColor={colors.warning}
+        />
       ) : favorites.length > 0 ? (
         <FlatList
           data={favorites}
@@ -179,13 +179,11 @@ export default function FavoritesPage() {
           )}
         />
       ) : (
-        <View style={styles.emptyContainer}>
-          <GlassCard style={styles.emptyCard}>
-            <Star size={64} color="rgba(245, 158, 11, 0.5)" />
-            <Text style={styles.emptyTitle}>{t('favorites.empty')}</Text>
-            <Text style={styles.emptyHint}>{t('favorites.emptyHint')}</Text>
-          </GlassCard>
-        </View>
+        <EmptyState
+          icon={<Star size={72} color="rgba(245, 158, 11, 0.5)" strokeWidth={1.5} />}
+          title={t('favorites.empty')}
+          description={t('favorites.emptyHint')}
+        />
       )}
     </View>
   );

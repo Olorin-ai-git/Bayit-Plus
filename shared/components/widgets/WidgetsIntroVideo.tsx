@@ -2,31 +2,27 @@
  * Widgets Intro Video
  * Reusable full-screen intro video component with fade animations
  * Supports dismiss functionality and loading/error states
+ * Cross-platform: Uses HTML5 video on web, react-native-video on native
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   View,
   Text,
   Animated,
   ActivityIndicator,
   Platform,
-  StyleSheet,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../ui/GlassButton';
 import { GlassView } from '../ui/GlassView';
 import { useDirection } from '../../hooks/useDirection';
-import { colors, spacing } from '../../theme';
-
-interface WidgetsIntroVideoProps {
-  videoUrl: string;
-  visible: boolean;
-  onComplete: () => void;
-  onDismiss?: () => void;
-  showDismissButton?: boolean;
-  autoPlay?: boolean;
-}
+import { colors } from '../../theme';
+import { WidgetsIntroVideoProps } from './WidgetsIntroVideo.types';
+import { getCaptionUrls } from './WidgetsIntroVideo.utils';
+import { styles } from './WidgetsIntroVideo.styles';
+import { WebVideoPlayer } from './WebVideoPlayer';
+import { NativeVideoPlayer } from './NativeVideoPlayer';
 
 export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
   videoUrl,
@@ -39,12 +35,12 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
   const { t } = useTranslation();
   const { isRTL, flexDirection } = useDirection();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoRef = useRef<any>(null);
   const completedRef = useRef(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const captionUrls = getCaptionUrls(videoUrl);
 
-  // Reset state when visibility changes
   useEffect(() => {
     if (visible) {
       completedRef.current = false;
@@ -52,8 +48,46 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
       setHasError(false);
     }
   }, [visible]);
+  const handleComplete = useCallback(() => {
+    if (completedRef.current) return;
+    completedRef.current = true;
 
-  // Fade in animation when visible
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start(() => {
+      onComplete();
+    });
+  }, [fadeAnim, onComplete]);
+
+  const handleDismiss = useCallback(() => {
+    if (completedRef.current) return;
+    completedRef.current = true;
+
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start(() => {
+      if (onDismiss) {
+        onDismiss();
+      } else {
+        onComplete();
+      }
+    });
+  }, [fadeAnim, onDismiss, onComplete]);
+
+  const handleVideoLoaded = useCallback(() => {
+    setIsLoading(false);
+    setHasError(false);
+  }, []);
+
+  const handleVideoError = useCallback(() => {
+    setIsLoading(false);
+    setHasError(true);
+    setTimeout(handleComplete, 2000);
+  }, [handleComplete]);
   useEffect(() => {
     if (visible) {
       Animated.timing(fadeAnim, {
@@ -64,7 +98,6 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
     }
   }, [visible, fadeAnim]);
 
-  // Keyboard navigation (Escape key)
   useEffect(() => {
     if (!visible || Platform.OS !== 'web') return;
 
@@ -80,56 +113,7 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
     };
   }, [visible, handleComplete]);
 
-  // Handle completion - only call once
-  const handleComplete = () => {
-    if (completedRef.current) return;
-    completedRef.current = true;
-
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 500,
-      useNativeDriver: true,
-    }).start(() => {
-      onComplete();
-    });
-  };
-
-  // Handle dismiss with "Don't show again"
-  const handleDismiss = () => {
-    if (completedRef.current) return;
-    completedRef.current = true;
-
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 500,
-      useNativeDriver: true,
-    }).start(() => {
-      if (onDismiss) {
-        onDismiss();
-      } else {
-        onComplete();
-      }
-    });
-  };
-
-  // Handle video loaded
-  const handleVideoLoaded = () => {
-    setIsLoading(false);
-    setHasError(false);
-  };
-
-  // Handle video error
-  const handleVideoError = () => {
-    setIsLoading(false);
-    setHasError(true);
-    // Auto-close after error
-    setTimeout(handleComplete, 2000);
-  };
-
-  // Don't render on non-web platforms or when not visible
-  if (Platform.OS !== 'web' || !visible) {
-    return null;
-  }
+  if (!visible) return null;
 
   return (
     <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
@@ -150,28 +134,30 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
           </View>
         )}
 
-        {/* Video element */}
+        {/* Video element - Cross-platform */}
         {!hasError && (
           <GlassView style={styles.videoContainer}>
-            <video
-              ref={videoRef}
-              src={videoUrl}
-              aria-label={t('widgets.intro.title')}
-              title={t('widgets.intro.title')}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'contain',
-                backgroundColor: colors.background,
-                display: isLoading ? 'none' : 'block',
-              } as React.CSSProperties}
-              playsInline
-              autoPlay={autoPlay}
-              controls
-              onLoadedData={handleVideoLoaded}
-              onEnded={handleComplete}
-              onError={handleVideoError}
-            />
+            {Platform.OS === 'web' ? (
+              <WebVideoPlayer
+                videoUrl={videoUrl}
+                captionUrls={captionUrls}
+                videoRef={videoRef}
+                isLoading={isLoading}
+                autoPlay={autoPlay}
+                onLoadedData={handleVideoLoaded}
+                onEnded={handleComplete}
+                onError={handleVideoError}
+              />
+            ) : (
+              <NativeVideoPlayer
+                videoUrl={videoUrl}
+                captionUrls={captionUrls}
+                autoPlay={autoPlay}
+                onLoad={handleVideoLoaded}
+                onEnd={handleComplete}
+                onError={handleVideoError}
+              />
+            )}
           </GlassView>
         )}
       </View>
@@ -180,7 +166,7 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
       <View style={[
         styles.buttonContainer,
         { flexDirection },
-        isRTL ? { left: 40, right: undefined } : { right: 40, left: undefined }
+        isRTL ? { right: 40, left: undefined } : { left: 40, right: undefined }
       ]}>
         {/* Skip button */}
         <GlassButton
@@ -203,56 +189,5 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.95)',
-    zIndex: 10000,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  container: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-  },
-  videoContainer: {
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-  },
-  loadingContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1,
-  },
-  errorContainer: {
-    padding: spacing.xl,
-    alignItems: 'center',
-  },
-  errorText: {
-    color: colors.text,
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 40,
-    gap: spacing.md,
-    alignItems: 'center',
-  },
-});
 
 export default WidgetsIntroVideo;

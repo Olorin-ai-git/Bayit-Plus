@@ -24,7 +24,7 @@ export function useProfileData() {
         downloads: downloadsCount,
       });
     } catch (error) {
-      console.error('Failed to load user stats:', error);
+      logger.error('Failed to load user stats', 'useProfileData', error);
     } finally {
       setStatsLoading(false);
     }
@@ -44,7 +44,7 @@ export function useProfileData() {
         setRecentActivity(activities);
       }
     } catch (error) {
-      console.error('Failed to load recent activity:', error);
+      logger.error('Failed to load recent activity', 'useProfileData', error);
     }
   };
 

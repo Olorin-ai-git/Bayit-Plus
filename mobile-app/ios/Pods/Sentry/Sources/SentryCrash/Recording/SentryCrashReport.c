@@ -163,7 +163,7 @@ addTextFileElement(
     char buffer[512];
     int bytesRead;
     for (bytesRead = (int)read(fd, buffer, sizeof(buffer)); bytesRead > 0;
-         bytesRead = (int)read(fd, buffer, sizeof(buffer))) {
+        bytesRead = (int)read(fd, buffer, sizeof(buffer))) {
         if (sentrycrashjson_appendStringElement(getJsonContext(writer), buffer, bytesRead)
             != SentryCrashJSON_OK) {
             SENTRY_ASYNC_SAFE_LOG_ERROR("Could not append string element");
@@ -1611,6 +1611,9 @@ writeScopeJson(const SentryCrashReportWriter *const writer)
         }
         if (scope->context) {
             addJSONElement(writer, "context", scope->context, false);
+        }
+        if (scope->traceContext) {
+            addJSONElement(writer, "traceContext", scope->traceContext, false);
         }
         if (scope->environment) {
             addJSONElement(writer, "environment", scope->environment, false);

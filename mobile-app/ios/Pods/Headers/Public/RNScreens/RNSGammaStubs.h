@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/stubs/RNSGammaStubs.h
+../../../../../../node_modules/react-native-screens/ios/stubs/RNSGammaStubs.h

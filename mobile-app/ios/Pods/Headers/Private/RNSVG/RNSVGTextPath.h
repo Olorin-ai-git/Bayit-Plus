@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-svg/apple/Text/RNSVGTextPath.h
+../../../../../../node_modules/react-native-svg/apple/Text/RNSVGTextPath.h

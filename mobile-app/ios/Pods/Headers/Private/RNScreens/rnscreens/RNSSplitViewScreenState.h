@@ -1,1 +1,1 @@
-../../../../../../node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSSplitViewScreenState.h
+../../../../../../../node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSSplitViewScreenState.h

@@ -1,1 +1,1 @@
-../../../../../../../../node_modules/react-native/ReactCommon/react/nativemodule/intersectionobserver/NativeIntersectionObserver.h
+../../../../../../../../../node_modules/react-native/ReactCommon/react/nativemodule/intersectionobserver/NativeIntersectionObserver.h

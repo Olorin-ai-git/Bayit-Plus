@@ -1,12 +1,19 @@
+/**
+ * WatchPartyOverlay Component
+ * Mobile-optimized bottom sheet overlay for Watch Party
+ */
+
 import { useState } from 'react'
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
+import { View, Text, Pressable, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { X, Users, MessageSquare } from 'lucide-react'
 import { colors } from '@bayit/shared/theme'
+import { isTV } from '@bayit/shared/utils/platform'
 import { GlassView } from '@bayit/shared/ui'
 import WatchPartyHeader from './WatchPartyHeader'
 import WatchPartyParticipants from './WatchPartyParticipants'
 import WatchPartyChat from './WatchPartyChat'
+import { styles } from './WatchPartyOverlay.styles'
 
 interface Participant {
   user_id: string
@@ -67,21 +74,24 @@ export default function WatchPartyOverlay({
   if (!party || !isOpen) return null
 
   return (
-    <View className="fixed top-0 left-0 right-0 bottom-0 z-50 justify-end">
-      <Pressable className="absolute top-0 left-0 right-0 bottom-0 bg-black/50" onPress={onClose} />
+    <View style={styles.overlay}>
+      <Pressable style={styles.backdrop} onPress={onClose} />
 
-      <GlassView className="max-h-[70%] rounded-t-3xl rounded-b-none" intensity="high">
-        <View className="flex-row items-center justify-between p-4 border-b border-white/10">
-          <Text className="text-lg font-semibold text-white">{t('watchParty.title')}</Text>
+      <GlassView style={styles.panel} intensity="high">
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>{t('watchParty.title')}</Text>
           <Pressable
             onPress={onClose}
-            className="w-8 h-8 items-center justify-center rounded-md hover:bg-white/10"
+            style={({ hovered }) => [
+              styles.closeButton,
+              hovered && styles.closeButtonHovered,
+            ]}
           >
-            <X size={18} color={colors.textSecondary} />
+            <X size={isTV ? 20 : 18} color={colors.textSecondary} />
           </Pressable>
         </View>
 
-        <View className="p-4 border-b border-white/10">
+        <View style={styles.headerSection}>
           <WatchPartyHeader
             roomCode={party.room_code}
             isHost={isHost}
@@ -92,7 +102,7 @@ export default function WatchPartyOverlay({
           />
         </View>
 
-        <View className="flex-row border-b border-white/10">
+        <View style={styles.tabRow}>
           {TABS.map((tab) => {
             const Icon = tab === 'participants' ? Users : MessageSquare
             const isActive = activeTab === tab
@@ -100,11 +110,10 @@ export default function WatchPartyOverlay({
               <Pressable
                 key={tab}
                 onPress={() => setActiveTab(tab)}
-                className="flex-1 flex-row items-center justify-center gap-3 py-4"
-                style={[isActive && styles.tabActive]}
+                style={[styles.tab, isActive && styles.tabActive]}
               >
-                <Icon size={16} color={isActive ? colors.primary : colors.textMuted} />
-                <Text className="text-sm font-medium" style={[isActive ? styles.textActive : styles.textInactive]}>
+                <Icon size={isTV ? 18 : 16} color={isActive ? colors.primary : colors.textMuted} />
+                <Text style={[styles.tabText, isActive ? styles.tabTextActive : styles.tabTextInactive]}>
                   {tab === 'participants'
                     ? `${t('watchParty.participants')} (${participants.length})`
                     : t('watchParty.chat')}
@@ -114,7 +123,10 @@ export default function WatchPartyOverlay({
           })}
         </View>
 
-        <ScrollView className="flex-1 min-h-[200px] max-h-[300px]" contentContainerClassName="p-4">
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+        >
           {activeTab === 'participants' ? (
             <WatchPartyParticipants
               participants={participants}
@@ -134,17 +146,3 @@ export default function WatchPartyOverlay({
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  tabActive: {
-    borderBottomWidth: 2,
-    borderBottomColor: '#9333ea',
-    backgroundColor: 'rgba(109, 40, 217, 0.3)',
-  },
-  textActive: {
-    color: '#c084fc',
-  },
-  textInactive: {
-    color: '#9ca3af',
-  },
-})

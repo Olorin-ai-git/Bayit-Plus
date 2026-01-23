@@ -1,5 +1,5 @@
-#import "SentryANRTracker.h"
-#import "SentryANRTrackerV2.h"
+#import "SentryANRTrackerV1.h"
+
 #import "SentryBinaryImageCache.h"
 #import "SentryDispatchFactory.h"
 #import "SentryDispatchQueueWrapper.h"
@@ -22,8 +22,12 @@
 #import <SentryCrash.h>
 #import <SentryCrashWrapper.h>
 #import <SentryDebugImageProvider.h>
+#import <SentryDefaultRateLimits.h>
 #import <SentryDependencyContainer.h>
+#import <SentryHttpDateParser.h>
 #import <SentryNSNotificationCenterWrapper.h>
+#import <SentryRateLimitParser.h>
+#import <SentryRetryAfterHeaderParser.h>
 #import <SentrySDK+Private.h>
 #import <SentrySwift.h>
 #import <SentrySwizzleWrapper.h>
@@ -32,6 +36,7 @@
 #import <SentryTracer.h>
 
 #if SENTRY_HAS_UIKIT
+#    import "SentryANRTrackerV2.h"
 #    import "SentryFramesTracker.h"
 #    import "SentryUIApplication.h"
 #    import <SentryScreenshot.h>
@@ -45,6 +50,12 @@
 #if !TARGET_OS_WATCH
 #    import "SentryReachability.h"
 #endif // !TARGET_OS_WATCH
+
+@interface SentryDependencyContainer ()
+
+@property (nonatomic, strong) id<SentryANRTracker> anrTracker;
+
+@end
 
 @implementation SentryDependencyContainer
 
@@ -86,8 +97,7 @@ static NSObject *sentryDependencyContainerLock;
         _random = [[SentryRandom alloc] init];
         _threadWrapper = [[SentryThreadWrapper alloc] init];
         _binaryImageCache = [[SentryBinaryImageCache alloc] init];
-        _debugImageProvider = [[SentryDebugImageProvider alloc] init];
-        _dateProvider = [[SentryCurrentDateProvider alloc] init];
+        _dateProvider = [[SentryDefaultCurrentDateProvider alloc] init];
     }
     return self;
 }
@@ -176,6 +186,16 @@ static NSObject *sentryDependencyContainerLock;
     return _threadInspector;
 }
 
+- (SentryDebugImageProvider *)debugImageProvider
+{
+    @synchronized(sentryDependencyContainerLock) {
+        if (_debugImageProvider == nil) {
+            _debugImageProvider = [[SentryDebugImageProvider alloc] init];
+        }
+        return _debugImageProvider;
+    }
+}
+
 - (SentryExtraContextProvider *)extraContextProvider SENTRY_DISABLE_THREAD_SANITIZER(
     "double-checked lock produce false alarms")
 {
@@ -196,6 +216,26 @@ static NSObject *sentryDependencyContainerLock;
             _notificationCenterWrapper = [[SentryNSNotificationCenterWrapper alloc] init];
         }
         return _notificationCenterWrapper;
+    }
+}
+
+- (id<SentryRateLimits>)rateLimits
+{
+    @synchronized(sentryDependencyContainerLock) {
+        if (_rateLimits == nil) {
+            SentryRetryAfterHeaderParser *retryAfterHeaderParser =
+                [[SentryRetryAfterHeaderParser alloc]
+                    initWithHttpDateParser:[[SentryHttpDateParser alloc] init]
+                       currentDateProvider:self.dateProvider];
+            SentryRateLimitParser *rateLimitParser =
+                [[SentryRateLimitParser alloc] initWithCurrentDateProvider:self.dateProvider];
+
+            _rateLimits = [[SentryDefaultRateLimits alloc]
+                initWithRetryAfterHeaderParser:retryAfterHeaderParser
+                            andRateLimitParser:rateLimitParser
+                           currentDateProvider:self.dateProvider];
+        }
+        return _rateLimits;
     }
 }
 
@@ -322,32 +362,14 @@ static NSObject *sentryDependencyContainerLock;
 }
 #endif // SENTRY_UIKIT_AVAILABLE
 
-- (SentryANRTracker *)getANRTracker:(NSTimeInterval)timeout
+- (id<SentryANRTracker>)getANRTracker:(NSTimeInterval)timeout
     SENTRY_DISABLE_THREAD_SANITIZER("double-checked lock produce false alarms")
 {
     if (_anrTracker == nil) {
         @synchronized(sentryDependencyContainerLock) {
             if (_anrTracker == nil) {
                 _anrTracker =
-                    [[SentryANRTracker alloc] initWithTimeoutInterval:timeout
-                                                         crashWrapper:self.crashWrapper
-                                                 dispatchQueueWrapper:self.dispatchQueueWrapper
-                                                        threadWrapper:self.threadWrapper];
-            }
-        }
-    }
-
-    return _anrTracker;
-}
-
-- (SentryANRTrackerV2 *)getANRTrackerV2:(NSTimeInterval)timeout
-    SENTRY_DISABLE_THREAD_SANITIZER("double-checked lock produce false alarms")
-{
-    if (_anrTrackerV2 == nil) {
-        @synchronized(sentryDependencyContainerLock) {
-            if (_anrTrackerV2 == nil) {
-                _anrTrackerV2 =
-                    [[SentryANRTrackerV2 alloc] initWithTimeoutInterval:timeout
+                    [[SentryANRTrackerV1 alloc] initWithTimeoutInterval:timeout
                                                            crashWrapper:self.crashWrapper
                                                    dispatchQueueWrapper:self.dispatchQueueWrapper
                                                           threadWrapper:self.threadWrapper];
@@ -355,8 +377,34 @@ static NSObject *sentryDependencyContainerLock;
         }
     }
 
-    return _anrTrackerV2;
+    return _anrTracker;
 }
+
+#if SENTRY_HAS_UIKIT
+- (id<SentryANRTracker>)getANRTracker:(NSTimeInterval)timeout
+                          isV2Enabled:(BOOL)isV2Enabled
+    SENTRY_DISABLE_THREAD_SANITIZER("double-checked lock produce false alarms")
+{
+    if (isV2Enabled) {
+        if (_anrTracker == nil) {
+            @synchronized(sentryDependencyContainerLock) {
+                if (_anrTracker == nil) {
+                    _anrTracker = [[SentryANRTrackerV2 alloc]
+                        initWithTimeoutInterval:timeout
+                                   crashWrapper:self.crashWrapper
+                           dispatchQueueWrapper:self.dispatchQueueWrapper
+                                  threadWrapper:self.threadWrapper
+                                  framesTracker:self.framesTracker];
+                }
+            }
+        }
+
+        return _anrTracker;
+    } else {
+        return [self getANRTracker:timeout];
+    }
+}
+#endif // SENTRY_HAS_UIKIT
 
 - (SentryNSProcessInfoWrapper *)processInfoWrapper SENTRY_DISABLE_THREAD_SANITIZER(
     "double-checked lock produce false alarms")

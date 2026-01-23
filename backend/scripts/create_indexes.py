@@ -5,7 +5,7 @@ Run this script after initializing the database to create necessary indexes for 
 
 import asyncio
 from app.core.database import connect_to_mongo, close_mongo_connection
-from app.models.content import Content, LiveChannel, RadioStation, Podcast, PodcastEpisode
+from app.models.content import Content, LiveChannel, RadioStation, Podcast, PodcastEpisode, Category
 from app.models.content_taxonomy import ContentSection
 from app.models.user import User
 from app.models.subscription import Subscription
@@ -15,6 +15,7 @@ from app.models.realtime import WatchParty, ChatMessage
 from app.models.chapters import VideoChapters
 from app.models.subtitles import SubtitleTrackDoc
 from app.models.trivia import ContentTrivia
+from app.models.live_feature_quota import LiveFeatureQuota, LiveFeatureUsageSession
 
 
 async def create_indexes():
@@ -126,6 +127,38 @@ async def create_indexes():
             [("content_id", 1), ("content_type", 1)],
             unique=True,
             name="content_trivia_unique_content"
+        )
+
+        # Live Feature Quota indexes
+        print("  - Live Feature Quota indexes")
+        await LiveFeatureQuota.get_pymongo_collection().create_index(
+            "user_id",
+            unique=True,
+            name="quota_user_unique"
+        )
+        await LiveFeatureQuota.get_pymongo_collection().create_index("last_hour_reset")
+        await LiveFeatureQuota.get_pymongo_collection().create_index("last_day_reset")
+        await LiveFeatureQuota.get_pymongo_collection().create_index("last_month_reset")
+
+        # Live Feature Usage Session indexes
+        print("  - Live Feature Usage Session indexes")
+        await LiveFeatureUsageSession.get_pymongo_collection().create_index(
+            "session_id",
+            unique=True,
+            name="session_id_unique"
+        )
+        await LiveFeatureUsageSession.get_pymongo_collection().create_index("user_id")
+        await LiveFeatureUsageSession.get_pymongo_collection().create_index("status")
+        await LiveFeatureUsageSession.get_pymongo_collection().create_index("feature_type")
+        await LiveFeatureUsageSession.get_pymongo_collection().create_index([("user_id", 1), ("started_at", -1)])
+        await LiveFeatureUsageSession.get_pymongo_collection().create_index([("feature_type", 1), ("started_at", -1)])
+        await LiveFeatureUsageSession.get_pymongo_collection().create_index([("started_at", -1)])
+        # TTL index for auto-cleanup of old completed sessions (90 days)
+        await LiveFeatureUsageSession.get_pymongo_collection().create_index(
+            "started_at",
+            expireAfterSeconds=7776000,  # 90 days
+            partialFilterExpression={"status": {"$in": ["completed", "error", "interrupted"]}},
+            name="session_ttl"
         )
 
         print("\n✅ All indexes created successfully!")

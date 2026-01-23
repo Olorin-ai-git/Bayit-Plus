@@ -1,1 +1,1 @@
-../../../../../../../../node_modules/react-native/ReactCommon/react/renderer/componentregistry/ComponentDescriptorRegistry.h
+../../../../../../../../../node_modules/react-native/ReactCommon/react/renderer/componentregistry/ComponentDescriptorRegistry.h

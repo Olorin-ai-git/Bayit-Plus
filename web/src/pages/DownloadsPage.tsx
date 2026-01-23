@@ -7,6 +7,7 @@ import { useDirection } from '@/hooks/useDirection';
 import { downloadsService } from '@/services/api';
 import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 import { GlassCard, GlassView } from '@bayit/shared/ui';
+import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
 
 const TYPE_ICONS: Record<string, string> = {
@@ -222,11 +223,10 @@ export default function DownloadsPage() {
 
       {/* Loading State */}
       {loading ? (
-        <View style={styles.loadingGrid}>
-          {[...Array(12)].map((_, i) => (
-            <View key={i} style={styles.skeletonCard} />
-          ))}
-        </View>
+        <LoadingState
+          message={t('downloads.loading', 'Loading downloads...')}
+          spinnerColor={colors.primary}
+        />
       ) : downloads.length > 0 ? (
         <FlatList
           data={downloads}
@@ -242,13 +242,11 @@ export default function DownloadsPage() {
           )}
         />
       ) : (
-        <View style={styles.emptyStateContainer}>
-          <GlassCard style={styles.emptyStateCard}>
-            <Download size={64} color="rgba(168, 85, 247, 0.5)" />
-            <Text style={styles.emptyStateTitle}>{t('downloads.empty')}</Text>
-            <Text style={styles.emptyStateHint}>{t('downloads.emptyHint')}</Text>
-          </GlassCard>
-        </View>
+        <EmptyState
+          icon={<Download size={72} color="rgba(168, 85, 247, 0.5)" strokeWidth={1.5} />}
+          title={t('downloads.empty')}
+          description={t('downloads.emptyHint')}
+        />
       )}
     </View>
   );

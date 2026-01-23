@@ -7,7 +7,7 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { GlassButton, GlassModal, GlassBadge } from '@bayit/glass'
+import { GlassButton, GlassModal, GlassBadge } from '@bayit/shared/ui'
 import { isTV } from '../../utils/platform'
 import { useDirection } from '../../hooks/useDirection'
 import { colors } from '../theme'

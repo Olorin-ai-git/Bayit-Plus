@@ -12,6 +12,7 @@ import {
   TelAvivRow,
   GlassCarousel,
   CultureCityRow,
+  CultureClock,
   CultureTrendingRow,
 } from '@bayit/shared';
 import { useCultureStore } from '@bayit/shared-contexts/CultureContext';
@@ -266,6 +267,23 @@ export default function HomePage() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
+      {/* Header Bar - Dual Time Clocks (Dynamic Culture + USA) */}
+      <View style={[styles.headerBar, isRTL && styles.headerBarRTL]}>
+        {/* Dynamic Culture Clock - changes based on selected culture */}
+        <CultureClock
+          cultureId={currentCulture?.culture_id}
+          variant="medium"
+          style={styles.clockLeft}
+        />
+
+        {/* USA Clock - always fixed */}
+        <CultureClock
+          cultureId="usa"
+          variant="medium"
+          style={styles.clockRight}
+        />
+      </View>
+
       {/* Shabbat Mode Banner - appears during Shabbat */}
       <ShabbatModeBanner />
 
@@ -437,6 +455,24 @@ const styles = StyleSheet.create({
   },
   pageContent: {
     paddingBottom: spacing.xl * 2,
+  },
+  // Header Bar - Compact clocks
+  headerBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.xs,
+  },
+  headerBarRTL: {
+    flexDirection: 'row-reverse',
+  },
+  clockLeft: {
+    alignItems: 'flex-start',
+  },
+  clockRight: {
+    alignItems: 'flex-end',
   },
   refreshButton: {
     flexDirection: 'row',

@@ -2,36 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { adminWidgetsService } from '@/services/adminApi';
 import { useWidgetStore } from '@/stores/widgetStore';
-import { DEFAULT_WIDGET_POSITION } from '@/types/widget';
+import { DEFAULT_WIDGET_POSITION, Widget } from '@/types/widget';
 import logger from '@/utils/logger';
-
-interface Widget {
-  id: string;
-  type: 'personal' | 'system';
-  title: string;
-  description?: string;
-  icon?: string;
-  content?: {
-    content_type: 'live_channel' | 'iframe';
-    live_channel_id?: string;
-    iframe_url?: string;
-    iframe_title?: string;
-  };
-  position?: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    z_index: number;
-  };
-  is_active: boolean;
-  is_muted: boolean;
-  is_visible: boolean;
-  is_closable: boolean;
-  is_draggable: boolean;
-  created_at: string;
-  updated_at: string;
-}
 
 export function useWidgetsPage() {
   const { t } = useTranslation();

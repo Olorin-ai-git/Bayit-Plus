@@ -248,6 +248,8 @@ class AuditAction(str, Enum):
     REFUND_PROCESSED = "refund_processed"
     PAYMENT_RECEIVED = "payment_received"
     SETTINGS_UPDATED = "settings_updated"
+    QUOTA_UPDATED = "quota_updated"
+    QUOTA_RESET = "quota_reset"
     LOGIN = "login"
     LOGOUT = "logout"
     # Content Management

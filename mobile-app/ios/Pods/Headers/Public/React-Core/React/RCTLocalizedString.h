@@ -1,1 +1,1 @@
-../../../../../../node_modules/react-native/React/I18n/RCTLocalizedString.h
+../../../../../../../node_modules/react-native/React/I18n/RCTLocalizedString.h

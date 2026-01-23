@@ -1,1 +1,1 @@
-../../../../../../node_modules/react-native/ReactCommon/jserrorhandler/StackTraceParser.h
+../../../../../../../node_modules/react-native/ReactCommon/jserrorhandler/StackTraceParser.h

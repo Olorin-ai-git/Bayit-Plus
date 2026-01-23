@@ -1,8 +1,15 @@
-import { View, Text, Pressable, Animated, StyleSheet } from 'react-native'
+/**
+ * AudioControls Component
+ * Audio controls for Watch Party with mute toggle and speaking indicator
+ */
+
+import { View, Text, Pressable, Animated } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Mic, MicOff, Loader2 } from 'lucide-react'
 import { useRef, useEffect } from 'react'
 import { colors } from '@bayit/shared/theme'
+import { isTV } from '@bayit/shared/utils/platform'
+import { styles } from './AudioControls.styles'
 
 interface AudioControlsProps {
   isMuted?: boolean
@@ -76,62 +83,43 @@ export default function AudioControls({
     return styles.buttonActive
   }
 
+  const iconSize = isTV ? 20 : 18
+
   return (
-    <View className="flex-row items-center gap-3" style={style}>
+    <View style={[styles.container, style]}>
       <Pressable
         onPress={onToggleMute}
         disabled={isConnecting}
-        className="relative p-3 rounded-md"
-        style={[getButtonStyle()]}
+        style={[styles.button, getButtonStyle()]}
       >
         {isConnecting ? (
           <Animated.View style={{ transform: [{ rotate: spin }] }}>
-            <Loader2 size={18} color={colors.textMuted} />
+            <Loader2 size={iconSize} color={colors.textMuted} />
           </Animated.View>
         ) : isMuted ? (
-          <MicOff size={18} color={colors.textMuted} />
+          <MicOff size={iconSize} color={colors.textMuted} />
         ) : (
-          <Mic size={18} color={isSpeaking ? '#34D399' : colors.primary} />
+          <Mic size={iconSize} color={isSpeaking ? '#34D399' : colors.primary} />
         )}
 
-        {/* Speaking indicator pulse */}
         {isSpeaking && !isMuted && (
           <Animated.View
-            className="absolute top-0 left-0 right-0 bottom-0 rounded-md bg-green-500/30"
-            style={{ opacity: pulseAnim }}
+            style={[styles.speakingPulse, { opacity: pulseAnim }]}
           />
         )}
       </Pressable>
 
-      {/* Connection status */}
       {isConnecting && (
-        <Text className="text-xs text-gray-400">
+        <Text style={styles.statusText}>
           {t('watchParty.audio.connecting')}
         </Text>
       )}
 
-      {/* Speaking indicator text */}
       {!isMuted && isSpeaking && (
-        <Text className="text-xs text-emerald-400">
+        <Text style={styles.speakingText}>
           {t('watchParty.audio.speaking')}
         </Text>
       )}
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  buttonConnecting: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    opacity: 0.5,
-  },
-  buttonMuted: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  buttonSpeaking: {
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-  },
-  buttonActive: {
-    backgroundColor: 'rgba(109, 40, 217, 0.3)',
-  },
-})

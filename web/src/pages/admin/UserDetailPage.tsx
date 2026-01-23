@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, Pressable } from 'react-native';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, Mail, Key, Ban, UserCheck, Edit2, Trash2 } from 'lucide-react';
+import { ArrowRight, Mail, Key, Ban, UserCheck, Edit2, Trash2, Clock } from 'lucide-react';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassCard, GlassButton, GlassModal, GlassInput, GlassToggle, GlassView } from '@bayit/shared/ui';
@@ -247,17 +247,24 @@ export default function UserDetailPage() {
             <Text style={styles.banReason}>{t('admin.users.banReason', { defaultValue: 'Ban reason' })}: {user.ban_reason}</Text>
           )}
           <GlassView style={styles.actionButtons}>
-            <GlassButton 
-              title={t('common.edit', { defaultValue: 'Edit' })} 
-              variant="primary" 
-              icon={<Edit2 size={16} color={colors.text} />} 
+            <GlassButton
+              title={t('common.edit', { defaultValue: 'Edit' })}
+              variant="primary"
+              icon={<Edit2 size={16} color={colors.text} />}
               onPress={handleEdit}
               style={styles.actionButton}
             />
-            <GlassButton 
-              title={t('admin.users.resetPassword')} 
-              variant="secondary" 
-              icon={<Key size={16} color={colors.text} />} 
+            <GlassButton
+              title={t('admin.liveQuotas.title', 'Live Quotas')}
+              variant="secondary"
+              icon={<Clock size={16} color={colors.primary} />}
+              onPress={() => navigate(`/admin/users/${userId}/live-quota`)}
+              style={styles.actionButton}
+            />
+            <GlassButton
+              title={t('admin.users.resetPassword')}
+              variant="secondary"
+              icon={<Key size={16} color={colors.text} />}
               onPress={handleResetPassword}
               style={styles.actionButton}
             />

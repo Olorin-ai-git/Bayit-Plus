@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native/Libraries/AppDelegate/RCTArchConfiguratorProtocol.h
+../../../../../../node_modules/react-native/Libraries/AppDelegate/RCTArchConfiguratorProtocol.h

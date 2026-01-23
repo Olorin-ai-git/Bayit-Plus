@@ -1,1 +1,1 @@
-../../../../../node_modules/react-native-screens/ios/RNSScreenNavigationContainer.h
+../../../../../../node_modules/react-native-screens/ios/RNSScreenNavigationContainer.h

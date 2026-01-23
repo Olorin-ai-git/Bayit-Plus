@@ -1,1 +1,1 @@
-../../../../../node_modules/@sentry/react-native/ios/RNSentryRNSScreen.h
+../../../../../../node_modules/@sentry/react-native/ios/RNSentryRNSScreen.h

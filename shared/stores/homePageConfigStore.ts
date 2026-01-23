@@ -84,9 +84,20 @@ export const useHomePageConfigStore = create<HomePageConfigStore>()(
             loading: false,
           });
         } catch (error: unknown) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to load preferences';
-          console.error('[HomePageConfigStore] Failed to load preferences:', error);
-          set({ loading: false, error: errorMessage });
+          // Handle 401 gracefully - user not authenticated, use defaults
+          const isUnauthorized = (error as any)?.response?.status === 401 || (error as any)?.status === 401;
+          if (isUnauthorized) {
+            console.log('[HomePageConfigStore] User not authenticated, using default preferences');
+            set({
+              preferences: DEFAULT_HOME_PAGE_PREFERENCES,
+              loading: false,
+              error: null, // No error for unauthenticated users
+            });
+          } else {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to load preferences';
+            console.error('[HomePageConfigStore] Failed to load preferences:', error);
+            set({ loading: false, error: errorMessage });
+          }
         }
       },
 

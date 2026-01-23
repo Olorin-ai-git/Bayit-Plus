@@ -1,1 +1,1 @@
-../../../../../../node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSSplitViewScreenComponentDescriptor.h
+../../../../../../../node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSSplitViewScreenComponentDescriptor.h

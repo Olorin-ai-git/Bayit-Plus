@@ -1,1 +1,1 @@
-../../../../../node_modules/@sentry/react-native/ios/RNSentryEvents.h
+../../../../../../node_modules/@sentry/react-native/ios/RNSentryEvents.h
