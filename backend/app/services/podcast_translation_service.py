@@ -166,7 +166,7 @@ class PodcastTranslationService:
                 "file_size": Path(final_audio_path).stat().st_size,
             }
 
-            await episode.update(
+            await PodcastEpisode.find_one({"_id": episode.id}).update(
                 {
                     "$set": {
                         f"translations.{target_lang}": translation_data,
@@ -189,7 +189,7 @@ class PodcastTranslationService:
             logger.error(f"Translation failed for episode {episode.id}: {e}")
 
             # Increment retry count and update status
-            await episode.update(
+            await PodcastEpisode.find_one({"_id": episode.id}).update(
                 {
                     "$set": {
                         "translation_status": "failed",

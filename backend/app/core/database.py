@@ -38,6 +38,8 @@ from app.models.jerusalem_content import (JerusalemContentItem,
                                           JerusalemContentSource)
 from app.models.jewish_calendar import JewishCalendarCache
 from app.models.live_dubbing import LiveDubbingSession
+from app.models.live_feature_quota import (LiveFeatureQuota,
+                                           LiveFeatureUsageSession)
 from app.models.jewish_community import (CommunityEvent, JewishOrganization,
                                          ScrapingJob)
 from app.models.jewish_news import JewishNewsItem, JewishNewsSource
@@ -208,6 +210,9 @@ async def connect_to_mongo():
         ContentDiscoveryQueue,
         # Live Dubbing models
         LiveDubbingSession,
+        # Live Feature Quota models (live dubbing & subtitle quotas)
+        LiveFeatureQuota,
+        LiveFeatureUsageSession,
         # Migration tracking models (script infrastructure)
         MigrationRecord,
         RollbackData,

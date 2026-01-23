@@ -104,6 +104,12 @@ class LiveFeatureUsageSession(Document):
     segments_processed: int = 0
     errors_count: int = 0
 
+    # Latency tracking (in milliseconds)
+    stt_latency_ms: float = 0.0
+    llm_first_token_ms: float = 0.0
+    tts_first_audio_ms: float = 0.0
+    end_to_end_latency_ms: float = 0.0
+
     # Cost tracking (estimated costs in USD)
     estimated_stt_cost: float = 0.0
     estimated_translation_cost: float = 0.0

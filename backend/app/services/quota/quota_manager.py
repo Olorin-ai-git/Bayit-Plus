@@ -22,7 +22,11 @@ class QuotaManager:
         quota = await LiveFeatureQuota.find_one(LiveFeatureQuota.user_id == user_id)
 
         if not quota:
-            user = await User.get(user_id)
+            try:
+                user = await User.get(user_id)
+            except Exception as e:
+                logger.error(f"Failed to fetch user {user_id}: {e}")
+                user = None
             tier = user.subscription_tier if user else "premium"
 
             # Get defaults from configuration based on subscription tier
@@ -167,5 +171,6 @@ class QuotaManager:
                 0, quota.dubbing_minutes_per_month - quota.dubbing_usage_current_month
             ),
             "accumulated_dubbing_minutes": quota.accumulated_dubbing_minutes,
+            "estimated_cost_current_month": quota.estimated_cost_current_month,
             "warning_threshold_percentage": quota.warning_threshold_percentage,
         }

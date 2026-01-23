@@ -17,6 +17,7 @@
     "deploy:preview": "npm run build && firebase hosting:channel:deploy partner-preview --only partner-portal"
   },
   "dependencies": {
+    "@bayit/firebase-config": "workspace:*",
     "@olorin/design-tokens": "2.0.0",
     "@olorin/shared-hooks": "2.0.0",
     "@olorin/shared-i18n": "2.0.0",

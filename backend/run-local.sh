@@ -1,6 +1,6 @@
 #!/bin/bash
 # Local Backend Development Server
-# Kills any existing process on port (default 8001) and starts the server with hot reload
+# Kills any existing process on port (default 8000) and starts the server with hot reload
 
 set -e  # Exit on error
 
@@ -13,11 +13,11 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# Check if port is in use (default 8001 for local dev)
-PORT=${PORT:-8001}
+# Check if port is in use (default 8000 for local dev)
+PORT=${PORT:-8000}
 echo -e "\n${YELLOW}Checking port ${PORT}...${NC}"
 
-# Find process using port 8000
+# Find process using port
 PID=$(lsof -ti:$PORT 2>/dev/null || true)
 
 if [ -n "$PID" ]; then

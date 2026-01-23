@@ -8,6 +8,7 @@
 import { AppRegistry } from 'react-native';
 import React from 'react';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import App from './src/App';
 import '../shared/styles/globals.css';
 import './src/styles/tv.css';
@@ -371,9 +372,11 @@ if (IS_TV_BUILD && typeof document !== 'undefined') {
 // Wrapper component that provides routing context
 const BayitWebApp = () => (
   <React.StrictMode>
-    <Router>
-      <App />
-    </Router>
+    <SafeAreaProvider>
+      <Router>
+        <App />
+      </Router>
+    </SafeAreaProvider>
   </React.StrictMode>
 );
 
