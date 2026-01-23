@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import pymongo
 from beanie import Document
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class ContentBase(BaseModel):
@@ -458,16 +458,23 @@ class PodcastEpisodeTranslation(BaseModel):
 class PodcastEpisodeMinimal(BaseModel):
     """Minimal projection for translation worker queries - reduces network transfer."""
 
-    id: str
+    id: str = Field(alias="_id")
     title: str
-    audio_url: Optional[str]
-    original_language: str
-    translation_status: str
-    retry_count: int
+    audio_url: Optional[str] = None
+    original_language: str = "he"
+    translation_status: str = "pending"
+    retry_count: int = 0
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+    @field_validator("id", mode="before")
+    @classmethod
+    def convert_objectid_to_str(cls, v: Any) -> str:
+        """Convert ObjectId to string."""
+        if hasattr(v, "__str__"):
+            return str(v)
+        return v
 
 
 class PodcastEpisode(Document):

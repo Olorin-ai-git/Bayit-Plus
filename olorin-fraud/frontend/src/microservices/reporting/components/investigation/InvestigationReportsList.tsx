@@ -32,7 +32,11 @@ async function fetchReports(params: {
   riskLevel?: RiskLevel;
   search?: string;
 }): Promise<InvestigationReportListResponse> {
-  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
+  const apiBaseUrl = (() => {
+    const url = process.env.REACT_APP_API_BASE_URL;
+    if (!url) throw new Error('REACT_APP_API_BASE_URL must be set');
+    return url;
+  })();
   const queryParams = new URLSearchParams({
     page: params.page.toString(),
     limit: params.limit.toString()
@@ -103,7 +107,11 @@ export const InvestigationReportsList: React.FC<InvestigationReportsListProps> =
   }, [currentPage, investigationId, riskLevel, search]);
 
   const handleViewReport = (invId: string) => {
-    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
+    const apiBaseUrl = (() => {
+    const url = process.env.REACT_APP_API_BASE_URL;
+    if (!url) throw new Error('REACT_APP_API_BASE_URL must be set');
+    return url;
+  })();
     const reportUrl = `${apiBaseUrl}/api/v1/reports/investigation/${invId}/html`;
     window.open(reportUrl, '_blank', 'noopener,noreferrer');
   };

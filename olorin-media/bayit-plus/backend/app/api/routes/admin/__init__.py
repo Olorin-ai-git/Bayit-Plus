@@ -16,6 +16,10 @@ from .dashboard import router as dashboard_router
 from .live_quotas import router as live_quotas_router
 from .live_quota_analytics import router as live_quota_analytics_router
 from .marketing import router as marketing_router
+from .voice_management import router as voice_management_router
+from .voice_analytics import router as voice_analytics_router
+from .voice_quotas import router as voice_quotas_router
+from .voice_settings import router as voice_settings_router
 from .plans import router as plans_router
 from .recordings import router as recordings_router
 from .settings import router as settings_router
@@ -39,5 +43,9 @@ router.include_router(analytics_router, tags=["admin-analytics"])
 router.include_router(recordings_router, tags=["admin-recordings"])
 router.include_router(live_quotas_router, tags=["admin-live-quotas"])
 router.include_router(live_quota_analytics_router, tags=["admin-live-quota-analytics"])
+router.include_router(voice_management_router, tags=["admin-voice-management"])
+router.include_router(voice_analytics_router, tags=["admin-voice-analytics"])
+router.include_router(voice_quotas_router, tags=["admin-voice-quotas"])
+router.include_router(voice_settings_router, tags=["admin-voice-settings"])
 
 __all__ = ["router", "require_admin", "has_permission", "log_audit"]

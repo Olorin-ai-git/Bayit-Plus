@@ -50,6 +50,10 @@ class Permission(str, Enum):
     ANALYTICS_EXPORT = "analytics:export"
     SYSTEM_CONFIG = "system:config"
     SYSTEM_LOGS = "system:logs"
+    VOICE_READ = "voice:read"
+    VOICE_CONFIG = "voice:config"
+    VOICE_TEST = "voice:test"
+    VOICE_QUOTA_MANAGE = "voice:quota:manage"
 
 
 ROLE_PERMISSIONS: Dict[Role, List[Permission]] = {
@@ -80,6 +84,10 @@ ROLE_PERMISSIONS: Dict[Role, List[Permission]] = {
         Permission.ANALYTICS_READ,
         Permission.ANALYTICS_EXPORT,
         Permission.SYSTEM_LOGS,
+        Permission.VOICE_READ,
+        Permission.VOICE_CONFIG,
+        Permission.VOICE_TEST,
+        Permission.VOICE_QUOTA_MANAGE,
     ],
     Role.CONTENT_MANAGER: [
         Permission.CONTENT_READ,

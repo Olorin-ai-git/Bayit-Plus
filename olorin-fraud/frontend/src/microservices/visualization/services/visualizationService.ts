@@ -362,7 +362,11 @@ class VisualizationService {
     callback: (data: any) => void
   ): () => void {
     // WebSocket connection for real-time updates
-    const ws = new WebSocket(`ws://localhost:8090/api/visualization/ws/${visualizationId}`);
+    const wsUrl = process.env.REACT_APP_WS_URL;
+    if (!wsUrl) {
+      throw new Error('REACT_APP_WS_URL must be set for WebSocket connections');
+    }
+    const ws = new WebSocket(`${wsUrl}/api/visualization/ws/${visualizationId}`);
 
     ws.onmessage = (event) => {
       try {

@@ -1,0 +1,18 @@
+# CVPlus Terraform Variables
+# Copy to variables.tfvars and fill in real values from:
+# - GCP Console
+# - MongoDB Atlas Portal
+# - Firebase Console
+
+# MongoDB Cloud Organization ID (from MongoDB Atlas Portal > Settings > Organization)
+mongodb_org_id = "YOUR_MONGODB_ORG_ID_HERE"
+
+# MongoDB Cloud API Key (from MongoDB Atlas Portal > Access Manager > API Keys)
+# Note: This should be retrieved from GCP Secret Manager, not hardcoded
+mongodb_api_key = "YOUR_MONGODB_API_KEY_HERE"
+
+# GCP Project ID
+gcp_project_id = "YOUR_GCP_PROJECT_ID"
+
+# Environment
+environment = "prod"

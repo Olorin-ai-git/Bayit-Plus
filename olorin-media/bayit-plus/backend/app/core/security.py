@@ -39,13 +39,37 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 
 def decode_token(token: str) -> Optional[dict]:
-    """Decode and validate a JWT token."""
+    """Decode and validate a JWT token with fallback for zero-downtime rotation.
+
+    During JWT secret rotation, attempts validation with new SECRET_KEY first,
+    then falls back to SECRET_KEY_OLD if present. This enables zero-downtime
+    secret rotation where old tokens remain valid for 7 days.
+    """
     try:
+        # Try new secret first
         payload = shared_verify_access_token(
             token=token, secret_key=settings.SECRET_KEY, algorithm=settings.ALGORITHM
         )
         return payload
-    except (jwt.InvalidTokenError, ValueError):
+    except (jwt.InvalidTokenError, ValueError) as e:
+        # If new secret fails and old secret exists, try old secret
+        if settings.SECRET_KEY_OLD:
+            try:
+                payload = shared_verify_access_token(
+                    token=token, secret_key=settings.SECRET_KEY_OLD, algorithm=settings.ALGORITHM
+                )
+                # Log successful validation with old secret for monitoring
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.warning(
+                    "Token validated with OLD secret during rotation",
+                    extra={"user_id": payload.get("sub"), "rotation_active": True}
+                )
+                return payload
+            except (jwt.InvalidTokenError, ValueError):
+                # Both secrets failed
+                return None
+        # No old secret configured, return None
         return None
 
 

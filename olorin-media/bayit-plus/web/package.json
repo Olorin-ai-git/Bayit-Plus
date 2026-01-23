@@ -24,6 +24,7 @@
     "build:tv": "npm run build:webos && npm run build:tizen"
   },
   "dependencies": {
+    "@bayit/firebase-config": "workspace:*",
     "@noriginmedia/norigin-spatial-navigation": "^2.3.0",
     "@olorin/design-tokens": "2.0.0",
     "@olorin/shared-hooks": "2.0.0",

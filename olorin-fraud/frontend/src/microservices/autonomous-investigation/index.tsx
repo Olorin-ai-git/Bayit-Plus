@@ -81,8 +81,16 @@ if (!window.olorin) {
     eventBus: null,
     monitoring: null,
     config: {
-      apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090',
-      wsUrl: process.env.REACT_APP_WS_URL || 'ws://localhost:8090',
+      apiBaseUrl: (() => {
+        const url = process.env.REACT_APP_API_BASE_URL;
+        if (!url) throw new Error('REACT_APP_API_BASE_URL must be set');
+        return url;
+      })(),
+      wsUrl: (() => {
+        const url = process.env.REACT_APP_WS_URL;
+        if (!url) throw new Error('REACT_APP_WS_URL must be set');
+        return url;
+      })(),
       enableDebug: process.env.NODE_ENV === 'development'
     }
   };

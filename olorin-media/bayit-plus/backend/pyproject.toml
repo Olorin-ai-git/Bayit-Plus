@@ -59,7 +59,9 @@ dependencies = [
     "bayit-translation",
     "olorin-core",
     "olorin-shared",
-    "olorin-i18n"
+    "olorin-i18n",
+    "demucs (>=4.0.1,<5.0.0)",
+    "torchcodec (>=0.10.0,<0.11.0)"
 ]
 
 

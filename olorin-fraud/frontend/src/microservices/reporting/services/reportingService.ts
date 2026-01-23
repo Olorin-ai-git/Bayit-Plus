@@ -501,7 +501,9 @@ class ReportingService {
     reportId: string,
     callback: (data: any) => void
   ): () => void {
-    const ws = new WebSocket(`ws://localhost:8090/api/reporting/ws/reports/${reportId}`);
+    const wsUrl = process.env.REACT_APP_WS_URL;
+    if (!wsUrl) throw new Error('REACT_APP_WS_URL must be set');
+    const ws = new WebSocket(`${wsUrl}/api/reporting/ws/reports/${reportId}`);
 
     ws.onmessage = (event) => {
       try {
@@ -525,7 +527,9 @@ class ReportingService {
     generationId: string,
     callback: (generation: ReportGeneration) => void
   ): () => void {
-    const ws = new WebSocket(`ws://localhost:8090/api/reporting/ws/generations/${generationId}`);
+    const wsUrl = process.env.REACT_APP_WS_URL;
+    if (!wsUrl) throw new Error('REACT_APP_WS_URL must be set');
+    const ws = new WebSocket(`${wsUrl}/api/reporting/ws/generations/${generationId}`);
 
     ws.onmessage = (event) => {
       try {

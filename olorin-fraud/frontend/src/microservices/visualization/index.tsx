@@ -74,8 +74,26 @@ if (!window.olorin) {
     eventBus: null,
     monitoring: null,
     config: {
-      apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090',
-      wsUrl: process.env.REACT_APP_WS_URL || 'ws://localhost:8090',
+      apiBaseUrl: (() => {
+        const url = process.env.REACT_APP_API_BASE_URL;
+        if (!url) {
+          throw new Error(
+            'CRITICAL: REACT_APP_API_BASE_URL is not set. ' +
+            'Set it in your .env file. No fallback allowed for security.'
+          );
+        }
+        return url;
+      })(),
+      wsUrl: (() => {
+        const url = process.env.REACT_APP_WS_URL;
+        if (!url) {
+          throw new Error(
+            'CRITICAL: REACT_APP_WS_URL is not set. ' +
+            'Set it in your .env file. No fallback allowed for security.'
+          );
+        }
+        return url;
+      })(),
       enableDebug: process.env.NODE_ENV === 'development'
     }
   };

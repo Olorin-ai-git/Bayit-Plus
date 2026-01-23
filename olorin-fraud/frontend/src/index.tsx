@@ -4,6 +4,12 @@ import './index.css';
 import App from './shell/App';
 import reportWebVitals from './reportWebVitals';
 import { initializeRuntimeConfig } from './shared/config/runtimeConfig';
+import { validateConfig } from './utils/validateConfig';
+
+// CRITICAL: Validate configuration FIRST - fail fast if misconfigured
+// This ensures the app never starts with invalid or missing environment variables
+// NO fallbacks, NO defaults - production safety through immediate failure
+validateConfig();
 
 // Initialize runtime configuration before app startup
 initializeRuntimeConfig();

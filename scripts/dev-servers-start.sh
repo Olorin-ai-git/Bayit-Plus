@@ -21,7 +21,7 @@
 # Port Allocation:
 #   Fraud Detection:  3000-3009 (frontend microservices), 8090 (backend)
 #   CVPlus:           3100 (frontend), 8180 (backend)
-#   Bayit+:           3200 (web), 8000 (backend)
+#   Bayit+:           3200 (web), 3211 (partner-portal), 8000 (backend)
 #   Israeli Radio:    3201 (frontend), 8001 (backend)
 #   Portals:          3301-3305 (fraud, streaming, radio, omen, main)
 #
@@ -310,6 +310,10 @@ if [ "$START_MEDIA" = true ]; then
   # Bayit+ Web
   start_service "bayit-web" 3200 "$ROOT_DIR/olorin-media/bayit-plus/web" \
     "npm run dev" || FAILED_SERVICES+=("bayit-web")
+
+  # Bayit+ Partner Portal
+  start_service "bayit-partner-portal" 3211 "$ROOT_DIR/olorin-media/bayit-plus/partner-portal" \
+    "npm run dev" || FAILED_SERVICES+=("bayit-partner-portal")
 
   # Israeli Radio Backend (if exists)
   if [ -d "$ROOT_DIR/olorin-media/israeli-radio-manager/backend" ]; then

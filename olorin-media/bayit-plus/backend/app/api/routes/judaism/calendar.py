@@ -40,11 +40,12 @@ async def get_shabbat_times(
     Supported cities: New York, Los Angeles, Chicago, Miami, Boston, Philadelphia,
     Atlanta, Dallas, Denver, Seattle, Baltimore, Cleveland, Detroit.
     """
-    return await jewish_calendar_service.get_shabbat_times(
+    response = await jewish_calendar_service.get_shabbat_times(
         city=city,
         state=state,
         geoname_id=geoname_id,
     )
+    return response.model_dump()
 
 
 @router.get("/calendar/daf-yomi")

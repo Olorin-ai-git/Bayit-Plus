@@ -10,8 +10,17 @@
 
 import React, { useState, useEffect } from 'react';
 
-// Environment configuration
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
+// Environment configuration (NO FALLBACKS - fail-fast for security)
+const API_BASE_URL = (() => {
+  const url = process.env.REACT_APP_API_BASE_URL;
+  if (!url) {
+    throw new Error(
+      'CRITICAL: REACT_APP_API_BASE_URL is not set. ' +
+      'Configure it in your .env file.'
+    );
+  }
+  return url;
+})();
 const REQUEST_TIMEOUT_MS = parseInt(process.env.REACT_APP_REQUEST_TIMEOUT_MS || '30000', 10);
 
 // Module-level flag to prevent duplicate calls across component remounts (e.g., React StrictMode)

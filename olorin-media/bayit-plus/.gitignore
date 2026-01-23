@@ -1,10 +1,17 @@
-# Environment variables
+# Environment variables (NEVER commit production secrets)
 .env
 .env.*
 .env.local
-.env.production
 .env.development
 .env.*.local
+
+# Production environment files (CRITICAL - NEVER commit)
+.env.production
+.env.*.production
+.env.prod
+.env.*.prod
+.env.staging
+.env.*.staging
 
 # Python
 __pycache__/
@@ -56,18 +63,18 @@ backend/uploads/
 *.m4a
 *.mp3
 
-# Google Cloud Service Account Credentials
+# Google Cloud Service Account Credentials (NEVER commit)
 backend/gcs-service-account-key.json
 **/gcs-service-account-key.json
 *.json.gcp
 *-service-account-key.json
 
-# Google OAuth Client Secrets
+# Google OAuth Client Secrets (NEVER commit)
 client_secret_*.json
 **/google-oauth-client-secret.json
 backend/google-oauth-client-secret.json
 
-# Apple Credentials
+# Apple Credentials (NEVER commit)
 credentials/
 *.p8
 AuthKey_*.p8
@@ -75,4 +82,14 @@ AuthKey_*.p8
 *.mobileprovision
 ios/profiles/
 provisioning-profiles/
+
+# API Keys and Secrets (NEVER commit)
+*.key
+*.pem
+secrets/
+**/.secrets/
+**/secrets.json
+**/api-keys.json
+
+# Turbo cache
 .turbo/

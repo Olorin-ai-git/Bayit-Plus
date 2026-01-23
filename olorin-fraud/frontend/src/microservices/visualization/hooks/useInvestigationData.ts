@@ -13,7 +13,9 @@ import type { NetworkNode, NetworkEdge } from '../types/network.types';
 import type { Event } from '../types/events.types';
 
 // Environment configuration
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
+import { getRequiredUrl } from '../../../utils/validateConfig';
+
+const API_BASE_URL = getRequiredUrl('REACT_APP_API_BASE_URL', 'Backend API base URL');
 const REQUEST_TIMEOUT_MS = parseInt(process.env.REACT_APP_REQUEST_TIMEOUT_MS || '30000', 10);
 
 interface Investigation {

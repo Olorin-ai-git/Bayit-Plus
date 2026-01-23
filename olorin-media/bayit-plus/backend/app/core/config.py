@@ -16,6 +16,7 @@ class Settings(BaseSettings):
 
     # Security (REQUIRED - no defaults for sensitive fields)
     SECRET_KEY: str  # Required, minimum 32 characters
+    SECRET_KEY_OLD: str = ""  # Old secret for zero-downtime JWT rotation (remove after 7 days)
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     ALGORITHM: str = "HS256"
 
@@ -131,7 +132,7 @@ class Settings(BaseSettings):
             import os
 
             if os.getenv("DEBUG", "").lower() == "true":
-                return ["http://localhost:3200", "http://localhost:3211", "http://localhost:8000"]
+                return ["http://localhost:3200", "http://localhost:3211", "http://localhost:8000", "http://localhost:8001"]
             raise ValueError(
                 "BACKEND_CORS_ORIGINS must be configured in production. "
                 "Set it as JSON array or comma-separated URLs."

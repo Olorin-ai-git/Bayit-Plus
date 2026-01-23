@@ -140,7 +140,7 @@ jobs:
             --port 8080 \
             --cpu-boost \
             --set-env-vars "API_V1_PREFIX=/api/v1,STORAGE_TYPE=gcs,DEBUG=true,GCP_PROJECT_ID=bayit-plus,SENTRY_ENVIRONMENT=staging,LOG_LEVEL=DEBUG,LIVE_QUOTA_PREMIUM_SUBTITLE_MINUTES_PER_HOUR=60,LIVE_QUOTA_PREMIUM_SUBTITLE_MINUTES_PER_DAY=240,LIVE_QUOTA_PREMIUM_SUBTITLE_MINUTES_PER_MONTH=2000,LIVE_QUOTA_PREMIUM_DUBBING_MINUTES_PER_HOUR=30,LIVE_QUOTA_PREMIUM_DUBBING_MINUTES_PER_DAY=120,LIVE_QUOTA_PREMIUM_DUBBING_MINUTES_PER_MONTH=1000,LIVE_QUOTA_FAMILY_SUBTITLE_MINUTES_PER_HOUR=120,LIVE_QUOTA_FAMILY_SUBTITLE_MINUTES_PER_DAY=480,LIVE_QUOTA_FAMILY_SUBTITLE_MINUTES_PER_MONTH=4000,LIVE_QUOTA_FAMILY_DUBBING_MINUTES_PER_HOUR=60,LIVE_QUOTA_FAMILY_DUBBING_MINUTES_PER_DAY=240,LIVE_QUOTA_FAMILY_DUBBING_MINUTES_PER_MONTH=2000,LIVE_QUOTA_MAX_ROLLOVER_MULTIPLIER=2.0,LIVE_QUOTA_WARNING_THRESHOLD_PERCENTAGE=80,LIVE_QUOTA_COST_STT_PER_MINUTE=0.006,LIVE_QUOTA_COST_TRANSLATION_PER_1K_CHARS=0.020,LIVE_QUOTA_COST_TTS_PER_1K_CHARS=0.016,LIVE_QUOTA_AVG_CHARS_PER_MINUTE_HEBREW=600,LIVE_QUOTA_AVG_CHARS_PER_MINUTE_ENGLISH=750,LIVE_QUOTA_SESSION_TTL_DAYS=90,LIVE_QUOTA_WEBSOCKET_RATE_LIMIT=5,LIVE_QUOTA_API_RATE_LIMIT=100,LIVE_QUOTA_CHECK_RATE_LIMIT=20" \
-            --set-secrets "SECRET_KEY=bayit-secret-key:latest,MONGODB_URL=mongodb-staging-url:latest,MONGODB_DB_NAME=mongodb-staging-db-name:latest"
+            --set-secrets "SECRET_KEY=bayit-secret-key-staging:latest,MONGODB_URL=mongodb-staging-url:latest,MONGODB_DB_NAME=mongodb-staging-db-name:latest,ANTHROPIC_API_KEY=bayit-anthropic-api-key-staging:latest,ELEVENLABS_API_KEY=bayit-elevenlabs-api-key-staging:latest,OPENAI_API_KEY=bayit-openai-api-key-staging:latest"
 
       - name: Get service URL
         id: service
@@ -190,17 +190,9 @@ jobs:
         env:
           SERVICE_URL: ${{ needs.deploy.outputs.service_url }}
         run: |
-          echo "Running smoke tests against $SERVICE_URL"
-
-          # Test health endpoint
-          echo "Testing /health..."
-          curl -sf "$SERVICE_URL/health" | jq .
-
-          # Test API version endpoint
-          echo "Testing /api/v1/..."
-          curl -sf "$SERVICE_URL/api/v1/" || echo "API endpoint returned error (may be expected)"
-
-          echo "Smoke tests completed!"
+          cd backend/scripts
+          chmod +x production/deployment/smoke_tests.sh
+          ./production/deployment/smoke_tests.sh
 
   notify:
     name: Notify deployment status
