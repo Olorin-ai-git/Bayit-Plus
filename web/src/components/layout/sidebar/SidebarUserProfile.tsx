@@ -2,7 +2,7 @@
  * SidebarUserProfile Component
  *
  * User profile section for GlassSidebar with avatar, name, and subscription badge
- * Part of GlassSidebar migration from StyleSheet to TailwindCSS
+ * Part of GlassSidebar - StyleSheet implementation for RN Web compatibility
  *
  * Features:
  * - User avatar with initial fallback
@@ -13,10 +13,10 @@
  * - 48x48pt touch target (iOS HIG compliant)
  */
 
-import { View, Text, TouchableOpacity, Image, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Animated, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
-import { platformClass } from '../../../utils/platformClass';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 
 // Check if this is a TV build
 declare const __TV__: boolean;
@@ -78,108 +78,59 @@ export default function SidebarUserProfile({
       onPress={handlePress}
       onFocus={() => onFocus('profile-section')}
       onBlur={onBlur}
-      className={platformClass(
-        `flex-row items-center py-2 mx-1 rounded-lg border border-transparent ${
-          showLabels ? 'justify-start px-2' : 'justify-center px-0'
-        } ${
-          focusedItem === 'profile-section'
-            ? 'bg-purple-700/30 border-purple-500 border-[3px]'
-            : ''
-        }`,
-        `flex-row items-center py-2 mx-1 rounded-lg border border-transparent ${
-          showLabels ? 'justify-start px-2' : 'justify-center px-0'
-        } ${
-          focusedItem === 'profile-section'
-            ? 'bg-purple-700/30 border-purple-500 border-[3px]'
-            : ''
-        }`
-      )}
+      style={[
+        styles.container,
+        showLabels ? styles.containerExpanded : styles.containerCollapsed,
+        focusedItem === 'profile-section' && styles.containerFocused,
+      ]}
     >
       <View
-        className={platformClass(
-          `bg-purple-700/30 justify-center items-center border-[3px] border-purple-500 relative overflow-hidden ${
-            isAuthenticated ? '' : ''
-          }`,
-          `bg-purple-700/30 justify-center items-center border-[3px] border-purple-500 relative overflow-hidden ${
-            isAuthenticated ? '' : ''
-          }`
-        )}
-        style={{
-          width: avatarSize,
-          height: avatarSize,
-          borderRadius: avatarRadius,
-        }}
+        style={[
+          styles.avatar,
+          {
+            width: avatarSize,
+            height: avatarSize,
+            borderRadius: avatarRadius,
+          },
+        ]}
       >
         {user?.avatar ? (
           <Image
             source={{ uri: user.avatar }}
-            style={{ width: '100%', height: '100%' }}
+            style={styles.avatarImage}
           />
         ) : (
-          <Text
-            className={platformClass(
-              'font-bold text-purple-500',
-              'font-bold text-purple-500'
-            )}
-            style={{ fontSize }}
-          >
+          <Text style={[styles.avatarText, { fontSize }]}>
             {displayInitial}
           </Text>
         )}
         {isAuthenticated && (
-          <View
-            className={platformClass(
-              'absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-[#0a0a14]',
-              'absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-[#0a0a14]'
-            )}
-          />
+          <View style={styles.onlineBadge} />
         )}
       </View>
       {showLabels && (
-        <Animated.View
-          style={{
+        <Animated.View style={[
+          styles.userInfo,
+          {
             opacity: opacityAnim,
-            flex: 1,
-            marginStart: 16,
-            paddingEnd: 8,
-          }}
-        >
+          },
+        ]}>
           <Text
-            className={platformClass(
-              'text-base font-bold text-white mb-0.5',
-              'text-base font-bold text-white mb-0.5'
-            )}
-            style={{ textAlign }}
+            style={[styles.userName, { textAlign }]}
             numberOfLines={1}
           >
             {displayName}
           </Text>
           {isAuthenticated ? (
-            <View
-              className={platformClass(
-                'self-start px-2 py-0.5 rounded bg-purple-700/30',
-                'self-start px-2 py-0.5 rounded bg-purple-700/30'
-              )}
-            >
-              <Text
-                className={platformClass(
-                  'text-[11px] text-purple-500 font-bold',
-                  'text-[11px] text-purple-500 font-bold'
-                )}
-              >
+            <View style={styles.subscriptionBadge}>
+              <Text style={styles.subscriptionText}>
                 {subscriptionPlan === 'premium'
                   ? t('account.premium', 'Premium')
                   : t('account.basic', 'Basic')}
               </Text>
             </View>
           ) : (
-            <Text
-              className={platformClass(
-                'text-xs text-white/60',
-                'text-xs text-white/60'
-              )}
-              style={{ textAlign }}
-            >
+            <Text style={[styles.loginPrompt, { textAlign }]}>
               {t('account.tapToLogin', 'Tap to login')}
             </Text>
           )}
@@ -188,3 +139,83 @@ export default function SidebarUserProfile({
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.sm,
+    marginHorizontal: spacing.xs,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  containerExpanded: {
+    justifyContent: 'flex-start',
+    paddingHorizontal: spacing.sm,
+  },
+  containerCollapsed: {
+    justifyContent: 'center',
+    paddingHorizontal: 0,
+  },
+  containerFocused: {
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    borderColor: colors.primary,
+    borderWidth: 3,
+  },
+  avatar: {
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: colors.primary,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+  },
+  avatarText: {
+    fontWeight: '700',
+    color: colors.primary,
+  },
+  onlineBadge: {
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: colors.success.DEFAULT,
+    borderWidth: 2,
+    borderColor: colors.background,
+  },
+  userInfo: {
+    flex: 1,
+    marginStart: spacing.md,
+    paddingEnd: spacing.sm,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: 2,
+  },
+  subscriptionBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+  },
+  subscriptionText: {
+    fontSize: 11,
+    color: colors.primary,
+    fontWeight: 'bold',
+  },
+  loginPrompt: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+});
