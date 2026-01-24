@@ -32,11 +32,13 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     bottom: 96, // 24 * 4 (bottom-24 in Tailwind)
-    left: 16,
-    right: 16,
+    left: '50%',
+    transform: [{ translateX: '-50%' }],
     alignItems: 'center',
     zIndex: 100,
     pointerEvents: 'none',
+    maxWidth: '80%',
+    overflow: 'hidden',
   },
   cueContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0.85)',
@@ -44,9 +46,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 12,
     marginVertical: 4,
-    maxWidth: '90%',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
+    alignSelf: 'center',
+    maxWidth: '100%',
+    overflow: 'hidden',
   },
   cueText: {
     color: '#fff',

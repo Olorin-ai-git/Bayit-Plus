@@ -7,7 +7,7 @@ Routes tool calls to the appropriate executor functions.
 import logging
 from typing import Any, Dict
 
-from app.services.ai_agent.executors import (  # Content; Metadata; Stream; Storage; Subtitles; Notifications; Podcasts; Diagnostics; Series Management; Integrity Tools; YouTube Validation Tools; YouTube Poster Tools
+from app.services.ai_agent.executors import (  # Content; Metadata; Stream; Storage; Subtitles; Notifications; Podcasts; Diagnostics; Series Management; Integrity Tools
     execute_auto_link_episodes, execute_batch_download_subtitles,
     execute_calculate_storage_costs, execute_check_api_configuration,
     execute_check_storage_usage, execute_check_stream_url,
@@ -18,12 +18,12 @@ from app.services.ai_agent.executors import (  # Content; Metadata; Stream; Stor
     execute_find_misclassified_episodes, execute_find_missing_metadata,
     execute_find_orphaned_content_records, execute_find_orphaned_gcs_files,
     execute_find_quality_variants, execute_find_stuck_upload_jobs,
-    execute_find_unlinked_episodes, execute_find_youtube_missing_posters,
+    execute_find_unlinked_episodes,
     execute_fix_misclassified_series, execute_fix_missing_metadata,
-    execute_fix_missing_poster, execute_fix_youtube_posters,
-    execute_flag_broken_youtube_videos, execute_flag_for_manual_review,
+    execute_fix_missing_poster,
+    execute_flag_for_manual_review,
     execute_get_categories, execute_get_content_details,
-    execute_get_integrity_status, execute_get_youtube_content_stats,
+    execute_get_integrity_status,
     execute_link_episode_to_series, execute_link_quality_variants,
     execute_list_content_items, execute_list_large_files,
     execute_manage_podcast_episodes, execute_organize_all_series,
@@ -33,7 +33,7 @@ from app.services.ai_agent.executors import (  # Content; Metadata; Stream; Stor
     execute_run_full_cleanup, execute_scan_video_subtitles,
     execute_search_external_subtitles, execute_search_tmdb,
     execute_send_email_notification, execute_sync_series_posters_to_episodes,
-    execute_validate_youtube_links, execute_verify_required_subtitles)
+    execute_verify_required_subtitles)
 from app.services.ai_agent.executors.taxonomy import (
     execute_apply_taxonomy_classification, execute_batch_migrate_taxonomy,
     execute_get_taxonomy_summary, execute_list_taxonomy_violations,
@@ -230,25 +230,6 @@ async def execute_tool(
 
         elif tool_name == "run_full_cleanup":
             return await execute_run_full_cleanup(**tool_input)
-
-        # YouTube Validation Tools
-        elif tool_name == "validate_youtube_links":
-            return await execute_validate_youtube_links(**tool_input)
-
-        elif tool_name == "flag_broken_youtube_videos":
-            return await execute_flag_broken_youtube_videos(
-                **tool_input, audit_id=audit_id, dry_run=dry_run
-            )
-
-        elif tool_name == "get_youtube_content_stats":
-            return await execute_get_youtube_content_stats()
-
-        # YouTube Poster Tools
-        elif tool_name == "fix_youtube_posters":
-            return await execute_fix_youtube_posters(**tool_input)
-
-        elif tool_name == "find_youtube_missing_posters":
-            return await execute_find_youtube_missing_posters(**tool_input)
 
         # Taxonomy Tools
         elif tool_name == "validate_taxonomy_compliance":

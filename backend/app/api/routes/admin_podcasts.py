@@ -66,7 +66,7 @@ async def _get_podcast_languages(podcast_id: str) -> list:
         {"$unwind": "$langs"},
         {"$group": {"_id": None, "languages": {"$addToSet": "$langs"}}},
     ]
-    result = await PodcastEpisode.aggregate(pipeline).to_list()
+    result = await PodcastEpisode.aggregate(pipeline).to_list(length=None)
     return sorted(result[0]["languages"]) if result else []
 
 
@@ -96,7 +96,7 @@ async def _batch_get_podcast_languages(podcast_ids: list) -> dict:
             }
         },
     ]
-    results = await PodcastEpisode.aggregate(pipeline).to_list()
+    results = await PodcastEpisode.aggregate(pipeline).to_list(length=None)
     return {r["_id"]: sorted([lang for lang in r["languages"] if lang]) for r in results}
 
 

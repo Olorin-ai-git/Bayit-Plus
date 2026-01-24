@@ -306,7 +306,7 @@ module.exports = (env, argv) => {
       proxy: [
         {
           context: ['/api', '/uploads'],
-          target: 'http://localhost:8001',
+          target: 'http://localhost:8000',
           changeOrigin: true,
         },
         {

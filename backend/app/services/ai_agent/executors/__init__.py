@@ -16,13 +16,8 @@ from .integrity import (execute_cleanup_orphans,
                         execute_find_orphaned_content_records,
                         execute_find_orphaned_gcs_files,
                         execute_find_stuck_upload_jobs,
-                        execute_find_youtube_missing_posters,
-                        execute_fix_youtube_posters,
-                        execute_flag_broken_youtube_videos,
                         execute_get_integrity_status,
-                        execute_get_youtube_content_stats,
-                        execute_recover_stuck_jobs, execute_run_full_cleanup,
-                        execute_validate_youtube_links)
+                        execute_recover_stuck_jobs, execute_run_full_cleanup)
 from .metadata import (execute_clean_title, execute_delete_broken_content,
                        execute_fix_missing_metadata,
                        execute_fix_missing_poster,
@@ -118,13 +113,6 @@ __all__ = [
     "execute_cleanup_orphans",
     "execute_recover_stuck_jobs",
     "execute_run_full_cleanup",
-    # YouTube Validation Tools
-    "execute_validate_youtube_links",
-    "execute_flag_broken_youtube_videos",
-    "execute_get_youtube_content_stats",
-    # YouTube Poster Tools
-    "execute_fix_youtube_posters",
-    "execute_find_youtube_missing_posters",
     # Taxonomy Tools
     "execute_validate_taxonomy_compliance",
     "execute_suggest_taxonomy_classification",

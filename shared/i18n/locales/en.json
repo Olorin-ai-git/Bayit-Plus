@@ -3797,5 +3797,41 @@
       "loadFailed": "Failed to load trivia",
       "saveFailed": "Failed to save trivia preferences"
     }
+  },
+  "cities": {
+    "jerusalem": {
+      "title": "Jerusalem",
+      "subtitle": "Discover the eternal city",
+      "loadingContent": "Loading Jerusalem content...",
+      "noContent": "No content available at this time",
+      "errorLoading": "Failed to load Jerusalem content",
+      "sources": "Sources",
+      "categories": {
+        "history": "🏛️ Historical Sites",
+        "religion": "🕍 Religious Heritage",
+        "culture": "🎭 Cultural Events",
+        "events": "📅 Local Events",
+        "food": "🍴 Culinary Delights",
+        "markets": "🛍️ Traditional Markets",
+        "arts": "🎨 Arts & Galleries"
+      }
+    },
+    "telAviv": {
+      "title": "Tel Aviv",
+      "subtitle": "Experience the vibrant city",
+      "loadingContent": "Loading Tel Aviv content...",
+      "noContent": "No content available at this time",
+      "errorLoading": "Failed to load Tel Aviv content",
+      "sources": "Sources",
+      "categories": {
+        "beaches": "🏖️ Beaches & Waterfront",
+        "nightlife": "🌃 Nightlife & Entertainment",
+        "culture": "🎭 Cultural Events",
+        "music": "🎵 Music & Concerts",
+        "food": "🍴 Dining & Food Scene",
+        "tech": "💻 Tech & Innovation",
+        "events": "📅 Local Events"
+      }
+    }
   }
 }

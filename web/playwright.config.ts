@@ -34,7 +34,7 @@ export default defineConfig({
   // Shared settings for all tests
   use: {
     // Base URL for navigation
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3200',
 
     // Screenshot on failure
     screenshot: 'only-on-failure',
@@ -136,7 +136,7 @@ export default defineConfig({
   // Run local dev server before starting tests
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:3000',
+    url: 'http://localhost:3200',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },

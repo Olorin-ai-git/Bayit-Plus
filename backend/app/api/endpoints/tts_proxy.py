@@ -7,6 +7,7 @@ Backend credentials are managed securely and never exposed to the client.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import Response
 from pydantic import BaseModel, Field
 import aiohttp
 import os
@@ -31,11 +32,11 @@ class TTSResponse(BaseModel):
     duration_ms: Optional[int] = None
 
 
-@router.post("/synthesize", response_class=bytes)
+@router.post("/synthesize")
 async def synthesize_speech(
     request: TTSRequest,
     current_user=Depends(verify_oauth_token),
-) -> bytes:
+) -> Response:
     """
     Synthesize speech using ElevenLabs API.
 
@@ -104,7 +105,7 @@ async def synthesize_speech(
                     extra={"voice_id": request.voice_id, "language": request.language_code}
                 )
 
-                return audio_data
+                return Response(content=audio_data, media_type="audio/mpeg")
 
     except aiohttp.ClientError as e:
         logger.error(f"[TTS] Network error calling ElevenLabs: {str(e)}")

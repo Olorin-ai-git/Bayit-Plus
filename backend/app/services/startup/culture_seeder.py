@@ -7,6 +7,7 @@ Creates cultures if they don't exist:
 - Japanese
 - Korean
 - Indian
+- USA (American)
 
 This ensures all culture endpoints work on startup.
 For full seed with news sources, run: python -m scripts.seed_cultures
@@ -805,6 +806,135 @@ INDIAN_CITIES_DATA = [
 ]
 
 # =============================================================================
+# USA CULTURE
+# =============================================================================
+USA_CULTURE_DATA = {
+    "culture_id": "usa",
+    "name": "American",
+    "name_localized": {
+        "en": "American",
+        "he": "אמריקאי",
+        "es": "Americano",
+    },
+    "flag_emoji": "🇺🇸",
+    "country_code": "US",
+    "primary_timezone": "America/New_York",
+    "primary_language": "en",
+    "supported_languages": ["en", "es"],
+    "keyword_weight_native": 1.5,
+    "keyword_weight_english": 2.0,
+    "has_shabbat_mode": False,
+    "has_lunar_calendar": False,
+    "has_special_holidays": True,
+    "display_order": 5,
+    "is_active": True,
+    "is_default": False,
+    "background_image_key": "cultures/usa/background.jpg",
+    "accent_color": "#B22234",
+}
+
+USA_CITIES_DATA = [
+    {
+        "city_id": "new-york",
+        "culture_id": "usa",
+        "name": "New York",
+        "name_localized": {
+            "en": "New York",
+            "he": "ניו יורק",
+            "es": "Nueva York",
+        },
+        "name_native": "New York",
+        "timezone": "America/New_York",
+        "coordinates": {"lat": 40.7128, "lng": -74.0060},
+        "country_code": "US",
+        "categories": [
+            CultureCityCategory(
+                id="finance",
+                name="Finance & Business",
+                name_localized={
+                    "en": "Finance & Business",
+                    "he": "פיננסים ועסקים",
+                    "es": "Finanzas y Negocios",
+                },
+                icon_emoji="💼",
+                keywords_native=["wall street", "finance", "business"],
+                keywords_english=["wall street", "finance", "business"],
+                display_order=0,
+                is_active=True,
+            ),
+            CultureCityCategory(
+                id="culture",
+                name="Arts & Culture",
+                name_localized={
+                    "en": "Arts & Culture",
+                    "he": "אמנות ותרבות",
+                    "es": "Arte y Cultura",
+                },
+                icon_emoji="🎭",
+                keywords_native=["broadway", "museum", "art"],
+                keywords_english=["broadway", "museum", "art"],
+                display_order=1,
+                is_active=True,
+            ),
+        ],
+        "display_order": 0,
+        "is_active": True,
+        "is_featured": True,
+        "background_image_key": "cultures/usa/new_york.jpg",
+        "accent_color": "#00BFFF",
+    },
+    {
+        "city_id": "los-angeles",
+        "culture_id": "usa",
+        "name": "Los Angeles",
+        "name_localized": {
+            "en": "Los Angeles",
+            "he": "לוס אנג'לס",
+            "es": "Los Ángeles",
+        },
+        "name_native": "Los Angeles",
+        "timezone": "America/Los_Angeles",
+        "coordinates": {"lat": 34.0522, "lng": -118.2437},
+        "country_code": "US",
+        "categories": [
+            CultureCityCategory(
+                id="entertainment",
+                name="Entertainment & Media",
+                name_localized={
+                    "en": "Entertainment & Media",
+                    "he": "בידור ומדיה",
+                    "es": "Entretenimiento y Medios",
+                },
+                icon_emoji="🎬",
+                keywords_native=["hollywood", "entertainment", "movies"],
+                keywords_english=["hollywood", "entertainment", "movies"],
+                display_order=0,
+                is_active=True,
+            ),
+            CultureCityCategory(
+                id="tech",
+                name="Technology",
+                name_localized={
+                    "en": "Technology",
+                    "he": "טכנולוגיה",
+                    "es": "Tecnología",
+                },
+                icon_emoji="💻",
+                keywords_native=["silicon beach", "tech", "startups"],
+                keywords_english=["silicon beach", "tech", "startups"],
+                display_order=1,
+                is_active=True,
+            ),
+        ],
+        "display_order": 1,
+        "is_active": True,
+        "is_featured": True,
+        "background_image_key": "cultures/usa/los_angeles.jpg",
+        "accent_color": "#FFD700",
+    },
+]
+
+# =============================================================================
 # ALL CULTURES DATA
 # =============================================================================
 ALL_CULTURES = [
@@ -813,6 +943,7 @@ ALL_CULTURES = [
     {"culture": JAPANESE_CULTURE_DATA, "cities": JAPANESE_CITIES_DATA},
     {"culture": KOREAN_CULTURE_DATA, "cities": KOREAN_CITIES_DATA},
     {"culture": INDIAN_CULTURE_DATA, "cities": INDIAN_CITIES_DATA},
+    {"culture": USA_CULTURE_DATA, "cities": USA_CITIES_DATA},
 ]
 
 

@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { View, Text, Pressable, Platform } from 'react-native';
+import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
 import { getLanguageInfo } from '../types/subtitle';
 import { colors, spacing, borderRadius } from '../theme';
-import { GlassCard } from './ui';
 
 interface SubtitleFlagsProps {
   languages: string[];
@@ -37,34 +36,39 @@ export function SubtitleFlags({
   const flagSize = size === 'medium' ? 16 : 14;
   const fontSize = size === 'medium' ? 16 : 14;
 
-  const positionClass = position === 'bottom-left'
-    ? (isRTL ? 'right-2' : 'left-2')
-    : (isRTL ? 'left-2' : 'right-2');
+  // Calculate position style based on props
+  const getPositionStyle = () => {
+    if (position === 'bottom-left') {
+      return isRTL ? styles.positionBottomRight : styles.positionBottomLeft;
+    }
+    return isRTL ? styles.positionBottomLeft : styles.positionBottomRight;
+  };
 
   return (
     <Pressable
       onHoverIn={() => setTooltipVisible(true)}
       onHoverOut={() => setTooltipVisible(false)}
       onPress={() => setTooltipVisible(!tooltipVisible)}
-      className={`absolute bottom-2 ${positionClass} z-[5]`}
+      style={[styles.container, getPositionStyle()]}
     >
       {/* Flags Row */}
       <View
-        className="rounded px-1.5 py-0.5 bg-black/70"
-        style={Platform.OS === 'web' ? { backdropFilter: 'blur(8px)' } as any : {}}
+        style={[
+          styles.flagsContainer,
+          Platform.OS === 'web' && { backdropFilter: 'blur(8px)' } as any,
+        ]}
       >
-        <View className="flex-row items-center gap-1">
+        <View style={styles.flagsRow}>
           {displayLanguages.map((lang, i) => (
             <Text
               key={lang.code}
-              className="text-white"
-              style={{ fontSize: flagSize, lineHeight: flagSize * 1.2 }}
+              style={[styles.flagText, { fontSize: flagSize, lineHeight: flagSize * 1.2 }]}
             >
               {lang.flag}
             </Text>
           ))}
           {remainingCount > 0 && (
-            <Text className="text-white/40 font-semibold ml-0.5" style={{ fontSize: fontSize - 2 }}>
+            <Text style={[styles.remainingText, { fontSize: fontSize - 2 }]}>
               +{remainingCount}
             </Text>
           )}
@@ -73,14 +77,69 @@ export function SubtitleFlags({
 
       {/* Tooltip */}
       {showTooltip && tooltipVisible && (
-        <View className="absolute bottom-full left-0 mb-1" pointerEvents="none">
-          <GlassCard className="px-2 py-1 min-w-[100px] max-w-[200px]">
-            <Text className="text-xs text-white text-left">
+        <View style={styles.tooltipContainer} pointerEvents="none">
+          <View style={styles.tooltipCard}>
+            <Text style={styles.tooltipText}>
               {languageData.map(lang => lang.nativeName).join(', ')}
             </Text>
-          </GlassCard>
+          </View>
         </View>
       )}
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 24,
+    zIndex: 50,
+  },
+  positionBottomLeft: {
+    left: 24,
+  },
+  positionBottomRight: {
+    right: 24,
+  },
+  flagsContainer: {
+    borderRadius: borderRadius.sm,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    alignSelf: 'flex-start',
+  },
+  flagsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  flagText: {
+    color: '#fff',
+  },
+  remainingText: {
+    color: 'rgba(255, 255, 255, 0.4)',
+    fontWeight: '600',
+    marginLeft: 2,
+  },
+  tooltipContainer: {
+    position: 'absolute',
+    bottom: '100%',
+    left: 0,
+    marginBottom: 4,
+  },
+  tooltipCard: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    minWidth: 100,
+    maxWidth: 200,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  tooltipText: {
+    fontSize: 12,
+    color: '#fff',
+    textAlign: 'left',
+  },
+});

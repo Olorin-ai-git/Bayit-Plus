@@ -135,7 +135,7 @@ export const SupportTicketList: React.FC = () => {
       setError(null);
 
       const apiUrl = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-        ? 'http://localhost:8001/api/v1/support'
+        ? 'http://localhost:8000/api/v1/support'
         : '/api/v1/support';
 
       const response = await fetch(`${apiUrl}/tickets`);

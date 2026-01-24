@@ -55,35 +55,34 @@ export default function SubtitleOverlay({
 
   return (
     <View
-      className="absolute left-0 right-0 z-[100] items-center px-4"
-      style={[settings.position === 'top' ? styles.positionTop : styles.positionBottom]}
+      style={[
+        styles.container,
+        settings.position === 'top' ? styles.positionTop : styles.positionBottom,
+      ]}
       pointerEvents="none"
     >
       {activeCues.map((cue) => (
         <View
           key={cue.index}
-          className="py-1 px-4 rounded max-w-[90%] my-0.5"
-          style={{
-            backgroundColor: settings.backgroundColor,
-            opacity: settings.opacity ?? 1,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.8,
-            shadowRadius: 4,
-          }}
+          style={[
+            styles.cueContainer,
+            {
+              backgroundColor: settings.backgroundColor,
+              opacity: settings.opacity ?? 1,
+            }
+          ]}
         >
           <Text
-            className="font-semibold leading-7 text-center"
-            style={{
-              color: settings.textColor,
-              fontSize: getFontSize(),
-              fontFamily: settings.fontFamily,
-              textAlign: isRTL ? 'right' : 'center',
-              writingDirection: isRTL ? 'rtl' : 'ltr',
-              textShadowColor: 'rgba(0, 0, 0, 0.95)',
-              textShadowOffset: { width: 1, height: 1 },
-              textShadowRadius: 3,
-            }}
+            style={[
+              styles.cueText,
+              {
+                color: settings.textColor,
+                fontSize: getFontSize(),
+                fontFamily: settings.fontFamily,
+                textAlign: isRTL ? 'right' : 'center',
+                writingDirection: isRTL ? 'rtl' : 'ltr',
+              }
+            ]}
           >
             {cue.text}
           </Text>
@@ -94,10 +93,40 @@ export default function SubtitleOverlay({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    left: '50%',
+    transform: [{ translateX: '-50%' }],
+    zIndex: 100,
+    alignItems: 'center',
+    maxWidth: '80%',
+    overflow: 'hidden',
+  },
   positionTop: {
     top: 32,
   },
   positionBottom: {
     bottom: 96,
+  },
+  cueContainer: {
+    paddingVertical: 4,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginVertical: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+    alignSelf: 'center',
+    maxWidth: '100%',
+    overflow: 'hidden',
+  },
+  cueText: {
+    fontWeight: '600',
+    lineHeight: 28,
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.95)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
 });
