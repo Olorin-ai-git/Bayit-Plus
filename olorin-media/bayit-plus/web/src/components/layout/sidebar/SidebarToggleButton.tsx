@@ -2,7 +2,7 @@
  * SidebarToggleButton Component
  *
  * Collapse/expand button for GlassSidebar with RTL support
- * Part of GlassSidebar migration from StyleSheet to TailwindCSS
+ * Part of GlassSidebar - StyleSheet implementation for RN Web compatibility
  *
  * Features:
  * - GlassButton with custom styling
@@ -11,10 +11,10 @@
  * - 44x44pt touch target (iOS HIG compliant)
  */
 
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { z } from 'zod';
 import { GlassButton } from '@bayit/shared/ui';
-import { platformClass } from '../../../utils/platformClass';
+import { colors, spacing } from '@bayit/shared/theme';
 
 const SidebarToggleButtonPropsSchema = z.object({
   isExpanded: z.boolean(),
@@ -40,29 +40,42 @@ export default function SidebarToggleButton({
   };
 
   return (
-    <View
-      className={platformClass(
-        `absolute top-20 z-[9999] ${isRTL ? '-left-5' : '-right-5'}`,
-        `absolute top-20 z-[9999] ${isRTL ? '-left-5' : '-right-5'}`
-      )}
-    >
+    <View style={[
+      styles.container,
+      isRTL ? styles.containerRTL : styles.containerLTR,
+    ]}>
       <GlassButton
         title={getToggleIcon()}
         onPress={isUIInteractionEnabled ? onToggle : undefined}
         variant="secondary"
         size="sm"
-        style={{
-          width: 44,
-          height: 44,
-          minWidth: 44,
-          paddingHorizontal: 0,
-          opacity: 0.5,
-          backgroundColor: 'transparent',
-          borderWidth: 2,
-          borderColor: '#a855f7', // colors.primary
-        }}
+        style={styles.button}
         disabled={!isUIInteractionEnabled}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: spacing.xl * 2,
+    zIndex: 9999,
+  },
+  containerLTR: {
+    right: -20,
+  },
+  containerRTL: {
+    left: -20,
+  },
+  button: {
+    width: 44,
+    height: 44,
+    minWidth: 44,
+    paddingHorizontal: 0,
+    opacity: 0.5,
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: colors.primary,
+  },
+});

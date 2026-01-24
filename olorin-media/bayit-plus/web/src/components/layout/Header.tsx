@@ -73,16 +73,17 @@ export default function Header() {
   // Only show admin button when store is fully hydrated to prevent race conditions
   const showAdmin = isHydrated && isAuthenticated && isAdmin() && !IS_TV_BUILD; // Hide admin on TV
 
-  // DEBUG: Log admin button visibility logic
+  // Log admin button visibility logic
   useEffect(() => {
     if (!IS_TV_BUILD) {
-      console.log('=== Admin Button Visibility ===');
-      console.log('isHydrated:', isHydrated);
-      console.log('isAuthenticated:', isAuthenticated);
-      console.log('user:', user);
-      console.log('user?.role:', user?.role);
-      console.log('isAdmin():', isAdmin());
-      console.log('showAdmin:', showAdmin);
+      logger.debug('Admin Button Visibility', 'Header', {
+        isHydrated,
+        isAuthenticated,
+        user,
+        userRole: user?.role,
+        isAdmin: isAdmin(),
+        showAdmin,
+      });
     }
   }, [isHydrated, isAuthenticated, user, showAdmin]);
 
