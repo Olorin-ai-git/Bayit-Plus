@@ -5,9 +5,10 @@
  * recent searches, and personalized suggestions
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { sanitizeText, sanitizeCategory } from '../../utils/sanitize';
 
 export interface Category {
   name: string;
@@ -40,14 +41,30 @@ export function SearchSuggestionsPanel({
 }: SearchSuggestionsPanelProps) {
   const { t } = useTranslation('search');
 
+  // Sanitize all untrusted inputs to prevent XSS
+  const sanitizedRecent = useMemo(() =>
+    recentSearches.map(sanitizeText).filter(text => text.length > 0),
+    [recentSearches]
+  );
+
+  const sanitizedTrending = useMemo(() =>
+    trendingSearches.map(sanitizeText).filter(text => text.length > 0),
+    [trendingSearches]
+  );
+
+  const sanitizedCategories = useMemo(() =>
+    categories.map(sanitizeCategory),
+    [categories]
+  );
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Trending Searches */}
-      {trendingSearches.length > 0 && (
+      {sanitizedTrending.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('suggestions.trendingTitle')}</Text>
           <View style={styles.itemsContainer}>
-            {trendingSearches.map((search, index) => (
+            {sanitizedTrending.map((search, index) => (
               <TouchableOpacity
                 key={index}
                 style={styles.trendingItem}
@@ -63,11 +80,11 @@ export function SearchSuggestionsPanel({
       )}
 
       {/* Category Chips */}
-      {categories.length > 0 && (
+      {sanitizedCategories.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('suggestions.categoriesTitle')}</Text>
           <View style={styles.categoriesGrid}>
-            {categories.map((category, index) => (
+            {sanitizedCategories.map((category, index) => (
               <TouchableOpacity
                 key={index}
                 style={styles.categoryChip}
@@ -84,7 +101,7 @@ export function SearchSuggestionsPanel({
       )}
 
       {/* Recent Searches */}
-      {recentSearches.length > 0 && (
+      {sanitizedRecent.length > 0 && (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>{t('suggestions.recentTitle')}</Text>
@@ -98,7 +115,7 @@ export function SearchSuggestionsPanel({
             )}
           </View>
           <View style={styles.itemsContainer}>
-            {recentSearches.map((search, index) => (
+            {sanitizedRecent.map((search, index) => (
               <TouchableOpacity
                 key={index}
                 style={styles.recentItem}
