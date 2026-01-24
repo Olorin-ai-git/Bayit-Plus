@@ -34,6 +34,11 @@ import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, typography } from '../theme';
 import type { RootStackParamList } from '../navigation/types';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('WatchlistScreenMobile');
+
 interface WatchlistItem {
   id: string;
   title: string;
@@ -85,7 +90,7 @@ export const WatchlistScreenMobile: React.FC = () => {
       const items = response.items || response.watchlist || [];
       setWatchlist(items);
     } catch (error) {
-      console.error('Error loading watchlist:', error);
+      moduleLogger.error('Error loading watchlist:', error);
       setWatchlist([]);
     } finally {
       setIsLoading(false);
@@ -119,7 +124,7 @@ export const WatchlistScreenMobile: React.FC = () => {
       await watchlistService.removeFromWatchlist(item.id);
       setWatchlist((prev) => prev.filter((w) => w.id !== item.id));
     } catch (error) {
-      console.error('Error removing from watchlist:', error);
+      moduleLogger.error('Error removing from watchlist:', error);
     }
   };
 

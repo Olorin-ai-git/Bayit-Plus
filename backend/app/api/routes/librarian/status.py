@@ -16,6 +16,7 @@ from app.api.routes.librarian.models import (ActionTypeConfig, AuditLimits,
 from app.core.config import settings
 from app.models.librarian import AuditReport
 from app.models.user import User
+from app.services.audit_recovery_service import audit_recovery_service
 from app.services.librarian_service import (get_audit_statistics,
                                             get_latest_audit_report)
 
@@ -190,4 +191,94 @@ async def get_integrity_status(current_user: User = Depends(require_admin())):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to get integrity status: {str(e)}",
+        )
+
+
+@router.get("/admin/librarian/audit-health/{audit_id}")
+async def check_audit_health(
+    audit_id: str, current_user: User = Depends(require_admin())
+):
+    """
+    Check the health of a specific audit.
+
+    Returns detailed health status including:
+    - Whether audit is healthy
+    - Any issues detected (stuck, no activity, etc.)
+    - Last activity timestamp
+    - Current status
+    - Whether task is actually running
+    """
+    try:
+        health = await audit_recovery_service.check_audit_health(audit_id)
+        return health
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to check audit health: {str(e)}",
+        )
+
+
+@router.post("/admin/librarian/audit-health/{audit_id}/recover")
+async def recover_audit(audit_id: str, current_user: User = Depends(require_admin())):
+    """
+    Manually recover a stuck audit.
+
+    This will:
+    - Mark the audit as failed in the database
+    - Add recovery logs to the execution log
+    - Cancel the task if it's still running
+    - Update the UI to reflect the failure
+    """
+    try:
+        # Check health first
+        health = await audit_recovery_service.check_audit_health(audit_id)
+
+        if health["is_healthy"]:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Audit is healthy and does not need recovery",
+            )
+
+        # Recover the audit
+        result = await audit_recovery_service.recover_stuck_audit(
+            audit_id, reason="; ".join(health["issues"])
+        )
+
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to recover audit: {str(e)}",
+        )
+
+
+@router.post("/admin/librarian/scan-stuck-audits")
+async def scan_stuck_audits(current_user: User = Depends(require_admin())):
+    """
+    Manually trigger a scan for stuck audits and recover them.
+
+    This is the same scan that runs automatically every 5 minutes,
+    but can be triggered manually for immediate action.
+
+    Returns a list of recovered audits.
+    """
+    try:
+        recoveries = await audit_recovery_service.scan_and_recover_stuck_audits()
+
+        return {
+            "scanned": True,
+            "recoveries_count": len(recoveries),
+            "recoveries": recoveries,
+            "message": (
+                f"Successfully scanned and recovered {len(recoveries)} stuck audit(s)"
+                if recoveries
+                else "No stuck audits found"
+            ),
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to scan for stuck audits: {str(e)}",
         )

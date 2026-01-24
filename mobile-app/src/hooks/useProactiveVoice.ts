@@ -16,6 +16,11 @@ import { useAuthStore } from '@bayit/shared-stores';
 import { usePiPWidgetStore } from '../stores/pipWidgetStore';
 import { useNavigation } from '@react-navigation/native';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('useProactiveVoice');
+
 export interface ProactiveSuggestion {
   id: string;
   type: 'time-based' | 'context-based' | 'presence-based';
@@ -180,7 +185,7 @@ export function useProactiveVoice(options: UseProactiveVoiceOptions = {}) {
         try {
           await ttsService.speak(suggestion.message);
         } catch (error) {
-          console.error('[useProactiveVoice] Failed to speak suggestion:', error);
+          moduleLogger.error('Failed to speak suggestion:', error', error);
         }
       }
 
@@ -207,7 +212,7 @@ export function useProactiveVoice(options: UseProactiveVoiceOptions = {}) {
 
         case 'widget':
           // Handle widget actions
-          console.log('[useProactiveVoice] Widget action:', payload);
+          moduleLogger.debug('[useProactiveVoice] Widget action:', payload);
           break;
 
         case 'content':

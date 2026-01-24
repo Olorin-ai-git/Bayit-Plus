@@ -30,6 +30,11 @@ import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
 import { spacing, colors, borderRadius } from '../theme';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('EPGScreenMobile');
+
 type Timezone = 'israel' | 'local';
 
 interface ChannelWithPrograms {
@@ -219,7 +224,7 @@ export const EPGScreenMobile: React.FC = () => {
       setChannels(response.channels);
       setPrograms(response.programs);
     } catch (err: any) {
-      console.error('Failed to fetch EPG data:', err);
+      moduleLogger.error('Failed to fetch EPG data:', err);
       setError(err.message || t('epg.errorLoading', 'Failed to load TV guide'));
     } finally {
       setLoading(false);

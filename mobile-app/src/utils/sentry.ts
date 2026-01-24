@@ -26,6 +26,11 @@ try {
 import { initLoggerSentry } from "@bayit/shared/utils/logger";
 import { initErrorBoundarySentry } from "@bayit/shared/components/ErrorBoundary";
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('sentry');
+
 // Environment variable access (from react-native-dotenv or similar)
 const SENTRY_DSN = process.env.SENTRY_DSN || "";
 const SENTRY_ENVIRONMENT = process.env.SENTRY_ENVIRONMENT || "development";
@@ -147,7 +152,7 @@ export const initSentry = (): boolean => {
       },
     });
 
-    console.info(`[Sentry] Initialized - environment: ${SENTRY_ENVIRONMENT}`);
+    moduleLogger.info(`[Sentry] Initialized - environment: ${SENTRY_ENVIRONMENT}`);
     return true;
   } catch (error) {
     console.error("[Sentry] Failed to initialize:", error);

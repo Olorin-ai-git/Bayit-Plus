@@ -3,8 +3,7 @@
  * Full-screen transparent backdrop to catch clicks outside the menu
  */
 
-import { View } from 'react-native'
-import { platformClass, platformStyle } from '@/utils/platformClass'
+import { View, StyleSheet } from 'react-native'
 
 interface SubtitleMenuBackdropProps {
   onClose: () => void
@@ -13,11 +12,7 @@ interface SubtitleMenuBackdropProps {
 export default function SubtitleMenuBackdrop({ onClose }: SubtitleMenuBackdropProps) {
   return (
     <View
-      className={platformClass('absolute inset-0 z-[199] cursor-default')}
-      style={platformStyle({
-        web: { pointerEvents: 'auto' },
-        native: {},
-      })}
+      style={styles.backdrop}
       onClick={(e: any) => {
         e.stopPropagation()
         e.preventDefault()
@@ -28,3 +23,12 @@ export default function SubtitleMenuBackdrop({ onClose }: SubtitleMenuBackdropPr
     />
   )
 }
+
+const styles = StyleSheet.create({
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 199,
+    cursor: 'default',
+    pointerEvents: 'auto',
+  },
+})

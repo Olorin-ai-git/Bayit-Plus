@@ -22,6 +22,9 @@ import {
 } from 'react-native';
 import { useVoiceFeatures } from '../../hooks/useVoiceFeatures';
 import { useNavigation } from '@react-navigation/native';
+import logger from '@/utils/logger';
+
+const moduleLogger = logger.scope('VoiceSearchModal');
 
 interface VoiceSearchModalProps {
   isVisible: boolean;
@@ -56,10 +59,10 @@ export const VoiceSearchModal: React.FC<VoiceSearchModalProps> = ({
   } = useVoiceFeatures({
     language: 'en',
     onStateChange: (newStage) => {
-      console.log('[VoiceSearchModal] Stage changed:', newStage);
+      moduleLogger.debug('Stage changed', { stage: newStage });
     },
     onError: (err) => {
-      console.error('[VoiceSearchModal] Voice error:', err);
+      moduleLogger.error('Voice error', err);
     }
   });
 
@@ -91,7 +94,7 @@ export const VoiceSearchModal: React.FC<VoiceSearchModalProps> = ({
         }
       }
     } catch (err) {
-      console.error('[VoiceSearchModal] Error executing command:', err);
+      moduleLogger.error('Error executing command', err);
     }
   }, [executeCommand, confidence, navigation, onCommandExecuted, handleClose]);
 

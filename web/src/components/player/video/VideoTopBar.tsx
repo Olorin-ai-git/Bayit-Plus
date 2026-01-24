@@ -1,15 +1,15 @@
 /**
  * VideoTopBar - Title, subtitle flags, and live badge
  *
- * Migration Status: ✅ StyleSheet → TailwindCSS
+ * Migration Status: ✅ Converted to StyleSheet.create()
  * File Size: Under 200 lines ✓
  */
 
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { z } from 'zod'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassBadge } from '@bayit/shared/ui'
 import { getLanguageInfo } from '@/types/subtitle'
-import { platformClass } from '@/utils/platformClass'
 
 // Zod schema for prop validation
 const SubtitleTrackSchema = z.object({
@@ -33,20 +33,10 @@ export default function VideoTopBar({
   liveLabel,
 }: VideoTopBarProps) {
   return (
-    <View
-      className={platformClass(
-        'absolute top-0 left-0 right-0 flex-row items-center justify-between p-4',
-        'absolute top-0 left-0 right-0 flex-row items-center justify-between p-4'
-      )}
-    >
-      <View className="flex-row items-center gap-4 flex-1">
+    <View style={styles.container}>
+      <View style={styles.leftSection}>
         <Text
-          className="text-lg font-semibold text-white"
-          style={{
-            textShadowColor: 'rgba(0, 0, 0, 0.5)',
-            textShadowOffset: { width: 0, height: 1 },
-            textShadowRadius: 2,
-          }}
+          style={styles.title}
           numberOfLines={1}
         >
           {title}
@@ -54,30 +44,20 @@ export default function VideoTopBar({
 
         {/* Available Subtitle Languages */}
         {!isLive && availableSubtitles.length > 0 && (
-          <View
-            className={platformClass(
-              'flex-row items-center gap-1 bg-black/40 backdrop-blur-sm px-2 py-1 rounded-lg',
-              'flex-row items-center gap-1 bg-black/40 px-2 py-1 rounded-lg'
-            )}
-          >
+          <View style={styles.subtitleFlags}>
             {availableSubtitles.slice(0, 6).map((track) => {
               const langInfo = getLanguageInfo(track.language)
               return (
                 <Text
                   key={track.id}
-                  className="text-lg"
-                  style={{
-                    textShadowColor: 'rgba(0, 0, 0, 0.5)',
-                    textShadowOffset: { width: 0, height: 1 },
-                    textShadowRadius: 2,
-                  }}
+                  style={styles.flag}
                 >
                   {langInfo?.flag || '🌐'}
                 </Text>
               )
             })}
             {availableSubtitles.length > 6 && (
-              <Text className="text-xs text-neutral-400 ml-1">
+              <Text style={styles.moreCount}>
                 +{availableSubtitles.length - 6}
               </Text>
             )}
@@ -89,3 +69,50 @@ export default function VideoTopBar({
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: spacing.md,
+  },
+  leftSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    flex: 1,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  subtitleFlags: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.lg,
+  },
+  flag: {
+    fontSize: 18,
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  moreCount: {
+    fontSize: 12,
+    color: colors.textMuted,
+    marginLeft: spacing.xs,
+  },
+})

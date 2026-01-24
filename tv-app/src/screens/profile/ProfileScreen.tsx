@@ -17,6 +17,9 @@ import { BillingTab } from './BillingTab';
 import { SubscriptionTab } from './SubscriptionTab';
 import { NotificationsTab } from './NotificationsTab';
 import { SecurityTab } from './SecurityTab';
+import logger from '../../utils/logger';
+
+const profileLogger = logger.scope('ProfileScreen');
 
 export const ProfileScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -56,7 +59,7 @@ export const ProfileScreen: React.FC = () => {
       setPaymentMethods(methodsRes.payment_methods || []);
       setBillingHistory(invoicesRes.invoices || []);
     } catch (error) {
-      console.error('Failed to load billing data:', error);
+      profileLogger.error('Failed to load billing data', error);
     } finally {
       setBillingLoading(false);
     }

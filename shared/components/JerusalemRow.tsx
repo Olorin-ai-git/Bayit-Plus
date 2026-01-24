@@ -1,3 +1,17 @@
+/**
+ * Jerusalem Row Component (Backward Compatible Export)
+ *
+ * Displays Jerusalem-focused content from Israeli news sources.
+ * Built with React Native StyleSheet, Glass components, theme colors, and i18n.
+ *
+ * Features:
+ * - Kotel events, IDF ceremonies, diaspora connection news
+ * - Glassmorphic design with backdrop blur
+ * - Full RTL support
+ * - Multi-language (Hebrew, English, Spanish)
+ * - Cross-platform (iOS, Android, tvOS, Web)
+ */
+
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
@@ -8,32 +22,40 @@ import {
   ActivityIndicator,
   Linking,
   ImageBackground,
+  StyleSheet,
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui/GlassView';
-import { jerusalemService } from '../services/api';
+import { GlassCard } from './ui/GlassCard';
+import { GlassBadge } from './ui/GlassBadge';
+import { apiJerusalemService } from '../services/api/cultureServices';
+import { colors, spacing, borderRadius, fontSize, shadows } from '../theme';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
+import logger from '../utils/logger';
 
-// Platform-specific detection
+// Platform detection
 const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
 const isMobilePhone = isMobile && !Platform.isTV;
 
-// Import Jerusalem panoramic background
+// Jerusalem panoramic background
 const JerusalemBackground = require('../assets/images/Scenery/Jerusalem.png');
 
+// Content item interface
 interface JerusalemContentItem {
   id: string;
   source_name: string;
   title: string;
   title_he?: string;
   title_en?: string;
+  title_es?: string;
   url: string;
   published_at: string;
   summary?: string;
   summary_he?: string;
   summary_en?: string;
+  summary_es?: string;
   image_url?: string;
   category: string;
   category_label: { he: string; en: string; es?: string };
@@ -60,6 +82,7 @@ interface JerusalemRowProps {
   showTitle?: boolean;
 }
 
+// Category emojis
 const CATEGORY_EMOJIS: Record<string, string> = {
   kotel: '🕎',
   'idf-ceremony': '🎖️',
@@ -71,8 +94,6 @@ const CATEGORY_EMOJIS: Record<string, string> = {
 
 /**
  * JerusalemRow Component
- * Displays Jerusalem-focused content from Israeli news.
- * Includes Kotel events, IDF ceremonies, diaspora connection news.
  */
 export const JerusalemRow: React.FC<JerusalemRowProps> = ({
   onItemPress,
@@ -83,30 +104,31 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
   const { isRTL } = useDirection();
   const [data, setData] = useState<JerusalemContentData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const currentLang = i18n.language;
 
-  // Helper to get localized text from an item's localized fields
+  // Localized field helper
   const getLocalizedField = (
-    item: { [key: string]: any },
+    item: Record<string, any>,
     field: string
   ): string => {
-    const heValue = item[`${field}_he`] || item[field];
-    const enValue = item[`${field}_en`] || item[field];
-    const esValue = item[`${field}_es`] || enValue || heValue;
-
-    if (currentLang === 'he') return heValue;
-    if (currentLang === 'es') return esValue;
-    return enValue;
+    const langSuffix = currentLang === 'he' ? '_he' : currentLang === 'es' ? '_es' : '_en';
+    return item[`${field}${langSuffix}`] || item[`${field}_en`] || item[field] || '';
   };
 
+  // Fetch content from API
   const fetchContent = async () => {
     try {
       setLoading(true);
-      const result = await jerusalemService.getContent(category) as JerusalemContentData;
-      setData(result);
+      setError(null);
+      const result = await apiJerusalemService.getContent(category);
+      setData(result.data || result);
+      logger.info('Jerusalem content loaded', 'JerusalemRow', { itemCount: result.data?.items?.length || 0 });
     } catch (err) {
-      console.error('Failed to fetch Jerusalem content:', err);
+      const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+      logger.error('Failed to fetch Jerusalem content', 'JerusalemRow', { error: errorMsg });
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -119,139 +141,135 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
     return () => clearInterval(interval);
   }, [category]);
 
+  // Handle item press
   const handleItemPress = (item: JerusalemContentItem) => {
     if (onItemPress) {
       onItemPress(item);
     } else {
-      // Default: open URL in browser
-      Linking.openURL(item.url).catch(err =>
-        console.error('Failed to open URL:', err)
+      Linking.openURL(item.url).catch((err) =>
+        logger.error('Failed to open URL', 'JerusalemRow', { error: err.message, url: item.url })
       );
     }
   };
 
-  if (loading) {
-    return (
-      <View className={`${isMobilePhone ? 'my-2 rounded-2xl mx-2' : 'my-4 rounded-3xl mx-4'} overflow-hidden`}>
-        <ImageBackground
-          source={JerusalemBackground}
-          style={{ width: '100%', minHeight: isMobilePhone ? 180 : 320 }}
-          imageStyle={{ opacity: 0.6, borderRadius: isMobilePhone ? 16 : 24 }}
-          resizeMode="cover"
-        >
-          <View
-            className={`absolute inset-0 bg-[rgba(10,10,30,0.5)] ${isMobilePhone ? 'rounded-2xl' : 'rounded-3xl'}`}
-          />
-          <View className={`relative z-10 ${isMobilePhone ? 'py-2' : 'py-4'}`}>
-            {showTitle && (
-              <View className={`flex items-center mb-1 ${isMobilePhone ? 'px-4' : 'px-6'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-                <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
-                  {t('jerusalem.title')}
-                </Text>
-                <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
-                  🇮🇱
-                </Text>
-              </View>
-            )}
-            <View className={`justify-center items-center ${isMobilePhone ? 'h-20' : 'h-36'}`}>
-              <ActivityIndicator color="#a855f7" size="large" />
-            </View>
-          </View>
-        </ImageBackground>
-      </View>
-    );
-  }
-
-  if (!data?.items?.length) {
-    return (
-      <View className={`${isMobilePhone ? 'my-2 rounded-2xl mx-2' : 'my-4 rounded-3xl mx-4'} overflow-hidden`}>
-        <ImageBackground
-          source={JerusalemBackground}
-          style={{ width: '100%', minHeight: isMobilePhone ? 180 : 320 }}
-          imageStyle={{ opacity: 0.6, borderRadius: isMobilePhone ? 16 : 24 }}
-          resizeMode="cover"
-        >
-          <View
-            className={`absolute inset-0 bg-[rgba(10,10,30,0.5)] ${isMobilePhone ? 'rounded-2xl' : 'rounded-3xl'}`}
-          />
-          <View className={`relative z-10 ${isMobilePhone ? 'py-2' : 'py-4'}`}>
-            {showTitle && (
-              <View className={`flex items-center mb-1 ${isMobilePhone ? 'px-4' : 'px-6'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-                <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
-                  {t('jerusalem.title')}
-                </Text>
-                <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
-                  🇮🇱
-                </Text>
-              </View>
-            )}
-            <View className={`justify-center items-center px-6 ${isMobilePhone ? 'h-14' : 'h-24'}`}>
-              <Text className={`text-${isMobilePhone ? 'sm' : 'base'} text-white/60 text-center`}>
-                {t('jerusalem.noContent')}
-              </Text>
-            </View>
-          </View>
-        </ImageBackground>
-      </View>
-    );
-  }
-
-  // Get category label from translations
-  const getCategoryLabel = (item: JerusalemContentItem) => {
-    // Use translation keys for known categories
-    const categoryKey = `jerusalem.categories.${item.category}`;
+  // Get category label
+  const getCategoryLabel = (item: JerusalemContentItem): string => {
+    const categoryKey = `cities.jerusalem.categories.${item.category}`;
     const translated = t(categoryKey);
-    // If translation not found (returns the key), fall back to API label
-    if (translated === categoryKey) {
-      if (currentLang === 'he') {
-        return item.category_label?.he || item.category;
-      }
-      if (currentLang === 'es') {
-        return item.category_label?.es || item.category_label?.en || item.category;
-      }
-      return item.category_label?.en || item.category;
-    }
-    return translated;
+    if (translated !== categoryKey) return translated;
+
+    if (currentLang === 'he') return item.category_label?.he || item.category;
+    if (currentLang === 'es') return item.category_label?.es || item.category_label?.en || item.category;
+    return item.category_label?.en || item.category;
   };
 
+  // Loading state
+  if (loading) {
+    return (
+      <View style={[styles.container, isMobilePhone && styles.containerMobile]}>
+        <ImageBackground
+          source={JerusalemBackground}
+          style={[styles.background, isMobilePhone && styles.backgroundMobile]}
+          imageStyle={[styles.backgroundImage, isMobilePhone && styles.backgroundImageMobile]}
+          resizeMode="cover"
+        >
+          <View style={styles.overlay} />
+          <View style={[styles.content, isMobilePhone && styles.contentMobile]}>
+            {showTitle && (
+              <View style={[styles.header, isRTL && styles.headerRTL]}>
+                <Text style={[styles.title, isMobilePhone && styles.titleMobile]}>
+                  {t('cities.jerusalem.title')}
+                </Text>
+                <Text style={[styles.titleEmoji, isRTL && styles.titleEmojiRTL]}>
+                  🇮🇱
+                </Text>
+              </View>
+            )}
+            <View style={[styles.loadingContainer, isMobilePhone && styles.loadingContainerMobile]}>
+              <ActivityIndicator color={colors.primary} size="large" />
+            </View>
+          </View>
+        </ImageBackground>
+      </View>
+    );
+  }
+
+  // Error state
+  if (error || !data?.items?.length) {
+    return (
+      <View style={[styles.container, isMobilePhone && styles.containerMobile]}>
+        <ImageBackground
+          source={JerusalemBackground}
+          style={[styles.background, isMobilePhone && styles.backgroundMobile]}
+          imageStyle={[styles.backgroundImage, isMobilePhone && styles.backgroundImageMobile]}
+          resizeMode="cover"
+        >
+          <View style={styles.overlay} />
+          <View style={[styles.content, isMobilePhone && styles.contentMobile]}>
+            {showTitle && (
+              <View style={[styles.header, isRTL && styles.headerRTL]}>
+                <Text style={[styles.title, isMobilePhone && styles.titleMobile]}>
+                  {t('cities.jerusalem.title')}
+                </Text>
+                <Text style={[styles.titleEmoji, isRTL && styles.titleEmojiRTL]}>
+                  🇮🇱
+                </Text>
+              </View>
+            )}
+            <View style={[styles.emptyContainer, isMobilePhone && styles.emptyContainerMobile]}>
+              <Text style={[styles.emptyText, isMobilePhone && styles.emptyTextMobile]}>
+                {error ? t('common.error') : t('cities.jerusalem.noContent')}
+              </Text>
+            </View>
+          </View>
+        </ImageBackground>
+      </View>
+    );
+  }
+
+  // Success state with content
   return (
-    <View className={`${isMobilePhone ? 'my-2 rounded-2xl mx-2' : 'my-4 rounded-3xl mx-4'} overflow-hidden`}>
-      {/* Background Image */}
+    <View style={[styles.container, isMobilePhone && styles.containerMobile]}>
       <ImageBackground
         source={JerusalemBackground}
-        style={{ width: '100%', minHeight: isMobilePhone ? 180 : 320 }}
-        imageStyle={{ opacity: 0.6, borderRadius: isMobilePhone ? 16 : 24 }}
+        style={[styles.background, isMobilePhone && styles.backgroundMobile]}
+        imageStyle={[styles.backgroundImage, isMobilePhone && styles.backgroundImageMobile]}
         resizeMode="cover"
       >
-        {/* Semi-transparent overlay */}
-        <View
-          className={`absolute inset-0 bg-[rgba(10,10,30,0.5)] ${isMobilePhone ? 'rounded-2xl' : 'rounded-3xl'}`}
-        />
+        <View style={styles.overlay} />
 
-        {/* Content */}
-        <View className={`relative z-10 ${isMobilePhone ? 'py-2' : 'py-4'}`}>
+        <View style={[styles.content, isMobilePhone && styles.contentMobile]}>
           {/* Header */}
           {showTitle && (
-            <View className={`flex items-center mb-1 ${isMobilePhone ? 'px-4' : 'px-6'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-              <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
-                {t('jerusalem.title')}
+            <View style={[styles.header, isRTL && styles.headerRTL]}>
+              <Text style={[styles.title, isMobilePhone && styles.titleMobile]}>
+                {t('cities.jerusalem.title')}
               </Text>
-              <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
+              <Text style={[styles.titleEmoji, isRTL && styles.titleEmojiRTL]}>
                 🇮🇱
               </Text>
             </View>
           )}
 
           {/* Subtitle */}
-          <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/60 ${isMobilePhone ? 'px-4 mb-2' : 'px-6 mb-4'} ${isRTL ? 'text-right' : 'text-left'}`}>
-            {t('jerusalem.subtitle')}
+          <Text style={[
+            styles.subtitle,
+            isMobilePhone && styles.subtitleMobile,
+            isRTL && styles.subtitleRTL
+          ]}>
+            {t('cities.jerusalem.subtitle')}
           </Text>
 
           {/* Content ScrollView */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerClassName={`${isMobilePhone ? 'px-4 gap-2' : 'px-6 gap-4'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}
+            style={styles.scrollView}
+            contentContainerStyle={[
+              styles.scrollContent,
+              isMobilePhone && styles.scrollContentMobile,
+              isRTL && styles.scrollContentRTL
+            ]}
           >
             {data.items.map((item, index) => (
               <ContentCard
@@ -261,6 +279,7 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
                 summary={item.summary ? getLocalizedField(item, 'summary') : undefined}
                 categoryLabel={getCategoryLabel(item)}
                 isFocused={focusedIndex === index}
+                isRTL={isRTL}
                 onFocus={() => setFocusedIndex(index)}
                 onBlur={() => setFocusedIndex(-1)}
                 onPress={() => handleItemPress(item)}
@@ -269,12 +288,12 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
           </ScrollView>
 
           {/* Sources */}
-          <View className={`${isMobilePhone ? 'px-4 mt-1' : 'px-6 mt-2'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-            <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/40`}>
-              {t('jerusalem.sources')}:{' '}
+          <View style={[styles.sources, isMobilePhone && styles.sourcesMobile, isRTL && styles.sourcesRTL]}>
+            <Text style={[styles.sourcesLabel, isMobilePhone && styles.sourcesLabelMobile]}>
+              {t('cities.jerusalem.sources')}:{' '}
             </Text>
-            <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/40`}>
-              {Array.from(new Set(data.items.map(item => item.source_name))).join(', ')}
+            <Text style={[styles.sourcesText, isMobilePhone && styles.sourcesTextMobile]}>
+              {Array.from(new Set(data.items.map(item => item.source_name).filter(Boolean))).join(', ')}
             </Text>
           </View>
         </View>
@@ -283,12 +302,14 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
   );
 };
 
+// Content Card Component
 interface ContentCardProps {
   item: JerusalemContentItem;
   title: string;
   summary?: string;
   categoryLabel: string;
   isFocused: boolean;
+  isRTL: boolean;
   onFocus: () => void;
   onBlur: () => void;
   onPress: () => void;
@@ -300,11 +321,11 @@ const ContentCard: React.FC<ContentCardProps> = ({
   summary,
   categoryLabel,
   isFocused,
+  isRTL,
   onFocus,
   onBlur,
   onPress,
 }) => {
-  const { isRTL } = useDirection();
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -325,35 +346,48 @@ const ContentCard: React.FC<ContentCardProps> = ({
       activeOpacity={0.8}
     >
       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-        <GlassView
-          className={`
-            ${isMobilePhone ? 'w-44 h-32 p-4 rounded-xl mr-2' : 'w-64 h-44 p-6 rounded-2xl mr-4'}
-            border-2
-            ${isFocused ? 'border-blue-500 bg-blue-500/20 shadow-blue-500/40 shadow-lg' : 'border-transparent'}
-          `}
-          intensity="subtle"
+        <GlassCard
+          style={[
+            styles.card,
+            isMobilePhone && styles.cardMobile,
+            isFocused && styles.cardFocused,
+          ]}
         >
-          <View className={`flex items-center ${isMobilePhone ? 'mb-1' : 'mb-2'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-            <Text className={`text-${isMobilePhone ? 'lg' : '2xl'} ${isRTL ? 'ml-2' : 'mr-2'}`}>
+          {/* Category Badge */}
+          <View style={[styles.cardHeader, isRTL && styles.cardHeaderRTL]}>
+            <Text style={[styles.cardEmoji, isRTL && styles.cardEmojiRTL]}>
               {CATEGORY_EMOJIS[item.category] || '📰'}
             </Text>
-            <View className={`bg-blue-500/30 ${isMobilePhone ? 'px-2 py-0.5' : 'px-4 py-1'} rounded-full border border-blue-500/60`}>
-              <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-blue-300/90 font-semibold`}>
+            <GlassBadge
+              variant="info"
+              style={[styles.badge, isMobilePhone && styles.badgeMobile]}
+            >
+              <Text style={[styles.badgeText, isMobilePhone && styles.badgeTextMobile]}>
                 {categoryLabel}
               </Text>
-            </View>
+            </GlassBadge>
           </View>
 
+          {/* Title */}
           <Text
-            className={`text-${isMobilePhone ? 'sm' : 'base'} font-bold text-white mb-1 leading-${isMobilePhone ? '4' : '5'} ${isRTL ? 'text-right' : 'text-left'}`}
+            style={[
+              styles.cardTitle,
+              isMobilePhone && styles.cardTitleMobile,
+              isRTL && styles.cardTitleRTL
+            ]}
             numberOfLines={3}
           >
             {title}
           </Text>
 
+          {/* Summary */}
           {summary && (
             <Text
-              className={`text-${isMobilePhone ? 'xs' : 'sm'} text-white/70 ${isMobilePhone ? 'mb-1 leading-3' : 'mb-2 leading-4'} ${isRTL ? 'text-right' : 'text-left'}`}
+              style={[
+                styles.cardSummary,
+                isMobilePhone && styles.cardSummaryMobile,
+                isRTL && styles.cardSummaryRTL
+              ]}
               numberOfLines={2}
             >
               {summary}
@@ -362,10 +396,10 @@ const ContentCard: React.FC<ContentCardProps> = ({
 
           {/* Tags */}
           {item.tags.length > 0 && (
-            <View className={`flex flex-wrap ${isMobilePhone ? 'gap-0.5 mb-1' : 'gap-1 mb-2'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+            <View style={[styles.tags, isRTL && styles.tagsRTL]}>
               {item.tags.slice(0, 3).map((tag, i) => (
-                <View key={i} className={`bg-white/10 ${isMobilePhone ? 'px-1 py-0.5 rounded-sm' : 'px-2 py-1 rounded'}`}>
-                  <Text className={`text-${isMobilePhone ? '[9px]' : 'xs'} text-white/60`}>
+                <View key={i} style={[styles.tag, isMobilePhone && styles.tagMobile]}>
+                  <Text style={[styles.tagText, isMobilePhone && styles.tagTextMobile]}>
                     {tag}
                   </Text>
                 </View>
@@ -373,27 +407,340 @@ const ContentCard: React.FC<ContentCardProps> = ({
             </View>
           )}
 
-          {/* Source and score */}
-          <View className={`flex justify-between items-center mt-auto ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-            <Text className={`text-${isMobilePhone ? '[9px]' : 'xs'} text-white/40 uppercase`}>
+          {/* Footer */}
+          <View style={[styles.cardFooter, isRTL && styles.cardFooterRTL]}>
+            <Text style={[styles.sourceName, isMobilePhone && styles.sourceNameMobile]}>
               {item.source_name}
             </Text>
-            <View className={`flex ${isMobilePhone ? 'gap-0.5' : 'gap-1'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+            <View style={[styles.scoreIndicator, isRTL && styles.scoreIndicatorRTL]}>
               {[...Array(5)].map((_, i) => (
                 <View
                   key={i}
-                  className={`
-                    ${isMobilePhone ? 'w-1 h-1 rounded-[2px]' : 'w-1.5 h-1.5 rounded-[3px]'}
-                    ${i < Math.ceil(item.relevance_score / 2) ? 'bg-blue-500' : 'bg-white/20'}
-                  `}
+                  style={[
+                    styles.scoreDot,
+                    isMobilePhone && styles.scoreDotMobile,
+                    i < Math.ceil(item.relevance_score / 2) && styles.scoreDotActive,
+                  ]}
                 />
               ))}
             </View>
           </View>
-        </GlassView>
+        </GlassCard>
       </Animated.View>
     </TouchableOpacity>
   );
 };
+
+// Styles
+const styles = StyleSheet.create({
+  container: {
+    marginVertical: spacing.md,
+    marginHorizontal: spacing.md,
+    borderRadius: borderRadius.xl,
+    overflow: 'hidden',
+  },
+  containerMobile: {
+    marginVertical: spacing.sm,
+    marginHorizontal: spacing.sm,
+    borderRadius: borderRadius.lg,
+  },
+  background: {
+    width: '100%',
+    minHeight: 320,
+    position: 'relative',
+  },
+  backgroundMobile: {
+    minHeight: 180,
+  },
+  backgroundImage: {
+    opacity: 0.6,
+    borderRadius: borderRadius.xl,
+  },
+  backgroundImageMobile: {
+    borderRadius: borderRadius.lg,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(10, 10, 30, 0.6)',
+    borderRadius: borderRadius.xl,
+  },
+  content: {
+    position: 'relative',
+    zIndex: 10,
+    paddingVertical: spacing.md,
+  },
+  contentMobile: {
+    paddingVertical: spacing.sm,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.xs,
+    paddingHorizontal: spacing.lg,
+  },
+  headerRTL: {
+    flexDirection: 'row-reverse',
+  },
+  title: {
+    fontSize: fontSize.lg,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  titleMobile: {
+    fontSize: fontSize.base,
+  },
+  titleEmoji: {
+    fontSize: fontSize.xl,
+    marginLeft: spacing.sm,
+  },
+  titleEmojiRTL: {
+    marginLeft: 0,
+    marginRight: spacing.sm,
+  },
+  subtitle: {
+    fontSize: fontSize.sm,
+    color: `${colors.text}99`,
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.md,
+    textAlign: 'left',
+  },
+  subtitleMobile: {
+    fontSize: fontSize.xs,
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  subtitleRTL: {
+    textAlign: 'right',
+  },
+  loadingContainer: {
+    height: 144,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingContainerMobile: {
+    height: 80,
+  },
+  emptyContainer: {
+    height: 96,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: spacing.lg,
+  },
+  emptyContainerMobile: {
+    height: 56,
+  },
+  emptyText: {
+    fontSize: fontSize.base,
+    color: `${colors.text}99`,
+    textAlign: 'center',
+  },
+  emptyTextMobile: {
+    fontSize: fontSize.sm,
+  },
+  scrollView: {
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  scrollContent: {
+    paddingHorizontal: spacing.lg,
+    flexDirection: 'row',
+  },
+  scrollContentMobile: {
+    paddingHorizontal: spacing.md,
+    flexDirection: 'row',
+  },
+  scrollContentRTL: {
+    flexDirection: 'row-reverse',
+  },
+  sources: {
+    flexDirection: 'row',
+    paddingHorizontal: spacing.lg,
+    marginTop: spacing.sm,
+  },
+  sourcesMobile: {
+    paddingHorizontal: spacing.md,
+    marginTop: spacing.xs,
+  },
+  sourcesRTL: {
+    flexDirection: 'row-reverse',
+  },
+  sourcesLabel: {
+    fontSize: fontSize.sm,
+    color: `${colors.text}66`,
+  },
+  sourcesLabelMobile: {
+    fontSize: fontSize.xs,
+  },
+  sourcesText: {
+    fontSize: fontSize.sm,
+    color: `${colors.text}66`,
+  },
+  sourcesTextMobile: {
+    fontSize: fontSize.xs,
+  },
+  // Card styles
+  card: {
+    width: 256,
+    minWidth: 256,
+    height: 176,
+    minHeight: 176,
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
+    marginRight: spacing.md,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    flexShrink: 0,
+  },
+  cardMobile: {
+    width: 176,
+    minWidth: 176,
+    height: 128,
+    minHeight: 128,
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    marginRight: spacing.sm,
+    flexShrink: 0,
+  },
+  cardFocused: {
+    borderColor: colors.primary,
+    backgroundColor: `${colors.primary}33`,
+    ...shadows.glass,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  cardHeaderRTL: {
+    flexDirection: 'row-reverse',
+  },
+  cardEmoji: {
+    fontSize: fontSize.xxl,
+    marginRight: spacing.sm,
+  },
+  cardEmojiRTL: {
+    marginRight: 0,
+    marginLeft: spacing.sm,
+  },
+  badge: {
+    backgroundColor: `${colors.primary}4D`,
+    borderColor: `${colors.primary}99`,
+  },
+  badgeMobile: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+  },
+  badgeText: {
+    fontSize: fontSize.sm,
+    color: `${colors.primary}E6`,
+    fontWeight: '600',
+  },
+  badgeTextMobile: {
+    fontSize: fontSize.xs,
+  },
+  cardTitle: {
+    fontSize: fontSize.base,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.xs,
+    lineHeight: 20,
+    textAlign: 'left',
+  },
+  cardTitleMobile: {
+    fontSize: fontSize.sm,
+    lineHeight: 16,
+  },
+  cardTitleRTL: {
+    textAlign: 'right',
+  },
+  cardSummary: {
+    fontSize: fontSize.sm,
+    color: `${colors.text}B3`,
+    marginBottom: spacing.sm,
+    lineHeight: 16,
+    textAlign: 'left',
+  },
+  cardSummaryMobile: {
+    fontSize: fontSize.xs,
+    marginBottom: spacing.xs,
+    lineHeight: 12,
+  },
+  cardSummaryRTL: {
+    textAlign: 'right',
+  },
+  tags: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: spacing.sm,
+  },
+  tagsRTL: {
+    flexDirection: 'row-reverse',
+  },
+  tag: {
+    backgroundColor: `${colors.text}1A`,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.sm,
+    marginRight: spacing.xs,
+    marginBottom: spacing.xs,
+  },
+  tagMobile: {
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: 2,
+    marginRight: spacing.xs,
+    marginBottom: spacing.xs,
+  },
+  tagText: {
+    fontSize: fontSize.xs,
+    color: `${colors.text}99`,
+  },
+  tagTextMobile: {
+    fontSize: 9,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 'auto',
+  },
+  cardFooterRTL: {
+    flexDirection: 'row-reverse',
+  },
+  sourceName: {
+    fontSize: fontSize.xs,
+    color: `${colors.text}66`,
+    textTransform: 'uppercase',
+  },
+  sourceNameMobile: {
+    fontSize: 9,
+  },
+  scoreIndicator: {
+    flexDirection: 'row',
+  },
+  scoreIndicatorRTL: {
+    flexDirection: 'row-reverse',
+  },
+  scoreDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: `${colors.text}33`,
+    marginRight: spacing.xs,
+  },
+  scoreDotMobile: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    marginRight: spacing.xs,
+  },
+  scoreDotActive: {
+    backgroundColor: colors.primary,
+  },
+});
 
 export default JerusalemRow;

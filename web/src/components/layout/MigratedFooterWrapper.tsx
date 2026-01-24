@@ -1,7 +1,7 @@
 /**
  * Migrated Footer Wrapper with Feature Flag
  *
- * Gradually rolls out the new Tailwind-based Footer to users.
+ * Gradually rolls out the new StyleSheet-based Footer to users.
  * Falls back to legacy Footer if flag is off or if errors occur.
  *
  * Rollout stages:
@@ -15,6 +15,7 @@
  */
 
 import React, { Suspense, lazy } from 'react';
+import { View, StyleSheet, Animated } from 'react-native';
 import { useFeature } from '@/providers/FeatureFlagProvider';
 import { ErrorBoundary } from 'react-error-boundary';
 import logger from '@/utils/logger';
@@ -54,14 +55,43 @@ function ErrorFallback({ error, resetErrorBoundary }: any) {
  * Shows while Footer is being lazy-loaded
  */
 function FooterSkeleton() {
+  const pulseAnim = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [pulseAnim]);
+
   return (
-    <div
-      className="mt-auto border-t border-white/[0.08] h-12 bg-black/30 backdrop-blur-xl"
+    <View
+      style={styles.skeleton}
       role="status"
       aria-label="Loading footer"
     >
-      <div className="animate-pulse h-full" />
-    </div>
+      <Animated.View
+        style={[
+          styles.skeletonPulse,
+          {
+            opacity: pulseAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0.4, 1],
+            }),
+          },
+        ]}
+      />
+    </View>
   );
 }
 
@@ -90,7 +120,7 @@ export default function MigratedFooterWrapper() {
 
   // Log which version is being used (for debugging)
   React.useEffect(() => {
-    logger.debug('Version', 'MigratedFooterWrapper', migratedFooterEnabled ? 'Migrated (Tailwind)' : 'Legacy (StyleSheet)');
+    logger.debug('Version', 'MigratedFooterWrapper', migratedFooterEnabled ? 'Migrated (StyleSheet)' : 'Legacy (StyleSheet)');
   }, [migratedFooterEnabled]);
 
   return (
@@ -107,3 +137,18 @@ export default function MigratedFooterWrapper() {
     </ErrorBoundary>
   );
 }
+
+const styles = StyleSheet.create({
+  skeleton: {
+    marginTop: 'auto',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    height: 48,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    // @ts-ignore - Web CSS
+    backdropFilter: 'blur(20px)',
+  } as any,
+  skeletonPulse: {
+    height: '100%',
+  },
+});

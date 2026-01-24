@@ -3,12 +3,12 @@
  * Menu for selecting subtitle language with flag preview and list
  */
 
-import { View, Text, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
 import { z } from 'zod'
 import { GlassView } from '@bayit/shared/ui'
-import { platformClass, platformStyle } from '@/utils/platformClass'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import SubtitleFlagsPreview from './SubtitleFlagsPreview'
 import SubtitleLanguageList from './SubtitleLanguageList'
 
@@ -66,33 +66,23 @@ export default function SubtitleLanguageMenu({
 
   return (
     <GlassView
-      className={platformClass(
-        'absolute bottom-20 right-4 w-80 max-h-[500px] rounded-xl z-[200]'
-      )}
+      style={styles.container}
       onClick={stopPropagation}
       onMouseDown={stopPropagation}
       onMouseUp={stopPropagation}
-      style={platformStyle({
-        web: { pointerEvents: 'auto' },
-        native: {},
-      })}
     >
-      {/* Header */}
-      <View className="flex-row justify-between items-center p-4 border-b border-white/10">
-        <Text className="text-white text-base font-semibold">
-          {t('subtitles.selectLanguage')}
-        </Text>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>{t('subtitles.selectLanguage')}</Text>
         <Pressable
           onPress={handleClosePress}
           onClick={stopPropagation}
           onMouseDown={stopPropagation}
-          className={platformClass('p-2 hover:bg-white/10 rounded', 'p-2 rounded')}
+          style={styles.closeButton}
         >
-          <X size={20} color="#ffffff" />
+          <X size={20} color={colors.text} />
         </Pressable>
       </View>
 
-      {/* Flags Preview */}
       <SubtitleFlagsPreview
         availableLanguages={availableLanguages}
         currentLanguage={currentLanguage}
@@ -100,8 +90,7 @@ export default function SubtitleLanguageMenu({
         onLanguageSelect={onLanguageSelect}
       />
 
-      {/* Language List */}
-      <ScrollView className="p-4 max-h-[440px]" style={{ gap: 4 }}>
+      <ScrollView style={styles.scrollView}>
         <SubtitleLanguageList
           availableLanguages={availableLanguages}
           currentLanguage={currentLanguage}
@@ -110,10 +99,43 @@ export default function SubtitleLanguageMenu({
           onLanguageSelect={onLanguageSelect}
           onDisable={onDisable}
         />
-
-        {/* Download section (passed as children) */}
         {children}
       </ScrollView>
     </GlassView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 80,
+    right: spacing[4],
+    width: 320,
+    maxHeight: 500,
+    borderRadius: borderRadius.xl,
+    zIndex: 200,
+    pointerEvents: 'auto',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: spacing[4],
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  headerTitle: {
+    color: colors.text,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  closeButton: {
+    padding: spacing[2],
+    borderRadius: borderRadius.DEFAULT,
+  },
+  scrollView: {
+    padding: spacing[4],
+    maxHeight: 440,
+    gap: spacing[1],
+  },
+});

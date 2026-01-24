@@ -10,6 +10,9 @@
  */
 
 import { InteractionManager, PixelRatio } from 'react-native';
+import logger from '@/utils/logger';
+
+const moduleLogger = logger.scope('Performance');
 
 export interface PerformanceMetrics {
   fps: number;
@@ -96,7 +99,7 @@ class PerformanceMonitor {
 
     if (duration > 16) {
       // Warn if render takes longer than 1 frame (16ms at 60fps)
-      console.warn(`[Performance] ${componentName} render took ${duration.toFixed(2)}ms`);
+      moduleLogger.warn('Slow render detected', { component: componentName, duration: `${duration.toFixed(2)}ms` });
     }
 
     return duration;
@@ -118,7 +121,7 @@ class PerformanceMonitor {
    * Log performance metrics
    */
   logMetrics(): void {
-    console.log('[Performance] Metrics:', {
+    moduleLogger.debug('Performance metrics', {
       fps: this.getCurrentFPS(),
       pixelRatio: PixelRatio.get(),
       fontScale: PixelRatio.getFontScale(),
@@ -141,7 +144,7 @@ export function withPerformanceTracking<P extends object>(
     const duration = performance.now() - start;
 
     if (duration > 16) {
-      console.warn(`[Performance] ${componentName} render: ${duration.toFixed(2)}ms`);
+      moduleLogger.warn('Slow component render', { component: componentName, duration: `${duration.toFixed(2)}ms` });
     }
 
     return result;
@@ -161,12 +164,12 @@ export async function measureAsync<T>(
     const result = await operation();
     const duration = performance.now() - start;
 
-    console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`);
+    moduleLogger.debug('Async operation completed', { operation: name, duration: `${duration.toFixed(2)}ms` });
 
     return result;
   } catch (error) {
     const duration = performance.now() - start;
-    console.error(`[Performance] ${name} failed after ${duration.toFixed(2)}ms:`, error);
+    moduleLogger.error('Async operation failed', { operation: name, duration: `${duration.toFixed(2)}ms`, error });
     throw error;
   }
 }
@@ -221,7 +224,7 @@ export function throttle<T extends (...args: any[]) => any>(
 export function setupMemoryWarnings(): void {
   // React Native doesn't have built-in memory warning API
   // This is a placeholder for future implementation
-  console.log('[Performance] Memory warnings configured');
+  moduleLogger.info('Memory warnings configured');
 }
 
 export default performanceMonitor;

@@ -2,7 +2,7 @@
  * SidebarLogo Component
  *
  * Logo and slogan section for GlassSidebar
- * Part of GlassSidebar migration from StyleSheet to TailwindCSS
+ * Part of GlassSidebar - StyleSheet implementation for RN Web compatibility
  *
  * Features:
  * - Animated logo display
@@ -11,11 +11,11 @@
  * - Placeholder when collapsed
  */
 
-import { View, Text, Image, Animated } from 'react-native';
+import { View, Text, Image, Animated, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
-import { platformClass } from '../../../utils/platformClass';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 
 const SidebarLogoPropsSchema = z.object({
   showLabels: z.boolean(),
@@ -31,12 +31,7 @@ export default function SidebarLogo({
   const { t } = useTranslation();
 
   return (
-    <View
-      className={platformClass(
-        'items-center justify-center pt-0 pb-1 mb-0',
-        'items-center justify-center pt-0 pb-1 mb-0'
-      )}
-    >
+    <View style={styles.container}>
       {showLabels ? (
         <>
           <Link
@@ -50,48 +45,72 @@ export default function SidebarLogo({
           >
             <Image
               source={{ uri: '/assets/images/logos/logo-transparent.png' }}
-              style={{
-                width: 96,
-                height: 96,
-                // @ts-ignore - Web CSS
-                transition: 'width 0.3s, height 0.3s',
-              }}
+              style={styles.logo}
               resizeMode="cover"
             />
           </Link>
           <Animated.View
-            style={{
-              marginBottom: 20,
-              opacity: sloganOpacityAnim,
-            }}
-            className={platformClass(
-              'bg-purple-500/15 border-2 border-purple-600/40 rounded-lg py-1 px-4 self-center backdrop-blur-xl',
-              'bg-purple-500/15 border-2 border-purple-600/40 rounded-lg py-1 px-4 self-center'
-            )}
+            style={[
+              styles.sloganContainer,
+              {
+                opacity: sloganOpacityAnim,
+              },
+            ]}
           >
-            <Text
-              className={platformClass(
-                'text-[11px] font-semibold text-white/95 text-center tracking-wider',
-                'text-[11px] font-semibold text-white/95 text-center tracking-wider'
-              )}
-              style={{
-                // @ts-ignore - Web CSS gradient
-                backgroundImage:
-                  'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(192, 132, 252, 0.9) 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
+            <Text style={styles.sloganText}>
               {t('common.slogan', 'Your Home. Anywhere.')}
             </Text>
           </Animated.View>
         </>
       ) : (
-        <View
-          className={platformClass('w-12 h-[180px]', 'w-12 h-[180px]')}
-        />
+        <View style={styles.placeholder} />
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 0,
+    paddingBottom: spacing.xs,
+    marginBottom: 0,
+  },
+  logo: {
+    width: 96,
+    height: 96,
+    // @ts-ignore - Web CSS
+    transition: 'width 0.3s, height 0.3s',
+  },
+  sloganContainer: {
+    marginBottom: 20,
+    backgroundColor: 'rgba(168, 85, 247, 0.15)',
+    borderWidth: 2,
+    borderColor: 'rgba(147, 51, 234, 0.4)',
+    borderRadius: borderRadius.md,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
+    alignSelf: 'center',
+    // @ts-ignore - Web CSS
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+  } as any,
+  sloganText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.95)',
+    textAlign: 'center',
+    letterSpacing: 0.8,
+    // @ts-ignore - Web CSS gradient
+    backgroundImage: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(192, 132, 252, 0.9) 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
+  } as any,
+  placeholder: {
+    width: 48,
+    height: 180, // Same height as expanded logo to maintain spacing
+  },
+});

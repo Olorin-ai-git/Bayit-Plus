@@ -50,6 +50,11 @@ import { getGridColumns } from '../utils/responsive';
 import { optimizeTMDBImageUrl } from '../utils/imageUtils';
 import { spacing, colors, typography } from '../theme';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('HomeScreenMobile');
+
 interface ContentItem {
   id: string;
   title: string;
@@ -113,7 +118,7 @@ export const HomeScreenMobile: React.FC = () => {
       //   navigation.navigate('MorningRitual' as never);
       // }
     } catch (err) {
-      console.log('Morning ritual check:', err);
+      moduleLogger.debug('Morning ritual check:', err);
     }
   };
 
@@ -143,7 +148,7 @@ export const HomeScreenMobile: React.FC = () => {
       results.forEach((result, index) => {
         if (result.status === 'rejected') {
           const serviceNames = ['featured', 'live', 'history', 'categories'];
-          console.warn(`Failed to load ${serviceNames[index]}:`, result.reason);
+          moduleLogger.warn(`Failed to load ${serviceNames[index]}:`, result.reason);
         }
       });
 
@@ -220,7 +225,7 @@ export const HomeScreenMobile: React.FC = () => {
 
       setIsLoading(false);
     } catch (error) {
-      console.error('Error loading home content:', error);
+      moduleLogger.error('Error loading home content:', error);
       setIsLoading(false);
     }
   };

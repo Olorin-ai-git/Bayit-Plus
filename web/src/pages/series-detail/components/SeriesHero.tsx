@@ -59,7 +59,15 @@ export function SeriesHero({
           },
         ]}
       >
-        <Image source={{ uri: backdropUrl }} style={styles.backgroundImage} resizeMode="cover" />
+        <Image
+          source={{ uri: backdropUrl }}
+          style={[
+            styles.backgroundImage,
+            // @ts-ignore - Web CSS object-position
+            { objectPosition: 'center top' }
+          ]}
+          resizeMode="cover"
+        />
       </View>
 
       <View
@@ -199,6 +207,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    zIndex: 1,
   },
   videoContainer: {
     position: 'absolute',
@@ -217,6 +226,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: '75%',
+    zIndex: 2,
   },
   leftGradient: {
     position: 'absolute',
@@ -224,6 +234,7 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: '60%',
+    zIndex: 3,
   },
   content: {
     position: 'absolute',
@@ -231,6 +242,7 @@ const styles = StyleSheet.create({
     right: 48,
     bottom: 40,
     maxWidth: 600,
+    zIndex: 10,
   },
   categoryBadge: {
     alignSelf: 'flex-start',

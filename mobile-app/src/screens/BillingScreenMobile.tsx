@@ -30,6 +30,11 @@ import { useAuthStore } from '@bayit/shared-stores';
 import { subscriptionService } from '@bayit/shared-services';
 import { spacing, colors, borderRadius } from '../theme';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('BillingScreenMobile');
+
 interface PaymentMethod {
   id: string;
   type: string;
@@ -74,7 +79,7 @@ export const BillingScreenMobile: React.FC = () => {
       setPaymentMethods(methodsRes?.payment_methods || []);
       setBillingHistory(invoicesRes?.invoices || []);
     } catch (error) {
-      console.error('Failed to load billing data:', error);
+      moduleLogger.error('Failed to load billing data:', error);
     } finally {
       setIsLoading(false);
     }
@@ -107,7 +112,7 @@ export const BillingScreenMobile: React.FC = () => {
       await subscriptionService.setDefaultPaymentMethod(methodId);
       await loadBillingData();
     } catch (error) {
-      console.error('Failed to set default payment method:', error);
+      moduleLogger.error('Failed to set default payment method:', error);
       Alert.alert(t('common.error'), t('billing.setDefaultError'));
     }
   }, [t, loadBillingData]);

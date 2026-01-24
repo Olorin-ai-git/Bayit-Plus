@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { config, isDemo } from '../config/appConfig'
+import { useAuthStore } from '@bayit/shared-stores/authStore'
 import {
   demoAuthService,
   demoContentService,
@@ -48,10 +49,10 @@ const api = axios.create({
 
 // Request interceptor to add auth token and correlation ID
 api.interceptors.request.use((config) => {
-  // Add auth token
-  const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
-  if (authData?.state?.token) {
-    config.headers.Authorization = `Bearer ${authData.state.token}`
+  // Add auth token - consistent with admin API and shared API client
+  const token = useAuthStore.getState().token
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
   }
 
   // Add correlation ID - use existing or generate new one
@@ -113,8 +114,14 @@ api.interceptors.response.use(
       ].some(msg => errorDetail.toLowerCase().includes(msg.toLowerCase()))
 
       if (isCriticalAuthEndpoint || isTokenError) {
-        localStorage.removeItem('bayit-auth')
-        window.location.href = '/login'
+        // Use auth store logout - consistent with admin API and shared API client
+        useAuthStore.getState().logout()
+
+        // Redirect to login page with return URL
+        const currentPath = window.location.pathname
+        if (!currentPath.includes('/login')) {
+          window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
+        }
       }
     }
     return Promise.reject(error.response?.data || error)

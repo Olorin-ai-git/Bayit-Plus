@@ -1,6 +1,7 @@
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { GlassView } from '@bayit/shared/ui'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { Chapter, formatTime, getChapterColor } from './constants'
 
 interface ChapterTooltipProps {
@@ -21,30 +22,70 @@ export default function ChapterTooltip({
   if (!position.visible) return null
 
   return (
-    <View
-      className="absolute bottom-full mb-2 -translate-x-1/2 z-50"
-      style={{ left: position.x }}
-    >
-      <GlassView className="px-4 py-2" intensity="high">
-        <Text className="text-sm font-medium text-white text-right">
-          {chapter.title}
-        </Text>
-        <View className="flex-row items-center gap-2 mt-1">
-          <View
-            className="w-2 h-2 rounded-full"
-            style={{ backgroundColor: categoryColor }}
-          />
-          <Text className="text-xs text-gray-400">
+    <View style={[styles.container, { left: position.x }]}>
+      <GlassView style={styles.content} intensity="high">
+        <Text style={styles.title}>{chapter.title}</Text>
+        <View style={styles.metaRow}>
+          <View style={[styles.categoryDot, { backgroundColor: categoryColor }]} />
+          <Text style={styles.metaText}>
             {t(`chapters.categories.${chapter.category}`, chapter.category)}
           </Text>
-          <Text className="text-xs text-gray-400">•</Text>
-          <Text className="text-xs text-gray-400 tabular-nums">
+          <Text style={styles.metaText}>•</Text>
+          <Text style={[styles.metaText, styles.tabularNums]}>
             {formatTime(chapter.start_time)}
           </Text>
         </View>
       </GlassView>
-      {/* Tooltip arrow */}
-      <View className="absolute left-1/2 top-full -ml-1 -mt-1 w-2 h-2 bg-white/10 rotate-45" />
+      <View style={styles.arrow} />
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: '100%',
+    marginBottom: spacing[2],
+    transform: [{ translateX: '-50%' }],
+    zIndex: 50,
+  },
+  content: {
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+    textAlign: 'right',
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+    marginTop: spacing[1],
+  },
+  categoryDot: {
+    width: 8,
+    height: 8,
+    borderRadius: borderRadius.full,
+  },
+  metaText: {
+    fontSize: 12,
+    color: '#9ca3af',
+  },
+  tabularNums: {
+    fontVariant: ['tabular-nums'],
+  },
+  arrow: {
+    position: 'absolute',
+    left: '50%',
+    top: '100%',
+    marginLeft: -4,
+    marginTop: -4,
+    width: 8,
+    height: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    transform: [{ rotate: '45deg' }],
+  },
+})

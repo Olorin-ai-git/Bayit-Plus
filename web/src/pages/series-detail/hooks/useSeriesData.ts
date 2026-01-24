@@ -100,6 +100,23 @@ export function useSeriesData({ seriesId }: UseSeriesDataProps): UseSeriesDataRe
     }
   }, [seriesId, selectedSeason, loadSeasonEpisodes]);
 
+  useEffect(() => {
+    const checkWatchlistStatus = async () => {
+      if (series && series.id) {
+        try {
+          const result = await watchlistService.isInWatchlist(series.id);
+          if (result && typeof result.in_watchlist === 'boolean') {
+            setInWatchlist(result.in_watchlist);
+          }
+        } catch (error) {
+          logger.error('Failed to check watchlist status', 'useSeriesData', error);
+        }
+      }
+    };
+
+    checkWatchlistStatus();
+  }, [series?.id]);
+
   return {
     series,
     episodes,

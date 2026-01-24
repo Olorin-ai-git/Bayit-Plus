@@ -20,6 +20,7 @@ export interface Episode {
   preview_url?: string;
   stream_url?: string;
   progress?: number;
+  available_subtitles?: string[];
 }
 
 export interface SeriesData {

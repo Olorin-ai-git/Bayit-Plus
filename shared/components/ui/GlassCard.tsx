@@ -151,7 +151,8 @@ const styles = StyleSheet.create({
     overflow: 'visible' as any,
   },
   card: {
-    overflow: 'visible' as any,
+    // Removed overflow: 'visible' to preserve GlassView's overflow: 'hidden'
+    // which is required for backdrop-filter to work properly on web
   },
   image: {
     borderTopLeftRadius: borderRadius.lg,

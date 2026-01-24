@@ -34,6 +34,11 @@ import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, borderRadius } from '../theme';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('YoungstersScreenMobile');
+
 interface YoungstersItem {
   id: string;
   title: string;
@@ -192,7 +197,7 @@ export const YoungstersScreenMobile: React.FC = () => {
         setCategories(response.data);
       }
     } catch (err) {
-      console.error('Failed to load youngsters categories:', err);
+      moduleLogger.error('Failed to load youngsters categories:', err);
     }
   }, []);
 
@@ -207,7 +212,7 @@ export const YoungstersScreenMobile: React.FC = () => {
         setContent(response.data);
       }
     } catch (err) {
-      console.error('Failed to load youngsters content:', err);
+      moduleLogger.error('Failed to load youngsters content:', err);
       setContent([]);
     } finally {
       setIsLoading(false);

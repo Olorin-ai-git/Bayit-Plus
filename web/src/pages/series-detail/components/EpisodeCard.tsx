@@ -7,6 +7,7 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Play } from 'lucide-react';
 import { colors } from '@bayit/shared/theme';
+import { SubtitleFlags } from '@bayit/shared/components';
 import type { Episode } from '../types/series.types';
 
 interface EpisodeCardProps {
@@ -58,6 +59,16 @@ export function EpisodeCard({
           <View style={styles.durationBadge}>
             <Text style={styles.durationText}>{episode.duration}</Text>
           </View>
+        )}
+
+        {episode.available_subtitles && episode.available_subtitles.length > 0 && (
+          <SubtitleFlags
+            languages={episode.available_subtitles}
+            maxDisplay={3}
+            size="small"
+            position="bottom-left"
+            isRTL={flexDirection === 'row-reverse'}
+          />
         )}
 
         {episode.progress !== undefined && episode.progress > 0 && (

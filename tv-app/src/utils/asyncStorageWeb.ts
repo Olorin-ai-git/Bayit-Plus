@@ -1,12 +1,16 @@
 // Web shim for @react-native-async-storage/async-storage
 // Uses localStorage under the hood
 
+import logger from './logger';
+
+const storageLogger = logger.scope('AsyncStorage');
+
 const AsyncStorage = {
   getItem: async (key: string): Promise<string | null> => {
     try {
       return localStorage.getItem(key);
     } catch (e) {
-      console.error('AsyncStorage getItem error:', e);
+      storageLogger.error('getItem error', e);
       return null;
     }
   },
@@ -15,7 +19,7 @@ const AsyncStorage = {
     try {
       localStorage.setItem(key, value);
     } catch (e) {
-      console.error('AsyncStorage setItem error:', e);
+      storageLogger.error('setItem error', e);
     }
   },
 
@@ -23,7 +27,7 @@ const AsyncStorage = {
     try {
       localStorage.removeItem(key);
     } catch (e) {
-      console.error('AsyncStorage removeItem error:', e);
+      storageLogger.error('removeItem error', e);
     }
   },
 
@@ -31,7 +35,7 @@ const AsyncStorage = {
     try {
       localStorage.clear();
     } catch (e) {
-      console.error('AsyncStorage clear error:', e);
+      storageLogger.error('clear error', e);
     }
   },
 
@@ -39,7 +43,7 @@ const AsyncStorage = {
     try {
       return Object.keys(localStorage);
     } catch (e) {
-      console.error('AsyncStorage getAllKeys error:', e);
+      storageLogger.error('getAllKeys error', e);
       return [];
     }
   },
@@ -48,7 +52,7 @@ const AsyncStorage = {
     try {
       return keys.map((key) => [key, localStorage.getItem(key)]);
     } catch (e) {
-      console.error('AsyncStorage multiGet error:', e);
+      storageLogger.error('multiGet error', e);
       return keys.map((key) => [key, null]);
     }
   },
@@ -59,7 +63,7 @@ const AsyncStorage = {
         localStorage.setItem(key, value);
       });
     } catch (e) {
-      console.error('AsyncStorage multiSet error:', e);
+      storageLogger.error('multiSet error', e);
     }
   },
 
@@ -69,7 +73,7 @@ const AsyncStorage = {
         localStorage.removeItem(key);
       });
     } catch (e) {
-      console.error('AsyncStorage multiRemove error:', e);
+      storageLogger.error('multiRemove error', e);
     }
   },
 };

@@ -1,4 +1,5 @@
 import React from 'react'
+import { View, Pressable, Text, StyleSheet } from 'react-native'
 import { ChevronLeft, ChevronRight, Clock, Globe } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { DateTime } from 'luxon'
@@ -22,7 +23,6 @@ const EPGTimeControls: React.FC<EPGTimeControlsProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  // Format time display based on selected timezone
   const formatTime = (date: Date, tz: Timezone) => {
     const dt = DateTime.fromJSDate(date)
     const zonedTime = tz === 'israel' ? dt.setZone('Asia/Jerusalem') : dt.setZone('local')
@@ -33,61 +33,139 @@ const EPGTimeControls: React.FC<EPGTimeControlsProps> = ({
   const localTime = formatTime(currentTime, 'local')
 
   return (
-    <div className="flex items-center gap-3 flex-wrap">
-      {/* Time Navigation */}
-      <div className="flex items-center gap-2 bg-black/20 backdrop-blur-xl rounded-xl p-2">
-        <button
-          onClick={() => onTimeShift(-2)}
-          className="flex items-center gap-1 px-3 py-2 text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+    <View style={styles.container}>
+      <View style={styles.navigationContainer}>
+        <Pressable
+          onPress={() => onTimeShift(-2)}
+          style={styles.navButton}
           aria-label={t('epg.goBack', { hours: 2 })}
         >
-          <ChevronLeft size={18} />
-          <span className="text-sm font-medium">{t('epg.goBack', { hours: 2 })}</span>
-        </button>
+          <ChevronLeft size={18} color="rgba(255, 255, 255, 0.8)" />
+          <Text style={styles.navButtonText}>{t('epg.goBack', { hours: 2 })}</Text>
+        </Pressable>
 
-        <button
-          onClick={onJumpToNow}
-          className="flex items-center gap-2 px-4 py-2 bg-primary/20 text-primary hover:bg-primary/30 rounded-lg transition-all"
+        <Pressable
+          onPress={onJumpToNow}
+          style={styles.nowButton}
           aria-label={t('epg.jumpToNow')}
         >
-          <Clock size={18} />
-          <span className="text-sm font-medium">{t('epg.jumpToNow')}</span>
-        </button>
+          <Clock size={18} color="#a855f7" />
+          <Text style={styles.nowButtonText}>{t('epg.jumpToNow')}</Text>
+        </Pressable>
 
-        <button
-          onClick={() => onTimeShift(2)}
-          className="flex items-center gap-1 px-3 py-2 text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+        <Pressable
+          onPress={() => onTimeShift(2)}
+          style={styles.navButton}
           aria-label={t('epg.goForward', { hours: 2 })}
         >
-          <span className="text-sm font-medium">{t('epg.goForward', { hours: 2 })}</span>
-          <ChevronRight size={18} />
-        </button>
-      </div>
+          <Text style={styles.navButtonText}>{t('epg.goForward', { hours: 2 })}</Text>
+          <ChevronRight size={18} color="rgba(255, 255, 255, 0.8)" />
+        </Pressable>
+      </View>
 
-      {/* Timezone Toggle */}
-      <button
-        onClick={onTimezoneToggle}
-        className="flex items-center gap-3 px-4 py-2 bg-black/20 backdrop-blur-xl rounded-xl hover:bg-black/30 transition-all"
+      <Pressable
+        onPress={onTimezoneToggle}
+        style={styles.timezoneButton}
         aria-label={t('epg.toggleTimezone')}
       >
-        <Globe size={18} className="text-primary" />
-        <div className="flex flex-col items-start">
-          <span className="text-xs text-white/60">
+        <Globe size={18} color="#a855f7" />
+        <View style={styles.timezoneContent}>
+          <Text style={styles.timezoneLabel}>
             {timezone === 'israel' ? t('epg.israelTime') : t('epg.localTime')}
-          </span>
-          <div className="flex items-center gap-2 text-sm font-medium text-white">
-            <span className={timezone === 'israel' ? 'text-primary' : ''}>
+          </Text>
+          <View style={styles.timezoneRow}>
+            <Text style={[styles.timeValue, timezone === 'israel' && styles.timeValueActive]}>
               {t('epg.il')}: {israelTime}
-            </span>
-            <span className="text-white/40">|</span>
-            <span className={timezone === 'local' ? 'text-primary' : ''}>
+            </Text>
+            <Text style={styles.timeDivider}>|</Text>
+            <Text style={[styles.timeValue, timezone === 'local' && styles.timeValueActive]}>
               {t('epg.local')}: {localTime}
-            </span>
-          </div>
-        </div>
-      </button>
-    </div>
+            </Text>
+          </View>
+        </View>
+      </Pressable>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flexWrap: 'wrap',
+  },
+  navigationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backdropFilter: 'blur(16px)',
+    borderRadius: 12,
+    padding: 8,
+  },
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  navButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  nowButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    borderRadius: 8,
+  },
+  nowButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#a855f7',
+  },
+  timezoneButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backdropFilter: 'blur(16px)',
+    borderRadius: 12,
+  },
+  timezoneContent: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  timezoneLabel: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  timezoneRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  timeValue: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#ffffff',
+  },
+  timeValueActive: {
+    color: '#a855f7',
+  },
+  timeDivider: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.4)',
+  },
+})
 
 export default EPGTimeControls

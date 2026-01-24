@@ -13,6 +13,9 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { View, Text, ActivityIndicator, Pressable } from 'react-native';
 import Video, { VideoRef } from 'react-native-video';
 import { Play, Pause } from 'lucide-react-native';
+import logger from '@/utils/logger';
+
+const moduleLogger = logger.scope('MobileVideoPlayer');
 
 interface MobileVideoPlayerProps {
   src: string;
@@ -55,7 +58,7 @@ export default function MobileVideoPlayer({
 
   // Handle video error
   const handleError = useCallback((err: any) => {
-    console.error('[MobileVideoPlayer] Error:', err);
+    moduleLogger.error('Video playback error', err);
     setLoading(false);
     setError('Failed to load video');
   }, []);

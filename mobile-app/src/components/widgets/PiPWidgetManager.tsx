@@ -18,6 +18,9 @@ import { useAuthStore } from '@bayit/shared-stores';
 import { api } from '@bayit/shared-services';
 import PiPWidgetContainer from './PiPWidgetContainer';
 import type { Widget } from '../../stores/pipWidgetStore';
+import logger from '@/utils/logger';
+
+const moduleLogger = logger.scope('PiPWidgetManager');
 
 interface PiPWidgetManagerProps {
   currentPage?: string;
@@ -96,7 +99,7 @@ export default function PiPWidgetManager({ currentPage = 'home' }: PiPWidgetMana
       setWidgets(limitedWidgets);
       setError(null);
     } catch (err: any) {
-      console.error('[PiPWidgetManager] Error loading widgets:', err);
+      moduleLogger.error('Error loading widgets', err);
       setError(err.message || 'Failed to load widgets');
     } finally {
       setLoading(false);
@@ -145,14 +148,14 @@ export default function PiPWidgetManager({ currentPage = 'home' }: PiPWidgetMana
           break;
 
         default:
-          console.warn('[PiPWidgetManager] Unknown content type:', content_type);
+          moduleLogger.warn('Unknown content type', { contentType: content_type });
       }
 
       if (url) {
         setStreamUrls((prev) => ({ ...prev, [widget.id]: url }));
       }
     } catch (err: any) {
-      console.error(`[PiPWidgetManager] Error fetching stream URL for widget ${widget.id}:`, err);
+      moduleLogger.error('Error fetching stream URL', { widgetId: widget.id, error: err });
     }
   }, []);
 
@@ -200,12 +203,12 @@ export default function PiPWidgetManager({ currentPage = 'home' }: PiPWidgetMana
     const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
       if (appState.match(/active/) && nextAppState === 'background') {
         // App going to background
-        console.log('[PiPWidgetManager] App backgrounded - maintaining audio playback');
+        moduleLogger.debug('App backgrounded - maintaining audio playback');
         // Background audio will continue for audio widgets
         // Video widgets should pause (handled by player component)
       } else if (appState.match(/inactive|background/) && nextAppState === 'active') {
         // App coming to foreground
-        console.log('[PiPWidgetManager] App foregrounded - resuming playback');
+        moduleLogger.debug('App foregrounded - resuming playback');
         // Resume playback if needed (handled by player component)
       }
       setAppState(nextAppState);

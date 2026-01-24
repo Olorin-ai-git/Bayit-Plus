@@ -15,6 +15,9 @@ import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 import { useDirection } from '@bayit/shared/hooks';
 import { demoWatchlist, type WatchlistItem } from '../demo/watchlist';
+import logger from '../utils/logger';
+
+const watchlistLogger = logger.scope('WatchlistScreen');
 
 const WatchlistCard: React.FC<{
   item: WatchlistItem;
@@ -141,7 +144,7 @@ export const WatchlistScreen: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 500));
       setWatchlist(demoWatchlist);
     } catch (err) {
-      console.error('Failed to load watchlist:', err);
+      watchlistLogger.error('Failed to load watchlist', err);
     } finally {
       setIsLoading(false);
     }

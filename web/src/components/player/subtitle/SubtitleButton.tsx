@@ -3,10 +3,10 @@
  * Button with badge showing current subtitle language
  */
 
-import { View, Text, Pressable } from 'react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { Subtitles } from 'lucide-react'
 import { z } from 'zod'
-import { platformClass } from '@/utils/platformClass'
+import { colors, borderRadius, spacing } from '@bayit/shared/theme'
 import { getLanguageInfo } from '@/types/subtitle'
 
 // Zod schema for props validation
@@ -41,25 +41,19 @@ export default function SubtitleButton({
   return (
     <Pressable
       onPress={onClick}
-      className={platformClass(
-        `w-11 h-11 items-center justify-center rounded-lg relative ${
-          isActive ? 'bg-white/15 hover:bg-white/20' : 'hover:bg-white/10'
-        }`,
-        `w-11 h-11 items-center justify-center rounded-lg relative ${
-          isActive ? 'bg-white/15' : ''
-        }`
-      )}
-      style={({ pressed }) => ({
-        opacity: pressed ? 0.7 : 1,
-      })}
+      style={({ pressed }) => [
+        styles.button,
+        isActive && styles.buttonActive,
+        { opacity: pressed ? 0.7 : 1 }
+      ]}
     >
       <Subtitles
         size={24}
-        color={enabled ? '#8b5cf6' : '#a1a1aa'}
+        color={enabled ? colors.primary : colors.textSecondary}
       />
       {currentLangInfo && enabled && (
-        <View className="absolute top-1 right-1 bg-purple-500 rounded-lg px-1 py-0.5 min-w-[20px]">
-          <Text className="text-white text-[9px] font-bold text-center">
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>
             {currentLangInfo.code.toUpperCase()}
           </Text>
         </View>
@@ -67,3 +61,33 @@ export default function SubtitleButton({
     </Pressable>
   )
 }
+
+const styles = StyleSheet.create({
+  button: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: borderRadius.lg,
+    position: 'relative',
+  },
+  buttonActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  badge: {
+    position: 'absolute',
+    top: spacing.xs,
+    right: spacing.xs,
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.lg,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    minWidth: 20,
+  },
+  badgeText: {
+    color: colors.text,
+    fontSize: 9,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+})

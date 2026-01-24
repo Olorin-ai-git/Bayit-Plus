@@ -2,7 +2,7 @@
  * SidebarMenuSection Component
  *
  * Menu section for GlassSidebar with title and list of menu items
- * Part of GlassSidebar migration from StyleSheet to TailwindCSS
+ * Part of GlassSidebar - StyleSheet implementation for RN Web compatibility
  *
  * Features:
  * - Optional section title (e.g., "Discover", "Favorites")
@@ -11,11 +11,11 @@
  * - Animated title fade-in/out
  */
 
-import { View, Text, Animated } from 'react-native';
+import { View, Text, Animated, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import SidebarMenuItem from './SidebarMenuItem';
-import { platformClass } from '../../../utils/platformClass';
+import { colors, spacing } from '@bayit/shared/theme';
 
 const MenuItemSchema = z.object({
   id: z.string(),
@@ -65,18 +65,17 @@ export default function SidebarMenuSection({
   const { t } = useTranslation();
 
   return (
-    <View className={platformClass('mb-1', 'mb-1')}>
+    <View style={styles.container}>
       {/* Section Title (only when expanded and has title) */}
       {section.titleKey && showLabels && (
         <Animated.Text
-          style={{
-            opacity: opacityAnim,
-            textAlign,
-          }}
-          className={platformClass(
-            'text-xs font-bold text-white/60 uppercase tracking-wider px-4 py-2 mt-2',
-            'text-xs font-bold text-white/60 uppercase tracking-wider px-4 py-2 mt-2'
-          )}
+          style={[
+            styles.sectionTitle,
+            {
+              opacity: opacityAnim,
+              textAlign,
+            },
+          ]}
         >
           {t(section.titleKey)}
         </Animated.Text>
@@ -102,13 +101,30 @@ export default function SidebarMenuSection({
 
       {/* Section Divider */}
       {sectionIndex < totalSections - 1 && (
-        <View
-          className={platformClass(
-            'h-px bg-white/[0.08] my-4 mx-4',
-            'h-px bg-white/[0.08] my-4 mx-4'
-          )}
-        />
+        <View style={styles.divider} />
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: spacing.xs,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.glassBorder,
+    marginVertical: spacing.md,
+    marginHorizontal: spacing.md,
+  },
+});

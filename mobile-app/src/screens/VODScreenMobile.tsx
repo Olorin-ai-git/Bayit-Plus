@@ -29,6 +29,11 @@ import { getGridColumns } from '../utils/responsive';
 import { ContentCardMobile } from '../components';
 import { colors } from '../theme';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('VODScreenMobile');
+
 interface Content {
   id: string;
   title: string;
@@ -97,10 +102,10 @@ export const VODScreenMobile: React.FC = () => {
 
       // Log any failures for debugging
       if (results[0].status === 'rejected') {
-        console.warn('Failed to load featured content:', results[0].reason);
+        moduleLogger.warn('Failed to load featured content:', results[0].reason);
       }
       if (results[1].status === 'rejected') {
-        console.warn('Failed to load categories:', results[1].reason);
+        moduleLogger.warn('Failed to load categories:', results[1].reason);
       }
 
       // Extract content from featured response
@@ -142,7 +147,7 @@ export const VODScreenMobile: React.FC = () => {
 
       setIsLoading(false);
     } catch (error) {
-      console.error('Error loading VOD content:', error);
+      moduleLogger.error('Error loading VOD content:', error);
       setIsLoading(false);
     }
   };

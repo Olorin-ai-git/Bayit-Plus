@@ -33,6 +33,11 @@ import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, borderRadius } from '../theme';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('JudaismScreenMobile');
+
 interface JudaismItem {
   id: string;
   title: string;
@@ -184,7 +189,7 @@ export const JudaismScreenMobile: React.FC = () => {
         setCategories(response.categories);
       }
     } catch (err) {
-      console.error('Failed to load Judaism categories:', err);
+      moduleLogger.error('Failed to load Judaism categories:', err);
     }
   }, []);
 
@@ -197,7 +202,7 @@ export const JudaismScreenMobile: React.FC = () => {
         setContent(response.content);
       }
     } catch (err) {
-      console.error('Failed to load Judaism content:', err);
+      moduleLogger.error('Failed to load Judaism content:', err);
       setContent([]);
     } finally {
       setIsLoading(false);

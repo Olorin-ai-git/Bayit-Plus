@@ -10,6 +10,11 @@
 
 import { NativeModules, NativeEventEmitter, Platform } from "react-native";
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('speech');
+
 const { SpeechModule } = NativeModules;
 
 interface SpeechRecognitionResult {
@@ -51,7 +56,7 @@ class SpeechService {
       const result = await SpeechModule.requestPermissions();
       return result;
     } catch (error: any) {
-      console.error("[SpeechService] Permission request failed:", error);
+      moduleLogger.error('Permission request failed:", error', error);
       throw error;
     }
   }
@@ -68,7 +73,7 @@ class SpeechService {
       const result = await SpeechModule.checkPermissions();
       return result;
     } catch (error) {
-      console.error("[SpeechService] Permission check failed:", error);
+      moduleLogger.error('Permission check failed:", error', error);
       return { microphone: false, speech: false };
     }
   }
@@ -84,9 +89,9 @@ class SpeechService {
 
     try {
       await SpeechModule.setLanguage(languageCode);
-      console.log("[SpeechService] Language set to:", languageCode);
+      moduleLogger.debug("[SpeechService] Language set to:", languageCode);
     } catch (error) {
-      console.error("[SpeechService] Failed to set language:", error);
+      moduleLogger.error('Failed to set language:", error', error);
       throw error;
     }
   }
@@ -118,9 +123,9 @@ class SpeechService {
 
       // Start native recognition
       await SpeechModule.startRecognition();
-      console.log("[SpeechService] Recognition started");
+      moduleLogger.debug("[SpeechService] Recognition started");
     } catch (error) {
-      console.error("[SpeechService] Failed to start recognition:", error);
+      moduleLogger.error('Failed to start recognition:", error', error);
       this.cleanup();
       throw error;
     }
@@ -137,9 +142,9 @@ class SpeechService {
     try {
       await SpeechModule.stopRecognition();
       this.cleanup();
-      console.log("[SpeechService] Recognition stopped");
+      moduleLogger.debug("[SpeechService] Recognition stopped");
     } catch (error) {
-      console.error("[SpeechService] Failed to stop recognition:", error);
+      moduleLogger.error('Failed to stop recognition:", error', error);
     }
   }
 

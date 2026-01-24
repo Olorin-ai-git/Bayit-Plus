@@ -10,10 +10,13 @@ import '@bayit/shared-utils/microphoneDiagnostics'
 
 // Initialize Sentry error tracking before React renders
 import { initSentry, SentryErrorBoundary } from './utils/sentry'
+import logger from './utils/logger'
+
+const appLogger = logger.scope('App');
 
 const sentryEnabled = initSentry()
 if (sentryEnabled) {
-  console.info('[App] Sentry error tracking enabled')
+  appLogger.info('Sentry error tracking enabled');
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(

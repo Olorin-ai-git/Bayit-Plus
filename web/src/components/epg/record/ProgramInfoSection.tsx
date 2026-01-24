@@ -5,12 +5,11 @@
  */
 
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { Clock } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { DateTime } from 'luxon'
 import { z } from 'zod'
-import { platformClass } from '@/utils/platformClass'
 import { useDirection } from '@/hooks/useDirection'
 import { EPGProgram } from '@/services/epgApi'
 
@@ -52,46 +51,65 @@ const ProgramInfoSection: React.FC<ProgramInfoSectionProps> = ({
   const durationFormatted = formatDuration(program.duration_seconds)
 
   return (
-    <View className={platformClass('mb-6')}>
-      {/* Program Title */}
-      <Text
-        className={platformClass('text-lg font-semibold text-white mb-2')}
-        style={{ textAlign }}
-      >
-        {program.title}
-      </Text>
+    <View style={styles.container}>
+      <Text style={[styles.title, { textAlign }]}>{program.title}</Text>
 
-      {/* Channel Name */}
-      <View
-        className={platformClass('flex items-center gap-2 mb-1')}
-        style={{ flexDirection }}
-      >
-        <Text className={platformClass('text-sm font-medium text-white/60')}>
-          {t('epg.channel')}:
-        </Text>
-        <Text className={platformClass('text-sm text-white/80')}>
-          {channelName}
-        </Text>
+      <View style={[styles.metaRow, { flexDirection }]}>
+        <Text style={styles.metaLabel}>{t('epg.channel')}:</Text>
+        <Text style={styles.metaValue}>{channelName}</Text>
       </View>
 
-      {/* Time and Duration */}
-      <View
-        className={platformClass('flex items-center gap-3')}
-        style={{ flexDirection }}
-      >
+      <View style={[styles.timeRow, { flexDirection }]}>
         <Clock size={14} color="rgba(255, 255, 255, 0.6)" />
-        <Text className={platformClass('text-sm text-white/60')}>
+        <Text style={styles.timeText}>
           {startTime.toFormat('HH:mm')} - {endTime.toFormat('HH:mm')}
         </Text>
-        <Text className={platformClass('text-sm text-white/60 opacity-50')}>
-          •
-        </Text>
-        <Text className={platformClass('text-sm text-white/60')}>
-          {durationFormatted}
-        </Text>
+        <Text style={styles.timeDivider}>•</Text>
+        <Text style={styles.timeText}>{durationFormatted}</Text>
       </View>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginBottom: 8,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  metaLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  metaValue: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  timeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  timeText: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  timeDivider: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
+    opacity: 0.5,
+  },
+})
 
 export default ProgramInfoSection

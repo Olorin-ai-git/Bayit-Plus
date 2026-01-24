@@ -18,6 +18,9 @@ import {
 } from '../components';
 import { contentService, liveService, historyService, ritualService } from '../services/api';
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
+import logger from '../utils/logger';
+
+const homeLogger = logger.scope('HomeScreen');
 
 interface ContentItem {
   id: string;
@@ -97,7 +100,7 @@ export const HomeScreen: React.FC = () => {
       }
     } catch (err) {
       // Ritual not enabled or error - continue to home
-      console.log('Morning ritual check:', err);
+      homeLogger.debug('Morning ritual check', err);
     }
   };
 
@@ -161,7 +164,7 @@ export const HomeScreen: React.FC = () => {
       })));
 
     } catch (error) {
-      console.error('Failed to load content:', error);
+      homeLogger.error('Failed to load content', error);
       // In production, show error state instead of silent failure
     } finally {
       setIsLoading(false);

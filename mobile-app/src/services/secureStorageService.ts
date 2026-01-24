@@ -11,6 +11,11 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('secureStorageService');
+
 // For production, install react-native-keychain:
 // npm install react-native-keychain
 // Then uncomment the import below and use it instead of AsyncStorage
@@ -95,7 +100,7 @@ export const secureStorageService = {
         );
       }
     } catch (error) {
-      console.error('Failed to store OAuth credentials:', error);
+      moduleLogger.error('Failed to store OAuth credentials:', error);
       throw new Error('Failed to securely store credentials');
     }
   },
@@ -131,7 +136,7 @@ export const secureStorageService = {
         userId: userId || undefined,
       };
     } catch (error) {
-      console.error('Failed to retrieve OAuth credentials:', error);
+      moduleLogger.error('Failed to retrieve OAuth credentials:', error);
       return null;
     }
   },
@@ -153,7 +158,7 @@ export const secureStorageService = {
         SECURE_KEYS.OAUTH_USER_ID,
       ]);
     } catch (error) {
-      console.error('Failed to delete OAuth credentials:', error);
+      moduleLogger.error('Failed to delete OAuth credentials:', error);
       throw new Error('Failed to delete credentials');
     }
   },
@@ -171,7 +176,7 @@ export const secureStorageService = {
       // Token is expired if expiry time is in the past
       return Date.now() > credentials.expiresAt;
     } catch (error) {
-      console.error('Failed to check token expiry:', error);
+      moduleLogger.error('Failed to check token expiry:', error);
       return true;
     }
   },
@@ -195,7 +200,7 @@ export const secureStorageService = {
       // This should be handled by the auth service
       return null;
     } catch (error) {
-      console.error('Failed to get valid access token:', error);
+      moduleLogger.error('Failed to get valid access token:', error);
       return null;
     }
   },

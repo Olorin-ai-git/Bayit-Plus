@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import { Platform } from 'react-native';
 import { partyService } from '../services/api';
 import { useAuthStore } from './authStore';
+import logger from '../utils/logger';
+
+const partyLogger = logger.scope('WatchParty');
 
 // Get WebSocket URL based on platform
 const getWsBaseUrl = () => {
@@ -160,7 +163,7 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
     };
 
     ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      partyLogger.error('WebSocket error', error);
       set({ error: 'Connection error', isConnecting: false });
     };
 
@@ -262,7 +265,7 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
         break;
 
       default:
-        console.log('Unknown message type:', type);
+        partyLogger.debug('Unknown message type', { type });
     }
   },
 
@@ -316,7 +319,7 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
       try {
         await partyService.leaveParty(party.id);
       } catch (error) {
-        console.error('Failed to leave party:', error);
+        partyLogger.error('Failed to leave party', error);
       }
     }
 
@@ -366,7 +369,7 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
       const messages: ChatMessage[] = response.messages || response || [];
       set({ messages: messages || [] });
     } catch (error) {
-      console.error('Failed to load chat history:', error);
+      partyLogger.error('Failed to load chat history', error);
     }
   },
 

@@ -34,6 +34,11 @@ import { useAuthStore } from '@bayit/shared-stores';
 import { securityService } from '@bayit/shared-services';
 import { spacing, colors, borderRadius } from '../theme';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('SecurityScreenMobile');
+
 interface ConnectedDevice {
   id: string;
   name: string;
@@ -85,7 +90,7 @@ export const SecurityScreenMobile: React.FC = () => {
       setTwoFactorEnabled(settingsRes?.two_factor_enabled || false);
       setBiometricEnabled(settingsRes?.biometric_enabled || false);
     } catch (error) {
-      console.error('Failed to load security data:', error);
+      moduleLogger.error('Failed to load security data:', error);
     } finally {
       setIsLoading(false);
     }
@@ -129,7 +134,7 @@ export const SecurityScreenMobile: React.FC = () => {
                 setTwoFactorEnabled(false);
                 ReactNativeHapticFeedback.trigger('notificationSuccess');
               } catch (error) {
-                console.error('Failed to disable 2FA:', error);
+                moduleLogger.error('Failed to disable 2FA:', error);
                 Alert.alert(t('common.error'), t('security.disable2FAError'));
               }
             },
@@ -155,7 +160,7 @@ export const SecurityScreenMobile: React.FC = () => {
           setBiometricEnabled(true);
           ReactNativeHapticFeedback.trigger('notificationSuccess');
         } catch (error) {
-          console.error('Failed to enable biometric:', error);
+          moduleLogger.error('Failed to enable biometric:', error);
           Alert.alert(t('common.error'), t('security.enableBiometricError'));
         }
       }
@@ -164,7 +169,7 @@ export const SecurityScreenMobile: React.FC = () => {
         await securityService.disableBiometric();
         setBiometricEnabled(false);
       } catch (error) {
-        console.error('Failed to disable biometric:', error);
+        moduleLogger.error('Failed to disable biometric:', error);
       }
     }
   }, [t]);
@@ -186,7 +191,7 @@ export const SecurityScreenMobile: React.FC = () => {
               setDevices(prev => prev.filter(d => d.id !== deviceId));
               ReactNativeHapticFeedback.trigger('notificationSuccess');
             } catch (error) {
-              console.error('Failed to remove device:', error);
+              moduleLogger.error('Failed to remove device:', error);
               Alert.alert(t('common.error'), t('security.removeDeviceError'));
             }
           },
@@ -445,7 +450,7 @@ export const SecurityScreenMobile: React.FC = () => {
                         await securityService.signOutAllDevices();
                         navigation.navigate('Login');
                       } catch (error) {
-                        console.error('Failed to sign out all devices:', error);
+                        moduleLogger.error('Failed to sign out all devices:', error);
                       }
                     },
                   },

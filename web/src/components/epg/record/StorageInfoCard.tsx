@@ -5,11 +5,10 @@
  */
 
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { HardDrive, AlertCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
-import { platformClass } from '@/utils/platformClass'
 import { useDirection } from '@/hooks/useDirection'
 import { QuotaInfo } from './types'
 
@@ -39,51 +38,87 @@ const StorageInfoCard: React.FC<StorageInfoCardProps> = ({
 
   return (
     <>
-      {/* Storage Estimate Card */}
-      <View className={platformClass('bg-white/5 rounded-2xl p-4 mb-4')}>
-        <View
-          className={platformClass('flex items-center gap-2 mb-1')}
-          style={{ flexDirection }}
-        >
+      <View style={styles.storageCard}>
+        <View style={[styles.storageHeader, { flexDirection }]}>
           <HardDrive size={16} color="rgba(255, 255, 255, 0.6)" />
-          <Text className={platformClass('text-sm font-medium text-white/60')}>
-            {t('epg.storageEstimate')}
-          </Text>
+          <Text style={styles.storageLabel}>{t('epg.storageEstimate')}</Text>
         </View>
-        <Text className={platformClass('text-3xl font-bold text-white mb-1')}>
+        <Text style={styles.storageValue}>
           ~{estimatedSizeMB < 1024 ? `${estimatedSizeMB} MB` : `${estimatedSizeGB} GB`}
         </Text>
         {quotaInfo && (
-          <Text className={platformClass('text-xs text-white/60')}>
+          <Text style={styles.storageAvailable}>
             {t('epg.availableSpace')}: {quotaInfo.storage_available_formatted}
           </Text>
         )}
       </View>
 
-      {/* Low Storage Warning */}
       {showLowStorageWarning && (
-        <View
-          className={platformClass(
-            'flex items-start gap-4 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-2xl mb-4'
-          )}
-          style={{ flexDirection }}
-        >
+        <View style={[styles.warningCard, { flexDirection }]}>
           <AlertCircle size={20} color="#f59e0b" />
-          <View className={platformClass('flex-1')}>
-            <Text className={platformClass('text-sm font-semibold text-yellow-500 mb-1')}>
-              {t('epg.lowStorage')}
-            </Text>
-            <Text
-              className={platformClass('text-xs text-yellow-500/80')}
-              style={{ lineHeight: 18 }}
-            >
-              {t('epg.lowStorageMessage')}
-            </Text>
+          <View style={styles.warningContent}>
+            <Text style={styles.warningTitle}>{t('epg.lowStorage')}</Text>
+            <Text style={styles.warningText}>{t('epg.lowStorageMessage')}</Text>
           </View>
         </View>
       )}
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  storageCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+  },
+  storageHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  storageLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  storageValue: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#ffffff',
+    marginBottom: 4,
+  },
+  storageAvailable: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  warningCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 16,
+    padding: 16,
+    backgroundColor: 'rgba(251, 191, 36, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(251, 191, 36, 0.3)',
+    borderRadius: 16,
+    marginBottom: 16,
+  },
+  warningContent: {
+    flex: 1,
+  },
+  warningTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#fbbf24',
+    marginBottom: 4,
+  },
+  warningText: {
+    fontSize: 13,
+    color: 'rgba(251, 191, 36, 0.8)',
+    lineHeight: 18,
+  },
+})
 
 export default StorageInfoCard

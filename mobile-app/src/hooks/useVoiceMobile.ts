@@ -22,6 +22,11 @@ import { useVoiceSettingsStore } from "@bayit/shared-stores";
 import { useNavigation } from "@react-navigation/native";
 import { usePiPWidgetStore } from "../stores/pipWidgetStore";
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('useVoiceMobile');
+
 interface UseVoiceMobileResult {
   isListening: boolean;
   isProcessing: boolean;
@@ -59,7 +64,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
   useEffect(() => {
     if (hasPermissions) {
       speechService.setLanguage(language).catch((err) => {
-        console.error("[useVoiceMobile] Failed to set language:", err);
+        moduleLogger.error('Failed to set language:", err', err);
       });
     }
   }, [language, hasPermissions]);
@@ -75,7 +80,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
       const permissions = await speechService.checkPermissions();
       setHasPermissions(permissions.microphone && permissions.speech);
     } catch (err) {
-      console.error("[useVoiceMobile] Permission check failed:", err);
+      moduleLogger.error('Permission check failed:", err', err);
       setHasPermissions(false);
     }
   }, []);
@@ -92,7 +97,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
       setHasPermissions(result.granted);
       return result.granted;
     } catch (err: any) {
-      console.error("[useVoiceMobile] Permission request failed:", err);
+      moduleLogger.error('Permission request failed:", err', err);
 
       let message = "Failed to request permissions";
       if (err.code === "PERMISSION_DENIED") {
@@ -123,11 +128,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
           commandHistoryRef.current,
         );
 
-        console.log("[useVoiceMobile] Voice analysis:", {
-          frustration: voiceAnalysis.frustrationLevel,
-          isRepeat: voiceAnalysis.isRepeatQuery,
-          hesitation: voiceAnalysis.hesitationDetected,
-        });
+        moduleLogger.debug('Voice analysis', { mood: emotionalAnalysis.mood, confidence: emotionalAnalysis.confidence, suggestion: emotionalAnalysis.suggestion });
 
         // Process command with shared voiceCommandProcessor
         const commandResponse =
@@ -228,7 +229,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
 
         setError(null);
       } catch (err: any) {
-        console.error("[useVoiceMobile] Command processing failed:", err);
+        moduleLogger.error('Command processing failed:", err', err);
         setError(err.message || "Failed to process command");
 
         // Speak error message
@@ -272,7 +273,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
   // Handle speech recognition error
   const handleRecognitionError = useCallback(
     (errorEvent: { error: string }) => {
-      console.error("[useVoiceMobile] Recognition error:", errorEvent.error);
+      moduleLogger.error('Recognition error:", errorEvent.error', errorEvent.error);
       setError(errorEvent.error);
       setIsListening(false);
     },
@@ -301,7 +302,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
       setTranscript("");
       currentTranscriptRef.current = "";
     } catch (err: any) {
-      console.error("[useVoiceMobile] Failed to start listening:", err);
+      moduleLogger.error('Failed to start listening:", err', err);
       setError(err.message || "Failed to start voice recognition");
       setIsListening(false);
 
@@ -329,7 +330,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
         await processCommand(currentTranscriptRef.current);
       }
     } catch (err) {
-      console.error("[useVoiceMobile] Failed to stop listening:", err);
+      moduleLogger.error('Failed to stop listening:", err', err);
     } finally {
       setIsListening(false);
 

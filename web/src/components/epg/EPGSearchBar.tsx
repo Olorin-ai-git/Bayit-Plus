@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { View, TextInput, Pressable, Text, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Search, Sparkles, Filter, X } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
@@ -20,13 +21,11 @@ const EPGSearchBar: React.FC<EPGSearchBarProps> = ({
   const [query, setQuery] = useState('')
   const [showSmartSearch, setShowSmartSearch] = useState(false)
 
-  // Check if user is premium
   const isPremium = user?.subscription?.plan === 'premium' || user?.subscription?.plan === 'family'
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = () => {
     if (query.trim() && !isSearching) {
-      onSearch(query, false) // Traditional search
+      onSearch(query, false)
     }
   }
 
@@ -38,69 +37,62 @@ const EPGSearchBar: React.FC<EPGSearchBarProps> = ({
   }
 
   const handleSmartSearch = async (smartQuery: string) => {
-    await onSearch(smartQuery, true) // LLM search
+    await onSearch(smartQuery, true)
     setShowSmartSearch(false)
   }
 
   return (
     <>
-      <div className="flex items-center gap-3">
-        {/* Traditional Search Bar */}
-        <form onSubmit={handleSubmit} className="flex-1">
-          <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2">
-              <Search size={18} className="text-white/40" />
-            </div>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t('epg.searchPlaceholder')}
-              disabled={isSearching}
-              className="w-full pl-12 pr-12 py-3 bg-black/20 backdrop-blur-xl border border-white/10 rounded-xl text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-            {query && (
-              <button
-                type="button"
-                onClick={handleClear}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-lg transition-colors"
-                aria-label={t('common.clear')}
-              >
-                <X size={16} className="text-white/60" />
-              </button>
-            )}
-          </div>
-        </form>
-
-        {/* Smart Search Button */}
-        <button
-          onClick={() => setShowSmartSearch(true)}
-          className={`flex items-center gap-2 px-5 py-3 rounded-xl font-medium transition-all ${
-            isPremium
-              ? 'bg-gradient-to-r from-primary to-purple-500 hover:from-primary/90 hover:to-purple-500/90 text-white shadow-lg shadow-primary/20'
-              : 'bg-white/5 border border-white/10 text-white/60 hover:bg-white/10'
-          }`}
-        >
-          <Sparkles size={18} />
-          <span className="hidden sm:inline">{t('epg.smartSearch')}</span>
-          {isPremium && (
-            <span className="hidden md:inline px-2 py-0.5 bg-white/20 rounded-full text-xs">
-              PREMIUM
-            </span>
+      <View style={styles.container}>
+        <View style={styles.searchContainer}>
+          <View style={styles.searchIconContainer}>
+            <Search size={18} color="rgba(255, 255, 255, 0.4)" />
+          </View>
+          <TextInput
+            value={query}
+            onChangeText={setQuery}
+            placeholder={t('epg.searchPlaceholder')}
+            placeholderTextColor="rgba(255, 255, 255, 0.4)"
+            editable={!isSearching}
+            onSubmitEditing={handleSubmit}
+            style={styles.searchInput}
+          />
+          {query && (
+            <Pressable
+              onPress={handleClear}
+              style={styles.clearButton}
+              aria-label={t('common.clear')}
+            >
+              <X size={16} color="rgba(255, 255, 255, 0.6)" />
+            </Pressable>
           )}
-        </button>
+        </View>
 
-        {/* Filters Button (placeholder for future) */}
-        <button
-          className="flex items-center gap-2 px-4 py-3 bg-white/5 border border-white/10 text-white/80 hover:bg-white/10 rounded-xl transition-colors"
+        <Pressable
+          onPress={() => setShowSmartSearch(true)}
+          style={[
+            styles.smartButton,
+            isPremium ? styles.smartButtonPremium : styles.smartButtonBasic,
+          ]}
+        >
+          <Sparkles size={18} color="#ffffff" />
+          <Text style={styles.smartButtonText}>{t('epg.smartSearch')}</Text>
+          {isPremium && (
+            <View style={styles.premiumBadge}>
+              <Text style={styles.premiumBadgeText}>PREMIUM</Text>
+            </View>
+          )}
+        </Pressable>
+
+        <Pressable
+          style={styles.filterButton}
           aria-label={t('common.filters')}
         >
-          <Filter size={18} />
-          <span className="hidden lg:inline">{t('common.filters')}</span>
-        </button>
-      </div>
+          <Filter size={18} color="rgba(255, 255, 255, 0.8)" />
+          <Text style={styles.filterButtonText}>{t('common.filters')}</Text>
+        </Pressable>
+      </View>
 
-      {/* Smart Search Modal */}
       {showSmartSearch && (
         <EPGSmartSearch
           onSearch={handleSmartSearch}
@@ -111,5 +103,97 @@ const EPGSearchBar: React.FC<EPGSearchBarProps> = ({
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  searchContainer: {
+    flex: 1,
+    position: 'relative',
+  },
+  searchIconContainer: {
+    position: 'absolute',
+    left: 16,
+    top: '50%',
+    transform: [{ translateY: -9 }],
+    zIndex: 1,
+  },
+  searchInput: {
+    width: '100%',
+    paddingLeft: 48,
+    paddingRight: 48,
+    paddingVertical: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backdropFilter: 'blur(16px)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    color: '#ffffff',
+    fontSize: 14,
+  },
+  clearButton: {
+    position: 'absolute',
+    right: 16,
+    top: '50%',
+    transform: [{ translateY: -8 }],
+    padding: 4,
+    borderRadius: 8,
+  },
+  smartButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+    fontWeight: '500',
+  },
+  smartButtonPremium: {
+    backgroundColor: '#a855f7',
+    shadowColor: '#a855f7',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+  },
+  smartButtonBasic: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  smartButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  premiumBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 12,
+  },
+  premiumBadgeText: {
+    color: '#ffffff',
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  filterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+  },
+  filterButtonText: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 14,
+  },
+})
 
 export default EPGSearchBar

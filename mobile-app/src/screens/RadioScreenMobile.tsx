@@ -31,6 +31,11 @@ import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, typography } from '../theme';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('RadioScreenMobile');
+
 interface RadioStation {
   id: string;
   name: string;
@@ -98,10 +103,10 @@ export const RadioScreenMobile: React.FC = () => {
 
       // Log any failures for debugging
       if (results[0].status === 'rejected') {
-        console.warn('Failed to load radio stations:', results[0].reason);
+        moduleLogger.warn('Failed to load radio stations:', results[0].reason);
       }
       if (results[1].status === 'rejected') {
-        console.warn('Failed to load categories:', results[1].reason);
+        moduleLogger.warn('Failed to load categories:', results[1].reason);
       }
 
       const stationsData = (stationsRes.stations || []).map((station: any) => ({
@@ -117,7 +122,7 @@ export const RadioScreenMobile: React.FC = () => {
 
       setIsLoading(false);
     } catch (error) {
-      console.error('Error loading radio stations:', error);
+      moduleLogger.error('Error loading radio stations:', error);
       setIsLoading(false);
     }
   };

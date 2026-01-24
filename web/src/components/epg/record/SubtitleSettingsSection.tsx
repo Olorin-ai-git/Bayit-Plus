@@ -5,11 +5,10 @@
  */
 
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { GlassToggle } from '@bayit/shared/ui'
-import { platformClass } from '@/utils/platformClass'
 import { useDirection } from '@/hooks/useDirection'
 import LanguageSelector from './LanguageSelector'
 
@@ -38,16 +37,9 @@ const SubtitleSettingsSection: React.FC<SubtitleSettingsSectionProps> = ({
   const { isRTL, flexDirection, textAlign } = useDirection()
 
   return (
-    <View className={platformClass('mb-6')}>
-      {/* Subtitle Toggle */}
-      <View
-        className={platformClass('flex items-center justify-between mb-4')}
-        style={{ flexDirection }}
-      >
-        <Text
-          className={platformClass('text-base font-medium text-white')}
-          style={{ textAlign }}
-        >
+    <View style={styles.container}>
+      <View style={[styles.toggleRow, { flexDirection }]}>
+        <Text style={[styles.toggleLabel, { textAlign }]}>
           {t('epg.enableSubtitles')}
         </Text>
         <GlassToggle
@@ -58,7 +50,6 @@ const SubtitleSettingsSection: React.FC<SubtitleSettingsSectionProps> = ({
         />
       </View>
 
-      {/* Language Selector (shown when subtitles enabled) */}
       {enableSubtitles && (
         <LanguageSelector
           selectedLanguage={selectedLanguage}
@@ -68,5 +59,22 @@ const SubtitleSettingsSection: React.FC<SubtitleSettingsSectionProps> = ({
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 24,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  toggleLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#ffffff',
+  },
+})
 
 export default SubtitleSettingsSection

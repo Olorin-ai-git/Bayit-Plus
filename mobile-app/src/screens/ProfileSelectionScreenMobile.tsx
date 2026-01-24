@@ -32,6 +32,11 @@ import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, borderRadius } from '../theme';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('ProfileSelectionScreenMobile');
+
 const AVATAR_COLORS = [
   '#a855f7',
   '#ff6b6b',
@@ -254,7 +259,7 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
         }
       }
     } catch (error) {
-      console.error('Biometric check failed:', error);
+      moduleLogger.error('Biometric check failed:', error);
     }
   };
 
@@ -316,7 +321,7 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
         navigation.replace('Main');
       }
     } catch (err: any) {
-      console.error('Biometric auth failed:', err);
+      moduleLogger.error('Biometric auth failed:', err);
       ReactNativeHapticFeedback.trigger('notificationError');
     }
   }, [selectedProfile, selectProfile, navigation, t]);

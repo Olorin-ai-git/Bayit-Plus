@@ -15,6 +15,9 @@ import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 import { useDirection } from '@bayit/shared/hooks';
 import { downloadsService, type Download } from '@bayit/shared-services';
+import logger from '../utils/logger';
+
+const downloadsLogger = logger.scope('DownloadsScreen');
 
 interface DownloadItem {
   id: string;
@@ -226,7 +229,7 @@ export const DownloadsScreen: React.FC = () => {
       const transformedDownloads = apiDownloads.map(transformDownload);
       setDownloads(transformedDownloads);
     } catch (err) {
-      console.error('Failed to load downloads:', err);
+      downloadsLogger.error('Failed to load downloads', err);
       setDownloads([]);
     } finally {
       setIsLoading(false);
@@ -248,7 +251,7 @@ export const DownloadsScreen: React.FC = () => {
       await downloadsService.deleteDownload(id);
       setDownloads(prev => prev.filter(item => item.id !== id));
     } catch (err) {
-      console.error('Failed to delete download:', err);
+      downloadsLogger.error('Failed to delete download', err);
     }
   };
 
