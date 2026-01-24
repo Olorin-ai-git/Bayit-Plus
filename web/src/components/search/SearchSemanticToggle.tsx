@@ -104,7 +104,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: 'rgba(255,255,255,0.6)',
-    transition: 'color 0.2s',
   },
   labelActive: {
     color: '#fff',
@@ -123,7 +122,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#fff',
     transform: [{ translateX: 0 }],
-    transition: 'transform 0.2s, background-color 0.2s',
   },
   switchThumbActive: {
     transform: [{ translateX: 22 }],

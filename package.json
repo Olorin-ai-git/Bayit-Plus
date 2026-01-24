@@ -4,6 +4,7 @@
   "private": true,
   "description": "Olorin.ai Ecosystem - Unified monorepo for all Olorin platforms",
   "workspaces": [
+    "packages/*",
     "packages/ui/*",
     "web",
     "tv-app",

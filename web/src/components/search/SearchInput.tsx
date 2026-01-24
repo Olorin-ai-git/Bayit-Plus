@@ -36,7 +36,7 @@ export function SearchInput({ value, onChangeText, placeholder }: SearchInputPro
         placeholder={placeholder || t('controls.placeholder')}
         placeholderTextColor="rgba(255,255,255,0.5)"
         accessibilityLabel={t('controls.placeholder')}
-        accessibilityHint="Enter keywords to search"
+        accessibilityHint={t('controls.hints.searchInput')}
       />
       {value.length > 0 && (
         <TouchableOpacity
@@ -63,7 +63,6 @@ const styles = StyleSheet.create({
     gap: 8,
     borderWidth: 1,
     borderColor: 'transparent',
-    transition: 'border-color 0.2s',
   },
   containerFocused: {
     borderColor: 'rgba(168,85,247,0.5)',
@@ -76,7 +75,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: '#fff',
-    outline: 'none',
   },
   clearButton: {
     padding: 4,

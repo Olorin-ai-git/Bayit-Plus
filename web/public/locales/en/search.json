@@ -10,6 +10,11 @@
       "live": "Live",
       "radio": "Radio",
       "podcast": "Podcasts"
+    },
+    "hints": {
+      "searchInput": "Enter keywords to search",
+      "llmSearch": "AI-powered contextual search",
+      "filters": "Advanced search filters"
     }
   },
   "semantic": {
