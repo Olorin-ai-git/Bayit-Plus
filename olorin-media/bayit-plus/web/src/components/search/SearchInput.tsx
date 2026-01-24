@@ -7,8 +7,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { GlassButton } from '../../../../../shared/components/ui/GlassButton';
-import { GlassInput } from '../../../../../shared/components/ui/GlassInput';
+import { GlassButton } from '../../../../shared/components/ui/GlassButton';
+import { GlassInput } from '../../../../shared/components/ui/GlassInput';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 
 interface SearchInputProps {
