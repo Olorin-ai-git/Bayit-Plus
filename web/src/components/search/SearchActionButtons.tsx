@@ -8,6 +8,7 @@ import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { VoiceSearchButton } from '../../../../shared/components/VoiceSearchButton';
+import { colors, borderRadius, spacing } from '../../theme/colors';
 
 // Platform-specific touch target sizes
 const TOUCH_TARGET_SIZE = Platform.select({

@@ -8,6 +8,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, Platform } from 'react-native';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
+import { colors, borderRadius, spacing } from '../../theme/colors';
 
 interface SearchResultsGridProps {
   /** Search results to display */

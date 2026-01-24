@@ -7,6 +7,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { colors, borderRadius, spacing } from '../../theme/colors';
 
 interface SearchInputProps {
   /** Current search query */

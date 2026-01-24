@@ -9,6 +9,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { ViewMode } from '../../hooks/useSearchViewMode';
+import { colors, borderRadius, spacing } from '../../theme/colors';
 
 // Platform-specific touch target sizes
 const TOUCH_TARGET_SIZE = Platform.select({

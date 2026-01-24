@@ -9,6 +9,7 @@ import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { sanitizeText, sanitizeCategory } from '../../utils/sanitize';
+import { colors, borderRadius, spacing } from '../../theme/colors';
 
 export interface Category {
   name: string;
