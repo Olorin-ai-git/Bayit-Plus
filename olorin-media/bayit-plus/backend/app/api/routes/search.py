@@ -539,3 +539,96 @@ async def get_search_metrics(days: int = Query(7, ge=1, le=90)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to get search metrics: {str(e)}",
         )
+
+
+@router.get("/trending")
+async def get_trending_searches(
+    limit: int = Query(10, ge=1, le=20, description="Maximum trending searches")
+):
+    """
+    Get trending search queries for suggestions panel.
+
+    Returns popular searches from the last 7 days, used to populate
+    the trending searches section in the search suggestions UI.
+
+    Example response:
+    {"trending": ["Fauda", "Shtisel", "Tehran", ...]}
+    """
+    try:
+        # Get popular searches from last 7 days
+        popular = await SearchQuery.get_popular_queries(limit=limit, days=7)
+
+        # Extract just the query strings
+        trending = [item.get("query", "") for item in popular if item.get("query")]
+
+        return {"trending": trending}
+
+    except Exception as e:
+        logger.error(f"Failed to get trending searches: {e}", exc_info=True)
+        # Return empty array on error (graceful degradation)
+        return {"trending": []}
+
+
+@router.get("/categories")
+async def get_search_categories():
+    """
+    Get predefined search categories with metadata.
+
+    Returns category suggestions for the search suggestions panel.
+    Each category includes a label, emoji, and pre-applied filters.
+
+    Example response:
+    {
+      "categories": [
+        {"id": "movies", "label": "Movies", "emoji": "🎬", "filters": {"content_types": ["vod"]}},
+        ...
+      ]
+    }
+    """
+    try:
+        # Predefined categories with filters
+        categories = [
+            {
+                "id": "movies",
+                "label": "Movies",
+                "emoji": "🎬",
+                "filters": {"content_types": ["vod"]},
+            },
+            {
+                "id": "series",
+                "label": "Series",
+                "emoji": "📺",
+                "filters": {"content_types": ["vod"]},
+            },
+            {
+                "id": "kids",
+                "label": "Kids",
+                "emoji": "👶",
+                "filters": {"is_kids_content": True},
+            },
+            {
+                "id": "comedy",
+                "label": "Comedy",
+                "emoji": "😂",
+                "filters": {"genres": ["Comedy"]},
+            },
+            {
+                "id": "drama",
+                "label": "Drama",
+                "emoji": "🎭",
+                "filters": {"genres": ["Drama"]},
+            },
+            {
+                "id": "documentaries",
+                "label": "Documentaries",
+                "emoji": "🎥",
+                "filters": {"genres": ["Documentary"]},
+            },
+        ]
+
+        return {"categories": categories}
+
+    except Exception as e:
+        logger.error(f"Failed to get categories: {e}", exc_info=True)
+        # Return empty array on error (graceful degradation)
+        return {"categories": []}

@@ -17,10 +17,10 @@ const TOUCH_TARGET_SIZE = Platform.select({
 });
 
 interface SearchActionButtonsProps {
-  /** Voice search callback */
-  onVoiceTranscribe?: (audioBlob: Blob, language?: string) => void;
-  /** Is voice transcribing */
-  isTranscribing?: boolean;
+  /** Voice search result callback */
+  onVoiceResult?: (text: string) => void;
+  /** Voice transcribe audio callback */
+  transcribeAudio?: (audioBlob: Blob) => Promise<{ text: string }>;
   /** Show LLM search button */
   showLLMSearch?: boolean;
   /** LLM search callback */
@@ -35,8 +35,8 @@ interface SearchActionButtonsProps {
  * Action buttons for enhanced search features
  */
 export function SearchActionButtons({
-  onVoiceTranscribe,
-  isTranscribing = false,
+  onVoiceResult,
+  transcribeAudio,
   showLLMSearch = false,
   onLLMSearchClick,
   showFilters = true,
@@ -48,11 +48,10 @@ export function SearchActionButtons({
   return (
     <View style={styles.container}>
       {/* Voice Search Button */}
-      {onVoiceTranscribe && (
+      {onVoiceResult && (
         <VoiceSearchButton
-          onTranscribe={onVoiceTranscribe}
-          size={36}
-          disabled={isTranscribing}
+          onResult={onVoiceResult}
+          transcribeAudio={transcribeAudio}
         />
       )}
 
@@ -68,7 +67,7 @@ export function SearchActionButtons({
           onBlur={() => setFocusedButton(null)}
           focusable={Platform.isTV}
           accessibilityLabel={t('controls.llmSearch')}
-          accessibilityHint="AI-powered contextual search"
+          accessibilityHint={t('controls.hints.llmSearch')}
         >
           <Text style={styles.buttonIcon}>✨</Text>
         </TouchableOpacity>
@@ -86,7 +85,7 @@ export function SearchActionButtons({
           onBlur={() => setFocusedButton(null)}
           focusable={Platform.isTV}
           accessibilityLabel={t('controls.filters')}
-          accessibilityHint="Advanced search filters"
+          accessibilityHint={t('controls.hints.filters')}
         >
           <Text style={styles.buttonIcon}>⚙️</Text>
         </TouchableOpacity>
@@ -110,7 +109,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.1)',
     borderWidth: 1,
     borderColor: 'transparent',
-    transition: 'background-color 0.2s',
   },
   buttonFocused: {
     borderWidth: 2,

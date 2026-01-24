@@ -55,12 +55,11 @@ export function SearchControls({
   placeholder,
 }: SearchControlsProps) {
   // Voice search integration
-  const { transcribe, isTranscribing } = useVoiceSearch({
-    onTranscriptionComplete: (text) => {
-      logger.info('Voice search transcription received', LOG_CONTEXT, {
-        textLength: text.length,
-      });
-      onQueryChange(text);
+  // Note: VoiceSearchButton will call onVoiceResult with transcribed text
+  // We provide transcribeAudio for custom backend integration
+  const { transcribe } = useVoiceSearch({
+    onTranscriptionComplete: () => {
+      // No-op: onVoiceResult callback will handle setting query
     },
     defaultLanguage: 'he',
   });
@@ -76,8 +75,8 @@ export function SearchControls({
         />
 
         <SearchActionButtons
-          onVoiceTranscribe={transcribe}
-          isTranscribing={isTranscribing}
+          onVoiceResult={(text) => onQueryChange(text)}
+          transcribeAudio={transcribe}
           showLLMSearch={showLLMSearch}
           onLLMSearchClick={onLLMSearchClick}
           showFilters={showFiltersButton}

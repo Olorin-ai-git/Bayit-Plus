@@ -18,6 +18,9 @@ export { SearchEmptyState } from './SearchEmptyState';
 export { SearchInput } from './SearchInput';
 export { SearchActionButtons } from './SearchActionButtons';
 export { ContentTypePills } from './ContentTypePills';
+export { SearchResultCard } from './SearchResultCard';
+export { SearchCardBadges } from './SearchCardBadges';
+export { SearchCardMetadata } from './SearchCardMetadata';
 
 // Types
 export type { ContentType } from './SearchControls';

@@ -83,7 +83,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
     backgroundColor: 'transparent',
-    transition: 'background-color 0.2s',
   },
   buttonActive: {
     backgroundColor: 'rgba(168,85,247,0.3)',
@@ -96,7 +95,6 @@ const styles = StyleSheet.create({
   icon: {
     fontSize: 20,
     color: 'rgba(255,255,255,0.6)',
-    transition: 'color 0.2s',
   },
   iconActive: {
     color: '#fff',

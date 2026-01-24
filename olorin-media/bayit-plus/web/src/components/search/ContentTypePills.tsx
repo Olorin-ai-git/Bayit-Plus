@@ -93,7 +93,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.1)',
     borderWidth: 1,
     borderColor: 'transparent',
-    transition: 'background-color 0.2s, border-color 0.2s',
   },
   pillActive: {
     backgroundColor: 'rgba(168,85,247,0.3)',

@@ -32,7 +32,13 @@ export function useSearchSuggestions(): UseSearchSuggestionsReturn {
         setLoading(true);
         setError(null);
 
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+        // Get API URL from environment (no fallback - fail if not set)
+        const apiUrl = import.meta.env.VITE_API_URL;
+        if (!apiUrl) {
+          throw new Error(
+            'VITE_API_URL environment variable not configured. Cannot fetch search suggestions.'
+          );
+        }
 
         // Fetch trending searches
         const trendingResponse = await fetch(`${apiUrl}/search/trending`);
