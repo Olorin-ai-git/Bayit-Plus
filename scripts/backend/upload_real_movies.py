@@ -20,12 +20,15 @@ import logging
 from datetime import datetime
 import argparse
 
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add backend directory to path
+script_dir = os.path.dirname(os.path.abspath(__file__))  # scripts/backend
+project_root = os.path.dirname(os.path.dirname(script_dir))  # bayit-plus
+backend_dir = os.path.join(project_root, 'backend')  # bayit-plus/backend
+sys.path.insert(0, backend_dir)
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
-from app.models.content import Content, 
+from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
 from app.core.config import settings
 from google.cloud import storage
@@ -181,18 +184,18 @@ async def upload_movies(source_dir: str, dry_run: bool = False, limit: Optional[
     db = client['bayit_plus']  # Always use bayit_plus database
     await init_beanie(
         database=db,
-        document_models=[Content, Category]
+        document_models=[Content, ContentSection]
     )
     logger.info("Connected to MongoDB Atlas")
 
     # Get or create Movies category
-    movies_category = await Category.find_one(Category.name == "Movies")
+    movies_category = await ContentSection.find_one({"name": "Movies"})
     if not movies_category:
         if dry_run:
             logger.info("[DRY RUN] Would create 'Movies' category")
             category_id = "dry-run-category-id"
         else:
-            movies_category = Category(
+            movies_category = ContentSection(
                 name="Movies",
                 name_he="סרטים",
                 slug="movies",

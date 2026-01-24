@@ -41,6 +41,7 @@ export interface SeriesData {
   preview_url?: string;
   seasons: Season[];
   related: any[];
+  available_subtitles?: string[];
 }
 
 export interface VideoPreviewState {

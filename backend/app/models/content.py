@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional, Union
 import pymongo
 from beanie import Document
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pymongo import IndexModel, TEXT
 
 
 class ContentBase(BaseModel):
@@ -206,6 +207,30 @@ class Content(Document):
     class Settings:
         name = "content"
         indexes = [
+            # Text search index for unified search
+            IndexModel(
+                [
+                    ("title", TEXT),
+                    ("title_en", TEXT),
+                    ("title_es", TEXT),
+                    ("description", TEXT),
+                    ("description_en", TEXT),
+                    ("description_es", TEXT),
+                    ("cast", TEXT),
+                    ("director", TEXT),
+                ],
+                name="search_text_index",
+                weights={
+                    "title": 10,
+                    "title_en": 10,
+                    "title_es": 10,
+                    "description": 5,
+                    "description_en": 5,
+                    "description_es": 5,
+                    "cast": 3,
+                    "director": 3,
+                },
+            ),
             # Legacy category indexes (backward compatibility)
             "category_id",
             ("category_id", "is_published"),

@@ -10,6 +10,7 @@ Provides comprehensive search functionality across all content types:
 """
 
 import logging
+import re
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -175,9 +176,7 @@ class UnifiedSearchService:
         if query.strip():
             # Text search with scoring
             results = (
-                await Content.find(
-                    mongo_query, projection={"score": {"$meta": "textScore"}}
-                )
+                await Content.find(mongo_query)
                 .sort([("score", {"$meta": "textScore"})])
                 .skip((page - 1) * limit)
                 .limit(limit)
@@ -208,10 +207,7 @@ class UnifiedSearchService:
 
         # Search subtitle tracks
         subtitle_tracks = (
-            await SubtitleTrackDoc.find(
-                {"$text": {"$search": query}},
-                projection={"score": {"$meta": "textScore"}},
-            )
+            await SubtitleTrackDoc.find({"$text": {"$search": query}})
             .sort([("score", {"$meta": "textScore"})])
             .limit(settings.SEARCH_SUBTITLE_RESULT_LIMIT)
             .to_list()
@@ -341,19 +337,22 @@ class UnifiedSearchService:
         if len(query) < 2:
             return []
 
+        # Escape regex special characters to prevent regex injection
+        escaped_query = re.escape(query)
+        logger.debug(f"Escaped suggestion query: {query} -> {escaped_query}")
+
         # Search for titles starting with or containing the query
         suggestions = (
             await Content.find(
                 {
                     "is_published": True,
                     "$or": [
-                        {"title": {"$regex": f"^{query}", "$options": "i"}},
-                        {"title_en": {"$regex": f"^{query}", "$options": "i"}},
-                        {"cast": {"$regex": query, "$options": "i"}},
-                        {"director": {"$regex": query, "$options": "i"}},
+                        {"title": {"$regex": f"^{escaped_query}", "$options": "i"}},
+                        {"title_en": {"$regex": f"^{escaped_query}", "$options": "i"}},
+                        {"cast": {"$regex": escaped_query, "$options": "i"}},
+                        {"director": {"$regex": escaped_query, "$options": "i"}},
                     ],
-                },
-                projection={"title": 1, "title_en": 1},
+                }
             )
             .limit(limit)
             .to_list()

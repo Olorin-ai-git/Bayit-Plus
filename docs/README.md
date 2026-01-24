@@ -39,6 +39,13 @@ Implementation notes and session reports:
 - Data migration notes
 - Session completion reports
 
+### `/operations/`
+Database operations and maintenance:
+- Series merges and deduplication
+- Content organization operations
+- Database maintenance tasks
+- Data cleanup operations
+
 ## 🗂️ Additional Documentation Locations
 
 ### Backend Documentation
@@ -85,6 +92,7 @@ Located in `/backend/docs/`:
 ### By Topic
 - **Authentication**: Check `/security/` and `/backend/docs/security/`
 - **Content Management**: Check `/features/` and `/backend/scripts/content/`
+- **Database Operations**: Check `/operations/` and `/backend/scripts/backend/content/`
 - **Deployment**: Check `/deployment/` and `/backend/docs/deployment/`
 - **Testing**: Check `/testing/` and `/backend/scripts/testing/`
 - **Localization**: Check `/backend/docs/localization/`
@@ -104,6 +112,7 @@ When adding new documentation:
    - Security docs → `/security/`
    - Deployment docs → `/deployment/`
    - Implementation notes → `/implementation/`
+   - Database operations → `/operations/`
 
 2. **Use clear naming**
    - `FEATURE_NAME_IMPLEMENTATION.md`

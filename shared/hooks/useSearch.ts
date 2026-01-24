@@ -8,6 +8,38 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import logger from '../utils/logger';
+
+/**
+ * Sanitize search query to prevent XSS and injection attacks
+ * - Removes potentially dangerous characters
+ * - Limits length
+ * - Trims whitespace
+ */
+function sanitizeSearchQuery(query: string): string {
+  if (!query) return '';
+
+  // Remove control characters and dangerous patterns
+  let sanitized = query
+    .replace(/[\x00-\x1F\x7F]/g, '') // Control characters
+    .replace(/<script[^>]*>.*?<\/script>/gi, '') // Script tags
+    .replace(/<iframe[^>]*>.*?<\/iframe>/gi, '') // Iframe tags
+    .replace(/javascript:/gi, '') // JavaScript protocol
+    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '') // Event handlers
+    .trim();
+
+  // Limit length to prevent buffer overflow attacks
+  const MAX_QUERY_LENGTH = 500;
+  if (sanitized.length > MAX_QUERY_LENGTH) {
+    logger.warn('Query truncated due to excessive length', 'useSearch', {
+      originalLength: sanitized.length,
+      maxLength: MAX_QUERY_LENGTH,
+    });
+    sanitized = sanitized.substring(0, MAX_QUERY_LENGTH);
+  }
+
+  return sanitized;
+}
 
 export interface SearchFilters {
   contentTypes: string[];
@@ -103,21 +135,33 @@ export function useSearch(options: UseSearchOptions = {}) {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   /**
-   * Get API base URL based on environment
-   * Consistent with adminApi.ts pattern
+   * Get API base URL from environment variables
+   * Web: VITE_API_URL, Mobile: EXPO_PUBLIC_API_URL
    */
   const getApiBaseUrl = useCallback(() => {
-    if (__DEV__) {
-      if (Platform.OS === 'web') {
-        return 'http://localhost:8000/api/v1';
-      } else if (Platform.OS === 'android') {
-        return 'http://10.0.2.2:8000/api/v1'; // Android emulator
-      } else {
-        return 'http://localhost:8000/api/v1'; // iOS simulator
+    if (Platform.OS === 'web') {
+      // Web: Use Vite environment variable
+      const apiUrl = typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL;
+      if (!apiUrl) {
+        logger.error('VITE_API_URL not configured', 'useSearch');
+        throw new Error('API URL not configured. Set VITE_API_URL in environment.');
       }
+      return apiUrl;
     }
-    // Production - use environment variable or default
-    return process.env.NEXT_PUBLIC_API_URL || 'https://api.bayit.tv/api/v1';
+
+    if (Platform.OS === 'android' || Platform.OS === 'ios') {
+      // Mobile: Use Expo environment variable
+      const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+      if (!apiUrl) {
+        logger.error('EXPO_PUBLIC_API_URL not configured', 'useSearch');
+        throw new Error('API URL not configured. Set EXPO_PUBLIC_API_URL in environment.');
+      }
+      return apiUrl;
+    }
+
+    // Fallback for other platforms (should not reach here)
+    logger.error('Unknown platform, cannot determine API URL', 'useSearch', { platform: Platform.OS });
+    throw new Error(`Unsupported platform: ${Platform.OS}`);
   }, []);
 
   /**
@@ -130,7 +174,7 @@ export function useSearch(options: UseSearchOptions = {}) {
         setRecentSearches(JSON.parse(stored));
       }
     } catch (error) {
-      console.error('Failed to load recent searches:', error);
+      logger.error('Failed to load recent searches', 'useSearch', error);
     }
   }, []);
 
@@ -149,7 +193,7 @@ export function useSearch(options: UseSearchOptions = {}) {
       setRecentSearches(updated);
       await AsyncStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
     } catch (error) {
-      console.error('Failed to save recent search:', error);
+      logger.error('Failed to save recent search', 'useSearch', error);
     }
   }, [recentSearches]);
 
@@ -161,7 +205,7 @@ export function useSearch(options: UseSearchOptions = {}) {
       setRecentSearches([]);
       await AsyncStorage.removeItem(RECENT_SEARCHES_KEY);
     } catch (error) {
-      console.error('Failed to clear recent searches:', error);
+      logger.error('Failed to clear recent searches', 'useSearch', error);
     }
   }, []);
 
@@ -187,9 +231,19 @@ export function useSearch(options: UseSearchOptions = {}) {
     try {
       const baseUrl = getApiBaseUrl();
 
+      // Sanitize query to prevent XSS and injection attacks
+      const sanitizedQuery = sanitizeSearchQuery(searchQuery);
+
+      if (sanitizedQuery !== searchQuery.trim()) {
+        logger.warn('Search query was sanitized', 'useSearch', {
+          original: searchQuery,
+          sanitized: sanitizedQuery,
+        });
+      }
+
       // Build query parameters
       const params = new URLSearchParams();
-      params.append('query', searchQuery);
+      params.append('query', sanitizedQuery);
       params.append('page', searchPage.toString());
       params.append('limit', '20');
 
@@ -246,7 +300,7 @@ export function useSearch(options: UseSearchOptions = {}) {
       if (error.name === 'AbortError') {
         return; // Ignore aborted requests
       }
-      console.error('Search error:', error);
+      logger.error('Search failed', 'useSearch', error);
       setError(error.message || 'Search failed');
       setResults([]);
     } finally {
@@ -288,7 +342,7 @@ export function useSearch(options: UseSearchOptions = {}) {
       const data = await response.json();
       setSuggestions(data.suggestions || []);
     } catch (error) {
-      console.error('Suggestions error:', error);
+      logger.error('Failed to load suggestions', 'useSearch', error);
       setSuggestions([]);
     }
   }, [getApiBaseUrl]);
@@ -350,7 +404,7 @@ export function useSearch(options: UseSearchOptions = {}) {
           time_to_click_ms: timeToClick
         })
       }).catch(error => {
-        console.error('Failed to track click:', error);
+        logger.error('Failed to track click analytics', 'useSearch', error);
       });
     }
   }, [onResultClick, searchStartTime, getApiBaseUrl]);

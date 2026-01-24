@@ -128,8 +128,45 @@ test.describe('Local Build Screenshots - ALL ROUTES', () => {
       const url = `${LOCAL_URL}${route.path}?lng=en`;
 
       try {
+        // Clear all browser storage to ensure unauthenticated state matches production
+        await page.goto(LOCAL_URL);
+        await page.evaluate(() => {
+          localStorage.clear();
+          sessionStorage.clear();
+          // Clear all cookies
+          document.cookie.split(';').forEach(c => {
+            document.cookie = c.trim().split('=')[0] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
+          });
+        });
+
         await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
-        await page.waitForTimeout(2000);
+        // Wait longer for local content to fully load
+        await page.waitForTimeout(5000);
+
+        // For home page, wait for key sections to load
+        if (route.name === 'home') {
+          try {
+            // Wait for Jerusalem section or Tel Aviv section
+            const jerusalemSelector = await page.waitForSelector('text=/ירושלים|Jerusalem/i', { timeout: 10000 });
+            console.log(`✓ Jerusalem section found on local`);
+
+            // Scroll to Jerusalem section to ensure it's loaded and visible
+            if (jerusalemSelector) {
+              await jerusalemSelector.scrollIntoViewIfNeeded();
+              await page.waitForTimeout(1000);
+            }
+
+            // Check if Tel Aviv section is also present
+            const telAvivVisible = await page.locator('text=/תל אביב|Tel Aviv/i').isVisible().catch(() => false);
+            console.log(`Tel Aviv section visible: ${telAvivVisible}`);
+
+            // Scroll back to top for full page screenshot
+            await page.evaluate(() => window.scrollTo(0, 0));
+            await page.waitForTimeout(1000);
+          } catch (e) {
+            console.log(`⚠️  Jerusalem/Tel Aviv sections may not be loaded on ${route.name}: ${e.message}`);
+          }
+        }
 
         const filename = await captureScreenshot(page, 'local', route, 'en', 'desktop');
         console.log(`✓ Captured local: ${filename}`);
@@ -146,6 +183,17 @@ test.describe('Local Build Screenshots - Hebrew (RTL)', () => {
       const url = `${LOCAL_URL}${route.path}?lng=he`;
 
       try {
+        // Clear all browser storage to ensure unauthenticated state matches production
+        await page.goto(LOCAL_URL);
+        await page.evaluate(() => {
+          localStorage.clear();
+          sessionStorage.clear();
+          // Clear all cookies
+          document.cookie.split(';').forEach(c => {
+            document.cookie = c.trim().split('=')[0] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
+          });
+        });
+
         await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
         await page.waitForTimeout(2000);
 

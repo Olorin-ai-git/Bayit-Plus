@@ -1,0 +1,55 @@
+{
+  "controls": {
+    "placeholder": "חפש תוכן...",
+    "voiceSearch": "חיפוש קולי",
+    "llmSearch": "חיפוש מבוסס AI",
+    "filters": "מסננים",
+    "contentTypes": {
+      "all": "הכל",
+      "vod": "וידאו לפי דרישה",
+      "live": "שידור חי",
+      "radio": "רדיו",
+      "podcast": "פודקאסטים"
+    }
+  },
+  "semantic": {
+    "keyword": "מילות מפתח",
+    "semantic": "סמנטי",
+    "info": "חיפוש סמנטי משתמש ב-AI כדי להבין הקשר ולמצוא תוכן לפי משמעות, לא רק מילות מפתח. מושלם למציאת סצנות או דיאלוג ספציפיים.",
+    "infoTitle": "אודות חיפוש סמנטי"
+  },
+  "viewMode": {
+    "grid": "תצוגת רשת",
+    "list": "תצוגת רשימה",
+    "cards": "תצוגת כרטיסים"
+  },
+  "suggestions": {
+    "trendingTitle": "🔥 חיפושים פופולריים",
+    "categoriesTitle": "קטגוריות",
+    "recentTitle": "חיפושים אחרונים",
+    "clearRecent": "נקה"
+  },
+  "empty": {
+    "noResults": "לא נמצאו תוצאות",
+    "noResultsMessage": "לא מצאנו דבר התואם ל-\"{{query}}\"",
+    "tryAgain": "נסה:",
+    "checkSpelling": "• בדוק איות",
+    "differentKeywords": "• השתמש במילות מפתח שונות",
+    "searchLanguage": "• חפש בעברית או אנגלית",
+    "useVoice": "• השתמש בחיפוש קולי 🎤",
+    "startSearching": "התחל לחפש",
+    "startSearchingMessage": "חפש סרטים, סדרות, פודקאסטים ועוד",
+    "clearSearch": "נקה חיפוש",
+    "tryAgainButton": "נסה שוב"
+  },
+  "errors": {
+    "somethingWrong": "משהו השתבש",
+    "retrySearch": "נסה שוב"
+  },
+  "loading": "טוען...",
+  "results": {
+    "premium": "פרימיום",
+    "kids": "ילדים",
+    "featured": "מומלץ"
+  }
+}

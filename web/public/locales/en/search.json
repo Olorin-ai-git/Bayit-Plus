@@ -1,0 +1,55 @@
+{
+  "controls": {
+    "placeholder": "Search for content...",
+    "voiceSearch": "Voice search",
+    "llmSearch": "AI-powered search",
+    "filters": "Filters",
+    "contentTypes": {
+      "all": "All",
+      "vod": "VOD",
+      "live": "Live",
+      "radio": "Radio",
+      "podcast": "Podcasts"
+    }
+  },
+  "semantic": {
+    "keyword": "Keyword",
+    "semantic": "Semantic",
+    "info": "Semantic search uses AI to understand context and find content by meaning, not just keywords. Perfect for finding specific scenes or dialogue.",
+    "infoTitle": "About Semantic Search"
+  },
+  "viewMode": {
+    "grid": "Grid view",
+    "list": "List view",
+    "cards": "Cards view"
+  },
+  "suggestions": {
+    "trendingTitle": "🔥 Trending Searches",
+    "categoriesTitle": "Categories",
+    "recentTitle": "Recent Searches",
+    "clearRecent": "Clear"
+  },
+  "empty": {
+    "noResults": "No results found",
+    "noResultsMessage": "We couldn't find anything matching \"{{query}}\"",
+    "tryAgain": "Try:",
+    "checkSpelling": "• Checking your spelling",
+    "differentKeywords": "• Using different keywords",
+    "searchLanguage": "• Searching in Hebrew or English",
+    "useVoice": "• Using voice search 🎤",
+    "startSearching": "Start searching",
+    "startSearchingMessage": "Search for movies, series, podcasts, and more",
+    "clearSearch": "Clear Search",
+    "tryAgainButton": "Try Again"
+  },
+  "errors": {
+    "somethingWrong": "Something went wrong",
+    "retrySearch": "Try Again"
+  },
+  "loading": "Loading...",
+  "results": {
+    "premium": "Premium",
+    "kids": "Kids",
+    "featured": "Featured"
+  }
+}
