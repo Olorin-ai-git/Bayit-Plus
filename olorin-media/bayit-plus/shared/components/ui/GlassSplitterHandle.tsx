@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { View, Platform, Pressable, I18nManager } from 'react-native';
+import { View, Platform, Pressable, I18nManager, StyleSheet } from 'react-native';
 import { colors, spacing, borderRadius } from '../theme';
 
 interface GlassSplitterHandleProps {
@@ -47,21 +47,20 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
   };
 
   // Position the handle on the appropriate edge
-  const handlePosition = position === 'right' 
+  const handlePosition = position === 'right'
     ? (isRTL ? { right: -22 } : { left: -22 })
     : (isRTL ? { left: -22 } : { right: -22 });
 
   if (Platform.OS !== 'web') {
     // Native: simple pressable
     return (
-      <View className="absolute z-[9999]" style={[{ top: spacing.xl * 2 }, handlePosition, style]}>
+      <View style={[styles.nativeContainer, { top: spacing.xl * 2 }, handlePosition, style]}>
         <Pressable
           onPress={onToggle}
-          className="w-11 h-11 rounded-lg bg-transparent border-2 items-center justify-center opacity-60"
-          style={{ borderColor: colors.primary }}
+          style={[styles.nativeButton, { borderColor: colors.primary }]}
         >
-          <View className="items-center justify-center">
-            <View className="text-purple-500 text-base font-bold" style={{ color: colors.primary }}>
+          <View style={styles.nativeIconContainer}>
+            <View style={[styles.nativeIcon, { color: colors.primary }]}>
               {/* Use a simple arrow character */}
             </View>
           </View>
@@ -76,7 +75,7 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
         position: 'absolute',
         top: spacing.xl * 2,
         zIndex: 9999,
-        ...(position === 'right' 
+        ...(position === 'right'
           ? (isRTL ? { right: -22 } : { left: -22 })
           : (isRTL ? { left: -22 } : { right: -22 })
         ),
@@ -112,7 +111,7 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
           (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)';
         }}
       >
-        <span style={{ 
+        <span style={{
           color: colors.primary,
           fontSize: 16,
           fontWeight: 'bold',
@@ -156,5 +155,31 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
     </div>
   );
 };
+
+const styles = StyleSheet.create({
+  // Native styles
+  nativeContainer: {
+    position: 'absolute',
+    zIndex: 9999,
+  },
+  nativeButton: {
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.6,
+  },
+  nativeIconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nativeIcon: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
 
 export default GlassSplitterHandle;

@@ -6,6 +6,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView, GlassSelect } from '@bayit/shared/ui';
+import { spacing, borderRadius, colors } from '@bayit/shared/theme';
 import { TimeRangeSectionProps } from '../types';
 
 export function TimeRangeSection({
@@ -29,13 +30,13 @@ export function TimeRangeSection({
   }));
 
   return (
-    <GlassView className="p-4 gap-4" style={!enabled && styles.disabled}>
-      <Text className="text-[13px] font-semibold text-gray-400 uppercase tracking-wide" style={isRTL && styles.textRight}>
+    <GlassView style={[styles.container, !enabled && styles.disabled]}>
+      <Text style={[styles.sectionTitle, isRTL && styles.textRight]}>
         {t('settings.ritual.timeRange', 'טווח זמנים')}
       </Text>
 
-      <View className="flex-row gap-4" style={isRTL && styles.rowReverse}>
-        <View className="flex-1">
+      <View style={[styles.row, isRTL && styles.rowReverse]}>
+        <View style={styles.flex1}>
           <GlassSelect
             label={t('settings.ritual.startTime')}
             value={startTime}
@@ -45,7 +46,7 @@ export function TimeRangeSection({
           />
         </View>
 
-        <View className="flex-1">
+        <View style={styles.flex1}>
           <GlassSelect
             label={t('settings.ritual.endTime')}
             value={endTime}
@@ -60,11 +61,29 @@ export function TimeRangeSection({
 }
 
 const styles = StyleSheet.create({
-  disabled: {
-    opacity: 0.5,
+  container: {
+    padding: spacing.md,
+    gap: spacing.md,
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  row: {
+    flexDirection: 'row',
+    gap: spacing.md,
   },
   rowReverse: {
     flexDirection: 'row-reverse',
+  },
+  flex1: {
+    flex: 1,
+  },
+  disabled: {
+    opacity: 0.5,
   },
   textRight: {
     textAlign: 'right',

@@ -17,7 +17,8 @@ class Settings(BaseSettings):
     # Security (REQUIRED - no defaults for sensitive fields)
     SECRET_KEY: str  # Required, minimum 32 characters
     SECRET_KEY_OLD: str = ""  # Old secret for zero-downtime JWT rotation (remove after 7 days)
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7  # 7 days for refresh tokens
     ALGORITHM: str = "HS256"
 
     # MongoDB (REQUIRED - no defaults for connection strings)

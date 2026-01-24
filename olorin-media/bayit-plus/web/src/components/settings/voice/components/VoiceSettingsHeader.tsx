@@ -16,10 +16,10 @@ export function VoiceSettingsHeader({ isRTL }: VoiceSettingsHeaderProps) {
 
   return (
     <View style={[styles.container, isRTL && styles.containerRTL]}>
-      <View className="w-12 h-12 rounded-xl bg-cyan-500/20 justify-center items-center">
+      <View style={styles.iconContainer}>
         <Mic size={24} color="#06B6D4" />
       </View>
-      <View className="flex-1">
+      <View style={styles.textContainer}>
         <Text style={[styles.title, isRTL && styles.textRight]}>
           {t('profile.voice.title', 'Voice & Accessibility')}
         </Text>
@@ -40,6 +40,17 @@ const styles = StyleSheet.create({
   },
   containerRTL: {
     flexDirection: 'row-reverse',
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: 'rgba(6, 182, 212, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textContainer: {
+    flex: 1,
   },
   title: {
     fontSize: 20,

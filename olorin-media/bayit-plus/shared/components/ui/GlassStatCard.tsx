@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { colors, spacing, borderRadius } from '../../theme';
 import { GlassView } from './GlassView';
 
@@ -29,25 +29,35 @@ export const GlassStatCard: React.FC<GlassStatCardProps> = ({
   const bgColor = iconBgColor || `${iconColor}20`;
 
   const content = (
-    <GlassView className={compact ? "flex-row items-center p-4 gap-2 min-h-[80px]" : "flex-row items-center p-6 gap-4"} style={style}>
-      <View className="justify-center items-center">
+    <GlassView style={[compact ? styles.containerCompact : styles.container, style]}>
+      <View style={styles.iconContainer}>
         {icon}
       </View>
-      <View className="flex-1 min-w-0">
-        <Text className={compact ? "text-[11px] text-gray-400 mb-0.5 flex-wrap" : "text-[13px] text-gray-400 mb-0.5"} style={{ color: colors.textMuted }}>
+      <View style={styles.contentContainer}>
+        <Text style={[
+          compact ? styles.labelCompact : styles.label,
+          { color: colors.textMuted }
+        ]}>
           {label}
         </Text>
-        <Text className={compact ? "text-lg font-semibold text-white" : "text-2xl font-bold text-white"} style={{ color: colors.text }}>
+        <Text style={[
+          compact ? styles.valueCompact : styles.value,
+          { color: colors.text }
+        ]}>
           {value}
         </Text>
-        {subtitle && <Text className="text-xs text-gray-400 mt-0.5" style={{ color: colors.textMuted }}>{subtitle}</Text>}
+        {subtitle && (
+          <Text style={[styles.subtitle, { color: colors.textMuted }]}>
+            {subtitle}
+          </Text>
+        )}
       </View>
     </GlassView>
   );
 
   if (onPress) {
     return (
-      <Pressable onPress={onPress} className="active:opacity-80 active:scale-[0.98]">
+      <Pressable onPress={onPress} style={({ pressed }) => pressed && styles.pressed}>
         {content}
       </Pressable>
     );
@@ -55,5 +65,61 @@ export const GlassStatCard: React.FC<GlassStatCardProps> = ({
 
   return content;
 };
+
+// Styles using StyleSheet.create() - React Native Web compatible
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  containerCompact: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.md,
+    gap: spacing.sm,
+    minHeight: 80,
+  },
+
+  iconContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  contentContainer: {
+    flex: 1,
+    minWidth: 0,
+  },
+
+  label: {
+    fontSize: 13,
+    marginBottom: 2,
+  },
+  labelCompact: {
+    fontSize: 11,
+    marginBottom: 2,
+    flexWrap: 'wrap',
+  },
+
+  value: {
+    fontSize: 24,
+    fontWeight: '700',
+  },
+  valueCompact: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+
+  subtitle: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+
+  pressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.98 }],
+  },
+});
 
 export default GlassStatCard;

@@ -129,6 +129,7 @@ const apiAuthService = {
   me: () => api.get('/auth/me'),
   updateProfile: (updates) => api.patch('/auth/profile', updates),
   resetPassword: (email) => api.post('/auth/reset-password', { email }),
+  refreshToken: (refreshToken) => api.post('/auth/refresh', { refresh_token: refreshToken }),
   getGoogleAuthUrl: async (redirectUri) => {
     const response = await api.get('/auth/google/url', { params: { redirect_uri: redirectUri } });
     // Store state in sessionStorage for CSRF validation

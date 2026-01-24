@@ -37,10 +37,10 @@ export function WakeWordSection({
   const { t } = useTranslation();
 
   return (
-    <GlassView className="p-6 gap-4">
+    <GlassView style={styles.container}>
       <View style={[styles.titleRow, isRTL && styles.rowReverse]}>
         <Zap size={16} color="#F59E0B" />
-        <Text className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-0">
+        <Text style={styles.sectionTitle}>
           {t('profile.voice.wakeWord', '"Hi Bayit" Wake Word')}
         </Text>
       </View>
@@ -72,6 +72,10 @@ export function WakeWordSection({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    padding: 24,
+    gap: 16,
+  },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -80,5 +84,13 @@ const styles = StyleSheet.create({
   },
   rowReverse: {
     flexDirection: 'row-reverse',
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#9CA3AF',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    marginBottom: 0,
   },
 });

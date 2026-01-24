@@ -17,32 +17,31 @@ export function VolumeControl({ volume, isRTL, onVolumeChange }: VolumeControlPr
   const { t } = useTranslation();
 
   return (
-    <View className="pt-2 border-t border-white/5 mt-4">
+    <View style={styles.container}>
       <View style={[styles.header, isRTL && styles.rowReverse]}>
         <Volume2 size={14} color="#9CA3AF" />
         <Text style={[styles.label, isRTL && styles.textRight]}>
           {t('profile.voice.ttsVolume', 'Voice Volume')}
         </Text>
-        <Text className="text-[13px] font-semibold text-purple-500">
+        <Text style={styles.percentage}>
           {Math.round(volume * 100)}%
         </Text>
       </View>
       <View style={[styles.sliderRow, isRTL && styles.rowReverse]}>
         <Pressable
           onPress={() => onVolumeChange(Math.max(0, volume - 0.1))}
-          className="w-8 h-8 rounded-lg bg-white/5 justify-center items-center"
+          style={styles.button}
         >
           <Minus size={14} color="#ffffff" />
         </Pressable>
-        <View className="flex-1 h-1 bg-white/5 rounded-sm overflow-hidden">
+        <View style={styles.sliderTrack}>
           <View
-            className="h-full bg-purple-500 rounded-sm"
-            style={{ width: `${volume * 100}%` }}
+            style={[styles.sliderFill, { width: `${volume * 100}%` }]}
           />
         </View>
         <Pressable
           onPress={() => onVolumeChange(Math.min(1, volume + 0.1))}
-          className="w-8 h-8 rounded-lg bg-white/5 justify-center items-center"
+          style={styles.button}
         >
           <Plus size={14} color="#ffffff" />
         </Pressable>
@@ -52,6 +51,12 @@ export function VolumeControl({ volume, isRTL, onVolumeChange }: VolumeControlPr
 }
 
 const styles = StyleSheet.create({
+  container: {
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    marginTop: 16,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -74,5 +79,30 @@ const styles = StyleSheet.create({
   },
   textRight: {
     textAlign: 'right',
+  },
+  percentage: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#A855F7',
+  },
+  button: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sliderTrack: {
+    flex: 1,
+    height: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  sliderFill: {
+    height: '100%',
+    backgroundColor: '#A855F7',
+    borderRadius: 2,
   },
 });

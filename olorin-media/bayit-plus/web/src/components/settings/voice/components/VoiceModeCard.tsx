@@ -19,30 +19,27 @@ export function VoiceModeCard({ mode, isSelected, isRTL, onSelect, t }: VoiceMod
   return (
     <Pressable
       onPress={onSelect}
-      className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/8"
       style={[
-        isRTL && styles.rtlRow,
+        styles.card,
         isSelected && styles.selected
       ]}
     >
-      <View className="flex-row items-center gap-4">
-        <Text className="text-[28px]">{mode.icon}</Text>
-        <View className="flex-1">
+      <View style={[styles.content, isRTL && styles.rtlRow]}>
+        <Text style={styles.icon}>{mode.icon}</Text>
+        <View style={styles.textContainer}>
           <Text
-            className="text-[15px] font-semibold"
-            style={isSelected ? styles.selectedText : styles.defaultText}
+            style={[styles.label, isSelected ? styles.selectedText : styles.defaultText]}
           >
             {t(mode.labelKey, mode.labelKey)}
           </Text>
           <Text
-            className="text-xs text-gray-400 mt-0.5"
-            style={isRTL && styles.textRight}
+            style={[styles.description, isRTL && styles.textRight]}
           >
             {t(mode.descKey, mode.descKey)}
           </Text>
         </View>
         {isSelected && (
-          <Check size={20} color="#A855F7" className="ml-2" />
+          <Check size={20} color="#A855F7" />
         )}
       </View>
     </Pressable>
@@ -50,23 +47,46 @@ export function VoiceModeCard({ mode, isSelected, isRTL, onSelect, t }: VoiceMod
 }
 
 const styles = StyleSheet.create({
-  // Dynamic RTL layout
+  card: {
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
   rtlRow: {
     flexDirection: 'row-reverse',
   },
-  // Dynamic selected state
   selected: {
-    backgroundColor: 'rgba(88, 28, 135, 0.3)', // purple-900/30
-    borderColor: 'rgba(168, 85, 247, 0.4)', // purple-500/40
+    backgroundColor: 'rgba(88, 28, 135, 0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.4)',
   },
-  // Dynamic text colors
+  icon: {
+    fontSize: 28,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  label: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
   selectedText: {
-    color: '#A855F7', // purple-500
+    color: '#A855F7',
   },
   defaultText: {
     color: '#FFFFFF',
   },
-  // Dynamic text alignment
+  description: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    marginTop: 2,
+  },
   textRight: {
     textAlign: 'right',
   },

@@ -17,7 +17,8 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { colors, borderRadius } from '../../theme';
 
 interface Particle {
   id: number;
@@ -44,6 +45,15 @@ const PARTICLES_PER_CONNECTION = 5; // Max connections per particle
 const WAVE_SPEED = 0.02;
 const AUDIO_SENSITIVITY = 2;
 
+// Canvas rendering colors (extracted from theme constants)
+const CANVAS_COLORS = {
+  background: 'rgba(10, 10, 30, 0.95)',
+  particleCore: (opacity: number) => `rgba(168, 85, 247, ${opacity})`,
+  particleGlowStart: (opacity: number) => `rgba(168, 85, 247, ${opacity * 0.8})`,
+  particleGlowEnd: 'rgba(168, 85, 247, 0)',
+  connection: (opacity: number) => `rgba(168, 85, 247, ${opacity})`,
+};
+
 export const GlassParticleLayer = React.forwardRef<View, GlassParticleLayerProps>(
   ({ isActive = false, audioLevel = 0, intensity = 'medium', style, noBorder = true }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -66,7 +76,7 @@ export const GlassParticleLayer = React.forwardRef<View, GlassParticleLayerProps
 
       const animate = () => {
         // Clear canvas with slight transparency for motion blur effect
-        ctx.fillStyle = 'rgba(10, 10, 30, 0.95)';
+        ctx.fillStyle = CANVAS_COLORS.background;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Update and draw particles
@@ -84,7 +94,7 @@ export const GlassParticleLayer = React.forwardRef<View, GlassParticleLayerProps
         animationFrameRef.current = requestAnimationFrame(animate);
       } else {
         // Render once if not active
-        ctx.fillStyle = 'rgba(10, 10, 30, 0.95)';
+        ctx.fillStyle = CANVAS_COLORS.background;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         drawParticles(ctx, particlesRef.current, canvas.width, canvas.height);
       }
@@ -106,31 +116,79 @@ export const GlassParticleLayer = React.forwardRef<View, GlassParticleLayerProps
       canvas.height = rect.height;
     }, []);
 
-    const intensityClass = {
-      low: "bg-[rgba(26,26,46,0.2)] backdrop-blur-[8px]",
-      medium: "bg-[rgba(26,26,46,0.4)] backdrop-blur-[12px]",
-      high: "bg-[rgba(26,26,46,0.6)] backdrop-blur-[20px]",
+    const intensityStyle = {
+      low: styles.intensityLow,
+      medium: styles.intensityMedium,
+      high: styles.intensityHigh,
     }[intensity];
 
-    const borderClass = !noBorder ? "border border-[rgba(255,255,255,0.1)]" : "border border-[rgba(255,255,255,0.03)]";
+    const borderStyle = !noBorder ? styles.borderVisible : styles.borderSubtle;
 
     return (
       <View
         ref={ref}
-        className={`relative overflow-hidden rounded-2xl bg-[rgba(26,26,46,0.4)] backdrop-blur-[12px] ${intensityClass} ${borderClass}`}
-        style={style}
+        style={[styles.container, intensityStyle, borderStyle, style]}
       >
         {/* Glass background */}
-        <View className="absolute inset-0 bg-[rgba(26,26,46,0.2)] pointer-events-none" />
+        <View style={styles.glassBackground} />
 
         {/* Particle canvas */}
-        <canvas ref={canvasRef} className="w-full h-full block" />
+        <canvas ref={canvasRef} style={styles.canvas} />
       </View>
     );
   }
 );
 
 GlassParticleLayer.displayName = 'GlassParticleLayer';
+
+// Styles using StyleSheet.create() - React Native Web compatible
+const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+    overflow: 'hidden',
+    borderRadius: borderRadius.xl,
+    backgroundColor: colors.glassPurple,
+  },
+
+  // Intensity variants
+  intensityLow: {
+    backgroundColor: colors.glassLight,
+  },
+  intensityMedium: {
+    backgroundColor: colors.glassMedium,
+  },
+  intensityHigh: {
+    backgroundColor: colors.glassStrong,
+  },
+
+  // Border variants
+  borderVisible: {
+    borderWidth: 1,
+    borderColor: colors.glassBorderWhite,
+  },
+  borderSubtle: {
+    borderWidth: 1,
+    borderColor: colors.glassBorderLight,
+  },
+
+  // Glass background overlay
+  glassBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: colors.glassLight,
+    pointerEvents: 'none',
+  },
+
+  // Canvas element
+  canvas: {
+    width: '100%',
+    height: '100%',
+    display: 'block',
+  },
+});
 
 /**
  * Generate initial particle field
@@ -232,14 +290,14 @@ function drawParticles(
 
     // Draw particle glow
     const gradient = ctx.createRadialGradient(x, y, 0, x, y, particle.size * 3);
-    gradient.addColorStop(0, `rgba(168, 85, 247, ${particle.opacity * 0.8})`);
-    gradient.addColorStop(1, `rgba(168, 85, 247, 0)`);
+    gradient.addColorStop(0, CANVAS_COLORS.particleGlowStart(particle.opacity));
+    gradient.addColorStop(1, CANVAS_COLORS.particleGlowEnd);
 
     ctx.fillStyle = gradient;
     ctx.fillRect(x - particle.size * 3, y - particle.size * 3, particle.size * 6, particle.size * 6);
 
     // Draw particle core
-    ctx.fillStyle = `rgba(168, 85, 247, ${particle.opacity})`;
+    ctx.fillStyle = CANVAS_COLORS.particleCore(particle.opacity);
     ctx.beginPath();
     ctx.arc(x, y, particle.size, 0, Math.PI * 2);
     ctx.fill();
@@ -260,7 +318,7 @@ function drawConnections(ctx: CanvasRenderingContext2D, particles: Particle[]): 
       const distance = Math.sqrt(dx * dx + dy * dy);
       const opacity = Math.max(0, 1 - distance * 5) * particle.opacity * 0.5;
 
-      ctx.strokeStyle = `rgba(168, 85, 247, ${opacity})`;
+      ctx.strokeStyle = CANVAS_COLORS.connection(opacity);
       ctx.lineWidth = 0.5;
       ctx.beginPath();
       ctx.moveTo(particle.x * ctx.canvas.width, particle.y * ctx.canvas.height);

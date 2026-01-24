@@ -245,14 +245,27 @@ export const useAuditControl = ({
       setInterjectModalVisible(false);
       setSuccessMessage(t('admin.librarian.audit.interjectSuccess', 'Message sent successfully'));
       setSuccessModalOpen(true);
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to interject audit:', error);
-      setErrorMessage(t('admin.librarian.errors.failedToInterject', 'Failed to send message'));
+
+      // Show the actual error message from the backend
+      const errorMessage = error?.message || t('admin.librarian.errors.failedToInterject', 'Failed to send message');
+      setErrorMessage(errorMessage);
       setErrorModalOpen(true);
+
+      // If audit completed, close the modal and refresh
+      if (errorMessage.includes('completed') || errorMessage.includes('finished')) {
+        setInterjectMessage('');
+        setInterjectModalVisible(false);
+        // Trigger a data reload to get updated status
+        setTimeout(() => {
+          loadData();
+        }, 500);
+      }
     } finally {
       setInterjectingAudit(false);
     }
-  }, [t, setSuccessMessage, setSuccessModalOpen, setErrorMessage, setErrorModalOpen]);
+  }, [t, setSuccessMessage, setSuccessModalOpen, setErrorMessage, setErrorModalOpen, loadData]);
 
   return {
     triggering,

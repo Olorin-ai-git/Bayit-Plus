@@ -3,7 +3,7 @@
  * Refactored modular voice settings orchestrator
  */
 
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { colors, spacing } from '@bayit/shared/theme';
 import { VoiceMode } from '@bayit/shared-types/voiceModes';
 import { useVoiceSettings } from './hooks';
@@ -23,14 +23,14 @@ export default function VoiceSettingsMain() {
 
   if (loading) {
     return (
-      <View className="items-center justify-center p-8">
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="small" color={colors.primary} />
       </View>
     );
   }
 
   return (
-    <View className="gap-4">
+    <View style={styles.container}>
       <VoiceSettingsHeader isRTL={isRTL} />
 
       <VoiceModeSection
@@ -87,3 +87,14 @@ export default function VoiceSettingsMain() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+  },
+  container: {
+    gap: 16,
+  },
+});

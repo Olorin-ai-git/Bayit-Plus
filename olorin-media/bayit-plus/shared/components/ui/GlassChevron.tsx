@@ -11,6 +11,7 @@ import {
   Animated,
   ViewStyle,
   StyleProp,
+  StyleSheet,
 } from 'react-native';
 import { colors, borderRadius, spacing } from '../theme';
 import { isTV } from '../utils/platform';
@@ -119,11 +120,12 @@ export const GlassChevron: React.FC<GlassChevronProps> = ({
       hasTVPreferredFocus={hasTVPreferredFocus}
     >
       <Animated.View
-        className={`items-center justify-center rounded-sm bg-white/10 border-2 border-white/20 ${disabled ? 'opacity-50' : ''}`}
         style={[
+          styles.container,
           containerSize,
           focusStyle,
           { transform: [{ scale: scaleAnim }] },
+          disabled && styles.disabled,
           style,
         ]}
       >
@@ -158,7 +160,7 @@ const ChevronIcon: React.FC<ChevronIconProps> = ({ size, strokeWidth, color }) =
   };
 
   return (
-    <Animated.View className="items-center justify-center" style={{ width: size, height: size }}>
+    <Animated.View style={[styles.iconContainer, { width: size, height: size }]}>
       {/* Top line of chevron (angled up-right) */}
       <Animated.View
         style={[
@@ -188,5 +190,26 @@ const ChevronIcon: React.FC<ChevronIconProps> = ({ size, strokeWidth, color }) =
     </Animated.View>
   );
 };
+
+// Styles using StyleSheet.create() - React Native Web compatible
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: borderRadius.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+
+  disabled: {
+    opacity: 0.5,
+  },
+
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 
 export default GlassChevron;

@@ -519,43 +519,7 @@ async def interject_audit_message(
     Inject a message into a running audit's conversation with Claude.
     """
     try:
-        if not audit_task_manager.is_running(audit_id):
-            try:
-                object_id = PydanticObjectId(audit_id)
-                audit = await AuditReport.get(object_id)
-            except Exception:
-                audit = await AuditReport.find_one({"audit_id": audit_id})
-
-            if not audit:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Audit not found. It may have been deleted or cleared.",
-                )
-
-            if audit.status == "completed":
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="This audit has already completed. Start a new audit to send messages.",
-                )
-            elif audit.status == "failed":
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="This audit failed before completion. Start a new audit to try again.",
-                )
-            elif audit.status == "cancelled":
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="This audit was cancelled. Start a new audit to continue working.",
-                )
-            else:
-                audit.status = "completed"
-                audit.completed_at = datetime.utcnow()
-                await audit.save()
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="This audit just finished. Refresh to see results, or start a new audit.",
-                )
-
+        # Fetch audit details first
         try:
             object_id = PydanticObjectId(audit_id)
             audit = await AuditReport.get(object_id)
@@ -564,15 +528,42 @@ async def interject_audit_message(
 
         if not audit:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Audit not found."
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Audit not found. It may have been deleted or cleared.",
             )
 
+        # Check if audit is in a terminal state
+        if audit.status == "completed":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="This audit has already completed. Refresh the page to see results, or start a new audit.",
+            )
+        elif audit.status == "failed":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="This audit failed before completion. Start a new audit to try again.",
+            )
+        elif audit.status == "cancelled":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="This audit was cancelled. Start a new audit to continue working.",
+            )
+
+        # Check if task is actually running
+        if not audit_task_manager.is_running(audit_id):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="This audit is no longer running. Please refresh the page to see the latest status.",
+            )
+
+        # Validate message
         if not request.message or not request.message.strip():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Please enter a message to send to the AI agent.",
             )
 
+        # Attempt to queue the message
         success = audit_task_manager.queue_message(
             audit_id=audit_id, message=request.message.strip(), source=request.source
         )
@@ -580,7 +571,7 @@ async def interject_audit_message(
         if not success:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Unable to send message - the audit just finished.",
+                detail="Unable to send message - the audit has finished. Please refresh the page.",
             )
 
         logger.info(

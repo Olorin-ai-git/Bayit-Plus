@@ -2,17 +2,123 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { authService } from '@/services/api'
 
+// Helper function to decode JWT and check expiration
+const decodeToken = (token) => {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(atob(parts[1]));
+    return payload;
+  } catch (error) {
+    console.error('[Auth] Failed to decode token:', error);
+    return null;
+  }
+};
+
+// Helper function to check if token will expire soon (within 5 minutes)
+const willExpireSoon = (token) => {
+  const payload = decodeToken(token);
+  if (!payload || !payload.exp) return true;
+  const expirationTime = payload.exp * 1000; // Convert to milliseconds
+  const now = Date.now();
+  const fiveMinutes = 5 * 60 * 1000;
+  return expirationTime - now < fiveMinutes;
+};
+
 export const useAuthStore = create(
   persist(
     (set, get) => ({
       user: null,
       token: null,
+      refreshToken: null,
       isAuthenticated: false,
       isLoading: false,
       error: null,
       isHydrated: false,
+      refreshTimeout: null, // Store timeout ID for cleanup
 
       setUser: (user) => set({ user, isAuthenticated: !!user }),
+
+      // Refresh access token using refresh token
+      refreshAccessToken: async () => {
+        const { refreshToken, logout } = get();
+
+        if (!refreshToken) {
+          console.warn('[Auth] No refresh token available');
+          logout();
+          return false;
+        }
+
+        try {
+          console.log('[Auth] Refreshing access token...');
+          const response = await authService.refreshToken(refreshToken);
+
+          // Update state with new tokens
+          set({
+            token: response.access_token,
+            refreshToken: response.refresh_token,
+            user: response.user,
+            isAuthenticated: true,
+          });
+
+          // Update localStorage immediately
+          const authData = {
+            state: {
+              user: response.user,
+              token: response.access_token,
+              refreshToken: response.refresh_token,
+              isAuthenticated: true,
+            },
+            version: 0,
+          };
+          localStorage.setItem('bayit-auth', JSON.stringify(authData));
+          console.log('[Auth] Token refreshed successfully');
+
+          // Schedule next refresh
+          get().scheduleTokenRefresh();
+          return true;
+        } catch (error) {
+          console.error('[Auth] Failed to refresh token:', error);
+          // Refresh failed - log out user
+          logout();
+          return false;
+        }
+      },
+
+      // Schedule automatic token refresh before expiration
+      scheduleTokenRefresh: () => {
+        const { token, refreshToken, refreshTimeout } = get();
+
+        // Clear any existing timeout
+        if (refreshTimeout) {
+          clearTimeout(refreshTimeout);
+        }
+
+        if (!token || !refreshToken) {
+          return;
+        }
+
+        const payload = decodeToken(token);
+        if (!payload || !payload.exp) {
+          return;
+        }
+
+        // Calculate time until token expires
+        const expirationTime = payload.exp * 1000;
+        const now = Date.now();
+        const timeUntilExpiry = expirationTime - now;
+
+        // Refresh 5 minutes before expiration (or immediately if already expired)
+        const refreshTime = Math.max(0, timeUntilExpiry - (5 * 60 * 1000));
+
+        console.log(`[Auth] Scheduling token refresh in ${Math.round(refreshTime / 1000 / 60)} minutes`);
+
+        const timeout = setTimeout(() => {
+          get().refreshAccessToken();
+        }, refreshTime);
+
+        set({ refreshTimeout: timeout });
+      },
 
       login: async (email, password) => {
         set({ isLoading: true, error: null })
@@ -22,7 +128,8 @@ export const useAuthStore = create(
           // Update state
           set({
             user: response.user,
-            token: response.token,
+            token: response.token || response.access_token,
+            refreshToken: response.refresh_token,
             isAuthenticated: true,
             isLoading: false,
           })
@@ -33,13 +140,17 @@ export const useAuthStore = create(
           const authData = {
             state: {
               user: response.user,
-              token: response.token,
+              token: response.token || response.access_token,
+              refreshToken: response.refresh_token,
               isAuthenticated: true,
             },
             version: 0,
           }
           localStorage.setItem('bayit-auth', JSON.stringify(authData))
-          console.log('[Auth] Login - Token saved to localStorage:', response.token?.substring(0, 20) + '...')
+          console.log('[Auth] Login - Token saved to localStorage:', (response.token || response.access_token)?.substring(0, 20) + '...')
+
+          // Schedule automatic token refresh
+          get().scheduleTokenRefresh();
 
           return response
         } catch (error) {
@@ -56,7 +167,8 @@ export const useAuthStore = create(
           // Update state
           set({
             user: response.user,
-            token: response.token,
+            token: response.token || response.access_token,
+            refreshToken: response.refresh_token,
             isAuthenticated: true,
             isLoading: false,
           })
@@ -67,13 +179,17 @@ export const useAuthStore = create(
           const authData = {
             state: {
               user: response.user,
-              token: response.token,
+              token: response.token || response.access_token,
+              refreshToken: response.refresh_token,
               isAuthenticated: true,
             },
             version: 0,
           }
           localStorage.setItem('bayit-auth', JSON.stringify(authData))
-          console.log('[Auth] Register - Token saved to localStorage:', response.token?.substring(0, 20) + '...')
+          console.log('[Auth] Register - Token saved to localStorage:', (response.token || response.access_token)?.substring(0, 20) + '...')
+
+          // Schedule automatic token refresh
+          get().scheduleTokenRefresh();
 
           return response
         } catch (error) {
@@ -113,6 +229,7 @@ export const useAuthStore = create(
           set({
             user: response.user,
             token: response.access_token,
+            refreshToken: response.refresh_token,
             isAuthenticated: true,
             isLoading: false,
           })
@@ -124,12 +241,16 @@ export const useAuthStore = create(
             state: {
               user: response.user,
               token: response.access_token,
+              refreshToken: response.refresh_token,
               isAuthenticated: true,
             },
             version: 0,
           }
           localStorage.setItem('bayit-auth', JSON.stringify(authData))
           console.log('[AuthStore] Auth data saved to localStorage')
+
+          // Schedule automatic token refresh
+          get().scheduleTokenRefresh();
 
           return response
         } catch (error) {
@@ -140,11 +261,20 @@ export const useAuthStore = create(
       },
 
       logout: () => {
+        const { refreshTimeout } = get();
+
+        // Clear refresh timeout
+        if (refreshTimeout) {
+          clearTimeout(refreshTimeout);
+        }
+
         set({
           user: null,
           token: null,
+          refreshToken: null,
           isAuthenticated: false,
           error: null,
+          refreshTimeout: null,
         })
       },
 
@@ -175,12 +305,25 @@ export const useAuthStore = create(
       partialize: (state) => ({
         user: state.user,
         token: state.token,
+        refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
       }),
       onRehydrateStorage: () => (state) => {
         // Mark as hydrated after rehydration from localStorage
         if (state) {
           state.isHydrated = true;
+
+          // Schedule token refresh if we have a valid token
+          if (state.token && state.refreshToken) {
+            // Check if token will expire soon
+            if (willExpireSoon(state.token)) {
+              console.log('[Auth] Token will expire soon, refreshing immediately');
+              state.refreshAccessToken();
+            } else {
+              console.log('[Auth] Scheduling token refresh after rehydration');
+              state.scheduleTokenRefresh();
+            }
+          }
         }
       },
     }

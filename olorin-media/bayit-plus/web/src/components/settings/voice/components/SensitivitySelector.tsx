@@ -24,22 +24,19 @@ export function SensitivitySelector({
   const { t } = useTranslation();
 
   return (
-    <View className="pt-2 border-t border-white/5 mt-2">
+    <View style={styles.container}>
       <Text
-        className="text-sm font-medium text-white mb-1"
-        style={[isRTL && styles.textRight]}
+        style={[styles.title, isRTL && styles.textRight]}
       >
         {t('profile.voice.wakeWordSensitivity', 'Wake Word Sensitivity')}
       </Text>
       <Text
-        className="text-[13px] text-white/60 mb-4"
-        style={[isRTL && styles.textRight]}
+        style={[styles.description, isRTL && styles.textRight]}
       >
         {t('profile.voice.wakeWordSensitivityDesc', 'Higher sensitivity detects the wake word more easily but may cause false triggers')}
       </Text>
       <View
-        className="flex-row gap-2"
-        style={[isRTL && styles.flexRowReverse]}
+        style={[styles.optionsRow, isRTL && styles.flexRowReverse]}
       >
         {options.map((sensitivity) => {
           const isSelected = Math.abs(selectedSensitivity - sensitivity.value) < 0.1;
@@ -47,11 +44,12 @@ export function SensitivitySelector({
             <Pressable
               key={sensitivity.value}
               onPress={() => onSensitivityChange(sensitivity.value)}
-              className="flex-1 items-center justify-center py-4 rounded-lg"
-              style={[isSelected ? styles.sensitivitySelected : styles.sensitivityUnselected]}
+              style={[
+                styles.option,
+                isSelected ? styles.sensitivitySelected : styles.sensitivityUnselected
+              ]}
             >
               <Text
-                className="text-[13px]"
                 style={[isSelected ? styles.sensitivityTextSelected : styles.sensitivityTextUnselected]}
               >
                 {t(`profile.voice.${sensitivity.labelKey}`, sensitivity.labelKey)}
@@ -65,11 +63,39 @@ export function SensitivitySelector({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    marginTop: 8,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#ffffff',
+    marginBottom: 4,
+  },
+  description: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginBottom: 16,
+  },
+  optionsRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  option: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    borderRadius: 8,
+  },
   textRight: {
-    textAlign: 'right' as const,
+    textAlign: 'right',
   },
   flexRowReverse: {
-    flexDirection: 'row-reverse' as const,
+    flexDirection: 'row-reverse',
   },
   sensitivitySelected: {
     backgroundColor: 'rgba(126, 34, 206, 0.3)',
@@ -80,10 +106,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   sensitivityTextSelected: {
+    fontSize: 13,
     color: '#a855f7',
     fontWeight: '500',
   },
   sensitivityTextUnselected: {
+    fontSize: 13,
     color: '#ffffff',
   },
 });

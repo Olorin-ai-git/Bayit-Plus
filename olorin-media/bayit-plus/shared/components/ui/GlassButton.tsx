@@ -33,7 +33,6 @@ interface GlassButtonProps {
   fullWidth?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
-  className?: string;
   hasTVPreferredFocus?: boolean;
   /** Accessibility label (defaults to title if not provided) */
   accessibilityLabel?: string;
@@ -53,7 +52,6 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
   fullWidth = false,
   style,
   textStyle,
-  className,
   hasTVPreferredFocus = false,
   accessibilityLabel,
   accessibilityHint,

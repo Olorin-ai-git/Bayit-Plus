@@ -22,7 +22,7 @@ export function VoiceSearchSection({
   const { t } = useTranslation();
 
   return (
-    <GlassView className="p-6 gap-4">
+    <GlassView style={styles.container}>
       <Text style={[styles.sectionTitle, isRTL && styles.textRight]}>
         {t('profile.voice.voiceSearch', 'Voice Search')}
       </Text>
@@ -39,6 +39,10 @@ export function VoiceSearchSection({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    padding: 24,
+    gap: 16,
+  },
   sectionTitle: {
     fontSize: 13,
     fontWeight: '600',

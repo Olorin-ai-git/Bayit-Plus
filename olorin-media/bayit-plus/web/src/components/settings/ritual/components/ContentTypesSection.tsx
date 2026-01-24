@@ -7,7 +7,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Check } from 'lucide-react';
 import { GlassView } from '@bayit/shared/ui';
-import { colors } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { ContentTypesSectionProps, ContentOption, ContentType } from '../types';
 
 export function ContentTypesSection({
@@ -25,26 +25,26 @@ export function ContentTypesSection({
   ];
 
   return (
-    <GlassView className="p-4 gap-4" style={!enabled && styles.disabled}>
-      <Text className="text-[13px] font-semibold text-gray-400 uppercase tracking-wide" style={isRTL && styles.textRight}>
+    <GlassView style={[styles.container, !enabled && styles.disabled]}>
+      <Text style={[styles.sectionTitle, isRTL && styles.textRight]}>
         {t('settings.ritual.contentTypes')}
       </Text>
 
-      <View className="gap-2">
+      <View style={styles.optionsContainer}>
         {contentOptions.map((content) => {
           const isSelected = selectedContent.includes(content.id);
           return (
             <Pressable
               key={content.id}
               onPress={() => enabled && onToggle(content.id)}
-              className="flex-row items-center gap-3 p-3 rounded-lg"
               style={[
+                styles.contentOption,
                 isSelected ? styles.contentSelected : styles.contentUnselected,
                 isRTL && styles.rowReverse,
               ]}
             >
-              <Text className="text-[20px]">{content.icon}</Text>
-              <Text className="flex-1 text-[14px] text-white" style={isRTL && styles.textRight}>
+              <Text style={styles.contentIcon}>{content.icon}</Text>
+              <Text style={[styles.contentLabel, isRTL && styles.textRight]}>
                 {content.label}
               </Text>
               {isSelected && <Check size={18} color={colors.primary} />}
@@ -57,6 +57,43 @@ export function ContentTypesSection({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    padding: spacing.md,
+    gap: spacing.md,
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  optionsContainer: {
+    gap: spacing.sm,
+  },
+  contentOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 12,
+    borderRadius: borderRadius.lg,
+  },
+  contentSelected: {
+    backgroundColor: colors.glassPurple,
+    borderWidth: 1,
+    borderColor: colors.glassBorderFocus,
+  },
+  contentUnselected: {
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  },
+  contentIcon: {
+    fontSize: 20,
+  },
+  contentLabel: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.text,
+  },
   disabled: {
     opacity: 0.5,
   },
@@ -65,13 +102,5 @@ const styles = StyleSheet.create({
   },
   textRight: {
     textAlign: 'right',
-  },
-  contentSelected: {
-    backgroundColor: 'rgba(126, 34, 206, 0.3)',
-    borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.6)',
-  },
-  contentUnselected: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
   },
 });
