@@ -6,8 +6,9 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassButton } from '@bayit/glass';
 import { colors, borderRadius } from '../../theme/colors';
 
 // Platform-specific touch target sizes
@@ -45,7 +46,8 @@ export function SearchSemanticToggle({
       <View style={styles.toggleContainer}>
         <Text style={[styles.label, !enabled && styles.labelActive]}>{t('semantic.keyword')}</Text>
 
-        <TouchableOpacity
+        <GlassButton
+          variant="ghost"
           style={[styles.switchTrack, isSwitchFocused && Platform.isTV && styles.switchFocused]}
           onPress={() => onToggle(!enabled)}
           onFocus={() => setIsSwitchFocused(true)}
@@ -57,13 +59,14 @@ export function SearchSemanticToggle({
           accessibilityLabel={t('semantic.keyword') + ' / ' + t('semantic.semantic')}
         >
           <View style={[styles.switchThumb, enabled && styles.switchThumbActive]} />
-        </TouchableOpacity>
+        </GlassButton>
 
         <Text style={[styles.label, enabled && styles.labelActive]}>{t('semantic.semantic')}</Text>
 
         {/* Info Button */}
         {showInfo && (
-          <TouchableOpacity
+          <GlassButton
+            variant="ghost"
             style={[styles.infoButton, isInfoFocused && Platform.isTV && styles.infoButtonFocused]}
             onPress={() => setShowTooltip(!showTooltip)}
             onFocus={() => setIsInfoFocused(true)}
@@ -72,7 +75,7 @@ export function SearchSemanticToggle({
             accessibilityLabel={t('semantic.infoTitle')}
           >
             <Text style={styles.infoIcon}>ℹ️</Text>
-          </TouchableOpacity>
+          </GlassButton>
         )}
       </View>
 

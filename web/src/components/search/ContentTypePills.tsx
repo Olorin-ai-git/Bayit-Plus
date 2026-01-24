@@ -5,8 +5,9 @@
  */
 
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Platform } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassButton } from '@bayit/glass';
 import type { ContentType } from './SearchControls';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 
@@ -50,8 +51,9 @@ export function ContentTypePills({ selected, onChange }: ContentTypePillsProps) 
         const isFocused = focusedType === type;
 
         return (
-          <TouchableOpacity
+          <GlassButton
             key={type}
+            variant={isSelected ? 'primary' : 'ghost'}
             style={[
               styles.pill,
               isSelected && styles.pillActive,
@@ -62,7 +64,6 @@ export function ContentTypePills({ selected, onChange }: ContentTypePillsProps) 
             onBlur={() => setFocusedType(null)}
             focusable={Platform.isTV}
             hasTVPreferredFocus={isSelected && Platform.isTV}
-            accessibilityRole="button"
             accessibilityLabel={t(`controls.contentTypes.${label}`)}
             accessibilityState={{ selected: isSelected }}
           >
@@ -70,7 +71,7 @@ export function ContentTypePills({ selected, onChange }: ContentTypePillsProps) 
             <Text style={[styles.label, isSelected && styles.labelActive]}>
               {t(`controls.contentTypes.${label}`)}
             </Text>
-          </TouchableOpacity>
+          </GlassButton>
         );
       })}
     </ScrollView>

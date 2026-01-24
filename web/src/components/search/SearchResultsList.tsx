@@ -6,7 +6,8 @@
  */
 
 import React, { memo, useCallback } from 'react';
-import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { GlassButton } from '@bayit/glass';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 
@@ -32,11 +33,11 @@ export const SearchResultsList = memo(function SearchResultsList({
   isLoadingMore,
 }: SearchResultsListProps) {
   const renderItem = useCallback(({ item, index }: { item: SearchResult; index: number }) => (
-    <TouchableOpacity
+    <GlassButton
+      variant="ghost"
       style={styles.listItem}
       onPress={() => onResultClick?.(item, index)}
       accessibilityLabel={`${item.title} - ${item.category_name || 'Content'}`}
-      accessibilityRole="button"
     >
       {/* Thumbnail */}
       <View style={styles.thumbnailContainer}>
@@ -77,7 +78,7 @@ export const SearchResultsList = memo(function SearchResultsList({
           </View>
         )}
       </View>
-    </TouchableOpacity>
+    </GlassButton>
   ), [onResultClick]);
 
   const keyExtractor = useCallback((item: SearchResult) => item.id, []);

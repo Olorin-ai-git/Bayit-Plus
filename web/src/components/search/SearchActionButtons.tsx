@@ -5,8 +5,9 @@
  */
 
 import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassButton } from '@bayit/glass';
 import { VoiceSearchButton } from '../../../../shared/components/VoiceSearchButton';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 
@@ -58,7 +59,8 @@ export function SearchActionButtons({
 
       {/* LLM Search Button (Premium) */}
       {showLLMSearch && onLLMSearchClick && (
-        <TouchableOpacity
+        <GlassButton
+          variant="ghost"
           style={[
             styles.button,
             focusedButton === 'llm' && Platform.isTV && styles.buttonFocused,
@@ -71,12 +73,13 @@ export function SearchActionButtons({
           accessibilityHint={t('controls.hints.llmSearch')}
         >
           <Text style={styles.buttonIcon}>✨</Text>
-        </TouchableOpacity>
+        </GlassButton>
       )}
 
       {/* Filters Button */}
       {showFilters && onFiltersClick && (
-        <TouchableOpacity
+        <GlassButton
+          variant="ghost"
           style={[
             styles.button,
             focusedButton === 'filters' && Platform.isTV && styles.buttonFocused,
@@ -89,7 +92,7 @@ export function SearchActionButtons({
           accessibilityHint={t('controls.hints.filters')}
         >
           <Text style={styles.buttonIcon}>⚙️</Text>
-        </TouchableOpacity>
+        </GlassButton>
       )}
     </View>
   );

@@ -6,8 +6,9 @@
  */
 
 import React, { useMemo } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassButton } from '@bayit/glass';
 import { sanitizeText, sanitizeCategory } from '../../utils/sanitize';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 
@@ -66,15 +67,15 @@ export function SearchSuggestionsPanel({
           <Text style={styles.sectionTitle}>{t('suggestions.trendingTitle')}</Text>
           <View style={styles.itemsContainer}>
             {sanitizedTrending.map((search, index) => (
-              <TouchableOpacity
+              <GlassButton
                 key={index}
+                variant="ghost"
                 style={styles.trendingItem}
                 onPress={() => onSearchSelect(search)}
                 accessibilityLabel={`Search for ${search}`}
-                accessibilityRole="button"
               >
                 <Text style={styles.trendingText}>{search}</Text>
-              </TouchableOpacity>
+              </GlassButton>
             ))}
           </View>
         </View>
@@ -86,16 +87,16 @@ export function SearchSuggestionsPanel({
           <Text style={styles.sectionTitle}>{t('suggestions.categoriesTitle')}</Text>
           <View style={styles.categoriesGrid}>
             {sanitizedCategories.map((category, index) => (
-              <TouchableOpacity
+              <GlassButton
                 key={index}
+                variant="secondary"
                 style={styles.categoryChip}
                 onPress={() => onSearchSelect(category.name)}
                 accessibilityLabel={`Browse ${category.name}`}
-                accessibilityRole="button"
               >
                 <Text style={styles.categoryEmoji}>{category.emoji}</Text>
                 <Text style={styles.categoryName}>{category.name}</Text>
-              </TouchableOpacity>
+              </GlassButton>
             ))}
           </View>
         </View>
@@ -107,26 +108,27 @@ export function SearchSuggestionsPanel({
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>{t('suggestions.recentTitle')}</Text>
             {onClearRecent && (
-              <TouchableOpacity
+              <GlassButton
+                variant="ghost"
                 onPress={onClearRecent}
                 accessibilityLabel={t('suggestions.clearRecent')}
               >
                 <Text style={styles.clearButton}>{t('suggestions.clearRecent')}</Text>
-              </TouchableOpacity>
+              </GlassButton>
             )}
           </View>
           <View style={styles.itemsContainer}>
             {sanitizedRecent.map((search, index) => (
-              <TouchableOpacity
+              <GlassButton
                 key={index}
+                variant="ghost"
                 style={styles.recentItem}
                 onPress={() => onSearchSelect(search)}
                 accessibilityLabel={`Search for ${search}`}
-                accessibilityRole="button"
               >
                 <Text style={styles.recentIcon}>🕐</Text>
                 <Text style={styles.recentText}>{search}</Text>
-              </TouchableOpacity>
+              </GlassButton>
             ))}
           </View>
         </View>

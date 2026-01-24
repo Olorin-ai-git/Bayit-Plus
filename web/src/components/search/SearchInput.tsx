@@ -5,8 +5,9 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassInput, GlassButton } from '@bayit/glass';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 
 interface SearchInputProps {
@@ -20,6 +21,7 @@ interface SearchInputProps {
 
 /**
  * Text input with integrated clear button
+ * Uses Glass components for consistent UI
  */
 export function SearchInput({ value, onChangeText, placeholder }: SearchInputProps) {
   const { t } = useTranslation('search');
@@ -28,7 +30,7 @@ export function SearchInput({ value, onChangeText, placeholder }: SearchInputPro
   return (
     <View style={[styles.container, isFocused && styles.containerFocused]}>
       <Text style={styles.icon}>🔍</Text>
-      <TextInput
+      <GlassInput
         style={styles.input}
         value={value}
         onChangeText={onChangeText}
@@ -40,13 +42,14 @@ export function SearchInput({ value, onChangeText, placeholder }: SearchInputPro
         accessibilityHint={t('controls.hints.searchInput')}
       />
       {value.length > 0 && (
-        <TouchableOpacity
+        <GlassButton
+          variant="ghost"
           onPress={() => onChangeText('')}
           style={styles.clearButton}
           accessibilityLabel={t('empty.clearSearch')}
         >
           <Text style={styles.clearIcon}>✕</Text>
-        </TouchableOpacity>
+        </GlassButton>
       )}
     </View>
   );
