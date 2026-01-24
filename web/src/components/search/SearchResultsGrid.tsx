@@ -7,7 +7,7 @@
 
 import React, { memo, useCallback, useState, useMemo } from 'react';
 import { View, Text, Image, FlatList, StyleSheet, Platform, ActivityIndicator } from 'react-native';
-import { GlassButton } from '../../../../../shared/components/ui/GlassButton';
+import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 
