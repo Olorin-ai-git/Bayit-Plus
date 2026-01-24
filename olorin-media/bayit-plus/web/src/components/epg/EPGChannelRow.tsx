@@ -1,4 +1,5 @@
 import React from 'react'
+import { View, Text, Image, StyleSheet, ScrollView } from 'react-native'
 import { Channel, EPGProgram } from '@/services/epgApi'
 import EPGTimeSlot from './EPGTimeSlot'
 import { RecordingStatus } from './EPGRecordingIndicator'
@@ -28,33 +29,27 @@ const EPGChannelRow: React.FC<EPGChannelRowProps> = ({
   getRecordingStatus,
   onRecordClick
 }) => {
-  // Filter programs for this channel
   const channelPrograms = programs.filter(p => p.channel_id === channel.id)
 
   return (
-    <div className="flex border-b border-white/5">
-      {/* Channel Info */}
-      <div
-        className="flex-shrink-0 flex items-center gap-3 px-4 bg-black/30 backdrop-blur-xl border-r border-white/10"
-        style={{ width: '200px', height: `${cellHeight}px` }}
-      >
+    <View style={styles.container}>
+      <View style={[styles.channelInfo, { width: 200, height: cellHeight }]}>
         {channel.logo && (
-          <img
-            src={channel.logo}
+          <Image
+            source={{ uri: channel.logo }}
             alt={channel.name}
-            className="w-10 h-10 object-contain rounded"
+            style={styles.channelLogo}
           />
         )}
-        <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-white truncate">{channel.name}</h3>
+        <View style={styles.channelDetails}>
+          <Text style={styles.channelName} numberOfLines={1}>{channel.name}</Text>
           {channel.requires_subscription === 'premium' && (
-            <span className="text-xs text-yellow-400">⭐ Premium</span>
+            <Text style={styles.premiumBadge}>⭐ Premium</Text>
           )}
-        </div>
-      </div>
+        </View>
+      </View>
 
-      {/* Programs */}
-      <div className="flex flex-1 overflow-x-auto scrollbar-thin">
+      <ScrollView horizontal style={styles.programsContainer}>
         {channelPrograms.length > 0 ? (
           channelPrograms.map(program => (
             <EPGTimeSlot
@@ -70,16 +65,62 @@ const EPGChannelRow: React.FC<EPGChannelRowProps> = ({
             />
           ))
         ) : (
-          <div
-            className="flex items-center justify-center text-white/40 text-sm"
-            style={{ width: `${cellWidth * 4}px`, height: `${cellHeight}px` }}
-          >
-            No programs scheduled
-          </div>
+          <View style={[styles.noProgramsContainer, { width: cellWidth * 4, height: cellHeight }]}>
+            <Text style={styles.noProgramsText}>No programs scheduled</Text>
+          </View>
         )}
-      </div>
-    </div>
+      </ScrollView>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  channelInfo: {
+    flexShrink: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backdropFilter: 'blur(16px)',
+    borderRightWidth: 1,
+    borderRightColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  channelLogo: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+    borderRadius: 4,
+  },
+  channelDetails: {
+    flex: 1,
+    minWidth: 0,
+  },
+  channelName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  premiumBadge: {
+    fontSize: 12,
+    color: '#fbbf24',
+  },
+  programsContainer: {
+    flex: 1,
+  },
+  noProgramsContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noProgramsText: {
+    color: 'rgba(255, 255, 255, 0.4)',
+    fontSize: 14,
+  },
+})
 
 export default EPGChannelRow
