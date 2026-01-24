@@ -3,17 +3,20 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Modal,
   Animated,
   Platform,
   ActivityIndicator,
+  StyleSheet,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { GlassView } from './ui';
-import { colors } from '../theme';
+import { GlassView, GlassModal } from './ui';
+import { colors, spacing, borderRadius } from '../theme';
 import { useVoiceSettingsStore } from '../stores/voiceSettingsStore';
 import { useWakeWordListening } from '../hooks/useWakeWordListening';
 import { VoiceListeningContext } from '../contexts/VoiceListeningContext';
+import { get_logger } from '../core/logging';
+
+const logger = get_logger('VoiceSearchButton');
 
 interface VoiceSearchButtonProps {
   onResult: (text: string) => void;
@@ -26,6 +29,19 @@ interface VoiceSearchButtonProps {
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+
+// Platform-specific sizes
+const BUTTON_SIZE = Platform.select({
+  ios: 44,
+  android: 44,
+  default: IS_TV_BUILD ? 80 : 44,
+});
+
+const MODAL_ICON_SIZE = Platform.select({
+  ios: 96,
+  android: 96,
+  default: IS_TV_BUILD ? 128 : 96,
+});
 
 export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
   onResult,
@@ -54,19 +70,13 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
   const voiceContext = useContext(VoiceListeningContext);
 
   // Determine if wake word listening should be enabled
-  // Only enable if the toggle button is pressed
   const shouldEnableConstantListening = isListeningToggle;
 
   // Memoize transcript handler to set processing state
   const handleTranscriptReceived = useCallback((text: string) => {
-    console.log('[VoiceSearchButton] Transcript received:', text.substring(0, 50));
-    // Set processing state to show "Processing..." on soundwave
+    logger.info('Transcript received', { textLength: text.length });
     setIsProcessingTranscription(true);
-
-    // Call the parent's result handler
     onResult(text);
-
-    // Clear processing state after 2 seconds (allows backend to take over)
     setTimeout(() => {
       setIsProcessingTranscription(false);
     }, 2000);
@@ -95,7 +105,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
       // Trigger visual feedback
     },
     onError: (err) => {
-      console.error('[VoiceSearchButton] Voice listening error:', err);
+      logger.error('Voice listening error', { error: err.message });
       setError(err.message || 'Microphone error');
     },
     transcribeAudio,
@@ -126,7 +136,6 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
   // Wake word detection animation
   useEffect(() => {
     if (wakeWordDetected) {
-      // Flash animation for wake word detection
       Animated.sequence([
         Animated.parallel([
           Animated.timing(wakeWordPulseAnim, {
@@ -159,7 +168,6 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
   // Subtle listening animation when wake word listening is active
   useEffect(() => {
     if (isConstantListening && !isAwake && !isRecording) {
-      // Subtle glow pulse for idle wake word listening
       Animated.loop(
         Animated.sequence([
           Animated.timing(glowAnim, {
@@ -178,11 +186,8 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
   }, [isConstantListening, isAwake, isRecording, glowAnim]);
 
   // Update global voice listening context when this button's state changes
-  // This ensures the soundwave indicator updates when the user clicks the voice button
-  // Store the setListeningState function in a ref to avoid dependency loops
   const setListeningStateRef = useRef(voiceContext?.setListeningState);
 
-  // Update the ref when context changes (stable due to useCallback in context)
   useEffect(() => {
     if (voiceContext?.setListeningState) {
       setListeningStateRef.current = voiceContext.setListeningState;
@@ -193,14 +198,9 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
   useEffect(() => {
     const isProcessing = isRecording || isTranscribing || isProcessingTranscription;
     if (setListeningStateRef.current) {
-      console.log('[VoiceSearchButton] Updating context:', {
+      logger.debug('Updating listening context', {
         isListening: isListeningToggle && isConstantListening,
         isProcessing,
-        isRecording,
-        isTranscribing,
-        isProcessingTranscription,
-        isListeningToggle,
-        isConstantListening,
       });
       setListeningStateRef.current({
         isListening: isListeningToggle && isConstantListening,
@@ -211,7 +211,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
 
   const handleTranscription = useCallback(async (audioBlob: Blob) => {
     if (!transcribeAudio) {
-      console.error('No transcribeAudio function provided');
+      logger.error('No transcribeAudio function provided');
       setError(t('voice.transcriptionNotAvailable', 'Transcription not available'));
       setShowModal(false);
       return;
@@ -229,7 +229,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
       }
       setShowModal(false);
     } catch (err) {
-      console.error('Transcription failed:', err);
+      logger.error('Transcription failed', { error: err });
       setError(t('voice.transcriptionFailed', 'Transcription failed'));
     } finally {
       setIsTranscribing(false);
@@ -238,7 +238,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
 
   const startRecording = useCallback(async () => {
     if (Platform.OS !== 'web') {
-      console.log('Voice recording not supported on this platform yet');
+      logger.info('Voice recording not supported on this platform');
       return;
     }
 
@@ -257,7 +257,6 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
           mimeType: 'audio/webm',
         });
       } else {
-        // Fallback - let browser choose format
         mediaRecorder = new MediaRecorder(stream);
       }
 
@@ -280,7 +279,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
       setIsRecording(true);
       setShowModal(true);
     } catch (err) {
-      console.error('Failed to start recording:', err);
+      logger.error('Failed to start recording', { error: err });
       setError(t('voice.micPermissionDenied', 'Microphone permission denied'));
       setShowModal(true);
     }
@@ -297,16 +296,13 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
   const [debugFlash, setDebugFlash] = useState(false);
 
   const handlePress = useCallback(() => {
-    console.log('[VoiceSearchButton] handlePress called!');
-
-    // Visual feedback - flash the button to confirm press was received
+    logger.info('Voice button pressed');
     setDebugFlash(true);
     setTimeout(() => setDebugFlash(false), 500);
 
-    // Toggle voice listening on/off - always enabled
     setIsListeningToggle(prev => {
       const newValue = !prev;
-      console.log('[VoiceSearchButton] Voice listening toggled to:', newValue);
+      logger.info('Voice listening toggled', { enabled: newValue });
       return newValue;
     });
   }, []);
@@ -316,7 +312,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
     if (Platform.OS !== 'web') return;
 
     const handleRemoteVoiceTrigger = () => {
-      console.log('[VoiceSearchButton] Remote voice trigger received');
+      logger.info('Remote voice trigger received');
       handlePress();
     };
 
@@ -351,8 +347,6 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
 
   // Handle keyboard events for TV remote (Enter/OK button)
   const handleKeyDown = useCallback((event: any) => {
-    console.log('[VoiceSearchButton] keyDown event:', event.keyCode);
-    // Enter key (13) or Space (32) triggers the button
     if (event.keyCode === 13 || event.keyCode === 32) {
       event.preventDefault();
       event.stopPropagation();
@@ -362,35 +356,29 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
 
   // Native click handler for Tizen compatibility
   const handleClick = useCallback((event: any) => {
-    console.log('[VoiceSearchButton] click event received');
     event.preventDefault();
     event.stopPropagation();
     handlePress();
   }, [handlePress]);
 
-  // Get button classes based on state
-  const getButtonClasses = () => {
-    let classes = 'w-11 h-11 justify-center items-center rounded-lg bg-white/5 border relative overflow-hidden';
-
+  // Get button style based on state
+  const getButtonStyle = () => {
     if (debugFlash) {
-      classes += ' bg-green-500 border-green-500';
+      return [styles.button, styles.buttonDebug];
     } else if (buttonState === 'recording') {
-      classes += ' bg-red-500/20 border-red-500';
+      return [styles.button, styles.buttonRecording];
     } else if (buttonState === 'wakeword') {
-      classes += ' bg-purple-500/60 border-purple-500';
+      return [styles.button, styles.buttonWakeWord];
     } else if (buttonState === 'processing') {
-      classes += ' bg-amber-500/20 border-amber-400';
+      return [styles.button, styles.buttonProcessing];
     } else if (isListeningToggle) {
-      classes += ' bg-purple-500/30 border-purple-500';
+      return [styles.button, styles.buttonListeningActive];
     } else if (isFocused) {
-      classes += ' border-purple-500 bg-purple-500/30';
+      return [styles.button, styles.buttonFocused];
     } else if (buttonState === 'listening') {
-      classes += ' bg-white/[0.08] border-transparent';
-    } else {
-      classes += ' border-transparent';
+      return [styles.button, styles.buttonListening];
     }
-
-    return classes;
+    return styles.button;
   };
 
   return (
@@ -405,24 +393,28 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
         onClick={handleClick}
         accessibilityRole="button"
         accessibilityLabel="Toggle voice listening"
-        className={getButtonClasses()}
+        style={getButtonStyle()}
       >
         <Animated.View
-          className="relative"
-          style={{
-            transform: [
-              { scale: isRecording || isAwake ? pulseAnim : wakeWordPulseAnim },
-            ],
-          }}
+          style={[
+            styles.iconContainer,
+            {
+              transform: [
+                { scale: isRecording || isAwake ? pulseAnim : wakeWordPulseAnim },
+              ],
+            },
+          ]}
         >
           {/* Glow effect for listening state */}
           {isConstantListening && (
             <Animated.View
-              className="absolute -inset-5 rounded-full blur-[15px]"
-              style={{
-                opacity: glowAnim,
-                backgroundColor: wakeWordDetected ? colors.primary : colors.textSecondary,
-              }}
+              style={[
+                styles.glow,
+                {
+                  opacity: glowAnim,
+                  backgroundColor: wakeWordDetected ? colors.primary : colors.textSecondary,
+                },
+              ]}
             />
           )}
 
@@ -430,9 +422,10 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
             <ActivityIndicator size="small" color={colors.primary} />
           ) : (
             <Text
-              className={`text-xl ${
-                buttonState === 'listening' ? 'opacity-70' : ''
-              }`}
+              style={[
+                styles.icon,
+                buttonState === 'listening' && styles.iconListening,
+              ]}
             >
               🎤
             </Text>
@@ -441,13 +434,15 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
 
         {/* Audio level indicator for wake word listening */}
         {isConstantListening && audioLevel.average > 0.01 && (
-          <View className="absolute bottom-0.5 left-1 right-1 h-0.5 bg-white/10 rounded-sm overflow-hidden">
+          <View style={styles.audioLevelContainer}>
             <View
-              className="h-full rounded-sm"
-              style={{
-                width: `${Math.min(100, audioLevel.average * 500)}%`,
-                backgroundColor: colors.primary,
-              }}
+              style={[
+                styles.audioLevelBar,
+                {
+                  width: `${Math.min(100, audioLevel.average * 500)}%`,
+                  backgroundColor: colors.primary,
+                },
+              ]}
             />
           </View>
         )}
@@ -455,74 +450,220 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
         {/* Status indicator dot */}
         {isConstantListening && (
           <View
-            className={`absolute top-1 right-1 w-1.5 h-1.5 rounded-full ${
-              buttonState === 'recording' ? 'bg-red-500' :
-              buttonState === 'wakeword' ? 'bg-purple-500' :
-              buttonState === 'listening' ? 'bg-green-500' :
-              'bg-gray-400'
-            }`}
+            style={[
+              styles.statusDot,
+              buttonState === 'recording' && styles.statusDotRecording,
+              buttonState === 'wakeword' && styles.statusDotWakeWord,
+              buttonState === 'listening' && styles.statusDotListening,
+            ]}
           />
         )}
       </TouchableOpacity>
 
-      <Modal
+      <GlassModal
         visible={showModal}
-        transparent
-        animationType="fade"
-        onRequestClose={handleCancel}
+        onClose={handleCancel}
+        title=""
+        showCloseButton={false}
       >
-        <View className="flex-1 bg-black/80 justify-center items-center">
-          <GlassView intensity="high" className="w-[300px] p-6 rounded-xl items-center">
-            <Animated.View
-              className="mb-4"
-              style={{ transform: [{ scale: isRecording ? pulseAnim : 1 }] }}
+        <View style={styles.modalContent}>
+          <Animated.View
+            style={[
+              styles.modalIconContainer,
+              { transform: [{ scale: isRecording ? pulseAnim : 1 }] },
+            ]}
+          >
+            <View
+              style={[
+                styles.modalIcon,
+                isRecording && styles.modalIconRecording,
+                isTranscribing && styles.modalIconTranscribing,
+              ]}
             >
-              <View
-                className={`w-24 h-24 rounded-full justify-center items-center border-[3px] ${
-                  isRecording ? 'bg-red-500/20 border-red-500' :
-                  isTranscribing ? 'bg-purple-500/30 border-purple-500' :
-                  'bg-purple-500/30 border-purple-500'
-                }`}
-              >
-                {isTranscribing ? (
-                  <ActivityIndicator size="large" color={colors.primary} />
-                ) : (
-                  <Text className="text-[40px]">🎤</Text>
-                )}
-              </View>
-            </Animated.View>
+              {isTranscribing ? (
+                <ActivityIndicator size="large" color={colors.primary} />
+              ) : (
+                <Text style={styles.modalIconText}>🎤</Text>
+              )}
+            </View>
+          </Animated.View>
 
-            <Text className="text-xl font-bold text-white mb-3">
+          <Text style={styles.modalTitle}>
+            {isRecording
+              ? t('voice.listening', 'Listening...')
+              : isTranscribing
+                ? t('voice.transcribing', 'Transcribing...')
+                : t('voice.processing', 'Processing...')}
+          </Text>
+
+          {error ? (
+            <Text style={styles.modalError}>{error}</Text>
+          ) : (
+            <Text style={styles.modalDescription}>
               {isRecording
-                ? t('voice.listening', 'Listening...')
-                : isTranscribing
-                  ? t('voice.transcribing', 'Transcribing...')
-                  : t('voice.processing', 'Processing...')}
+                ? t('voice.tapToStop', 'Tap to stop recording')
+                : t('voice.pleaseWait', 'Please wait...')}
             </Text>
+          )}
 
-            {error ? (
-              <Text className="text-sm text-red-500 mb-4 text-center">{error}</Text>
-            ) : (
-              <Text className="text-sm text-gray-400 mb-4 text-center">
-                {isRecording
-                  ? t('voice.tapToStop', 'Tap to stop recording')
-                  : t('voice.pleaseWait', 'Please wait...')}
-              </Text>
-            )}
-
-            <TouchableOpacity
-              onPress={handleCancel}
-              className="py-2 px-6 rounded-md bg-white/10"
-            >
-              <Text className="text-base text-gray-400">{t('common.cancel', 'Cancel')}</Text>
-            </TouchableOpacity>
-          </GlassView>
+          <TouchableOpacity
+            onPress={handleCancel}
+            style={styles.cancelButton}
+          >
+            <Text style={styles.cancelButtonText}>{t('common.cancel', 'Cancel')}</Text>
+          </TouchableOpacity>
         </View>
-      </Modal>
-
-      {/* Voice listening status indicator - removed as SoundwaveParticles panel shows status */}
+      </GlassModal>
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  button: {
+    width: BUTTON_SIZE,
+    height: BUTTON_SIZE,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.glass,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  buttonDebug: {
+    backgroundColor: colors.success,
+    borderColor: colors.success,
+  },
+  buttonRecording: {
+    backgroundColor: colors.glassOverlayPurple,
+    borderColor: colors.error,
+  },
+  buttonWakeWord: {
+    backgroundColor: colors.glassPurple,
+    borderColor: colors.primary,
+  },
+  buttonProcessing: {
+    backgroundColor: colors.glassOverlay,
+    borderColor: colors.warning,
+  },
+  buttonListeningActive: {
+    backgroundColor: colors.glassPurpleLight,
+    borderColor: colors.primary,
+  },
+  buttonFocused: {
+    borderColor: colors.primary,
+    backgroundColor: colors.glassPurpleLight,
+  },
+  buttonListening: {
+    backgroundColor: colors.glassLight,
+    borderColor: 'transparent',
+  },
+  iconContainer: {
+    position: 'relative',
+  },
+  glow: {
+    position: 'absolute',
+    top: -20,
+    left: -20,
+    right: -20,
+    bottom: -20,
+    borderRadius: 100,
+  },
+  icon: {
+    fontSize: 20,
+  },
+  iconListening: {
+    opacity: 0.7,
+  },
+  audioLevelContainer: {
+    position: 'absolute',
+    bottom: 2,
+    left: 4,
+    right: 4,
+    height: 2,
+    backgroundColor: colors.glassLight,
+    borderRadius: 1,
+    overflow: 'hidden',
+  },
+  audioLevelBar: {
+    height: '100%',
+    borderRadius: 1,
+  },
+  statusDot: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.textMuted,
+  },
+  statusDotRecording: {
+    backgroundColor: colors.error,
+  },
+  statusDotWakeWord: {
+    backgroundColor: colors.primary,
+  },
+  statusDotListening: {
+    backgroundColor: colors.success,
+  },
+  modalContent: {
+    alignItems: 'center',
+    paddingVertical: spacing.lg,
+  },
+  modalIconContainer: {
+    marginBottom: spacing.md,
+  },
+  modalIcon: {
+    width: MODAL_ICON_SIZE,
+    height: MODAL_ICON_SIZE,
+    borderRadius: MODAL_ICON_SIZE / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    backgroundColor: colors.glassPurpleLight,
+    borderColor: colors.primary,
+  },
+  modalIconRecording: {
+    backgroundColor: colors.glassOverlayPurple,
+    borderColor: colors.error,
+  },
+  modalIconTranscribing: {
+    backgroundColor: colors.glassPurpleLight,
+    borderColor: colors.primary,
+  },
+  modalIconText: {
+    fontSize: 40,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  modalError: {
+    fontSize: 14,
+    color: colors.error,
+    marginBottom: spacing.md,
+    textAlign: 'center',
+  },
+  modalDescription: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginBottom: spacing.md,
+    textAlign: 'center',
+  },
+  cancelButton: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.glassLight,
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    color: colors.textSecondary,
+  },
+});
 
 export default VoiceSearchButton;
