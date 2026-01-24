@@ -48,13 +48,13 @@ export const useAuthStore = create(
         const { refreshToken, logout } = get();
 
         if (!refreshToken) {
-          console.warn('[Auth] No refresh token available');
+          authLogger.warn('No refresh token available');
           logout();
           return false;
         }
 
         try {
-          console.log('[Auth] Refreshing access token...');
+          authLogger.info('Refreshing access token');
           const response = await authService.refreshToken(refreshToken);
 
           // Update state with new tokens
@@ -76,13 +76,13 @@ export const useAuthStore = create(
             version: 0,
           };
           localStorage.setItem('bayit-auth', JSON.stringify(authData));
-          console.log('[Auth] Token refreshed successfully');
+          authLogger.info('Token refreshed successfully');
 
           // Schedule next refresh
           get().scheduleTokenRefresh();
           return true;
         } catch (error) {
-          console.error('[Auth] Failed to refresh token:', error);
+          authLogger.error('Failed to refresh token', error);
           // Refresh failed - log out user
           logout();
           return false;
@@ -115,7 +115,7 @@ export const useAuthStore = create(
         // Refresh 5 minutes before expiration (or immediately if already expired)
         const refreshTime = Math.max(0, timeUntilExpiry - (5 * 60 * 1000));
 
-        console.log(`[Auth] Scheduling token refresh in ${Math.round(refreshTime / 1000 / 60)} minutes`);
+        authLogger.info(`Scheduling token refresh in ${Math.round(refreshTime / 1000 / 60)} minutes`);
 
         const timeout = setTimeout(() => {
           get().refreshAccessToken();
@@ -151,7 +151,9 @@ export const useAuthStore = create(
             version: 0,
           }
           localStorage.setItem('bayit-auth', JSON.stringify(authData))
-          console.log('[Auth] Login - Token saved to localStorage:', (response.token || response.access_token)?.substring(0, 20) + '...')
+          authLogger.info('Login successful - Token saved to localStorage', {
+            tokenPreview: (response.token || response.access_token)?.substring(0, 20) + '...'
+          });
 
           // Schedule automatic token refresh
           get().scheduleTokenRefresh();
@@ -190,7 +192,9 @@ export const useAuthStore = create(
             version: 0,
           }
           localStorage.setItem('bayit-auth', JSON.stringify(authData))
-          console.log('[Auth] Register - Token saved to localStorage:', (response.token || response.access_token)?.substring(0, 20) + '...')
+          authLogger.info('Registration successful - Token saved to localStorage', {
+            tokenPreview: (response.token || response.access_token)?.substring(0, 20) + '...'
+          });
 
           // Schedule automatic token refresh
           get().scheduleTokenRefresh();
@@ -207,27 +211,32 @@ export const useAuthStore = create(
         try {
           // Build redirect URI dynamically based on current origin
           const redirectUri = `${window.location.origin}/auth/google/callback`
-          console.log('[Auth] Starting Google login with redirect URI:', redirectUri)
+          authLogger.info('Starting Google login', { redirectUri });
           const response = await authService.getGoogleAuthUrl(redirectUri)
-          console.log('[Auth] Got Google auth URL:', response.url)
-          console.log('[Auth] Redirecting to Google...')
+          authLogger.info('Got Google auth URL, redirecting', { url: response.url });
           window.location.href = response.url
         } catch (error) {
-          console.error('[Auth] Error getting Google auth URL:', error)
+          authLogger.error('Error getting Google auth URL', error);
           set({ error: error.message, isLoading: false })
           throw error
         }
       },
 
       handleGoogleCallback: async (code, state) => {
-        console.log('[AuthStore] handleGoogleCallback called:', { codePreview: code?.substring(0, 20), hasState: !!state })
+        authLogger.info('handleGoogleCallback called', {
+          codePreview: code?.substring(0, 20),
+          hasState: !!state
+        });
         set({ isLoading: true, error: null })
         try {
           // Build redirect URI dynamically based on current origin
           const redirectUri = `${window.location.origin}/auth/google/callback`
-          console.log('[AuthStore] Calling authService.googleCallback with redirectUri:', redirectUri)
+          authLogger.info('Calling authService.googleCallback', { redirectUri });
           const response = await authService.googleCallback(code, redirectUri, state)
-          console.log('[AuthStore] googleCallback response received:', { hasUser: !!response?.user, hasToken: !!response?.access_token })
+          authLogger.info('googleCallback response received', {
+            hasUser: !!response?.user,
+            hasToken: !!response?.access_token
+          });
 
           // Update state
           set({
@@ -251,14 +260,14 @@ export const useAuthStore = create(
             version: 0,
           }
           localStorage.setItem('bayit-auth', JSON.stringify(authData))
-          console.log('[AuthStore] Auth data saved to localStorage')
+          authLogger.info('Auth data saved to localStorage');
 
           // Schedule automatic token refresh
           get().scheduleTokenRefresh();
 
           return response
         } catch (error) {
-          console.error('[AuthStore] handleGoogleCallback error:', error)
+          authLogger.error('handleGoogleCallback error', error);
           set({ error: error.message, isLoading: false })
           throw error
         }
@@ -321,10 +330,10 @@ export const useAuthStore = create(
           if (state.token && state.refreshToken) {
             // Check if token will expire soon
             if (willExpireSoon(state.token)) {
-              console.log('[Auth] Token will expire soon, refreshing immediately');
+              authLogger.info('Token will expire soon, refreshing immediately');
               state.refreshAccessToken();
             } else {
-              console.log('[Auth] Scheduling token refresh after rehydration');
+              authLogger.info('Scheduling token refresh after rehydration');
               state.scheduleTokenRefresh();
             }
           }

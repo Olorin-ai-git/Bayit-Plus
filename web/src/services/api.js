@@ -148,9 +148,16 @@ const apiAuthService = {
         sessionStorage.removeItem('oauth_state');
       }
     }
-    console.log('[API] googleCallback request:', { redirectUri, hasState: !!finalState, statePreview: finalState?.substring(0, 10) });
+    apiLogger.info('googleCallback request', {
+      redirectUri,
+      hasState: !!finalState,
+      statePreview: finalState?.substring(0, 10)
+    });
     const response = await api.post('/auth/google/callback', { code, redirect_uri: redirectUri, state: finalState });
-    console.log('[API] googleCallback response:', { hasUser: !!response?.user, hasToken: !!response?.access_token });
+    apiLogger.info('googleCallback response', {
+      hasUser: !!response?.user,
+      hasToken: !!response?.access_token
+    });
     return response;
   },
 }
