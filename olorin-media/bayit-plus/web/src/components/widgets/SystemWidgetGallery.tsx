@@ -10,7 +10,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Pressable, useWindowDimensions, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Check, Tv, Globe, Podcast, Radio, Film, RefreshCw, Eye, EyeOff, RotateCcw, Trash2 } from 'lucide-react';
-import { GlassCard } from '@bayit/shared/ui';
+import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { adminWidgetsService } from '@/services/adminApi';
 import { useWidgetStore } from '@/stores/widgetStore';
@@ -153,39 +153,40 @@ function SystemWidgetCard({
           </Pressable>
         )}
 
-        {/* Add/Remove/Show Button */}
-        <Pressable
+        {/* Add/Remove/Show Button - Glassmorphic */}
+        <GlassButton
+          title={
+            actionLoading
+              ? '...'
+              : isHidden
+                ? t('widgets.show') || 'Show'
+                : widget.is_added
+                  ? t('widgets.added') || 'Added'
+                  : t('widgets.add') || 'Add'
+          }
           onPress={handleAction}
           disabled={actionLoading || isLoading}
-          style={[
-            styles.actionButton,
+          loading={actionLoading}
+          variant={
             isHidden
-              ? styles.actionButtonHidden
+              ? 'warning'
               : widget.is_added
-                ? styles.actionButtonAdded
-                : styles.actionButtonAdd,
-            (actionLoading || isLoading) && styles.actionButtonDisabled,
-          ]}
-        >
-          {actionLoading ? (
-            <ActivityIndicator size="small" color={colors.text} />
-          ) : isHidden ? (
-            <>
+                ? 'success'
+                : 'primary'
+          }
+          size="sm"
+          icon={
+            !actionLoading &&
+            (isHidden ? (
               <Eye size={16} color={colors.text} />
-              <Text style={styles.actionButtonText}>{t('widgets.show') || 'Show'}</Text>
-            </>
-          ) : widget.is_added ? (
-            <>
+            ) : widget.is_added ? (
               <Check size={16} color={colors.text} />
-              <Text style={styles.actionButtonText}>{t('widgets.added') || 'Added'}</Text>
-            </>
-          ) : (
-            <>
+            ) : (
               <Plus size={16} color={colors.text} />
-              <Text style={styles.actionButtonText}>{t('widgets.add') || 'Add'}</Text>
-            </>
-          )}
-        </Pressable>
+            ))
+          }
+          style={styles.actionButton}
+        />
       </GlassCard>
     </View>
   );
@@ -284,10 +285,13 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>{error}</Text>
-        <Pressable onPress={loadWidgets} style={styles.retryButton}>
-          <RefreshCw size={16} color={colors.text} />
-          <Text style={styles.retryText}>{t('common.retry') || 'Retry'}</Text>
-        </Pressable>
+        <GlassButton
+          title={t('common.retry') || 'Retry'}
+          onPress={loadWidgets}
+          variant="ghost"
+          size="sm"
+          icon={<RefreshCw size={16} color={colors.text} />}
+        />
       </View>
     );
   }
@@ -347,7 +351,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: colors.textSecondary,
   },
   gridContainer: {
     flexDirection: 'row',
@@ -363,16 +367,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     position: 'relative',
-    borderWidth: 0,
+    borderWidth: 1,
+    borderColor: colors.glassBorderLight,
   },
   cardHovered: {
-    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+    backgroundColor: colors.glassPurpleLight,
+    borderColor: colors.glassBorder,
   },
   iconContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: colors.glassPurple,
+    borderWidth: 1,
+    borderColor: colors.glassBorderLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -389,7 +397,7 @@ const styles = StyleSheet.create({
   },
   cardDescription: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: colors.textSecondary,
     marginTop: 2,
   },
   badgeContainer: {
@@ -401,55 +409,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs / 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: colors.glassPurple,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
     paddingHorizontal: spacing.xs,
     paddingVertical: 2,
-    borderRadius: 4,
+    borderRadius: borderRadius.sm,
   },
   badgeText: {
     fontSize: 11,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: colors.primaryLight,
     textTransform: 'capitalize',
   },
   resetButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.glassPurple,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: spacing.xs,
   },
   actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: 8,
-    minWidth: 80,
-    justifyContent: 'center',
-  },
-  actionButtonHidden: {
-    backgroundColor: 'rgba(234, 179, 8, 0.2)',
-    borderWidth: 1,
-    borderColor: 'rgba(234, 179, 8, 0.5)',
-  },
-  actionButtonAdded: {
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
-    borderWidth: 1,
-    borderColor: 'rgba(34, 197, 94, 0.5)',
-  },
-  actionButtonAdd: {
-    backgroundColor: '#2563eb',
-  },
-  actionButtonDisabled: {
-    opacity: 0.5,
-  },
-  actionButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.text,
+    minWidth: 90,
   },
   loadingContainer: {
     padding: spacing.xl,
@@ -458,43 +442,34 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: spacing.xs,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: colors.textSecondary,
     fontSize: 14,
   },
   errorContainer: {
     padding: spacing.lg,
     alignItems: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    borderRadius: 8,
+    backgroundColor: 'rgba(220, 38, 38, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(220, 38, 38, 0.3)',
+    borderRadius: borderRadius.lg,
     marginBottom: spacing.lg,
   },
   errorText: {
-    color: '#ef4444',
+    color: colors.error,
     fontSize: 14,
-    marginBottom: spacing.xs,
-  },
-  retryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 8,
-  },
-  retryText: {
-    color: colors.text,
-    fontSize: 14,
+    marginBottom: spacing.md,
   },
   emptyContainer: {
     padding: spacing.lg,
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 8,
+    backgroundColor: colors.glassLight,
+    borderWidth: 1,
+    borderColor: colors.glassBorderLight,
+    borderRadius: borderRadius.lg,
     marginBottom: spacing.lg,
   },
   emptyText: {
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: colors.textSecondary,
     fontSize: 14,
   },
 });

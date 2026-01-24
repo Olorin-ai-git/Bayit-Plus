@@ -163,6 +163,7 @@ class WhisperTranscriptionService:
     ) -> tuple[str, str]:
         """
         Transcribe an audio file using Whisper API with automatic language detection.
+        Handles large files by splitting them into chunks under 25MB.
 
         Args:
             audio_path: Path to audio file (mp3, wav, m4a, etc.)
@@ -175,9 +176,25 @@ class WhisperTranscriptionService:
             Exception: If transcription fails
         """
         try:
+            import os
+            from pathlib import Path
+
             logger.info(f"📝 Transcribing audio file: {audio_path}")
 
-            # Read audio file
+            # Check file size
+            file_size_mb = os.path.getsize(audio_path) / (1024 * 1024)
+            logger.info(f"   File size: {file_size_mb:.2f} MB")
+
+            # Whisper API has 25MB limit
+            MAX_SIZE_MB = 24  # Use 24MB to be safe
+
+            if file_size_mb > MAX_SIZE_MB:
+                logger.info(
+                    f"   File exceeds {MAX_SIZE_MB}MB limit, splitting into chunks..."
+                )
+                return await self._transcribe_large_file(audio_path, language)
+
+            # File is small enough, transcribe directly
             with open(audio_path, "rb") as audio_file:
                 # Call Whisper API with auto-detection or specified language
                 if language:
@@ -208,6 +225,88 @@ class WhisperTranscriptionService:
 
         except Exception as e:
             logger.error(f"❌ Whisper file transcription error: {str(e)}")
+            raise
+
+    async def _transcribe_large_file(
+        self, audio_path: str, language: Optional[str] = None
+    ) -> tuple[str, str]:
+        """
+        Transcribe large audio files by splitting into chunks.
+
+        Args:
+            audio_path: Path to audio file
+            language: Optional language code
+
+        Returns:
+            Tuple of (combined transcript text, detected language code)
+        """
+        try:
+            from pydub import AudioSegment
+            import os
+            from pathlib import Path
+            import tempfile
+
+            logger.info("   Loading audio file...")
+            audio = AudioSegment.from_file(audio_path)
+
+            # Split into 10-minute chunks (ensures under 25MB)
+            chunk_length_ms = 10 * 60 * 1000  # 10 minutes in milliseconds
+            chunks = []
+
+            for i in range(0, len(audio), chunk_length_ms):
+                chunk = audio[i : i + chunk_length_ms]
+                chunks.append(chunk)
+
+            logger.info(f"   Split into {len(chunks)} chunks")
+
+            # Transcribe each chunk
+            transcripts = []
+            detected_lang = None
+
+            with tempfile.TemporaryDirectory() as temp_dir:
+                for idx, chunk in enumerate(chunks):
+                    logger.info(f"   Transcribing chunk {idx + 1}/{len(chunks)}...")
+
+                    # Export chunk to temporary file
+                    chunk_path = os.path.join(temp_dir, f"chunk_{idx}.mp3")
+                    chunk.export(chunk_path, format="mp3", bitrate="128k")
+
+                    # Transcribe chunk
+                    with open(chunk_path, "rb") as chunk_file:
+                        if language or detected_lang:
+                            lang_code = WHISPER_LANGUAGE_CODES.get(
+                                language or detected_lang, language or detected_lang
+                            )
+                            result = await self.client.audio.transcriptions.create(
+                                model="whisper-1",
+                                file=chunk_file,
+                                language=lang_code,
+                                response_format="verbose_json",
+                            )
+                        else:
+                            result = await self.client.audio.transcriptions.create(
+                                model="whisper-1",
+                                file=chunk_file,
+                                response_format="verbose_json",
+                            )
+
+                    transcripts.append(result.text)
+
+                    # Use detected language from first chunk for subsequent chunks
+                    if not detected_lang:
+                        detected_lang = result.language
+                        logger.info(f"   Detected language: {detected_lang}")
+
+            # Combine all transcripts
+            combined_text = " ".join(transcripts)
+            logger.info(
+                f"✅ Transcribed large file: {len(combined_text)} characters total"
+            )
+
+            return combined_text, detected_lang
+
+        except Exception as e:
+            logger.error(f"❌ Large file transcription error: {str(e)}")
             raise
 
     def verify_service_availability(self) -> bool:
