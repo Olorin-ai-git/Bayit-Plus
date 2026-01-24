@@ -17,6 +17,7 @@ import {
 import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassView } from '@bayit/shared/ui'
 import { subtitlesService } from '@/services/api'
+import logger from '@/utils/logger'
 
 interface SubtitleControlsProps {
   contentId: string
@@ -57,13 +58,21 @@ export default function SubtitleControls({
 
   // Handle download more subtitles
   const handleDownloadSubtitles = async () => {
-    if (isDownloading) return
+    if (isDownloading) {
+      logger.debug('Download already in progress, skipping', 'SubtitleControls')
+      return
+    }
 
+    logger.info('Starting subtitle download', 'SubtitleControls', { contentId })
     setIsDownloading(true)
     setDownloadResult(null)
 
     try {
       const response = await subtitlesService.fetchExternal(contentId)
+      logger.info('Subtitle download response received', 'SubtitleControls', {
+        imported: response.imported?.length || 0,
+        failed: response.failed?.length || 0
+      })
 
       if (response.imported && response.imported.length > 0) {
         const importedNames = response.imported.map((item: any) => item.language_name)
@@ -94,6 +103,11 @@ export default function SubtitleControls({
       setTimeout(() => setDownloadResult(null), 5000)
     } catch (error: any) {
       const errorMessage = error?.response?.data?.detail || error?.message || 'Download failed'
+      logger.error('Subtitle download failed', 'SubtitleControls', {
+        contentId,
+        error: errorMessage,
+        stack: error?.stack
+      })
       setDownloadResult({
         type: 'error',
         message: errorMessage,
@@ -101,6 +115,7 @@ export default function SubtitleControls({
       setTimeout(() => setDownloadResult(null), 5000)
     } finally {
       setIsDownloading(false)
+      logger.debug('Subtitle download completed', 'SubtitleControls')
     }
   }
 
@@ -309,9 +324,17 @@ export default function SubtitleControls({
             <Pressable
               onPress={(e) => {
                 e?.stopPropagation?.()
+                logger.debug('Download button pressed (onPress)', 'SubtitleControls')
                 handleDownloadSubtitles()
               }}
-              onClick={(e: any) => e.stopPropagation()}
+              onClick={(e: any) => {
+                e.stopPropagation()
+                e.preventDefault()
+                logger.debug('Download button clicked (onClick)', 'SubtitleControls', { isDownloading })
+                if (!isDownloading) {
+                  handleDownloadSubtitles()
+                }
+              }}
               onMouseDown={(e: any) => e.stopPropagation()}
               disabled={isDownloading}
               style={({ pressed }) => [

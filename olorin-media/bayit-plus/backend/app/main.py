@@ -136,6 +136,15 @@ async def lifespan(app: FastAPI):
 
     logger.info("Upload queue processor ready (manual trigger only)")
 
+    # Start audit recovery monitoring
+    from app.services.audit_recovery_service import audit_recovery_service
+
+    try:
+        await audit_recovery_service.start_monitoring()
+        logger.info("Audit recovery monitoring started")
+    except Exception as e:
+        logger.warning(f"Failed to start audit recovery monitoring: {e}")
+
     logger.info("Server startup complete - Ready to accept connections")
 
     yield
@@ -144,6 +153,13 @@ async def lifespan(app: FastAPI):
     # Shutdown
     # ============================================
     logger.info("Shutting down server...")
+
+    # Stop audit recovery monitoring
+    try:
+        await audit_recovery_service.stop_monitoring()
+        logger.info("Audit recovery monitoring stopped")
+    except Exception as e:
+        logger.warning(f"Failed to stop audit recovery monitoring: {e}")
 
     # Stop background tasks gracefully
     await stop_background_tasks()

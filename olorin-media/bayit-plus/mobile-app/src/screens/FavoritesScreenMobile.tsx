@@ -31,6 +31,11 @@ import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, typography } from '../theme';
 import type { RootStackParamList } from '../navigation/types';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('FavoritesScreenMobile');
+
 interface FavoriteItem {
   id: string;
   title: string;
@@ -84,7 +89,7 @@ export const FavoritesScreenMobile: React.FC = () => {
       const items = response.items || response.favorites || [];
       setFavorites(items);
     } catch (error) {
-      console.error('Error loading favorites:', error);
+      moduleLogger.error('Error loading favorites:', error);
       setFavorites([]);
     } finally {
       setIsLoading(false);
@@ -118,7 +123,7 @@ export const FavoritesScreenMobile: React.FC = () => {
       await favoritesService.removeFromFavorites(item.id);
       setFavorites((prev) => prev.filter((f) => f.id !== item.id));
     } catch (error) {
-      console.error('Error removing favorite:', error);
+      moduleLogger.error('Error removing favorite:', error);
     }
   };
 

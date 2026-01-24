@@ -5,10 +5,9 @@
  * File Size: Under 200 lines ✓
  */
 
-import { View, ActivityIndicator } from 'react-native'
+import { View, ActivityIndicator, StyleSheet } from 'react-native'
 import { z } from 'zod'
 import { colors } from '@bayit/shared/theme'
-import { platformClass } from '@/utils/platformClass'
 import { RecordingStatusIndicator } from '../RecordingStatusIndicator'
 import SubtitleOverlay from '../SubtitleOverlay'
 import LiveSubtitleOverlay from '../LiveSubtitleOverlay'
@@ -87,15 +86,9 @@ export default function VideoOverlays({
         />
       )}
 
-      {/* Loading Spinner */}
       {loading && (
-        <View
-          className={platformClass(
-            'absolute inset-0 bg-black/30 backdrop-blur-sm items-center justify-center',
-            'absolute inset-0 bg-black/30 items-center justify-center'
-          )}
-        >
-          <View className="w-12 h-12">
+        <View style={styles.loadingOverlay}>
+          <View style={styles.loadingSpinner}>
             <ActivityIndicator size="large" color={colors.primary} />
           </View>
         </View>
@@ -103,3 +96,20 @@ export default function VideoOverlays({
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingSpinner: {
+    width: 48,
+    height: 48,
+  },
+});

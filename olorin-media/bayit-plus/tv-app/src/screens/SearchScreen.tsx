@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@bayit/shared/hooks';
 import { chatService } from '../services/api';
 import { useAuthStore } from '../../../shared/stores/authStore';
+import logger from '../utils/logger';
 
 // Shared search components
 import { useSearch } from '../../../shared/hooks/useSearch';
@@ -35,6 +36,8 @@ import { SearchFilters } from '../../../shared/components/search/SearchFilters';
 import { SearchResults } from '../../../shared/components/search/SearchResults';
 import { LLMSearchButton } from '../../../shared/components/search/LLMSearchButton';
 import { LLMSearchModal } from '../../../shared/components/search/LLMSearchModal';
+
+const searchLogger = logger.scope('SearchScreen');
 
 interface SearchRoute {
   params?: {
@@ -135,7 +138,7 @@ export const SearchScreen: React.FC = () => {
         setQuery(text);
       }
     } catch (err) {
-      console.error('Voice search failed:', err);
+      searchLogger.error('Voice search failed', err);
     }
   }, [setQuery]);
 

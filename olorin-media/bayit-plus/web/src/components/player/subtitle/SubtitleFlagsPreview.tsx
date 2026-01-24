@@ -3,9 +3,9 @@
  * Visual flag preview of available subtitle languages
  */
 
-import { View, Text, Pressable } from 'react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { z } from 'zod'
-import { platformClass } from '@/utils/platformClass'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { SubtitleTrack, getLanguageInfo } from '@/types/subtitle'
 
 // Zod schema for props
@@ -44,7 +44,7 @@ export default function SubtitleFlagsPreview({
   }
 
   return (
-    <View className="flex-row flex-wrap justify-center items-center gap-2 p-4 border-b border-white/10">
+    <View style={styles.container}>
       {availableLanguages.map((track: SubtitleTrack) => {
         const langInfo = getLanguageInfo(track.language)
         const isActive = track.language === currentLanguage && enabled
@@ -53,18 +53,45 @@ export default function SubtitleFlagsPreview({
             key={track.id}
             onPress={handleLanguagePress(track.language)}
             onClick={stopPropagation}
-            className={platformClass(
-              `w-12 h-12 rounded-lg items-center justify-center bg-white/5 border-2 ${
-                isActive
-                  ? 'border-purple-400 bg-purple-500/20'
-                  : 'border-transparent hover:bg-white/10'
-              }`
-            )}
+            style={[
+              styles.flagButton,
+              isActive && styles.flagButtonActive
+            ]}
           >
-            <Text className="text-[28px]">{langInfo?.flag || '🌐'}</Text>
+            <Text style={styles.flagText}>{langInfo?.flag || '🌐'}</Text>
           </Pressable>
         )
       })}
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorderWhite,
+  },
+  flagButton: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  flagButtonActive: {
+    borderColor: colors.primaryLight,
+    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+  },
+  flagText: {
+    fontSize: 28,
+  },
+})

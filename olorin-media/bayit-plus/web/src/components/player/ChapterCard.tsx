@@ -1,28 +1,28 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Play } from 'lucide-react'
-import { colors } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import { GlassView } from '@bayit/shared/ui'
 
 // Category colors for chapter markers
 const categoryColors: Record<string, string> = {
-  intro: '#3B82F6',      // blue-500
-  news: '#EF4444',       // red-500
-  security: '#F97316',   // orange-500
-  politics: '#A855F7',   // purple-500
-  economy: '#22C55E',    // green-500
-  sports: '#EAB308',     // yellow-500
-  weather: '#06B6D4',    // cyan-500
-  culture: '#EC4899',    // pink-500
-  conclusion: '#6B7280', // gray-500
-  flashback: '#6366F1',  // indigo-500
-  journey: '#14B8A6',    // teal-500
-  climax: '#F43F5E',     // rose-500
-  setup: '#F59E0B',      // amber-500
-  action: '#DC2626',     // red-600
-  conflict: '#EA580C',   // orange-600
-  cliffhanger: '#8B5CF6',// violet-500
-  main: '#2563EB',       // blue-600
+  intro: colors.primary,
+  news: colors.error,
+  security: '#F97316',
+  politics: colors.primary,
+  economy: colors.success,
+  sports: colors.warning,
+  weather: '#06B6D4',
+  culture: '#EC4899',
+  conclusion: colors.textMuted,
+  flashback: '#6366F1',
+  journey: '#14B8A6',
+  climax: '#F43F5E',
+  setup: colors.warning,
+  action: colors.error,
+  conflict: '#EA580C',
+  cliffhanger: '#8B5CF6',
+  main: colors.primary,
 }
 
 function formatTime(seconds: number): string {
@@ -58,44 +58,46 @@ export default function ChapterCard({
     <Pressable onPress={onClick}>
       {({ hovered }) => (
         <GlassView
-          className="p-2 rounded-lg"
           style={[
+            styles.card,
             isActive && styles.cardActive,
             hovered && !isActive && styles.cardHovered,
+            isActive && { shadowColor: colors.primary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.3, shadowRadius: 8 }
           ]}
           intensity={isActive ? 'high' : 'medium'}
           borderColor={isActive ? colors.primary : undefined}
-          style={isActive ? { shadowColor: colors.primary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.3, shadowRadius: 8 } : undefined}
         >
-          <View className="flex-row items-center gap-2">
+          <View style={styles.cardContent}>
             {/* Category indicator */}
-            <View className="w-1 h-12 rounded-sm" style={{ backgroundColor: categoryColor }} />
+            <View style={[styles.categoryIndicator, { backgroundColor: categoryColor }]} />
 
-            <View className="flex-1 min-w-0">
+            <View style={styles.contentWrapper}>
               {/* Title and time */}
-              <View className="flex-row items-center justify-between gap-2">
+              <View style={styles.titleRow}>
                 <Text
-                  className="flex-1 text-sm font-medium text-right"
-                  style={[isActive ? styles.textActive : styles.textInactive]}
+                  style={[
+                    styles.titleBase,
+                    isActive ? styles.textActive : styles.textInactive
+                  ]}
                   numberOfLines={1}
                 >
                   {chapter.title}
                 </Text>
-                <Text className="text-xs text-gray-500 tabular-nums">
+                <Text style={styles.timeText}>
                   {formatTime(chapter.start_time)}
                 </Text>
               </View>
 
               {/* Category badge */}
               {showCategory && (
-                <View className="flex-row items-center gap-2 mt-1">
-                  <View className="px-2 py-0.5 rounded-full" style={{ backgroundColor: `${categoryColor}33` }}>
-                    <Text className="text-[11px] text-white/80">
+                <View style={styles.badgeRow}>
+                  <View style={[styles.categoryBadge, { backgroundColor: `${categoryColor}33` }]}>
+                    <Text style={styles.categoryText}>
                       {t(`chapters.categories.${chapter.category}`, chapter.category || '')}
                     </Text>
                   </View>
                   {isActive && (
-                    <Text className="text-[11px]" style={{ color: colors.primary }}>
+                    <Text style={[styles.currentText, { color: colors.primary }]}>
                       {t('chapters.current')}
                     </Text>
                   )}
@@ -105,11 +107,11 @@ export default function ChapterCard({
 
             {/* Play indicator */}
             <View
-              className="w-8 h-8 rounded-2xl items-center justify-center"
               style={[
+                styles.playButton,
+                isActive && { backgroundColor: colors.primary },
                 !isActive && (hovered ? styles.playBgHovered : styles.playBgDefault),
               ]}
-              style={isActive ? { backgroundColor: colors.primary } : undefined}
             >
               <Play
                 size={14}
@@ -125,28 +127,83 @@ export default function ChapterCard({
 }
 
 const styles = StyleSheet.create({
+  card: {
+    padding: spacing.sm,
+    borderRadius: borderRadius.lg,
+  },
   cardActive: {
     borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.5)',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    borderColor: colors.glassBorder,
   },
   cardHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.glassLight,
+  },
+  cardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  categoryIndicator: {
+    width: 4,
+    height: 48,
+    borderRadius: borderRadius.sm,
+  },
+  contentWrapper: {
+    flex: 1,
+    minWidth: 0,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+  },
+  titleBase: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'right',
   },
   textActive: {
-    color: '#c084fc',
+    color: colors.primaryLight,
   },
   textInactive: {
-    color: '#fff',
+    color: colors.text,
+  },
+  timeText: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  categoryBadge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: borderRadius.full,
+  },
+  categoryText: {
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  currentText: {
+    fontSize: 11,
+  },
+  playButton: {
+    width: 32,
+    height: 32,
+    borderRadius: borderRadius.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   playBgDefault: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   playBgHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.glassLight,
   },
 })
 

@@ -13,6 +13,9 @@ import {
 import Video, { OnLoadData } from 'react-native-video';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import logger from '@/utils/logger';
+
+const moduleLogger = logger.scope('SplashScreen');
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -48,7 +51,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   const currentLang = (i18n.language || 'he') as string;
   const videoSource = VIDEO_SOURCES[currentLang] || VIDEO_SOURCES.he;
 
-  console.log('[Splash] Language:', currentLang);
+  moduleLogger.debug('Splash screen initialized', { language: currentLang });
 
   // Handle completion with minimum duration
   const handleComplete = useCallback(() => {
@@ -78,7 +81,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   useEffect(() => {
     const fallbackTimeout = setTimeout(() => {
       if (!videoEnded) {
-        console.log('[Splash] Fallback timeout triggered');
+        moduleLogger.warn('Fallback timeout triggered');
         handleComplete();
       }
     }, 8000);
@@ -87,24 +90,24 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   }, [handleComplete, videoEnded]);
 
   const onVideoLoad = (data: OnLoadData) => {
-    console.log('[Splash] Video loaded, duration:', data.duration);
+    moduleLogger.debug('Video loaded', { duration: data.duration });
     setVideoLoaded(true);
   };
 
   const onVideoEnd = () => {
-    console.log('[Splash] Video ended');
+    moduleLogger.debug('Video ended');
     setVideoEnded(true);
   };
 
   const onVideoError = (error: any) => {
-    console.warn('[Splash] Video error:', error);
+    moduleLogger.warn('Video error', error);
     // Complete immediately on error
     handleComplete();
   };
 
   // Allow skip on tap
   const handleSkip = () => {
-    console.log('[Splash] Skipped by user');
+    moduleLogger.debug('Skipped by user');
     handleComplete();
   };
 

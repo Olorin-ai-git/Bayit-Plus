@@ -9,11 +9,10 @@
  * - Accessibility support
  */
 
-import { Pressable } from 'react-native'
+import { Pressable, StyleSheet } from 'react-native'
 import { Play, Pause } from 'lucide-react'
 import { z } from 'zod'
-import { colors } from '@bayit/shared/theme'
-import { platformClass } from '../../../utils/platformClass'
+import { colors, borderRadius } from '@bayit/shared/theme'
 
 const PlayButtonPropsSchema = z.object({
   isPlaying: z.boolean(),
@@ -29,10 +28,7 @@ export default function PlayButton({ isPlaying, onToggle }: PlayButtonProps) {
         e.stopPropagation?.()
         onToggle()
       }}
-      className={platformClass(
-        'w-9 h-9 rounded-lg items-center justify-center hover:bg-white/10',
-        'w-9 h-9 rounded-lg items-center justify-center'
-      )}
+      style={styles.button}
       accessibilityLabel={isPlaying ? 'Pause' : 'Play'}
       accessibilityRole="button"
     >
@@ -44,3 +40,13 @@ export default function PlayButton({ isPlaying, onToggle }: PlayButtonProps) {
     </Pressable>
   )
 }
+
+const styles = StyleSheet.create({
+  button: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+})

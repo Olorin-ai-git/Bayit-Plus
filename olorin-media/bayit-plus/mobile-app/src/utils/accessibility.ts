@@ -11,6 +11,9 @@
 
 import { AccessibilityInfo, Platform } from 'react-native';
 import { useState, useEffect } from 'react';
+import logger from '@/utils/logger';
+
+const moduleLogger = logger.scope('Accessibility');
 
 export interface AccessibilitySettings {
   isScreenReaderEnabled: boolean;
@@ -46,9 +49,9 @@ class AccessibilityService {
       this.settings.isGrayscaleEnabled = await AccessibilityInfo.isGrayscaleEnabled();
       this.settings.isInvertColorsEnabled = await AccessibilityInfo.isInvertColorsEnabled();
 
-      console.log('[Accessibility] Settings initialized:', this.settings);
+      moduleLogger.info('Settings initialized', this.settings);
     } catch (error) {
-      console.error('[Accessibility] Failed to initialize:', error);
+      moduleLogger.error('Failed to initialize', error);
     }
   }
 

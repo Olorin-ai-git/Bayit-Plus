@@ -23,6 +23,11 @@ import { wakeWordService } from './wakeWord';
 import { ttsService } from './tts';
 import { backendProxyService } from './backendProxyService';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('voiceManager');
+
 /**
  * Voice command pipeline stages
  */
@@ -103,18 +108,18 @@ class VoiceManager {
   private _setupEventListeners(): void {
     // Wake word detection listener
     wakeWordService.addDetectionListener((detection) => {
-      console.log('[VoiceManager] Wake word detected:', detection.wakeWord);
+      moduleLogger.debug('[VoiceManager] Wake word detected:', detection.wakeWord);
       this._onWakeWordDetected(detection);
     });
 
     // Speech recognition listeners
     speechService.addResultListener((result) => {
-      console.log('[VoiceManager] Speech result:', result.transcription);
+      moduleLogger.debug('[VoiceManager] Speech result:', result.transcription);
       this._onSpeechResult(result);
     });
 
     speechService.addErrorListener((error) => {
-      console.error('[VoiceManager] Speech error:', error);
+      moduleLogger.error('Speech error:', error', error);
       this._onSpeechError(error);
     });
   }
@@ -125,12 +130,12 @@ class VoiceManager {
    */
   async startBackgroundListening(): Promise<void> {
     if (this.isWakeWordListening) {
-      console.log('[VoiceManager] Already listening for wake word');
+      moduleLogger.debug('[VoiceManager] Already listening for wake word');
       return;
     }
 
     try {
-      console.log('[VoiceManager] Starting background wake word detection');
+      moduleLogger.debug('[VoiceManager] Starting background wake word detection');
 
       // Check and set language
       await wakeWordService.setLanguage(this.config.wakeWordLanguage);
@@ -143,13 +148,13 @@ class VoiceManager {
       // Set timeout for wake word listening if configured
       if (this.config.wakeWordTimeoutMs > 0) {
         this.listenTimeoutHandle = setTimeout(async () => {
-          console.warn('[VoiceManager] Wake word timeout, stopping background listening');
+          moduleLogger.warn('[VoiceManager] Wake word timeout, stopping background listening');
           await this.stopBackgroundListening();
           this._setStage('timeout');
         }, this.config.wakeWordTimeoutMs);
       }
     } catch (error) {
-      console.error('[VoiceManager] Failed to start background listening:', error);
+      moduleLogger.error('Failed to start background listening:', error', error);
       this._setStage('error', (error as Error).message);
       throw error;
     }
@@ -164,7 +169,7 @@ class VoiceManager {
     }
 
     try {
-      console.log('[VoiceManager] Stopping background wake word detection');
+      moduleLogger.debug('[VoiceManager] Stopping background wake word detection');
       await wakeWordService.stopListening();
       this.isWakeWordListening = false;
 
@@ -176,7 +181,7 @@ class VoiceManager {
 
       this._setStage('idle');
     } catch (error) {
-      console.error('[VoiceManager] Failed to stop background listening:', error);
+      moduleLogger.error('Failed to stop background listening:', error', error);
       throw error;
     }
   }
@@ -187,7 +192,7 @@ class VoiceManager {
    */
   async startManualListening(): Promise<void> {
     try {
-      console.log('[VoiceManager] Starting manual speech recognition');
+      moduleLogger.debug('[VoiceManager] Starting manual speech recognition');
 
       // Stop background wake word listening first
       if (this.isWakeWordListening) {
@@ -205,12 +210,12 @@ class VoiceManager {
 
       // Set timeout for listening
       this.listenTimeoutHandle = setTimeout(async () => {
-        console.warn('[VoiceManager] Speech listening timeout');
+        moduleLogger.warn('[VoiceManager] Speech listening timeout');
         await this.stopListening();
         this._setStage('timeout');
       }, this.config.listenTimeoutMs);
     } catch (error) {
-      console.error('[VoiceManager] Failed to start manual listening:', error);
+      moduleLogger.error('Failed to start manual listening:', error', error);
       this._setStage('error', (error as Error).message);
       throw error;
     }
@@ -221,7 +226,7 @@ class VoiceManager {
    */
   async stopListening(): Promise<void> {
     try {
-      console.log('[VoiceManager] Stopping speech recognition');
+      moduleLogger.debug('[VoiceManager] Stopping speech recognition');
 
       // Stop speech recognition
       await speechService.stopRecognition();
@@ -239,7 +244,7 @@ class VoiceManager {
         this._setStage('idle');
       }
     } catch (error) {
-      console.error('[VoiceManager] Failed to stop listening:', error);
+      moduleLogger.error('Failed to stop listening:', error', error);
       throw error;
     }
   }
@@ -271,16 +276,16 @@ class VoiceManager {
 
       // Set timeout for speech listening
       this.listenTimeoutHandle = setTimeout(async () => {
-        console.warn('[VoiceManager] Speech timeout after wake word');
+        moduleLogger.warn('[VoiceManager] Speech timeout after wake word');
         await speechService.stopRecognition();
         this._setStage('timeout');
         await this.startBackgroundListening();
       }, this.config.listenTimeoutMs);
     } catch (error) {
-      console.error('[VoiceManager] Failed to handle wake word:', error);
+      moduleLogger.error('Failed to handle wake word:', error', error);
       this._setStage('error', (error as Error).message);
       // Return to background listening
-      await this.startBackgroundListening().catch(console.error);
+      await this.startBackgroundListening().catch((err) => moduleLogger.error("Background operation failed", err));
     }
   }
 
@@ -297,11 +302,11 @@ class VoiceManager {
 
       // Only process final results
       if (!result.isFinal) {
-        console.log('[VoiceManager] Interim result:', result.transcription);
+        moduleLogger.debug('[VoiceManager] Interim result:', result.transcription);
         return;
       }
 
-      console.log('[VoiceManager] Final result:', result.transcription);
+      moduleLogger.debug('[VoiceManager] Final result:', result.transcription);
 
       // Stop listening
       await speechService.stopRecognition();
@@ -341,15 +346,15 @@ class VoiceManager {
           this._setStage('idle');
         }
       } catch (apiError) {
-        console.error('[VoiceManager] API processing failed:', apiError);
+        moduleLogger.error('API processing failed:', apiError', apiError);
         this._setStage('error', (apiError as Error).message);
         // Try to return to background listening
         if (this.config.enableBackgroundListening) {
-          await this.startBackgroundListening().catch(console.error);
+          await this.startBackgroundListening().catch((err) => moduleLogger.error("Background operation failed", err));
         }
       }
     } catch (error) {
-      console.error('[VoiceManager] Failed to handle speech result:', error);
+      moduleLogger.error('Failed to handle speech result:', error', error);
       this._setStage('error', (error as Error).message);
     }
   }
@@ -358,7 +363,7 @@ class VoiceManager {
    * Handle speech recognition error
    */
   private async _onSpeechError(error: any): Promise<void> {
-    console.error('[VoiceManager] Speech recognition error:', error);
+    moduleLogger.error('Speech recognition error:', error', error);
 
     // Clear timeout
     if (this.listenTimeoutHandle) {
@@ -370,7 +375,7 @@ class VoiceManager {
     try {
       await speechService.stopRecognition();
     } catch (e) {
-      console.error('[VoiceManager] Error stopping recognition after error:', e);
+      moduleLogger.error('Error stopping recognition after error:', e', e);
     }
 
     // Signal error state
@@ -378,7 +383,7 @@ class VoiceManager {
 
     // Return to background listening or idle
     if (this.config.enableBackgroundListening) {
-      await this.startBackgroundListening().catch(console.error);
+      await this.startBackgroundListening().catch((err) => moduleLogger.error("Background operation failed", err));
     } else {
       this._setStage('idle');
     }
@@ -411,17 +416,10 @@ class VoiceManager {
 
       // Log metrics if enabled
       if (this.config.enableMetrics && this.sessionMetrics) {
-        console.log('[VoiceManager] Session metrics:', {
-          wakeWordTime: this.sessionMetrics.wakeWordTime,
-          listeningTime: this.sessionMetrics.listeningTime,
-          processingTime: this.sessionMetrics.processingTime,
-          ttsTime: this.sessionMetrics.ttsTime,
-          totalTime: this.sessionMetrics.totalTime,
-          confidence: this.sessionMetrics.confidence,
-        });
+        moduleLogger.info('Session metrics', { totalDuration, listenDuration, processingDuration, avgConfidence });
       }
     } catch (error) {
-      console.error('[VoiceManager] Failed to play voice response:', error);
+      moduleLogger.error('Failed to play voice response:', error', error);
       // Don't treat TTS error as critical failure
     }
   }
@@ -463,7 +461,7 @@ class VoiceManager {
       try {
         listener(eventData);
       } catch (error) {
-        console.error('[VoiceManager] Error in event listener:', error);
+        moduleLogger.error('Error in event listener:', error', error);
       }
     });
   }
@@ -501,7 +499,7 @@ class VoiceManager {
    */
   updateConfig(config: Partial<VoiceManagerConfig>): void {
     this.config = { ...this.config, ...config };
-    console.log('[VoiceManager] Configuration updated:', this.config);
+    moduleLogger.debug('[VoiceManager] Configuration updated:', this.config);
   }
 
   /**
@@ -523,7 +521,7 @@ class VoiceManager {
    */
   async cleanup(): Promise<void> {
     try {
-      console.log('[VoiceManager] Cleaning up voice resources');
+      moduleLogger.debug('[VoiceManager] Cleaning up voice resources');
 
       // Clear timeout
       if (this.listenTimeoutHandle) {
@@ -535,27 +533,27 @@ class VoiceManager {
       try {
         await speechService.stopRecognition();
       } catch (e) {
-        console.error('[VoiceManager] Error stopping speech recognition:', e);
+        moduleLogger.error('Error stopping speech recognition:', e', e);
       }
 
       // Stop wake word listening
       try {
         await wakeWordService.stopListening();
       } catch (e) {
-        console.error('[VoiceManager] Error stopping wake word listening:', e);
+        moduleLogger.error('Error stopping wake word listening:', e', e);
       }
 
       // Stop TTS
       try {
         await ttsService.stop();
       } catch (e) {
-        console.error('[VoiceManager] Error stopping TTS:', e);
+        moduleLogger.error('Error stopping TTS:', e', e);
       }
 
       this._setStage('idle');
       this.isWakeWordListening = false;
     } catch (error) {
-      console.error('[VoiceManager] Error during cleanup:', error);
+      moduleLogger.error('Error during cleanup:', error', error);
     }
   }
 }

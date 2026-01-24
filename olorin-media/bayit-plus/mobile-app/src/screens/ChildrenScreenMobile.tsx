@@ -32,6 +32,11 @@ import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, borderRadius } from '../theme';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('ChildrenScreenMobile');
+
 interface KidsItem {
   id: string;
   title: string;
@@ -187,7 +192,7 @@ export const ChildrenScreenMobile: React.FC = () => {
         setCategories(response.data);
       }
     } catch (err) {
-      console.error('Failed to load children categories:', err);
+      moduleLogger.error('Failed to load children categories:', err);
     }
   }, []);
 
@@ -200,7 +205,7 @@ export const ChildrenScreenMobile: React.FC = () => {
         setContent(response.data);
       }
     } catch (err) {
-      console.error('Failed to load kids content:', err);
+      moduleLogger.error('Failed to load kids content:', err);
       setContent([]);
     } finally {
       setIsLoading(false);

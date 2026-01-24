@@ -5,10 +5,10 @@
  * File Size: Under 200 lines ✓
  */
 
-import { View } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import { z } from 'zod'
 import { GlassView } from '@bayit/shared/ui'
-import { platformClass } from '@/utils/platformClass'
+import { spacing, borderRadius } from '@bayit/shared/theme'
 import PlayerControls from '../PlayerControls'
 import ProgressBar from '../ProgressBar'
 import type { PlayerState, PlayerControls as PlayerControlsType, Chapter } from '../types'
@@ -52,26 +52,10 @@ export default function VideoControlsOverlay({
 }: VideoControlsOverlayProps) {
   return (
     <View
-      className={platformClass(
-        showControls
-          ? 'absolute inset-0 bg-gradient-to-t from-[rgba(17,17,34,0.9)] via-transparent to-[rgba(17,17,34,0.4)] opacity-100 transition-opacity'
-          : 'absolute inset-0 bg-gradient-to-t from-[rgba(17,17,34,0.9)] via-transparent to-[rgba(17,17,34,0.4)] opacity-0 transition-opacity pointer-events-none',
-        showControls
-          ? 'absolute inset-0 opacity-100'
-          : 'absolute inset-0 opacity-0'
-      )}
+      style={[styles.overlay, showControls ? styles.overlayVisible : styles.overlayHidden]}
       pointerEvents={showControls ? 'auto' : 'none'}
     >
-      {/* Bottom Controls */}
-      <GlassView
-        className={platformClass(
-          'absolute bottom-0 left-0 right-0 p-4 gap-2 rounded-b-2xl',
-          'absolute bottom-0 left-0 right-0 p-4 gap-2'
-        )}
-        intensity="high"
-        noBorder
-      >
-        {/* Progress Bar */}
+      <GlassView style={styles.controls} intensity="high" noBorder>
         {!isLive && (
           <ProgressBar
             currentTime={state.currentTime}
@@ -81,8 +65,6 @@ export default function VideoControlsOverlay({
             onChapterSeek={controls.seekToTime}
           />
         )}
-
-        {/* Controls Row */}
         <PlayerControls
           state={state}
           controls={controls}
@@ -102,3 +84,30 @@ export default function VideoControlsOverlay({
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  overlayVisible: {
+    opacity: 1,
+  },
+  overlayHidden: {
+    opacity: 0,
+    pointerEvents: 'none',
+  },
+  controls: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: spacing[4],
+    gap: spacing[2],
+    borderBottomLeftRadius: borderRadius['2xl'],
+    borderBottomRightRadius: borderRadius['2xl'],
+  },
+});

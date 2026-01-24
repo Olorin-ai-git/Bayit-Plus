@@ -6,8 +6,8 @@
  */
 
 import { forwardRef } from 'react'
+import { StyleSheet } from 'react-native'
 import { z } from 'zod'
-import { platformClass, platformStyle } from '@/utils/platformClass'
 
 // Zod schema for prop validation
 const VideoContainerPropsSchema = z.object({
@@ -23,23 +23,8 @@ export type VideoContainerProps = z.infer<typeof VideoContainerPropsSchema> & {
 const VideoContainer = forwardRef<HTMLDivElement, VideoContainerProps>(
   ({ videoRef, poster, onContainerClick, children }, containerRef) => {
     return (
-      <div
-        ref={containerRef}
-        className={platformClass(
-          'relative bg-black w-full h-full cursor-pointer',
-          'relative bg-black w-full h-full'
-        )}
-        style={platformStyle({
-          web: { cursor: 'pointer' },
-        })}
-        onClick={onContainerClick}
-      >
-        <video
-          ref={videoRef}
-          poster={poster}
-          className="w-full h-full"
-          playsInline
-        />
+      <div ref={containerRef} style={webStyles.container} onClick={onContainerClick}>
+        <video ref={videoRef} poster={poster} style={webStyles.video} playsInline />
         {children}
       </div>
     )
@@ -49,3 +34,17 @@ const VideoContainer = forwardRef<HTMLDivElement, VideoContainerProps>(
 VideoContainer.displayName = 'VideoContainer'
 
 export default VideoContainer
+
+const webStyles: Record<string, React.CSSProperties> = {
+  container: {
+    position: 'relative',
+    backgroundColor: '#000',
+    width: '100%',
+    height: '100%',
+    cursor: 'pointer',
+  },
+  video: {
+    width: '100%',
+    height: '100%',
+  },
+}

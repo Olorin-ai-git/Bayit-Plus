@@ -42,6 +42,11 @@ import { SearchFilters } from '../../../shared/components/search/SearchFilters';
 import { SearchResults } from '../../../shared/components/search/SearchResults';
 import { LLMSearchModal } from '../../../shared/components/search/LLMSearchModal';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('SearchScreenMobile');
+
 type SearchRoute = RouteProp<RootStackParamList, 'Search'>;
 
 interface SearchResult {
@@ -152,7 +157,7 @@ export const SearchScreenMobile: React.FC = () => {
         setQuery(text);
       }
     } catch (err) {
-      console.error('Voice search failed:', err);
+      moduleLogger.error('Voice search failed:', err);
       if (Platform.OS === 'ios') {
         ReactNativeHapticFeedback.trigger('notificationError');
       }

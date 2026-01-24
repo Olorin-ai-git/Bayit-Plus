@@ -33,6 +33,11 @@ import { getGridColumns } from '../utils/responsive';
 import { BottomSheet } from '../components';
 import { spacing, colors, typography } from '../theme';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('PodcastsScreenMobile');
+
 interface Podcast {
   id: string;
   title: string;
@@ -117,10 +122,10 @@ export const PodcastsScreenMobile: React.FC = () => {
 
       // Log any failures for debugging
       if (results[0].status === 'rejected') {
-        console.warn('Failed to load podcasts:', results[0].reason);
+        moduleLogger.warn('Failed to load podcasts:', results[0].reason);
       }
       if (results[1].status === 'rejected') {
-        console.warn('Failed to load categories:', results[1].reason);
+        moduleLogger.warn('Failed to load categories:', results[1].reason);
       }
 
       const podcastsData = (podcastsRes.shows || []).map((podcast: any) => ({
@@ -135,7 +140,7 @@ export const PodcastsScreenMobile: React.FC = () => {
 
       setIsLoading(false);
     } catch (error) {
-      console.error('Error loading podcasts:', error);
+      moduleLogger.error('Error loading podcasts:', error);
       setIsLoading(false);
     }
   };
@@ -165,7 +170,7 @@ export const PodcastsScreenMobile: React.FC = () => {
       const episodesRes = await podcastService.getEpisodes(podcast.id);
       setEpisodes(episodesRes.episodes || []);
     } catch (error) {
-      console.error('Error loading episodes:', error);
+      moduleLogger.error('Error loading episodes:', error);
     } finally {
       setLoadingEpisodes(false);
     }

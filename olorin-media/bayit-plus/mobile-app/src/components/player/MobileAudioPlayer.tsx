@@ -13,6 +13,9 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { View, Text, ActivityIndicator, Pressable, Image } from 'react-native';
 import Video, { VideoRef } from 'react-native-video';
 import { Play, Pause } from 'lucide-react-native';
+import logger from '@/utils/logger';
+
+const moduleLogger = logger.scope('MobileAudioPlayer');
 
 interface MobileAudioPlayerProps {
   src: string;
@@ -56,7 +59,7 @@ export default function MobileAudioPlayer({
 
   // Handle audio error
   const handleError = useCallback((err: any) => {
-    console.error('[MobileAudioPlayer] Error:', err);
+    moduleLogger.error('Audio playback error', err);
     setLoading(false);
     setError('Failed to load audio');
   }, []);

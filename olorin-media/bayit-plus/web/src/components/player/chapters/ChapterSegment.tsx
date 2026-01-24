@@ -1,4 +1,4 @@
-import { View, Pressable } from 'react-native'
+import { View, Pressable, StyleSheet } from 'react-native'
 import { Chapter, getChapterColor } from './constants'
 
 interface ChapterSegmentProps {
@@ -34,25 +34,48 @@ export default function ChapterSegment({
       onPress={handlePress}
       onHoverIn={(e) => onMouseEnter(chapter, e)}
       onHoverOut={onMouseLeave}
-      className="absolute top-0 h-full cursor-pointer"
-      style={{
-        left: `${startPercent}%` as any,
-        width: `${widthPercent}%` as any,
-      }}
+      style={[
+        styles.segment,
+        {
+          left: `${startPercent}%` as any,
+          width: `${widthPercent}%` as any,
+        },
+      ]}
     >
-      {/* Marker line at chapter start */}
       {index > 0 && (
-        <View
-          className="absolute left-0 top-0 w-0.5 h-full opacity-60"
-          style={{ backgroundColor: chapterColor }}
-        />
+        <View style={[styles.markerLine, { backgroundColor: chapterColor }]} />
       )}
-
-      {/* Hover/Active highlight */}
       <View
-        className="absolute inset-0 rounded-sm"
-        style={isActive ? { backgroundColor: `${chapterColor}33` } : undefined}
+        style={[
+          styles.highlight,
+          isActive && { backgroundColor: `${chapterColor}33` },
+        ]}
       />
     </Pressable>
   )
 }
+
+const styles = StyleSheet.create({
+  segment: {
+    position: 'absolute',
+    top: 0,
+    height: '100%',
+    cursor: 'pointer',
+  },
+  markerLine: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: 2,
+    height: '100%',
+    opacity: 0.6,
+  },
+  highlight: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 2,
+  },
+})

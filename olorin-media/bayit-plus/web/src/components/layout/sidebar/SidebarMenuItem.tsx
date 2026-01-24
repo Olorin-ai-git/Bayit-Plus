@@ -2,7 +2,7 @@
  * SidebarMenuItem Component
  *
  * Individual menu item for GlassSidebar with icon, label, and active state
- * Part of GlassSidebar migration from StyleSheet to TailwindCSS
+ * Part of GlassSidebar - StyleSheet implementation for RN Web compatibility
  *
  * Features:
  * - Emoji icon with label
@@ -13,10 +13,10 @@
  * - Touch target minimum 36x36pt (iOS HIG compliant)
  */
 
-import { View, Text, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, Animated, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
-import { platformClass } from '../../../utils/platformClass';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 
 // Check if this is a TV build
 declare const __TV__: boolean;
@@ -70,60 +70,39 @@ export default function SidebarMenuItem({
       disabled={!isUIInteractionEnabled}
       onFocus={() => onFocus(item.id)}
       onBlur={onBlur}
-      className={platformClass(
-        `flex-row items-center py-2 px-2 rounded-lg mb-1 relative ${
-          isActive ? 'bg-purple-700/30' : ''
-        } ${
-          focusedItem === item.id
-            ? 'bg-purple-700/30 border border-purple-500'
-            : ''
-        }`,
-        `flex-row items-center py-2 px-2 rounded-lg mb-1 relative ${
-          isActive ? 'bg-purple-700/30' : ''
-        } ${
-          focusedItem === item.id
-            ? 'bg-purple-700/30 border border-purple-500'
-            : ''
-        }`
-      )}
-      style={{
-        pointerEvents: isUIInteractionEnabled ? 'auto' : 'none',
-        opacity: isUIInteractionEnabled ? 1 : 0.5,
-      }}
+      style={[
+        styles.container,
+        isActive && styles.containerActive,
+        focusedItem === item.id && styles.containerFocused,
+        {
+          pointerEvents: isUIInteractionEnabled ? 'auto' : 'none',
+          opacity: isUIInteractionEnabled ? 1 : 0.5,
+        },
+      ]}
     >
       <View
-        className={platformClass(
-          'justify-center items-center',
-          'justify-center items-center'
-        )}
-        style={{
-          width: iconSize,
-          height: iconSize,
-        }}
+        style={[
+          styles.iconContainer,
+          {
+            width: iconSize,
+            height: iconSize,
+          },
+        ]}
       >
         <Text style={{ fontSize: emojiSize }}>{item.icon}</Text>
       </View>
       {showLabels && (
         <Animated.Text
-          style={{
-            textAlign,
-            marginStart: 8,
-            opacity: opacityAnim,
-            fontSize,
-            flex: 1,
-          }}
-          className={platformClass(
-            `${
-              isActive
-                ? 'text-purple-500 font-bold'
-                : 'text-white font-normal'
-            }`,
-            `${
-              isActive
-                ? 'text-purple-500 font-bold'
-                : 'text-white font-normal'
-            }`
-          )}
+          style={[
+            styles.label,
+            isActive && styles.labelActive,
+            {
+              textAlign,
+              marginStart: spacing.sm,
+              opacity: opacityAnim,
+              fontSize,
+            },
+          ]}
           numberOfLines={1}
         >
           {t(item.labelKey)}
@@ -131,16 +110,59 @@ export default function SidebarMenuItem({
       )}
       {isActive && (
         <View
-          className={platformClass(
-            `absolute top-1/2 -mt-3 w-1 h-6 bg-purple-500 rounded ${
-              isRTL ? 'right-0' : 'left-0'
-            }`,
-            `absolute top-1/2 -mt-3 w-1 h-6 bg-purple-500 rounded ${
-              isRTL ? 'right-0' : 'left-0'
-            }`
-          )}
+          style={[
+            styles.activeIndicator,
+            isRTL ? styles.activeIndicatorRTL : styles.activeIndicatorLTR,
+          ]}
         />
       )}
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    borderRadius: borderRadius.md,
+    marginBottom: spacing.xs,
+    position: 'relative',
+  },
+  containerActive: {
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+  },
+  containerFocused: {
+    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+  iconContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  label: {
+    color: colors.text,
+    flex: 1,
+  },
+  labelActive: {
+    color: colors.primary,
+    fontWeight: 'bold',
+  },
+  activeIndicator: {
+    position: 'absolute',
+    top: '50%',
+    marginTop: -12,
+    width: 4,
+    height: 24,
+    backgroundColor: colors.primary,
+    borderRadius: 2,
+  },
+  activeIndicatorLTR: {
+    left: 0,
+  },
+  activeIndicatorRTL: {
+    right: 0,
+  },
+});

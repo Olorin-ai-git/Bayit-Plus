@@ -6,7 +6,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
-import { colors } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 
 // Validation schema
 export const LanguageSelectorPropsSchema = z.object({
@@ -41,11 +41,11 @@ export default function LanguageSelector({
   if (availableLanguages.length === 0) return null
 
   return (
-    <View className="mb-6">
-      <Text className="text-sm font-semibold text-white mb-2">
+    <View style={styles.container}>
+      <Text style={styles.title}>
         {t('subtitles.translateTo', 'Translate To')}
       </Text>
-      <View className="gap-1">
+      <View style={styles.languageList}>
         {availableLanguages.map((langCode) => {
           const lang = langMap[langCode] || { flag: '🌐', label: langCode.toUpperCase() }
           const isActive = currentLanguage === langCode
@@ -53,25 +53,19 @@ export default function LanguageSelector({
           return (
             <Pressable
               key={langCode}
-              className="flex-row items-center justify-between p-4 rounded-xl border"
-              style={[isActive ? styles.languageActive : styles.languageInactive]}
+              style={[
+                styles.languageButton,
+                isActive ? styles.languageActive : styles.languageInactive,
+              ]}
               onPress={() => onLanguageChange(langCode)}
             >
-              <View className="flex-row items-center flex-1">
-                <Text className="text-xl mr-3">{lang.flag}</Text>
-                <Text
-                  className="text-sm font-medium"
-                  style={[isActive ? styles.textActive : styles.textInactive]}
-                >
+              <View style={styles.languageContent}>
+                <Text style={styles.flag}>{lang.flag}</Text>
+                <Text style={[styles.label, isActive ? styles.textActive : styles.textInactive]}>
                   {lang.label}
                 </Text>
               </View>
-              {isActive && (
-                <View
-                  className="w-2 h-2 rounded-full ml-3"
-                  style={{ backgroundColor: colors.primary }}
-                />
-              )}
+              {isActive && <View style={styles.activeDot} />}
             </Pressable>
           )
         })}
@@ -81,6 +75,26 @@ export default function LanguageSelector({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: spacing[6],
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing[2],
+  },
+  languageList: {
+    gap: spacing[1],
+  },
+  languageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: spacing[4],
+    borderRadius: borderRadius.xl,
+    borderWidth: 1,
+  },
   languageActive: {
     borderColor: 'rgba(168, 85, 247, 0.5)',
     backgroundColor: 'rgba(168, 85, 247, 0.1)',
@@ -89,11 +103,31 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.1)',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
+  languageContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  flag: {
+    fontSize: 20,
+    marginRight: spacing[3],
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
   textActive: {
     color: '#c084fc',
     fontWeight: '600',
   },
   textInactive: {
     color: '#9ca3af',
+  },
+  activeDot: {
+    width: 8,
+    height: 8,
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.primary,
+    marginLeft: spacing[3],
   },
 });

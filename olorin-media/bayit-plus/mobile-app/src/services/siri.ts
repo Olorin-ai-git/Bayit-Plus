@@ -9,6 +9,11 @@
 
 import { NativeModules, Platform } from 'react-native';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('siri');
+
 const { SiriModule } = NativeModules;
 
 class SiriService {
@@ -23,9 +28,9 @@ class SiriService {
 
     try {
       await SiriModule.donatePlayIntent(contentId, contentTitle, contentType);
-      console.log('[SiriService] Play intent donated:', contentTitle);
+      moduleLogger.debug('[SiriService] Play intent donated:', contentTitle);
     } catch (error) {
-      console.error('[SiriService] Failed to donate play intent:', error);
+      moduleLogger.error('Failed to donate play intent:', error', error);
     }
   }
 
@@ -40,9 +45,9 @@ class SiriService {
 
     try {
       await SiriModule.donateSearchIntent(query);
-      console.log('[SiriService] Search intent donated:', query);
+      moduleLogger.debug('[SiriService] Search intent donated:', query);
     } catch (error) {
-      console.error('[SiriService] Failed to donate search intent:', error);
+      moduleLogger.error('Failed to donate search intent:', error', error);
     }
   }
 
@@ -57,9 +62,9 @@ class SiriService {
 
     try {
       await SiriModule.donateWidgetIntent(widgetType, channelId, channelName);
-      console.log('[SiriService] Widget intent donated:', channelName);
+      moduleLogger.debug('[SiriService] Widget intent donated:', channelName);
     } catch (error) {
-      console.error('[SiriService] Failed to donate widget intent:', error);
+      moduleLogger.error('Failed to donate widget intent:', error', error);
     }
   }
 
@@ -74,9 +79,9 @@ class SiriService {
 
     try {
       await SiriModule.donateResumeIntent();
-      console.log('[SiriService] Resume watching intent donated');
+      moduleLogger.debug('[SiriService] Resume watching intent donated');
     } catch (error) {
-      console.error('[SiriService] Failed to donate resume watching intent:', error);
+      moduleLogger.error('Failed to donate resume watching intent:', error', error);
     }
   }
 
@@ -90,10 +95,10 @@ class SiriService {
 
     try {
       const result = await SiriModule.deleteAllShortcuts();
-      console.log(`[SiriService] Deleted ${result.deleted} shortcuts`);
+      moduleLogger.debug(`[SiriService] Deleted ${result.deleted} shortcuts`);
       return result.deleted;
     } catch (error) {
-      console.error('[SiriService] Failed to delete shortcuts:', error);
+      moduleLogger.error('Failed to delete shortcuts:', error', error);
       return 0;
     }
   }
@@ -110,7 +115,7 @@ class SiriService {
       const result = await SiriModule.getSuggestedShortcuts();
       return result.shortcuts || [];
     } catch (error) {
-      console.error('[SiriService] Failed to get shortcuts:', error);
+      moduleLogger.error('Failed to get shortcuts:', error', error);
       return [];
     }
   }

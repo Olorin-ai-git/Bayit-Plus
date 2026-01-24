@@ -5,11 +5,11 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
-import { View, Pressable, ActivityIndicator, Text } from 'react-native'
+import { View, Pressable, ActivityIndicator, Text, StyleSheet } from 'react-native'
 import { X } from 'lucide-react'
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore'
 import { contentService, liveService, chaptersService, historyService } from '@/services/api'
-import { colors } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import VideoPlayer from './VideoPlayer'
 import logger from '@/utils/logger'
 
@@ -134,16 +134,16 @@ export default function FullscreenVideoOverlay() {
     // Update every 10 seconds
     if (Math.abs(currentTime - lastProgressRef.current) >= 10) {
       lastProgressRef.current = currentTime
-      historyService.updateProgress(content.id, currentTime, duration).catch(() => {})
+      historyService.updateProgress(content.id, content.type, currentTime, duration).catch(() => {})
     }
-  }, [content?.id])
+  }, [content?.id, content?.type])
 
   // Handle video ended
   const handleEnded = useCallback(() => {
     if (!content) return
-    // Mark as completed
-    historyService.updateProgress(content.id, 0, 0).catch(() => {})
-  }, [content?.id])
+    // Mark as completed (send duration as position to indicate 100% watched)
+    historyService.updateProgress(content.id, content.type, 0, 0).catch(() => {})
+  }, [content?.id, content?.type])
 
   // Handle close with ESC key
   useEffect(() => {
@@ -176,28 +176,22 @@ export default function FullscreenVideoOverlay() {
       style={webStyles.container}
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Close button */}
-      <Pressable
-        onPress={closePlayer}
-        className="absolute top-4 right-4 w-11 h-11 rounded-full bg-black/60 items-center justify-center z-[10001] hover:bg-black/80"
-      >
+      <Pressable onPress={closePlayer} style={styles.closeButton}>
         <X size={24} color={colors.text} />
       </Pressable>
 
-      {/* Loading state */}
       {loading && (
-        <View className="flex-1 items-center justify-center">
+        <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text className="text-white text-base mt-4">Loading...</Text>
+          <Text style={styles.loadingText}>Loading...</Text>
         </View>
       )}
 
-      {/* Error state */}
       {error && !loading && (
-        <View className="flex-1 items-center justify-center px-8">
-          <Text className="text-red-500 text-lg text-center mb-4">{error}</Text>
-          <Pressable onPress={closePlayer} className="px-8 py-4 rounded-lg" style={{ backgroundColor: colors.primary }}>
-            <Text className="text-white text-base font-semibold">Close</Text>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <Pressable onPress={closePlayer} style={styles.errorButton}>
+            <Text style={styles.errorButtonText}>Close</Text>
           </Pressable>
         </View>
       )}
@@ -240,6 +234,54 @@ export default function FullscreenVideoOverlay() {
     ? createPortal(overlay, document.body)
     : null
 }
+
+const styles = StyleSheet.create({
+  closeButton: {
+    position: 'absolute',
+    top: spacing[4],
+    right: spacing[4],
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10001,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    color: colors.text,
+    fontSize: 16,
+    marginTop: spacing[4],
+  },
+  errorContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing[8],
+  },
+  errorText: {
+    color: '#ef4444',
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: spacing[4],
+  },
+  errorButton: {
+    paddingHorizontal: spacing[8],
+    paddingVertical: spacing[4],
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.primary,
+  },
+  errorButtonText: {
+    color: colors.text,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+})
 
 const webStyles: Record<string, React.CSSProperties> = {
   container: {

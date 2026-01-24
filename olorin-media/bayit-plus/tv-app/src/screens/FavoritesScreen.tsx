@@ -15,6 +15,9 @@ import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 import { useDirection } from '@bayit/shared/hooks';
 import { demoFavorites, type FavoriteItem } from '../demo/favorites';
+import logger from '../utils/logger';
+
+const favoritesLogger = logger.scope('FavoritesScreen');
 
 const TYPE_ICONS: Record<string, string> = {
   movie: '🎬',
@@ -134,7 +137,7 @@ export const FavoritesScreen: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 500));
       setFavorites(demoFavorites);
     } catch (err) {
-      console.error('Failed to load favorites:', err);
+      favoritesLogger.error('Failed to load favorites', err);
     } finally {
       setIsLoading(false);
     }

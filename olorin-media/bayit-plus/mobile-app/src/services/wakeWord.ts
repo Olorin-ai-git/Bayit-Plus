@@ -9,6 +9,11 @@
 
 import { NativeModules, NativeEventEmitter, Platform } from "react-native";
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('wakeWord');
+
 const { WakeWordModule } = NativeModules;
 
 interface WakeWordDetection {
@@ -36,15 +41,15 @@ class WakeWordService {
    */
   async setLanguage(languageCode: string): Promise<void> {
     if (!WakeWordModule) {
-      console.warn("[WakeWordService] Wake word detection not available");
+      moduleLogger.warn("[WakeWordService] Wake word detection not available");
       return;
     }
 
     try {
       const result = await WakeWordModule.setLanguage(languageCode);
-      console.log("[WakeWordService] Language set:", result);
+      moduleLogger.debug("[WakeWordService] Language set:", result);
     } catch (error) {
-      console.error("[WakeWordService] Failed to set language:", error);
+      moduleLogger.error('Failed to set language:", error', error);
       throw error;
     }
   }
@@ -55,15 +60,15 @@ class WakeWordService {
    */
   async setCustomWakeWords(words: string[]): Promise<void> {
     if (!WakeWordModule) {
-      console.warn("[WakeWordService] Wake word detection not available");
+      moduleLogger.warn("[WakeWordService] Wake word detection not available");
       return;
     }
 
     try {
       await WakeWordModule.setCustomWakeWords(words);
-      console.log("[WakeWordService] Custom wake words set:", words);
+      moduleLogger.debug("[WakeWordService] Custom wake words set:", words);
     } catch (error) {
-      console.error(
+      moduleLogger.error(
         "[WakeWordService] Failed to set custom wake words:",
         error,
       );
@@ -76,7 +81,7 @@ class WakeWordService {
    */
   async startListening(): Promise<void> {
     if (!WakeWordModule || !this.eventEmitter) {
-      console.warn(
+      moduleLogger.warn(
         "[WakeWordService] Wake word detection not available - feature requires native WakeWordModule implementation",
       );
       return;
@@ -87,7 +92,7 @@ class WakeWordService {
       this.detectionSubscription = this.eventEmitter.addListener(
         "WakeWordDetected",
         (detection: WakeWordDetection) => {
-          console.log(
+          moduleLogger.debug(
             "[WakeWordService] Wake word detected:",
             detection.wakeWord,
           );
@@ -98,9 +103,9 @@ class WakeWordService {
       // Start native detection
       const result = await WakeWordModule.startListening();
       this.isActive = true;
-      console.log("[WakeWordService] Wake word detection started:", result);
+      moduleLogger.debug("[WakeWordService] Wake word detection started:", result);
     } catch (error) {
-      console.error(
+      moduleLogger.error(
         "[WakeWordService] Failed to start wake word detection:",
         error,
       );
@@ -121,9 +126,9 @@ class WakeWordService {
       await WakeWordModule.stopListening();
       this.isActive = false;
       this.cleanup();
-      console.log("[WakeWordService] Wake word detection stopped");
+      moduleLogger.debug("[WakeWordService] Wake word detection stopped");
     } catch (error) {
-      console.error(
+      moduleLogger.error(
         "[WakeWordService] Failed to stop wake word detection:",
         error,
       );
@@ -142,7 +147,7 @@ class WakeWordService {
       const result = await WakeWordModule.isActive();
       return result.active;
     } catch (error) {
-      console.error("[WakeWordService] Failed to check active status:", error);
+      moduleLogger.error('Failed to check active status:", error', error);
       return false;
     }
   }

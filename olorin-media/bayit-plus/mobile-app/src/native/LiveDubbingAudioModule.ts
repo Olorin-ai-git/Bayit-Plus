@@ -5,6 +5,9 @@
 
 import { NativeModules, Platform } from 'react-native'
 import type { IAudioPlayer } from '@bayit/shared/services/liveDubbingService'
+import logger from '@/utils/logger'
+
+const moduleLogger = logger.scope('LiveDubbingAudio')
 
 interface NativeLiveDubbingAudio {
   playAudio(base64Audio: string): Promise<{ success: boolean; duration: number }>
@@ -29,15 +32,15 @@ export class LiveDubbingAudioPlayer implements IAudioPlayer {
 
   async playAudio(base64Audio: string): Promise<void> {
     if (!NativeModule) {
-      console.warn('[LiveDubbingAudio] Native module not available')
+      moduleLogger.warn('Native module not available')
       return
     }
 
     try {
       const result = await NativeModule.playAudio(base64Audio)
-      console.log(`[LiveDubbingAudio] Played audio, duration: ${result.duration}s`)
+      moduleLogger.info('Played audio', { duration: result.duration })
     } catch (error) {
-      console.error('[LiveDubbingAudio] Error playing audio:', error)
+      moduleLogger.error('Error playing audio', error)
       throw error
     }
   }
@@ -45,20 +48,20 @@ export class LiveDubbingAudioPlayer implements IAudioPlayer {
   setOriginalVolume(volume: number): void {
     this.originalVolume = Math.max(0, Math.min(1, volume))
     NativeModule?.setOriginalVolume(this.originalVolume).catch((err) => {
-      console.error('[LiveDubbingAudio] Error setting original volume:', err)
+      moduleLogger.error('Error setting original volume', err)
     })
   }
 
   setDubbedVolume(volume: number): void {
     this.dubbedVolume = Math.max(0, Math.min(1, volume))
     NativeModule?.setDubbedVolume(this.dubbedVolume).catch((err) => {
-      console.error('[LiveDubbingAudio] Error setting dubbed volume:', err)
+      moduleLogger.error('Error setting dubbed volume', err)
     })
   }
 
   cleanup(): void {
     NativeModule?.cleanup().catch((err) => {
-      console.error('[LiveDubbingAudio] Error during cleanup:', err)
+      moduleLogger.error('Error during cleanup', err)
     })
   }
 

@@ -1,4 +1,5 @@
 import React from 'react'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { Clock, Circle } from 'lucide-react'
 import { EPGProgram } from '@/services/epgApi'
 import { DateTime } from 'luxon'
@@ -27,85 +28,168 @@ const EPGTimeSlot: React.FC<EPGTimeSlotProps> = ({
 }) => {
   const zoneName = timezone === 'israel' ? 'Asia/Jerusalem' : 'local'
 
-  // Format time
   const startTime = DateTime.fromISO(program.start_time).setZone(zoneName)
   const endTime = DateTime.fromISO(program.end_time).setZone(zoneName)
   const timeLabel = `${startTime.toFormat('HH:mm')} - ${endTime.toFormat('HH:mm')}`
 
-  // Calculate width based on duration
   const durationMinutes = endTime.diff(startTime, 'minutes').minutes
-  const widthMultiplier = durationMinutes / 30 // 30-minute intervals
+  const widthMultiplier = durationMinutes / 30
   const width = cellWidth * widthMultiplier
 
-  // Visual states
   const isPast = program.is_past
   const isNow = program.is_now
   const isFuture = program.is_future
 
+  const containerStyle = [
+    styles.container,
+    isNow ? styles.containerNow : styles.containerDefault,
+    isPast && styles.containerPast,
+    { width: Math.max(width, cellWidth), minWidth: cellWidth, height: cellHeight },
+  ]
+
   return (
-    <button
-      onClick={() => onClick?.(program)}
-      className={`
-        group relative flex-shrink-0 p-3 border-r border-white/5 text-left transition-all
-        ${isNow ? 'bg-primary/20 border-primary/40 ring-2 ring-primary/30' : 'bg-black/10 backdrop-blur-sm'}
-        ${isPast ? 'opacity-60' : ''}
-        ${isFuture ? 'hover:bg-white/5' : ''}
-        hover:scale-[1.02] hover:shadow-lg hover:z-10
-      `}
-      style={{
-        width: `${width}px`,
-        minWidth: `${cellWidth}px`,
-        height: `${cellHeight}px`
-      }}
+    <Pressable
+      onPress={() => onClick?.(program)}
+      style={({ pressed }) => [
+        ...containerStyle,
+        pressed && isFuture && styles.containerPressed,
+      ]}
       aria-label={`${program.title} - ${timeLabel}`}
     >
-      {/* Content */}
-      <div className="flex flex-col gap-1 h-full overflow-hidden">
-        {/* Title */}
-        <h4 className="text-sm font-semibold text-white line-clamp-2 group-hover:text-primary transition-colors">
+      <View style={styles.content}>
+        <Text style={styles.title} numberOfLines={2}>
           {program.title}
-        </h4>
+        </Text>
 
-        {/* Time */}
-        <div className="flex items-center gap-1 text-xs text-white/60">
-          <Clock size={12} />
-          <span>{timeLabel}</span>
-        </div>
+        <View style={styles.timeRow}>
+          <Clock size={12} color="rgba(255, 255, 255, 0.6)" />
+          <Text style={styles.timeText}>{timeLabel}</Text>
+        </View>
 
-        {/* Category */}
         {program.category && (
-          <span className="text-xs text-white/50 truncate">{program.category}</span>
+          <Text style={styles.category} numberOfLines={1}>
+            {program.category}
+          </Text>
         )}
-      </div>
+      </View>
 
-      {/* "Now" Badge */}
       {isNow && (
-        <div className="absolute top-2 left-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">
-          LIVE
-        </div>
+        <View style={styles.liveBadge}>
+          <Text style={styles.liveBadgeText}>LIVE</Text>
+        </View>
       )}
 
-      {/* Recording Indicator */}
       <EPGRecordingIndicator status={recordingStatus} size="sm" />
 
-      {/* Record Button (only for future programs and premium users) */}
       {isFuture && isPremium && onRecordClick && (
-        <button
-          onClick={(e) => {
+        <Pressable
+          onPress={(e) => {
             e.stopPropagation()
-            onRecordClick(program, e)
+            onRecordClick(program, e as any)
           }}
-          className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 bg-red-500/90 hover:bg-red-600 backdrop-blur-sm rounded-full shadow-lg"
+          style={styles.recordButton}
           aria-label="Record"
         >
-          <Circle size={14} className="text-white" />
-        </button>
+          <Circle size={14} color="#ffffff" />
+        </Pressable>
       )}
 
-      {/* Hover Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-    </button>
+      <View style={styles.hoverOverlay} />
+    </Pressable>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+    flexShrink: 0,
+    padding: 12,
+    borderRightWidth: 1,
+    borderRightColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  containerDefault: {
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    backdropFilter: 'blur(8px)',
+  },
+  containerNow: {
+    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    borderColor: 'rgba(168, 85, 247, 0.4)',
+    borderWidth: 2,
+  },
+  containerPast: {
+    opacity: 0.6,
+  },
+  containerPressed: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    transform: [{ scale: 1.02 }],
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    zIndex: 10,
+  },
+  content: {
+    flexDirection: 'column',
+    gap: 4,
+    height: '100%',
+    overflow: 'hidden',
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  timeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  timeText: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  category: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.5)',
+  },
+  liveBadge: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    backgroundColor: '#ef4444',
+    borderRadius: 12,
+  },
+  liveBadgeText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  recordButton: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    opacity: 0,
+    padding: 6,
+    backgroundColor: 'rgba(239, 68, 68, 0.9)',
+    borderRadius: 12,
+    backdropFilter: 'blur(8px)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  hoverOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'transparent',
+    opacity: 0,
+    pointerEvents: 'none',
+  },
+})
 
 export default EPGTimeSlot

@@ -1,4 +1,5 @@
 import React from 'react'
+import { View, Text, Image, Pressable, StyleSheet } from 'react-native'
 import { Clock, Info } from 'lucide-react'
 import { EPGProgram } from '@/services/epgApi'
 import { DateTime } from 'luxon'
@@ -18,98 +19,233 @@ const EPGProgramCard: React.FC<EPGProgramCardProps> = ({
 }) => {
   const zoneName = timezone === 'israel' ? 'Asia/Jerusalem' : 'local'
 
-  // Format time
   const startTime = DateTime.fromISO(program.start_time).setZone(zoneName)
   const endTime = DateTime.fromISO(program.end_time).setZone(zoneName)
   const timeLabel = `${startTime.toFormat('HH:mm')} - ${endTime.toFormat('HH:mm')}`
 
-  // Visual states
   const isPast = program.is_past
   const isNow = program.is_now
 
+  const containerStyle = [
+    styles.container,
+    isNow && styles.containerLive,
+    isPast && styles.containerPast,
+  ]
+
   return (
-    <button
-      onClick={() => onClick?.(program)}
-      className={`
-        group w-full flex items-start gap-4 p-4 bg-black/20 backdrop-blur-xl rounded-xl border border-white/10
-        hover:border-primary/40 hover:bg-black/30 transition-all text-left
-        ${isNow ? 'ring-2 ring-primary/40 bg-primary/10' : ''}
-        ${isPast ? 'opacity-60' : ''}
-      `}
+    <Pressable
+      onPress={() => onClick?.(program)}
+      style={({ pressed }) => [
+        ...containerStyle,
+        pressed && styles.containerPressed,
+      ]}
     >
-      {/* Thumbnail */}
       {program.thumbnail ? (
-        <img
-          src={program.thumbnail}
+        <Image
+          source={{ uri: program.thumbnail }}
           alt={program.title}
-          className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+          style={styles.thumbnail}
         />
       ) : (
-        <div className="w-24 h-24 flex items-center justify-center bg-black/40 rounded-lg flex-shrink-0">
-          <span className="text-4xl">📺</span>
-        </div>
+        <View style={styles.thumbnailPlaceholder}>
+          <Text style={styles.thumbnailEmoji}>📺</Text>
+        </View>
       )}
 
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors line-clamp-2">
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <Text style={styles.title} numberOfLines={2}>
             {program.title}
-          </h3>
+          </Text>
           {isNow && (
-            <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse flex-shrink-0">
-              LIVE
-            </span>
+            <View style={styles.liveBadge}>
+              <Text style={styles.liveBadgeText}>LIVE</Text>
+            </View>
           )}
-        </div>
+        </View>
 
-        {/* Channel & Time */}
-        <div className="flex items-center gap-3 text-sm text-white/70 mb-2">
-          <span className="font-medium">{channelName}</span>
-          <span className="text-white/40">•</span>
-          <div className="flex items-center gap-1">
-            <Clock size={14} />
-            <span>{timeLabel}</span>
-          </div>
+        <View style={styles.metadata}>
+          <Text style={styles.metadataText}>{channelName}</Text>
+          <Text style={styles.metadataDivider}>•</Text>
+          <View style={styles.timeRow}>
+            <Clock size={14} color="rgba(255, 255, 255, 0.7)" />
+            <Text style={styles.metadataText}>{timeLabel}</Text>
+          </View>
           {program.category && (
             <>
-              <span className="text-white/40">•</span>
-              <span>{program.category}</span>
+              <Text style={styles.metadataDivider}>•</Text>
+              <Text style={styles.metadataText}>{program.category}</Text>
             </>
           )}
-        </div>
+        </View>
 
-        {/* Description */}
         {program.description && (
-          <p className="text-sm text-white/60 line-clamp-2 mb-2">{program.description}</p>
+          <Text style={styles.description} numberOfLines={2}>
+            {program.description}
+          </Text>
         )}
 
-        {/* Metadata */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <View style={styles.tags}>
           {program.genres && program.genres.length > 0 && (
-            <div className="flex items-center gap-1">
+            <View style={styles.genreList}>
               {program.genres.slice(0, 3).map((genre, index) => (
-                <span key={index} className="px-2 py-0.5 bg-white/10 text-white/70 text-xs rounded-full">
-                  {genre}
-                </span>
+                <View key={index} style={styles.genreTag}>
+                  <Text style={styles.genreText}>{genre}</Text>
+                </View>
               ))}
-            </div>
+            </View>
           )}
           {program.rating && (
-            <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">
-              {program.rating}
-            </span>
+            <View style={styles.ratingTag}>
+              <Text style={styles.ratingText}>{program.rating}</Text>
+            </View>
           )}
-        </div>
-      </div>
+        </View>
+      </View>
 
-      {/* Action Hint */}
-      <div className="flex-shrink-0 self-center opacity-0 group-hover:opacity-100 transition-opacity">
-        <Info size={20} className="text-primary" />
-      </div>
-    </button>
+      <View style={styles.actionHint}>
+        <Info size={20} color="#a855f7" />
+      </View>
+    </Pressable>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 16,
+    padding: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backdropFilter: 'blur(16px)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  containerLive: {
+    borderWidth: 2,
+    borderColor: 'rgba(168, 85, 247, 0.4)',
+    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+  },
+  containerPast: {
+    opacity: 0.6,
+  },
+  containerPressed: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderColor: 'rgba(168, 85, 247, 0.4)',
+  },
+  thumbnail: {
+    width: 96,
+    height: 96,
+    resizeMode: 'cover',
+    borderRadius: 8,
+    flexShrink: 0,
+  },
+  thumbnailPlaceholder: {
+    width: 96,
+    height: 96,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    borderRadius: 8,
+    flexShrink: 0,
+  },
+  thumbnailEmoji: {
+    fontSize: 36,
+  },
+  content: {
+    flex: 1,
+    minWidth: 0,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: 8,
+    marginBottom: 8,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#ffffff',
+    flex: 1,
+  },
+  liveBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: '#ef4444',
+    borderRadius: 12,
+    flexShrink: 0,
+  },
+  liveBadgeText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  metadata: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 8,
+    flexWrap: 'wrap',
+  },
+  metadataText: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.7)',
+  },
+  metadataDivider: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.4)',
+  },
+  timeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  description: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginBottom: 8,
+    lineHeight: 20,
+  },
+  tags: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  genreList: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    flexWrap: 'wrap',
+  },
+  genreTag: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+  },
+  genreText: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.7)',
+  },
+  ratingTag: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    backgroundColor: 'rgba(251, 191, 36, 0.2)',
+    borderRadius: 12,
+  },
+  ratingText: {
+    fontSize: 12,
+    color: '#fbbf24',
+  },
+  actionHint: {
+    flexShrink: 0,
+    alignSelf: 'center',
+    opacity: 0,
+  },
+})
 
 export default EPGProgramCard

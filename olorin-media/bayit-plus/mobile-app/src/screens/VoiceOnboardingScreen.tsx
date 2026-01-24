@@ -26,6 +26,11 @@ import { speechService, wakeWordService, ttsService } from '../services';
 import { VoiceWaveform } from '../components/voice';
 import { colors, spacing } from '../theme';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('VoiceOnboardingScreen');
+
 type OnboardingStep = 'welcome' | 'permissions' | 'test-wake-word' | 'complete';
 
 export default function VoiceOnboardingScreen() {
@@ -73,7 +78,7 @@ export default function VoiceOnboardingScreen() {
     try {
       // Add detection listener
       wakeWordService.addDetectionListener((detection) => {
-        console.log('Wake word detected:', detection.wakeWord);
+        moduleLogger.debug('Wake word detected:', detection.wakeWord);
         setWakeWordDetected(true);
         setIsTestingWakeWord(false);
 

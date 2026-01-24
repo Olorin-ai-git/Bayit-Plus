@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import { View, Text, StyleSheet } from 'react-native'
 import { DateTime } from 'luxon'
 
 interface EPGTimelineProps {
@@ -23,7 +24,6 @@ const EPGTimeline: React.FC<EPGTimelineProps> = ({
     let current = DateTime.fromJSDate(startTime).setZone(zoneName)
     const end = DateTime.fromJSDate(endTime).setZone(zoneName)
 
-    // Round to nearest interval
     const minutes = current.minute
     const roundedMinutes = Math.floor(minutes / intervalMinutes) * intervalMinutes
     current = current.set({ minute: roundedMinutes, second: 0, millisecond: 0 })
@@ -39,7 +39,6 @@ const EPGTimeline: React.FC<EPGTimelineProps> = ({
     return slots
   }, [startTime, endTime, timezone, intervalMinutes])
 
-  // Calculate "now" indicator position
   const nowPosition = useMemo(() => {
     const now = DateTime.now().setZone(timezone === 'israel' ? 'Asia/Jerusalem' : 'local')
     const start = DateTime.fromJSDate(startTime).setZone(timezone === 'israel' ? 'Asia/Jerusalem' : 'local')
@@ -55,32 +54,85 @@ const EPGTimeline: React.FC<EPGTimelineProps> = ({
   }, [startTime, endTime, timezone])
 
   return (
-    <div className="relative bg-black/20 backdrop-blur-xl border-b border-white/10">
-      {/* Timeline Slots */}
-      <div className="flex">
+    <View style={styles.container}>
+      <View style={styles.timeSlotContainer}>
         {timeSlots.map((slot, index) => (
-          <div
+          <View
             key={index}
-            className="flex-shrink-0 px-4 py-3 border-r border-white/5 last:border-r-0"
-            style={{ width: `${cellWidth}px` }}
+            style={[styles.timeSlot, { width: cellWidth }]}
           >
-            <span className="text-sm font-medium text-white/80">{slot.label}</span>
-          </div>
+            <Text style={styles.timeText}>{slot.label}</Text>
+          </View>
         ))}
-      </div>
+      </View>
 
-      {/* "Now" Indicator */}
       {nowPosition !== null && (
-        <div
-          className="absolute top-0 bottom-0 w-0.5 bg-red-500 shadow-lg shadow-red-500/50 z-10 animate-pulse"
-          style={{ left: `${nowPosition}%` }}
-        >
-          <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-red-500 rounded-full"></div>
-          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-red-500 rounded-full"></div>
-        </div>
+        <>
+          <View style={[styles.nowIndicator, { left: `${nowPosition}%` }]}>
+            <View style={styles.nowIndicatorDot} />
+            <View style={styles.nowIndicatorDotBottom} />
+          </View>
+        </>
       )}
-    </div>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backdropFilter: 'blur(16px)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  timeSlotContainer: {
+    flexDirection: 'row',
+  },
+  timeSlot: {
+    flexShrink: 0,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRightWidth: 1,
+    borderRightColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  timeText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  nowIndicator: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 2,
+    backgroundColor: '#ef4444',
+    shadowColor: '#ef4444',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    zIndex: 10,
+  },
+  nowIndicatorDot: {
+    position: 'absolute',
+    top: -4,
+    left: '50%',
+    transform: [{ translateX: -4 }],
+    width: 8,
+    height: 8,
+    backgroundColor: '#ef4444',
+    borderRadius: 4,
+  },
+  nowIndicatorDotBottom: {
+    position: 'absolute',
+    bottom: -4,
+    left: '50%',
+    transform: [{ translateX: -4 }],
+    width: 8,
+    height: 8,
+    backgroundColor: '#ef4444',
+    borderRadius: 4,
+  },
+})
 
 export default EPGTimeline

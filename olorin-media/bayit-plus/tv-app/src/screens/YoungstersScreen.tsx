@@ -23,6 +23,9 @@ import { isTV } from '../utils/platform';
 import { useDirection } from '@bayit/shared/hooks';
 import { useProfile } from '../contexts/ProfileContext';
 import { youngstersService } from '../services/api';
+import logger from '../utils/logger';
+
+const youngstersLogger = logger.scope('YoungstersScreen');
 
 interface YoungstersItem {
   id: string;
@@ -177,7 +180,7 @@ export const YoungstersScreen: React.FC = () => {
         setCategories(response.data);
       }
     } catch (err) {
-      console.error('Failed to load youngsters categories:', err);
+      youngstersLogger.error('Failed to load youngsters categories', err);
     }
   };
 
@@ -193,7 +196,7 @@ export const YoungstersScreen: React.FC = () => {
         setContent(response.data);
       }
     } catch (err) {
-      console.error('Failed to load youngsters content:', err);
+      youngstersLogger.error('Failed to load youngsters content', err);
       setContent([]);
     } finally {
       setIsLoading(false);

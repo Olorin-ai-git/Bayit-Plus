@@ -17,6 +17,9 @@ import { colors, spacing } from '../../theme';
 import { isTV } from '../../utils/platform';
 import { useDirection } from '@bayit/shared/hooks';
 import { judaismService } from '../../services/api';
+import logger from '../../utils/logger';
+
+const judaismLogger = logger.scope('JudaismScreen');
 import {
   JudaismItem,
   Category,
@@ -67,7 +70,7 @@ export const JudaismScreen: React.FC = () => {
         setCategories(response.categories);
       }
     } catch (err) {
-      console.error('Failed to load Judaism categories:', err);
+      judaismLogger.error('Failed to load Judaism categories', err);
     }
   };
 
@@ -78,7 +81,7 @@ export const JudaismScreen: React.FC = () => {
         setShabbatStatus(response);
       }
     } catch (err) {
-      console.error('Failed to load Shabbat status:', err);
+      judaismLogger.error('Failed to load Shabbat status', err);
     }
   };
 
@@ -110,7 +113,7 @@ export const JudaismScreen: React.FC = () => {
         setCalendarData(null);
       }
     } catch (err) {
-      console.error('Failed to load Judaism content:', err);
+      judaismLogger.error('Failed to load Judaism content', err);
       setContent([]);
     } finally {
       setIsLoading(false);
@@ -126,7 +129,7 @@ export const JudaismScreen: React.FC = () => {
   };
 
   const handleNewsPress = (item: NewsItem) => {
-    console.log('News item pressed:', item.link);
+    judaismLogger.debug('News item pressed', { link: item.link });
   };
 
   const renderSpecialView = () => {

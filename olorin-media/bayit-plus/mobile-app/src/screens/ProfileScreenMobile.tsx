@@ -33,6 +33,11 @@ import { profilesService } from '@bayit/shared-services';
 import { spacing, colors, typography, touchTarget } from '../theme';
 import { useResponsive } from '../hooks/useResponsive';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('ProfileScreenMobile');
+
 interface ProfileStats {
   watchlistCount: number;
   favoritesCount: number;
@@ -73,7 +78,7 @@ export const ProfileScreenMobile: React.FC = () => {
       });
     } catch (error) {
       // Keep default values on error (already initialized to 0)
-      console.warn('Failed to load profile stats:', error);
+      moduleLogger.warn('Failed to load profile stats:', error);
     }
   };
 

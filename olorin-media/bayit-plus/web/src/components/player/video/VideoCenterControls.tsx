@@ -5,10 +5,9 @@
  * File Size: Under 200 lines ✓
  */
 
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { z } from 'zod'
-import { colors } from '@bayit/shared/theme'
-import { platformClass, platformStyle } from '@/utils/platformClass'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 
 // Zod schema for prop validation
 const VideoCenterControlsPropsSchema = z.object({
@@ -32,24 +31,9 @@ export default function VideoCenterControls({
   }
 
   return (
-    <View
-      className={platformClass(
-        'absolute inset-0 flex-row items-center justify-center gap-8 pointer-events-none',
-        'absolute inset-0 flex-row items-center justify-center gap-8'
-      )}
-    >
-      {/* Skip Backward 30s */}
+    <View style={styles.container}>
       {!isLive && (
-        <View
-          onClick={(e: any) => handleClick(e, () => onSkip(-30))}
-          className={platformClass(
-            'w-14 h-14 rounded-full bg-black/30 backdrop-blur-md items-center justify-center border border-white/10 cursor-pointer opacity-90 pointer-events-auto hover:opacity-100 hover:scale-105 transition-all',
-            'w-14 h-14 rounded-full bg-black/30 items-center justify-center border border-white/10 opacity-90'
-          )}
-          style={platformStyle({
-            web: { cursor: 'pointer' },
-          })}
-        >
+        <View onClick={(e: any) => handleClick(e, () => onSkip(-30))} style={styles.skipButton}>
           <svg
             width={24}
             height={24}
@@ -60,21 +44,11 @@ export default function VideoCenterControls({
           >
             <path d="M12 5V1L7 6l5 5V7a6 6 0 11-6 6" />
           </svg>
-          <Text className="text-[11px] font-bold text-white -mt-1">30</Text>
+          <Text style={styles.skipText}>30</Text>
         </View>
       )}
 
-      {/* Play/Pause Button */}
-      <View
-        onClick={(e: any) => handleClick(e, onTogglePlay)}
-        className={platformClass(
-          'w-20 h-20 rounded-full bg-black/30 backdrop-blur-md items-center justify-center border border-white/10 cursor-pointer pointer-events-auto hover:scale-110 transition-all',
-          'w-20 h-20 rounded-full bg-black/30 items-center justify-center border border-white/10'
-        )}
-        style={platformStyle({
-          web: { cursor: 'pointer' },
-        })}
-      >
+      <View onClick={(e: any) => handleClick(e, onTogglePlay)} style={styles.playButton}>
         {isPlaying ? (
           <svg width={40} height={40} viewBox="0 0 24 24" fill={colors.text}>
             <rect x="6" y="5" width="4" height="14" />
@@ -93,18 +67,8 @@ export default function VideoCenterControls({
         )}
       </View>
 
-      {/* Skip Forward 30s */}
       {!isLive && (
-        <View
-          onClick={(e: any) => handleClick(e, () => onSkip(30))}
-          className={platformClass(
-            'w-14 h-14 rounded-full bg-black/30 backdrop-blur-md items-center justify-center border border-white/10 cursor-pointer opacity-90 pointer-events-auto hover:opacity-100 hover:scale-105 transition-all',
-            'w-14 h-14 rounded-full bg-black/30 items-center justify-center border border-white/10 opacity-90'
-          )}
-          style={platformStyle({
-            web: { cursor: 'pointer' },
-          })}
-        >
+        <View onClick={(e: any) => handleClick(e, () => onSkip(30))} style={styles.skipButton}>
           <svg
             width={24}
             height={24}
@@ -115,9 +79,55 @@ export default function VideoCenterControls({
           >
             <path d="M12 5V1l5 5-5 5V7a6 6 0 106 6" />
           </svg>
-          <Text className="text-[11px] font-bold text-white -mt-1">30</Text>
+          <Text style={styles.skipText}>30</Text>
         </View>
       )}
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing[8],
+    pointerEvents: 'none',
+  },
+  skipButton: {
+    width: 56,
+    height: 56,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    opacity: 0.9,
+    pointerEvents: 'auto',
+    cursor: 'pointer',
+  },
+  playButton: {
+    width: 80,
+    height: 80,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    pointerEvents: 'auto',
+    cursor: 'pointer',
+  },
+  skipText: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginTop: -4,
+  },
+});

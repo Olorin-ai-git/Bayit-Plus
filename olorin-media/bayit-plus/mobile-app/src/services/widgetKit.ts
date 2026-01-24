@@ -9,6 +9,11 @@
 
 import { NativeModules, Platform } from 'react-native';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('widgetKit');
+
 const { WidgetKitModule } = NativeModules;
 
 interface WidgetData {
@@ -31,15 +36,15 @@ class WidgetKitService {
    */
   async updateWidgetData(widgetType: string, data: WidgetData): Promise<void> {
     if (!WidgetKitModule || Platform.OS !== 'ios') {
-      console.warn('[WidgetKitService] WidgetKit not available');
+      moduleLogger.warn('[WidgetKitService] WidgetKit not available');
       return;
     }
 
     try {
       await WidgetKitModule.updateWidgetData(widgetType, data);
-      console.log('[WidgetKitService] Widget data updated:', widgetType);
+      moduleLogger.debug('[WidgetKitService] Widget data updated:', widgetType);
     } catch (error) {
-      console.error('[WidgetKitService] Failed to update widget data:', error);
+      moduleLogger.error('Failed to update widget data:', error', error);
       throw error;
     }
   }
@@ -55,9 +60,9 @@ class WidgetKitService {
 
     try {
       await WidgetKitModule.reloadTimelines(widgetTypes);
-      console.log('[WidgetKitService] Widget timelines reloaded');
+      moduleLogger.debug('[WidgetKitService] Widget timelines reloaded');
     } catch (error) {
-      console.error('[WidgetKitService] Failed to reload timelines:', error);
+      moduleLogger.error('Failed to reload timelines:', error', error);
     }
   }
 
@@ -73,7 +78,7 @@ class WidgetKitService {
       const result = await WidgetKitModule.getCurrentConfigurations();
       return result.widgets || [];
     } catch (error) {
-      console.error('[WidgetKitService] Failed to get configurations:', error);
+      moduleLogger.error('Failed to get configurations:', error', error);
       return [];
     }
   }

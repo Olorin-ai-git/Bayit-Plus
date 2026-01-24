@@ -33,6 +33,11 @@ import { getLocalizedName, getLocalizedDescription } from "@bayit/shared-utils";
 import { useDirection } from "@bayit/shared-hooks";
 import { spacing, colors, borderRadius } from "../theme";
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('SeriesDetailScreenMobile');
+
 // Type assertion for LinearGradient React component
 const LinearGradientComponent = LinearGradient as any as React.FC<any>;
 
@@ -219,7 +224,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
         // Non-blocking error
       }
     } catch (error) {
-      console.error("Failed to load series:", error);
+      moduleLogger.error("Failed to load series:", error);
     } finally {
       setLoading(false);
     }
@@ -237,7 +242,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
         setSelectedEpisode(data.episodes[0]);
       }
     } catch (error) {
-      console.error("Failed to load episodes:", error);
+      moduleLogger.error("Failed to load episodes:", error);
     } finally {
       setEpisodesLoading(false);
     }
@@ -286,7 +291,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
           title: getLocalizedText(series, "title"),
         });
       } catch (error) {
-        console.error("Share failed:", error);
+        moduleLogger.error("Share failed:", error);
       }
     }
   }, [series, t, getLocalizedText]);

@@ -28,6 +28,9 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
         "/api/v1/auth/refresh",
         "/api/v1/auth/google/callback",  # OAuth callbacks use state parameter for CSRF protection
         "/api/v1/admin",  # Admin endpoints already protected by JWT authentication
+        "/api/v1/history",  # History endpoints already protected by JWT authentication
+        "/api/v1/subtitles",  # Subtitle endpoints already protected by JWT authentication
+        "/api/v1/trivia",  # Trivia endpoints already protected by JWT authentication
         "/docs",
         "/openapi.json",
         "/health",

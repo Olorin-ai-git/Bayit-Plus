@@ -11,6 +11,11 @@ import { backendProxyService, VoiceCommandRequest, VoiceCommandResponse } from '
 import { voiceManager, VoiceStage, VoiceSessionMetrics } from '../services/voiceManager';
 import { queryKeys } from '../config/queryConfig';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('useVoiceFeatures');
+
 // ============================================
 // Voice Command Hook
 // ============================================
@@ -271,17 +276,13 @@ export const useVoiceFeatures = (options: VoiceFeatureOptions = {}) => {
 
       // Log successful execution
       if (response.success) {
-        console.log('[VoiceFeatures] Command executed:', {
-          type: response.commandType,
-          action: response.action,
-          confidence: response.confidence
-        });
+        moduleLogger.debug('Command executed', { type: response.commandType, action: response.action, confidence: response.confidence });
       }
 
       return response;
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
-      console.error('[VoiceFeatures] Command execution failed:', error);
+      moduleLogger.error('Command execution failed:', error', error);
       throw error;
     }
   }, [voiceCommand, voiceStateOptions.language]);

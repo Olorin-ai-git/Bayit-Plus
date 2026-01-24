@@ -14,6 +14,11 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('offlineCacheService');
+
 // Cache version for invalidation (increment when cache structure changes)
 const CACHE_VERSION = '1.0.0';
 const CACHE_PREFIX = '@bayit_offline_cache_';
@@ -75,7 +80,7 @@ export const offlineCacheService = {
 
       // Check size limits
       if (dataSize > CACHE_LIMITS[category]) {
-        console.warn(
+        moduleLogger.warn(
           `Cache data for ${key} (${dataSize} bytes) exceeds limit for category ${category}`
         );
         return;
@@ -96,7 +101,7 @@ export const offlineCacheService = {
       // Update index
       await this._updateCacheIndex(cacheEntry);
     } catch (error) {
-      console.error(`Failed to cache ${key}:`, error);
+      moduleLogger.error(`Failed to cache ${key}:`, error);
       // Don't throw - caching failures should not break the app
     }
   },
@@ -128,7 +133,7 @@ export const offlineCacheService = {
 
       return cacheEntry.data;
     } catch (error) {
-      console.error(`Failed to retrieve cache for ${key}:`, error);
+      moduleLogger.error(`Failed to retrieve cache for ${key}:`, error);
       return null;
     }
   },
@@ -147,7 +152,7 @@ export const offlineCacheService = {
       // Update index
       await this._removeFromCacheIndex(key, category);
     } catch (error) {
-      console.error(`Failed to delete cache for ${key}:`, error);
+      moduleLogger.error(`Failed to delete cache for ${key}:`, error);
     }
   },
 
@@ -176,7 +181,7 @@ export const offlineCacheService = {
         await AsyncStorage.setItem(CACHE_METADATA_KEY, JSON.stringify(parsed));
       }
     } catch (error) {
-      console.error(`Failed to clear cache category ${category}:`, error);
+      moduleLogger.error(`Failed to clear cache category ${category}:`, error);
     }
   },
 
@@ -196,7 +201,7 @@ export const offlineCacheService = {
       await AsyncStorage.removeItem(CACHE_METADATA_KEY);
       await AsyncStorage.removeItem(CACHE_INDEX_KEY);
     } catch (error) {
-      console.error('Failed to clear all caches:', error);
+      moduleLogger.error('Failed to clear all caches:', error);
     }
   },
 
@@ -238,7 +243,7 @@ export const offlineCacheService = {
         byCategory,
       };
     } catch (error) {
-      console.error('Failed to get cache stats:', error);
+      moduleLogger.error('Failed to get cache stats:', error);
       return { totalSize: 0, entriesCount: 0, byCategory: {} };
     }
   },
@@ -281,7 +286,7 @@ export const offlineCacheService = {
 
       return removed;
     } catch (error) {
-      console.error('Failed to cleanup expired cache:', error);
+      moduleLogger.error('Failed to cleanup expired cache:', error);
       return 0;
     }
   },
@@ -310,7 +315,7 @@ export const offlineCacheService = {
 
       await AsyncStorage.setItem(CACHE_METADATA_KEY, JSON.stringify(metadata));
     } catch (error) {
-      console.error('Failed to update cache index:', error);
+      moduleLogger.error('Failed to update cache index:', error);
     }
   },
 
@@ -333,7 +338,7 @@ export const offlineCacheService = {
 
       await AsyncStorage.setItem(CACHE_METADATA_KEY, JSON.stringify(parsed));
     } catch (error) {
-      console.error('Failed to remove from cache index:', error);
+      moduleLogger.error('Failed to remove from cache index:', error);
     }
   },
 };

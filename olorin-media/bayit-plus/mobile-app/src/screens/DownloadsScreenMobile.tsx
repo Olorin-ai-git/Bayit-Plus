@@ -36,6 +36,11 @@ import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { colors } from '../theme';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('DownloadsScreenMobile');
+
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const DELETE_THRESHOLD = SCREEN_WIDTH * 0.25;
 
@@ -289,7 +294,7 @@ export const DownloadsScreenMobile: React.FC = () => {
       const transformedDownloads = apiDownloads.map(transformDownload);
       setDownloads(transformedDownloads);
     } catch (err) {
-      console.error('Failed to load downloads:', err);
+      moduleLogger.error('Failed to load downloads:', err);
       setDownloads([]);
     } finally {
       setIsLoading(false);
@@ -346,7 +351,7 @@ export const DownloadsScreenMobile: React.FC = () => {
               setDownloads(prev => prev.filter(item => item.id !== id));
               ReactNativeHapticFeedback.trigger('notificationSuccess');
             } catch (err) {
-              console.error('Failed to delete download:', err);
+              moduleLogger.error('Failed to delete download:', err);
               ReactNativeHapticFeedback.trigger('notificationError');
             }
           },

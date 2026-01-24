@@ -32,6 +32,11 @@ import { useAuthStore } from '@bayit/shared-stores';
 import { subscriptionService } from '@bayit/shared-services';
 import { spacing, colors, borderRadius } from '../theme';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('SubscriptionScreenMobile');
+
 interface SubscriptionPlan {
   id: string;
   name: string;
@@ -140,7 +145,7 @@ export const SubscriptionScreenMobile: React.FC = () => {
                 t('subscription.cancelledMessage')
               );
             } catch (error) {
-              console.error('Failed to cancel subscription:', error);
+              moduleLogger.error('Failed to cancel subscription:', error);
               Alert.alert(t('common.error'), t('subscription.cancelError'));
             } finally {
               setIsLoading(false);

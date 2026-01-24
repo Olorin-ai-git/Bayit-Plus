@@ -20,6 +20,11 @@ import { useEffect, useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import { voiceCommandProcessor } from "@bayit/shared-services";
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('useConversationContextMobile');
+
 export interface ConversationContextData {
   currentRoute: string;
   visibleContentIds: string[];
@@ -62,10 +67,7 @@ export function useConversationContextMobile(
    * Example: When HomeScreen loads and displays featured content
    */
   const registerVisibleContent = (ids: string[]) => {
-    console.log(
-      "[ConversationContext] Registered visible content:",
-      ids.length,
-    );
+    moduleLogger.debug('Proactive suggestion', proactiveSuggestion);
     setVisibleContentIds(ids);
   };
 
@@ -89,7 +91,7 @@ export function useConversationContextMobile(
    * Useful for detecting repeated commands or user intent shifts
    */
   const recordCommand = (transcript: string) => {
-    console.log("[ConversationContext] Recorded command:", transcript);
+    moduleLogger.debug("[ConversationContext] Recorded command:", transcript);
     setCommandHistory((prev) => {
       const updated = [transcript, ...prev].slice(0, maxHistoryLength);
       return updated;
@@ -101,7 +103,7 @@ export function useConversationContextMobile(
    * Helps with "find more like this" or "refine search" commands
    */
   const recordSearchQuery = (query: string) => {
-    console.log("[ConversationContext] Recorded search query:", query);
+    moduleLogger.debug("[ConversationContext] Recorded search query:", query);
     setLastSearchQuery(query);
   };
 
@@ -174,7 +176,7 @@ export function useConversationContextMobile(
    * Call when starting a new conversation or user navigates away
    */
   const clear = () => {
-    console.log("[ConversationContext] Cleared context");
+    moduleLogger.debug("[ConversationContext] Cleared context");
     setVisibleContentIds([]);
     setLastMentionedContentIds([]);
     setCommandHistory([]);

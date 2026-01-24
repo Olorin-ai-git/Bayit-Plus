@@ -30,6 +30,11 @@ import { getGridColumns } from '../utils/responsive';
 import { ChannelCardMobile } from '../components';
 import { spacing, colors, typography } from '../theme';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('LiveTVScreenMobile');
+
 interface Channel {
   id: string;
   number: string;
@@ -96,10 +101,10 @@ export const LiveTVScreenMobile: React.FC = () => {
 
       // Log any failures for debugging
       if (results[0].status === 'rejected') {
-        console.warn('Failed to load channels:', results[0].reason);
+        moduleLogger.warn('Failed to load channels:', results[0].reason);
       }
       if (results[1].status === 'rejected') {
-        console.warn('Failed to load categories:', results[1].reason);
+        moduleLogger.warn('Failed to load categories:', results[1].reason);
       }
 
       const channelsData = (channelsRes.channels || []).map((channel: any) => ({
@@ -114,7 +119,7 @@ export const LiveTVScreenMobile: React.FC = () => {
 
       setIsLoading(false);
     } catch (error) {
-      console.error('Error loading channels:', error);
+      moduleLogger.error('Error loading channels:', error);
       setIsLoading(false);
     }
   };

@@ -64,6 +64,11 @@ import {
 import { GlassView, GlassButton } from "@bayit/shared";
 import { colors } from "../theme";
 import type { RootStackParamList } from "../navigation/types";
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('PlayerScreenMobile');
+
 import {
   Play,
   Pause,
@@ -130,7 +135,7 @@ export const PlayerScreenMobile: React.FC = () => {
           setIsYouTube(false);
         }
       } catch (error) {
-        console.error("Failed to fetch stream URL:", error);
+        moduleLogger.error("Failed to fetch stream URL:", error);
         // Fallback
         setStreamUrl(`${API_BASE_URL.replace("/api/v1", "")}/stream/${id}`);
         setIsYouTube(false);
@@ -163,7 +168,7 @@ export const PlayerScreenMobile: React.FC = () => {
           setSubtitleTracks(tracks);
         }
       } catch (error) {
-        console.error("Failed to fetch subtitles:", error);
+        moduleLogger.error("Failed to fetch subtitles:", error);
       }
     };
 
@@ -183,7 +188,7 @@ export const PlayerScreenMobile: React.FC = () => {
           setChapters(data.chapters || []);
         }
       } catch (error) {
-        console.error("Failed to fetch chapters:", error);
+        moduleLogger.error("Failed to fetch chapters:", error);
       } finally {
         setChaptersLoading(false);
       }

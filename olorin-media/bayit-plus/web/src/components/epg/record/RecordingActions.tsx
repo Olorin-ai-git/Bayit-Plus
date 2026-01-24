@@ -5,10 +5,9 @@
  */
 
 import React from 'react'
-import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
-import { platformClass } from '@/utils/platformClass'
 import { useDirection } from '@/hooks/useDirection'
 
 /**
@@ -34,42 +33,74 @@ const RecordingActions: React.FC<RecordingActionsProps> = ({
   const { flexDirection } = useDirection()
 
   return (
-    <View
-      className={platformClass('flex gap-4')}
-      style={{ flexDirection }}
-    >
-      {/* Cancel Button */}
+    <View style={[styles.container, { flexDirection }]}>
       <Pressable
-        className={platformClass(
-          'flex-1 py-4 rounded-2xl items-center justify-center bg-white/10 border border-white/10 active:opacity-80'
-        )}
+        style={({ pressed }) => [
+          styles.button,
+          styles.cancelButton,
+          pressed && styles.buttonPressed,
+        ]}
         onPress={onCancel}
       >
-        <Text className={platformClass('text-sm font-semibold text-white')}>
-          {t('common.cancel')}
-        </Text>
+        <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
       </Pressable>
 
-      {/* Confirm Button */}
       <Pressable
-        className={platformClass(
-          `flex-1 py-4 rounded-2xl items-center justify-center bg-purple-500 active:opacity-80 ${
-            loading ? 'opacity-50' : ''
-          }`
-        )}
+        style={({ pressed }) => [
+          styles.button,
+          styles.confirmButton,
+          pressed && styles.buttonPressed,
+          loading && styles.buttonDisabled,
+        ]}
         onPress={onConfirm}
         disabled={loading}
       >
         {loading ? (
           <ActivityIndicator size="small" color="#ffffff" />
         ) : (
-          <Text className={platformClass('text-sm font-semibold text-white')}>
-            {t('epg.scheduleRecording')}
-          </Text>
+          <Text style={styles.confirmButtonText}>{t('epg.scheduleRecording')}</Text>
         )}
       </Pressable>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  button: {
+    flex: 1,
+    paddingVertical: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonPressed: {
+    opacity: 0.8,
+  },
+  buttonDisabled: {
+    opacity: 0.5,
+  },
+  cancelButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  cancelButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  confirmButton: {
+    backgroundColor: '#a855f7',
+  },
+  confirmButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+})
 
 export default RecordingActions

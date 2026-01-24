@@ -6,7 +6,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
-import { colors } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 
 // Validation schema
 export const PlaybackSpeedSelectorPropsSchema = z.object({
@@ -36,25 +36,22 @@ export default function PlaybackSpeedSelector({
   }
 
   return (
-    <View className="mb-6">
-      <Text className="text-sm font-semibold text-white mb-2">
-        {t('player.playbackSpeed')}
-      </Text>
-      <View className="flex-row flex-wrap gap-2">
+    <View style={styles.container}>
+      <Text style={styles.title}>{t('player.playbackSpeed')}</Text>
+      <View style={styles.speedList}>
         {PLAYBACK_SPEEDS.map((speed) => {
           const isActive = currentSpeed === speed
 
           return (
             <Pressable
               key={speed}
-              className="py-2 px-4 rounded-xl border"
-              style={[isActive ? styles.speedActive : styles.speedInactive]}
+              style={[
+                styles.speedButton,
+                isActive ? styles.speedActive : styles.speedInactive,
+              ]}
               onPress={() => handleSpeedChange(speed)}
             >
-              <Text
-                className="text-sm font-medium"
-                style={[isActive ? styles.textActive : styles.textInactive]}
-              >
+              <Text style={[styles.speedText, isActive ? styles.textActive : styles.textInactive]}>
                 {speed}x
               </Text>
             </Pressable>
@@ -66,6 +63,26 @@ export default function PlaybackSpeedSelector({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: spacing[6],
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing[2],
+  },
+  speedList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing[2],
+  },
+  speedButton: {
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[4],
+    borderRadius: borderRadius.xl,
+    borderWidth: 1,
+  },
   speedActive: {
     borderColor: 'rgba(168, 85, 247, 0.5)',
     backgroundColor: 'rgba(168, 85, 247, 0.1)',
@@ -73,6 +90,10 @@ const styles = StyleSheet.create({
   speedInactive: {
     borderColor: 'rgba(255, 255, 255, 0.2)',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
+  },
+  speedText: {
+    fontSize: 14,
+    fontWeight: '500',
   },
   textActive: {
     color: '#c084fc',

@@ -4,8 +4,9 @@
  */
 
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { Circle } from 'lucide-react'
+import { spacing, borderRadius, colors } from '@bayit/shared/theme'
 
 interface RecordingStatusIndicatorProps {
   isRecording: boolean
@@ -30,11 +31,33 @@ export const RecordingStatusIndicator: React.FC<RecordingStatusIndicatorProps> =
   }
 
   return (
-    <View className="absolute top-4 right-4 flex-row items-center gap-2 bg-red-500/90 backdrop-blur-[40px] px-3 py-2 rounded-full z-[100]">
+    <View style={styles.container}>
       <View>
-        <Circle size={8} color="white" fill="white" />
+        <Circle size={8} color={colors.text} fill={colors.text} />
       </View>
-      <Text className="text-white text-xs font-bold tracking-wide">REC {formatDuration(duration)}</Text>
+      <Text style={styles.text}>REC {formatDuration(duration)}</Text>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: spacing.md,
+    right: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: 'rgba(239, 68, 68, 0.9)',
+    paddingHorizontal: spacing.md - 4,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.full,
+    zIndex: 100,
+  },
+  text: {
+    color: colors.text,
+    fontSize: 12,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+  },
+})

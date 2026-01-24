@@ -7,7 +7,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Check } from 'lucide-react'
 import { z } from 'zod'
-import { colors } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 import type { QualityOption } from '../types'
 
 // Validation schema
@@ -43,11 +43,9 @@ export default function QualitySelector({
   const { t } = useTranslation()
 
   return (
-    <View className="mb-6">
-      <Text className="text-sm font-semibold text-white mb-2">
-        {t('player.quality')}
-      </Text>
-      <View className="gap-1">
+    <View style={styles.container}>
+      <Text style={styles.title}>{t('player.quality')}</Text>
+      <View style={styles.qualityList}>
         {availableQualities.length > 0 ? (
           availableQualities.map((quality) => {
             const isActive = currentQuality === quality.quality
@@ -56,36 +54,27 @@ export default function QualitySelector({
             return (
               <Pressable
                 key={quality.content_id}
-                className="flex-row items-center justify-between p-4 rounded-xl border"
-                style={[isActive ? styles.qualityActive : styles.qualityInactive]}
+                style={[
+                  styles.qualityButton,
+                  isActive ? styles.qualityActive : styles.qualityInactive,
+                ]}
                 onPress={() => onQualityChange?.(quality.quality)}
               >
-                <View className="flex-row items-center flex-1">
-                  <Text
-                    className="text-sm font-medium"
-                    style={[isActive ? styles.textActive : styles.textInactive]}
-                  >
+                <View style={styles.qualityContent}>
+                  <Text style={[styles.qualityLabel, isActive ? styles.textActive : styles.textInactive]}>
                     {displayLabel}
                   </Text>
                   {quality.resolution_height > 0 && (
-                    <Text className="text-xs text-gray-500 ml-3">
-                      {quality.resolution_height}p
-                    </Text>
+                    <Text style={styles.resolutionText}>{quality.resolution_height}p</Text>
                   )}
                 </View>
-                {isActive && (
-                  <Check size={16} color={colors.primary} />
-                )}
+                {isActive && <Check size={16} color={colors.primary} />}
               </Pressable>
             )
           })
         ) : (
-          <Pressable
-            className="py-2 px-4 rounded-xl border border-purple-500/50 bg-purple-500/10"
-          >
-            <Text className="text-sm font-semibold text-purple-400">
-              {t('player.auto')}
-            </Text>
+          <Pressable style={styles.autoButton}>
+            <Text style={styles.autoText}>{t('player.auto')}</Text>
           </Pressable>
         )}
       </View>
@@ -94,6 +83,26 @@ export default function QualitySelector({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: spacing[6],
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing[2],
+  },
+  qualityList: {
+    gap: spacing[1],
+  },
+  qualityButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: spacing[4],
+    borderRadius: borderRadius.xl,
+    borderWidth: 1,
+  },
   qualityActive: {
     borderColor: 'rgba(168, 85, 247, 0.5)',
     backgroundColor: 'rgba(168, 85, 247, 0.1)',
@@ -102,11 +111,38 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.1)',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
+  qualityContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  qualityLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
   textActive: {
     color: '#c084fc',
     fontWeight: '600',
   },
   textInactive: {
     color: '#9ca3af',
+  },
+  resolutionText: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginLeft: spacing[3],
+  },
+  autoButton: {
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[4],
+    borderRadius: borderRadius.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(168, 85, 247, 0.5)',
+    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+  },
+  autoText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#c084fc',
   },
 });

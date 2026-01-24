@@ -284,6 +284,11 @@ class Settings(BaseSettings):
     LIBRARIAN_ID_TRUNCATE_LENGTH: int
     LIBRARIAN_MODAL_MAX_HEIGHT: int
 
+    # Librarian Audit Recovery
+    AUDIT_STUCK_TIMEOUT_MINUTES: int = 30  # Audit considered stuck after 30 minutes
+    AUDIT_NO_ACTIVITY_TIMEOUT_MINUTES: int = 15  # No activity for 15 minutes is suspicious
+    AUDIT_HEALTH_CHECK_INTERVAL_SECONDS: int = 300  # Check every 5 minutes
+
     # EPG Configuration
     EPG_DEFAULT_TIME_WINDOW_HOURS: int = 6
     EPG_PAST_HOURS: int = 2

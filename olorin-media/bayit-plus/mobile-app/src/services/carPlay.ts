@@ -11,6 +11,11 @@
 
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('carPlay');
+
 const { CarPlayModule } = NativeModules;
 
 export interface CarPlayTemplate {
@@ -65,7 +70,7 @@ class CarPlayService {
     position?: number;
   }): Promise<void> {
     // Will be implemented with native CarPlay bridge
-    console.log('[CarPlay] Update now playing:', info);
+    moduleLogger.debug('[CarPlay] Update now playing:', info);
   }
 }
 

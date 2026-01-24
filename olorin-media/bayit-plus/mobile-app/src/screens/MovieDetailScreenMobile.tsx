@@ -32,6 +32,11 @@ import { getLocalizedName, getLocalizedDescription } from "@bayit/shared-utils";
 import { useDirection } from "@bayit/shared-hooks";
 import { spacing, colors, borderRadius } from "../theme";
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('MovieDetailScreenMobile');
+
 // Type assertion for LinearGradient React component
 const LinearGradientComponent = LinearGradient as any as React.FC<any>;
 
@@ -140,7 +145,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
         // Non-blocking error - continue without recommendations
       }
     } catch (error) {
-      console.error("Failed to load movie:", error);
+      moduleLogger.error("Failed to load movie:", error);
     } finally {
       setLoading(false);
     }
@@ -166,7 +171,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
           title: getLocalizedText(movie, "title"),
         });
       } catch (error) {
-        console.error("Share failed:", error);
+        moduleLogger.error("Share failed:", error);
       }
     }
   }, [movie, t, getLocalizedText]);

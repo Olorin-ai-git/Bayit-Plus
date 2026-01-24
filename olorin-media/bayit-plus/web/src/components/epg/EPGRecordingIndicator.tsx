@@ -1,4 +1,5 @@
 import React from 'react'
+import { View, StyleSheet } from 'react-native'
 import { Circle, Clock, CheckCircle } from 'lucide-react'
 
 export type RecordingStatus = 'none' | 'scheduled' | 'active' | 'completed'
@@ -14,53 +15,82 @@ const EPGRecordingIndicator: React.FC<EPGRecordingIndicatorProps> = ({
 }) => {
   if (status === 'none') return null
 
-  const sizeClasses = {
-    sm: 'w-5 h-5',
-    md: 'w-6 h-6',
-    lg: 'w-8 h-8'
+  const sizeStyles = {
+    sm: styles.sizeSmall,
+    md: styles.sizeMedium,
+    lg: styles.sizeLarge,
   }
 
   const iconSizes = {
     sm: 12,
     md: 14,
-    lg: 18
+    lg: 18,
   }
 
   const iconSize = iconSizes[size]
+  const sizeStyle = sizeStyles[size]
 
   return (
-    <div className="absolute top-2 right-2 z-10">
-      {/* Scheduled Recording */}
+    <View style={styles.container}>
       {status === 'scheduled' && (
-        <div
-          className={`${sizeClasses[size]} flex items-center justify-center bg-yellow-500/90 backdrop-blur-sm rounded-full shadow-lg`}
-          title="Scheduled"
-        >
-          <Clock size={iconSize} className="text-white" />
-        </div>
+        <View style={[styles.badge, styles.badgeScheduled, sizeStyle]} title="Scheduled">
+          <Clock size={iconSize} color="#ffffff" />
+        </View>
       )}
 
-      {/* Active Recording */}
       {status === 'active' && (
-        <div
-          className={`${sizeClasses[size]} flex items-center justify-center bg-red-500 backdrop-blur-sm rounded-full shadow-lg animate-pulse`}
-          title="Recording"
-        >
-          <Circle size={iconSize} className="text-white" fill="white" />
-        </div>
+        <View style={[styles.badge, styles.badgeActive, sizeStyle]} title="Recording">
+          <Circle size={iconSize} color="#ffffff" fill="#ffffff" />
+        </View>
       )}
 
-      {/* Completed Recording */}
       {status === 'completed' && (
-        <div
-          className={`${sizeClasses[size]} flex items-center justify-center bg-green-500/90 backdrop-blur-sm rounded-full shadow-lg`}
-          title="Recorded"
-        >
-          <CheckCircle size={iconSize} className="text-white" />
-        </div>
+        <View style={[styles.badge, styles.badgeCompleted, sizeStyle]} title="Recorded">
+          <CheckCircle size={iconSize} color="#ffffff" />
+        </View>
       )}
-    </div>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    zIndex: 10,
+  },
+  badge: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backdropFilter: 'blur(8px)',
+    borderRadius: 999,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  badgeScheduled: {
+    backgroundColor: 'rgba(251, 191, 36, 0.9)',
+  },
+  badgeActive: {
+    backgroundColor: '#ef4444',
+  },
+  badgeCompleted: {
+    backgroundColor: 'rgba(34, 197, 94, 0.9)',
+  },
+  sizeSmall: {
+    width: 20,
+    height: 20,
+  },
+  sizeMedium: {
+    width: 24,
+    height: 24,
+  },
+  sizeLarge: {
+    width: 32,
+    height: 32,
+  },
+})
 
 export default EPGRecordingIndicator

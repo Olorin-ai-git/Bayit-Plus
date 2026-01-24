@@ -3,11 +3,11 @@
  * Download subtitles button and result messages
  */
 
-import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Download, Check, AlertCircle } from 'lucide-react'
 import { z } from 'zod'
-import { platformClass } from '@/utils/platformClass'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 
 // Zod schema for download result
 const DownloadResultSchema = z.object({
@@ -52,21 +52,16 @@ export default function SubtitleDownloadSection({
 
   return (
     <>
-      {/* Divider */}
-      <View className="h-px bg-white/10 my-2" />
+      <View style={styles.divider} />
 
-      {/* Download Result Message */}
       {downloadResult && (
         <View
-          className={platformClass(
-            `flex-row items-start p-3 mx-2 mb-2 rounded-lg gap-2 ${
-              downloadResult.type === 'success'
-                ? 'bg-green-500/15 border border-green-500/30'
-                : downloadResult.type === 'error'
-                ? 'bg-red-500/15 border border-red-500/30'
-                : 'bg-yellow-500/15 border border-yellow-500/30'
-            }`
-          )}
+          style={[
+            styles.resultContainer,
+            downloadResult.type === 'success' && styles.resultSuccess,
+            downloadResult.type === 'error' && styles.resultError,
+            downloadResult.type === 'partial' && styles.resultWarning,
+          ]}
         >
           {downloadResult.type === 'success' ? (
             <Check size={16} color="#22c55e" />
@@ -75,46 +70,34 @@ export default function SubtitleDownloadSection({
           ) : (
             <AlertCircle size={16} color="#eab308" />
           )}
-          <View className="flex-1">
-            <Text className="text-white text-[13px] font-medium">
-              {downloadResult.message}
-            </Text>
+          <View style={styles.resultContent}>
+            <Text style={styles.resultMessage}>{downloadResult.message}</Text>
             {downloadResult.imported && downloadResult.imported.length > 0 && (
-              <Text className="text-zinc-400 text-[11px] mt-0.5">
-                {downloadResult.imported.join(', ')}
-              </Text>
+              <Text style={styles.resultImported}>{downloadResult.imported.join(', ')}</Text>
             )}
           </View>
         </View>
       )}
 
-      {/* Download Button */}
       <Pressable
         onPress={handlePress}
         onClick={stopPropagation}
         onMouseDown={stopPropagation}
         disabled={isDownloading}
-        className={platformClass(
-          `flex-row items-center justify-start p-3 rounded-lg mx-2 mb-2 bg-purple-500/10 border border-white/10 ${
-            isDownloading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-purple-500/20'
-          }`
-        )}
-        style={({ pressed }) => ({
-          opacity: pressed && !isDownloading ? 0.7 : 1,
-        })}
+        style={[styles.downloadButton, isDownloading && styles.downloadButtonDisabled]}
       >
         {isDownloading ? (
-          <ActivityIndicator size="small" color="#8b5cf6" style={{ marginRight: 12 }} />
+          <ActivityIndicator size="small" color="#8b5cf6" style={styles.icon} />
         ) : (
-          <Download size={20} color="#8b5cf6" style={{ marginRight: 12 }} />
+          <Download size={20} color="#8b5cf6" style={styles.icon} />
         )}
-        <View className="flex-1">
-          <Text className="text-purple-500 text-sm font-medium">
+        <View style={styles.downloadContent}>
+          <Text style={styles.downloadTitle}>
             {isDownloading
               ? t('subtitles.downloading', 'Searching OpenSubtitles...')
               : t('subtitles.downloadMore', 'Download more subtitles...')}
           </Text>
-          <Text className="text-zinc-400 text-xs mt-0.5">
+          <Text style={styles.downloadSubtitle}>
             {t('subtitles.opensubtitlesSource', 'From OpenSubtitles.com')}
           </Text>
         </View>
@@ -122,3 +105,77 @@ export default function SubtitleDownloadSection({
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    marginVertical: spacing[2],
+  },
+  resultContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    padding: spacing[3],
+    marginHorizontal: spacing[2],
+    marginBottom: spacing[2],
+    borderRadius: borderRadius.lg,
+    gap: spacing[2],
+    borderWidth: 1,
+  },
+  resultSuccess: {
+    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+    borderColor: 'rgba(34, 197, 94, 0.3)',
+  },
+  resultError: {
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+  },
+  resultWarning: {
+    backgroundColor: 'rgba(234, 179, 8, 0.15)',
+    borderColor: 'rgba(234, 179, 8, 0.3)',
+  },
+  resultContent: {
+    flex: 1,
+  },
+  resultMessage: {
+    color: colors.text,
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  resultImported: {
+    color: '#a1a1aa',
+    fontSize: 11,
+    marginTop: 2,
+  },
+  downloadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    padding: spacing[3],
+    borderRadius: borderRadius.lg,
+    marginHorizontal: spacing[2],
+    marginBottom: spacing[2],
+    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  downloadButtonDisabled: {
+    opacity: 0.5,
+  },
+  icon: {
+    marginRight: spacing[3],
+  },
+  downloadContent: {
+    flex: 1,
+  },
+  downloadTitle: {
+    color: '#a855f7',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  downloadSubtitle: {
+    color: '#a1a1aa',
+    fontSize: 12,
+    marginTop: 2,
+  },
+});

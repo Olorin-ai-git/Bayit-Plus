@@ -32,6 +32,11 @@ import { useDirection } from "@bayit/shared-hooks";
 import api from "@bayit/shared-services/api";
 import { spacing, colors, borderRadius } from "../theme";
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('FlowsScreenMobile');
+
 // Type assertion for LinearGradient React component
 const LinearGradientComponent = LinearGradient as any as React.FC<any>;
 
@@ -219,7 +224,7 @@ export const FlowsScreenMobile: React.FC = () => {
         setActiveFlow(activeRes.data.active_flow);
       }
     } catch (error) {
-      console.error("Error fetching flows:", error);
+      moduleLogger.error("Error fetching flows:", error);
     } finally {
       setLoading(false);
     }
@@ -274,7 +279,7 @@ export const FlowsScreenMobile: React.FC = () => {
           setShowFlowModal(true);
         }
       } catch (error) {
-        console.error("Error starting flow:", error);
+        moduleLogger.error("Error starting flow:", error);
       }
     },
     [navigation, getLocalizedName],
@@ -286,7 +291,7 @@ export const FlowsScreenMobile: React.FC = () => {
       await api.post(`/flows/${flow.id}/skip-today`);
       setActiveFlow(null);
     } catch (error) {
-      console.error("Error skipping flow:", error);
+      moduleLogger.error("Error skipping flow:", error);
     }
   }, []);
 

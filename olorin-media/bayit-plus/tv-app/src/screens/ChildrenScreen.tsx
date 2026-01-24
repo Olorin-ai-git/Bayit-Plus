@@ -22,6 +22,9 @@ import { isTV } from '../utils/platform';
 import { useDirection } from '@bayit/shared/hooks';
 import { useProfile } from '../contexts/ProfileContext';
 import { childrenService } from '../services/api';
+import logger from '../utils/logger';
+
+const childrenLogger = logger.scope('ChildrenScreen');
 
 interface KidsItem {
   id: string;
@@ -173,7 +176,7 @@ export const ChildrenScreen: React.FC = () => {
         setCategories(response.data);
       }
     } catch (err) {
-      console.error('Failed to load children categories:', err);
+      childrenLogger.error('Failed to load children categories', err);
     }
   };
 
@@ -187,7 +190,7 @@ export const ChildrenScreen: React.FC = () => {
         setContent(response.data);
       }
     } catch (err) {
-      console.error('Failed to load kids content:', err);
+      childrenLogger.error('Failed to load kids content', err);
       setContent([]);
     } finally {
       setIsLoading(false);

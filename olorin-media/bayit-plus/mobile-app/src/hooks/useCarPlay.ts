@@ -13,6 +13,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { AppState, Platform } from 'react-native';
 import { carPlayService } from '../services/carPlay';
 
+import logger from '@/utils/logger';
+
+
+const moduleLogger = logger.scope('useCarPlay');
+
 export interface CarPlayState {
   isConnected: boolean;
   isPlaying: boolean;
@@ -46,7 +51,7 @@ export function useCarPlay(options: UseCarPlayOptions = {}) {
         const connected = await carPlayService.isConnected();
         setIsConnected(connected);
       } catch (error) {
-        console.error('[useCarPlay] Failed to check connection:', error);
+        moduleLogger.error('Failed to check connection:', error', error);
       }
     };
 
@@ -80,9 +85,9 @@ export function useCarPlay(options: UseCarPlayOptions = {}) {
           position: 0,
         });
 
-        console.log('[useCarPlay] Playing content:', content.title);
+        moduleLogger.debug('[useCarPlay] Playing content:', content.title);
       } catch (error) {
-        console.error('[useCarPlay] Failed to play content:', error);
+        moduleLogger.error('Failed to play content:', error', error);
       }
     },
     []
@@ -118,7 +123,7 @@ export function useCarPlay(options: UseCarPlayOptions = {}) {
           position,
         });
       } catch (error) {
-        console.error('[useCarPlay] Failed to update position:', error);
+        moduleLogger.error('Failed to update position:', error', error);
       }
     },
     [currentContent]

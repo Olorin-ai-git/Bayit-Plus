@@ -9,9 +9,9 @@
  * - TailwindCSS styling
  */
 
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { z } from 'zod'
-import { platformClass } from '../../../utils/platformClass'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 
 const TimeDisplayPropsSchema = z.object({
   currentTime: z.number(),
@@ -31,28 +31,35 @@ export default function TimeDisplay({
   const speedDisplay = playbackSpeed !== 1 ? `${playbackSpeed}x` : null
 
   return (
-    <View className="flex-row items-center gap-2">
-      <Text
-        className={platformClass(
-          'text-sm text-neutral-400',
-          'text-sm text-neutral-400'
-        )}
-        style={{
-          fontVariant: ['tabular-nums'] as any,
-        }}
-      >
+    <View style={styles.container}>
+      <Text style={styles.timeText}>
         {formatTime(currentTime)} / {formatTime(duration)}
       </Text>
       {speedDisplay && (
-        <Text
-          className={platformClass(
-            'text-[11px] font-semibold text-purple-500 bg-purple-700/30 px-1 py-0.5 rounded',
-            'text-[11px] font-semibold text-purple-500 bg-purple-700/30 px-1 py-0.5 rounded'
-          )}
-        >
-          {speedDisplay}
-        </Text>
+        <Text style={styles.speedBadge}>{speedDisplay}</Text>
       )}
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+  },
+  timeText: {
+    fontSize: 14,
+    color: '#a3a3a3',
+    fontVariant: ['tabular-nums'],
+  },
+  speedBadge: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#a855f7',
+    backgroundColor: 'rgba(126, 34, 206, 0.3)',
+    paddingHorizontal: spacing[1],
+    paddingVertical: 2,
+    borderRadius: borderRadius.DEFAULT,
+  },
+})

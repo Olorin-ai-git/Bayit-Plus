@@ -11,7 +11,7 @@
  * - TailwindCSS styling
  */
 
-import { View, Pressable } from 'react-native'
+import { View, Pressable, StyleSheet } from 'react-native'
 import {
   Maximize,
   Minimize,
@@ -19,8 +19,7 @@ import {
   List,
 } from 'lucide-react'
 import { z } from 'zod'
-import { colors } from '@bayit/shared/theme'
-import { platformClass } from '../../../utils/platformClass'
+import { colors, spacing, borderRadius } from '@bayit/shared/theme'
 
 const ActionButtonsPropsSchema = z.object({
   isFullscreen: z.boolean(),
@@ -54,25 +53,16 @@ export default function ActionButtons({
   renderRecordButton,
 }: ActionButtonsProps) {
   return (
-    <View className="flex-row items-center gap-2">
-      {/* Watch Party Button (custom render) */}
+    <View style={styles.container}>
       {renderWatchPartyButton && renderWatchPartyButton()}
 
-      {/* Chapters Toggle */}
       {!isLive && hasChapters && onChaptersPanelToggle && (
         <Pressable
           onPress={(e) => {
             e.stopPropagation?.()
             onChaptersPanelToggle()
           }}
-          className={platformClass(
-            `w-9 h-9 rounded-lg items-center justify-center hover:bg-white/10 ${
-              showChaptersPanel ? 'bg-purple-700/30' : ''
-            }`,
-            `w-9 h-9 rounded-lg items-center justify-center ${
-              showChaptersPanel ? 'bg-purple-700/30' : ''
-            }`
-          )}
+          style={[styles.button, showChaptersPanel && styles.buttonActive]}
           accessibilityLabel="Toggle chapters"
           accessibilityRole="button"
         >
@@ -83,28 +73,17 @@ export default function ActionButtons({
         </Pressable>
       )}
 
-      {/* Subtitle Controls (custom render) */}
       {renderSubtitleControls && renderSubtitleControls()}
       {renderLiveSubtitleControls && renderLiveSubtitleControls()}
-
-      {/* Record Button (custom render) */}
       {renderRecordButton && renderRecordButton()}
 
-      {/* Settings Toggle */}
       {onSettingsToggle && (
         <Pressable
           onPress={(e) => {
             e.stopPropagation?.()
             onSettingsToggle()
           }}
-          className={platformClass(
-            `w-9 h-9 rounded-lg items-center justify-center hover:bg-white/10 ${
-              showSettings ? 'bg-purple-700/30' : ''
-            }`,
-            `w-9 h-9 rounded-lg items-center justify-center ${
-              showSettings ? 'bg-purple-700/30' : ''
-            }`
-          )}
+          style={[styles.button, showSettings && styles.buttonActive]}
           accessibilityLabel="Toggle settings"
           accessibilityRole="button"
         >
@@ -115,16 +94,12 @@ export default function ActionButtons({
         </Pressable>
       )}
 
-      {/* Fullscreen Toggle */}
       <Pressable
         onPress={(e) => {
           e.stopPropagation?.()
           onToggleFullscreen()
         }}
-        className={platformClass(
-          'w-9 h-9 rounded-lg items-center justify-center hover:bg-white/10',
-          'w-9 h-9 rounded-lg items-center justify-center'
-        )}
+        style={styles.button}
         accessibilityLabel={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
         accessibilityRole="button"
       >
@@ -137,3 +112,21 @@ export default function ActionButtons({
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+  },
+  button: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonActive: {
+    backgroundColor: 'rgba(126, 34, 206, 0.3)',
+  },
+})
