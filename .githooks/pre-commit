@@ -19,21 +19,29 @@ BLOCKED_FILES=()
 
 # Check staged changes for blocked patterns
 for pattern in "${BLOCKED_PATTERNS[@]}"; do
-    # Get list of staged files that match the pattern
-    FILES=$(git diff --cached --name-only | xargs grep -l "$pattern" 2>/dev/null || true)
+    # Check only added lines in the diff (lines starting with +)
+    MATCHES=$(git diff --cached | grep -E "^\+" | grep -E "$pattern" 2>/dev/null || true)
 
-    if [ -n "$FILES" ]; then
+    if [ -n "$MATCHES" ]; then
         FOUND=1
         echo ""
         echo "❌ COMMIT BLOCKED: Hardcoded path found matching: $pattern"
-        echo "   Affected files:"
-        for file in $FILES; do
-            echo "     - $file"
-            BLOCKED_FILES+=("$file")
-            # Show the actual lines
-            echo "       Lines:"
-            git diff --cached "$file" | grep -E "$pattern" | head -3 | sed 's/^/         /'
-        done
+        echo "   Found in added lines:"
+
+        # Get affected files
+        while IFS= read -r file; do
+            if [ -n "$file" ]; then
+                echo "     - $file"
+                BLOCKED_FILES+=("$file")
+                # Show the actual added lines
+                echo "       Lines:"
+                git diff --cached "$file" | grep -E "^\+" | grep -E "$pattern" | head -3 | sed 's/^/         /'
+            fi
+        done < <(git diff --cached --name-only | while read file; do
+            if git diff --cached "$file" | grep -E "^\+" | grep -q "$pattern" 2>/dev/null; then
+                echo "$file"
+            fi
+        done)
     fi
 done
 
