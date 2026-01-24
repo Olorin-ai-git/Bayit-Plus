@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Play, Plus, Check } from 'lucide-react';
 import LinearGradient from 'react-native-linear-gradient';
 import { GlassView, GlassButton, GlassBadge, GlassTooltip } from '@bayit/shared/ui';
+import { SubtitleFlags } from '@bayit/shared/components';
 import { colors } from '@bayit/shared/theme';
 import type { SeriesData, Episode } from '../types/series.types';
 
@@ -130,6 +131,17 @@ export function SeriesHero({
             <Text style={styles.metadataText}>
               {series.total_episodes || episodes.length} {t('content.episodes')}
             </Text>
+          )}
+          {series.available_subtitles && series.available_subtitles.length > 0 && (
+            <View style={{ position: 'relative' }}>
+              <SubtitleFlags
+                languages={series.available_subtitles}
+                maxDisplay={5}
+                size="medium"
+                position="bottom-left"
+                isRTL={flexDirection === 'row-reverse'}
+              />
+            </View>
           )}
         </View>
 

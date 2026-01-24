@@ -6,6 +6,7 @@ Create, update, delete, and modify VOD content
 import logging
 from datetime import datetime
 
+from beanie import PydanticObjectId
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 
 from app.models.admin import AuditAction, Permission
@@ -16,7 +17,8 @@ from app.services.image_storage import download_and_encode_image
 from app.services.subtitle_extraction_service import \
     analyze_and_extract_subtitles
 
-from .admin_content_schemas import ContentCreateRequest, ContentUpdateRequest
+from .admin_content_schemas import (ContentCreateRequest,
+                                     ContentUpdateRequest, MergeContentRequest)
 from .admin_content_utils import has_permission, log_audit
 
 router = APIRouter()
@@ -251,3 +253,160 @@ async def delete_content(
     )
     await content.delete()
     return {"message": "Content deleted"}
+
+
+@router.post("/content/batch/merge")
+async def merge_content(
+    data: MergeContentRequest,
+    request: Request,
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
+):
+    """Merge multiple content items into one base item."""
+    from datetime import datetime, timezone
+
+    # Validate base_id and merge_ids
+    if not data.merge_ids:
+        raise HTTPException(
+            status_code=400, detail="At least one item required for merging"
+        )
+
+    try:
+        # Convert IDs to ObjectId
+        try:
+            base_obj_id = PydanticObjectId(data.base_id)
+            merge_obj_ids = [PydanticObjectId(mid) for mid in data.merge_ids]
+        except Exception as e:
+            raise HTTPException(
+                status_code=400, detail=f"Invalid content ID format: {str(e)}"
+            )
+
+        # Get base content
+        base_content = await Content.get(base_obj_id)
+        if not base_content:
+            raise HTTPException(
+                status_code=404, detail=f"Base content {data.base_id} not found"
+            )
+
+        # Get merge contents
+        merge_contents = await Content.find(
+            {"_id": {"$in": merge_obj_ids}}
+        ).to_list()
+
+        if len(merge_contents) != len(data.merge_ids):
+            raise HTTPException(
+                status_code=404, detail="Some merge content items not found"
+            )
+
+        # Validate all contents are same type (series/movie)
+        if not all(c.is_series == base_content.is_series for c in merge_contents):
+            raise HTTPException(
+                status_code=400,
+                detail="All content items must be of the same type (series or movie)",
+            )
+
+        seasons_transferred = 0
+        episodes_transferred = 0
+        errors = []
+
+        # For series, transfer seasons and episodes
+        if base_content.is_series:
+            for merge_series in merge_contents:
+                try:
+                    # Transfer seasons if requested
+                    if data.transfer_seasons:
+                        seasons = await Content.find(
+                            {
+                                "series_id": merge_series.id,
+                                "is_series": False,
+                                "season_number": {"$exists": True, "$ne": None}
+                            }
+                        ).to_list()
+
+                        for season in seasons:
+                            if not data.dry_run:
+                                season.series_id = base_obj_id
+                                await season.save()
+                            seasons_transferred += 1
+
+                    # Transfer episodes if requested
+                    if data.transfer_episodes:
+                        episodes = await Content.find(
+                            {
+                                "series_id": merge_series.id,
+                                "is_series": False,
+                                "episode_number": {"$exists": True, "$ne": None}
+                            }
+                        ).to_list()
+
+                        for episode in episodes:
+                            if not data.dry_run:
+                                episode.series_id = base_obj_id
+                                await episode.save()
+                            episodes_transferred += 1
+
+                except Exception as e:
+                    logger.error(f"Error transferring content from {merge_series.id}: {e}")
+                    errors.append(f"Failed to transfer from {merge_series.title}: {str(e)}")
+
+            # Update base series metadata if not preserving
+            if not data.dry_run:
+                if not data.preserve_metadata.useBasePoster:
+                    # Use poster from first merge series that has one
+                    for merge_series in merge_contents:
+                        if merge_series.poster_url or merge_series.thumbnail:
+                            base_content.poster_url = merge_series.poster_url or merge_series.thumbnail
+                            base_content.thumbnail = merge_series.thumbnail or merge_series.poster_url
+                            break
+
+                if not data.preserve_metadata.useBaseDescription:
+                    # Use description from first merge series that has one
+                    for merge_series in merge_contents:
+                        if merge_series.description:
+                            base_content.description = merge_series.description
+                            break
+
+                base_content.updated_at = datetime.now(timezone.utc)
+                await base_content.save()
+
+        # Mark merged contents as merged (unpublish and add review reason)
+        if not data.dry_run:
+            for merge_content in merge_contents:
+                merge_content.is_published = False
+                merge_content.needs_review = False  # No review needed, this is intentional
+                merge_content.review_reason = f"Merged into '{base_content.title}' (ID: {str(base_obj_id)})"
+                merge_content.review_issue_type = "merged"
+                merge_content.updated_at = datetime.now(timezone.utc)
+                await merge_content.save()
+
+        # Log audit
+        await log_audit(
+            str(current_user.id),
+            AuditAction.CONTENT_UPDATED,
+            "content",
+            data.base_id,
+            {
+                "action": "merge",
+                "base_id": data.base_id,
+                "merged_ids": data.merge_ids,
+                "seasons_transferred": seasons_transferred,
+                "episodes_transferred": episodes_transferred,
+                "dry_run": data.dry_run,
+            },
+            request,
+        )
+
+        return {
+            "success": True,
+            "items_merged": len(data.merge_ids),
+            "base_content_id": data.base_id,
+            "merged_content_ids": data.merge_ids,
+            "seasons_transferred": seasons_transferred,
+            "episodes_transferred": episodes_transferred,
+            "errors": errors,
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error merging content: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))

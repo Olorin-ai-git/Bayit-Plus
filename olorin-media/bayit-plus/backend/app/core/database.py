@@ -50,6 +50,7 @@ from app.models.profile import Profile
 from app.models.realtime import ChatMessage, WatchParty
 from app.models.recording import (Recording, RecordingSchedule,
                                   RecordingSession, RecordingSubtitleCue)
+from app.models.search_analytics import SearchQuery
 from app.models.security_audit import SecurityAuditLog
 from app.models.subscription import Invoice, Subscription
 from app.models.subtitle_preferences import SubtitlePreference
@@ -128,6 +129,8 @@ async def connect_to_mongo():
         SubtitleSearchCacheDoc,
         SubtitleQuotaTrackerDoc,
         SubtitlePreference,
+        # Search analytics models
+        SearchQuery,
         # Admin models
         Campaign,
         Transaction,

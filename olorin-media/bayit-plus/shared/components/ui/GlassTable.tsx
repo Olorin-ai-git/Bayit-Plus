@@ -305,6 +305,8 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+    // @ts-ignore - Web CSS
+    whiteSpace: 'nowrap',
   },
   loadingContainer: {
     flexDirection: 'row',

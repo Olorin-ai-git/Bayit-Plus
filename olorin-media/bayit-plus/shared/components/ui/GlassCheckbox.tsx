@@ -101,6 +101,8 @@ const styles = StyleSheet.create({
   touchable: {
     flexDirection: 'row',
     alignItems: 'center',
+    // @ts-ignore - Web CSS
+    cursor: 'pointer',
   },
   rowReverse: {
     flexDirection: 'row-reverse',
@@ -110,6 +112,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
+    // @ts-ignore - Web CSS
+    transition: 'all 0.2s ease',
   },
   checkboxChecked: {
     backgroundColor: '#a855f7',
@@ -121,6 +125,8 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.5,
+    // @ts-ignore - Web CSS
+    cursor: 'not-allowed',
   },
   marginLeft: {
     marginLeft: spacing.sm,

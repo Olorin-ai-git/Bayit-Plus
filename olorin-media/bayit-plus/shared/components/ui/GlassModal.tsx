@@ -72,6 +72,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({
   loading = false,
   dismissable = true,
 }) => {
+  console.log('[GlassModal] Rendering:', { visible, hasChildren: !!children, title })
   const modalColor = getColorForType(type);
   const icon = getIconForType(type);
   const hasCustomContent = !!children;
@@ -218,15 +219,30 @@ export const GlassModal: React.FC<GlassModalProps> = ({
     );
   };
 
+  console.log('[GlassModal] Rendering Modal component with visible:', visible)
+
   return (
     <Modal
       visible={visible}
-      transparent
+      transparent={true}
       animationType="fade"
       onRequestClose={handleBackdropPress}
+      statusBarTranslucent={true}
+      supportedOrientations={['portrait', 'landscape']}
     >
       <TouchableWithoutFeedback onPress={handleBackdropPress}>
-        <View style={styles.backdrop}>
+        <View style={[
+          styles.backdrop,
+          Platform.OS === 'web' && {
+            // @ts-ignore - Web-specific CSS properties
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999,
+          }
+        ]}>
           <TouchableWithoutFeedback>
             {renderGlassContainer()}
           </TouchableWithoutFeedback>

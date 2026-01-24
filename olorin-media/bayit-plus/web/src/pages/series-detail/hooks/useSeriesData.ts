@@ -75,16 +75,33 @@ export function useSeriesData({ seriesId }: UseSeriesDataProps): UseSeriesDataRe
       logger.warn('Cannot toggle watchlist: series or series.id is missing', 'useSeriesData');
       return;
     }
+
+    const previousState = inWatchlist;
+
     try {
+      // Optimistically update UI
+      setInWatchlist(!inWatchlist);
+
+      logger.info('Toggling watchlist', 'useSeriesData', {
+        seriesId: series.id,
+        contentType: 'series',
+        currentState: inWatchlist
+      });
+
       const result = await watchlistService.toggleWatchlist(series.id, 'series');
+
+      logger.info('Watchlist toggle response', 'useSeriesData', { result });
+
       if (result && typeof result.in_watchlist === 'boolean') {
         setInWatchlist(result.in_watchlist);
       } else {
-        setInWatchlist(!inWatchlist);
+        logger.warn('Unexpected watchlist response format', 'useSeriesData', { result });
+        // Keep the optimistic update if API doesn't return expected format
       }
     } catch (error) {
       logger.error('Failed to toggle watchlist', 'useSeriesData', error);
-      setInWatchlist(!inWatchlist);
+      // Revert to previous state on error
+      setInWatchlist(previousState);
     }
   }, [series, inWatchlist]);
 

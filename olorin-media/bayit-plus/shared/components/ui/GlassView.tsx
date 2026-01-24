@@ -86,7 +86,7 @@ export const GlassView: React.FC<GlassViewProps> = ({
         style,
       ]}
     >
-      <View style={[styles.innerView, { borderColor: colors.glassBorderLight }]}>
+      <View style={styles.innerView}>
         {children}
       </View>
     </LinearGradient>
@@ -103,8 +103,6 @@ const styles = StyleSheet.create({
   },
   innerView: {
     flex: 1,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
   },
 });
 

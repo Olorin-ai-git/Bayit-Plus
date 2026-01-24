@@ -145,8 +145,12 @@ export default function LoginPage() {
 
           {/* Email Input */}
           <View style={styles.inputWrapper}>
+            <View style={[styles.inputHeader, isRTL && styles.inputHeaderRTL]}>
+              <Text style={IS_TV_BUILD ? styles.inputLabelTV : styles.inputLabel}>
+                {t('login.email')}
+              </Text>
+            </View>
             <GlassInput
-              label={t('login.email')}
               value={email}
               onChangeText={setEmail}
               placeholder={t('login.emailPlaceholder')}
@@ -159,8 +163,8 @@ export default function LoginPage() {
 
           {/* Password Input */}
           <View style={styles.inputWrapper}>
-            <View style={[styles.passwordHeader, isRTL && styles.passwordHeaderRTL]}>
-              <Text style={IS_TV_BUILD ? styles.passwordLabelTV : styles.passwordLabel}>
+            <View style={[styles.inputHeader, isRTL && styles.inputHeaderRTL]}>
+              <Text style={IS_TV_BUILD ? styles.inputLabelTV : styles.inputLabel}>
                 {t('login.password')}
               </Text>
               <Link to="/forgot-password" style={{ textDecoration: 'none' }}>
@@ -443,24 +447,24 @@ const styles = StyleSheet.create({
   inputWrapper: {
     marginBottom: spacing.lg,
   },
-  passwordHeader: {
+  inputHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: spacing.sm,
   },
-  passwordHeaderRTL: {
+  inputHeaderRTL: {
     flexDirection: 'row-reverse',
   },
-  passwordLabel: {
+  inputLabel: {
     fontSize: 14,
     fontWeight: '500',
-    color: colors.textMuted,
+    color: 'rgba(255, 255, 255, 0.7)',
   },
-  passwordLabelTV: {
+  inputLabelTV: {
     fontSize: 20,
     fontWeight: '500',
-    color: colors.textMuted,
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   forgotPasswordLink: {
     fontSize: 13,

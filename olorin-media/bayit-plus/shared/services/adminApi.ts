@@ -618,6 +618,28 @@ export const adminContentService = {
 
   batchPublishContent: (contentIds: string[], published: boolean): Promise<{ updated_count: number }> =>
     adminApi.post('/admin/content/batch/publish', { content_ids: contentIds, published }),
+
+  mergeContent: (request: {
+    base_id: string;
+    merge_ids: string[];
+    transfer_seasons?: boolean;
+    transfer_episodes?: boolean;
+    preserve_metadata?: {
+      useBaseTitle?: boolean;
+      useBasePoster?: boolean;
+      useBaseDescription?: boolean;
+    };
+    dry_run?: boolean;
+  }): Promise<{
+    success: boolean;
+    items_merged: number;
+    base_content_id: string;
+    merged_content_ids: string[];
+    seasons_transferred?: number;
+    episodes_transferred?: number;
+    errors: string[];
+  }> =>
+    adminApi.post('/admin/content/batch/merge', request),
 };
 
 // ============================================

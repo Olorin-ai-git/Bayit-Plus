@@ -21,6 +21,27 @@ echo "  Budget Limit: \$$BUDGET_LIMIT"
 echo "  Dry Run: $DRY_RUN"
 echo ""
 
+# Run series episodes integrity check first
+echo "🔍 Step 1: Running Series Episodes Integrity Check..."
+echo "──────────────────────────────────────────────────"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INTEGRITY_SCRIPT="$SCRIPT_DIR/../../check-series-integrity.sh"
+
+if [ -f "$INTEGRITY_SCRIPT" ]; then
+    bash "$INTEGRITY_SCRIPT" || {
+        echo "⚠️  Warning: Series integrity check failed, but continuing with audit..."
+        echo ""
+    }
+else
+    echo "⚠️  Warning: Integrity check script not found at $INTEGRITY_SCRIPT"
+    echo ""
+fi
+
+echo ""
+echo "🤖 Step 2: Running AI Librarian Audit..."
+echo "──────────────────────────────────────────────────"
+echo ""
+
 # Check if server is running
 echo "⏳ Checking server health..."
 if ! curl -sf "$API_URL/health" > /dev/null; then
@@ -91,5 +112,9 @@ echo "   Check logs with: tail -f backend/.cursor/debug.log"
 echo ""
 echo "📊 To view results:"
 echo "   curl -H 'Authorization: Bearer YOUR_TOKEN' $API_URL/api/v1/admin/librarian/status"
+echo ""
+echo "🔍 Series Integrity:"
+echo "   Review integrity check results above for missing episodes"
+echo "   Run standalone check: ./scripts/backend/check-series-integrity.sh"
 echo ""
 echo "🎯 Tip: Run this script multiple times to cover your entire library!"

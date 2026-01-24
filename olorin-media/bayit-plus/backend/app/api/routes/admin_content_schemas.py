@@ -230,3 +230,19 @@ class PodcastEpisodeUpdateRequest(BaseModel):
     season_number: Optional[int] = None
     published_at: Optional[datetime] = None
     thumbnail: Optional[str] = None
+
+
+# Merge Content Models
+class PreserveMetadata(BaseModel):
+    useBaseTitle: bool = True
+    useBasePoster: bool = True
+    useBaseDescription: bool = True
+
+
+class MergeContentRequest(BaseModel):
+    base_id: str
+    merge_ids: List[str] = Field(..., min_length=1, max_length=10)
+    transfer_seasons: bool = True
+    transfer_episodes: bool = True
+    preserve_metadata: PreserveMetadata = Field(default_factory=PreserveMetadata)
+    dry_run: bool = False
