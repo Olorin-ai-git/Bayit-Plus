@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { colors, borderRadius, spacing } from '../../theme/colors';
 
 interface SearchCardBadgesProps {
   /** Subscription tier requirement */

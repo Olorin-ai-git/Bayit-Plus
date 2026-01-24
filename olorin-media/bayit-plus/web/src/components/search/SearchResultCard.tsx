@@ -9,6 +9,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { SearchCardBadges } from './SearchCardBadges';
 import { SearchCardMetadata } from './SearchCardMetadata';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
+import { colors, borderRadius, spacing } from '../../theme/colors';
 
 interface SearchResultCardProps {
   /** Search result data */

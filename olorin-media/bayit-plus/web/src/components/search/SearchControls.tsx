@@ -14,6 +14,7 @@ import { SearchActionButtons } from './SearchActionButtons';
 import { ContentTypePills } from './ContentTypePills';
 import { useVoiceSearch } from '../../hooks/useVoiceSearch';
 import logger from '../../../../shared/utils/logger';
+import { colors, borderRadius, spacing } from '../../theme/colors';
 
 const LOG_CONTEXT = 'SearchControls';
 

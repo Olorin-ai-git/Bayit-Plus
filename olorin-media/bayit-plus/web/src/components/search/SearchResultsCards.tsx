@@ -9,6 +9,7 @@ import React from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { SearchResultCard } from './SearchResultCard';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
+import { colors, borderRadius, spacing } from '../../theme/colors';
 
 interface SearchResultsCardsProps {
   /** Search results to display */

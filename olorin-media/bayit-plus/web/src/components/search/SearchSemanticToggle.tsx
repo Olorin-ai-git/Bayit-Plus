@@ -8,6 +8,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { colors, borderRadius } from '../../theme/colors';
 
 // Platform-specific touch target sizes
 const TOUCH_TARGET_SIZE = Platform.select({
@@ -97,22 +98,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     padding: 12,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.cardBackground,
   },
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: 'rgba(255,255,255,0.6)',
+    color: colors.textSecondary,
   },
   labelActive: {
-    color: '#fff',
+    color: colors.text,
   },
   switchTrack: {
     minWidth: Math.max(48, TOUCH_TARGET_SIZE),
     minHeight: Math.max(26, TOUCH_TARGET_SIZE),
     borderRadius: 13,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: colors.disabled,
     justifyContent: 'center',
     paddingHorizontal: 3,
   },
@@ -120,16 +121,16 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#fff',
+    backgroundColor: colors.text,
     transform: [{ translateX: 0 }],
   },
   switchThumbActive: {
     transform: [{ translateX: 22 }],
-    backgroundColor: 'rgba(168,85,247,1)',
+    backgroundColor: colors.primary,
   },
   switchFocused: {
     borderWidth: 2,
-    borderColor: 'rgba(168,85,247,1)',
+    borderColor: colors.primary,
     transform: [{ scale: 1.05 }],
   },
   infoButton: {
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
   },
   infoButtonFocused: {
     borderWidth: 2,
-    borderColor: 'rgba(168,85,247,1)',
+    borderColor: colors.primary,
     borderRadius: TOUCH_TARGET_SIZE / 2,
     transform: [{ scale: 1.05 }],
   },
@@ -149,20 +150,20 @@ const styles = StyleSheet.create({
   },
   tooltip: {
     padding: 12,
-    borderRadius: 12,
-    backgroundColor: 'rgba(168,85,247,0.1)',
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.glassBorderLight,
     borderWidth: 1,
-    borderColor: 'rgba(168,85,247,0.3)',
+    borderColor: colors.pillBorder,
     gap: 4,
   },
   tooltipTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.text,
   },
   tooltipText: {
     fontSize: 13,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     lineHeight: 18,
   },
 });
