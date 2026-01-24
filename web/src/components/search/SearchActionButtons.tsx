@@ -107,13 +107,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.inputBackground,
     borderWidth: 1,
     borderColor: 'transparent',
   },
   buttonFocused: {
     borderWidth: 2,
-    borderColor: 'rgba(168,85,247,1)',
+    borderColor: colors.primary,
     transform: [{ scale: 1.05 }],
   },
   buttonIcon: {

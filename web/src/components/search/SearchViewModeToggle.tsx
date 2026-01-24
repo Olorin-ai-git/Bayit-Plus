@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     gap: 4,
     padding: 4,
     borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: colors.cardBackground,
   },
   button: {
     minWidth: TOUCH_TARGET_SIZE,
@@ -86,18 +86,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   buttonActive: {
-    backgroundColor: 'rgba(168,85,247,0.3)',
+    backgroundColor: colors.pillActive,
   },
   buttonFocused: {
     borderWidth: 2,
-    borderColor: 'rgba(168,85,247,1)',
+    borderColor: colors.primary,
     transform: [{ scale: 1.05 }],
   },
   icon: {
     fontSize: 20,
-    color: 'rgba(255,255,255,0.6)',
+    color: colors.textSecondary,
   },
   iconActive: {
-    color: '#fff',
+    color: colors.text,
   },
 });

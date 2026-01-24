@@ -5,8 +5,8 @@
  * Large cards with backdrop, full metadata, and description
  */
 
-import React from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import React, { useCallback, memo } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { SearchResultCard } from './SearchResultCard';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
 import { colors, borderRadius, spacing } from '../../theme/colors';
@@ -24,45 +24,63 @@ interface SearchResultsCardsProps {
 
 /**
  * Cards view for search results - detailed cards
+ * Memoized for performance
  */
-export function SearchResultsCards({
+export const SearchResultsCards = memo(function SearchResultsCards({
   results,
   onResultClick,
   onLoadMore,
   isLoadingMore,
 }: SearchResultsCardsProps) {
-  const renderItem = ({ item, index }: { item: SearchResult; index: number }) => (
-    <SearchResultCard result={item} position={index} onPress={onResultClick} />
+  const renderItem = useCallback(
+    ({ item, index }: { item: SearchResult; index: number }) => (
+      <SearchResultCard result={item} position={index} onPress={onResultClick} />
+    ),
+    [onResultClick]
+  );
+
+  const keyExtractor = useCallback((item: SearchResult) => item.id, []);
+
+  const ListFooterComponent = useCallback(
+    () =>
+      isLoadingMore ? (
+        <View style={styles.loader}>
+          <ActivityIndicator size="small" color={colors.primary} />
+          <Text style={styles.loaderText}>Loading more results...</Text>
+        </View>
+      ) : null,
+    [isLoadingMore]
   );
 
   return (
     <FlatList
       data={results}
       renderItem={renderItem}
-      keyExtractor={(item) => item.id}
+      keyExtractor={keyExtractor}
       contentContainerStyle={styles.container}
       onEndReached={onLoadMore}
       onEndReachedThreshold={0.5}
-      ListFooterComponent={
-        isLoadingMore ? (
-          <View style={styles.loader}>
-            <Text style={styles.loaderText}>Loading...</Text>
-          </View>
-        ) : null
-      }
+      initialNumToRender={10}
+      maxToRenderPerBatch={10}
+      windowSize={5}
+      removeClippedSubviews={true}
+      updateCellsBatchingPeriod={50}
+      ListFooterComponent={ListFooterComponent}
     />
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: spacing.md,
   },
   loader: {
-    padding: 20,
+    padding: spacing.lg,
     alignItems: 'center',
+    gap: spacing.sm,
   },
   loaderText: {
-    color: 'rgba(255,255,255,0.6)',
+    color: colors.textSecondary,
+    fontSize: 14,
   },
 });

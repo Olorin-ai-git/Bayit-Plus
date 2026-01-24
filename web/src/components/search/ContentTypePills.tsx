@@ -91,17 +91,17 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     minHeight: TOUCH_TARGET_SIZE,
     borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.inputBackground,
     borderWidth: 1,
     borderColor: 'transparent',
   },
   pillActive: {
-    backgroundColor: 'rgba(168,85,247,0.3)',
-    borderColor: 'rgba(168,85,247,0.5)',
+    backgroundColor: colors.pillActive,
+    borderColor: colors.pillActiveBorder,
   },
   pillFocused: {
     borderWidth: 2,
-    borderColor: 'rgba(168,85,247,1)',
+    borderColor: colors.primary,
     transform: [{ scale: 1.05 }],
   },
   emoji: {
@@ -110,10 +110,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.text,
   },
   labelActive: {
-    color: '#fff',
+    color: colors.text,
     fontWeight: '600',
   },
 });
