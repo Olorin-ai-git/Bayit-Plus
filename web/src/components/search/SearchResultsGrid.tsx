@@ -5,8 +5,8 @@
  * Responsive grid with thumbnail, title, and metadata
  */
 
-import React from 'react';
-import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, Platform } from 'react-native';
+import React, { memo, useCallback, useState, useMemo } from 'react';
+import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, Platform, ActivityIndicator } from 'react-native';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 
@@ -23,31 +23,44 @@ interface SearchResultsGridProps {
 
 /**
  * Grid view for search results
+ * Memoized for performance
  */
-export function SearchResultsGrid({
+export const SearchResultsGrid = memo(function SearchResultsGrid({
   results,
   onResultClick,
   onLoadMore,
   isLoadingMore,
 }: SearchResultsGridProps) {
-  const [focusedIndex, setFocusedIndex] = React.useState<number | null>(null);
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
 
-  const getNumColumns = () => {
+  const numColumns = useMemo(() => {
     if (Platform.OS === 'web') {
       return window.innerWidth > 1280 ? 6 : 4;
     }
     return 2;
-  };
+  }, []);
 
-  const renderItem = ({ item, index }: { item: SearchResult; index: number }) => {
+  const handleItemPress = useCallback((item: SearchResult, index: number) => {
+    onResultClick?.(item, index);
+  }, [onResultClick]);
+
+  const handleFocus = useCallback((index: number) => {
+    setFocusedIndex(index);
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    setFocusedIndex(null);
+  }, []);
+
+  const renderItem = useCallback(({ item, index }: { item: SearchResult; index: number }) => {
     const isFocused = focusedIndex === index;
 
     return (
       <TouchableOpacity
         style={[styles.gridItem, isFocused && Platform.isTV && styles.gridItemFocused]}
-        onPress={() => onResultClick?.(item, index)}
-        onFocus={() => setFocusedIndex(index)}
-        onBlur={() => setFocusedIndex(null)}
+        onPress={() => handleItemPress(item, index)}
+        onFocus={() => handleFocus(index)}
+        onBlur={handleBlur}
         focusable={Platform.isTV}
         hasTVPreferredFocus={index === 0 && Platform.isTV}
         accessibilityLabel={`${item.title} - ${item.category_name || 'Content'}`}
@@ -91,27 +104,39 @@ export function SearchResultsGrid({
       </View>
     </TouchableOpacity>
     );
-  };
+  }, [focusedIndex, handleItemPress, handleFocus, handleBlur]);
+
+  const keyExtractor = useCallback((item: SearchResult) => item.id, []);
+
+  const ListFooterComponent = useCallback(
+    () =>
+      isLoadingMore ? (
+        <View style={styles.loader}>
+          <ActivityIndicator size="small" color={colors.primary} />
+          <Text style={styles.loaderText}>Loading more results...</Text>
+        </View>
+      ) : null,
+    [isLoadingMore]
+  );
 
   return (
     <FlatList
       data={results}
       renderItem={renderItem}
-      keyExtractor={(item) => item.id}
-      numColumns={getNumColumns()}
+      keyExtractor={keyExtractor}
+      numColumns={numColumns}
       contentContainerStyle={styles.container}
       onEndReached={onLoadMore}
       onEndReachedThreshold={0.5}
-      ListFooterComponent={
-        isLoadingMore ? (
-          <View style={styles.loader}>
-            <Text style={styles.loaderText}>Loading...</Text>
-          </View>
-        ) : null
-      }
+      initialNumToRender={10}
+      maxToRenderPerBatch={10}
+      windowSize={5}
+      removeClippedSubviews={true}
+      updateCellsBatchingPeriod={50}
+      ListFooterComponent={ListFooterComponent}
     />
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
