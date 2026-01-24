@@ -44,6 +44,12 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 1,
   },
+  loadingText: {
+    color: colors.textSecondary,
+    fontSize: 14,
+    marginTop: spacing.md,
+    textAlign: 'center',
+  },
   errorContainer: {
     padding: spacing.xl,
     alignItems: 'center',
@@ -52,6 +58,30 @@ export const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 16,
     textAlign: 'center',
+  },
+  progressContainer: {
+    position: 'absolute',
+    top: 40,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing.sm,
+    zIndex: 2,
+  },
+  progressDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  progressDotActive: {
+    width: 32,
+    backgroundColor: colors.primary,
+  },
+  progressDotCompleted: {
+    backgroundColor: colors.success,
   },
   buttonContainer: {
     position: 'absolute',

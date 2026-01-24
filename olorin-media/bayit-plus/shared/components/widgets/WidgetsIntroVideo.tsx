@@ -3,6 +3,7 @@
  * Reusable full-screen intro video component with fade animations
  * Supports dismiss functionality and loading/error states
  * Cross-platform: Uses HTML5 video on web, react-native-video on native
+ * NOW WITH SEQUENCE SUPPORT: Plays Marty Jr. BTTF2 video, then widgets intro
  */
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
@@ -23,6 +24,7 @@ import { getCaptionUrls } from './WidgetsIntroVideo.utils';
 import { styles } from './WidgetsIntroVideo.styles';
 import { WebVideoPlayer } from './WebVideoPlayer';
 import { NativeVideoPlayer } from './NativeVideoPlayer';
+import { config } from '../../config/appConfig';
 
 export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
   videoUrl,
@@ -39,16 +41,48 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
   const completedRef = useRef(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const captionUrls = getCaptionUrls(videoUrl);
+
+  // Video sequence: Marty Jr. BTTF2 first, then widgets intro
+  const videoSequence = [
+    config.media.martyJrBttf2Video,
+    videoUrl,
+  ];
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const currentVideoUrl = videoSequence[currentVideoIndex];
+  const captionUrls = getCaptionUrls(currentVideoUrl);
 
   useEffect(() => {
     if (visible) {
       completedRef.current = false;
+      setCurrentVideoIndex(0); // Reset to first video
       setIsLoading(true);
       setHasError(false);
     }
   }, [visible]);
-  const handleComplete = useCallback(() => {
+
+  const handleVideoComplete = useCallback(() => {
+    // Check if there are more videos in the sequence
+    if (currentVideoIndex < videoSequence.length - 1) {
+      // Move to next video
+      setCurrentVideoIndex(prev => prev + 1);
+      setIsLoading(true);
+      setHasError(false);
+    } else {
+      // All videos completed
+      if (completedRef.current) return;
+      completedRef.current = true;
+
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }).start(() => {
+        onComplete();
+      });
+    }
+  }, [currentVideoIndex, videoSequence.length, fadeAnim, onComplete]);
+
+  const handleSkipAll = useCallback(() => {
     if (completedRef.current) return;
     completedRef.current = true;
 
@@ -86,8 +120,18 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
   const handleVideoError = useCallback(() => {
     setIsLoading(false);
     setHasError(true);
-    setTimeout(handleComplete, 2000);
-  }, [handleComplete]);
+    // If video fails, wait 2 seconds then try next video or complete
+    setTimeout(() => {
+      if (currentVideoIndex < videoSequence.length - 1) {
+        setCurrentVideoIndex(prev => prev + 1);
+        setIsLoading(true);
+        setHasError(false);
+      } else {
+        handleSkipAll();
+      }
+    }, 2000);
+  }, [currentVideoIndex, videoSequence.length, handleSkipAll]);
+
   useEffect(() => {
     if (visible) {
       Animated.timing(fadeAnim, {
@@ -103,7 +147,7 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        handleComplete();
+        handleSkipAll();
       }
     };
 
@@ -111,17 +155,36 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [visible, handleComplete]);
+  }, [visible, handleSkipAll]);
 
   if (!visible) return null;
 
   return (
     <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
       <View style={styles.container}>
+        {/* Video progress indicator */}
+        <View style={styles.progressContainer}>
+          {videoSequence.map((_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.progressDot,
+                index === currentVideoIndex && styles.progressDotActive,
+                index < currentVideoIndex && styles.progressDotCompleted,
+              ]}
+            />
+          ))}
+        </View>
+
         {/* Loading indicator */}
         {isLoading && !hasError && (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={styles.loadingText}>
+              {currentVideoIndex === 0
+                ? t('widgets.intro.loadingMartyJr', 'Loading Marty Jr...')
+                : t('widgets.intro.loadingWidgets', 'Loading widgets intro...')}
+            </Text>
           </View>
         )}
 
@@ -129,7 +192,7 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
         {hasError && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>
-              {t('widgets.intro.videoUnavailable')}
+              {t('widgets.intro.videoUnavailable', 'Video unavailable, skipping...')}
             </Text>
           </View>
         )}
@@ -139,22 +202,24 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
           <GlassView style={styles.videoContainer}>
             {Platform.OS === 'web' ? (
               <WebVideoPlayer
-                videoUrl={videoUrl}
+                key={currentVideoIndex} // Force remount on video change
+                videoUrl={currentVideoUrl}
                 captionUrls={captionUrls}
                 videoRef={videoRef}
                 isLoading={isLoading}
                 autoPlay={autoPlay}
                 onLoadedData={handleVideoLoaded}
-                onEnded={handleComplete}
+                onEnded={handleVideoComplete}
                 onError={handleVideoError}
               />
             ) : (
               <NativeVideoPlayer
-                videoUrl={videoUrl}
+                key={currentVideoIndex} // Force remount on video change
+                videoUrl={currentVideoUrl}
                 captionUrls={captionUrls}
                 autoPlay={autoPlay}
                 onLoad={handleVideoLoaded}
-                onEnd={handleComplete}
+                onEnd={handleVideoComplete}
                 onError={handleVideoError}
               />
             )}
@@ -170,8 +235,8 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
       ]}>
         {/* Skip button */}
         <GlassButton
-          title={t('widgets.intro.skip')}
-          onPress={handleComplete}
+          title={t('widgets.intro.skip', 'Skip')}
+          onPress={handleSkipAll}
           variant="secondary"
           size="md"
         />
@@ -179,7 +244,7 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
         {/* Dismiss button (Don't show again) */}
         {showDismissButton && onDismiss && (
           <GlassButton
-            title={t('widgets.intro.dismiss')}
+            title={t('widgets.intro.dismiss', "Don't show again")}
             onPress={handleDismiss}
             variant="ghost"
             size="sm"

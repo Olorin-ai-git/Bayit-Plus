@@ -717,6 +717,16 @@ export const adminWidgetsService = {
 
   unpublishWidget: (widgetId: string): Promise<Widget> =>
     adminApi.post(`/admin/widgets/${widgetId}/unpublish`),
+
+  // System widgets (user-facing, opt-in model)
+  getAvailableSystemWidgets: (): Promise<PaginatedResponse<Widget>> =>
+    adminApi.get('/widgets/system/available'),
+
+  addSystemWidget: (widgetId: string): Promise<{ message: string; id: string; widget_id: string }> =>
+    adminApi.post(`/widgets/system/${widgetId}/add`),
+
+  removeSystemWidget: (widgetId: string): Promise<{ message: string }> =>
+    adminApi.delete(`/widgets/system/${widgetId}/remove`),
 };
 
 // ============================================

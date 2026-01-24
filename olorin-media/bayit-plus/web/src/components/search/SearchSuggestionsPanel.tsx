@@ -8,7 +8,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { GlassButton } from '@bayit/glass';
+import { GlassButton } from '../../../../../shared/components/ui/GlassButton';
 import { sanitizeText, sanitizeCategory } from '../../utils/sanitize';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 

@@ -1198,7 +1198,9 @@
       "watchVideo": "צפה בהקדמה",
       "skip": "דלג",
       "dismiss": "אל תציג שוב",
-      "videoUnavailable": "וידאו אינו זמין באופן זמני"
+      "videoUnavailable": "וידאו אינו זמין באופן זמני",
+      "loadingMartyJr": "טוען את מרטי ג'וניור...",
+      "loadingWidgets": "טוען הקדמה לוידג'טים..."
     }
   },
   "trending": {

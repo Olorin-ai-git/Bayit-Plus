@@ -186,7 +186,7 @@ class Settings(BaseSettings):
 
     # Upload Monitoring Configuration
     UPLOAD_MONITOR_ENABLED: bool = (
-        True  # Controlled by DEBUG mode in background_tasks.py
+        False  # Disabled by default - enable via environment variable if needed
     )
     UPLOAD_MONITOR_INTERVAL: int = 3600  # Seconds between scans (default: 1 hour)
     UPLOAD_DEFAULT_FOLDERS: str = ""  # Comma-separated paths to monitor on startup

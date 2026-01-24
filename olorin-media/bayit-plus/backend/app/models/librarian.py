@@ -59,6 +59,19 @@ class AuditReport(Document):
     #   "index_status": "all_present"
     # }
 
+    # Content maintenance results
+    maintenance_results: Dict[str, Any] = Field(default_factory=dict)
+    # {
+    #   "status": "completed",
+    #   "total_updates": 42,
+    #   "tasks": {
+    #     "podcast_sync": {"episodes_added": 15},
+    #     "poster_attachment": {"items_enriched": 10},
+    #     "subtitle_addition": {"subtitles_added": 12},
+    #     "podcast_translation": {"episodes_queued": 5}
+    #   }
+    # }
+
     # AI insights
     ai_insights: List[str] = Field(default_factory=list)
 

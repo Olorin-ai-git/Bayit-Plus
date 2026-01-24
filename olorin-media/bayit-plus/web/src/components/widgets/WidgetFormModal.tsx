@@ -81,8 +81,10 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
   const { isRTL, textAlign, flexDirection } = useDirection();
 
   const [formState, setFormState] = useState<FormState>(DEFAULT_FORM_STATE);
+  const [showContentPicker, setShowContentPicker] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null);
 
   // Initialize form
   useEffect(() => {
@@ -119,12 +121,29 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
     setError(null);
   };
 
+  const handleSwitchToContent = () => {
+    setShowContentPicker(true);
+  };
+
   const handleSwitchToIframe = () => {
     setFormState((prev) => ({
       ...prev,
       content_type: 'iframe',
       content_id: '',
     }));
+    setSelectedContent(null);
+  };
+
+  const handleContentSelected = (content: ContentItem) => {
+    setSelectedContent(content);
+    setFormState((prev) => ({
+      ...prev,
+      content_type: content.type,
+      content_id: content.id,
+      iframe_url: '',
+      iframe_title: '',
+    }));
+    setShowContentPicker(false);
   };
 
   const validateForm = (): boolean => {
@@ -429,6 +448,26 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
           />
         </View>
       </GlassModal>
+
+      {/* Content Picker Modal - TODO: Implement ContentPickerModal */}
+      {showContentPicker && (
+        <GlassModal
+          visible={showContentPicker}
+          onClose={() => setShowContentPicker(false)}
+          title={t('widgets.form.selectContent', 'Select Content')}
+        >
+          <View style={{ padding: spacing.md }}>
+            <Text style={{ color: colors.text, marginBottom: spacing.md }}>
+              {t('widgets.form.contentPickerPlaceholder', 'Content picker will be implemented here')}
+            </Text>
+            <GlassButton
+              title={t('common.close', 'Close')}
+              variant="ghost"
+              onPress={() => setShowContentPicker(false)}
+            />
+          </View>
+        </GlassModal>
+      )}
     </>
   );
 };

@@ -10,7 +10,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { GlassButton } from '@bayit/glass';
+import { GlassButton } from '../../../../../shared/components/ui/GlassButton';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 
 interface SearchEmptyStateProps {
