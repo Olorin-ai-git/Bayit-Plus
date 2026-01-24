@@ -17,7 +17,12 @@ logger = logging.getLogger(__name__)
 
 
 async def execute_organize_all_series(
-    audit_id: str, dry_run: bool = False
+    fetch_tmdb_metadata: bool = True,
+    propagate_to_episodes: bool = True,
+    include_hebrew: bool = True,
+    *,
+    audit_id: str,
+    dry_run: bool = False
 ) -> Dict[str, Any]:
     """
     Organize all series: link episodes, sync posters, fix duplicates.
@@ -27,8 +32,11 @@ async def execute_organize_all_series(
     2. Syncs series posters to all episodes
 
     Args:
-        audit_id: The audit ID for logging actions.
-        dry_run: If True, simulate the operation without making changes.
+        fetch_tmdb_metadata: If true, fetch metadata from TMDB for each series
+        propagate_to_episodes: If true, apply series poster/backdrop to all linked episodes
+        include_hebrew: If true, process Hebrew series with Hebrew-to-English title mapping
+        audit_id: The audit ID for logging actions (keyword-only)
+        dry_run: If True, simulate the operation without making changes (keyword-only)
 
     Returns:
         Dictionary with success status and operation counts.
