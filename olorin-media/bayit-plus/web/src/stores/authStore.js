@@ -1,6 +1,10 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { authService } from '@/services/api'
+import logger from '@/utils/logger'
+
+// Create scoped logger for auth operations
+const authLogger = logger.scope('Auth');
 
 // Helper function to decode JWT and check expiration
 const decodeToken = (token) => {
@@ -10,7 +14,7 @@ const decodeToken = (token) => {
     const payload = JSON.parse(atob(parts[1]));
     return payload;
   } catch (error) {
-    console.error('[Auth] Failed to decode token:', error);
+    authLogger.error('Failed to decode token', error);
     return null;
   }
 };
