@@ -401,6 +401,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
             style={[
               styles.userProfileSection,
               {
+                flexDirection: isRTL ? 'row-reverse' : 'row',
                 justifyContent: showLabels ? 'flex-start' : 'center',
                 paddingHorizontal: showLabels ? spacing.sm : 0,
               },
@@ -424,7 +425,14 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
               )}
             </View>
             {showLabels && (
-              <Animated.View style={[styles.userInfoContainer, { opacity: opacityAnim }]}>
+              <Animated.View style={[
+                styles.userInfoContainer,
+                {
+                  opacity: opacityAnim,
+                  marginStart: isRTL ? 0 : spacing.md,
+                  marginEnd: isRTL ? spacing.md : 0,
+                }
+              ]}>
                 <Text style={[styles.userName, { textAlign }]} numberOfLines={1}>
                   {displayName}
                 </Text>
@@ -474,6 +482,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                     onBlur={() => setFocusedItem(null)}
                     style={[
                       styles.menuItem,
+                      { flexDirection: isRTL ? 'row-reverse' : 'row' },
                       isActive(item) && styles.menuItemActive,
                       focusedItem === item.id && styles.menuItemFocused,
                       !isUIInteractionEnabled && {
@@ -494,7 +503,11 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                       <Animated.Text
                         style={[
                           styles.menuLabel,
-                          { textAlign, marginStart: spacing.sm },
+                          {
+                            textAlign,
+                            marginStart: isRTL ? 0 : spacing.sm,
+                            marginEnd: isRTL ? spacing.sm : 0,
+                          },
                           isActive(item) && styles.menuLabelActive,
                           { opacity: opacityAnim },
                         ]}
@@ -611,7 +624,6 @@ const styles = StyleSheet.create({
     backgroundClip: 'text',
   } as any,
   userProfileSection: {
-    flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: spacing.sm,
     marginHorizontal: spacing.xs,
@@ -661,7 +673,6 @@ const styles = StyleSheet.create({
   },
   userInfoContainer: {
     flex: 1,
-    marginStart: spacing.md,
     paddingEnd: spacing.sm,
   },
   userName: {
@@ -712,7 +723,6 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   menuItem: {
-    flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.sm,
