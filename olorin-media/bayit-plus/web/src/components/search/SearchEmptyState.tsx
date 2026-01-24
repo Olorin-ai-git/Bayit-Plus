@@ -8,8 +8,9 @@
  */
 
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassButton } from '@bayit/glass';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 
 interface SearchEmptyStateProps {
@@ -42,13 +43,14 @@ export function SearchEmptyState({
         <Text style={styles.title}>{t('errors.somethingWrong')}</Text>
         <Text style={styles.message}>{error}</Text>
         {onRetry && (
-          <TouchableOpacity
+          <GlassButton
+            variant="primary"
             style={styles.button}
             onPress={onRetry}
             accessibilityLabel={t('errors.retrySearch')}
           >
             <Text style={styles.buttonText}>{t('errors.retrySearch')}</Text>
-          </TouchableOpacity>
+          </GlassButton>
         )}
       </View>
     );
@@ -73,13 +75,14 @@ export function SearchEmptyState({
         </View>
 
         {onClear && (
-          <TouchableOpacity
+          <GlassButton
+            variant="secondary"
             style={styles.button}
             onPress={onClear}
             accessibilityLabel={t('empty.clearSearch')}
           >
             <Text style={styles.buttonText}>{t('empty.clearSearch')}</Text>
-          </TouchableOpacity>
+          </GlassButton>
         )}
       </View>
     );

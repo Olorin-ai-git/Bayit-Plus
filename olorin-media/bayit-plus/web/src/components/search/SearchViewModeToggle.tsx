@@ -6,8 +6,9 @@
  */
 
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassButton } from '@bayit/glass';
 import type { ViewMode } from '../../hooks/useSearchViewMode';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 
@@ -45,8 +46,9 @@ export function SearchViewModeToggle({ value, onChange }: SearchViewModeTogglePr
         const isFocused = focusedMode === mode;
 
         return (
-          <TouchableOpacity
+          <GlassButton
             key={mode}
+            variant={isSelected ? 'primary' : 'ghost'}
             style={[
               styles.button,
               isSelected && styles.buttonActive,
@@ -57,12 +59,11 @@ export function SearchViewModeToggle({ value, onChange }: SearchViewModeTogglePr
             onBlur={() => setFocusedMode(null)}
             focusable={Platform.isTV}
             hasTVPreferredFocus={isSelected && Platform.isTV}
-            accessibilityRole="button"
             accessibilityLabel={t(`viewMode.${mode}`)}
             accessibilityState={{ selected: isSelected }}
           >
             <Text style={[styles.icon, isSelected && styles.iconActive]}>{icon}</Text>
-          </TouchableOpacity>
+          </GlassButton>
         );
       })}
     </View>

@@ -5,7 +5,8 @@
  */
 
 import React, { memo, useCallback } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
+import { GlassButton } from '@bayit/glass';
 import { SearchCardBadges } from './SearchCardBadges';
 import { SearchCardMetadata } from './SearchCardMetadata';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
@@ -34,11 +35,11 @@ export const SearchResultCard = memo(function SearchResultCard({
   }, [result, position, onPress]);
 
   return (
-    <TouchableOpacity
+    <GlassButton
+      variant="ghost"
       style={styles.card}
       onPress={handlePress}
       accessibilityLabel={`${result.title} - ${result.category_name || 'Content'}`}
-      accessibilityRole="button"
     >
       {/* Backdrop Image */}
       <View style={styles.backdropContainer}>
@@ -90,7 +91,7 @@ export const SearchResultCard = memo(function SearchResultCard({
           </View>
         )}
       </View>
-    </TouchableOpacity>
+    </GlassButton>
   );
 });
 

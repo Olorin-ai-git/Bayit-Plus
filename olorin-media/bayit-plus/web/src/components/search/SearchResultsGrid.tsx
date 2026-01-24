@@ -6,7 +6,8 @@
  */
 
 import React, { memo, useCallback, useState, useMemo } from 'react';
-import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, Platform, ActivityIndicator } from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet, Platform, ActivityIndicator } from 'react-native';
+import { GlassButton } from '@bayit/glass';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 
@@ -56,7 +57,8 @@ export const SearchResultsGrid = memo(function SearchResultsGrid({
     const isFocused = focusedIndex === index;
 
     return (
-      <TouchableOpacity
+      <GlassButton
+        variant="ghost"
         style={[styles.gridItem, isFocused && Platform.isTV && styles.gridItemFocused]}
         onPress={() => handleItemPress(item, index)}
         onFocus={() => handleFocus(index)}
@@ -64,7 +66,6 @@ export const SearchResultsGrid = memo(function SearchResultsGrid({
         focusable={Platform.isTV}
         hasTVPreferredFocus={index === 0 && Platform.isTV}
         accessibilityLabel={`${item.title} - ${item.category_name || 'Content'}`}
-        accessibilityRole="button"
       >
 
       {/* Thumbnail */}
@@ -102,7 +103,7 @@ export const SearchResultsGrid = memo(function SearchResultsGrid({
         {item.year && <Text style={styles.metadataText}>{item.year}</Text>}
         {item.rating && <Text style={styles.metadataText}>⭐ {item.rating}</Text>}
       </View>
-    </TouchableOpacity>
+    </GlassButton>
     );
   }, [focusedIndex, handleItemPress, handleFocus, handleBlur]);
 
