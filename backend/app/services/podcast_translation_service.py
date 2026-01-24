@@ -256,7 +256,7 @@ class PodcastTranslationService:
 
     async def _transcribe_audio(self, audio_path: str) -> Tuple[str, str]:
         """
-        Transcribe audio using Whisper with automatic language detection.
+        Transcribe audio using Whisper API with automatic language detection.
 
         Args:
             audio_path: Path to audio file
@@ -264,25 +264,11 @@ class PodcastTranslationService:
         Returns:
             Tuple of (transcript text, detected language code)
         """
-        # Lazy import torch and whisper to avoid startup dependency
-        import torch
-        import whisper
-
-        # Load Whisper model (large-v3 for best accuracy)
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        model = whisper.load_model("large-v3", device=device)
-
-        # Transcribe with auto-detection
-        result = model.transcribe(
-            audio_path,
-            language=None,  # Auto-detect Hebrew or English
-            task="transcribe",
-            verbose=False,
-            word_timestamps=True,
-            fp16=torch.cuda.is_available(),
-        )
-
-        return result["text"], result["language"]
+        # Use OpenAI Whisper API via WhisperTranscriptionService
+        logger.info(f"Transcribing audio using Whisper API: {audio_path}")
+        text, language = await self.stt_service.transcribe_audio_file(audio_path)
+        logger.info(f"Transcription complete: {len(text)} characters, language: {language}")
+        return text, language
 
     async def _generate_tts(
         self, text: str, language: str, output_path: str

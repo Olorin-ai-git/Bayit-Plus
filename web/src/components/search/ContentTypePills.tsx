@@ -7,7 +7,7 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { GlassButton } from '@bayit/glass';
+import { GlassButton } from '../../../../../shared/components/ui/GlassButton';
 import type { ContentType } from './SearchControls';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 

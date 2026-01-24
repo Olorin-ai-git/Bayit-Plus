@@ -6,7 +6,7 @@
 
 import React, { memo, useCallback } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
-import { GlassButton } from '@bayit/glass';
+import { GlassButton } from '../../../../../shared/components/ui/GlassButton';
 import { SearchCardBadges } from './SearchCardBadges';
 import { SearchCardMetadata } from './SearchCardMetadata';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';

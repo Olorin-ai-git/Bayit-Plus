@@ -14,9 +14,9 @@ import { colors, spacing, borderRadius } from '../theme';
 import { useVoiceSettingsStore } from '../stores/voiceSettingsStore';
 import { useWakeWordListening } from '../hooks/useWakeWordListening';
 import { VoiceListeningContext } from '../contexts/VoiceListeningContext';
-import { get_logger } from '../core/logging';
+import { logger as baseLogger } from '../utils/logger';
 
-const logger = get_logger('VoiceSearchButton');
+const logger = baseLogger.scope('VoiceSearchButton');
 
 interface VoiceSearchButtonProps {
   onResult: (text: string) => void;

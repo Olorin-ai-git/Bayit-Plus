@@ -1192,7 +1192,9 @@
       "watchVideo": "Watch Introduction",
       "skip": "Skip",
       "dismiss": "Don't show again",
-      "videoUnavailable": "Video temporarily unavailable"
+      "videoUnavailable": "Video temporarily unavailable",
+      "loadingMartyJr": "Loading Marty Jr...",
+      "loadingWidgets": "Loading widgets intro..."
     }
   },
   "trending": {

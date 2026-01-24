@@ -3,6 +3,7 @@
  *
  * Displays available system widgets that users can browse and add to their collection.
  * Part of the opt-in widget subscription model.
+ * REBUILT: Using StyleSheet exclusively for reliable rendering
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -114,27 +115,28 @@ function SystemWidgetCard({
     <View
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="flex-1"
+      style={styles.cardWrapper}
     >
-      <GlassCard className="px-4 py-4 mb-4 flex-row items-center gap-4 relative border-0"
-        style={[isHovered && styles.cardHovered]}>
-        <View className="w-12 h-12 rounded-full bg-white/5 justify-center items-center">
-          <Text className="text-2xl">{getIcon()}</Text>
+      <GlassCard style={[styles.cardInner, isHovered && styles.cardHovered]}>
+        {/* Icon */}
+        <View style={styles.iconContainer}>
+          <Text style={styles.iconText}>{getIcon()}</Text>
         </View>
 
-        <View className="flex-1">
-          <Text className="text-[15px] font-semibold text-white" numberOfLines={2}>
+        {/* Content */}
+        <View style={styles.cardContent}>
+          <Text style={styles.cardTitle} numberOfLines={2}>
             {widget.title}
           </Text>
           {widget.description && (
-            <Text className="text-xs text-white/60 mt-0.5" numberOfLines={2}>
+            <Text style={styles.cardDescription} numberOfLines={2}>
               {widget.description}
             </Text>
           )}
-          <View className="flex-row gap-2 mt-2">
-            <View className="flex-row items-center gap-1 bg-white/5 px-2 py-0.5 rounded">
+          <View style={styles.badgeContainer}>
+            <View style={styles.badge}>
               {getContentTypeIcon(widget.content?.content_type)}
-              <Text className="text-[11px] text-white/60 capitalize">
+              <Text style={styles.badgeText}>
                 {getContentTypeLabel(widget.content?.content_type)}
               </Text>
             </View>
@@ -145,7 +147,7 @@ function SystemWidgetCard({
         {isHovered && widget.is_added && (
           <Pressable
             onPress={() => onResetPosition(widget.id)}
-            className="w-8 h-8 rounded-full bg-white/10 justify-center items-center mr-2"
+            style={styles.resetButton}
           >
             <RotateCcw size={16} color={colors.text} />
           </Pressable>
@@ -155,13 +157,14 @@ function SystemWidgetCard({
         <Pressable
           onPress={handleAction}
           disabled={actionLoading || isLoading}
-          className="flex-row items-center gap-1.5 px-4 py-2 rounded-lg min-w-[80px] justify-center"
           style={[
+            styles.actionButton,
             isHidden
               ? styles.actionButtonHidden
               : widget.is_added
                 ? styles.actionButtonAdded
-                : styles.actionButtonAdd
+                : styles.actionButtonAdd,
+            (actionLoading || isLoading) && styles.actionButtonDisabled,
           ]}
         >
           {actionLoading ? (
@@ -169,17 +172,17 @@ function SystemWidgetCard({
           ) : isHidden ? (
             <>
               <Eye size={16} color={colors.text} />
-              <Text className="text-[13px] font-semibold text-white">{t('widgets.show') || 'Show'}</Text>
+              <Text style={styles.actionButtonText}>{t('widgets.show') || 'Show'}</Text>
             </>
           ) : widget.is_added ? (
             <>
               <Check size={16} color={colors.text} />
-              <Text className="text-[13px] font-semibold text-white">{t('widgets.added') || 'Added'}</Text>
+              <Text style={styles.actionButtonText}>{t('widgets.added') || 'Added'}</Text>
             </>
           ) : (
             <>
               <Plus size={16} color={colors.text} />
-              <Text className="text-[13px] font-semibold text-white">{t('widgets.add') || 'Add'}</Text>
+              <Text style={styles.actionButtonText}>{t('widgets.add') || 'Add'}</Text>
             </>
           )}
         </Pressable>
@@ -270,20 +273,20 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
 
   if (loading) {
     return (
-      <View className="p-8 items-center justify-center">
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text className="mt-2 text-white/60 text-sm">{t('common.loading') || 'Loading...'}</Text>
+        <Text style={styles.loadingText}>{t('common.loading') || 'Loading...'}</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View className="p-6 items-center bg-red-500/10 rounded-lg mb-6">
-        <Text className="text-red-500 text-sm mb-2">{error}</Text>
-        <Pressable onPress={loadWidgets} className="flex-row items-center gap-2 px-4 py-2 bg-white/5 rounded-lg">
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+        <Pressable onPress={loadWidgets} style={styles.retryButton}>
           <RefreshCw size={16} color={colors.text} />
-          <Text className="text-white text-sm">{t('common.retry') || 'Retry'}</Text>
+          <Text style={styles.retryText}>{t('common.retry') || 'Retry'}</Text>
         </Pressable>
       </View>
     );
@@ -291,8 +294,8 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
 
   if (widgets.length === 0) {
     return (
-      <View className="p-6 items-center bg-white/5 rounded-lg mb-6">
-        <Text className="text-white/60 text-sm">
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>
           {t('widgets.noSystemWidgets') || 'No system widgets available'}
         </Text>
       </View>
@@ -300,17 +303,17 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
   }
 
   return (
-    <View className="mb-8">
-      <View className="mb-4">
-        <Text className="text-xl font-semibold text-white mb-2" style={{ textAlign }}>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={[styles.headerTitle, { textAlign }]}>
           {t('widgets.systemWidgets') || 'System Widgets'}
         </Text>
-        <Text className="text-sm text-white/60" style={{ textAlign }}>
+        <Text style={[styles.headerSubtitle, { textAlign }]}>
           {t('widgets.systemWidgetsHint') || 'Browse and add widgets to your collection'}
         </Text>
       </View>
 
-      <View className="flex-row flex-wrap" style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
+      <View style={[styles.gridContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         {widgets.map((widget) => (
           <View key={widget.id} style={{ width: `${100 / numColumns}%`, paddingHorizontal: spacing.xs }}>
             <SystemWidgetCard
@@ -330,8 +333,102 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: spacing.lg * 2,
+  },
+  header: {
+    marginBottom: spacing.md,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  cardWrapper: {
+    flex: 1,
+  },
+  cardInner: {
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    position: 'relative',
+    borderWidth: 0,
+  },
   cardHovered: {
     backgroundColor: 'rgba(59, 130, 246, 0.05)',
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconText: {
+    fontSize: 24,
+  },
+  cardContent: {
+    flex: 1,
+  },
+  cardTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  cardDescription: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: 2,
+  },
+  badgeContainer: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+  },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs / 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  badgeText: {
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.6)',
+    textTransform: 'capitalize',
+  },
+  resetButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: spacing.xs,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: 8,
+    minWidth: 80,
+    justifyContent: 'center',
   },
   actionButtonHidden: {
     backgroundColor: 'rgba(234, 179, 8, 0.2)',
@@ -345,6 +442,60 @@ const styles = StyleSheet.create({
   },
   actionButtonAdd: {
     backgroundColor: '#2563eb',
+  },
+  actionButtonDisabled: {
+    opacity: 0.5,
+  },
+  actionButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  loadingContainer: {
+    padding: spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: spacing.xs,
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 14,
+  },
+  errorContainer: {
+    padding: spacing.lg,
+    alignItems: 'center',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderRadius: 8,
+    marginBottom: spacing.lg,
+  },
+  errorText: {
+    color: '#ef4444',
+    fontSize: 14,
+    marginBottom: spacing.xs,
+  },
+  retryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 8,
+  },
+  retryText: {
+    color: colors.text,
+    fontSize: 14,
+  },
+  emptyContainer: {
+    padding: spacing.lg,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 8,
+    marginBottom: spacing.lg,
+  },
+  emptyText: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 14,
   },
 });
 

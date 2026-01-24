@@ -1,6 +1,6 @@
 ---
 name: glass-ux-design
-description: Glassmorphic dark-mode UI design system using Tailwind CSS. Use this skill when building any UI components, dashboards, applications, or interfaces. Enforces dark mode, glassmorphism effects, animated sidebars, modals, draggable splitters, and custom components. Never use native browser components. Always import the Glass component library.
+description: Glassmorphic dark-mode UI design system using React Native StyleSheet. Use this skill when building any UI components, dashboards, applications, or interfaces. Enforces dark mode, glassmorphism effects, animated sidebars, modals, draggable splitters, and custom components. Never use native browser components. Always import the Glass component library.
 ---
 
 # Glass UX Design System
@@ -9,22 +9,53 @@ Build all interfaces with this glassmorphic dark-mode design system. **Always us
 
 ## Core Principles
 
-1. **Dark mode only** - All backgrounds use dark grays/blacks (`bg-gray-900`, `bg-slate-950`, `bg-zinc-900`)
+1. **Dark mode only** - All backgrounds use dark grays/blacks (`#111827`, `#0f172a`, `#18181b`)
 2. **Glassmorphism everywhere** - Frosted glass effects on all containers, cards, modals, sidebars
-3. **Tailwind CSS only** - No inline styles, no CSS files, no styled-components
-4. **No native components** - Replace all `<select>`, `<input>`, `<button>` with custom Glass variants
-5. **Animation required** - All interactive elements must animate (transitions, transforms, opacity)
+3. **StyleSheet only for React Native** - Use `StyleSheet.create()` for all styling, no inline styles, no CSS files, no styled-components
+4. **No native components** - Replace all native form elements with custom Glass variants
+5. **Animation required** - All interactive elements must animate using React Native's Animated API
 
 ## Glass Effect Recipe
 
 Apply to all containers, cards, panels:
 ```jsx
-className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl"
+import { StyleSheet } from 'react-native';
+
+const styles = StyleSheet.create({
+  glassContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.5,
+    shadowRadius: 24,
+  },
+});
+
+<View style={styles.glassContainer}>
+  {/* Content */}
+</View>
 ```
 
-Hover states:
+Pressed states (use Pressable):
 ```jsx
-className="hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+<Pressable
+  style={({ pressed }) => [
+    styles.glassContainer,
+    pressed && styles.glassContainerPressed
+  ]}
+>
+  {/* Content */}
+</Pressable>
+
+const styles = StyleSheet.create({
+  glassContainerPressed: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+});
 ```
 
 ## Required Components
@@ -56,55 +87,107 @@ className="hover:bg-white/10 hover:border-white/20 transition-all duration-300"
 ## Implementation Steps
 
 1. Copy components from `assets/glass-components.jsx` into project
-2. Import required components
-3. Apply dark background to root: `bg-slate-950 min-h-screen`
-4. Build layouts using Glass components exclusively
+2. Import required components and React Native modules
+3. Create StyleSheet with dark background: `backgroundColor: '#0f172a'`
+4. Build layouts using Glass components exclusively with StyleSheet.create()
+5. Use React Native's Animated API for all animations
 
-## Animation Tokens
+## Animation Patterns
 
 ```jsx
-// Standard transitions
-transition-all duration-300 ease-out
+import { Animated } from 'react-native';
 
-// Hover lift
-hover:-translate-y-0.5 hover:shadow-xl
+// Fade in animation
+const fadeAnim = useRef(new Animated.Value(0)).current;
+
+useEffect(() => {
+  Animated.timing(fadeAnim, {
+    toValue: 1,
+    duration: 300,
+    useNativeDriver: true,
+  }).start();
+}, []);
+
+<Animated.View style={{ opacity: fadeAnim }}>
+  {/* Content */}
+</Animated.View>
 
 // Scale on press
-active:scale-95
+const scaleAnim = useRef(new Animated.Value(1)).current;
 
-// Fade in
-animate-[fadeIn_0.3s_ease-out]
+const handlePressIn = () => {
+  Animated.spring(scaleAnim, {
+    toValue: 0.95,
+    useNativeDriver: true,
+  }).start();
+};
+
+const handlePressOut = () => {
+  Animated.spring(scaleAnim, {
+    toValue: 1,
+    useNativeDriver: true,
+  }).start();
+};
+
+<Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+  {/* Content */}
+</Animated.View>
 
 // Slide from left (sidebar)
-animate-[slideIn_0.3s_ease-out]
+const slideAnim = useRef(new Animated.Value(-300)).current;
+
+Animated.timing(slideAnim, {
+  toValue: 0,
+  duration: 300,
+  useNativeDriver: true,
+}).start();
+
+<Animated.View style={{ transform: [{ translateX: slideAnim }] }}>
+  {/* Sidebar */}
+</Animated.View>
 ```
 
 ## Color Palette
 
-| Purpose | Class |
-|---------|-------|
-| Background | `bg-slate-950` or `bg-gray-900` |
-| Glass surface | `bg-white/5` to `bg-white/10` |
-| Border | `border-white/10` to `border-white/20` |
-| Text primary | `text-white` |
-| Text secondary | `text-gray-400` |
-| Accent | `text-blue-400` or `text-purple-400` |
-| Glow | `shadow-blue-500/20` |
+| Purpose | Value | StyleSheet |
+|---------|-------|------------|
+| Background | Dark gray/black | `backgroundColor: '#0f172a'` or `'#111827'` |
+| Glass surface | Semi-transparent white | `backgroundColor: 'rgba(255, 255, 255, 0.05)'` to `'rgba(255, 255, 255, 0.1)'` |
+| Border | Semi-transparent white | `borderColor: 'rgba(255, 255, 255, 0.1)'` to `'rgba(255, 255, 255, 0.2)'` |
+| Text primary | White | `color: '#ffffff'` |
+| Text secondary | Gray | `color: '#9ca3af'` |
+| Accent | Blue or Purple | `color: '#60a5fa'` or `'#c084fc'` |
+| Shadow | Black with opacity | `shadowColor: '#000', shadowOpacity: 0.5` |
 
 ## Example Structure
 
 ```jsx
-<div className="bg-slate-950 min-h-screen flex">
+import { View, StyleSheet } from 'react-native';
+
+<View style={styles.container}>
   <GlassSidebar />
   <GlassSplitter />
-  <main className="flex-1 p-6">
+  <View style={styles.main}>
     <GlassCard>
       <GlassInput placeholder="Search..." />
       <GlassButton>Submit</GlassButton>
     </GlassCard>
-  </main>
+  </View>
   <GlassModal isOpen={open} onClose={() => setOpen(false)}>
     Modal content
   </GlassModal>
-</div>
+</View>
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#0f172a',
+    minHeight: '100%',
+  },
+  main: {
+    flex: 1,
+    padding: 24,
+  },
+});
 ```

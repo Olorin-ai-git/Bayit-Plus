@@ -158,6 +158,58 @@ class WhisperTranscriptionService:
             logger.error(f"Whisper stream transcription error: {str(e)}")
             raise
 
+    async def transcribe_audio_file(
+        self, audio_path: str, language: Optional[str] = None
+    ) -> tuple[str, str]:
+        """
+        Transcribe an audio file using Whisper API with automatic language detection.
+
+        Args:
+            audio_path: Path to audio file (mp3, wav, m4a, etc.)
+            language: Optional language code (if None, auto-detects)
+
+        Returns:
+            Tuple of (transcript text, detected language code)
+
+        Raises:
+            Exception: If transcription fails
+        """
+        try:
+            logger.info(f"📝 Transcribing audio file: {audio_path}")
+
+            # Read audio file
+            with open(audio_path, "rb") as audio_file:
+                # Call Whisper API with auto-detection or specified language
+                if language:
+                    lang_code = WHISPER_LANGUAGE_CODES.get(language, language)
+                    transcript = await self.client.audio.transcriptions.create(
+                        model="whisper-1",
+                        file=audio_file,
+                        language=lang_code,
+                        response_format="verbose_json",  # Get language info
+                    )
+                else:
+                    # Auto-detect language
+                    transcript = await self.client.audio.transcriptions.create(
+                        model="whisper-1",
+                        file=audio_file,
+                        response_format="verbose_json",  # Get language info
+                    )
+
+            # Extract text and language from response
+            text = transcript.text
+            detected_lang = transcript.language
+
+            logger.info(
+                f"✅ Transcribed {len(text)} characters, detected language: {detected_lang}"
+            )
+
+            return text, detected_lang
+
+        except Exception as e:
+            logger.error(f"❌ Whisper file transcription error: {str(e)}")
+            raise
+
     def verify_service_availability(self) -> bool:
         """Verify OpenAI API is available."""
         try:

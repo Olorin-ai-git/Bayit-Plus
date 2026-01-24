@@ -68,6 +68,10 @@ export const config = {
 
   // Media assets - from environment variables with fallback
   media: {
+    // Marty Jr. from Back to the Future Part 2 (plays before widgets intro)
+    martyJrBttf2Video: (typeof process !== 'undefined' && process.env.REACT_APP_MARTY_JR_BTTF2_VIDEO_URL)
+      || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_MARTY_JR_BTTF2_VIDEO_URL)
+      || '/assets/video/intro/Marty-Jr.mp4',
     widgetsIntroVideo: (typeof process !== 'undefined' && process.env.REACT_APP_WIDGETS_INTRO_VIDEO_URL)
       || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_WIDGETS_INTRO_VIDEO_URL)
       || '/media/widgets-intro.mp4',

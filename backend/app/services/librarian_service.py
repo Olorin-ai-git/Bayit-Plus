@@ -128,15 +128,17 @@ async def run_daily_audit(
 
         # Import services here to avoid circular imports
         from app.services.content_auditor import audit_content_items
+        from app.services.content_maintenance_tasks import run_content_maintenance_tasks
         from app.services.database_maintenance import \
             perform_database_maintenance
         from app.services.stream_validator import validate_content_streams
 
-        # Run audits in parallel
-        content_results, stream_results, db_health = await asyncio.gather(
+        # Run audits and maintenance in parallel
+        content_results, stream_results, db_health, maintenance_results = await asyncio.gather(
             audit_content_items(scope.content_ids, audit_report.audit_id, dry_run),
             validate_content_streams(scope, audit_report.audit_id),
             perform_database_maintenance(),
+            run_content_maintenance_tasks(dry_run),
             return_exceptions=True,
         )
 
@@ -152,6 +154,10 @@ async def run_daily_audit(
         if isinstance(db_health, Exception):
             logger.error(f"❌ Database maintenance failed: {db_health}")
             db_health = {"status": "failed", "error": str(db_health)}
+
+        if isinstance(maintenance_results, Exception):
+            logger.error(f"❌ Content maintenance tasks failed: {maintenance_results}")
+            maintenance_results = {"status": "failed", "error": str(maintenance_results)}
 
         # Check for cancellation/pause
         if audit_id:
@@ -222,12 +228,14 @@ async def run_daily_audit(
         logger.info("\n📊 Step 3: Compiling audit results...")
         audit_report.content_results = content_results
         audit_report.database_health = db_health
+        audit_report.maintenance_results = maintenance_results
 
         # Add series linking and integrity results to database health
         if isinstance(db_health, dict):
             db_health["series_linking"] = linking_results
             db_health["episode_deduplication"] = dedup_results
             db_health["integrity_cleanup"] = integrity_results
+            db_health["content_maintenance"] = maintenance_results
 
         # Extract issues from results
         audit_report.broken_streams = stream_results.get("broken_streams", [])
