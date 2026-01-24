@@ -5,14 +5,16 @@
  * - Icon and title
  * - Widget count
  * - New widget button
+ * REBUILT: Using StyleSheet and glassmorphic design
  */
 
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Plus, Grid3x3 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { useDirection } from '@/hooks/useDirection';
-import { colors } from '@bayit/shared/theme';
+import { GlassButton } from '@bayit/shared/ui';
+import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 
 const WidgetsPageHeaderPropsSchema = z.object({
   widgetCount: z.number(),
@@ -29,22 +31,20 @@ export default function WidgetsPageHeader({ widgetCount, onCreateWidget }: Widge
   const { textAlign } = useDirection();
 
   return (
-    <View className="flex-row justify-between items-center mb-6">
+    <View style={styles.container}>
       {/* Left side: Icon + Title */}
-      <View className="flex-row items-center gap-3">
-        <View className="w-14 h-14 rounded-full bg-purple-700/30 justify-center items-center">
+      <View style={styles.leftSection}>
+        <View style={styles.iconContainer}>
           <Grid3x3 size={28} color={colors.primary} />
         </View>
         <View>
           <Text
-            className="text-[32px] font-bold text-white"
-            style={{ textAlign }}
+            style={[styles.title, { textAlign }]}
           >
             {t('nav.widgets')}
           </Text>
           <Text
-            className="text-sm text-gray-400 mt-1"
-            style={{ textAlign }}
+            style={[styles.subtitle, { textAlign }]}
           >
             {widgetCount} {t('widgets.itemsTotal') || 'total widgets'}
           </Text>
@@ -52,15 +52,47 @@ export default function WidgetsPageHeader({ widgetCount, onCreateWidget }: Widge
       </View>
 
       {/* Right side: Create button */}
-      <Pressable
-        className="flex-row items-center gap-2 px-4 py-2 rounded-lg bg-purple-600"
+      <GlassButton
+        title={t('common.new') || 'New Widget'}
         onPress={onCreateWidget}
-      >
-        <Plus size={20} color={colors.text} />
-        <Text className="text-sm font-semibold text-white">
-          {t('common.new') || 'New Widget'}
-        </Text>
-      </Pressable>
+        variant="primary"
+        size="md"
+        icon={<Plus size={20} color={colors.text} />}
+      />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  leftSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  iconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.glassPurple,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginTop: 4,
+  },
+});

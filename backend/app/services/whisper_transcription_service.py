@@ -231,7 +231,7 @@ class WhisperTranscriptionService:
         self, audio_path: str, language: Optional[str] = None
     ) -> tuple[str, str]:
         """
-        Transcribe large audio files by splitting into chunks.
+        Transcribe large audio files by splitting into chunks using ffmpeg.
 
         Args:
             audio_path: Path to audio file
@@ -241,37 +241,80 @@ class WhisperTranscriptionService:
             Tuple of (combined transcript text, detected language code)
         """
         try:
-            from pydub import AudioSegment
             import os
-            from pathlib import Path
+            import subprocess
             import tempfile
+            from pathlib import Path
 
-            logger.info("   Loading audio file...")
-            audio = AudioSegment.from_file(audio_path)
+            logger.info("   Splitting audio file using ffmpeg...")
 
-            # Split into 10-minute chunks (ensures under 25MB)
-            chunk_length_ms = 10 * 60 * 1000  # 10 minutes in milliseconds
-            chunks = []
+            # Get audio duration using ffprobe
+            duration_cmd = [
+                "ffprobe",
+                "-v",
+                "error",
+                "-show_entries",
+                "format=duration",
+                "-of",
+                "default=noprint_wrappers=1:nokey=1",
+                audio_path,
+            ]
+            result = subprocess.run(duration_cmd, capture_output=True, text=True, check=True)
+            total_duration = float(result.stdout.strip())
 
-            for i in range(0, len(audio), chunk_length_ms):
-                chunk = audio[i : i + chunk_length_ms]
-                chunks.append(chunk)
+            # Split into 10-minute chunks (600 seconds)
+            chunk_duration = 600  # 10 minutes
+            num_chunks = int((total_duration + chunk_duration - 1) / chunk_duration)
 
-            logger.info(f"   Split into {len(chunks)} chunks")
+            logger.info(f"   Audio duration: {total_duration:.1f}s")
+            logger.info(f"   Splitting into {num_chunks} chunks of {chunk_duration}s each")
 
             # Transcribe each chunk
             transcripts = []
             detected_lang = None
 
             with tempfile.TemporaryDirectory() as temp_dir:
-                for idx, chunk in enumerate(chunks):
-                    logger.info(f"   Transcribing chunk {idx + 1}/{len(chunks)}...")
+                for chunk_idx in range(num_chunks):
+                    start_time = chunk_idx * chunk_duration
+                    chunk_path = os.path.join(temp_dir, f"chunk_{chunk_idx}.mp3")
 
-                    # Export chunk to temporary file
-                    chunk_path = os.path.join(temp_dir, f"chunk_{idx}.mp3")
-                    chunk.export(chunk_path, format="mp3", bitrate="128k")
+                    logger.info(f"   Creating chunk {chunk_idx + 1}/{num_chunks} (starting at {start_time}s)...")
+
+                    # Use ffmpeg to extract chunk
+                    ffmpeg_cmd = [
+                        "ffmpeg",
+                        "-i",
+                        audio_path,
+                        "-ss",
+                        str(start_time),
+                        "-t",
+                        str(chunk_duration),
+                        "-acodec",
+                        "libmp3lame",
+                        "-ab",
+                        "128k",
+                        "-y",  # Overwrite output file
+                        chunk_path,
+                    ]
+
+                    subprocess.run(
+                        ffmpeg_cmd,
+                        capture_output=True,
+                        check=True,
+                        stderr=subprocess.DEVNULL,  # Suppress ffmpeg output
+                    )
+
+                    # Verify chunk was created and has reasonable size
+                    if not os.path.exists(chunk_path):
+                        logger.error(f"   Failed to create chunk {chunk_idx}")
+                        continue
+
+                    chunk_size_mb = os.path.getsize(chunk_path) / (1024 * 1024)
+                    logger.info(f"   Chunk {chunk_idx + 1} size: {chunk_size_mb:.2f} MB")
 
                     # Transcribe chunk
+                    logger.info(f"   Transcribing chunk {chunk_idx + 1}/{num_chunks}...")
+
                     with open(chunk_path, "rb") as chunk_file:
                         if language or detected_lang:
                             lang_code = WHISPER_LANGUAGE_CODES.get(
@@ -305,6 +348,9 @@ class WhisperTranscriptionService:
 
             return combined_text, detected_lang
 
+        except subprocess.CalledProcessError as e:
+            logger.error(f"❌ FFmpeg error: {e.stderr if e.stderr else str(e)}")
+            raise
         except Exception as e:
             logger.error(f"❌ Large file transcription error: {str(e)}")
             raise
