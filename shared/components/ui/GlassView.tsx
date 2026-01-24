@@ -54,8 +54,9 @@ export const GlassView: React.FC<GlassViewProps> = ({
           borderColor && { borderColor },
           {
             // @ts-ignore - Web-specific CSS properties
-            backdropFilter: `blur(${blurAmount[normalizedIntensity]}px)`,
-            WebkitBackdropFilter: `blur(${blurAmount[normalizedIntensity]}px)`,
+            backdropFilter: `blur(${blurAmount[normalizedIntensity]}px) saturate(180%)`,
+            WebkitBackdropFilter: `blur(${blurAmount[normalizedIntensity]}px) saturate(180%)`,
+            isolation: 'isolate',
           },
           style,
         ]}

@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, ViewStyle, StyleProp } from 'react-native';
+import { View, Text, ViewStyle, StyleProp, StyleSheet } from 'react-native';
 import { colors, borderRadius, spacing } from '../theme';
 
-type BadgeVariant = 'default' | 'primary' | 'success' | 'danger' | 'warning' | 'purple';
+type BadgeVariant = 'default' | 'primary' | 'success' | 'danger' | 'warning' | 'purple' | 'info';
 type BadgeSize = 'sm' | 'default' | 'lg';
 
 interface GlassBadgeProps {
@@ -27,9 +27,10 @@ export const GlassBadge: React.FC<GlassBadgeProps> = ({
   const variantStyles: Record<BadgeVariant, { bg: string; text: string }> = {
     default: { bg: colors.glass, text: colors.text },
     primary: { bg: 'rgba(107, 33, 168, 0.3)', text: colors.primary },
+    info: { bg: 'rgba(107, 33, 168, 0.3)', text: colors.primaryLight },
     success: { bg: 'rgba(16, 185, 129, 0.2)', text: colors.success },
     danger: { bg: 'rgba(239, 68, 68, 0.2)', text: colors.error },
-    warning: { bg: 'rgba(245, 158, 11, 0.2)', text: colors.warning },
+    warning: { bg: 'rgba(245, 158, 11, 0.2)', text: '#fb923c' },
     purple: { bg: 'rgba(138, 43, 226, 0.2)', text: colors.secondary },
   };
 
@@ -42,9 +43,10 @@ export const GlassBadge: React.FC<GlassBadgeProps> = ({
   const dotColors: Record<BadgeVariant, string> = {
     default: colors.textMuted,
     primary: colors.primary,
+    info: colors.primaryLight,
     success: colors.success,
     danger: colors.error,
-    warning: colors.warning,
+    warning: '#f59e0b',
     purple: colors.secondary,
   };
 
@@ -54,8 +56,8 @@ export const GlassBadge: React.FC<GlassBadgeProps> = ({
 
   return (
     <View
-      className="flex-row items-center rounded-full border border-white/20"
       style={[
+        styles.container,
         {
           backgroundColor: currentVariant.bg,
           paddingHorizontal: currentSize.paddingH,
@@ -66,19 +68,45 @@ export const GlassBadge: React.FC<GlassBadgeProps> = ({
     >
       {dot && (
         <View
-          className="w-1.5 h-1.5 rounded-full ml-1"
-          style={{ backgroundColor: dotColors[computedDotColor] }}
+          style={[
+            styles.dot,
+            { backgroundColor: dotColors[computedDotColor] }
+          ]}
         />
       )}
-      {icon && <View className="ml-1">{icon}</View>}
+      {icon && <View style={styles.icon}>{icon}</View>}
       <Text
-        className="font-semibold"
-        style={{ color: currentVariant.text, fontSize: currentSize.fontSize }}
+        style={[
+          styles.text,
+          { color: currentVariant.text, fontSize: currentSize.fontSize }
+        ]}
       >
         {children}
       </Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: borderRadius.full,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginLeft: spacing.xs,
+  },
+  icon: {
+    marginLeft: spacing.xs,
+  },
+  text: {
+    fontWeight: '600',
+  },
+});
 
 export default GlassBadge;

@@ -447,6 +447,7 @@ const styles = StyleSheet.create({
   background: {
     width: '100%',
     minHeight: 320,
+    position: 'relative',
   },
   backgroundMobile: {
     minHeight: 180,
@@ -464,7 +465,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(10, 10, 30, 0.4)',
+    backgroundColor: 'rgba(10, 10, 30, 0.6)',
     borderRadius: borderRadius.xl,
   },
   content: {
@@ -542,12 +543,15 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flexGrow: 0,
+    flexShrink: 0,
   },
   scrollContent: {
     paddingHorizontal: spacing.lg,
+    flexDirection: 'row',
   },
   scrollContentMobile: {
     paddingHorizontal: spacing.md,
+    flexDirection: 'row',
   },
   scrollContentRTL: {
     flexDirection: 'row-reverse',
@@ -581,19 +585,25 @@ const styles = StyleSheet.create({
   // Card styles
   card: {
     width: 256,
+    minWidth: 256,
     height: 176,
+    minHeight: 176,
     padding: spacing.lg,
     borderRadius: borderRadius.lg,
     marginRight: spacing.md,
     borderWidth: 2,
     borderColor: 'transparent',
+    flexShrink: 0,
   },
   cardMobile: {
     width: 176,
+    minWidth: 176,
     height: 128,
+    minHeight: 128,
     padding: spacing.md,
     borderRadius: borderRadius.md,
     marginRight: spacing.sm,
+    flexShrink: 0,
   },
   cardFocused: {
     borderColor: colors.primary,
