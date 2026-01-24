@@ -54,6 +54,9 @@ def register_all_routers(app: FastAPI) -> None:
                                 websocket_chess, websocket_dm,
                                 websocket_live_dubbing, websocket_live_subtitles,
                                 widgets, youngsters, zman)
+    # Import search sub-routers
+    from app.api.routes import (search_analytics, search_suggestions,
+                                search_scenes, search_llm)
     from app.api.endpoints import tts_router, wake_word_router, analytics_router, voice_router
     from app.api.routes.admin.recordings import \
         router as admin_recordings_router
@@ -97,6 +100,10 @@ def register_all_routers(app: FastAPI) -> None:
     # Content Routes
     # ============================================
     app.include_router(search.router, prefix=prefix, tags=["search"])
+    app.include_router(search_analytics.router, prefix=prefix, tags=["search", "analytics"])
+    app.include_router(search_suggestions.router, prefix=prefix, tags=["search", "suggestions"])
+    app.include_router(search_scenes.router, prefix=prefix, tags=["search", "scenes"])
+    app.include_router(search_llm.router, prefix=prefix, tags=["search", "llm"])
     app.include_router(content.router, prefix=f"{prefix}/content", tags=["content"])
     app.include_router(
         content_taxonomy.router, prefix=prefix, tags=["content-taxonomy"]
