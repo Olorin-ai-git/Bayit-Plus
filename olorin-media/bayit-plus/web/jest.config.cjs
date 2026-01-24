@@ -6,7 +6,7 @@ module.exports = {
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { configFile: './babel.config.cjs' }],
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-web|react-router-dom|lucide-react)/)',
+    'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-web|react-native-linear-gradient|react-native-web-linear-gradient|react-router-dom|lucide-react)/)',
   ],
   testMatch: [
     '**/__tests__/**/*.(test|spec).(ts|tsx|js|jsx)',
@@ -35,6 +35,8 @@ module.exports = {
     '^@bayit/shared-stores/(.*)$': '<rootDir>/../shared/stores/$1',
     '^@bayit/shared-hooks/(.*)$': '<rootDir>/../shared/hooks/$1',
     '^@bayit/shared/(.*)$': '<rootDir>/../shared/$1',
+    '^react-native-linear-gradient$': '<rootDir>/__mocks__/react-native-linear-gradient.js',
+    '^react-native-web-linear-gradient$': '<rootDir>/__mocks__/react-native-linear-gradient.js',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
   },
