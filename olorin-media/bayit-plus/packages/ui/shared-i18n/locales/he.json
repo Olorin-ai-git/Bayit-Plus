@@ -2381,6 +2381,12 @@
         "inactive": "לא פעילים",
         "blocked": "חסומים"
       },
+      "roles": {
+        "superAdmin": "מנהל על",
+        "admin": "מנהל",
+        "moderator": "מנחה",
+        "user": "משתמש"
+      },
       "columns": {
         "name": "שם",
         "role": "תפקיד",

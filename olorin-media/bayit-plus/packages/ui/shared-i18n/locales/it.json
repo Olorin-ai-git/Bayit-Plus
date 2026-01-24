@@ -714,6 +714,14 @@
     "dashboard": {
       "title": "Dashboard",
       "subtitle": "Panoramica del sistema"
+    },
+    "users": {
+      "roles": {
+        "superAdmin": "Super Amministratore",
+        "admin": "Amministratore",
+        "moderator": "Moderatore",
+        "user": "Utente"
+      }
     }
   },
   "cultures": {

@@ -17,25 +17,27 @@ logger = logging.getLogger(__name__)
 
 
 async def execute_clean_title(
-    content_id: str, new_title: str, audit_id: str, dry_run: bool = False
+    content_id: str, cleaned_title: str, cleaned_title_en: str = None, reason: str = None, *, audit_id: str, dry_run: bool = False
 ) -> Dict[str, Any]:
     """
     Clean/fix content title.
 
     Args:
         content_id: The content ID to update
-        new_title: The cleaned/new title
-        audit_id: The audit ID for logging
-        dry_run: If True, only simulate the operation
+        cleaned_title: The cleaned/new title
+        cleaned_title_en: Optional English title
+        reason: Brief explanation of what was cleaned
+        audit_id: The audit ID for logging (keyword-only)
+        dry_run: If True, only simulate the operation (keyword-only)
 
     Returns:
         Dict with success status and title change details
     """
     dry_run_result = handle_dry_run(
         dry_run,
-        "rename {content_id} to '{new_title}'",
+        "rename {content_id} to '{cleaned_title}'",
         content_id=content_id,
-        new_title=new_title,
+        cleaned_title=cleaned_title,
     )
     if dry_run_result:
         return dry_run_result
@@ -46,7 +48,9 @@ async def execute_clean_title(
             return error
 
         old_title = content.title
-        content.title = new_title
+        content.title = cleaned_title
+        if cleaned_title_en:
+            content.title_en = cleaned_title_en
         content.updated_at = datetime.utcnow()
         await content.save()
 
@@ -54,8 +58,10 @@ async def execute_clean_title(
             action="Cleaned title",
             content_title=old_title,
             old_value=old_title,
-            new_value=new_title,
+            new_value=cleaned_title,
         )
+        if reason:
+            description = f"{description} - {reason}"
 
         await log_librarian_action(
             audit_id=audit_id,
@@ -64,14 +70,14 @@ async def execute_clean_title(
             description=description,
             issue_type="title_cleanup",
             before_state={"title": old_title},
-            after_state={"title": new_title},
+            after_state={"title": cleaned_title},
         )
 
         return {
             "success": True,
             "updated": True,
             "old_title": old_title,
-            "new_title": new_title,
+            "new_title": cleaned_title,
         }
     except Exception as e:
         logger.error(f"Error cleaning title: {e}")

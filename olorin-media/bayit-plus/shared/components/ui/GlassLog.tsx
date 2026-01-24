@@ -490,7 +490,10 @@ export const GlassLog: React.FC<GlassLogProps> = ({
             <ScrollView
               ref={scrollViewRef}
               style={[styles.scrollView, { maxHeight }]}
-              contentContainerStyle={styles.scrollViewContent}
+              contentContainerStyle={[
+                styles.scrollViewContent,
+                filteredLogs.length === 0 && { flex: 1 }
+              ]}
               showsVerticalScrollIndicator={true}
               onScroll={handleScroll}
               scrollEventThrottle={100}
@@ -910,9 +913,11 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    minHeight: 200,
   },
   scrollViewContent: {
     flexGrow: 1,
+    minHeight: 200,
   },
   emptyContainer: {
     flex: 1,

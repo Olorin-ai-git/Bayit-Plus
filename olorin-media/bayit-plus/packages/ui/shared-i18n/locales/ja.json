@@ -1661,7 +1661,15 @@
     "api": "API",
     "webhooks": "Webhook",
     "developers": "開発者",
-    "documentation": "ドキュメント"
+    "documentation": "ドキュメント",
+    "users": {
+      "roles": {
+        "superAdmin": "スーパー管理者",
+        "admin": "管理者",
+        "moderator": "モデレーター",
+        "user": "ユーザー"
+      }
+    }
   },
   "cultureClock": {
     "timeIn": "{{location}}の時間",

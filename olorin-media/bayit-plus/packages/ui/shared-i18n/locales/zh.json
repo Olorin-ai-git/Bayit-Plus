@@ -1875,6 +1875,14 @@
       "radioStations": "电台",
       "podcasts": "播客",
       "settings": "设置"
+    },
+    "users": {
+      "roles": {
+        "superAdmin": "超级管理员",
+        "admin": "管理员",
+        "moderator": "版主",
+        "user": "用户"
+      }
     }
   },
   "cultures": {

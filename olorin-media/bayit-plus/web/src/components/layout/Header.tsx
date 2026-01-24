@@ -70,7 +70,22 @@ export default function Header() {
     }
   }, [isHydrated, localAuthChecked]);
 
-  const showAdmin = authReady && isAuthenticated && isAdmin() && !IS_TV_BUILD; // Hide admin on TV
+  // Only show admin button when store is fully hydrated to prevent race conditions
+  const showAdmin = isHydrated && isAuthenticated && isAdmin() && !IS_TV_BUILD; // Hide admin on TV
+
+  // DEBUG: Log admin button visibility logic
+  useEffect(() => {
+    if (!IS_TV_BUILD) {
+      console.log('=== Admin Button Visibility ===');
+      console.log('isHydrated:', isHydrated);
+      console.log('isAuthenticated:', isAuthenticated);
+      console.log('user:', user);
+      console.log('user?.role:', user?.role);
+      console.log('isAdmin():', isAdmin());
+      console.log('showAdmin:', showAdmin);
+    }
+  }, [isHydrated, isAuthenticated, user, showAdmin]);
+
   const [loginFocused, setLoginFocused] = useState(false);
 
   // Voice settings for TV - only enable if mic is available

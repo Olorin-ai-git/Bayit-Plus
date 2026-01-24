@@ -2503,6 +2503,12 @@
         "inactive": "Inactive",
         "blocked": "Blocked"
       },
+      "roles": {
+        "superAdmin": "Super Admin",
+        "admin": "Admin",
+        "moderator": "Moderator",
+        "user": "User"
+      },
       "columns": {
         "name": "Name",
         "role": "Role",

@@ -1442,6 +1442,12 @@
         "inactive": "Inactivos",
         "blocked": "Bloqueados"
       },
+      "roles": {
+        "superAdmin": "Súper Administrador",
+        "admin": "Administrador",
+        "moderator": "Moderador",
+        "user": "Usuario"
+      },
       "columns": {
         "name": "Nombre",
         "role": "Rol",

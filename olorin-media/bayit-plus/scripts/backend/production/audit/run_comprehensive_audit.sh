@@ -47,9 +47,16 @@ if [ -z "$ADMIN_EMAIL" ] || [ -z "$ADMIN_PASSWORD" ]; then
     exit 1
 fi
 
-TOKEN_RESPONSE=$(curl -sf -X POST "$API_URL/api/v1/auth/login" \
+# Create temp file for JSON payload to handle special characters in password
+TMPFILE=$(mktemp)
+cat > "$TMPFILE" << EOF
+{"email":"$ADMIN_EMAIL","password":"$ADMIN_PASSWORD"}
+EOF
+
+TOKEN_RESPONSE=$(curl -s -X POST "$API_URL/api/v1/auth/login" \
     -H "Content-Type: application/json" \
-    -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"$ADMIN_PASSWORD\"}" || echo "{}")
+    -d @"$TMPFILE")
+rm -f "$TMPFILE"
 
 TOKEN=$(echo "$TOKEN_RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin).get('access_token', ''))" 2>/dev/null || echo "")
 

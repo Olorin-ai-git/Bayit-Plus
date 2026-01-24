@@ -504,6 +504,14 @@
       "users": "ব্যবহারকারী",
       "content": "কন্টেন্ট",
       "settings": "সেটিংস"
+    },
+    "users": {
+      "roles": {
+        "superAdmin": "সুপার অ্যাডমিন",
+        "admin": "অ্যাডমিন",
+        "moderator": "মডারেটর",
+        "user": "ব্যবহারকারী"
+      }
     }
   },
   "cultureClock": {

@@ -48,7 +48,7 @@ export default function VideoPlayer({
   initialSeekTime,
   onShowUpgrade,
 }: VideoPlayerProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const user = useAuthStore((s) => s.user)
 
   // Live feature quota tracking
@@ -96,7 +96,7 @@ export default function VideoPlayer({
   // Trivia management (VOD only)
   const trivia = useTrivia({
     contentId,
-    language: t('app.lang'),
+    language: i18n.language,
     currentTime: state.currentTime,
     isPlaying: state.isPlaying && !isLive,
   })
@@ -213,7 +213,7 @@ export default function VideoPlayer({
         <TriviaOverlay
           fact={trivia.currentFact}
           onDismiss={trivia.dismissFact}
-          isRTL={t('app.lang') === 'he'}
+          isRTL={i18n.language === 'he'}
           isTTSPlaying={isTTSPlaying}
         />
       )}
