@@ -112,12 +112,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#fff',
+    color: colors.text,
     textAlign: 'center',
   },
   message: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.7)',
+    color: colors.text,
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -129,25 +129,25 @@ const styles = StyleSheet.create({
   suggestionsTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.text,
     marginBottom: 8,
   },
   suggestionText: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.text,
   },
   button: {
     marginTop: 16,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 12,
-    backgroundColor: 'rgba(168,85,247,0.2)',
+    backgroundColor: colors.glassBorder,
     borderWidth: 1,
-    borderColor: 'rgba(168,85,247,0.5)',
+    borderColor: colors.inputBorderFocus,
   },
   buttonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.text,
   },
 });

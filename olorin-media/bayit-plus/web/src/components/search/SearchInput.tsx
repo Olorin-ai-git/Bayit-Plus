@@ -35,7 +35,7 @@ export function SearchInput({ value, onChangeText, placeholder }: SearchInputPro
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         placeholder={placeholder || t('controls.placeholder')}
-        placeholderTextColor="rgba(255,255,255,0.5)"
+        placeholderTextColor={colors.textMuted}
         accessibilityLabel={t('controls.placeholder')}
         accessibilityHint={t('controls.hints.searchInput')}
       />
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.inputBackground,
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -66,8 +66,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   containerFocused: {
-    borderColor: 'rgba(168,85,247,0.5)',
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderColor: colors.inputBorderFocus,
+    backgroundColor: colors.inputBackgroundFocus,
   },
   icon: {
     fontSize: 18,
@@ -75,13 +75,13 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: '#fff',
+    color: colors.text,
   },
   clearButton: {
     padding: 4,
   },
   clearIcon: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.7)',
+    color: colors.text,
   },
 });

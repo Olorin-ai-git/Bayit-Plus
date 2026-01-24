@@ -59,17 +59,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   badge: {
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: colors.glassOverlay,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 6,
   },
   featuredBadge: {
-    backgroundColor: 'rgba(168,85,247,0.7)',
+    backgroundColor: colors.glassOverlayPurple,
   },
   badgeText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.text,
   },
 });

@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 12,
     borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: colors.cardBackground,
     gap: 12,
   },
   thumbnailContainer: {
@@ -132,12 +132,12 @@ const styles = StyleSheet.create({
   thumbnail: {
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: colors.cardBackground,
   },
   placeholderThumbnail: {
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: colors.cardBackground,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -151,11 +151,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.text,
   },
   description: {
     fontSize: 13,
-    color: 'rgba(255,255,255,0.7)',
+    color: colors.text,
     lineHeight: 18,
   },
   metadata: {
@@ -165,13 +165,13 @@ const styles = StyleSheet.create({
   },
   metadataText: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.5)',
+    color: colors.textMuted,
   },
   badges: {
     gap: 4,
   },
   badge: {
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: colors.glassOverlay,
     borderRadius: 4,
     padding: 4,
   },
@@ -183,6 +183,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loaderText: {
-    color: 'rgba(255,255,255,0.6)',
+    color: colors.textSecondary,
   },
 });

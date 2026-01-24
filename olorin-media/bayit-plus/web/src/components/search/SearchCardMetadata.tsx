@@ -69,11 +69,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 6,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.inputBackground,
   },
   metadataText: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.text,
     fontWeight: '500',
   },
 });

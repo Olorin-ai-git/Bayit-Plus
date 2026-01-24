@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   },
   gridItemFocused: {
     borderWidth: 2,
-    borderColor: 'rgba(168,85,247,1)',
+    borderColor: colors.primary,
     borderRadius: 12,
     transform: [{ scale: 1.05 }],
   },
@@ -165,12 +165,12 @@ const styles = StyleSheet.create({
   thumbnail: {
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: colors.cardBackground,
   },
   placeholderThumbnail: {
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: colors.cardBackground,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   badge: {
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: colors.glassOverlay,
     borderRadius: 4,
     padding: 4,
   },
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.text,
     marginBottom: 4,
   },
   metadata: {
@@ -204,13 +204,13 @@ const styles = StyleSheet.create({
   },
   metadataText: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.6)',
+    color: colors.textSecondary,
   },
   loader: {
     padding: 20,
     alignItems: 'center',
   },
   loaderText: {
-    color: 'rgba(255,255,255,0.6)',
+    color: colors.textSecondary,
   },
 });

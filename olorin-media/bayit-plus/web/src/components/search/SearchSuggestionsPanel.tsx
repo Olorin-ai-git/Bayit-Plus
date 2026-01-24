@@ -154,11 +154,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.text,
   },
   clearButton: {
     fontSize: 14,
-    color: 'rgba(168,85,247,1)',
+    color: colors.primary,
     fontWeight: '500',
   },
   itemsContainer: {
@@ -167,13 +167,13 @@ const styles = StyleSheet.create({
   trendingItem: {
     padding: 12,
     borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: colors.cardBackground,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.cardBorder,
   },
   trendingText: {
     fontSize: 15,
-    color: '#fff',
+    color: colors.text,
   },
   categoriesGrid: {
     flexDirection: 'row',
@@ -186,9 +186,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: colors.cardBackground,
     borderWidth: 1,
-    borderColor: 'rgba(168,85,247,0.3)',
+    borderColor: colors.pillBorder,
     gap: 8,
     minWidth: 120,
   },
@@ -198,14 +198,14 @@ const styles = StyleSheet.create({
   categoryName: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#fff',
+    color: colors.text,
   },
   recentItem: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
     borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: colors.backgroundElevated,
     gap: 12,
   },
   recentIcon: {
@@ -213,6 +213,6 @@ const styles = StyleSheet.create({
   },
   recentText: {
     fontSize: 15,
-    color: 'rgba(255,255,255,0.9)',
+    color: colors.text,
   },
 });

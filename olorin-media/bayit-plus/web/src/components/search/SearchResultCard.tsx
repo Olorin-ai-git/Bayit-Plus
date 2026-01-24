@@ -4,7 +4,7 @@
  * Individual card component for search results
  */
 
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { SearchCardBadges } from './SearchCardBadges';
 import { SearchCardMetadata } from './SearchCardMetadata';
@@ -22,12 +22,21 @@ interface SearchResultCardProps {
 
 /**
  * Single search result card with backdrop image and metadata
+ * Memoized for optimal list performance
  */
-export function SearchResultCard({ result, position, onPress }: SearchResultCardProps) {
+export const SearchResultCard = memo(function SearchResultCard({
+  result,
+  position,
+  onPress,
+}: SearchResultCardProps) {
+  const handlePress = useCallback(() => {
+    onPress?.(result, position);
+  }, [result, position, onPress]);
+
   return (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => onPress?.(result, position)}
+      onPress={handlePress}
       accessibilityLabel={`${result.title} - ${result.category_name || 'Content'}`}
       accessibilityRole="button"
     >
@@ -83,13 +92,13 @@ export function SearchResultCard({ result, position, onPress }: SearchResultCard
       </View>
     </TouchableOpacity>
   );
-}
+});
 
 const styles = StyleSheet.create({
   card: {
     marginBottom: 16,
     borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: colors.cardBackground,
     overflow: 'hidden',
   },
   backdropContainer: {
@@ -104,7 +113,7 @@ const styles = StyleSheet.create({
   placeholderBackdrop: {
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: colors.cardBackground,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -117,7 +126,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: '50%',
-    backgroundColor: 'rgba(0,0,0,0.8)',
+    backgroundColor: colors.glassOverlayStrong,
   },
   content: {
     padding: 16,
@@ -126,11 +135,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#fff',
+    color: colors.text,
   },
   description: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.text,
     lineHeight: 20,
   },
   genres: {
@@ -140,6 +149,6 @@ const styles = StyleSheet.create({
   },
   genreText: {
     fontSize: 13,
-    color: 'rgba(168,85,247,1)',
+    color: colors.primary,
   },
 });
