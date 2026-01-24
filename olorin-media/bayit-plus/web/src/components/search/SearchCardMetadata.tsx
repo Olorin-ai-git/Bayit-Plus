@@ -4,7 +4,7 @@
  * Displays metadata chips (category, year, rating, duration)
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 
@@ -21,8 +21,9 @@ interface SearchCardMetadataProps {
 
 /**
  * Metadata chips for search result cards
+ * Memoized for optimal list performance
  */
-export function SearchCardMetadata({
+export const SearchCardMetadata = memo(function SearchCardMetadata({
   categoryName,
   year,
   rating,
@@ -56,7 +57,7 @@ export function SearchCardMetadata({
       )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   metadata: {

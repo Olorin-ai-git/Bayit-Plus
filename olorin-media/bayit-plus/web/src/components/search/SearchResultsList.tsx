@@ -5,8 +5,8 @@
  * Horizontal layout with thumbnail, title, and metadata in rows
  */
 
-import React from 'react';
-import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet } from 'react-native';
+import React, { memo, useCallback } from 'react';
+import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 
@@ -23,14 +23,15 @@ interface SearchResultsListProps {
 
 /**
  * List view for search results - compact rows
+ * Memoized for performance
  */
-export function SearchResultsList({
+export const SearchResultsList = memo(function SearchResultsList({
   results,
   onResultClick,
   onLoadMore,
   isLoadingMore,
 }: SearchResultsListProps) {
-  const renderItem = ({ item, index }: { item: SearchResult; index: number }) => (
+  const renderItem = useCallback(({ item, index }: { item: SearchResult; index: number }) => (
     <TouchableOpacity
       style={styles.listItem}
       onPress={() => onResultClick?.(item, index)}
@@ -77,26 +78,38 @@ export function SearchResultsList({
         )}
       </View>
     </TouchableOpacity>
+  ), [onResultClick]);
+
+  const keyExtractor = useCallback((item: SearchResult) => item.id, []);
+
+  const ListFooterComponent = useCallback(
+    () =>
+      isLoadingMore ? (
+        <View style={styles.loader}>
+          <ActivityIndicator size="small" color={colors.primary} />
+          <Text style={styles.loaderText}>Loading more results...</Text>
+        </View>
+      ) : null,
+    [isLoadingMore]
   );
 
   return (
     <FlatList
       data={results}
       renderItem={renderItem}
-      keyExtractor={(item) => item.id}
+      keyExtractor={keyExtractor}
       contentContainerStyle={styles.container}
       onEndReached={onLoadMore}
       onEndReachedThreshold={0.5}
-      ListFooterComponent={
-        isLoadingMore ? (
-          <View style={styles.loader}>
-            <Text style={styles.loaderText}>Loading...</Text>
-          </View>
-        ) : null
-      }
+      initialNumToRender={10}
+      maxToRenderPerBatch={10}
+      windowSize={5}
+      removeClippedSubviews={true}
+      updateCellsBatchingPeriod={50}
+      ListFooterComponent={ListFooterComponent}
     />
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

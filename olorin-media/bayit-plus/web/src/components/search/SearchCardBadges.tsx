@@ -4,7 +4,7 @@
  * Displays badges for search result cards (Premium, Kids, Featured)
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors, borderRadius, spacing } from '../../theme/colors';
 
@@ -19,8 +19,9 @@ interface SearchCardBadgesProps {
 
 /**
  * Badge overlay for search result cards
+ * Memoized for optimal list performance
  */
-export function SearchCardBadges({
+export const SearchCardBadges = memo(function SearchCardBadges({
   requiresSubscription,
   isKidsContent,
   isFeatured,
@@ -48,7 +49,7 @@ export function SearchCardBadges({
       )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   badges: {
