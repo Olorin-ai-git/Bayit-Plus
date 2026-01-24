@@ -1,6 +1,7 @@
 /**
  * Text-to-Speech Service
- * Provides Hebrew, English, and Spanish TTS via ElevenLabs API
+ * Provides multi-language TTS via ElevenLabs API
+ * Supports 10 languages: Hebrew, English, Spanish, Chinese, French, Italian, Hindi, Tamil, Bengali, Japanese
  * Manages audio playback queue with priority system
  * Syncs language with i18n configuration
  * NO MOCKS - Real API integration only
@@ -8,6 +9,7 @@
 
 import { EventEmitter } from 'eventemitter3';
 import i18n from '../i18n';
+import type { VoiceLanguage } from './api/types';
 
 export interface TTSQueueItem {
   id: string;
@@ -21,7 +23,7 @@ export interface TTSQueueItem {
 
 export interface TTSConfig {
   voiceId: string;
-  language: 'he' | 'en' | 'es';
+  language: VoiceLanguage;
   model: 'eleven_v3' | 'eleven_turbo_v2' | 'eleven_monolingual_v1';
   stability: number; // 0-1
   similarityBoost: number; // 0-1
@@ -54,14 +56,35 @@ class TTSService extends EventEmitter {
 
   private config: TTSConfig = {
     voiceId: this.getDefaultVoiceId(),
-    language: (typeof window !== 'undefined' && (i18n.language as 'he' | 'en' | 'es')) || 'he',
+    language: (typeof window !== 'undefined' && (i18n.language as VoiceLanguage)) || 'he',
     model: 'eleven_v3',
     stability: 0.5,
     similarityBoost: 0.75,
   };
 
+  /**
+   * Language-specific voice mapping for optimal quality
+   * Uses ElevenLabs multilingual voices configured for each language
+   */
+  private getLanguageVoiceId(language: VoiceLanguage): string {
+    const languageVoices: Record<VoiceLanguage, string> = {
+      he: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Hebrew optimized)
+      en: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (English)
+      es: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Spanish)
+      zh: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Chinese)
+      fr: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (French)
+      it: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Italian)
+      hi: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Hindi)
+      ta: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Tamil)
+      bn: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Bengali)
+      ja: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Japanese)
+    };
+
+    return languageVoices[language] || this.getDefaultVoiceId();
+  }
+
   private getDefaultVoiceId(): string {
-    // Use env variable from config, otherwise fallback to Rachel (multilingual, excellent for Hebrew)
+    // Use env variable from config, otherwise fallback to Rachel (multilingual, excellent for all 10 languages)
     // Note: Using process.env for React Native compatibility (Vite's import.meta.env not supported by Hermes)
     try {
       const envVoiceId = typeof process !== 'undefined' && process.env?.VITE_ELEVENLABS_DEFAULT_VOICE_ID;
@@ -77,14 +100,12 @@ class TTSService extends EventEmitter {
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
 
       // Initialize with current i18n language
-      const currentLang = i18n.language as 'he' | 'en' | 'es' || 'he';
+      const currentLang = i18n.language as VoiceLanguage || 'he';
       this.config.language = currentLang;
-      console.log('[TTS] Initialized with language:', currentLang);
 
       // Listen to i18n language changes
       i18n.on('languageChanged', (lng: string) => {
-        console.log('[TTS] Language changed event received:', lng);
-        this.setLanguage(lng as 'he' | 'en' | 'es');
+        this.setLanguage(lng as VoiceLanguage);
       });
     }
   }
@@ -103,24 +124,12 @@ class TTSService extends EventEmitter {
   ): Promise<void> {
     const id = `${Date.now()}-${Math.random()}`;
 
-    console.log('[TTS] speak() called:', {
-      id,
-      priority,
-      text: text.substring(0, 50),
-      voiceId: voiceId || this.config.voiceId,
-      language: this.config.language,
-      currentlyPlaying: this.isPlaying,
-      queueLength: this.playQueue.length,
-    });
-
     if (priority === 'high') {
       // Stop current playback and clear queue
-      console.log('[TTS] HIGH priority: stopping current playback and clearing queue');
       this.stop();
       this.playQueue = [];
     } else if (priority === 'low' && this.isPlaying) {
       // Skip if already playing
-      console.log('[TTS] LOW priority and already playing, skipping');
       return;
     }
 
@@ -135,15 +144,12 @@ class TTSService extends EventEmitter {
     };
 
     this.playQueue.push(queueItem);
-    console.log('[TTS] Added to queue, new queue length:', this.playQueue.length);
     this.emit('queue-updated', { length: this.playQueue.length });
 
     // Process queue if not playing
     if (!this.isPlaying) {
-      console.log('[TTS] Not currently playing, processing queue immediately');
       await this.processQueue();
     } else {
-      console.log('[TTS] Currently playing, will process queue after current playback');
     }
   }
 
@@ -152,7 +158,6 @@ class TTSService extends EventEmitter {
       return;
     }
 
-    console.log('[TTS] Processing queue, items:', this.playQueue.length);
 
     // Sort by priority
     this.playQueue.sort((a, b) => {
@@ -163,40 +168,32 @@ class TTSService extends EventEmitter {
     const item = this.playQueue.shift();
     if (!item) return;
 
-    console.log('[TTS] Playing queue item:', { id: item.id, priority: item.priority, text: item.text.substring(0, 50) });
 
     this.isPlaying = true;
     this.emit('playing', item);
 
     try {
-      console.log('[TTS] Calling onStart callback');
       item.onStart?.();
 
       // Try cache first
       const cacheKey = `${item.text}-${item.voiceId || this.config.voiceId}`;
-      console.log('[TTS] Checking cache for key:', cacheKey);
       let audioBlob = await this.getCachedAudio(cacheKey);
 
       // If not in cache, fetch from API
       if (!audioBlob) {
-        console.log('[TTS] Not in cache, fetching from API');
         audioBlob = await this.fetchAudioFromAPI(
           item.text,
           item.voiceId || this.config.voiceId
         );
 
         // Cache the audio
-        console.log('[TTS] Caching audio for text:', item.text.substring(0, 100) + (item.text.length > 100 ? '...' : ''));
         this.cacheAudio(cacheKey, item.text, audioBlob);
       } else {
-        console.log('[TTS] Using cached audio');
       }
 
       // Play the audio
-      console.log('[TTS] Calling playAudio');
       await this.playAudio(audioBlob);
 
-      console.log('[TTS] Playback completed, calling onComplete');
       item.onComplete?.();
       this.emit('completed', item);
     } catch (error) {
@@ -207,13 +204,11 @@ class TTSService extends EventEmitter {
     } finally {
       this.isPlaying = false;
       // Process next in queue
-      console.log('[TTS] Processing next in queue');
       await this.processQueue();
     }
   }
 
   private async fetchAudioFromAPI(text: string, voiceId: string): Promise<Blob> {
-    console.log('[TTS] Fetching audio from API:', { text: text.substring(0, 50), voiceId, language: this.config.language });
 
     // Get auth token from localStorage (stored by Zustand persist middleware)
     let token: string | null = null;
@@ -224,14 +219,12 @@ class TTSService extends EventEmitter {
       if (authData) {
         const parsed = JSON.parse(authData);
         token = parsed?.state?.token;
-        console.log('[TTS] Retrieved token from bayit-auth store:', !!token);
       }
 
       // Fallback: check old auth_token key (legacy)
       if (!token) {
         token = localStorage.getItem('auth_token');
         if (token) {
-          console.log('[TTS] Retrieved token from legacy auth_token key');
         }
       }
     } catch (error) {
@@ -245,7 +238,6 @@ class TTSService extends EventEmitter {
 
     try {
       const apiUrl = this.getApiEndpoint();
-      console.log('[TTS] Fetching from API URL:', apiUrl);
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -264,7 +256,6 @@ class TTSService extends EventEmitter {
         }),
       });
 
-      console.log('[TTS] API response status:', response.status, response.statusText);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -273,7 +264,6 @@ class TTSService extends EventEmitter {
       }
 
       const blob = await response.blob();
-      console.log('[TTS] Audio blob received, size:', blob.size, 'type:', blob.type);
 
       if (blob.size === 0) {
         console.error('[TTS] Received empty audio blob from API');
@@ -290,7 +280,6 @@ class TTSService extends EventEmitter {
   private async playAudio(blob: Blob): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        console.log('[TTS] Starting audio playback, blob size:', blob.size);
 
         // Validate blob
         if (!blob || blob.size === 0) {
@@ -311,7 +300,6 @@ class TTSService extends EventEmitter {
         audio.src = objectUrl;
         audio.volume = this.getVolume();
 
-        console.log('[TTS] Audio element created, url:', objectUrl, 'volume:', audio.volume);
 
         // Apply audio ducking if video is playing
         this.applyAudioDucking(audio, true);
@@ -351,19 +339,15 @@ class TTSService extends EventEmitter {
         }, 30000);
 
         audio.oncanplay = () => {
-          console.log('[TTS] Audio ready to play');
         };
 
         audio.onloadedmetadata = () => {
-          console.log('[TTS] Audio metadata loaded, duration:', audio.duration);
         };
 
         audio.onplaying = () => {
-          console.log('[TTS] Audio playback started');
         };
 
         audio.onended = () => {
-          console.log('[TTS] Audio playback completed');
           clearTimeout(timeoutId);
           safeResolve();
         };
@@ -492,11 +476,10 @@ class TTSService extends EventEmitter {
     this.config.voiceId = voiceId;
   }
 
-  setLanguage(language: 'he' | 'en' | 'es'): void {
-    console.log('[TTS] setLanguage() called with:', language);
+  setLanguage(language: VoiceLanguage): void {
     this.config.language = language;
-    // Use configured voice for all languages
-    this.config.voiceId = this.getDefaultVoiceId();
+    // Update voice ID for language-specific optimization
+    this.config.voiceId = this.getLanguageVoiceId(language);
     this.emit('language-changed', language);
   }
 
