@@ -13,7 +13,9 @@ import type { FraudMetrics, PrecisionRecallResponse } from '../types/metrics';
 import type { CohortAnalysisResponse } from '../types/cohort';
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
+  process.env.REACT_APP_API_BASE_URL || (() => {
+    throw new Error('CRITICAL: REACT_APP_API_BASE_URL is not set. Set it in your .env file. No fallback allowed for security.');
+  })();
 
 export class AnalyticsService extends BaseApiService {
   constructor() {

@@ -1,6 +1,6 @@
 /**
  * Settings Service
- * Feature: 004-new-olorin-frontend
+ * Feature: 004-new-fraud-frontend
  *
  * Fetches agents and tools configuration from backend API.
  * SYSTEM MANDATE compliant: No hardcoded values, configuration-driven.
@@ -32,7 +32,9 @@ export class SettingsService extends BaseApiService {
   private readonly settingsEndpoint = '/api/settings';
 
   constructor(baseUrl?: string) {
-    const apiUrl = baseUrl || getRuntimeConfig('REACT_APP_API_BASE_URL', { fallback: 'http://localhost:8090', required: false });
+    const apiUrl = baseUrl || process.env.REACT_APP_API_BASE_URL || (() => {
+      throw new Error('CRITICAL: REACT_APP_API_BASE_URL is not set. Set it in your .env file. No fallback allowed for security.');
+    })();
     super(apiUrl);
   }
 

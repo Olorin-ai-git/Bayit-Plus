@@ -54,6 +54,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+// TEST ONLY - Hardcoded fallback allowed for E2E testing helpers
 var API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
 var InvestigationAPIClient = /** @class */ (function () {
     function InvestigationAPIClient(apiRequest) {

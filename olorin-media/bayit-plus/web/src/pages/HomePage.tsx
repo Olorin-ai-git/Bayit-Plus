@@ -267,16 +267,16 @@ export default function HomePage() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
-      {/* Header Bar - Dual Time Clocks (Dynamic Culture + USA) */}
+      {/* Header Bar - Culture Time Clocks */}
       <View style={[styles.headerBar, isRTL && styles.headerBarRTL]}>
-        {/* Dynamic Culture Clock - changes based on selected culture */}
+        {/* Israeli Clock - Left side */}
         <CultureClock
-          cultureId={currentCulture?.culture_id}
+          cultureId="israeli"
           variant="medium"
           style={styles.clockLeft}
         />
 
-        {/* USA Clock - always fixed */}
+        {/* USA Clock - Right side */}
         <CultureClock
           cultureId="usa"
           variant="medium"
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
   headerBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
     paddingTop: spacing.sm,
     paddingBottom: spacing.xs,
@@ -470,9 +470,11 @@ const styles = StyleSheet.create({
   },
   clockLeft: {
     alignItems: 'flex-start',
+    marginHorizontal: 10,
   },
   clockRight: {
     alignItems: 'flex-end',
+    marginHorizontal: 10,
   },
   refreshButton: {
     flexDirection: 'row',

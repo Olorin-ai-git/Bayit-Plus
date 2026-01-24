@@ -249,7 +249,7 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
 
   private getWsEndpoint(): string {
     if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-      return 'ws://localhost:8001/api/v1/support/voice';
+      return 'ws://localhost:8000/api/v1/support/voice';
     }
     // Use secure WebSocket in production
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';

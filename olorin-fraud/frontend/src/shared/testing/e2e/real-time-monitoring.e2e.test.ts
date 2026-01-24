@@ -45,7 +45,9 @@ interface UISnapshot {
 test.describe('Real-Time Investigation Monitoring E2E', () => {
   let page: Page;
   let logger: TestLogger;
+  // TEST ONLY - Hardcoded fallback allowed for E2E testing
   const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8090';
+  // TEST ONLY - Hardcoded fallback allowed for E2E testing
   const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
   
   test.beforeAll(() => {
@@ -517,8 +519,9 @@ async function verifyEventsList(page: Page, logger: TestLogger): Promise<void> {
  */
 async function verifyEventPagination(page: Page, investigationId: string, logger: TestLogger): Promise<void> {
   logger.info('Verifying event pagination...');
-  
+
   try {
+    // TEST ONLY - Hardcoded fallback allowed for E2E testing
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:8090';
     
     // Fetch first page

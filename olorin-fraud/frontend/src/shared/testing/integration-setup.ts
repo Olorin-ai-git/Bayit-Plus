@@ -9,7 +9,9 @@
 import '@testing-library/jest-dom';
 
 // Mock environment variables for integration tests
+// TEST ONLY - Hardcoded fallback allowed for testing infrastructure
 process.env.REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
+// TEST ONLY - Hardcoded fallback allowed for testing infrastructure
 process.env.REACT_APP_WS_BASE_URL = process.env.REACT_APP_WS_BASE_URL || 'ws://localhost:8090';
 
 // Extended timeout for integration tests (already set in jest.config.js but good to have here too)

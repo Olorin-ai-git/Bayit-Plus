@@ -1,6 +1,6 @@
 /**
  * Investigation Progress Page
- * Features: 004-new-olorin-frontend, 006-hybrid-graph-integration, 007-progress-wizard-page
+ * Features: 004-new-fraud-frontend, 006-hybrid-graph-integration, 007-progress-wizard-page
  * Enhancement: Phase 3 User Story 1 (T019) - Event-driven rehydration with cursor persistence
  */
 
@@ -449,7 +449,9 @@ export const ProgressPage: React.FC = () => {
       const result = await investigationService.generateConfusionMatrix(structuredInvestigationId);
       
       if (result && result.url) {
-        const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
+        const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || (() => {
+          throw new Error('CRITICAL: REACT_APP_API_BASE_URL is not set. Set it in your .env file. No fallback allowed for security.');
+        })();
         const downloadUrl = `${apiBaseUrl}${result.url}`;
         window.open(downloadUrl, '_blank');
         setReportSuccess('Confusion matrix generated and downloaded.');
@@ -473,7 +475,9 @@ export const ProgressPage: React.FC = () => {
 
   // Handler for viewing report
   const handleViewReport = () => {
-    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || (() => {
+      throw new Error('CRITICAL: REACT_APP_API_BASE_URL is not set. Set it in your .env file. No fallback allowed for security.');
+    })();
     const reportUrl = `${apiBaseUrl}/api/v1/reports/investigation/${structuredInvestigationId}/html`;
     window.open(reportUrl, '_blank');
   };

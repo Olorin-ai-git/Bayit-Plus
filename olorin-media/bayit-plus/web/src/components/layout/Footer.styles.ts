@@ -117,7 +117,7 @@ export const footerStyles = StyleSheet.create({
     gap: 8,
   },
   link: {
-    textDecoration: 'none',
+    textDecorationLine: 'none',
   },
   linkText: {
     fontSize: 10,

@@ -244,6 +244,7 @@ export function assertApiFailure<T>(
 export function getTestApiConfig() {
   return {
     env: 'development' as const,
+    // TEST ONLY - Hardcoded fallback allowed for testing utilities
     apiBaseUrl: process.env["TEST_API_BASE_URL"] || 'http://localhost:8090',
     requestTimeoutMs: 5000,
     retryAttempts: 0,

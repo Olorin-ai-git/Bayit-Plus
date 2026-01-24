@@ -18,7 +18,9 @@ import {
   cleanupTestInvestigations,
 } from './helpers/api';
 
+// TEST ONLY - Hardcoded fallback allowed for E2E testing
 const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:3000';
+// TEST ONLY - Hardcoded fallback allowed for E2E testing
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
 
 test.describe('Parallel Investigations Feature - End-to-End', () => {

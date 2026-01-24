@@ -151,6 +151,8 @@ def init_sentry() -> bool:
             send_default_pii=False,
             # Attach stack trace to all messages
             attach_stacktrace=True,
+            # Disable local variables to prevent Python 3.13 FrameLocalsProxy pickle errors
+            with_locals=False,
             # Maximum breadcrumbs to keep
             max_breadcrumbs=50,
             # Enable debug mode in development

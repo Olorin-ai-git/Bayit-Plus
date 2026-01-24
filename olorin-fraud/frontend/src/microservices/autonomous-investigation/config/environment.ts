@@ -10,12 +10,12 @@ const EnvironmentSchema = z.object({
   NODE_ENV: z.enum(['development', 'staging', 'production']).default('development'),
   PORT: z.coerce.number().default(3007),
 
-  // API Configuration
-  API_BASE_URL: z.string().default('http://localhost:8090'),
+  // API Configuration - NO DEFAULTS for security (fail fast if missing)
+  API_BASE_URL: z.string().min(1, 'API_BASE_URL is required'),
   API_TIMEOUT: z.coerce.number().default(30000),
 
-  // WebSocket Configuration
-  WEBSOCKET_URL: z.string().default('ws://localhost:8090/ws'),
+  // WebSocket Configuration - NO DEFAULTS for security (fail fast if missing)
+  WEBSOCKET_URL: z.string().min(1, 'WEBSOCKET_URL is required'),
   WEBSOCKET_RECONNECT_INTERVAL: z.coerce.number().default(5000),
   WEBSOCKET_MAX_RETRIES: z.coerce.number().default(5),
 
@@ -102,12 +102,16 @@ class EnvironmentConfig {
         NODE_ENV: process.env.NODE_ENV || 'development',
         PORT: process.env.PORT || process.env.REACT_APP_PORT || '3007',
 
-        // API Configuration
-        API_BASE_URL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090',
+        // API Configuration - CRITICAL: No fallbacks allowed for security
+        API_BASE_URL: process.env.REACT_APP_API_BASE_URL || (() => {
+          throw new Error('CRITICAL: REACT_APP_API_BASE_URL is not set. Set it in your .env file. No fallback allowed for security.');
+        })(),
         API_TIMEOUT: process.env.REACT_APP_API_TIMEOUT || '30000',
 
-        // WebSocket Configuration
-        WEBSOCKET_URL: process.env.REACT_APP_WEBSOCKET_URL || 'ws://localhost:8090/ws',
+        // WebSocket Configuration - CRITICAL: No fallbacks allowed for security
+        WEBSOCKET_URL: process.env.REACT_APP_WEBSOCKET_URL || (() => {
+          throw new Error('CRITICAL: REACT_APP_WEBSOCKET_URL is not set. Set it in your .env file. No fallback allowed for security.');
+        })(),
         WEBSOCKET_RECONNECT_INTERVAL: process.env.REACT_APP_WEBSOCKET_RECONNECT_INTERVAL || '5000',
         WEBSOCKET_MAX_RETRIES: process.env.REACT_APP_WEBSOCKET_MAX_RETRIES || '5',
 

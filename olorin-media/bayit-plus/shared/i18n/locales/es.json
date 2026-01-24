@@ -3606,5 +3606,41 @@
       "add_transcript_failed": "Error al agregar transcripción",
       "generate_recap_failed": "Error al generar resumen"
     }
+  },
+  "cities": {
+    "jerusalem": {
+      "title": "Jerusalén",
+      "subtitle": "Descubre la ciudad eterna",
+      "loadingContent": "Cargando contenido de Jerusalén...",
+      "noContent": "No hay contenido disponible en este momento",
+      "errorLoading": "Error al cargar contenido de Jerusalén",
+      "sources": "Fuentes",
+      "categories": {
+        "history": "🏛️ Sitios Históricos",
+        "religion": "🕍 Patrimonio Religioso",
+        "culture": "🎭 Eventos Culturales",
+        "events": "📅 Eventos Locales",
+        "food": "🍴 Delicias Culinarias",
+        "markets": "🛍️ Mercados Tradicionales",
+        "arts": "🎨 Arte y Galerías"
+      }
+    },
+    "telAviv": {
+      "title": "Tel Aviv",
+      "subtitle": "Experimenta la ciudad vibrante",
+      "loadingContent": "Cargando contenido de Tel Aviv...",
+      "noContent": "No hay contenido disponible en este momento",
+      "errorLoading": "Error al cargar contenido de Tel Aviv",
+      "sources": "Fuentes",
+      "categories": {
+        "beaches": "🏖️ Playas y Costa",
+        "nightlife": "🌃 Vida Nocturna y Entretenimiento",
+        "culture": "🎭 Eventos Culturales",
+        "music": "🎵 Música y Conciertos",
+        "food": "🍴 Gastronomía",
+        "tech": "💻 Tecnología e Innovación",
+        "events": "📅 Eventos Locales"
+      }
+    }
   }
 }

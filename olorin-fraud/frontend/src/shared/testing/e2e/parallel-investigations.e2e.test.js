@@ -48,7 +48,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 import { test, expect } from '@playwright/test';
 import { InvestigationAPIClient, createTestInvestigations, cleanupTestInvestigations, } from './helpers/api';
+// TEST ONLY - Hardcoded fallback allowed for E2E testing
 var BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:3000';
+// TEST ONLY - Hardcoded fallback allowed for E2E testing
 var API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
 test.describe('Parallel Investigations Feature - End-to-End', function () {
     var testInvestigations = [];

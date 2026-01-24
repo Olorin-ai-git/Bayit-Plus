@@ -268,12 +268,25 @@ export const PreviewHero: React.FC<PreviewHeroProps> = ({
 
         {/* Description */}
         {description && (
-          <Text
-            className={`${isTV ? 'text-lg leading-7' : 'text-[15px] leading-[22px]'} text-white/85 mb-6`}
-            numberOfLines={3}
+          <View
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: borderRadius.md,
+              paddingHorizontal: spacing.md,
+              paddingVertical: spacing.md,
+              borderWidth: 1,
+              borderColor: 'rgba(255, 255, 255, 0.05)',
+              marginBottom: spacing.lg,
+            }}
           >
-            {description}
-          </Text>
+            <Text
+              className={`${isTV ? 'text-lg leading-7' : 'text-[15px] leading-[22px]'} text-white/95`}
+              numberOfLines={3}
+            >
+              {description}
+            </Text>
+          </View>
         )}
 
         {/* Action Buttons */}

@@ -31,7 +31,9 @@ interface WebSocketProviderProps {
 
 export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
   children,
-  url = process.env.REACT_APP_WS_URL || 'ws://localhost:8090/ws',
+  url = process.env.REACT_APP_WS_URL || (() => {
+    throw new Error('CRITICAL: REACT_APP_WS_URL is not set. Set it in your .env file. No fallback allowed for security.');
+  })(),
   autoConnect = true,
   reconnectInterval = 5000,
   maxReconnectAttempts = 10,

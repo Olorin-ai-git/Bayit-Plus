@@ -1,14 +1,18 @@
 export const developmentConfig = {
-  // API Configuration
+  // API Configuration - CRITICAL: No fallbacks allowed for security
   api: {
-    baseUrl: process.env.REACT_APP_API_URL || 'http://localhost:8090',
+    baseUrl: process.env.REACT_APP_API_URL || (() => {
+      throw new Error('CRITICAL: REACT_APP_API_URL is not set. Set it in your .env file. No fallback allowed for security.');
+    })(),
     timeout: 30000,
     retryAttempts: 3,
   },
 
-  // WebSocket Configuration
+  // WebSocket Configuration - CRITICAL: No fallbacks allowed for security
   websocket: {
-    url: process.env.REACT_APP_WS_URL || 'ws://localhost:8090/ws',
+    url: process.env.REACT_APP_WS_URL || (() => {
+      throw new Error('CRITICAL: REACT_APP_WS_URL is not set. Set it in your .env file. No fallback allowed for security.');
+    })(),
     reconnectInterval: 5000,
     maxReconnectAttempts: 10,
   },

@@ -111,7 +111,9 @@ class WebSocketService {
 
   constructor(config: Partial<WebSocketServiceConfig> = {}) {
     this.config = {
-      url: process.env.REACT_APP_WS_URL || 'http://localhost:8090',
+      url: process.env.REACT_APP_WS_URL || (() => {
+        throw new Error('CRITICAL: REACT_APP_WS_URL is not set. Set it in your .env file. No fallback allowed for security.');
+      })(),
       autoConnect: true,
       reconnectAttempts: 5,
       reconnectDelay: 3000,

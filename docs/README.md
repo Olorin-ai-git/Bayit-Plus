@@ -5,8 +5,8 @@
 ## 🏗️ Project Architecture
 
 ### Core Components
-- **[olorin-server](../olorin-server/)** - Python FastAPI backend with AI agents and investigation tools
-- **[olorin-front](../olorin-front/)** - React TypeScript frontend application for investigations
+- **[olorin-fraud/backend](../olorin-fraud/backend/)** - Python FastAPI backend with AI agents and investigation tools
+- **[olorin-fraud/frontend](../olorin-fraud/frontend/)** - React TypeScript frontend application for investigations
 - **[olorin-web-portal](../olorin-web-portal/)** - Marketing website and product information portal
 
 ### Architecture Documentation
@@ -105,8 +105,8 @@
 ## 🚀 Getting Started
 
 ### Quick Setup
-1. **Backend**: `cd olorin-server && poetry install && poetry run uvicorn app.main:app`
-2. **Frontend**: `cd olorin-front && npm install && npm start`  
+1. **Backend**: `cd olorin-fraud/backend && poetry install && poetry run uvicorn app.main:app`
+2. **Frontend**: `cd olorin-fraud/frontend && npm install && npm start`
 3. **Portal**: `cd olorin-web-portal && npm install && npm run dev`
 
 ### Documentation Navigation
@@ -114,6 +114,26 @@
 - **Setting up Development?** Check [Development Guides](development/)
 - **Integrating APIs?** Review [API Documentation](api/)
 - **Deploying to Production?** Follow [Deployment Guides](build-deployment/)
+
+---
+
+## 📑 Documentation Standards & Indexes
+
+### NEW: Documentation Management Standards (2026-01-23)
+
+**Important:** All documentation now follows strict organization standards:
+
+- ✅ **User Request Required** - Documentation only created when explicitly requested
+- ✅ **No Root Directory Docs** - All docs must be in `/docs/[category]/` subfolders
+- ✅ **Mandatory Index Updates** - All new docs must be added to documentation index
+- ✅ **Standard Categories** - 10 standard categories for documentation organization
+
+**📚 Complete Documentation Indexes:**
+- [Comprehensive Documentation Index](DOCUMENTATION_INDEX_COMPREHENSIVE.md) - Complete catalog of all documentation
+- [Documentation Management Summary](DOCUMENTATION_MANAGEMENT_SUMMARY.md) - Implementation details and standards
+- [Bayit+ Documentation Index](../olorin-media/bayit-plus/docs/DOCUMENTATION_INDEX.md) - Bayit+ project documentation
+
+**⚠️ Root Cleanup Required:** 18+ documents currently in root need relocation to proper subfolders. See comprehensive index for details.
 
 ---
 

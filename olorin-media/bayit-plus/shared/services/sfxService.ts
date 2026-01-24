@@ -23,9 +23,9 @@ class SFXService extends EventEmitter {
   private CACHE_EXPIRY_MS = 1000 * 60 * 60 * 24; // 24 hours
 
   private getApiEndpoint(): string {
-    // For development with separate backend (localhost:8001)
+    // For development with separate backend (localhost:8000)
     if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-      return 'http://localhost:8001/api/v1/chat/sound-effect';
+      return 'http://localhost:8000/api/v1/chat/sound-effect';
     }
     // For production, use relative path (handled by reverse proxy)
     return '/api/v1/chat/sound-effect';

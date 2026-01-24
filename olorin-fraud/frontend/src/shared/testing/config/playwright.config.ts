@@ -21,7 +21,7 @@ import { z } from 'zod';
  *
  * Log Fetching:
  * - PLAYWRIGHT_LOG_FETCH_METHOD: 'http', 'shell', or 'both' (default: 'both')
- * - PLAYWRIGHT_LOG_FETCH_CMD: Shell command for logs (optional, e.g., 'docker logs olorin-server | grep {investigationId}')
+ * - PLAYWRIGHT_LOG_FETCH_CMD: Shell command for logs (optional, e.g., 'docker logs backend-container | grep {investigationId}')
  * - PLAYWRIGHT_SKIP_SERVER_LOG_ASSERTIONS: Skip if logs unavailable (default: false)
  *
  * Debugging:
@@ -68,7 +68,9 @@ export type PlaywrightTestConfig = z.infer<typeof PlaywrightTestConfigSchema>;
 export function loadPlaywrightTestConfig(): PlaywrightTestConfig {
   const parsed = PlaywrightTestConfigSchema.safeParse({
     // URLs - provide defaults if not set
+    // TEST ONLY - Hardcoded fallback allowed for testing infrastructure
     baseUrl: process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000',
+    // TEST ONLY - Hardcoded fallback allowed for testing infrastructure
     backendBaseUrl: process.env.PLAYWRIGHT_BACKEND_BASE_URL || 'http://localhost:8090',
 
     // Timeouts

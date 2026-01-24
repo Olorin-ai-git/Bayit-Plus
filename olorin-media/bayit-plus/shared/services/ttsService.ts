@@ -44,9 +44,9 @@ class TTSService extends EventEmitter {
   private API_ENDPOINT: string;
 
   private getApiEndpoint(): string {
-    // For development with separate backend (localhost:8001)
+    // For development with separate backend (localhost:8000)
     if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-      return 'http://localhost:8001/api/v1/chat/text-to-speech';
+      return 'http://localhost:8000/api/v1/chat/text-to-speech';
     }
     // For production, use relative path (handled by reverse proxy)
     return '/api/v1/chat/text-to-speech';

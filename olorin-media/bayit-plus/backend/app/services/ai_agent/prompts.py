@@ -23,67 +23,32 @@ CAPABILITY_PROMPTS: Dict[str, str] = {
 
 Before fixing metadata, posters, or subtitles, you MUST validate content integrity:
 
-### 1. Check Regular Stream URLs:
-- Use `check_stream_url(content_id)` for each non-YouTube item
+### 1. Check Stream URLs:
+- Use `check_stream_url(content_id)` for each content item
 - A broken stream means the video file doesn't exist or is inaccessible
 - DO NOT process items with broken streams for metadata/posters/subtitles
 
-### 2. Validate YouTube Links (IMPORTANT!):
-YouTube videos can become unavailable (removed, private, copyright strikes, etc.)
-- First: Use `get_youtube_content_stats()` to see how many YouTube items exist
-- Then: Use `validate_youtube_links(limit=100)` to check all YouTube video URLs
-- YouTube validation uses oEmbed API (no API key required, unlimited)
-- This will identify: removed videos, private videos, region-locked videos
-- For broken YouTube videos: Use `flag_broken_youtube_videos(content_ids=[...])` to mark for review
-- YouTube content should NOT be auto-deleted (admin review needed to find replacements)
-
-### 3. Verify Database Record Integrity:
+### 2. Verify Database Record Integrity:
 - Content must have a valid `stream_url` field
 - Content must have a valid `content_type` (movie or series)
 - Content must belong to a valid category
 
-### 4. Handle Broken Content:
-**For regular GCS streams:**
+### 3. Handle Broken Content:
 - Count items with broken streams
 - **DELETE broken content** using `delete_broken_content(content_id, reason)`
-- Broken GCS content is useless and should be removed
+- Broken content is useless and should be removed
 
-**For YouTube content:**
-- FLAG for manual review using `flag_broken_youtube_videos(content_ids=[...])`
-- DO NOT auto-delete YouTube content (admins may find replacement videos)
-- Set review_issue_type="broken_youtube" for easy filtering
-
-### 5. Skip Invalid Content:
+### 4. Skip Invalid Content:
 - DO NOT fetch TMDB metadata for content with broken streams
 - DO NOT download subtitles for content with broken streams
 - DO NOT waste API calls on non-existent content
 
-### 6. Fix YouTube Posters (IMPORTANT!):
-YouTube content should have nice poster images from YouTube's thumbnail service:
-- Use `get_youtube_content_stats()` to see how many items are missing posters
-- Use `fix_youtube_posters(limit=100, dry_run=false)` to fix all YouTube thumbnails
-- This fetches high-quality thumbnails (maxresdefault or sddefault) from YouTube
-- Updates thumbnail, backdrop, and poster_url fields automatically
-- No API key required - uses public YouTube thumbnail URLs
-
 **Workflow Example:**
 ```
-Step 1: get_youtube_content_stats()
-        → See total YouTube content count and missing_posters count
+Step 1: Check stream URLs for all content items
+        → Delete broken content
 
-Step 2: validate_youtube_links(limit=100, include_kids=true)
-        → Returns list of broken YouTube videos
-
-Step 3: flag_broken_youtube_videos(content_ids=[broken IDs], dry_run=false)
-        → Flag broken videos for manual review
-
-Step 4: fix_youtube_posters(limit=100, dry_run=false)
-        → Fix all YouTube thumbnails with high-quality images
-
-Step 5: For non-YouTube content: check_stream_url for each item
-        → Delete broken GCS content
-
-Step 6: Proceed with metadata/subtitle fixes for valid content only
+Step 2: Proceed with metadata/subtitle fixes for valid content only
 ```
 """,
     "clean_titles": """
@@ -572,13 +537,6 @@ These will ONLY appear in AI Insights in complete_audit, NOT as fixes_applied!
 - batch_download_subtitles - Batch download subtitles for multiple items
 - flag_for_manual_review - Flag for manual review (NOT for broken streams)
 - delete_broken_content - Delete content with broken/inaccessible streams
-
-**Available Tools - YouTube Link Validation:**
-- get_youtube_content_stats - Get statistics about YouTube content (total count, kids vs non-kids, already flagged, missing posters)
-- validate_youtube_links - Validate YouTube video URLs are still available (checks for removed, private, region-locked videos)
-- flag_broken_youtube_videos - Flag content with broken YouTube videos for manual review (DO NOT delete YouTube content)
-- fix_youtube_posters - Fix missing or low-quality posters for YouTube content (fetches high-quality thumbnails from YouTube)
-- find_youtube_missing_posters - Find YouTube content items that are missing proper thumbnails/posters
 
 **Available Tools - Storage Monitoring:**
 - check_storage_usage - Check storage usage (total size, file count, breakdown by type)

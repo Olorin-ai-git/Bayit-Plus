@@ -31,10 +31,14 @@ export const ManualInvestigationApp: React.FC<ManualInvestigationAppProps> = ({
       setError(null);
       setConnectionStatus('connecting');
 
-      // Create service configuration with browser-safe defaults
+      // Create service configuration - fail fast if config not provided
       const serviceConfig = createServiceConfig({
-        api_base_url: config.apiBaseUrl || 'http://localhost:8090',
-        websocket_url: config.websocketUrl || 'ws://localhost:8090/ws',
+        api_base_url: config.apiBaseUrl || process.env.REACT_APP_API_BASE_URL || (() => {
+          throw new Error('CRITICAL: REACT_APP_API_BASE_URL is not set. Set it in your .env file. No fallback allowed for security.');
+        })(),
+        websocket_url: config.websocketUrl || process.env.REACT_APP_WS_URL || (() => {
+          throw new Error('CRITICAL: REACT_APP_WS_URL is not set. Set it in your .env file. No fallback allowed for security.');
+        })(),
         debug_mode: config.debugMode ?? true,
         enable_real_time: true,
         timeout_ms: 30000,

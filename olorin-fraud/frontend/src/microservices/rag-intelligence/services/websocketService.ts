@@ -23,9 +23,11 @@ export interface WebSocketConfig {
   subscriptions?: string[];
 }
 
-// Default configuration
+// Default configuration - CRITICAL: No fallback allowed for security
 const DEFAULT_CONFIG: Required<WebSocketConfig> = {
-  url: process.env.REACT_APP_RAG_WS_URL || 'ws://localhost:8090/ws/rag',
+  url: process.env.REACT_APP_RAG_WS_URL || (() => {
+    throw new Error('CRITICAL: REACT_APP_RAG_WS_URL is not set. Set it in your .env file. No fallback allowed for security.');
+  })(),
   reconnect: true,
   reconnectInterval: 5000,
   maxReconnectAttempts: 10,

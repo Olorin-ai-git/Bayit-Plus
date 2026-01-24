@@ -74,7 +74,7 @@ export const SupportCategories: React.FC = () => {
 
       // Fetch documentation manifest from API
       const apiUrl = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-        ? 'http://localhost:8001/api/v1/support/docs'
+        ? 'http://localhost:8000/api/v1/support/docs'
         : '/api/v1/support/docs';
 
       const response = await fetch(`${apiUrl}?language=${language}`);

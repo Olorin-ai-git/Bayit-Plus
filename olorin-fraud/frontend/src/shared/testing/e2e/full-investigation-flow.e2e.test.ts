@@ -19,7 +19,9 @@
 
 import { test, expect, Page } from '@playwright/test';
 
+// TEST ONLY - Hardcoded fallback allowed for E2E testing
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8090';
+// TEST ONLY - Hardcoded fallback allowed for E2E testing
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 const TEST_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 const MONITORING_DURATION = 3 * 60 * 1000; // Monitor for 3 minutes max

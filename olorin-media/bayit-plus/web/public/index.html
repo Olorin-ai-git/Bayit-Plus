@@ -509,20 +509,23 @@
           audioPromptText.textContent = promptTexts[currentLang];
         }
 
+        // Backend base URL for static assets
+        var backendBaseUrl = 'http://localhost:8000';
+
         // Map language to video file
         var videoFiles = {
-          'he': '/assets/video/intro/Bayit_Intro_Hebrew.mp4',
-          'en': '/assets/video/intro/Bayit_Intro_English.mp4',
-          'es': '/assets/video/intro/Bayit_Intro_English.mp4' // Use English for Spanish
+          'he': backendBaseUrl + '/assets/video/intro/Bayit_Intro_Hebrew.mp4',
+          'en': backendBaseUrl + '/assets/video/intro/Bayit_Intro_English.mp4',
+          'es': backendBaseUrl + '/assets/video/intro/Bayit_Intro_English.mp4' // Use English for Spanish
         };
 
         var videoPath = videoFiles[currentLang] || videoFiles['en'];
         console.log('Loading splash video for language:', currentLang, '→', videoPath);
-        
+
         // Set volume and unmuted
         video.volume = 1.0;
         video.muted = false;
-        
+
         // Set source
         videoSource.src = videoPath;
         

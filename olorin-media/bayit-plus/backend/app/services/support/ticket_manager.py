@@ -108,9 +108,9 @@ async def get_ticket_stats() -> dict:
     import asyncio
 
     status_results, priority_results, category_results = await asyncio.gather(
-        SupportTicket.aggregate(pipeline_status).to_list(),
-        SupportTicket.aggregate(pipeline_priority).to_list(),
-        SupportTicket.aggregate(pipeline_category).to_list(),
+        SupportTicket.aggregate(pipeline_status).to_list(length=None),
+        SupportTicket.aggregate(pipeline_priority).to_list(length=None),
+        SupportTicket.aggregate(pipeline_category).to_list(length=None),
     )
 
     # Build stats dictionaries from aggregation results

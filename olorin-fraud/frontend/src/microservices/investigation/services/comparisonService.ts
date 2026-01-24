@@ -19,8 +19,10 @@ import type {
 
 class ComparisonService extends BaseApiService {
   constructor() {
-    // Use environment variable or default to backend API URL
-    const apiUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
+    // CRITICAL: No fallback allowed for security - fail fast if not set
+    const apiUrl = process.env.REACT_APP_API_BASE_URL || (() => {
+      throw new Error('CRITICAL: REACT_APP_API_BASE_URL is not set. Set it in your .env file. No fallback allowed for security.');
+    })();
     super(apiUrl);
   }
 
