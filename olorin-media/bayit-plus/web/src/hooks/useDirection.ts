@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import i18n from '@bayit/shared-i18n';
+import { announceToScreenReader, getLanguageName } from '../utils/accessibility';
 
 type Direction = 'rtl' | 'ltr';
 type FlexDirection = 'row';
@@ -41,6 +42,13 @@ export const useDirection = (): DirectionResult => {
       // This keeps the splash screen RTL while allowing the app to switch based on language
       const updateDirection = () => {
         document.documentElement.dir = rtl ? 'rtl' : 'ltr';
+
+        // Announce language change to screen readers (WCAG 4.1.3)
+        const languageName = getLanguageName(lng);
+        announceToScreenReader(
+          `Language changed to ${languageName}`,
+          { delay: 200, assertive: false }
+        );
       };
 
       if ((window as any).splashScreenRemoved) {

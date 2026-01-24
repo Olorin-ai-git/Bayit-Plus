@@ -23,6 +23,7 @@ This project enforces strict code standards documented in individual CLAUDE.md f
 4. **NO File Deletion**: Requires explicit user approval
 5. **NO Fallback/Default Values**: If real data doesn't exist, reject the task—**DO NOT USE FALLBACKS**
 6. **Configuration-Driven Design**: All variable values injected, never literals
+7. **MANDATORY Olorin-Core Shared Packages**: ALL subplatforms MUST use authorized packages from `olorin-core/packages/` (i18n, shared utilities, etc.). **NO custom implementations** of functionality provided by shared packages.
 
 See individual service CLAUDE.md files for language-specific implementation details.
 
@@ -102,6 +103,7 @@ Every implementation MUST comply with:
 - ✅ **No stubs/mocks** - Production code fully functional
 - ✅ **High test coverage** - 87%+ minimum requirement
 - ✅ **All endpoints tested** - Integration and unit coverage
+- ✅ **Mandatory olorin-core packages** - Use shared packages, no custom implementations
 
 ### 🚨 FAILURE CONDITIONS
 
@@ -115,6 +117,9 @@ Implementation FAILS if:
 - ❌ Test coverage below 87%
 - ❌ Server fails to start
 - ❌ Any endpoints non-functional
+- ❌ Custom implementation when authorized olorin-core shared package exists
+- ❌ Outdated shared package versions (must use latest from olorin-core)
+- ❌ Direct library usage bypassing required shared package wrappers
 
 **If ANY failure condition is met, the implementation is REJECTED and must be fixed before acceptance.**
 
@@ -326,6 +331,137 @@ FRONTEND_PORT=3000
 - Frontend: `.tsx` and `.ts` files
 - Backend: Python modules
 - Enforced via linting and builds
+
+## OLORIN-CORE SHARED PACKAGES (MANDATORY)
+
+**CRITICAL: All subplatforms MUST use authorized shared packages from `olorin-core/packages/`. Custom implementations are FORBIDDEN.**
+
+### Package Authority Hierarchy
+
+1. **PRIMARY SOURCE**: `olorin-core/packages/`
+   - Canonical source for all shared packages
+   - Published to private npm registry as `@olorin/[package-name]`
+   - Version-controlled and synchronized across ecosystem
+
+2. **LOCAL MIRRORS** (when needed for platform compatibility):
+   - May exist in subplatform directories for build/bundling requirements
+   - MUST remain in sync with primary source
+   - Used for Metro/Webpack module resolution only
+
+### Mandatory Shared Packages
+
+#### 1. Internationalization (i18n)
+
+**Package**: `@olorin/shared-i18n`
+
+**MANDATORY for**: ALL frontend applications requiring multi-language support
+
+**Forbidden**:
+- ❌ Custom i18n implementations
+- ❌ Direct use of `i18next`/`react-i18next` without shared package
+- ❌ Isolated locale files outside shared package structure
+- ❌ Outdated i18n library versions
+
+**Authorized Usage**:
+```typescript
+// ✅ CORRECT - Using shared package
+import i18n from '@olorin/shared-i18n';
+import { initWebI18n } from '@olorin/shared-i18n/web';     // Web platform
+import { initNativeI18n } from '@olorin/shared-i18n/native'; // React Native
+
+// ❌ FORBIDDEN - Custom implementation
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+// Custom configuration...
+```
+
+**Features**:
+- 10 Languages: Hebrew (RTL), English, Spanish, Chinese, French, Italian, Hindi, Tamil, Bengali, Japanese
+- Platform variants: Web, React Native (iOS/tvOS/Android)
+- LocalStorage/AsyncStorage persistence
+- Language preference management
+- RTL support
+
+**Version Requirements**:
+- `@olorin/shared-i18n`: 2.0.0
+- `i18next`: ^25.8.0 (peer dependency)
+- `react-i18next`: ^16.5.3 (peer dependency)
+
+**Locations**:
+- **Primary**: `olorin-core/packages/shared-i18n/`
+- **Package**: Published as `@olorin/shared-i18n` to private npm
+- **Locales**: `/olorin-core/packages/shared-i18n/locales/` (10 languages)
+
+**Platform-Specific Usage**:
+
+| Platform | Import | Configuration |
+|----------|--------|---------------|
+| **Web (React)** | `import i18n from '@olorin/shared-i18n'` | Use `initWebI18n()` from `/web` export |
+| **Mobile (iOS/Android)** | `import i18n from '@olorin/shared-i18n'` | Use `initNativeI18n()` from `/native` export |
+| **tvOS** | `import i18n from '@olorin/shared-i18n'` | Use `initNativeI18n()` from `/native` export |
+| **Partner Portal (B2B)** | `import i18n from '@olorin/shared-i18n'` | Use `initWebI18n()` + custom B2B config |
+
+**Metro Config Resolution** (React Native):
+```javascript
+// mobile-app/metro.config.js or tv-app/metro.config.js
+modules['@olorin/shared-i18n'] = path.resolve(packagesRoot, 'shared-i18n/src');
+```
+
+#### 2. Additional Shared Packages (To Be Documented)
+
+**Future shared packages from olorin-core**:
+- Shared UI components
+- Shared utilities
+- Shared types/interfaces
+- Shared API clients
+- Shared authentication
+
+### Compliance Requirements
+
+**Before implementing ANY feature involving shared functionality:**
+
+1. ✅ **Check olorin-core/packages/** for existing shared package
+2. ✅ **Use shared package if available** - NO custom implementations
+3. ✅ **Follow version requirements** - Keep dependencies synchronized
+4. ✅ **Use platform-specific exports** - Web vs Native variants
+5. ✅ **Import from published package** - Use `@olorin/[package-name]`
+
+### Migration Requirements
+
+**Existing custom implementations MUST be migrated to shared packages:**
+
+**Current Non-Compliance** (identified in i18n audit):
+- **olorin-cv** (CVPlus): Custom i18n implementation → Migrate to `@olorin/shared-i18n`
+- **olorin-portals** (Portal-Omen, Portal-Fraud, Portal-Main): Custom i18n → Migrate to `@olorin/shared-i18n`
+
+**Migration Priority**:
+1. **High**: Portals (inconsistent versions, limited languages)
+2. **Medium**: CVPlus (missing 8 languages, isolated implementation)
+
+### Package Verification Checklist
+
+**Before declaring ANY task complete:**
+```
+□ Verified no custom implementations of shared package functionality
+□ Confirmed using latest version of @olorin/shared-i18n (2.0.0)
+□ Verified i18next version: ^25.8.0
+□ Verified react-i18next version: ^16.5.3
+□ Checked platform-specific export usage (web vs native)
+□ Confirmed no duplicate locale files outside shared package
+□ All imports use @olorin/[package-name] (not local paths)
+```
+
+### Enforcement
+
+**FAILURE CONDITIONS** (added to existing failure conditions):
+- ❌ Custom i18n implementation when `@olorin/shared-i18n` available
+- ❌ Outdated i18n library versions (must use ^25.8.0 / ^16.5.3)
+- ❌ Duplicate locale files outside shared package structure
+- ❌ Direct use of i18next/react-i18next without shared package wrapper
+
+**Implementation FAILS if ANY shared package requirement is violated.**
+
+---
 
 ## Common Workflows
 
@@ -669,5 +805,11 @@ This project follows the **Global CLAUDE.md Quality Gates & Multi-Agent Signoff*
 ---
 
 ## Recent Changes
+- **2026-01-24**: Added MANDATORY Olorin-Core Shared Packages requirement
+  - Prohibition #7: All subplatforms MUST use `@olorin/shared-i18n` and other olorin-core packages
+  - New section: "OLORIN-CORE SHARED PACKAGES (MANDATORY)" with full specifications
+  - Documented i18n package requirements: version 2.0.0, 10 languages, platform-specific exports
+  - Added package verification checklist and enforcement rules
+  - Identified non-compliant implementations requiring migration (CVPlus, Portals)
 - 026-realtime-flow-dashboard: Added real-time daily/monthly flow progression panels on Running Investigations and a read-only investigation-state flow progression API endpoint.
 - **2026-01-21**: Added mandatory multi-agent plan review requirements (13 agents total including UI/UX Designer)

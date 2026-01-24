@@ -29,7 +29,7 @@ export interface LLMSearchResponse {
 }
 
 // Voice Preferences Types
-export type VoiceLanguage = 'he' | 'en' | 'es';
+export type VoiceLanguage = 'he' | 'en' | 'es' | 'zh' | 'fr' | 'it' | 'hi' | 'ta' | 'bn' | 'ja';
 export type TextSize = 'small' | 'medium' | 'large';
 export type VADSensitivity = 'low' | 'medium' | 'high';
 

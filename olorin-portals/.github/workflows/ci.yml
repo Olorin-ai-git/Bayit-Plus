@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        portal: [portal-main, portal-fraud, portal-streaming, portal-station]
+        portal: [portal-main, portal-fraud, portal-streaming, portal-radio, portal-omen, portal-station, portal-cvplus]
 
     steps:
       - name: Checkout code
@@ -54,7 +54,7 @@ jobs:
 
     strategy:
       matrix:
-        portal: [portal-main, portal-fraud, portal-streaming, portal-station]
+        portal: [portal-main, portal-fraud, portal-streaming, portal-radio, portal-omen, portal-station, portal-cvplus]
 
     steps:
       - name: Checkout code
@@ -105,7 +105,7 @@ jobs:
 
     strategy:
       matrix:
-        portal: [portal-main, portal-fraud, portal-streaming, portal-station]
+        portal: [portal-main, portal-fraud, portal-streaming, portal-radio, portal-omen, portal-station, portal-cvplus]
 
     steps:
       - name: Checkout code
@@ -183,7 +183,7 @@ jobs:
 
     strategy:
       matrix:
-        portal: [portal-main, portal-fraud, portal-streaming, portal-station]
+        portal: [portal-main, portal-fraud, portal-streaming, portal-radio, portal-omen, portal-station, portal-cvplus]
 
     steps:
       - name: Checkout code
@@ -253,7 +253,7 @@ jobs:
 
     strategy:
       matrix:
-        portal: [portal-main, portal-fraud, portal-streaming, portal-station]
+        portal: [portal-main, portal-fraud, portal-streaming, portal-radio, portal-omen, portal-station, portal-cvplus]
 
     steps:
       - name: Checkout code

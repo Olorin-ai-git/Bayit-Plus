@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        portal: [portal-main, portal-fraud, portal-streaming, portal-radio]
+        portal: [portal-main, portal-fraud, portal-streaming, portal-radio, portal-omen, portal-station, portal-cvplus]
 
     steps:
       - name: Checkout code
@@ -74,3 +74,33 @@ jobs:
           channelId: live
           projectId: olorin-radio
           target: olorin-radio
+
+      - name: Deploy to Firebase - Omen Portal
+        if: matrix.portal == 'portal-omen'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          channelId: live
+          projectId: olorin-omen
+          target: olorin-omen
+
+      - name: Deploy to Firebase - Station Portal
+        if: matrix.portal == 'portal-station'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          channelId: live
+          projectId: olorin-station
+          target: olorin-station
+
+      - name: Deploy to Firebase - CVPlus Portal
+        if: matrix.portal == 'portal-cvplus'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          channelId: live
+          projectId: olorin-cvplus
+          target: olorin-cvplus

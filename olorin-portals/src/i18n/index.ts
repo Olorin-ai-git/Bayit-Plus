@@ -36,7 +36,7 @@ i18n
     debug: false,
     
     interpolation: {
-      escapeValue: false,
+      escapeValue: true, // XSS protection enabled - CRITICAL SECURITY FIX
     },
     
     detection: {
