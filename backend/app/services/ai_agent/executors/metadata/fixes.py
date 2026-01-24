@@ -60,14 +60,14 @@ async def execute_fix_missing_poster(
 
 
 async def execute_fix_missing_metadata(
-    content_id: str, reason: str = None, *, audit_id: str, dry_run: bool = False
+    content_id: str, reason: str, *, audit_id: str, dry_run: bool = False
 ) -> Dict[str, Any]:
     """
     Fix missing metadata fields for content.
 
     Args:
         content_id: The content ID to fix
-        reason: Brief explanation of what metadata is missing
+        reason: Brief explanation of what metadata is missing (required)
         audit_id: The audit ID for logging (keyword-only)
         dry_run: If True, only simulate the operation (keyword-only)
 

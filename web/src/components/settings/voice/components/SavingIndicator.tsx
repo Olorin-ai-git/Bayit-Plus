@@ -3,7 +3,7 @@
  * Shows when settings are being saved
  */
 
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 interface SavingIndicatorProps {
@@ -16,9 +16,23 @@ export function SavingIndicator({ visible }: SavingIndicatorProps) {
   if (!visible) return null;
 
   return (
-    <View className="flex-row items-center justify-center gap-2 p-4">
+    <View style={styles.container}>
       <ActivityIndicator size="small" color="#A855F7" />
-      <Text className="text-sm text-gray-500">{t('common.saving', 'Saving...')}</Text>
+      <Text style={styles.text}>{t('common.saving', 'Saving...')}</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    padding: 16,
+  },
+  text: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+});

@@ -8,9 +8,10 @@ import {
   Animated,
   Platform,
   I18nManager,
+  StyleSheet,
 } from 'react-native';
 import { GlassView } from './GlassView';
-import { colors, borderRadius, spacing } from '../theme';
+import { colors, borderRadius, spacing, fontSize } from '../theme';
 import { isTV } from '../utils/platform';
 import { useTVFocus } from '../hooks/useTVFocus';
 
@@ -71,8 +72,12 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
   const flexDirection = isRTL ? 'row-reverse' : 'row';
 
   return (
-    <View className="w-full">
-      {label && <Text className="text-sm font-medium mb-2" style={{ color: colors.textSecondary, textAlign }}>{label}</Text>}
+    <View style={styles.container}>
+      {label && (
+        <Text style={[styles.labelText, { color: colors.textSecondary, textAlign }]}>
+          {label}
+        </Text>
+      )}
 
       <TouchableOpacity
         onPress={() => !disabled && setIsOpen(true)}
@@ -85,8 +90,11 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
       >
         <Animated.View style={scaleTransform}>
           <GlassView
-            className={`flex-row items-center justify-between px-4 py-4 min-h-[48px] ${disabled ? 'opacity-50' : ''}`}
-            style={{ flexDirection }}
+            style={[
+              styles.selectButton,
+              { flexDirection },
+              disabled && styles.disabled
+            ]}
             intensity="medium"
             borderColor={
               error
@@ -97,17 +105,29 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
             }
           >
             <Text
-              className={`text-base flex-1 ${!selectedOption ? 'text-gray-500' : ''}`}
-              style={{ textAlign, color: selectedOption ? colors.text : colors.textMuted }}
+              style={[
+                styles.selectedText,
+                { textAlign, color: selectedOption ? colors.text : colors.textMuted }
+              ]}
             >
               {selectedOption?.label || placeholder}
             </Text>
-            <Text className="text-xs" style={[{ color: colors.textSecondary }, isRTL ? { marginRight: spacing.sm, marginLeft: 0 } : { marginLeft: spacing.sm }]}>▼</Text>
+            <Text style={[
+              styles.chevron,
+              { color: colors.textSecondary },
+              isRTL ? { marginRight: spacing.sm, marginLeft: 0 } : { marginLeft: spacing.sm }
+            ]}>
+              ▼
+            </Text>
           </GlassView>
         </Animated.View>
       </TouchableOpacity>
 
-      {error && <Text className="text-xs mt-1" style={{ color: colors.error, textAlign }}>{error}</Text>}
+      {error && (
+        <Text style={[styles.errorText, { color: colors.error, textAlign }]}>
+          {error}
+        </Text>
+      )}
 
       <Modal
         visible={isOpen}
@@ -116,12 +136,11 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
         onRequestClose={() => setIsOpen(false)}
       >
         <TouchableOpacity
-          className="flex-1 justify-center items-center p-8"
-          style={{ backgroundColor: colors.overlay }}
+          style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}
           activeOpacity={1}
           onPress={() => setIsOpen(false)}
         >
-          <GlassView className="w-4/5 max-w-[400px] max-h-[60%] p-2" intensity="high">
+          <GlassView style={styles.modalContent} intensity="high">
             <FlatList
               data={options}
               keyExtractor={(item) => item.value}
@@ -129,22 +148,35 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
                 <TouchableOpacity
                   onPress={() => handleSelect(item)}
                   disabled={item.disabled}
-                  className={`flex-row items-center justify-between px-4 py-4 rounded-lg ${item.value === value ? 'bg-purple-900/30' : ''} ${item.disabled ? 'opacity-50' : ''}`}
-                  style={{ flexDirection }}
+                  style={[
+                    styles.optionItem,
+                    { flexDirection },
+                    item.value === value && styles.selectedOption,
+                    item.disabled && styles.disabled
+                  ]}
                   // @ts-ignore - TV focus
                   hasTVPreferredFocus={index === 0}
                 >
                   <Text
-                    className={`text-base flex-1 ${item.value === value ? 'font-semibold' : ''}`}
-                    style={{
-                      textAlign,
-                      color: item.value === value ? colors.primary : item.disabled ? colors.textMuted : colors.text
-                    }}
+                    style={[
+                      styles.optionText,
+                      item.value === value && styles.selectedOptionText,
+                      {
+                        textAlign,
+                        color: item.value === value ? colors.primary : item.disabled ? colors.textMuted : colors.text
+                      }
+                    ]}
                   >
                     {item.label}
                   </Text>
                   {item.value === value && (
-                    <Text className="text-base" style={[{ color: colors.primary }, isRTL ? { marginRight: spacing.sm, marginLeft: 0 } : { marginLeft: spacing.sm }]}>✓</Text>
+                    <Text style={[
+                      styles.checkmark,
+                      { color: colors.primary },
+                      isRTL ? { marginRight: spacing.sm, marginLeft: 0 } : { marginLeft: spacing.sm }
+                    ]}>
+                      ✓
+                    </Text>
                   )}
                 </TouchableOpacity>
               )}
@@ -155,5 +187,85 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
     </View>
   );
 };
+
+// Styles using StyleSheet.create() - React Native Web compatible
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+  },
+
+  labelText: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: spacing.sm,
+  },
+
+  selectButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    minHeight: 48,
+  },
+
+  selectedText: {
+    fontSize: 16,
+    flex: 1,
+  },
+
+  chevron: {
+    fontSize: 12,
+  },
+
+  errorText: {
+    fontSize: 12,
+    marginTop: spacing.xs,
+  },
+
+  disabled: {
+    opacity: 0.5,
+  },
+
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+  },
+
+  modalContent: {
+    width: '80%',
+    maxWidth: 400,
+    maxHeight: '60%',
+    padding: spacing.sm,
+  },
+
+  optionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.lg,
+  },
+
+  selectedOption: {
+    backgroundColor: 'rgba(88, 28, 135, 0.3)', // purple-900/30
+  },
+
+  optionText: {
+    fontSize: 16,
+    flex: 1,
+  },
+
+  selectedOptionText: {
+    fontWeight: '600',
+  },
+
+  checkmark: {
+    fontSize: 16,
+  },
+});
 
 export default GlassSelect;

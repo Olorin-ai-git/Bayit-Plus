@@ -1,17 +1,18 @@
 import i18n from 'i18next';
+import { useAuthStore } from '@/stores/authStore';
 
 // API configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
 const getAuthHeaders = (): HeadersInit => {
-  const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}');
+  const token = useAuthStore.getState().token;
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     'Accept-Language': i18n.language || 'en',
   };
 
-  if (authData?.state?.token) {
-    headers['Authorization'] = `Bearer ${authData.state.token}`;
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
   }
 
   return headers;

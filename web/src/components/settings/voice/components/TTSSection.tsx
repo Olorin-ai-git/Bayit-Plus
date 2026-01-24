@@ -33,10 +33,10 @@ export function TTSSection({
   const { t } = useTranslation();
 
   return (
-    <GlassView className="p-6 gap-4">
-      <View className="flex-row items-center gap-2 mb-1" style={isRTL && styles.rtlRow}>
+    <GlassView style={styles.container}>
+      <View style={[styles.header, isRTL && styles.rtlRow]}>
         <Volume size={16} color="#A855F7" />
-        <Text className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-0">
+        <Text style={styles.sectionTitle}>
           {t('profile.voice.textToSpeech', 'Voice Responses')}
         </Text>
       </View>
@@ -69,7 +69,25 @@ export function TTSSection({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    padding: 24,
+    gap: 16,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
   rtlRow: {
     flexDirection: 'row-reverse',
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#9CA3AF',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    marginBottom: 0,
   },
 });

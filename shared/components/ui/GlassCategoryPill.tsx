@@ -6,6 +6,7 @@ import {
   ViewStyle,
   StyleProp,
   View,
+  StyleSheet,
 } from 'react-native';
 
 // Check if this is a TV build (set by webpack)
@@ -61,6 +62,19 @@ export const GlassCategoryPill: React.FC<GlassCategoryPillProps> = ({
   const currentSize = sizeStyles[size];
   const showHighlight = isActive || isHovered || isFocused;
 
+  const pillStyles = [
+    styles.pill,
+    isActive && styles.pillActive,
+    isHovered && !isActive && styles.pillHovered,
+    isFocused && styles.pillFocused,
+    disabled && styles.pillDisabled,
+    {
+      paddingHorizontal: currentSize.px * 4,
+      paddingVertical: currentSize.py * 4,
+    },
+    style,
+  ];
+
   return (
     <Pressable
       onPress={disabled ? undefined : onPress}
@@ -70,19 +84,7 @@ export const GlassCategoryPill: React.FC<GlassCategoryPillProps> = ({
       onBlur={() => setIsFocused(false)}
       // @ts-ignore - TV-specific prop
       hasTVPreferredFocus={hasTVPreferredFocus}
-      className={`flex-row items-center justify-center rounded-2xl border border-white/10 bg-black/20 backdrop-blur-lg
-        ${isActive ? 'bg-purple-600 border-purple-600' : ''}
-        ${isHovered && !isActive ? 'bg-purple-600/30 border-purple-500/50' : ''}
-        ${isFocused ? 'border-purple-600 border-[3px]' : ''}
-        ${disabled ? 'opacity-50' : ''}
-        ${Platform.OS === 'web' ? 'transition-all duration-200' : ''}`}
-      style={[
-        {
-          paddingHorizontal: currentSize.px * 4,
-          paddingVertical: currentSize.py * 4,
-        },
-        style,
-      ]}
+      style={pillStyles}
     >
       {/* Icon or Emoji */}
       {(icon || emoji) && (
@@ -95,11 +97,13 @@ export const GlassCategoryPill: React.FC<GlassCategoryPillProps> = ({
 
       {/* Label */}
       <Text
-        className={`font-medium text-center
-          ${isActive ? 'text-black font-semibold' : 'text-gray-400'}
-          ${(isHovered || isFocused) && !isActive ? 'text-purple-500' : ''}
-          ${disabled ? 'text-gray-600' : ''}`}
-        style={{ fontSize: currentSize.fontSize }}
+        style={[
+          styles.label,
+          { fontSize: currentSize.fontSize },
+          isActive ? styles.labelActive : styles.labelInactive,
+          (isHovered || isFocused) && !isActive && styles.labelHighlighted,
+          disabled && styles.labelDisabled,
+        ]}
         numberOfLines={1}
       >
         {label}
@@ -107,5 +111,56 @@ export const GlassCategoryPill: React.FC<GlassCategoryPillProps> = ({
     </Pressable>
   );
 };
+
+// Styles using StyleSheet.create() - React Native Web compatible
+const styles = StyleSheet.create({
+  pill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    // @ts-ignore - Web CSS
+    backdropFilter: 'blur(16px)',
+    WebkitBackdropFilter: 'blur(16px)',
+    // @ts-ignore - Web CSS transition
+    transition: 'all 0.2s ease',
+  },
+  pillActive: {
+    backgroundColor: 'rgb(147, 51, 234)', // purple-600
+    borderColor: 'rgb(147, 51, 234)',
+  },
+  pillHovered: {
+    backgroundColor: 'rgba(147, 51, 234, 0.3)', // purple-600/30
+    borderColor: 'rgba(126, 34, 206, 0.5)', // purple-500/50
+  },
+  pillFocused: {
+    borderColor: 'rgb(147, 51, 234)', // purple-600
+    borderWidth: 3,
+  },
+  pillDisabled: {
+    opacity: 0.5,
+  },
+
+  label: {
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  labelActive: {
+    color: '#000000',
+    fontWeight: '600',
+  },
+  labelInactive: {
+    color: 'rgb(156, 163, 175)', // gray-400
+  },
+  labelHighlighted: {
+    color: 'rgb(168, 85, 247)', // purple-500
+  },
+  labelDisabled: {
+    color: 'rgb(75, 85, 99)', // gray-600
+  },
+});
 
 export default GlassCategoryPill;

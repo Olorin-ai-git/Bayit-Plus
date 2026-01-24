@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 async def execute_clean_title(
-    content_id: str, cleaned_title: str, cleaned_title_en: str = None, reason: str = None, *, audit_id: str, dry_run: bool = False
+    content_id: str, cleaned_title: str, reason: str, cleaned_title_en: str = None, *, audit_id: str, dry_run: bool = False
 ) -> Dict[str, Any]:
     """
     Clean/fix content title.
@@ -25,8 +25,8 @@ async def execute_clean_title(
     Args:
         content_id: The content ID to update
         cleaned_title: The cleaned/new title
+        reason: Brief explanation of what was cleaned (required)
         cleaned_title_en: Optional English title
-        reason: Brief explanation of what was cleaned
         audit_id: The audit ID for logging (keyword-only)
         dry_run: If True, only simulate the operation (keyword-only)
 

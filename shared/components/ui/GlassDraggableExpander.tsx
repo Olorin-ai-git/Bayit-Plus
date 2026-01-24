@@ -1,6 +1,13 @@
+/**
+ * GlassDraggableExpander - Expandable panel with drag-to-resize functionality
+ * Complex animations for expansion/collapse with height adjustment
+ * Preserves RTL support and accessibility
+ */
+
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Pressable, Animated, PanResponder, Easing, ScrollView } from 'react-native';
-import { ChevronDown, ChevronUp, GripVertical } from 'lucide-react';
+import { View, Text, Pressable, Animated, PanResponder, Easing, ScrollView, ViewStyle, TextStyle } from 'react-native';
+import { ChevronDown, GripVertical } from 'lucide-react';
+import { colors, borderRadius, spacing } from '../../theme';
 
 interface GlassDraggableExpanderProps {
   title: string;
@@ -39,7 +46,7 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [contentHeight, setContentHeight] = useState(minHeight);
-  
+
   // Animation values
   const heightAnim = useRef(new Animated.Value(defaultExpanded ? minHeight : 0)).current;
   const opacityAnim = useRef(new Animated.Value(defaultExpanded ? 1 : 0)).current;
@@ -92,7 +99,7 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
       onMoveShouldSetPanResponder: () => draggable && isExpanded,
       onPanResponderMove: (_, gestureState) => {
         if (!draggable || !isExpanded) return;
-        
+
         const newHeight = Math.max(
           minHeight,
           Math.min(maxHeight, contentHeight + gestureState.dy)
@@ -130,18 +137,21 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
   });
 
   return (
-    <View className="bg-black/20 rounded-lg border border-white/10 overflow-hidden backdrop-blur-xl" style={style}>
+    <View style={[styles.container, style]}>
       {/* Header - Entire header is clickable to toggle */}
-      <Pressable className="flex-row items-center justify-between p-3 border-b border-white/[0.08] cursor-pointer" onPress={toggleExpanded}>
-        <View className="flex-row items-center flex-1 gap-2" pointerEvents="box-none">
-          {icon && <View className="mr-1" pointerEvents="none">{icon}</View>}
-          <View className="flex-1" pointerEvents="none">
-            <Text className="text-lg font-semibold text-white">{title}</Text>
-            {subtitle && <Text className="text-sm text-gray-400 mt-0.5">{subtitle}</Text>}
+      <Pressable
+        style={styles.header}
+        onPress={toggleExpanded}
+      >
+        <View style={styles.headerContent} pointerEvents="box-none">
+          {icon && <View style={styles.iconWrapper} pointerEvents="none">{icon}</View>}
+          <View style={styles.titleContainer} pointerEvents="none">
+            <Text style={styles.title}>{title}</Text>
+            {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
           </View>
-          {badge && <View className="ml-2" pointerEvents="none">{badge}</View>}
+          {badge && <View style={styles.badgeWrapper} pointerEvents="none">{badge}</View>}
         </View>
-        <View className="flex-row items-center gap-2 ml-2">
+        <View style={styles.headerActions}>
           {/* Header Actions (e.g., buttons) - stops propagation */}
           {headerActions && (
             <Pressable
@@ -166,28 +176,30 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
           <Animated.View
             style={{ transform: [{ rotate: chevronRotate }] }}
           >
-            <ChevronDown size={20} color="#a855f7" />
+            <ChevronDown size={20} color={colors.primary} />
           </Animated.View>
         </View>
       </Pressable>
 
       {/* Expandable Content - Always rendered but animated */}
       <Animated.View
-        className="overflow-hidden relative"
-        style={{
-          height: heightAnim,
-          opacity: opacityAnim,
-        }}
+        style={[
+          styles.contentWrapper,
+          {
+            height: heightAnim,
+            opacity: opacityAnim,
+          }
+        ]}
         pointerEvents={isExpanded ? 'auto' : 'none'}
       >
         <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ padding: 12, flexGrow: 1 }}
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollViewContent}
           showsVerticalScrollIndicator={false}
         >
           {isEmpty && emptyMessage ? (
-            <View className="py-6 items-center justify-center">
-              <Text className="text-sm text-gray-400 text-center">{emptyMessage}</Text>
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyMessage}>{emptyMessage}</Text>
             </View>
           ) : (
             children
@@ -197,15 +209,135 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
         {/* Draggable Handle */}
         {draggable && isExpanded && (
           <View
-            className="absolute bottom-0 left-0 right-0 h-8 justify-center items-center bg-white/5 border-t border-white/[0.08] cursor-ns-resize"
+            style={styles.dragHandle}
             {...panResponder.panHandlers}
           >
-            <GripVertical size={20} color="#9ca3af" />
+            <GripVertical size={20} color={colors.textSecondary} />
           </View>
         )}
       </Animated.View>
     </View>
   );
+};
+
+// Styles using StyleSheet-compatible object - React Native Web compatible
+const styles = {
+  // Container
+  container: {
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.glassBorderWhite,
+    overflow: 'hidden' as const,
+    // @ts-ignore - Web-specific property
+    backdropFilter: 'blur(20px)',
+    // @ts-ignore - Web-specific property
+    WebkitBackdropFilter: 'blur(20px)',
+  } as ViewStyle,
+
+  // Header
+  header: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+    // @ts-ignore - Web-specific property
+    cursor: 'pointer',
+  } as ViewStyle,
+
+  // Header content
+  headerContent: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    flex: 1,
+    gap: spacing.sm,
+  } as ViewStyle,
+
+  // Icon wrapper
+  iconWrapper: {
+    marginRight: spacing.xs,
+  } as ViewStyle,
+
+  // Title container
+  titleContainer: {
+    flex: 1,
+  } as ViewStyle,
+
+  // Title text
+  title: {
+    fontSize: 18,
+    fontWeight: '600' as const,
+    color: colors.text,
+  } as TextStyle,
+
+  // Subtitle text
+  subtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginTop: 2,
+  } as TextStyle,
+
+  // Badge wrapper
+  badgeWrapper: {
+    marginLeft: spacing.sm,
+  } as ViewStyle,
+
+  // Header actions
+  headerActions: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: spacing.sm,
+    marginLeft: spacing.sm,
+  } as ViewStyle,
+
+  // Content wrapper
+  contentWrapper: {
+    overflow: 'hidden' as const,
+    position: 'relative' as const,
+  } as ViewStyle,
+
+  // ScrollView
+  scrollView: {
+    flex: 1,
+  } as ViewStyle,
+
+  // ScrollView content
+  scrollViewContent: {
+    padding: spacing.md,
+    flexGrow: 1,
+  } as ViewStyle,
+
+  // Empty container
+  emptyContainer: {
+    paddingVertical: spacing.lg,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  } as ViewStyle,
+
+  // Empty message
+  emptyMessage: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    textAlign: 'center' as const,
+  } as TextStyle,
+
+  // Drag handle
+  dragHandle: {
+    position: 'absolute' as const,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 32,
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    // @ts-ignore - Web-specific property
+    cursor: 'ns-resize',
+  } as ViewStyle,
 };
 
 export default GlassDraggableExpander;

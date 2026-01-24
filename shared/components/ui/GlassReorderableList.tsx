@@ -9,6 +9,7 @@ import {
   View,
   Platform,
   LayoutChangeEvent,
+  StyleSheet,
 } from 'react-native';
 import { colors, spacing } from '../theme';
 
@@ -156,7 +157,7 @@ export function GlassReorderableList<T>({
   }, [dragState.isDragging, handleDragMove, handleDragEnd]);
 
   return (
-    <View ref={containerRef} className="gap-2" style={style}>
+    <View ref={containerRef} style={[styles.container, style]}>
       {items.map((item, index) => {
         const key = keyExtractor(item);
         const isDragging = dragState.isDragging && dragState.dragIndex === index;
@@ -184,8 +185,7 @@ export function GlassReorderableList<T>({
         return (
           <View
             key={key}
-            className="relative"
-            style={itemStyle}
+            style={[styles.item, itemStyle]}
             onLayout={(e) => handleItemLayout(key, e)}
             {...webDragProps}
           >
@@ -196,5 +196,15 @@ export function GlassReorderableList<T>({
     </View>
   );
 }
+
+// Styles using StyleSheet.create() - React Native Web compatible
+const styles = StyleSheet.create({
+  container: {
+    gap: spacing.sm,
+  },
+  item: {
+    position: 'relative',
+  },
+});
 
 export default GlassReorderableList;

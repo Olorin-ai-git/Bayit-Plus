@@ -42,19 +42,19 @@ export function VoiceModeSection({ selectedMode, isRTL, onModeChange }: VoiceMod
   const { t } = useTranslation();
 
   return (
-    <GlassView className="p-6 gap-4">
-      <View className={`flex-row items-center gap-2 mb-1`} style={isRTL && styles.rowReverse}>
+    <GlassView style={styles.container}>
+      <View style={[styles.header, isRTL && styles.rowReverse]}>
         <RadioIcon size={16} color="#A855F7" />
-        <Text className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-0">
+        <Text style={styles.sectionTitle}>
           {t('profile.voice.operationMode', 'Voice Operation Mode')}
         </Text>
       </View>
 
-      <Text className="text-[13px] text-gray-400 mb-4" style={isRTL && styles.textRight}>
+      <Text style={[styles.description, isRTL && styles.textRight]}>
         {t('profile.voice.operationModeDesc', 'Choose how you interact with the app')}
       </Text>
 
-      <View className="gap-4">
+      <View style={styles.modesContainer}>
         {VOICE_MODES.map((modeOption) => (
           <VoiceModeCard
             key={modeOption.value}
@@ -67,33 +67,33 @@ export function VoiceModeSection({ selectedMode, isRTL, onModeChange }: VoiceMod
         ))}
       </View>
 
-      <View className="pt-4 border-t border-white/5 mt-4" style={isRTL && styles.rowReverse}>
+      <View style={styles.infoContainer}>
         {selectedMode === VoiceMode.VOICE_ONLY && (
           <>
-            <Text className="text-[13px] font-semibold text-purple-500 mb-1" style={isRTL && styles.textRight}>
+            <Text style={[styles.infoTitle, isRTL && styles.textRight]}>
               {t('profile.voice.voiceOnlyInfo', 'Voice Only Mode')}
             </Text>
-            <Text className="text-xs text-gray-400 leading-4" style={isRTL && styles.textRight}>
+            <Text style={[styles.infoText, isRTL && styles.textRight]}>
               {t('profile.voice.voiceOnlyDetails', 'Say "Hey Bayit" to activate. Remote control disabled. Navigate entirely with voice commands.')}
             </Text>
           </>
         )}
         {selectedMode === VoiceMode.HYBRID && (
           <>
-            <Text className="text-[13px] font-semibold text-purple-500 mb-1" style={isRTL && styles.textRight}>
+            <Text style={[styles.infoTitle, isRTL && styles.textRight]}>
               {t('profile.voice.hybridInfo', 'Hybrid Mode')}
             </Text>
-            <Text className="text-xs text-gray-400 leading-4" style={isRTL && styles.textRight}>
+            <Text style={[styles.infoText, isRTL && styles.textRight]}>
               {t('profile.voice.hybridDetails', 'Use both voice and remote control. Get voice feedback on your button presses and interactions.')}
             </Text>
           </>
         )}
         {selectedMode === VoiceMode.CLASSIC && (
           <>
-            <Text className="text-[13px] font-semibold text-purple-500 mb-1" style={isRTL && styles.textRight}>
+            <Text style={[styles.infoTitle, isRTL && styles.textRight]}>
               {t('profile.voice.classicInfo', 'Classic Mode')}
             </Text>
-            <Text className="text-xs text-gray-400 leading-4" style={isRTL && styles.textRight}>
+            <Text style={[styles.infoText, isRTL && styles.textRight]}>
               {t('profile.voice.classicDetails', 'Traditional remote-only experience. Voice features disabled.')}
             </Text>
           </>
@@ -104,8 +104,51 @@ export function VoiceModeSection({ selectedMode, isRTL, onModeChange }: VoiceMod
 }
 
 const styles = StyleSheet.create({
+  container: {
+    padding: 24,
+    gap: 16,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
   rowReverse: {
     flexDirection: 'row-reverse',
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#9CA3AF',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    marginBottom: 0,
+  },
+  description: {
+    fontSize: 13,
+    color: '#9CA3AF',
+    marginBottom: 16,
+  },
+  modesContainer: {
+    gap: 16,
+  },
+  infoContainer: {
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    marginTop: 16,
+  },
+  infoTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#A855F7',
+    marginBottom: 4,
+  },
+  infoText: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    lineHeight: 16,
   },
   textRight: {
     textAlign: 'right',

@@ -1,12 +1,13 @@
 import { useEffect, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { loadSavedLanguage } from '@bayit/shared-i18n'
+import { initWebI18n, setupWebDirectionListener } from '@bayit/shared-i18n/web'
 import { useDirection } from '@/hooks/useDirection'
 import { VoiceListeningProvider } from '@bayit/shared-contexts'
 import { ModalProvider } from '@/contexts/ModalContext'
 import Layout from './components/layout/Layout'
 import FullscreenVideoOverlay from './components/player/FullscreenVideoOverlay'
 import { useAuthStore } from '@/stores/authStore'
+import { logger } from '@/utils/logger'
 import './styles/layout-fix.css'
 
 // Loading fallback component
@@ -23,29 +24,31 @@ const LoadingFallback = () => (
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAdmin, isLoading, user, isAuthenticated, isHydrated } = useAuthStore()
 
-  // DEBUG: Log auth state when component renders
-  console.log('=== AdminRoute Check ===');
-  console.log('isLoading:', isLoading);
-  console.log('isHydrated:', isHydrated);
-  console.log('isAuthenticated:', isAuthenticated);
-  console.log('user:', user);
-  console.log('user.role:', user?.role);
-  console.log('isAdmin():', isAdmin());
+  // Log auth state when component renders
+  logger.debug('AdminRoute auth check', 'AdminRoute', {
+    isLoading,
+    isHydrated,
+    isAuthenticated,
+    userId: user?.id,
+    userRole: user?.role,
+    isAdminResult: isAdmin(),
+  })
 
   if (isLoading) {
-    console.log('AdminRoute: Showing loading fallback');
+    logger.debug('Showing loading fallback', 'AdminRoute')
     return <LoadingFallback />
   }
 
   if (!isAdmin()) {
-    console.log('AdminRoute: NOT ADMIN - Redirecting to home');
-    console.log('  - User exists:', !!user);
-    console.log('  - User role:', user?.role);
-    console.log('  - Expected roles:', ['super_admin', 'admin', 'content_manager', 'billing_admin', 'support']);
+    logger.info('Access denied - redirecting to home', 'AdminRoute', {
+      userExists: !!user,
+      userRole: user?.role,
+      expectedRoles: ['super_admin', 'admin', 'content_manager', 'billing_admin', 'support'],
+    })
     return <Navigate to="/" replace />
   }
 
-  console.log('AdminRoute: Admin check passed ✓');
+  logger.debug('Admin check passed', 'AdminRoute')
   return <>{children}</>
 }
 
@@ -123,7 +126,16 @@ function App() {
   useDirection()
 
   useEffect(() => {
-    loadSavedLanguage()
+    const initI18n = async () => {
+      try {
+        await initWebI18n()
+        setupWebDirectionListener()
+        logger.info('i18n initialized successfully', 'App')
+      } catch (error) {
+        logger.error('Failed to initialize i18n', 'App', error)
+      }
+    }
+    initI18n()
   }, [])
 
   return (

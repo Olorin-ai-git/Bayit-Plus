@@ -20,28 +20,29 @@ export function SpeedControl({ speed, isRTL, onSpeedChange }: SpeedControlProps)
   const { t } = useTranslation();
 
   return (
-    <View className="pt-2 border-t border-white/5 mt-4">
-      <View className="flex-row items-center gap-2 mb-4" style={isRTL && styles.rtlRow}>
+    <View style={styles.container}>
+      <View style={[styles.header, isRTL && styles.rtlRow]}>
         <Gauge size={14} color={colors.textMuted} />
-        <Text className="flex-1 text-[13px] font-medium text-white" style={isRTL && styles.rtlText}>
+        <Text style={[styles.label, isRTL && styles.rtlText]}>
           {t('profile.voice.ttsSpeed', 'Speaking Speed')}
         </Text>
-        <Text className="text-[13px] font-semibold text-purple-500">
+        <Text style={styles.value}>
           {speed.toFixed(1)}x
         </Text>
       </View>
-      <View className="flex-row gap-2" style={isRTL && styles.rtlRow}>
+      <View style={[styles.speedRow, isRTL && styles.rtlRow]}>
         {TTS_SPEEDS.map((speedOption) => {
           const isSelected = Math.abs(speed - speedOption) < 0.05;
           return (
             <Pressable
               key={speedOption}
               onPress={() => onSpeedChange(speedOption)}
-              className="flex-1 items-center justify-center py-2 rounded"
-              style={[isSelected ? styles.speedSelected : styles.speedUnselected]}
+              style={[
+                styles.speedButton,
+                isSelected ? styles.speedSelected : styles.speedUnselected
+              ]}
             >
               <Text
-                className="text-xs font-medium"
                 style={[isSelected ? styles.speedTextSelected : styles.speedTextUnselected]}
               >
                 {speedOption === 1.0 ? t('common.normal', 'Normal') : `${speedOption}x`}
@@ -55,11 +56,45 @@ export function SpeedControl({ speed, isRTL, onSpeedChange }: SpeedControlProps)
 }
 
 const styles = StyleSheet.create({
+  container: {
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    marginTop: 16,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
   rtlRow: {
     flexDirection: 'row-reverse',
   },
+  label: {
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#ffffff',
+  },
   rtlText: {
     textAlign: 'right',
+  },
+  value: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#A855F7',
+  },
+  speedRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  speedButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    borderRadius: 4,
   },
   speedSelected: {
     backgroundColor: 'rgba(126, 34, 206, 0.3)',
@@ -70,9 +105,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   speedTextSelected: {
+    fontSize: 12,
+    fontWeight: '500',
     color: '#a855f7',
   },
   speedTextUnselected: {
+    fontSize: 12,
+    fontWeight: '500',
     color: '#ffffff',
   },
 });

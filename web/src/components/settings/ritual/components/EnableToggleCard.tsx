@@ -6,6 +6,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '@bayit/shared/ui';
+import { spacing, colors } from '@bayit/shared/theme';
 import { Toggle } from './Toggle';
 import { EnableToggleCardProps } from '../types';
 
@@ -13,13 +14,12 @@ export function EnableToggleCard({ enabled, onToggle, isRTL }: EnableToggleCardP
   const { t } = useTranslation();
 
   return (
-    <GlassView className="p-4">
+    <GlassView style={styles.container}>
       <Pressable
         onPress={onToggle}
-        className="flex-row items-center justify-between"
-        style={isRTL && styles.rowReverse}
+        style={[styles.pressable, isRTL && styles.rowReverse]}
       >
-        <Text className="text-[15px] font-medium text-white" style={isRTL && styles.textRight}>
+        <Text style={[styles.label, isRTL && styles.textRight]}>
           {t('settings.ritual.enabled')}
         </Text>
         <Toggle value={enabled} onToggle={onToggle} />
@@ -29,8 +29,21 @@ export function EnableToggleCard({ enabled, onToggle, isRTL }: EnableToggleCardP
 }
 
 const styles = StyleSheet.create({
+  container: {
+    padding: spacing.md,
+  },
+  pressable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   rowReverse: {
     flexDirection: 'row-reverse',
+  },
+  label: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: colors.text,
   },
   textRight: {
     textAlign: 'right',

@@ -12,8 +12,9 @@ import {
   ViewStyle,
   TextStyle,
   StyleProp,
+  StyleSheet,
 } from 'react-native';
-import { colors, borderRadius, spacing } from '../theme';
+import { colors, borderRadius, spacing } from '../../theme';
 import { isTV } from '../utils/platform';
 
 type ProgressSize = 'sm' | 'md' | 'lg';
@@ -109,10 +110,10 @@ export const GlassProgressBar: React.FC<GlassProgressBarProps> = ({
 
   // Variant colors
   const variantColors: Record<ProgressVariant, { start: string; end: string }> = {
-    default: { start: colors.primary, end: '#7c3aed' },
-    gradient: { start: '#a855f7', end: '#a855f7' },
-    success: { start: colors.success, end: '#00CC66' },
-    warning: { start: colors.warning, end: '#FF6B00' },
+    default: { start: colors.primary, end: colors.primaryDark },
+    gradient: { start: colors.primary, end: colors.primary },
+    success: { start: colors.success, end: colors.success },
+    warning: { start: colors.warning, end: colors.warning },
   };
 
   const currentSize = sizeStyles[size];
@@ -126,30 +127,33 @@ export const GlassProgressBar: React.FC<GlassProgressBarProps> = ({
   // Render segments mode
   if (showSegments && total) {
     return (
-      <View className="w-full" style={style}>
-        <View className={`flex w-full ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+      <View style={[styles.container, style]}>
+        <View style={[styles.segmentsRow, isRTL && styles.segmentsRowRTL]}>
           {Array.from({ length: total }, (_, index) => (
             <View
               key={index}
-              className="flex-1 rounded-full"
-              style={{
-                height: currentSize.height,
-                marginHorizontal: currentSize.segmentGap / 2,
-                backgroundColor: index < (current || 0)
-                  ? currentVariant.start
-                  : colors.glassBorderWhite,
-              }}
+              style={[
+                styles.segment,
+                {
+                  height: currentSize.height,
+                  marginHorizontal: currentSize.segmentGap / 2,
+                  backgroundColor: index < (current || 0)
+                    ? currentVariant.start
+                    : colors.glassBorderWhite,
+                },
+              ]}
             />
           ))}
         </View>
         {showLabel && (
           <Text
-            className={`text-gray-400 font-medium text-center ${isRTL ? 'text-right' : ''}`}
             style={[
+              styles.label,
               {
                 fontSize: currentSize.labelFontSize,
                 marginTop: currentSize.labelMargin,
               },
+              isRTL && styles.labelRTL,
               labelStyle,
             ]}
           >
@@ -162,18 +166,20 @@ export const GlassProgressBar: React.FC<GlassProgressBarProps> = ({
 
   // Render continuous progress bar
   return (
-    <View className="w-full" style={style}>
+    <View style={[styles.container, style]}>
       <View
-        className="w-full overflow-hidden"
-        style={{
-          height: currentSize.height,
-          borderRadius: currentSize.height / 2,
-          backgroundColor: colors.glassBorderWhite,
-        }}
+        style={[
+          styles.progressTrack,
+          {
+            height: currentSize.height,
+            borderRadius: currentSize.height / 2,
+            backgroundColor: colors.glassBorderWhite,
+          },
+        ]}
       >
         <Animated.View
-          className="absolute top-0"
           style={[
+            styles.progressFill,
             {
               height: currentSize.height,
               borderRadius: currentSize.height / 2,
@@ -191,12 +197,13 @@ export const GlassProgressBar: React.FC<GlassProgressBarProps> = ({
       </View>
       {showLabel && (
         <Text
-          className={`text-gray-400 font-medium text-center ${isRTL ? 'text-right' : ''}`}
           style={[
+            styles.label,
             {
               fontSize: currentSize.labelFontSize,
               marginTop: currentSize.labelMargin,
             },
+            isRTL && styles.labelRTL,
             labelStyle,
           ]}
         >
@@ -206,5 +213,38 @@ export const GlassProgressBar: React.FC<GlassProgressBarProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+  },
+  segmentsRow: {
+    flexDirection: 'row',
+    width: '100%',
+  },
+  segmentsRowRTL: {
+    flexDirection: 'row-reverse',
+  },
+  segment: {
+    flex: 1,
+    borderRadius: borderRadius.full,
+  },
+  progressTrack: {
+    width: '100%',
+    overflow: 'hidden',
+  },
+  progressFill: {
+    position: 'absolute',
+    top: 0,
+  },
+  label: {
+    color: colors.textSecondary,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  labelRTL: {
+    textAlign: 'right',
+  },
+});
 
 export default GlassProgressBar;

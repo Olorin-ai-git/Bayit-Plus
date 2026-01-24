@@ -38,10 +38,10 @@ export function AccessibilitySection({
   const { t } = useTranslation();
 
   return (
-    <GlassView className="p-6 gap-4">
+    <GlassView style={styles.container}>
       <View style={[styles.headerRow, isRTL && styles.rowReverse]}>
         <Eye size={16} color="#9CA3AF" />
-        <Text className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-0">
+        <Text style={styles.sectionTitle}>
           {t('profile.voice.accessibility', 'Accessibility')}
         </Text>
       </View>
@@ -62,10 +62,10 @@ export function AccessibilitySection({
         isRTL={isRTL}
       />
 
-      <View className="pt-2">
+      <View style={styles.textSizeContainer}>
         <View style={[styles.textSizeHeader, isRTL && styles.rowReverse]}>
           <Type size={16} color="#9CA3AF" />
-          <Text className="text-sm font-medium text-white">
+          <Text style={styles.textSizeTitle}>
             {t('profile.voice.textSize', 'Text size')}
           </Text>
         </View>
@@ -102,7 +102,10 @@ export function AccessibilitySection({
 }
 
 const styles = StyleSheet.create({
-  // Dynamic RTL styles
+  container: {
+    padding: 24,
+    gap: 16,
+  },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -112,18 +115,32 @@ const styles = StyleSheet.create({
   rowReverse: {
     flexDirection: 'row-reverse',
   },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#9CA3AF',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    marginBottom: 0,
+  },
+  textSizeContainer: {
+    paddingTop: 8,
+  },
   textSizeHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     marginBottom: 8,
   },
+  textSizeTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#ffffff',
+  },
   textSizeRow: {
     flexDirection: 'row',
     gap: 8,
   },
-
-  // Text size button styles
   textSizeButton: {
     flex: 1,
     alignItems: 'center',
@@ -132,20 +149,18 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   textSizeButtonSelected: {
-    backgroundColor: 'rgba(88, 28, 135, 0.3)', // purple-900/30
+    backgroundColor: 'rgba(88, 28, 135, 0.3)',
     borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.4)', // purple-500/40
+    borderColor: 'rgba(168, 85, 247, 0.4)',
   },
   textSizeButtonUnselected: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)', // white/5
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
-
-  // Text size label styles
   textSizeLabel: {
     color: '#ffffff',
   },
   textSizeLabelSelected: {
-    color: '#a855f7', // purple-500
+    color: '#a855f7',
     fontWeight: '500',
   },
 });

@@ -640,7 +640,11 @@ const LibrarianAgentPage = () => {
                   variant="secondary"
                   icon={<MessageSquare size={16} color={colors.text} />}
                   onPress={() => setInterjectModalVisible(true)}
-                  disabled={interjectingAudit || auditPaused}
+                  disabled={
+                    interjectingAudit ||
+                    auditPaused ||
+                    livePanelReport.status !== 'in_progress'
+                  }
                   size="sm"
                 />
                 {auditPaused ? (

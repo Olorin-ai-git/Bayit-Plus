@@ -23,10 +23,10 @@ export function HybridFeedbackSection({
   const { t } = useTranslation();
 
   return (
-    <GlassView className="p-6 gap-4">
-      <View className="flex-row items-center gap-2 mb-1" style={isRTL && styles.rowReverse}>
+    <GlassView style={styles.container}>
+      <View style={[styles.header, isRTL && styles.rowReverse]}>
         <Zap size={16} color="#F59E0B" />
-        <Text className="text-[13px] font-semibold text-gray-400 uppercase tracking-wider mb-0">
+        <Text style={styles.sectionTitle}>
           {t('profile.voice.hybridFeedback', 'Interactive Feedback')}
         </Text>
       </View>
@@ -39,7 +39,7 @@ export function HybridFeedbackSection({
         isRTL={isRTL}
       />
 
-      <Text className="text-xs text-gray-500 italic pt-4 border-t border-white/5 mt-4" style={isRTL && styles.textRight}>
+      <Text style={[styles.exampleText, isRTL && styles.textRight]}>
         {t('profile.voice.feedbackExample', 'Example: Click a movie → App says "Playing [Movie Name]"')}
       </Text>
     </GlassView>
@@ -47,8 +47,35 @@ export function HybridFeedbackSection({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    padding: 24,
+    gap: 16,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
   rowReverse: {
     flexDirection: 'row-reverse',
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#9CA3AF',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    marginBottom: 0,
+  },
+  exampleText: {
+    fontSize: 12,
+    color: '#6B7280',
+    fontStyle: 'italic',
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    marginTop: 16,
   },
   textRight: {
     textAlign: 'right',

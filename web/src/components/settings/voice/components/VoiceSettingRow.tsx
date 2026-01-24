@@ -25,7 +25,7 @@ export function VoiceSettingRow({
         disabled && styles.disabled,
       ]}
     >
-      <View className="flex-1">
+      <View style={styles.textContainer}>
         <Text style={[
           styles.label,
           isRTL && styles.textRight,
@@ -59,6 +59,9 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.5,
+  },
+  textContainer: {
+    flex: 1,
   },
   label: {
     fontSize: 15,

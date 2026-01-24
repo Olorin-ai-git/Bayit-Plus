@@ -16,6 +16,7 @@ from app.core.security import (create_access_token, get_current_active_user,
 from app.models.user import (TokenResponse, User, UserCreate, UserLogin,
                              UserResponse, UserUpdate)
 from app.services.audit_logger import audit_logger
+from olorin_shared.auth import create_refresh_token, verify_refresh_token
 
 
 class GoogleAuthCode(BaseModel):
@@ -77,11 +78,17 @@ async def register(request: Request, user_data: UserCreate):
     # ✅ Audit log: successful registration
     await audit_logger.log_registration(user, request)
 
-    # Create token
+    # Create access and refresh tokens
     access_token = create_access_token(data={"sub": str(user.id)})
+    refresh_token = create_refresh_token(
+        user_id=str(user.id),
+        secret_key=settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM,
+    )
 
     return TokenResponse(
         access_token=access_token,
+        refresh_token=refresh_token,
         user=user.to_response(),
     )
 
@@ -195,11 +202,17 @@ async def login(request: Request, credentials: UserLogin):
     # ✅ Audit log: successful login
     await audit_logger.log_login_success(user, request, "email_password")
 
-    # Create token
+    # Create access and refresh tokens
     access_token = create_access_token(data={"sub": str(user.id)})
+    refresh_token = create_refresh_token(
+        user_id=str(user.id),
+        secret_key=settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM,
+    )
 
     return TokenResponse(
         access_token=access_token,
+        refresh_token=refresh_token,
         user=user.to_response(),
     )
 
@@ -246,6 +259,74 @@ async def reset_password(email: str):
 async def logout(current_user: User = Depends(get_current_active_user)):
     """Logout user (client should delete token)."""
     return {"message": "Logged out successfully"}
+
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
+
+@router.post("/refresh", response_model=TokenResponse)
+@limiter.limit("10/minute")
+async def refresh_access_token(request: Request, refresh_request: RefreshTokenRequest):
+    """Refresh access token using a valid refresh token."""
+    import logging
+
+    logger = logging.getLogger(__name__)
+
+    try:
+        # Verify refresh token and extract user ID
+        user_id = verify_refresh_token(
+            token=refresh_request.refresh_token,
+            secret_key=settings.SECRET_KEY,
+            algorithm=settings.ALGORITHM,
+        )
+
+        if not user_id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid refresh token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        # Get user from database
+        user = await User.get(user_id)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not found",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        # Check if user is active
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Account is inactive",
+            )
+
+        # Create new access and refresh tokens
+        access_token = create_access_token(data={"sub": str(user.id)})
+        new_refresh_token = create_refresh_token(
+            user_id=str(user.id),
+            secret_key=settings.SECRET_KEY,
+            algorithm=settings.ALGORITHM,
+        )
+
+        logger.info(f"Token refreshed for user: {user.email}")
+
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=new_refresh_token,
+            user=user.to_response(),
+        )
+
+    except Exception as e:
+        logger.error(f"Token refresh failed: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not refresh token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 @router.get("/google/url")
@@ -400,10 +481,16 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
     # ✅ Audit log: OAuth login
     await audit_logger.log_oauth_login(user, request, "google")
 
-    # Create JWT token
+    # Create JWT access and refresh tokens
     jwt_token = create_access_token(data={"sub": str(user.id)})
+    refresh_token = create_refresh_token(
+        user_id=str(user.id),
+        secret_key=settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM,
+    )
 
     return TokenResponse(
         access_token=jwt_token,
+        refresh_token=refresh_token,
         user=user.to_response(),
     )

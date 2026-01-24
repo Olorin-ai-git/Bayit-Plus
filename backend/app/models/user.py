@@ -334,3 +334,4 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserResponse
+    refresh_token: Optional[str] = None  # Optional for backward compatibility

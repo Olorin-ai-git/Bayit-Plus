@@ -155,14 +155,21 @@ export const GlassFAB: React.FC<GlassFABProps> = ({
   };
 
   const content = (
-    <View className={`flex-row items-center justify-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-      <View style={{ width: currentSize.iconSize, height: currentSize.iconSize }} className="justify-center items-center">
+    <View style={[
+      styles.contentContainer,
+      isRTL && styles.contentContainerRTL
+    ]}>
+      <View style={[
+        styles.iconContainer,
+        { width: currentSize.iconSize, height: currentSize.iconSize }
+      ]}>
         {icon}
       </View>
       {label && (
         <Text
-          className={`font-bold ${isRTL ? 'text-right' : ''}`}
           style={[
+            styles.label,
+            isRTL && styles.labelRTL,
             { color: currentVariant.text, fontSize: currentSize.fontSize, letterSpacing: 0.3 },
             labelStyle,
           ]}
@@ -176,14 +183,21 @@ export const GlassFAB: React.FC<GlassFABProps> = ({
   const renderButton = () => {
     if (variant === 'gradient') {
       return (
-        <View className={`flex-row items-center justify-center overflow-hidden bg-[rgba(15,15,25,0.4)] border border-white/15 ${(isFocused || isHovered) ? 'border-2 border-purple-500 bg-[rgba(15,15,25,0.6)]' : ''} ${disabled ? 'opacity-50' : ''}`} style={[fabStyle, style, { backdropFilter: 'blur(20px)', transition: 'all 0.3s ease' } as any]}>
+        <View style={[
+          styles.buttonBase,
+          styles.gradientButton,
+          (isFocused || isHovered) && styles.focusedBorder,
+          disabled && styles.disabled,
+          fabStyle,
+          style
+        ]}>
           <LinearGradient
             colors={['rgba(107, 33, 168, 0.3)', 'rgba(0, 153, 204, 0.25)']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.8 }}
+            style={styles.gradientOverlay}
           />
-          <View className="flex-row items-center justify-center z-10">
+          <View style={styles.contentWrapper}>
             {content}
           </View>
         </View>
@@ -191,7 +205,13 @@ export const GlassFAB: React.FC<GlassFABProps> = ({
     }
 
     return (
-      <View className={`flex-row items-center justify-center overflow-hidden ${(isFocused || isHovered) ? 'border-2 border-purple-500 bg-[rgba(15,15,25,0.6)]' : ''} ${disabled ? 'opacity-50' : ''}`} style={[fabStyle, style]}>
+      <View style={[
+        styles.buttonBase,
+        (isFocused || isHovered) && styles.focusedBorder,
+        disabled && styles.disabled,
+        fabStyle,
+        style
+      ]}>
         {content}
       </View>
     );
@@ -223,5 +243,82 @@ export const GlassFAB: React.FC<GlassFABProps> = ({
   );
 };
 
+
+// Styles using StyleSheet.create() - React Native Web compatible
+const styles = {
+  // Content container
+  contentContainer: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    gap: spacing.sm,
+  },
+  contentContainerRTL: {
+    flexDirection: 'row-reverse' as const,
+  },
+
+  // Icon container
+  iconContainer: {
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
+  },
+
+  // Label text
+  label: {
+    fontWeight: '700' as const,
+  },
+  labelRTL: {
+    textAlign: 'right' as const,
+  },
+
+  // Button base
+  buttonBase: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    overflow: 'hidden' as const,
+  },
+
+  // Gradient variant
+  gradientButton: {
+    backgroundColor: 'rgba(15, 15, 25, 0.4)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    // @ts-ignore - Web-specific property
+    backdropFilter: 'blur(20px)',
+    // @ts-ignore - Web-specific property
+    WebkitBackdropFilter: 'blur(20px)',
+  },
+
+  // Gradient overlay
+  gradientOverlay: {
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.8,
+  },
+
+  // Content wrapper (for z-index)
+  contentWrapper: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    zIndex: 10,
+  },
+
+  // Focus/hover state
+  focusedBorder: {
+    borderWidth: 2,
+    borderColor: colors.primary,
+    backgroundColor: 'rgba(15, 15, 25, 0.6)',
+  },
+
+  // Disabled state
+  disabled: {
+    opacity: 0.5,
+  },
+};
 
 export default GlassFAB;

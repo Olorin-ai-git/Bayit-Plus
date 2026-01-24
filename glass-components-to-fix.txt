@@ -1,0 +1,32 @@
+# Glass Components Requiring className → StyleSheet Migration (17 total)
+
+## CRITICAL Priority (5 components):
+1. GlassFAB.tsx - Most complex, heavy className usage
+2. GlassButton.tsx - Core interaction component
+3. GlassSelect.tsx - className on wrapper + modal
+4. GlassTooltip.tsx - Positioning logic
+5. GlassChevron.tsx - Icon component
+
+## HIGH Priority (4 components):
+6. GlassResizablePanel.tsx - Complex drag logic
+7. GlassDraggableExpander.tsx - Complex animation
+8. GlassReorderableList.tsx - Complex drag-drop
+9. GlassProgressBar.tsx - Progress indicator
+
+## MEDIUM Priority (5 components):
+10. GlassSectionItem.tsx - List item
+11. GlassCategoryPill.tsx - Badge component
+12. GlassTextarea.tsx - Form input
+13. GlassSplitterHandle.tsx - Drag handle
+14. GlassStatCard.tsx - Stat display
+
+## LOW Priority (3 components):
+15. GlassAvatar.tsx - Simple component
+16. GlassParticleLayer.tsx - Visual effect
+17. GlassBreadcrumbs.tsx - Navigation component
+
+## Already Correct (verify only):
+- GlassView.tsx - Pure StyleSheet, no className
+- GlassCard.tsx - Pure StyleSheet, no className (reference implementation)
+- GlassTable.tsx - Pure StyleSheet, no className (reference implementation)
+- GlassBadge.tsx - Recently fixed, verify only

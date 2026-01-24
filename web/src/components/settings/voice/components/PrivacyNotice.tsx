@@ -15,9 +15,9 @@ export function PrivacyNotice({ isRTL }: PrivacyNoticeProps) {
   const { t } = useTranslation();
 
   return (
-    <View className="flex-row items-center gap-2 pt-4 border-t border-white/5 mt-2" style={isRTL && styles.rtlRow}>
+    <View style={[styles.container, isRTL && styles.rtlRow]}>
       <ShieldCheck size={14} color="#22C55E" />
-      <Text className="text-xs text-gray-500 flex-1" style={isRTL && styles.rtlText}>
+      <Text style={[styles.text, isRTL && styles.rtlText]}>
         {t('profile.voice.wakeWordPrivacy', 'Wake word detection is processed locally on your device - no audio is sent until after "Hi Bayit" is detected')}
       </Text>
     </View>
@@ -25,8 +25,22 @@ export function PrivacyNotice({ isRTL }: PrivacyNoticeProps) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    marginTop: 8,
+  },
   rtlRow: {
     flexDirection: 'row-reverse',
+  },
+  text: {
+    fontSize: 12,
+    color: '#6B7280',
+    flex: 1,
   },
   rtlText: {
     textAlign: 'right',

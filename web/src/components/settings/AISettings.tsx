@@ -23,7 +23,7 @@ export default function AISettings() {
 
   if (loading) {
     return (
-      <View className="items-center justify-center p-8">
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="small" color={colors.primary} />
       </View>
     );
@@ -47,7 +47,7 @@ export default function AISettings() {
         disabled && styles.toggleDisabled,
       ]}
     >
-      <View className="w-6 h-6 rounded-full bg-white" />
+      <View style={styles.toggleCircle} />
     </Pressable>
   );
 
@@ -73,7 +73,7 @@ export default function AISettings() {
         disabled && styles.settingRowDisabled,
       ]}
     >
-      <View className="flex-1">
+      <View style={styles.flex1}>
         <Text
           style={[
             styles.settingLabel,
@@ -98,13 +98,13 @@ export default function AISettings() {
   );
 
   return (
-    <View className="gap-4">
+    <View style={styles.container}>
       {/* Header */}
       <View style={[styles.header, isRTL && styles.headerRTL]}>
-        <View className="w-12 h-12 rounded-md bg-purple-500/20 justify-center items-center">
-          <Sparkles size={24} color="#A855F7" />
+        <View style={styles.headerIcon}>
+          <Sparkles size={24} color={colors.primary} />
         </View>
-        <View className="flex-1">
+        <View style={styles.flex1}>
           <Text style={[styles.headerTitle, isRTL && styles.textRight]}>
             {t('profile.ai.title', 'AI & Personalization')}
           </Text>
@@ -115,7 +115,7 @@ export default function AISettings() {
       </View>
 
       {/* Chatbot Settings */}
-      <GlassView className="p-4 gap-4">
+      <GlassView style={styles.section}>
         <Text style={[styles.sectionTitle, isRTL && styles.textRight]}>
           {t('profile.ai.chatbot', 'AI Assistant')}
         </Text>
@@ -137,7 +137,7 @@ export default function AISettings() {
       </GlassView>
 
       {/* Recommendations */}
-      <GlassView className="p-4 gap-4">
+      <GlassView style={styles.section}>
         <Text style={[styles.sectionTitle, isRTL && styles.textRight]}>
           {t('profile.ai.recommendations', 'Recommendations')}
         </Text>
@@ -151,7 +151,7 @@ export default function AISettings() {
       </GlassView>
 
       {/* Privacy */}
-      <GlassView className="p-4 gap-4">
+      <GlassView style={styles.section}>
         <Text style={[styles.sectionTitle, isRTL && styles.textRight]}>
           {t('profile.ai.privacy', 'Privacy & Data')}
         </Text>
@@ -165,7 +165,7 @@ export default function AISettings() {
 
         <View style={[styles.privacyNote, isRTL && styles.privacyNoteRTL]}>
           <Shield size={16} color={colors.success} />
-          <Text className="text-[13px] text-green-500">
+          <Text style={styles.privacyNoteText}>
             {t('profile.ai.privacyNote', 'Your data is encrypted and secure')}
           </Text>
         </View>
@@ -173,9 +173,9 @@ export default function AISettings() {
 
       {/* Saving indicator */}
       {saving && (
-        <View className="flex-row items-center justify-center gap-2 p-4">
+        <View style={styles.savingIndicator}>
           <ActivityIndicator size="small" color={colors.primary} />
-          <Text className="text-[14px] text-gray-400">{t('common.saving', 'Saving...')}</Text>
+          <Text style={styles.savingText}>{t('common.saving', 'Saving...')}</Text>
         </View>
       )}
     </View>
@@ -183,11 +183,24 @@ export default function AISettings() {
 }
 
 const styles = StyleSheet.create({
+  // Container
+  container: {
+    gap: spacing.md,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl,
+  },
+  flex1: {
+    flex: 1,
+  },
+
   // Toggle styles
   toggleBase: {
     width: 52,
     height: 28,
-    borderRadius: 9999,
+    borderRadius: borderRadius.full,
     padding: 2,
     flexDirection: 'row',
     alignItems: 'center',
@@ -197,10 +210,16 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   toggleInactive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.glassBorderWhite,
   },
   toggleDisabled: {
     opacity: 0.5,
+  },
+  toggleCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.text,
   },
 
   // SettingRow styles
@@ -208,8 +227,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 8,
-    gap: 16,
+    paddingVertical: spacing.sm,
+    gap: spacing.md,
   },
   settingRowRTL: {
     flexDirection: 'row-reverse',
@@ -222,11 +241,11 @@ const styles = StyleSheet.create({
   settingLabel: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#FFFFFF',
+    color: colors.text,
   },
   settingDescription: {
     fontSize: 13,
-    color: '#9CA3AF',
+    color: colors.textSecondary,
     marginTop: 2,
     lineHeight: 18,
   },
@@ -234,38 +253,52 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   textDisabled: {
-    color: '#9CA3AF',
+    color: colors.textSecondary,
   },
   textDisabledSecondary: {
-    color: '#6B7280',
+    color: colors.textMuted,
   },
 
   // Header styles
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
-    marginBottom: 8,
+    gap: spacing.md,
+    marginBottom: spacing.sm,
   },
   headerRTL: {
     flexDirection: 'row-reverse',
   },
+  headerIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.glassPurple,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: colors.text,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: colors.textSecondary,
     marginTop: 2,
+  },
+
+  // Section
+  section: {
+    padding: spacing.md,
+    gap: spacing.md,
   },
 
   // Section title
   sectionTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#9CA3AF',
+    color: colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 4,
@@ -275,14 +308,31 @@ const styles = StyleSheet.create({
   privacyNote: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    backgroundColor: 'rgba(34, 197, 94, 0.1)',
-    borderRadius: 6,
-    marginTop: 8,
+    gap: spacing.sm,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    borderRadius: borderRadius.sm,
+    marginTop: spacing.sm,
   },
   privacyNoteRTL: {
     flexDirection: 'row-reverse',
+  },
+  privacyNoteText: {
+    fontSize: 13,
+    color: colors.success,
+  },
+
+  // Saving indicator
+  savingIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+  },
+  savingText: {
+    fontSize: 14,
+    color: colors.textSecondary,
   },
 });

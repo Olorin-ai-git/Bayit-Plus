@@ -6,6 +6,7 @@ import {
   Animated,
   Platform,
   TextInputProps,
+  StyleSheet,
 } from 'react-native';
 import { GlassView } from './GlassView';
 import { colors, borderRadius, spacing } from '../theme';
@@ -33,12 +34,16 @@ export const GlassTextarea: React.FC<GlassTextareaProps> = ({
   });
 
   return (
-    <View className="w-full">
-      {label && <Text className="text-sm font-medium mb-2 text-right" style={{ color: colors.textSecondary }}>{label}</Text>}
+    <View style={styles.container}>
+      {label && (
+        <Text style={[styles.label, { color: colors.textSecondary }]}>
+          {label}
+        </Text>
+      )}
 
       <Animated.View style={scaleTransform}>
         <GlassView
-          className="overflow-hidden"
+          style={styles.glassContainer}
           intensity="medium"
           borderColor={
             error
@@ -49,8 +54,11 @@ export const GlassTextarea: React.FC<GlassTextareaProps> = ({
           }
         >
           <TextInput
-            className="text-base px-4 py-4 text-right"
-            style={[{ minHeight, color: colors.text }, !error && focusStyle]}
+            style={[
+              styles.input,
+              { minHeight, color: colors.text },
+              !error && focusStyle
+            ]}
             placeholderTextColor={colors.textMuted}
             onFocus={handleFocus}
             onBlur={handleBlur}
@@ -63,10 +71,49 @@ export const GlassTextarea: React.FC<GlassTextareaProps> = ({
         </GlassView>
       </Animated.View>
 
-      {error && <Text className="text-xs mt-1 text-right" style={{ color: colors.error }}>{error}</Text>}
-      {hint && !error && <Text className="text-xs mt-1 text-right" style={{ color: colors.textMuted }}>{hint}</Text>}
+      {error && (
+        <Text style={[styles.helperText, { color: colors.error }]}>
+          {error}
+        </Text>
+      )}
+      {hint && !error && (
+        <Text style={[styles.helperText, { color: colors.textMuted }]}>
+          {hint}
+        </Text>
+      )}
     </View>
   );
 };
+
+// Styles using StyleSheet.create() - React Native Web compatible
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+  },
+
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: spacing.sm,
+    textAlign: 'right',
+  },
+
+  glassContainer: {
+    overflow: 'hidden',
+  },
+
+  input: {
+    fontSize: 16,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    textAlign: 'right',
+  },
+
+  helperText: {
+    fontSize: 12,
+    marginTop: spacing.xs,
+    textAlign: 'right',
+  },
+});
 
 export default GlassTextarea;

@@ -10,6 +10,7 @@ import {
   Text,
   TouchableOpacity,
   Platform,
+  StyleSheet,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './GlassView';
@@ -59,33 +60,43 @@ export const GlassSectionItem: React.FC<GlassSectionItemProps> = ({
   const { isRTL, flexDirection } = useDirection();
   const [isFocused, setIsFocused] = useState(false);
 
+  const containerStyle = [
+    isTV ? styles.containerTV : styles.container,
+    isDragging ? styles.containerDragging : isFocused ? styles.containerFocused : styles.containerNormal
+  ];
+
+  const buttonSize = isTV ? styles.buttonTV : styles.button;
+  const buttonRadius = isTV ? styles.buttonRadiusTV : styles.buttonRadius;
+
   return (
-    <GlassView
-      className={`${isTV ? 'p-4' : 'p-2'} rounded-lg border-2 ${
-        isDragging ? 'border-purple-500 bg-purple-500/20' : isFocused ? 'border-purple-500 bg-purple-500/15' : 'border-transparent'
-      }`}
-    >
-      <View className="flex-row items-center gap-4" style={{ flexDirection }}>
+    <GlassView style={containerStyle}>
+      <View style={[styles.mainRow, { flexDirection }]}>
         {/* Drag Handle (web only) */}
         {showDragHandle && (
-          <View
-            className="px-1 py-2 cursor-grab"
-            data-drag-handle="true"
-          >
-            <Text className={`${isTV ? 'text-[20px]' : 'text-base'} text-white/60`} style={{ letterSpacing: -2 }}>⋮⋮</Text>
+          <View style={styles.dragHandle} data-drag-handle="true">
+            <Text style={[
+              isTV ? styles.dragHandleTextTV : styles.dragHandleText,
+              { color: 'rgba(255, 255, 255, 0.6)', letterSpacing: -2 }
+            ]}>
+              ⋮⋮
+            </Text>
           </View>
         )}
 
         {/* Section Info */}
-        <View className="flex-1 flex-row items-center gap-2" style={{ flexDirection }}>
-          <Text className={isTV ? 'text-[28px]' : 'text-[22px]'}>{icon}</Text>
-          <Text className={`${isTV ? 'text-lg' : 'text-base'} text-white font-medium ${isRTL ? 'text-right' : ''}`}>
+        <View style={[styles.sectionInfo, { flexDirection }]}>
+          <Text style={isTV ? styles.iconTV : styles.icon}>{icon}</Text>
+          <Text style={[
+            isTV ? styles.labelTV : styles.label,
+            { color: colors.text },
+            isRTL && styles.labelRTL
+          ]}>
             {t(labelKey)}
           </Text>
         </View>
 
         {/* Controls */}
-        <View className="flex-row items-center gap-2" style={{ flexDirection }}>
+        <View style={[styles.controls, { flexDirection }]}>
           {/* Arrow Buttons (for TV and accessibility) */}
           {showArrows && visible && (
             <>
@@ -94,15 +105,14 @@ export const GlassSectionItem: React.FC<GlassSectionItemProps> = ({
                 disabled={isFirst}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
-                className={`${isTV ? 'w-11 h-11' : 'w-9 h-9'} ${isTV ? 'rounded-[22px]' : 'rounded-[18px]'} bg-white/10 justify-center items-center border border-white/20 ${
-                  isFirst ? 'opacity-30' : ''
-                }`}
+                style={[buttonSize, buttonRadius, styles.controlButton, isFirst && styles.controlButtonDisabled]}
                 accessibilityLabel={t('common.moveUp', 'Move up')}
                 accessibilityRole="button"
               >
-                <Text
-                  className={`${isTV ? 'text-base' : 'text-xs'} ${isFirst ? 'text-white/60' : 'text-white'}`}
-                >
+                <Text style={[
+                  isTV ? styles.arrowTextTV : styles.arrowText,
+                  { color: isFirst ? 'rgba(255, 255, 255, 0.6)' : colors.text }
+                ]}>
                   ▲
                 </Text>
               </TouchableOpacity>
@@ -112,15 +122,14 @@ export const GlassSectionItem: React.FC<GlassSectionItemProps> = ({
                 disabled={isLast}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
-                className={`${isTV ? 'w-11 h-11' : 'w-9 h-9'} ${isTV ? 'rounded-[22px]' : 'rounded-[18px]'} bg-white/10 justify-center items-center border border-white/20 ${
-                  isLast ? 'opacity-30' : ''
-                }`}
+                style={[buttonSize, buttonRadius, styles.controlButton, isLast && styles.controlButtonDisabled]}
                 accessibilityLabel={t('common.moveDown', 'Move down')}
                 accessibilityRole="button"
               >
-                <Text
-                  className={`${isTV ? 'text-base' : 'text-xs'} ${isLast ? 'text-white/60' : 'text-white'}`}
-                >
+                <Text style={[
+                  isTV ? styles.arrowTextTV : styles.arrowText,
+                  { color: isLast ? 'rgba(255, 255, 255, 0.6)' : colors.text }
+                ]}>
                   ▼
                 </Text>
               </TouchableOpacity>
@@ -133,7 +142,7 @@ export const GlassSectionItem: React.FC<GlassSectionItemProps> = ({
               onPress={onToggleVisibility}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
-              className={`${isTV ? 'w-11 h-11' : 'w-9 h-9'} ${isTV ? 'rounded-[22px]' : 'rounded-[18px]'} bg-white/10 justify-center items-center border border-white/20`}
+              style={[buttonSize, buttonRadius, styles.controlButton]}
               accessibilityLabel={
                 visible
                   ? t('settings.tapToHide', 'Tap to hide')
@@ -141,7 +150,7 @@ export const GlassSectionItem: React.FC<GlassSectionItemProps> = ({
               }
               accessibilityRole="button"
             >
-              <Text className={isTV ? 'text-xl' : 'text-base'}>
+              <Text style={isTV ? styles.visibilityIconTV : styles.visibilityIcon}>
                 {visible ? '👁️' : '👁️‍🗨️'}
               </Text>
             </TouchableOpacity>
@@ -152,5 +161,124 @@ export const GlassSectionItem: React.FC<GlassSectionItemProps> = ({
   );
 };
 
+
+// Styles using StyleSheet.create() - React Native Web compatible
+const styles = StyleSheet.create({
+  // Container styles
+  container: {
+    padding: spacing.sm,
+    borderRadius: borderRadius.lg,
+    borderWidth: 2,
+  },
+  containerTV: {
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    borderWidth: 2,
+  },
+  containerNormal: {
+    borderColor: 'transparent',
+  },
+  containerFocused: {
+    borderColor: colors.primary,
+    backgroundColor: 'rgba(126, 34, 206, 0.15)',
+  },
+  containerDragging: {
+    borderColor: colors.primary,
+    backgroundColor: 'rgba(126, 34, 206, 0.2)',
+  },
+
+  // Main row
+  mainRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+
+  // Drag handle
+  dragHandle: {
+    paddingHorizontal: spacing.xs,
+    paddingVertical: spacing.sm,
+    // @ts-ignore - Web CSS
+    cursor: 'grab',
+  },
+  dragHandleText: {
+    fontSize: 16,
+  },
+  dragHandleTextTV: {
+    fontSize: 20,
+  },
+
+  // Section info
+  sectionInfo: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  icon: {
+    fontSize: 22,
+  },
+  iconTV: {
+    fontSize: 28,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  labelTV: {
+    fontSize: 18,
+    fontWeight: '500',
+  },
+  labelRTL: {
+    textAlign: 'right',
+  },
+
+  // Controls
+  controls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+
+  // Buttons
+  button: {
+    width: 36,
+    height: 36,
+  },
+  buttonTV: {
+    width: 44,
+    height: 44,
+  },
+  buttonRadius: {
+    borderRadius: 18,
+  },
+  buttonRadiusTV: {
+    borderRadius: 22,
+  },
+  controlButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  controlButtonDisabled: {
+    opacity: 0.3,
+  },
+
+  // Text in buttons
+  arrowText: {
+    fontSize: 12,
+  },
+  arrowTextTV: {
+    fontSize: 16,
+  },
+  visibilityIcon: {
+    fontSize: 16,
+  },
+  visibilityIconTV: {
+    fontSize: 20,
+  },
+});
 
 export default GlassSectionItem;

@@ -18,7 +18,7 @@ export function Toggle({ value, onToggle, disabled }: ToggleProps) {
         disabled && styles.disabled,
       ]}
     >
-      <View className="w-6 h-6 rounded-full bg-white" />
+      <View style={styles.toggleThumb} />
     </Pressable>
   );
 }
@@ -41,5 +41,11 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.5,
+  },
+  toggleThumb: {
+    width: 24,
+    height: 24,
+    borderRadius: 9999,
+    backgroundColor: '#ffffff',
   },
 });

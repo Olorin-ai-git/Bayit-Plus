@@ -83,14 +83,10 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
     </ScrollView>
   );
 
-  // Web: Use CSS backdrop-filter
+  // Web: Use backdrop-filter
   if (Platform.OS === 'web') {
     return (
-      <View
-        // @ts-ignore - Web-specific className
-        className="glass-light"
-        style={styles.containerWeb}
-      >
+      <View style={[styles.containerWeb, styles.glassLight]}>
         {renderContent()}
       </View>
     );
@@ -115,6 +111,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  glassLight: {
+    // @ts-ignore - Web CSS for glassmorphism
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   containerNative: {
     paddingHorizontal: 16,
