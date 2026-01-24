@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { UserPlus, Edit, Ban, Key, Trash2, X } from 'lucide-react';
+import { UserPlus, Edit, Ban, Key, Trash2 } from 'lucide-react';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@bayit/shared/theme';
 import { GlassButton, GlassModal, GlassInput } from '@bayit/shared/ui';
@@ -28,38 +28,49 @@ interface Pagination {
   total: number;
 }
 
-const statusColors: Record<string, { bg: string; text: string; labelKey: string }> = {
+type FilterStatus = 'all' | 'active' | 'inactive' | 'banned';
+
+interface ModalState {
+  open: boolean;
+  user: User | null;
+}
+
+const STATUS_COLORS: Record<string, { bg: string; text: string; labelKey: string }> = {
   active: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', labelKey: 'admin.users.status.active' },
   inactive: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', labelKey: 'admin.users.status.inactive' },
   banned: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', labelKey: 'admin.users.status.blocked' },
 };
 
-const filterKeys: Record<string, string> = {
+const ROLE_LABELS: Record<string, string> = {
+  super_admin: 'admin.users.roles.superAdmin',
+  admin: 'admin.users.roles.admin',
+  moderator: 'admin.users.roles.moderator',
+  user: 'admin.users.roles.user',
+};
+
+const FILTER_KEYS: Record<FilterStatus, string> = {
   all: 'admin.users.filters.all',
   active: 'admin.users.filters.active',
   inactive: 'admin.users.filters.inactive',
   banned: 'admin.users.filters.blocked',
 };
 
+const FILTERS: FilterStatus[] = ['all', 'active', 'inactive', 'banned'];
+
 export default function UsersListPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isRTL, textAlign, flexDirection } = useDirection();
+
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 });
-  const [filters, setFilters] = useState({ search: '', status: 'all' });
+  const [filters, setFilters] = useState({ search: '', status: 'all' as FilterStatus });
 
-  // Modal states
-  const [deleteModal, setDeleteModal] = useState<{ open: boolean; user: User | null }>({ open: false, user: null });
-  const [banModal, setBanModal] = useState<{ open: boolean; user: User | null }>({ open: false, user: null });
+  const [deleteModal, setDeleteModal] = useState<ModalState>({ open: false, user: null });
+  const [banModal, setBanModal] = useState<ModalState>({ open: false, user: null });
   const [banReason, setBanReason] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [confirmAction, setConfirmAction] = useState<(() => void) | null>(null);
-  const [confirmMessage, setConfirmMessage] = useState('');
-  const [successModalOpen, setSuccessModalOpen] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -82,13 +93,13 @@ export default function UsersListPage() {
     loadUsers();
   }, [loadUsers]);
 
-  const handleSearch = (search: string) => {
-    setFilters((prev) => ({ ...prev, search }));
-    setPagination((prev) => ({ ...prev, page: 1 }));
-  };
-
   const handlePageChange = (page: number) => {
     setPagination((prev) => ({ ...prev, page }));
+  };
+
+  const handleFilterChange = (status: FilterStatus) => {
+    setFilters((prev) => ({ ...prev, status }));
+    setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
   const handleEdit = (user: User) => {
@@ -105,7 +116,7 @@ export default function UsersListPage() {
     try {
       await usersService.deleteUser(deleteModal.user.id);
       setDeleteModal({ open: false, user: null });
-      loadUsers();
+      await loadUsers();
     } catch (error) {
       logger.error('Failed to delete user', 'UsersListPage', error);
     } finally {
@@ -128,7 +139,7 @@ export default function UsersListPage() {
         await usersService.banUser(banModal.user.id, banReason);
       }
       setBanModal({ open: false, user: null });
-      loadUsers();
+      await loadUsers();
     } catch (error) {
       logger.error('Failed to ban/unban user', 'UsersListPage', error);
     } finally {
@@ -137,49 +148,83 @@ export default function UsersListPage() {
   };
 
   const handleResetPassword = async (user: User) => {
-    setConfirmMessage(t('admin.users.confirmResetPassword', { email: user.email }));
-    setConfirmAction(() => async () => {
-      try {
-        await usersService.resetPassword(user.id);
-        setSuccessMessage(t('admin.users.resetPasswordSent'));
-        setSuccessModalOpen(true);
-      } catch (error) {
-        logger.error('Failed to reset password', 'UsersListPage', error);
-      }
-    });
-    setConfirmModalOpen(true);
+    try {
+      await usersService.resetPassword(user.id);
+      logger.info('Password reset email sent', 'UsersListPage', { userId: user.id });
+    } catch (error) {
+      logger.error('Failed to reset password', 'UsersListPage', error);
+    }
   };
 
-  const getStatusBadge = (status: string) => {
-    const style = statusColors[status] || statusColors.inactive;
-    return (
-      <View style={[styles.badge, { backgroundColor: style.bg }]}>
-        <Text style={[styles.badgeText, { color: style.text }]}>{t(style.labelKey)}</Text>
+  const renderUserCell = (user: User) => (
+    <View style={[styles.userCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <View style={[styles.avatar, isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }]}>
+        <Text style={styles.avatarText}>{user.name?.charAt(0) || '?'}</Text>
       </View>
+      <GlassTableCell.TwoLine
+        primary={user.name}
+        secondary={user.email}
+        align={isRTL ? 'right' : 'left'}
+      />
+    </View>
+  );
+
+  const renderStatusBadge = (status: string) => {
+    const normalizedStatus = status?.toLowerCase() || 'inactive';
+    const variant = normalizedStatus === 'active' ? 'success' : normalizedStatus === 'banned' ? 'error' : 'default';
+    const style = STATUS_COLORS[normalizedStatus] || STATUS_COLORS.inactive;
+    return (
+      <GlassTableCell.Badge variant={variant}>
+        {t(style.labelKey)}
+      </GlassTableCell.Badge>
     );
   };
+
+  const renderRole = (role: string) => {
+    const roleKey = ROLE_LABELS[role] || 'admin.users.roles.user';
+    return (
+      <GlassTableCell.Text>
+        {t(roleKey, { defaultValue: role })}
+      </GlassTableCell.Text>
+    );
+  };
+
+  const renderActions = (user: User) => (
+    <GlassTableCell.Actions isRTL={isRTL}>
+      <GlassTableCell.ActionButton
+        onPress={() => handleEdit(user)}
+        icon={<Edit size={16} color="#a855f7" />}
+        variant="primary"
+      />
+      <GlassTableCell.ActionButton
+        onPress={() => handleResetPassword(user)}
+        icon={<Key size={16} color={colors.textMuted} />}
+      />
+      <GlassTableCell.ActionButton
+        onPress={() => handleBanClick(user)}
+        icon={<Ban size={16} color={user.status === 'banned' ? '#22C55E' : '#F59E0B'} />}
+      />
+      <GlassTableCell.ActionButton
+        onPress={() => handleDeleteClick(user)}
+        icon={<Trash2 size={16} color="#ef4444" />}
+        variant="danger"
+      />
+    </GlassTableCell.Actions>
+  );
 
   const columns: GlassTableColumn<User>[] = [
     {
       key: 'name',
       label: t('admin.users.columns.name'),
-      render: (_: any, user: User) => (
-        <View style={[styles.userCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{user.name?.charAt(0) || '?'}</Text>
-          </View>
-          <GlassTableCell.TwoLine
-            primary={user.name}
-            secondary={user.email}
-            align={isRTL ? 'right' : 'left'}
-          />
-        </View>
-      ),
+      render: (_: any, user: User) => renderUserCell(user),
+      align: isRTL ? 'right' : 'left',
     },
     {
       key: 'role',
       label: t('admin.users.columns.role'),
-      width: 100,
+      width: 120,
+      render: (role: string) => renderRole(role),
+      align: isRTL ? 'right' : 'left',
     },
     {
       key: 'subscription',
@@ -190,20 +235,14 @@ export default function UsersListPage() {
           {sub?.plan || t('admin.users.columns.noSubscription')}
         </GlassTableCell.Text>
       ),
+      align: isRTL ? 'right' : 'left',
     },
     {
       key: 'status',
       label: t('admin.users.columns.status'),
       width: 100,
-      render: (status: string) => {
-        const variant = status === 'active' ? 'success' : status === 'banned' ? 'error' : 'default';
-        const style = statusColors[status] || statusColors.inactive;
-        return (
-          <GlassTableCell.Badge variant={variant}>
-            {t(style.labelKey)}
-          </GlassTableCell.Badge>
-        );
-      },
+      render: (status: string) => renderStatusBadge(status),
+      align: isRTL ? 'right' : 'left',
     },
     {
       key: 'created_at',
@@ -214,45 +253,25 @@ export default function UsersListPage() {
           {new Date(date).toLocaleDateString('he-IL')}
         </GlassTableCell.Text>
       ),
+      align: isRTL ? 'right' : 'left',
     },
     {
       key: 'actions',
       label: '',
       width: 140,
-      render: (_: any, user: User) => (
-        <GlassTableCell.Actions isRTL={isRTL}>
-          <GlassTableCell.ActionButton
-            onPress={() => handleEdit(user)}
-            icon={<Edit size={16} color="#a855f7" />}
-            variant="primary"
-          />
-          <GlassTableCell.ActionButton
-            onPress={() => handleResetPassword(user)}
-            icon={<Key size={16} color={colors.textMuted} />}
-          />
-          <GlassTableCell.ActionButton
-            onPress={() => handleBanClick(user)}
-            icon={<Ban size={16} color={user.status === 'banned' ? '#22C55E' : '#F59E0B'} />}
-          />
-          <GlassTableCell.ActionButton
-            onPress={() => handleDeleteClick(user)}
-            icon={<Trash2 size={16} color="#ef4444" />}
-            variant="danger"
-          />
-        </GlassTableCell.Actions>
-      ),
+      render: (_: any, user: User) => renderActions(user),
+      align: 'center',
     },
   ];
 
   return (
-    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
-      {/* Header */}
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={[styles.header, { flexDirection }]}>
         <View>
           <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.users')}</Text>
           <Text style={[styles.subtitle, { textAlign }]}>{t('admin.users.subtitle')}</Text>
         </View>
-        <Link to="/admin/users/new" style={{ textDecoration: 'none' }}>
+        <Link to="/admin/users/new" style={styles.link}>
           <GlassButton
             title={t('admin.users.addUser')}
             variant="primary"
@@ -261,22 +280,20 @@ export default function UsersListPage() {
         </Link>
       </View>
 
-      {/* Filters */}
       <View style={[styles.filtersRow, { flexDirection }]}>
-        {(['all', 'active', 'inactive', 'banned'] as const).map((status) => (
+        {FILTERS.map((status) => (
           <Pressable
             key={status}
-            onPress={() => setFilters((prev) => ({ ...prev, status }))}
+            onPress={() => handleFilterChange(status)}
             style={[styles.filterButton, filters.status === status && styles.filterButtonActive]}
           >
             <Text style={[styles.filterText, filters.status === status && styles.filterTextActive]}>
-              {t(filterKeys[status])}
+              {t(FILTER_KEYS[status])}
             </Text>
           </Pressable>
         ))}
       </View>
 
-      {/* Table */}
       <GlassTable
         columns={columns}
         data={users}
@@ -287,7 +304,6 @@ export default function UsersListPage() {
         isRTL={isRTL}
       />
 
-      {/* Delete Confirmation Modal */}
       <GlassModal
         visible={deleteModal.open}
         title={t('admin.users.confirmDelete', 'Delete User')}
@@ -297,22 +313,25 @@ export default function UsersListPage() {
         <Text style={styles.modalText}>
           {t('admin.users.confirmDeleteMessage', 'Are you sure you want to delete {{name}}? This action cannot be undone.', { name: deleteModal.user?.name })}
         </Text>
-        <View className="flex flex-row gap-4 mt-6">
-          <GlassButton
-            title={t('common.cancel', 'Cancel')}
-            variant="cancel"
-            onPress={() => setDeleteModal({ open: false, user: null })}
-          />
-          <GlassButton
-            title={actionLoading ? t('common.deleting', 'Deleting...') : t('common.delete', 'Delete')}
-            variant="danger"
-            onPress={handleDeleteConfirm}
-            disabled={actionLoading}
-          />
+        <View style={styles.modalActions}>
+          <View style={styles.modalButton}>
+            <GlassButton
+              title={t('common.cancel', 'Cancel')}
+              variant="cancel"
+              onPress={() => setDeleteModal({ open: false, user: null })}
+            />
+          </View>
+          <View style={styles.modalButton}>
+            <GlassButton
+              title={actionLoading ? t('common.deleting', 'Deleting...') : t('common.delete', 'Delete')}
+              variant="danger"
+              onPress={handleDeleteConfirm}
+              disabled={actionLoading}
+            />
+          </View>
         </View>
       </GlassModal>
 
-      {/* Ban/Unban Modal */}
       <GlassModal
         visible={banModal.open}
         title={banModal.user?.status === 'banned' ? t('admin.users.unban') : t('admin.users.block')}
@@ -334,69 +353,115 @@ export default function UsersListPage() {
             {t('admin.users.confirmUnban')}
           </Text>
         )}
-        <View className="flex flex-row gap-4 mt-6">
-          <GlassButton
-            title={t('common.cancel', 'Cancel')}
-            variant="cancel"
-            onPress={() => setBanModal({ open: false, user: null })}
-          />
-          <GlassButton
-            title={actionLoading
-              ? t('common.saving', 'Saving...')
-              : banModal.user?.status === 'banned'
-                ? t('admin.users.unban')
-                : t('admin.users.block')}
-            variant={banModal.user?.status === 'banned' ? 'success' : 'warning'}
-            onPress={handleBanConfirm}
-            disabled={actionLoading}
-          />
-        </View>
-      </GlassModal>
-
-      {/* Confirm Modal */}
-      <GlassModal
-        visible={confirmModalOpen}
-        title={t('common.confirm')}
-        onClose={() => setConfirmModalOpen(false)}
-        dismissable={true}
-      >
-        <Text style={styles.modalText}>{confirmMessage}</Text>
-        <View className="flex flex-row gap-4 mt-6">
-          <GlassButton
-            title={t('common.cancel')}
-            onPress={() => setConfirmModalOpen(false)}
-            variant="cancel"
-          />
-          <GlassButton
-            title={t('common.confirm')}
-            onPress={() => {
-              if (confirmAction) {
-                confirmAction();
-                setConfirmModalOpen(false);
-              }
-            }}
-            variant="success"
-          />
-        </View>
-      </GlassModal>
-
-      {/* Success Modal */}
-      <GlassModal
-        visible={successModalOpen}
-        title={t('common.success')}
-        onClose={() => setSuccessModalOpen(false)}
-        dismissable={true}
-      >
-        <Text style={styles.modalText}>{successMessage}</Text>
-        <View className="flex flex-row gap-4 mt-6">
-          <GlassButton
-            title={t('common.ok')}
-            onPress={() => setSuccessModalOpen(false)}
-            variant="success"
-          />
+        <View style={styles.modalActions}>
+          <View style={styles.modalButton}>
+            <GlassButton
+              title={t('common.cancel', 'Cancel')}
+              variant="cancel"
+              onPress={() => setBanModal({ open: false, user: null })}
+            />
+          </View>
+          <View style={styles.modalButton}>
+            <GlassButton
+              title={actionLoading
+                ? t('common.saving', 'Saving...')
+                : banModal.user?.status === 'banned'
+                  ? t('admin.users.unban')
+                  : t('admin.users.block')}
+              variant={banModal.user?.status === 'banned' ? 'success' : 'warning'}
+              onPress={handleBanConfirm}
+              disabled={actionLoading}
+            />
+          </View>
         </View>
       </GlassModal>
     </ScrollView>
   );
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: spacing.lg,
+  },
+  header: {
+    marginBottom: spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  headerText: {
+    marginBottom: spacing.md,
+  },
+  pageTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: colors.textPrimary,
+    marginBottom: spacing.xs,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
+  link: {
+    textDecoration: 'none',
+  },
+  filtersRow: {
+    marginBottom: spacing.lg,
+    flexWrap: 'wrap',
+    marginHorizontal: -spacing.xs,
+  },
+  filterButton: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    marginHorizontal: spacing.xs,
+    marginBottom: spacing.sm,
+  },
+  filterButtonActive: {
+    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+  },
+  filterText: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
+  filterTextActive: {
+    color: '#a855f7',
+    fontWeight: '600',
+  },
+  userCell: {
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.sm,
+  },
+  avatarText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#a855f7',
+  },
+  modalText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    lineHeight: 20,
+  },
+  modalInput: {
+    marginBottom: spacing.md,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    marginTop: spacing.xl,
+  },
+  modalButton: {
+    flex: 1,
+    marginHorizontal: spacing.xs,
+  },
+});

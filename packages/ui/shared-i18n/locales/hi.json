@@ -637,6 +637,14 @@
       "users": "उपयोगकर्ता",
       "content": "सामग्री",
       "settings": "सेटिंग्स"
+    },
+    "users": {
+      "roles": {
+        "superAdmin": "सुपर एडमिन",
+        "admin": "एडमिन",
+        "moderator": "मॉडरेटर",
+        "user": "उपयोगकर्ता"
+      }
     }
   },
   "cultureClock": {

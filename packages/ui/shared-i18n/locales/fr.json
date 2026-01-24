@@ -839,6 +839,14 @@
       "users": "Utilisateurs",
       "revenue": "Revenus",
       "subscriptions": "Abonnements"
+    },
+    "users": {
+      "roles": {
+        "superAdmin": "Super Administrateur",
+        "admin": "Administrateur",
+        "moderator": "Modérateur",
+        "user": "Utilisateur"
+      }
     }
   },
   "cultures": {

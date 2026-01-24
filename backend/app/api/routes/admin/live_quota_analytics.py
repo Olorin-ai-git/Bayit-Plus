@@ -15,7 +15,7 @@ from app.models.live_feature_quota import (FeatureType, LiveFeatureQuota,
                                              LiveFeatureUsageSession, UsageSessionStatus)
 from app.models.user import User
 
-router = APIRouter(prefix="/admin/live-quotas", tags=["Admin - Live Quota Analytics"])
+router = APIRouter(prefix="/live-quotas", tags=["Admin - Live Quota Analytics"])
 logger = logging.getLogger(__name__)
 
 
@@ -72,9 +72,11 @@ async def get_system_stats(current_user: User = Depends(has_permission(Permissio
             {"$match": {"started_at": {"$gte": today_start}}},
             {"$group": {"_id": "$feature_type", "total_minutes": {"$sum": {"$divide": ["$duration_seconds", 60]}}, "total_cost": {"$sum": "$estimated_total_cost"}}},
         ]
-        today_results = await LiveFeatureUsageSession.aggregate(today_pipeline).to_list(length=None)
+        today_cursor = LiveFeatureUsageSession.aggregate(today_pipeline)
+        today_results = await today_cursor.to_list()
         month_pipeline = [{"$match": {"started_at": {"$gte": month_start}}}, {"$group": {"_id": None, "total_cost": {"$sum": "$estimated_total_cost"}}}]
-        month_results = await LiveFeatureUsageSession.aggregate(month_pipeline).to_list(length=None)
+        month_cursor = LiveFeatureUsageSession.aggregate(month_pipeline)
+        month_results = await month_cursor.to_list()
         subtitle_minutes_today = 0.0
         dubbing_minutes_today = 0.0
         cost_today = 0.0
@@ -118,7 +120,8 @@ async def get_top_users(
             }},
             {"$sort": {"total_minutes": -1}}, {"$limit": limit},
         ]
-        results = await LiveFeatureUsageSession.aggregate(pipeline).to_list(length=None)
+        cursor = LiveFeatureUsageSession.aggregate(pipeline)
+        results = await cursor.to_list()
         top_users = [
             {"user_id": r["_id"], "total_sessions": r["total_sessions"], "total_minutes": round(r["total_minutes"], 2),
              "total_cost": round(r["total_cost"], 4), "subtitle_minutes": round(r["subtitle_minutes"], 2),

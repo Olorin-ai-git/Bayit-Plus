@@ -459,8 +459,12 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.glassOverlayPurple,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(10, 10, 30, 0.4)',
     borderRadius: borderRadius.xl,
   },
   content: {
@@ -541,11 +545,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: spacing.lg,
-    gap: spacing.md,
   },
   scrollContentMobile: {
     paddingHorizontal: spacing.md,
-    gap: spacing.sm,
   },
   scrollContentRTL: {
     flexDirection: 'row-reverse',
@@ -663,7 +665,6 @@ const styles = StyleSheet.create({
   tags: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.xs,
     marginBottom: spacing.sm,
   },
   tagsRTL: {
@@ -674,11 +675,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.sm,
+    marginRight: spacing.xs,
+    marginBottom: spacing.xs,
   },
   tagMobile: {
     paddingHorizontal: spacing.xs,
     paddingVertical: 2,
     borderRadius: 2,
+    marginRight: spacing.xs,
+    marginBottom: spacing.xs,
   },
   tagText: {
     fontSize: fontSize.xs,
@@ -706,7 +711,6 @@ const styles = StyleSheet.create({
   },
   scoreIndicator: {
     flexDirection: 'row',
-    gap: spacing.xs,
   },
   scoreIndicatorRTL: {
     flexDirection: 'row-reverse',
@@ -716,11 +720,13 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
     backgroundColor: `${colors.text}33`,
+    marginRight: spacing.xs,
   },
   scoreDotMobile: {
     width: 4,
     height: 4,
     borderRadius: 2,
+    marginRight: spacing.xs,
   },
   scoreDotActive: {
     backgroundColor: colors.primary,

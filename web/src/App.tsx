@@ -21,9 +21,31 @@ const LoadingFallback = () => (
 
 // Admin-only route wrapper
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAdmin, isLoading } = useAuthStore()
-  if (isLoading) return <LoadingFallback />
-  if (!isAdmin()) return <Navigate to="/" replace />
+  const { isAdmin, isLoading, user, isAuthenticated, isHydrated } = useAuthStore()
+
+  // DEBUG: Log auth state when component renders
+  console.log('=== AdminRoute Check ===');
+  console.log('isLoading:', isLoading);
+  console.log('isHydrated:', isHydrated);
+  console.log('isAuthenticated:', isAuthenticated);
+  console.log('user:', user);
+  console.log('user.role:', user?.role);
+  console.log('isAdmin():', isAdmin());
+
+  if (isLoading) {
+    console.log('AdminRoute: Showing loading fallback');
+    return <LoadingFallback />
+  }
+
+  if (!isAdmin()) {
+    console.log('AdminRoute: NOT ADMIN - Redirecting to home');
+    console.log('  - User exists:', !!user);
+    console.log('  - User role:', user?.role);
+    console.log('  - Expected roles:', ['super_admin', 'admin', 'content_manager', 'billing_admin', 'support']);
+    return <Navigate to="/" replace />
+  }
+
+  console.log('AdminRoute: Admin check passed ✓');
   return <>{children}</>
 }
 

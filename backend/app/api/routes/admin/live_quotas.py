@@ -15,7 +15,7 @@ from app.models.admin import AuditAction, Permission
 from app.models.user import User
 from app.services.live_feature_quota_service import LiveFeatureQuotaService
 
-router = APIRouter(prefix="/admin/live-quotas", tags=["Admin - Live Quota Management"])
+router = APIRouter(prefix="/live-quotas", tags=["Admin - Live Quota Management"])
 logger = logging.getLogger(__name__)
 
 
