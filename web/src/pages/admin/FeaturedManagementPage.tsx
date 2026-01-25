@@ -6,7 +6,7 @@ import { adminContentService, Content } from '@/services/adminApi'
 import { GlassReorderableList } from '@bayit/shared/ui'
 import { GlassCard, GlassButton, GlassSelect } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
-import { useModal } from '@/contexts/ModalContext'
+import { useNotifications } from '@olorin/glass-ui/hooks'
 import logger from '@/utils/logger'
 import { spacing, colors, borderRadius } from '@olorin/design-tokens'
 
@@ -15,7 +15,7 @@ type ContentType = 'all' | 'movie' | 'series'
 export default function FeaturedManagementPage() {
   const { t } = useTranslation()
   const { isRTL } = useDirection()
-  const { showConfirm } = useModal()
+  const notifications = useNotifications()
   const [items, setItems] = useState<Content[]>([])
   const [originalItems, setOriginalItems] = useState<Content[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -94,21 +94,26 @@ export default function FeaturedManagementPage() {
   }
 
   const handleRemoveFromFeatured = (item: Content) => {
-    showConfirm(
-      t('admin.featured.confirmUnfeature', 'Remove from featured?'),
-      async () => {
-        try {
-          await adminContentService.featureContent(item.id)
-          await loadFeaturedContent()
-        } catch (err: unknown) {
-          const errorObj = err as { detail?: string; message?: string }
-          const msg = errorObj?.message || 'Failed to remove from featured'
-          logger.error(msg, 'FeaturedManagementPage', err)
-          setError(msg)
-        }
+    notifications.show({
+      level: 'warning',
+      message: t('admin.featured.confirmUnfeature', 'Remove from featured?'),
+      dismissable: true,
+      action: {
+        label: t('admin.featured.remove', 'Remove'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await adminContentService.featureContent(item.id)
+            await loadFeaturedContent()
+          } catch (err: unknown) {
+            const errorObj = err as { detail?: string; message?: string }
+            const msg = errorObj?.message || 'Failed to remove from featured'
+            logger.error(msg, 'FeaturedManagementPage', err)
+            setError(msg)
+          }
+        },
       },
-      { destructive: true, confirmText: t('admin.featured.remove', 'Remove') }
-    )
+    })
   }
 
   const filteredItems = items.filter(item => {
