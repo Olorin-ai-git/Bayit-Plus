@@ -12,19 +12,15 @@ import logger from '@/utils/logger';
 // eslint-disable-next-line no-undef
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
-// Single source of truth: .env file (VITE_APP_MODE, REACT_APP_MODE, or NODE_ENV)
+// Single source of truth: .env file (VITE_APP_MODE)
 // TV builds use demo mode
-// Support both Vite (VITE_*) and Webpack (REACT_APP_*) environment variables
+// Vite exposes env vars through import.meta.env
 const getEnvMode = () => {
-  if (typeof process !== 'undefined' && process.env) {
-    // Try VITE_APP_MODE first (for Vite builds)
-    if (process.env.VITE_APP_MODE) return process.env.VITE_APP_MODE;
-    // Try REACT_APP_MODE (for Webpack builds)
-    if (process.env.REACT_APP_MODE) return process.env.REACT_APP_MODE;
-    // Fall back to NODE_ENV
-    if (process.env.NODE_ENV) return process.env.NODE_ENV;
+  // Check if import.meta.env is available (Vite)
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    return import.meta.env.VITE_APP_MODE || import.meta.env.MODE || 'development';
   }
-  // Default fallback
+  // Fallback for non-Vite environments
   return 'development';
 };
 
