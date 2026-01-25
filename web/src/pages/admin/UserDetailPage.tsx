@@ -7,7 +7,7 @@ import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassCard, GlassButton, GlassModal, GlassInput, GlassToggle, GlassView } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
-import { useModal } from '@/contexts/ModalContext';
+import { useNotifications } from '@olorin/glass-ui/hooks';;
 import logger from '@/utils/logger';
 
 interface User {
@@ -56,7 +56,7 @@ const formatCurrency = (amount: number, currency = 'USD') => {
 export default function UserDetailPage() {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
-  const { showConfirm } = useModal();
+  const notifications = useNotifications();
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -103,19 +103,24 @@ export default function UserDetailPage() {
 
   const handleResetPassword = () => {
     if (!user) return;
-    showConfirm(
-      t('admin.users.confirmResetPassword', { email: user.email }),
-      async () => {
-        try {
-          await usersService.resetPassword(user.id);
-          setSuccessMessage(t('admin.users.resetPasswordSent'));
-          setSuccessModalOpen(true);
-        } catch (error) {
-          logger.error('Failed to reset password', 'UserDetailPage', error);
-        }
+    notifications.show({
+      level: 'warning',
+      message: t('admin.users.confirmResetPassword', { email: user.email }),
+      dismissable: true,
+      action: {
+        label: t('common.send', 'Send'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await usersService.resetPassword(user.id);
+            setSuccessMessage(t('admin.users.resetPasswordSent'));
+            setSuccessModalOpen(true);
+          } catch (error) {
+            logger.error('Failed to reset password', 'UserDetailPage', error);
+          }
+        },
       },
-      { confirmText: t('common.send', 'Send') }
-    );
+    });
   };
 
   const handleBan = async () => {
@@ -135,18 +140,23 @@ export default function UserDetailPage() {
 
   const handleUnban = () => {
     if (!user) return;
-    showConfirm(
-      t('admin.users.confirmUnban', { defaultValue: 'Unban user?' }),
-      async () => {
-        try {
-          await usersService.unbanUser(user.id);
-          loadUserData();
-        } catch (error) {
-          logger.error('Failed to unban user', 'UserDetailPage', error);
-        }
+    notifications.show({
+      level: 'warning',
+      message: t('admin.users.confirmUnban', { defaultValue: 'Unban user?' }),
+      dismissable: true,
+      action: {
+        label: t('common.unban', 'Unban'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await usersService.unbanUser(user.id);
+            loadUserData();
+          } catch (error) {
+            logger.error('Failed to unban user', 'UserDetailPage', error);
+          }
+        },
       },
-      { confirmText: t('common.unban', 'Unban') }
-    );
+    });
   };
 
   const handleEdit = () => {
@@ -178,21 +188,26 @@ export default function UserDetailPage() {
 
   const handleDelete = () => {
     if (!user) return;
-    showConfirm(
-      t('admin.users.confirmDelete', { defaultValue: `Are you sure you want to delete ${user.name}? This action cannot be undone.` }),
-      async () => {
-        try {
-          await usersService.deleteUser(user.id);
-          setSuccessMessage(t('admin.users.userDeleted', { defaultValue: 'User deleted successfully' }));
-          setSuccessModalOpen(true);
-          setTimeout(() => navigate('/admin/users'), 1500);
-        } catch (error: any) {
-          logger.error('Failed to delete user', 'UserDetailPage', error);
-          alert(error?.message || 'Failed to delete user');
-        }
+    notifications.show({
+      level: 'warning',
+      message: t('admin.users.confirmDelete', { defaultValue: `Are you sure you want to delete ${user.name}? This action cannot be undone.` }),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await usersService.deleteUser(user.id);
+            setSuccessMessage(t('admin.users.userDeleted', { defaultValue: 'User deleted successfully' }));
+            setSuccessModalOpen(true);
+            setTimeout(() => navigate('/admin/users'), 1500);
+          } catch (error: any) {
+            logger.error('Failed to delete user', 'UserDetailPage', error);
+            alert(error?.message || 'Failed to delete user');
+          }
+        },
       },
-      { confirmText: t('common.delete', 'Delete'), variant: 'danger' }
-    );
+    });
   };
 
   if (loading) {
