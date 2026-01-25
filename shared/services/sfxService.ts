@@ -5,6 +5,10 @@
  */
 
 import { EventEmitter } from 'eventemitter3';
+import { logger } from '../utils/logger';
+
+// Scoped logger for sound effects service
+const sfxLogger = logger.scope('SFX');
 
 export type WizardGesture = 'conjuring' | 'thinking' | 'clapping' | 'cheering';
 
@@ -42,7 +46,10 @@ class SFXService extends EventEmitter {
       // Fallback: check old auth_token key (legacy)
       return localStorage.getItem('auth_token');
     } catch (error) {
-      console.error('[SFX] Error parsing auth token:', error);
+      sfxLogger.error('Error parsing auth token', {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       return null;
     }
   }
@@ -55,18 +62,30 @@ class SFXService extends EventEmitter {
     // Check if already cached and not expired
     const cached = this.cache.get(gesture);
     if (cached && Date.now() - cached.timestamp < this.CACHE_EXPIRY_MS) {
-      console.log(`[SFX] ${gesture} already cached`);
+      sfxLogger.debug('Gesture already cached', {
+        gesture,
+        cacheAge: Date.now() - cached.timestamp,
+      });
       return;
     }
 
-    console.log(`[SFX] Preloading ${gesture} sound effect...`);
+    sfxLogger.info('Preloading sound effect', {
+      gesture,
+    });
 
     try {
       const audioBlob = await this.fetchSFX(gesture);
       this.cacheAudio(gesture, audioBlob);
-      console.log(`[SFX] ${gesture} preloaded successfully`);
+      sfxLogger.info('Sound effect preloaded successfully', {
+        gesture,
+        blobSize: audioBlob.size,
+      });
     } catch (error) {
-      console.error(`[SFX] Failed to preload ${gesture}:`, error);
+      sfxLogger.error('Failed to preload sound effect', {
+        gesture,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       // Don't throw - preload failures shouldn't break the app
     }
   }
@@ -85,7 +104,10 @@ class SFXService extends EventEmitter {
    * Will fetch if not cached
    */
   async play(gesture: WizardGesture): Promise<void> {
-    console.log(`[SFX] Playing ${gesture}...`);
+    sfxLogger.info('Playing sound effect', {
+      gesture,
+      currentlyPlaying: this.isPlaying,
+    });
 
     try {
       // Check cache first
@@ -93,7 +115,10 @@ class SFXService extends EventEmitter {
 
       // Fetch if not cached or expired
       if (!cached || Date.now() - cached.timestamp >= this.CACHE_EXPIRY_MS) {
-        console.log(`[SFX] ${gesture} not in cache, fetching...`);
+        sfxLogger.debug('Sound effect not in cache, fetching', {
+          gesture,
+          cacheExpired: cached ? Date.now() - cached.timestamp >= this.CACHE_EXPIRY_MS : false,
+        });
         const audioBlob = await this.fetchSFX(gesture);
         cached = this.cacheAudio(gesture, audioBlob);
       }
@@ -106,7 +131,11 @@ class SFXService extends EventEmitter {
 
       this.emit('played', gesture);
     } catch (error) {
-      console.error(`[SFX] Failed to play ${gesture}:`, error);
+      sfxLogger.error('Failed to play sound effect', {
+        gesture,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       this.emit('error', { gesture, error });
       throw error;
     }
@@ -159,11 +188,14 @@ class SFXService extends EventEmitter {
    */
   clearCache(): void {
     // Revoke all object URLs to free memory
+    const cacheSize = this.cache.size;
     for (const cached of this.cache.values()) {
       URL.revokeObjectURL(cached.objectUrl);
     }
     this.cache.clear();
-    console.log('[SFX] Cache cleared');
+    sfxLogger.info('Sound effects cache cleared', {
+      itemsCleared: cacheSize,
+    });
   }
 
   private async fetchSFX(gesture: WizardGesture): Promise<Blob> {
@@ -173,7 +205,10 @@ class SFXService extends EventEmitter {
     }
 
     const apiUrl = `${this.getApiEndpoint()}/${gesture}`;
-    console.log(`[SFX] Fetching from: ${apiUrl}`);
+    sfxLogger.debug('Fetching sound effect from API', {
+      gesture,
+      apiUrl,
+    });
 
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -188,7 +223,11 @@ class SFXService extends EventEmitter {
     }
 
     const blob = await response.blob();
-    console.log(`[SFX] Received ${blob.size} bytes for ${gesture}`);
+    sfxLogger.info('Sound effect blob received', {
+      gesture,
+      blobSize: blob.size,
+      contentType: blob.type,
+    });
 
     if (blob.size === 0) {
       throw new Error('API returned empty audio blob');

@@ -53,19 +53,17 @@ async def get_usage_report(
             s for s in sessions if s.feature_type == FeatureType.DUBBING
         ]
         return {
-            "summary": {
-                "total_sessions": total,
-                "total_minutes": round(total_minutes, 2),
-                "total_cost": round(total_cost, 4),
-                "subtitle_sessions": len(subtitle_sessions),
-                "subtitle_minutes": round(
-                    sum(s.duration_seconds / 60.0 for s in subtitle_sessions), 2
-                ),
-                "dubbing_sessions": len(dubbing_sessions),
-                "dubbing_minutes": round(
-                    sum(s.duration_seconds / 60.0 for s in dubbing_sessions), 2
-                ),
-            },
+            "total_sessions": total,
+            "total_minutes": round(total_minutes, 2),
+            "total_cost": round(total_cost, 4),
+            "subtitle_sessions": len(subtitle_sessions),
+            "subtitle_minutes": round(
+                sum(s.duration_seconds / 60.0 for s in subtitle_sessions), 2
+            ),
+            "dubbing_sessions": len(dubbing_sessions),
+            "dubbing_minutes": round(
+                sum(s.duration_seconds / 60.0 for s in dubbing_sessions), 2
+            ),
             "sessions": [
                 {
                     "session_id": s.session_id,
@@ -113,14 +111,16 @@ async def get_system_stats(
                 }
             },
         ]
-        today_cursor = LiveFeatureUsageSession.aggregate(today_pipeline)
-        today_results = await today_cursor.to_list(length=None)
+        today_results = await LiveFeatureUsageSession.aggregate(
+            today_pipeline
+        ).to_list()
         month_pipeline = [
             {"$match": {"started_at": {"$gte": month_start}}},
             {"$group": {"_id": None, "total_cost": {"$sum": "$estimated_total_cost"}}},
         ]
-        month_cursor = LiveFeatureUsageSession.aggregate(month_pipeline)
-        month_results = await month_cursor.to_list(length=None)
+        month_results = await LiveFeatureUsageSession.aggregate(
+            month_pipeline
+        ).to_list()
         subtitle_minutes_today = 0.0
         dubbing_minutes_today = 0.0
         cost_today = 0.0
@@ -147,15 +147,19 @@ async def get_system_stats(
 
 @router.get("/top-users")
 async def get_top_users(
+    start_date: Optional[datetime] = Query(None),
+    end_date: Optional[datetime] = Query(None),
     feature_type: Optional[FeatureType] = Query(None),
-    days: int = Query(30, ge=1, le=365),
     limit: int = Query(20, ge=1, le=100),
     current_user: User = Depends(has_permission(Permission.ANALYTICS_READ)),
 ):
     """Get top users by usage for a time period using MongoDB aggregation."""
     try:
-        start_date = datetime.utcnow() - timedelta(days=days)
-        match_stage = {"$match": {"started_at": {"$gte": start_date}}}
+        if not start_date:
+            start_date = datetime.utcnow() - timedelta(days=30)
+        if not end_date:
+            end_date = datetime.utcnow()
+        match_stage = {"$match": {"started_at": {"$gte": start_date, "$lte": end_date}}}
         if feature_type:
             match_stage["$match"]["feature_type"] = feature_type
         pipeline = [
@@ -189,24 +193,25 @@ async def get_top_users(
             {"$sort": {"total_minutes": -1}},
             {"$limit": limit},
         ]
-        cursor = LiveFeatureUsageSession.aggregate(pipeline)
-        results = await cursor.to_list(length=None)
-        top_users = [
-            {
+        results = await LiveFeatureUsageSession.aggregate(pipeline).to_list()
+
+        # Enrich with user details
+        top_users = []
+        for r in results:
+            user = await User.find_one(User.id == r["_id"])
+            top_users.append({
                 "user_id": r["_id"],
+                "user_name": user.name if user else "Unknown User",
+                "user_email": user.email if user else "unknown@example.com",
                 "total_sessions": r["total_sessions"],
                 "total_minutes": round(r["total_minutes"], 2),
                 "total_cost": round(r["total_cost"], 4),
                 "subtitle_minutes": round(r["subtitle_minutes"], 2),
                 "dubbing_minutes": round(r["dubbing_minutes"], 2),
-            }
-            for r in results
-        ]
-        return {
-            "period_days": days,
-            "feature_type": feature_type.value if feature_type else "all",
-            "top_users": top_users,
-        }
+            })
+
+        period_days = (end_date - start_date).days
+        return top_users
     except Exception as e:
         logger.error(f"Error getting top users: {e}")
         raise HTTPException(status_code=500, detail="Failed to get top users")

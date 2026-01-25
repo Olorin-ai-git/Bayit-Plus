@@ -16,6 +16,10 @@ import { useCallback, useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ttsService } from '../services/ttsService';
 import { voiceCommandProcessor } from '../services/voiceCommandProcessor';
+import { logger } from '../utils/logger';
+
+// Scoped logger for voice response coordination
+const voiceCoordinatorLogger = logger.scope('VoiceCoordinator');
 
 interface ChatResponse {
   message: string;
@@ -74,15 +78,22 @@ export function useVoiceResponseCoordinator(
    */
   const handleVoiceResponse = useCallback(
     async (response: ChatResponse) => {
-      console.log('[VoiceResponseCoordinator] handleVoiceResponse called with:', {
+      voiceCoordinatorLogger.info('Voice response received', {
         hasSpokenResponse: !!response.spoken_response,
         language: response.language,
         hasAction: !!response.action,
+        actionType: response.action?.type,
+        visualAction: response.visual_action,
+        contentIdsCount: response.content_ids?.length,
+        recommendationsCount: response.recommendations?.length,
+        confidence: response.confidence,
         isMounted: isMountedRef.current,
       });
 
       if (!isMountedRef.current) {
-        console.warn('[VoiceResponseCoordinator] Component not mounted, skipping');
+        voiceCoordinatorLogger.warn('Component unmounted, skipping response', {
+          responseId: response.conversation_id,
+        });
         return;
       }
 
@@ -93,8 +104,23 @@ export function useVoiceResponseCoordinator(
       abortControllerRef.current = new AbortController();
 
       try {
-        console.log('[VoiceResponseCoordinator] Starting processing');
-        console.log('[VoiceResponseCoordinator] Full response object:', JSON.stringify(response, null, 2));
+        voiceCoordinatorLogger.info('Starting voice response processing', {
+          conversationId: response.conversation_id,
+          language: response.language,
+          hasSpokenResponse: !!response.spoken_response,
+          actionType: response.action?.type,
+          visualAction: response.visual_action,
+        });
+
+        voiceCoordinatorLogger.debug('Full response details', {
+          message: response.message.substring(0, 100),
+          spokenResponse: response.spoken_response?.substring(0, 100),
+          action: response.action,
+          contentIds: response.content_ids,
+          recommendations: response.recommendations?.map(r => ({ id: r.id, title: r.title })),
+          confidence: response.confidence,
+        });
+
         onProcessingStart?.();
         setIsProcessing(true);
 
@@ -130,31 +156,49 @@ export function useVoiceResponseCoordinator(
             };
 
             const path = pathMap[navigationTarget] || (navigationTarget.startsWith('/') ? navigationTarget : `/${navigationTarget}`);
-            console.log('[VoiceResponseCoordinator] Navigating to:', path, '(target:', navigationTarget + ')');
+            voiceCoordinatorLogger.info('Executing navigation', {
+              path,
+              target: navigationTarget,
+              actionPayload: response.action.payload,
+            });
             // Navigate immediately without waiting for speech to complete
             navigate(path);
           } else {
-            console.warn('[VoiceResponseCoordinator] Navigate action missing path or target:', response.action);
+            voiceCoordinatorLogger.warn('Navigate action missing path/target', {
+              action: response.action,
+              payload: response.action?.payload,
+            });
           }
         }
 
         // Step 3: Execute search if specified
         if (response.action?.type === 'search' && response.action?.payload?.query) {
-          console.log('[VoiceResponseCoordinator] Searching for:', response.action.payload.query);
+          voiceCoordinatorLogger.info('Executing search', {
+            query: response.action.payload.query,
+            confidence: response.confidence,
+          });
           onSearch?.(response.action.payload.query);
         }
 
         // Step 4: Play content if specified
         if (response.action?.type === 'play' && response.content_ids?.[0]) {
-          console.log('[VoiceResponseCoordinator] Playing content:', response.content_ids[0]);
+          voiceCoordinatorLogger.info('Executing play', {
+            contentId: response.content_ids[0],
+            contentIdsCount: response.content_ids.length,
+          });
           onPlay?.(response.content_ids[0]);
         } else if (response.action?.type === 'play') {
-          console.warn('[VoiceResponseCoordinator] Play action missing content_ids:', response.action);
+          voiceCoordinatorLogger.warn('Play action missing content_ids', {
+            action: response.action,
+            payload: response.action?.payload,
+          });
         }
 
         // Step 5: Handle scrolling
         if (response.action?.type === 'scroll' && response.action?.payload?.direction) {
-          console.log('[VoiceResponseCoordinator] Scrolling:', response.action.payload.direction);
+          voiceCoordinatorLogger.info('Executing scroll', {
+            direction: response.action.payload.direction,
+          });
           onScroll?.(response.action.payload.direction);
         }
 
@@ -162,17 +206,27 @@ export function useVoiceResponseCoordinator(
         // Use spoken_response if available (optimized for voice), fall back to message
         const textToSpeak = response.spoken_response || response.message;
 
-        console.log('[VoiceResponseCoordinator] Ready to speak, textToSpeak length:', textToSpeak?.length);
-        console.log('[VoiceResponseCoordinator] textToSpeak:', textToSpeak?.substring(0, 100));
+        voiceCoordinatorLogger.info('Preparing TTS speech', {
+          textLength: textToSpeak?.length,
+          textPreview: textToSpeak?.substring(0, 100),
+          hasSpokenResponse: !!response.spoken_response,
+          language: response.language,
+        });
 
         if (textToSpeak) {
           // Set language for TTS if available
           const language = response.language === 'en' ? 'en' : 'he';
-          console.log('[VoiceResponseCoordinator] Setting TTS language to:', language);
+          voiceCoordinatorLogger.info('Setting TTS language', {
+            language,
+            responseLanguage: response.language,
+          });
           ttsService.setLanguage(language);
 
-          console.log('[VoiceResponseCoordinator] Calling ttsService.speak() with text:', textToSpeak.substring(0, 50));
-          console.log('[VoiceResponseCoordinator] ttsService:', ttsService);
+          voiceCoordinatorLogger.debug('Invoking TTS speak', {
+            textPreview: textToSpeak.substring(0, 50),
+            textLength: textToSpeak.length,
+            language,
+          });
 
           // Speak the response
           await ttsService.speak(
@@ -181,16 +235,26 @@ export function useVoiceResponseCoordinator(
             undefined, // voiceId - uses default
             {
               onStart: () => {
-                console.log('[VoiceResponseCoordinator] TTS started');
+                voiceCoordinatorLogger.info('TTS playback started', {
+                  textLength: textToSpeak.length,
+                  language,
+                });
               },
               onComplete: () => {
-                console.log('[VoiceResponseCoordinator] TTS completed');
+                voiceCoordinatorLogger.info('TTS playback completed', {
+                  textLength: textToSpeak.length,
+                  language,
+                });
                 if (isMountedRef.current) {
                   onProcessingEnd?.();
                 }
               },
               onError: (error) => {
-                console.error('[VoiceResponseCoordinator] TTS Error:', error);
+                voiceCoordinatorLogger.error('TTS playback failed', {
+                  error: error instanceof Error ? error.message : String(error),
+                  textLength: textToSpeak.length,
+                  language,
+                });
                 if (isMountedRef.current) {
                   onProcessingEnd?.();
                 }
@@ -198,16 +262,27 @@ export function useVoiceResponseCoordinator(
             }
           );
         } else {
-          console.warn('[VoiceResponseCoordinator] No text to speak, calling onProcessingEnd');
+          voiceCoordinatorLogger.warn('No text to speak, skipping TTS', {
+            hasSpokenResponse: !!response.spoken_response,
+            hasMessage: !!response.message,
+          });
           onProcessingEnd?.();
         }
       } catch (error) {
         if (error instanceof DOMException && error.name === 'AbortError') {
           // Operation was cancelled - don't process error
+          voiceCoordinatorLogger.debug('Voice response processing cancelled', {
+            conversationId: response.conversation_id,
+          });
           return;
         }
 
-        console.error('Error handling voice response:', error);
+        voiceCoordinatorLogger.error('Voice response processing failed', {
+          error: error instanceof Error ? error.message : String(error),
+          conversationId: response.conversation_id,
+          actionType: response.action?.type,
+          stack: error instanceof Error ? error.stack : undefined,
+        });
         if (isMountedRef.current) {
           onProcessingEnd?.();
         }
@@ -232,11 +307,13 @@ export function useVoiceResponseCoordinator(
         // Use voice command processor to enhance interpretation
         const command = voiceCommandProcessor.processVoiceInput(transcript);
 
-        // Log confidence and intent
-        console.log('[Voice Command]', {
+        voiceCoordinatorLogger.info('Voice command processed', {
+          transcript: transcript.substring(0, 100),
           intent: command.intent,
           confidence: command.confidence,
-          type: command.action.type,
+          actionType: command.action.type,
+          visualAction: command.visualAction,
+          hasSpokenResponse: !!command.spokenResponse,
         });
 
         // Merge command insights with chat response
@@ -251,7 +328,11 @@ export function useVoiceResponseCoordinator(
         // Coordinate the full response execution
         await handleVoiceResponse(enhancedResponse);
       } catch (error) {
-        console.error('Error processing voice command:', error);
+        voiceCoordinatorLogger.error('Voice command processing failed', {
+          error: error instanceof Error ? error.message : String(error),
+          transcript: transcript.substring(0, 100),
+          stack: error instanceof Error ? error.stack : undefined,
+        });
       }
     },
     [handleVoiceResponse]

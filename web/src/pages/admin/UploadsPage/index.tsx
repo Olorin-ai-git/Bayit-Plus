@@ -9,7 +9,8 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { Upload } from 'lucide-react';
 import { spacing } from '@olorin/design-tokens';
 import { GlassPageHeader, GlassTabs } from '@bayit/shared/ui';
-import { GlassDraggableExpander } from '../../../../shared/components/ui/GlassDraggableExpander';
+import { GlassDraggableExpander } from '../../../../../shared/components/ui/GlassDraggableExpander';
+import { ADMIN_PAGE_CONFIG } from '../../../../../shared/utils/adminConstants';
 import { useTranslation } from 'react-i18next';
 
 // Hooks
@@ -43,20 +44,30 @@ const UploadsPage: React.FC = () => {
     // Note: Actual upload will be triggered by ManualUpload component
   };
 
+  const pageConfig = ADMIN_PAGE_CONFIG.uploads;
+  const IconComponent = pageConfig.icon;
+
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Page Header */}
         <GlassPageHeader
           title={t('admin.uploads.title')}
-          icon={<Upload size={24} />}
+          icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+          iconColor={pageConfig.iconColor}
+          iconBackgroundColor={pageConfig.iconBackgroundColor}
           badge={connected ? undefined : 'Disconnected'}
         />
 
-        {/* Queue Dashboard - Always visible */}
-        <View style={styles.section}>
-          <QueueDashboard queueState={queueState} onRefresh={refreshQueue} />
-        </View>
+        {/* Queue Dashboard - Collapsible */}
+        <GlassDraggableExpander
+          title={t('admin.uploads.queueDashboard.title')}
+          defaultExpanded={true}
+        >
+          <View style={styles.section}>
+            <QueueDashboard queueState={queueState} onRefresh={refreshQueue} />
+          </View>
+        </GlassDraggableExpander>
 
         {/* Manual Upload Section */}
         <GlassDraggableExpander
@@ -70,11 +81,11 @@ const UploadsPage: React.FC = () => {
             {/* Upload Mode Tabs */}
             <GlassTabs
               tabs={[
-                { key: 'browser', label: t('admin.uploads.manualUpload.browserUpload') },
-                { key: 'url', label: t('admin.uploads.manualUpload.urlUpload') },
+                { id: 'browser', label: t('admin.uploads.manualUpload.browserUpload') },
+                { id: 'url', label: t('admin.uploads.manualUpload.urlUpload') },
               ]}
               activeTab={uploadMode}
-              onTabChange={(tab) => setUploadMode(tab as UploadMode)}
+              onChange={(tab) => setUploadMode(tab as UploadMode)}
             />
 
             {/* Upload Interface */}

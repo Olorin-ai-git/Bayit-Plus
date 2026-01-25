@@ -1744,6 +1744,7 @@
       "content": "Content Library",
       "categories": "Categories",
       "liveChannels": "Live Channels",
+      "librarian": "Librarian Agent",
       "radioStations": "Radio Stations",
       "podcasts": "Podcasts",
       "settings": "Settings"
@@ -1829,6 +1830,196 @@
       "remove": "Remove",
       "unsavedChanges": "You have unsaved changes"
     },
+    "content": {
+      "subtitle": "Manage your content library",
+      "searchPlaceholder": "Search content...",
+      "emptyMessage": "No content found",
+      "showOnlyWithSubtitles": "With subtitles only",
+      "selectedItems": "{{count}} selected",
+      "batchMerge": "Merge Series",
+      "batchFeature": "Add to Featured",
+      "batchUnfeature": "Remove from Featured",
+      "confirmBatchDelete": "Delete {{count}} items?",
+      "createSuccess": "Content created successfully",
+      "updateSuccess": "Content updated successfully",
+      "deleteSuccess": "Content deleted successfully",
+      "columns": {
+        "title": "Title",
+        "category": "Category",
+        "year": "Year",
+        "subtitles": "Subtitles",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "filters": {
+        "contentType": "Content Type",
+        "allStatus": "All Status",
+        "series": "Series",
+        "movies": "Movies",
+        "podcasts": "Podcasts",
+        "radioStations": "Radio Stations"
+      },
+      "status": {
+        "published": "Published",
+        "draft": "Draft"
+      },
+      "type": {
+        "movie": "Movie",
+        "series": "Series"
+      },
+      "merge": {
+        "mergeSuccess": "Series merged successfully"
+      },
+      "categoryPicker": {
+        "selectPlaceholder": "Select category",
+        "searchPlaceholder": "Search categories...",
+        "noCategories": "No categories available",
+        "noResults": "No categories found",
+        "createNew": "Create new category",
+        "loading": "Loading categories...",
+        "modal": {
+          "title": "Create New Category",
+          "placeholder": "Category name",
+          "create": "Create",
+          "creating": "Creating..."
+        },
+        "errors": {
+          "loadFailed": "Failed to load categories",
+          "createFailed": "Failed to create category"
+        }
+      },
+      "streamUrlInput": {
+        "streamType": "Stream Type",
+        "copied": "URL copied to clipboard",
+        "supportedFormats": {
+          "title": "Supported formats",
+          "hls": "HLS (.m3u8)",
+          "dash": "DASH (.mpd)",
+          "audio": "Audio (.mp3, .aac)"
+        },
+        "errors": {
+          "required": "Stream URL is required",
+          "invalidFormat": "Invalid stream URL format"
+        }
+      },
+      "editor": {
+        "pageTitle": "Edit Content",
+        "pageTitleNew": "Add New Content",
+        "sections": {
+          "basicInfo": "Basic Information",
+          "media": "Media Assets",
+          "streaming": "Streaming Configuration",
+          "details": "Content Details",
+          "publishing": "Publishing Options",
+          "accessControl": "Access Control",
+          "channelDetails": "Channel Details",
+          "stationDetails": "Station Details",
+          "podcastDetails": "Podcast Details",
+          "episodeDetails": "Episode Details"
+        },
+        "fields": {
+          "title": "Title",
+          "titlePlaceholder": "Enter content title",
+          "titleRequired": "Title is required",
+          "description": "Description",
+          "descriptionPlaceholder": "Enter description...",
+          "year": "Year",
+          "yearPlaceholder": "e.g., 2024",
+          "category": "Category",
+          "thumbnail": "Thumbnail (3:4 aspect ratio)",
+          "backdrop": "Backdrop (16:9 aspect ratio)",
+          "streamUrl": "Stream URL",
+          "streamUrlPlaceholder": "https://example.com/stream.m3u8",
+          "streamType": "Stream Type",
+          "drmProtected": "DRM Protected",
+          "drmProtectedLabel": "Enable DRM protection",
+          "duration": "Duration (minutes)",
+          "durationPlaceholder": "e.g., 120",
+          "rating": "Rating",
+          "ratingPlaceholder": "e.g., PG-13",
+          "genre": "Genre",
+          "genrePlaceholder": "e.g., Action",
+          "director": "Director",
+          "directorPlaceholder": "Director name",
+          "isSeries": "Series Content",
+          "isSeriesLabel": "This is a series",
+          "season": "Season",
+          "seasonNumber": "Season number",
+          "episode": "Episode",
+          "episodeNumber": "Episode number",
+          "isPublishedLabel": "Published",
+          "isFeaturedLabel": "Featured",
+          "isKidsContentLabel": "Kids Content",
+          "requiredSubscription": "Subscription Tier",
+          "seriesId": "Series ID",
+          "seriesIdPlaceholder": "Parent series ID",
+          "channelLogo": "Channel Logo",
+          "epgSource": "EPG Source",
+          "epgSourcePlaceholder": "EPG URL",
+          "currentShow": "Current Show",
+          "currentShowPlaceholder": "Show name",
+          "nextShow": "Next Show",
+          "nextShowPlaceholder": "Upcoming show",
+          "stationLogo": "Station Logo",
+          "website": "Website",
+          "websitePlaceholder": "https://station.com",
+          "currentSong": "Current Song",
+          "currentSongPlaceholder": "Song name",
+          "rssFeed": "RSS Feed",
+          "rssFeedPlaceholder": "https://podcast.com/feed.xml",
+          "posterCover": "Poster/Cover",
+          "podcastCategory": "Podcast Category",
+          "podcastCategoryPlaceholder": "e.g., Technology",
+          "author": "Author",
+          "authorPlaceholder": "Author name",
+          "audioUrl": "Audio URL",
+          "audioUrlPlaceholder": "https://example.com/episode.mp3",
+          "audioUrlRequired": "Audio URL is required",
+          "publishedDate": "Published Date",
+          "isActiveLabel": "Active"
+        },
+        "subscriptionTiers": {
+          "basic": "Basic",
+          "premium": "Premium",
+          "family": "Family"
+        },
+        "actions": {
+          "save": "Save",
+          "saving": "Saving...",
+          "cancel": "Cancel"
+        },
+        "imageUpload": {
+          "dropHere": "Drop image here or click to browse",
+          "orPasteUrl": "Or paste image URL below",
+          "urlPlaceholder": "https://example.com/image.jpg",
+          "validateButton": "Validate URL",
+          "validating": "Validating...",
+          "uploading": "Uploading...",
+          "success": "Image uploaded successfully",
+          "errors": {
+            "uploadFailed": "Failed to upload image",
+            "imageOnly": "Only image files are allowed",
+            "invalidUrl": "Invalid image URL"
+          }
+        },
+        "validation": {
+          "titleRequired": "Title is required",
+          "requiredFields": "Please fill in all required fields"
+        }
+      }
+    },
+    "categories": {
+      "form": {
+        "titleNew": "New Category",
+        "titleEdit": "Edit Category",
+        "nameHebrew": "Category name (Hebrew)",
+        "nameHebrewPlaceholder": "Category name (Hebrew)",
+        "nameEnglish": "Category name (English)",
+        "nameEnglishPlaceholder": "Category name (English)",
+        "slug": "Slug",
+        "slugPlaceholder": "Slug (e.g., movies)"
+      }
+    },
     "recordings": {
       "title": "Recordings Management",
       "subtitle": "Manage user recordings across the platform",
@@ -1854,7 +2045,25 @@
       "queuedUploads": "Queued Uploads",
       "queued": "Queued",
       "andMore": "And {{count}} more",
-      "monitoredFolders": "Monitored Folders",
+      "monitoredFolders": {
+        "title": "Monitored Folders",
+        "subtitle": "Configure folders for automatic content monitoring and upload",
+        "noMonitoredFolders": "No monitored folders configured",
+        "configureFoldersHelp": "Click 'Add Folder' to configure monitored folders for automatic uploads",
+        "addFolder": "Add Folder",
+        "editFolder": "Edit Folder",
+        "deleteFolder": "Delete Folder",
+        "confirmDelete": "Delete this folder?",
+        "scanFolder": "Scan Folder",
+        "scanSuccess": "Folder scan completed successfully",
+        "scanFailed": "Failed to scan folder",
+        "contentType": "Content Type",
+        "lastScan": "Last Scan",
+        "filesFound": "Files Found"
+      },
+      "queueDashboard": {
+        "title": "Upload Queue Status"
+      },
       "monitoredFoldersSubtitle": "Configure folders for automatic content monitoring and upload",
       "noMonitoredFolders": "No monitored folders configured",
       "configureFoldersHelp": "Click 'Add Folder' to configure monitored folders for automatic uploads",
@@ -1939,45 +2148,101 @@
       "contentTypes": {
         "movie": "Movies",
         "series": "Series",
+        "podcast": "Podcasts",
         "audiobook": "Audiobooks"
       },
       "errors": {
         "pathRequired": "Folder path is required",
         "loadFailed": "Failed to load upload data",
+        "uploadFailed": "Upload failed",
         "resumeFailed": "Failed to resume upload queue",
         "clearFailed": "Failed to clear upload queue",
         "triggerFailed": "Failed to trigger upload scan",
         "saveFailed": "Failed to save folder configuration",
-        "deleteFailed": "Failed to delete folder"
+        "deleteFailed": "Failed to delete folder",
+        "addFolderFailed": "Failed to add folder",
+        "updateFolderFailed": "Failed to update folder",
+        "deleteFolderFailed": "Failed to delete folder",
+        "scanFolderFailed": "Failed to scan folder",
+        "dryRunFailed": "Dry run failed",
+        "urlValidationFailed": "URL validation failed",
+        "urlUploadFailed": "URL upload failed"
       },
       "manualUpload": {
         "title": "Manual Upload",
         "subtitle": "Drag and drop files or select a folder",
+        "browserUpload": "Browser Upload",
+        "urlUpload": "URL Upload",
+        "dragOrClick": "Drag files here or click to browse",
+        "dropFiles": "Drop files to upload",
         "dropHere": "Drop files here or click to browse",
         "dropHereActive": "Drop files to add them",
         "selectFolder": "Select Folder",
+        "acceptedFormats": "Accepted formats",
+        "maxSize": "Max file size",
         "supportedFormats": "Supports video files (mp4, mkv, avi, mov, webm)",
         "selectedFiles": "Selected Files",
         "noFilesSelected": "No files selected",
+        "fileName": "File Name",
+        "fileSize": "File Size",
+        "progress": "Progress",
+        "status": "Status",
+        "contentType": "Content Type",
         "clearAll": "Clear All",
+        "clearFiles": "Clear Files",
         "uploadSelected": "Upload Selected",
+        "uploadFiles": "Upload Files",
         "selectContentType": "Select content type for upload",
         "uploadingFiles": "Adding {{count}} file(s) to queue...",
-        "uploadSuccess": "Successfully added {{count}} file(s) to queue",
-        "uploadFailed": "Failed to add files to queue",
+        "uploadSuccess": "{{count}} file(s) uploaded successfully",
+        "uploadFailed": "{{count}} file(s) failed to upload",
+        "uploadCancelled": "Upload cancelled",
+        "uploadComplete": "Upload Complete",
+        "successful": "Successful",
+        "failed": "Failed",
+        "total": "Total",
         "fileSize": "Size",
         "removeFile": "Remove",
         "invalidFileType": "Invalid file type. Only video files are supported.",
         "filesCount": "{{count}} file(s) selected",
         "pendingRestore": "{{count}} file(s) pending from previous session",
         "pendingRestoreHint": "Drop or select the same files to restore your upload queue",
-        "invalidFiles": "{{count}} file(s) rejected - invalid type or too large",
+        "invalidFiles": "{{count}} file(s) rejected",
         "validationFailed": "Validation Failed",
         "uploadFailedDetails": "Failed: {{files}}",
-        "uploadFiles": "Upload {{count}} file(s)",
-        "uploadComplete": "Upload Complete",
-        "successful": "{{count}} successful",
-        "failed": "{{count}} failed"
+        "fileList": "File upload list",
+        "dropZoneAriaLabel": "File upload dropzone. Click or press Enter to select files"
+      },
+      "dryRun": {
+        "toggle": "Dry Run Mode",
+        "enabled": "Preview uploads before uploading",
+        "preview": "Upload Preview",
+        "willUpload": "Will Upload",
+        "duplicates": "Duplicates",
+        "errors": "Errors",
+        "proceedWithUpload": "Proceed with {{count}} upload(s)",
+        "skipDuplicates": "Skip duplicates automatically",
+        "new_file": "New upload",
+        "duplicate_hash": "Duplicate (same file hash)",
+        "duplicate_filename": "Duplicate (same filename)",
+        "duplicate_in_queue": "Already in upload queue",
+        "validation_failed": "Validation failed",
+        "existingContent": "Existing content:"
+      },
+      "urlUpload": {
+        "title": "Upload from URL",
+        "placeholder": "Enter URLs (one per line)",
+        "hint": "Enter one URL per line",
+        "validate": "Validate URL",
+        "upload": "Import from URL",
+        "accessible": "URL is accessible",
+        "notAccessible": "URL not accessible",
+        "downloading": "Downloading from URL...",
+        "downloadComplete": "Download complete",
+        "downloadFailed": "Download failed",
+        "invalidUrl": "Invalid URL format",
+        "fileTooLarge": "File too large (max 10GB)",
+        "uploadSuccess": "{{count}} file(s) imported successfully"
       }
     },
     "librarian": {

@@ -23,8 +23,8 @@ import { isDuplicate } from './utils';
 const GlassQueue: React.FC<GlassQueueProps> = ({
   stats,
   activeJob,
-  queue,
-  recentCompleted,
+  queue = [],
+  recentCompleted = [],
   queuePaused = false,
   pauseReason = null,
   loading = false,
@@ -39,7 +39,7 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection: directionFlex } = useDirection();
 
-  const skippedCount = stats.skipped ?? recentCompleted.filter(job => isDuplicate(job)).length;
+  const skippedCount = stats.skipped ?? (recentCompleted || []).filter(job => isDuplicate(job)).length;
   const actualFailures = stats.failed - skippedCount;
 
   if (loading) {

@@ -22,26 +22,45 @@ global.Animated = {
 };
 
 // Mock react-native
-jest.mock('react-native', () => ({
-  Platform: global.Platform,
-  Animated: global.Animated,
-  StyleSheet: {
-    create: (styles) => styles,
-  },
-  View: 'View',
-  Text: 'Text',
-  TouchableOpacity: 'TouchableOpacity',
-  Pressable: 'Pressable',
-  AccessibilityInfo: {
-    announceForAccessibility: jest.fn(),
-  },
-  I18nManager: {
-    isRTL: false,
-  },
-  Vibration: {
-    vibrate: jest.fn(),
-  },
-}));
+jest.mock('react-native', () => {
+  const React = require('react');
+
+  // Component wrapper to map testID to data-testid and onPress to onClick
+  const createComponent = (name) => {
+    return React.forwardRef((props, ref) => {
+      const { testID, onPress, ...rest } = props;
+      const elementProps = testID ? { ...rest, 'data-testid': testID } : rest;
+
+      // Map onPress to onClick for web testing
+      if (onPress) {
+        elementProps.onClick = onPress;
+      }
+
+      return React.createElement(name.toLowerCase(), { ...elementProps, ref });
+    });
+  };
+
+  return {
+    Platform: global.Platform,
+    Animated: global.Animated,
+    StyleSheet: {
+      create: (styles) => styles,
+    },
+    View: createComponent('View'),
+    Text: createComponent('Text'),
+    TouchableOpacity: createComponent('TouchableOpacity'),
+    Pressable: createComponent('Pressable'),
+    AccessibilityInfo: {
+      announceForAccessibility: jest.fn(),
+    },
+    I18nManager: {
+      isRTL: false,
+    },
+    Vibration: {
+      vibrate: jest.fn(),
+    },
+  };
+});
 
 // Mock react-native-linear-gradient
 jest.mock('react-native-linear-gradient', () => 'LinearGradient');

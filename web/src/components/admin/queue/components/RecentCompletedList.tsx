@@ -15,7 +15,7 @@ import { StatusIcon } from './StatusIcon';
 import { format } from 'date-fns';
 
 interface RecentCompletedListProps {
-  recentCompleted: QueueJob[];
+  recentCompleted?: QueueJob[];
   isRTL: boolean;
   textAlign: 'left' | 'right' | 'center';
   onClearCompleted?: () => void;
@@ -23,7 +23,7 @@ interface RecentCompletedListProps {
 }
 
 export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
-  recentCompleted,
+  recentCompleted = [],
   isRTL,
   textAlign,
   onClearCompleted,
@@ -32,7 +32,9 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
   const { t } = useTranslation();
   const [showCompleted, setShowCompleted] = useState(true);
 
-  if (recentCompleted.length === 0) return null;
+  const completedItems = recentCompleted || [];
+
+  if (completedItems.length === 0) return null;
 
   return (
     <View style={[styles.container, { borderTopColor: colors.glassBorder }]}>
@@ -42,7 +44,7 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
           onPress={() => setShowCompleted(!showCompleted)}
         >
           <Text style={[styles.headerText, { textAlign, color: colors.text }]}>
-            {t('admin.uploads.recentCompleted', 'Recently Completed')} ({recentCompleted.length})
+            {t('admin.uploads.recentCompleted', 'Recently Completed')} ({completedItems.length})
           </Text>
           {showCompleted ? (
             <ChevronUp size={20} color={colors.textMuted} />
@@ -71,7 +73,7 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
           nestedScrollEnabled
           showsVerticalScrollIndicator={false}
         >
-          {recentCompleted.map((job) => {
+          {completedItems.map((job) => {
             const isJobDuplicate = isDuplicate(job);
             const badgeVariant = job.status === 'completed'
               ? 'success'

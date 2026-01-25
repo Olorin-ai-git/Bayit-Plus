@@ -115,6 +115,9 @@ class AuditRecoveryService:
                     last_activity = datetime.fromisoformat(
                         last_activity_str.replace("Z", "+00:00")
                     )
+                    # Ensure timezone-aware datetime
+                    if last_activity.tzinfo is None:
+                        last_activity = last_activity.replace(tzinfo=UTC)
                 except (ValueError, AttributeError):
                     pass
 
@@ -139,6 +142,9 @@ class AuditRecoveryService:
                     audit_date_dt = datetime.fromisoformat(
                         str(audit_date).replace("Z", "+00:00")
                     )
+                    # Ensure timezone-aware datetime
+                    if audit_date_dt.tzinfo is None:
+                        audit_date_dt = audit_date_dt.replace(tzinfo=UTC)
                     time_since_start = datetime.now(UTC) - audit_date_dt
                 except (ValueError, AttributeError):
                     time_since_start = timedelta(minutes=0)

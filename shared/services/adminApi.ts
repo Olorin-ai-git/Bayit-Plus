@@ -1077,6 +1077,15 @@ export const createAdminApi = (authStore: AuthStore) => {
 
   getById: (channelId: string): Promise<any> =>
     adminApi.get(`/admin/live-channels/${channelId}`),
+
+  create: (data: any): Promise<any> =>
+    adminApi.post('/admin/live-channels', data),
+
+  update: (channelId: string, data: any): Promise<any> =>
+    adminApi.patch(`/admin/live-channels/${channelId}`, data),
+
+  delete: (channelId: string): Promise<void> =>
+    adminApi.delete(`/admin/live-channels/${channelId}`),
 };
 
   // ============================================

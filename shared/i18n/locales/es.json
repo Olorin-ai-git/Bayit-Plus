@@ -1975,6 +1975,196 @@
       "remove": "Quitar",
       "unsavedChanges": "Tienes cambios sin guardar"
     },
+    "content": {
+      "subtitle": "Administre su biblioteca de contenido",
+      "searchPlaceholder": "Buscar contenido...",
+      "emptyMessage": "No se encontró contenido",
+      "showOnlyWithSubtitles": "Solo con subtítulos",
+      "selectedItems": "{{count}} seleccionado(s)",
+      "batchMerge": "Fusionar Series",
+      "batchFeature": "Agregar a Destacados",
+      "batchUnfeature": "Quitar de Destacados",
+      "confirmBatchDelete": "¿Eliminar {{count}} elemento(s)?",
+      "createSuccess": "Contenido creado exitosamente",
+      "updateSuccess": "Contenido actualizado exitosamente",
+      "deleteSuccess": "Contenido eliminado exitosamente",
+      "columns": {
+        "title": "Título",
+        "category": "Categoría",
+        "year": "Año",
+        "subtitles": "Subtítulos",
+        "status": "Estado",
+        "actions": "Acciones"
+      },
+      "filters": {
+        "contentType": "Tipo de Contenido",
+        "allStatus": "Todos los Estados",
+        "series": "Series",
+        "movies": "Películas",
+        "podcasts": "Podcasts",
+        "radioStations": "Estaciones de Radio"
+      },
+      "status": {
+        "published": "Publicado",
+        "draft": "Borrador"
+      },
+      "type": {
+        "movie": "Película",
+        "series": "Serie"
+      },
+      "merge": {
+        "mergeSuccess": "Serie fusionada exitosamente"
+      },
+      "categoryPicker": {
+        "selectPlaceholder": "Seleccionar categoría",
+        "searchPlaceholder": "Buscar categorías...",
+        "noCategories": "No hay categorías disponibles",
+        "noResults": "No se encontraron categorías",
+        "createNew": "Crear nueva categoría",
+        "loading": "Cargando categorías...",
+        "modal": {
+          "title": "Crear Nueva Categoría",
+          "placeholder": "Nombre de la categoría",
+          "create": "Crear",
+          "creating": "Creando..."
+        },
+        "errors": {
+          "loadFailed": "Error al cargar categorías",
+          "createFailed": "Error al crear categoría"
+        }
+      },
+      "streamUrlInput": {
+        "streamType": "Tipo de Transmisión",
+        "copied": "URL copiada al portapapeles",
+        "supportedFormats": {
+          "title": "Formatos soportados",
+          "hls": "HLS (.m3u8)",
+          "dash": "DASH (.mpd)",
+          "audio": "Audio (.mp3, .aac)"
+        },
+        "errors": {
+          "required": "La URL de transmisión es requerida",
+          "invalidFormat": "Formato de URL de transmisión inválido"
+        }
+      },
+      "editor": {
+        "pageTitle": "Editar Contenido",
+        "pageTitleNew": "Agregar Nuevo Contenido",
+        "sections": {
+          "basicInfo": "Información Básica",
+          "media": "Recursos Multimedia",
+          "streaming": "Configuración de Transmisión",
+          "details": "Detalles del Contenido",
+          "publishing": "Opciones de Publicación",
+          "accessControl": "Control de Acceso",
+          "channelDetails": "Detalles del Canal",
+          "stationDetails": "Detalles de la Estación",
+          "podcastDetails": "Detalles del Podcast",
+          "episodeDetails": "Detalles del Episodio"
+        },
+        "fields": {
+          "title": "Título",
+          "titlePlaceholder": "Ingrese el título del contenido",
+          "titleRequired": "El título es requerido",
+          "description": "Descripción",
+          "descriptionPlaceholder": "Ingrese la descripción...",
+          "year": "Año",
+          "yearPlaceholder": "ej., 2024",
+          "category": "Categoría",
+          "thumbnail": "Miniatura (relación de aspecto 3:4)",
+          "backdrop": "Fondo (relación de aspecto 16:9)",
+          "streamUrl": "URL de Transmisión",
+          "streamUrlPlaceholder": "https://ejemplo.com/stream.m3u8",
+          "streamType": "Tipo de Transmisión",
+          "drmProtected": "Protegido con DRM",
+          "drmProtectedLabel": "Habilitar protección DRM",
+          "duration": "Duración (minutos)",
+          "durationPlaceholder": "ej., 120",
+          "rating": "Clasificación",
+          "ratingPlaceholder": "ej., PG-13",
+          "genre": "Género",
+          "genrePlaceholder": "ej., Acción",
+          "director": "Director",
+          "directorPlaceholder": "Nombre del director",
+          "isSeries": "Contenido de Serie",
+          "isSeriesLabel": "Esto es una serie",
+          "season": "Temporada",
+          "seasonNumber": "Número de temporada",
+          "episode": "Episodio",
+          "episodeNumber": "Número de episodio",
+          "isPublishedLabel": "Publicado",
+          "isFeaturedLabel": "Destacado",
+          "isKidsContentLabel": "Contenido Infantil",
+          "requiredSubscription": "Nivel de Suscripción",
+          "seriesId": "ID de Serie",
+          "seriesIdPlaceholder": "ID de serie padre",
+          "channelLogo": "Logo del Canal",
+          "epgSource": "Fuente EPG",
+          "epgSourcePlaceholder": "URL del EPG",
+          "currentShow": "Programa Actual",
+          "currentShowPlaceholder": "Nombre del programa",
+          "nextShow": "Próximo Programa",
+          "nextShowPlaceholder": "Programa próximo",
+          "stationLogo": "Logo de la Estación",
+          "website": "Sitio Web",
+          "websitePlaceholder": "https://estacion.com",
+          "currentSong": "Canción Actual",
+          "currentSongPlaceholder": "Nombre de la canción",
+          "rssFeed": "Feed RSS",
+          "rssFeedPlaceholder": "https://podcast.com/feed.xml",
+          "posterCover": "Póster/Portada",
+          "podcastCategory": "Categoría del Podcast",
+          "podcastCategoryPlaceholder": "ej., Tecnología",
+          "author": "Autor",
+          "authorPlaceholder": "Nombre del autor",
+          "audioUrl": "URL de Audio",
+          "audioUrlPlaceholder": "https://ejemplo.com/episodio.mp3",
+          "audioUrlRequired": "La URL de audio es requerida",
+          "publishedDate": "Fecha de Publicación",
+          "isActiveLabel": "Activo"
+        },
+        "subscriptionTiers": {
+          "basic": "Básico",
+          "premium": "Premium",
+          "family": "Familiar"
+        },
+        "actions": {
+          "save": "Guardar",
+          "saving": "Guardando...",
+          "cancel": "Cancelar"
+        },
+        "imageUpload": {
+          "dropHere": "Suelta la imagen aquí o haz clic para navegar",
+          "orPasteUrl": "O pega la URL de la imagen a continuación",
+          "urlPlaceholder": "https://ejemplo.com/imagen.jpg",
+          "validateButton": "Validar URL",
+          "validating": "Validando...",
+          "uploading": "Subiendo...",
+          "success": "Imagen subida exitosamente",
+          "errors": {
+            "uploadFailed": "Error al subir la imagen",
+            "imageOnly": "Solo se permiten archivos de imagen",
+            "invalidUrl": "URL de imagen inválida"
+          }
+        },
+        "validation": {
+          "titleRequired": "El título es requerido",
+          "requiredFields": "Por favor complete todos los campos requeridos"
+        }
+      }
+    },
+    "categories": {
+      "form": {
+        "titleNew": "Nueva Categoría",
+        "titleEdit": "Editar Categoría",
+        "nameHebrew": "Nombre de categoría (Hebreo)",
+        "nameHebrewPlaceholder": "Nombre de categoría (Hebreo)",
+        "nameEnglish": "Nombre de categoría (Inglés)",
+        "nameEnglishPlaceholder": "Nombre de categoría (Inglés)",
+        "slug": "Slug",
+        "slugPlaceholder": "Slug (ej., peliculas)"
+      }
+    },
     "recordings": {
       "title": "Gestión de Grabaciones",
       "subtitle": "Administrar grabaciones de usuarios en la plataforma",
@@ -2000,8 +2190,26 @@
       "queuedUploads": "Cargas en Cola",
       "queued": "En Cola",
       "andMore": "Y {{count}} más",
-      "monitoredFolders": "Carpetas Monitoreadas",
-      "monitoredFoldersSubtitle": "Configure folders for automatic content monitoring and upload",
+      "monitoredFolders": {
+        "title": "Carpetas Monitoreadas",
+        "subtitle": "Configurar carpetas para monitoreo automático de contenido y carga",
+        "noMonitoredFolders": "No hay carpetas monitoreadas configuradas",
+        "configureFoldersHelp": "Haga clic en 'Agregar Carpeta' para configurar carpetas monitoreadas para cargas automáticas",
+        "addFolder": "Agregar Carpeta",
+        "editFolder": "Editar Carpeta",
+        "deleteFolder": "Eliminar Carpeta",
+        "confirmDelete": "¿Eliminar esta carpeta?",
+        "scanFolder": "Escanear Carpeta",
+        "scanSuccess": "Escaneo de carpeta completado exitosamente",
+        "scanFailed": "Error al escanear carpeta",
+        "contentType": "Tipo de Contenido",
+        "lastScan": "Último Escaneo",
+        "filesFound": "Archivos Encontrados"
+      },
+      "queueDashboard": {
+        "title": "Estado de Cola de Carga"
+      },
+      "monitoredFoldersSubtitle": "Configurar carpetas para monitoreo automático de contenido y carga",
       "noMonitoredFolders": "No hay carpetas monitoreadas configuradas",
       "configureFoldersHelp": "Haga clic en 'Agregar Carpeta' para configurar carpetas monitoreadas para cargas automáticas",
       "addFolder": "Agregar Carpeta",

@@ -6,6 +6,10 @@
  */
 
 import { ttsService } from '../services/ttsService';
+import { logger } from './logger';
+
+// Scoped logger for search TTS
+const searchTTSLogger = logger.scope('SearchTTS');
 
 interface SearchResult {
   id: string;
@@ -99,9 +103,31 @@ export function speakSearchResult(
   const text = formatSearchResultForSpeech(result, language, includeMetadata);
 
   ttsService.speak(text, priority, undefined, {
-    onStart: () => console.log(`[SearchTTS] Speaking: ${result.title}`),
-    onComplete: () => console.log(`[SearchTTS] Completed: ${result.title}`),
-    onError: (error) => console.error(`[SearchTTS] Error speaking ${result.title}:`, error),
+    onStart: () => {
+      searchTTSLogger.info('Speaking search result', {
+        title: result.title,
+        resultId: result.id,
+        language,
+        priority,
+        textLength: text.length,
+      });
+    },
+    onComplete: () => {
+      searchTTSLogger.info('Completed speaking search result', {
+        title: result.title,
+        resultId: result.id,
+        language,
+      });
+    },
+    onError: (error) => {
+      searchTTSLogger.error('Error speaking search result', {
+        title: result.title,
+        resultId: result.id,
+        language,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+    },
   });
 }
 

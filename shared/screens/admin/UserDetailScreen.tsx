@@ -25,10 +25,14 @@ import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { AdminStackParamList } from '../../navigation/AdminNavigator';
 import { formatDate, formatCurrency } from '../../utils/formatters';
 import { getRoleColor, getRoleLabel } from '../../utils/adminConstants';
+import { logger } from '../../utils/logger';
 
 type UserDetailRouteProp = RouteProp<AdminStackParamList, 'UserDetail'>;
 
 type TabType = 'profile' | 'permissions' | 'activity' | 'billing' | 'subscription';
+
+// Scoped logger for user detail screen
+const userDetailLogger = logger.scope('Admin:UserDetail');
 
 export const UserDetailScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -88,7 +92,11 @@ export const UserDetailScreen: React.FC = () => {
         permissions: userData.permissions || [],
       });
     } catch (err) {
-      console.error('Error loading user:', err);
+      userDetailLogger.error('Error loading user', {
+        userId,
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       const errorMessage = err instanceof Error ? err.message : 'Failed to load user data';
       setError(errorMessage);
     } finally {
@@ -142,7 +150,18 @@ export const UserDetailScreen: React.FC = () => {
         loadUserData();
       }
     } catch (error) {
-      console.error('Error saving user:', error);
+      userDetailLogger.error('Error saving user', {
+        isNewUser,
+        userId: userId || 'new',
+        formData: {
+          name: formData.name,
+          email: formData.email,
+          role: formData.role,
+          is_active: formData.is_active,
+        },
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       notifications.showError(
         t('admin.users.saveErrorMessage', 'Failed to save user. Please try again.'),
         t('admin.users.saveError', 'Error')
@@ -161,7 +180,13 @@ export const UserDetailScreen: React.FC = () => {
       setShowRoleModal(false);
       loadUserData();
     } catch (error) {
-      console.error('Error updating role:', error);
+      userDetailLogger.error('Error updating role', {
+        userId,
+        newRole,
+        permissions: formData.permissions,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     } finally {
       setSaving(false);
     }
@@ -187,7 +212,11 @@ export const UserDetailScreen: React.FC = () => {
         t('admin.users.passwordReset', 'Password Reset')
       );
     } catch (error) {
-      console.error('Error resetting password:', error);
+      userDetailLogger.error('Error resetting password', {
+        userId,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 
@@ -206,7 +235,11 @@ export const UserDetailScreen: React.FC = () => {
             await usersService.banUser(userId!, 'Banned by admin');
             loadUserData();
           } catch (error) {
-            console.error('Error banning user:', error);
+            userDetailLogger.error('Error banning user', {
+              userId,
+              error: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            });
           }
         },
       },
@@ -228,7 +261,11 @@ export const UserDetailScreen: React.FC = () => {
             await usersService.deleteUser(userId!);
             navigation.goBack();
           } catch (error) {
-            console.error('Error deleting user:', error);
+            userDetailLogger.error('Error deleting user', {
+              userId,
+              error: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            });
           }
         },
       },

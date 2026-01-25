@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { View, Text, ScrollView, StyleSheet } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, Image } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Plus, Edit, Trash2, AlertCircle, X } from 'lucide-react'
+import { Plus, Edit, Trash2, AlertCircle, X, Folder } from 'lucide-react'
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
 import { GlassPageHeader, GlassButton } from '@bayit/shared/ui'
 import { GlassTable, GlassTableCell, type GlassTableColumn } from '@bayit/shared/ui/web'
@@ -36,15 +36,35 @@ export default function CategoriesPage() {
   const columns: GlassTableColumn<Category>[] = useMemo(
     () => [
       {
+        key: 'thumbnail',
+        label: t('admin.content.columns.icon', 'Icon'),
+        width: 80,
+        align: 'center',
+        render: (thumbnail: string | undefined, item: Category) => (
+          <View style={styles.thumbnailContainer}>
+            {thumbnail ? (
+              <Image
+                source={{ uri: thumbnail }}
+                style={styles.thumbnailImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={styles.thumbnailPlaceholder}>
+                <Folder size={20} color={colors.textMuted} />
+              </View>
+            )}
+          </View>
+        ),
+      },
+      {
         key: 'name',
         label: t('admin.content.columns.name', 'Name'),
         align: isRTL ? 'right' : 'left',
         render: (name: string, item: Category) => (
-          <GlassTableCell.TwoLine
-            primary={name}
-            secondary={item.name_en}
-            align={isRTL ? 'right' : 'left'}
-          />
+          <View>
+            <Text style={styles.nameText}>{name}</Text>
+            {item.name_en && <Text style={styles.nameSecondary}>{item.name_en}</Text>}
+          </View>
         ),
       },
       {
@@ -53,7 +73,7 @@ export default function CategoriesPage() {
         width: 150,
         align: isRTL ? 'right' : 'left',
         render: (slug: string) => (
-          <Text style={[styles.cellText, { textAlign: isRTL ? 'right' : 'left' }]}>{slug}</Text>
+          <Text style={[styles.slugText, { textAlign: isRTL ? 'right' : 'left' }]}>{slug}</Text>
         ),
       },
       {
@@ -62,7 +82,7 @@ export default function CategoriesPage() {
         width: 80,
         align: isRTL ? 'right' : 'left',
         render: (order: number) => (
-          <Text style={[styles.cellText, { textAlign: isRTL ? 'right' : 'left' }]}>{order}</Text>
+          <Text style={[styles.orderText, { textAlign: isRTL ? 'right' : 'left' }]}>{order}</Text>
         ),
       },
       {
@@ -81,22 +101,28 @@ export default function CategoriesPage() {
       {
         key: 'actions',
         label: '',
-        width: 90,
+        width: 100,
         align: 'center',
         render: (_: any, item: Category) => (
-          <GlassTableCell.Actions isRTL={isRTL}>
-            <GlassTableCell.ActionButton
+          <View style={[styles.actionsCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <GlassButton
+              variant="ghost"
+              size="sm"
               onPress={() => handleEdit(item)}
-              icon={<Edit size={16} color={colors.info.DEFAULT} />}
-              variant="primary"
+              icon={<Edit size={18} color="#60a5fa" />}
+              style={styles.actionButton}
+              accessibilityLabel={t('admin.categories.editCategory', { defaultValue: 'Edit category' })}
             />
-            <GlassTableCell.ActionButton
+            <GlassButton
+              variant="ghost"
+              size="sm"
               onPress={() => handleDelete(item.id)}
-              icon={<Trash2 size={16} color={colors.error.DEFAULT} />}
-              variant="danger"
               disabled={deleting === item.id}
+              icon={<Trash2 size={18} color="#f87171" />}
+              style={[styles.actionButton, deleting === item.id && styles.disabledButton]}
+              accessibilityLabel={t('admin.categories.deleteCategory', { defaultValue: 'Delete category' })}
             />
-          </GlassTableCell.Actions>
+          </View>
         ),
       },
     ],
@@ -169,11 +195,66 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: spacing.lg,
   },
+  thumbnailContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: borderRadius.md,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  thumbnailImage: {
+    width: '100%',
+    height: '100%',
+  },
+  thumbnailPlaceholder: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  },
+  nameText: {
+    fontSize: fontSize.md,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  nameSecondary: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  slugText: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    fontFamily: 'monospace',
+    fontWeight: '500',
+  },
+  orderText: {
+    fontSize: fontSize.md,
+    color: colors.text,
+    fontWeight: '600',
+  },
   actionsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: spacing.lg,
+  },
+  actionsCell: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionButton: {
+    minWidth: 44,
+    minHeight: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  disabledButton: {
+    opacity: 0.5,
   },
   errorContainer: {
     flexDirection: 'row',

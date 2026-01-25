@@ -14,14 +14,16 @@ import { StatusIcon } from './StatusIcon';
 import { format } from 'date-fns';
 
 interface QueuedItemsListProps {
-  queue: QueueJob[];
+  queue?: QueueJob[];
   isRTL: boolean;
   textAlign: 'left' | 'right' | 'center';
 }
 
-export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue, isRTL, textAlign }) => {
+export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue = [], isRTL, textAlign }) => {
   const { t } = useTranslation();
   const [showQueue, setShowQueue] = useState(true);
+
+  const queueItems = queue || [];
 
   return (
     <View style={[styles.container, { borderTopColor: colors.glassBorder }]}>
@@ -30,7 +32,7 @@ export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue, isRTL, 
         onPress={() => setShowQueue(!showQueue)}
       >
         <Text style={[styles.headerText, { textAlign, color: colors.text }]}>
-          {t('admin.uploads.queuedItems', 'Queued')} ({queue.length})
+          {t('admin.uploads.queuedItems', 'Queued')} ({queueItems.length})
         </Text>
         {showQueue ? (
           <ChevronUp size={20} color={colors.textMuted} />
@@ -45,12 +47,12 @@ export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue, isRTL, 
           nestedScrollEnabled
           showsVerticalScrollIndicator={false}
         >
-          {queue.length === 0 ? (
+          {queueItems.length === 0 ? (
             <Text style={[styles.emptyText, { textAlign, color: colors.textMuted }]}>
               {t('admin.uploads.noQueuedItems', 'No items in queue')}
             </Text>
           ) : (
-            queue.map((job) => (
+            queueItems.map((job) => (
               <View key={job.job_id} style={[styles.jobCard, { backgroundColor: colors.backgroundLight, borderColor: colors.glassBorder }]}>
                 <View style={[styles.jobRow, isRTL && styles.rowReverse]}>
                   <StatusIcon status={job.status} job={job} />

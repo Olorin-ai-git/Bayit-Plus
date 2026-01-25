@@ -4,10 +4,10 @@
  */
 
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { GlassButton, GlassConfirmDialog } from '@bayit/shared/ui';
-import { Plus } from 'lucide-react';
-import { spacing } from '@olorin/design-tokens';
+import { View, StyleSheet, ScrollView, Text } from 'react-native';
+import { GlassButton, GlassModal, GlassCard } from '@bayit/shared/ui';
+import { Plus, AlertTriangle } from 'lucide-react';
+import { spacing, colors, fontSize } from '@olorin/design-tokens';
 import { useTranslation } from 'react-i18next';
 import { useMonitoredFolders } from '../../hooks/useMonitoredFolders';
 import { FolderCard } from './FolderCard';
@@ -47,6 +47,10 @@ export const MonitoredFolders: React.FC = () => {
     setShowDeleteConfirm(true);
   };
 
+  const handleScan = (folder: MonitoredFolder) => {
+    scanFolder(folder._id);
+  };
+
   const confirmDelete = async () => {
     if (folderToDelete) {
       await deleteFolder(folderToDelete._id);
@@ -64,13 +68,13 @@ export const MonitoredFolders: React.FC = () => {
       </View>
 
       <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
-        {folders.map((folder) => (
+        {folders.map((folder, index) => (
           <FolderCard
-            key={folder._id}
+            key={folder._id || `folder-${index}`}
             folder={folder}
             onEdit={handleEdit}
             onDelete={handleDelete}
-            onScan={scanFolder}
+            onScan={handleScan}
             actionInProgress={actionInProgress}
           />
         ))}
@@ -84,19 +88,42 @@ export const MonitoredFolders: React.FC = () => {
         saving={actionInProgress}
       />
 
-      <GlassConfirmDialog
+      <GlassModal
         visible={showDeleteConfirm}
-        title={t('admin.uploads.monitoredFolders.confirmDelete')}
-        message={folderToDelete ? `${folderToDelete.name} - ${folderToDelete.path}` : ''}
-        onConfirm={confirmDelete}
-        onCancel={() => {
+        onClose={() => {
           setShowDeleteConfirm(false);
           setFolderToDelete(null);
         }}
-        confirmText={t('common.delete')}
-        cancelText={t('common.cancel')}
-        variant="destructive"
-      />
+        title={t('admin.uploads.monitoredFolders.confirmDelete')}
+      >
+        <GlassCard style={styles.confirmDialog}>
+          <View style={styles.confirmIcon}>
+            <AlertTriangle size={48} color={colors.error} />
+          </View>
+          <Text style={styles.confirmMessage}>
+            {folderToDelete ? `${folderToDelete.name} - ${folderToDelete.path}` : ''}
+          </Text>
+          <View style={styles.confirmActions}>
+            <GlassButton
+              onPress={() => {
+                setShowDeleteConfirm(false);
+                setFolderToDelete(null);
+              }}
+              variant="secondary"
+              style={styles.confirmButton}
+            >
+              {t('common.cancel')}
+            </GlassButton>
+            <GlassButton
+              onPress={confirmDelete}
+              variant="primary"
+              style={[styles.confirmButton, styles.deleteButton]}
+            >
+              {t('common.delete')}
+            </GlassButton>
+          </View>
+        </GlassCard>
+      </GlassModal>
     </View>
   );
 };
@@ -111,5 +138,30 @@ const styles = StyleSheet.create({
   },
   list: {
     gap: spacing.md,
+  },
+  confirmDialog: {
+    padding: spacing.xl,
+    gap: spacing.lg,
+    alignItems: 'center',
+  },
+  confirmIcon: {
+    marginBottom: spacing.md,
+  },
+  confirmMessage: {
+    fontSize: fontSize.md,
+    color: colors.text,
+    textAlign: 'center',
+    marginBottom: spacing.lg,
+  },
+  confirmActions: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    width: '100%',
+  },
+  confirmButton: {
+    flex: 1,
+  },
+  deleteButton: {
+    backgroundColor: colors.error,
   },
 });

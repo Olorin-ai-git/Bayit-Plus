@@ -23,6 +23,10 @@ import { User, Subscription } from '../../types/rbac';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { formatDate } from '../../utils/formatters';
 import { getRoleColor } from '../../utils/adminConstants';
+import { logger } from '../../utils/logger';
+
+// Scoped logger for users list screen
+const usersListLogger = logger.scope('Admin:UsersList');
 
 type UserStatus = 'active' | 'inactive' | 'all';
 
@@ -63,7 +67,11 @@ export const UsersListScreen: React.FC = () => {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load users';
       setError(message);
-      console.error('Error loading users:', err);
+      usersListLogger.error('Error loading users', {
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+        filters,
+      });
     } finally {
       setLoading(false);
     }
@@ -120,7 +128,12 @@ export const UsersListScreen: React.FC = () => {
             await usersService.deleteUser(user.id);
             loadUsers();
           } catch (error) {
-            console.error('Error deleting user:', error);
+            usersListLogger.error('Error deleting user', {
+              userId: user.id,
+              userName: user.name,
+              error: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            });
           }
         },
       },
@@ -132,7 +145,12 @@ export const UsersListScreen: React.FC = () => {
       await usersService.banUser(user.id, 'Banned by admin');
       loadUsers();
     } catch (error) {
-      console.error('Error banning user:', error);
+      usersListLogger.error('Error banning user', {
+        userId: user.id,
+        userName: user.name,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 
@@ -141,7 +159,12 @@ export const UsersListScreen: React.FC = () => {
       await usersService.resetPassword(user.id);
       notifications.showSuccess(t('admin.users.passwordResetSuccess', 'Password reset email sent successfully.'), t('admin.users.passwordReset', 'Password Reset'));
     } catch (error) {
-      console.error('Error resetting password:', error);
+      usersListLogger.error('Error resetting password', {
+        userId: user.id,
+        userName: user.name,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 
@@ -161,7 +184,12 @@ export const UsersListScreen: React.FC = () => {
             setSelectedUsers([]);
             loadUsers();
           } catch (error) {
-            console.error('Error bulk deleting users:', error);
+            usersListLogger.error('Error bulk deleting users', {
+              selectedUserIds: selectedUsers,
+              count: selectedUsers.length,
+              error: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            });
           }
         },
       },
@@ -174,7 +202,12 @@ export const UsersListScreen: React.FC = () => {
       setSelectedUsers([]);
       loadUsers();
     } catch (error) {
-      console.error('Error bulk banning users:', error);
+      usersListLogger.error('Error bulk banning users', {
+        selectedUserIds: selectedUsers,
+        count: selectedUsers.length,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 

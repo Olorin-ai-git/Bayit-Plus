@@ -11,9 +11,22 @@ import { useNotifications } from '../hooks/useNotifications';
 import { useNotificationStore } from '../stores/notificationStore';
 
 // Mock GlassToastContainer
-jest.mock('../native/components/GlassToastContainer', () => ({
-  GlassToastContainer: () => null,
-}));
+jest.mock('../native/components/GlassToastContainer', () => {
+  const React = require('react');
+  return {
+    GlassToastContainer: () => {
+      const { useNotificationStore } = require('../stores/notificationStore');
+      const { useEffect } = React;
+
+      useEffect(() => {
+        useNotificationStore.getState().setProviderMounted(true);
+        return () => useNotificationStore.getState().setProviderMounted(false);
+      }, []);
+
+      return null;
+    },
+  };
+});
 
 describe('Notification System Integration', () => {
   beforeEach(() => {
@@ -47,7 +60,7 @@ describe('Notification System Integration', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       const button = getByTestId('show-button');
@@ -96,7 +109,7 @@ describe('Notification System Integration', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       fireEvent.press(getByTestId('show-info'));
@@ -148,7 +161,7 @@ describe('Notification System Integration', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       fireEvent.press(getByTestId('show-button'));
@@ -197,7 +210,7 @@ describe('Notification System Integration', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       fireEvent.press(getByTestId('show-multiple'));
@@ -246,7 +259,7 @@ describe('Notification System Integration', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       fireEvent.press(getByTestId('api-button'));
@@ -295,7 +308,7 @@ describe('Notification System Integration', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       fireEvent.press(getByTestId('delete-button'));
@@ -336,7 +349,7 @@ describe('Notification System Integration', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       fireEvent.press(getByTestId('show-duplicate'));
@@ -375,7 +388,7 @@ describe('Notification System Integration', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       fireEvent.press(getByTestId('show-mixed'));
@@ -416,7 +429,7 @@ describe('Notification System Integration', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       fireEvent.press(getByTestId('show-many'));
@@ -453,7 +466,7 @@ describe('Notification System Integration', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       // Use hook API

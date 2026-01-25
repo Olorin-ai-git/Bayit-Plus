@@ -1652,6 +1652,196 @@
       "remove": "הסר",
       "unsavedChanges": "יש לך שינויים שלא נשמרו"
     },
+    "content": {
+      "subtitle": "נהל את ספריית התוכן שלך",
+      "searchPlaceholder": "חפש תוכן...",
+      "emptyMessage": "לא נמצא תוכן",
+      "showOnlyWithSubtitles": "רק עם כתוביות",
+      "selectedItems": "{{count}} נבחרו",
+      "batchMerge": "מזג סדרות",
+      "batchFeature": "הוסף למובחר",
+      "batchUnfeature": "הסר מהמובחר",
+      "confirmBatchDelete": "למחוק {{count}} פריטים?",
+      "createSuccess": "התוכן נוצר בהצלחה",
+      "updateSuccess": "התוכן עודכן בהצלחה",
+      "deleteSuccess": "התוכן נמחק בהצלחה",
+      "columns": {
+        "title": "כותרת",
+        "category": "קטגוריה",
+        "year": "שנה",
+        "subtitles": "כתוביות",
+        "status": "סטטוס",
+        "actions": "פעולות"
+      },
+      "filters": {
+        "contentType": "סוג תוכן",
+        "allStatus": "כל הסטטוסים",
+        "series": "סדרות",
+        "movies": "סרטים",
+        "podcasts": "פודקאסטים",
+        "radioStations": "תחנות רדיו"
+      },
+      "status": {
+        "published": "פורסם",
+        "draft": "טיוטה"
+      },
+      "type": {
+        "movie": "סרט",
+        "series": "סדרה"
+      },
+      "merge": {
+        "mergeSuccess": "הסדרות מוזגו בהצלחה"
+      },
+      "categoryPicker": {
+        "selectPlaceholder": "בחר קטגוריה",
+        "searchPlaceholder": "חפש קטגוריות...",
+        "noCategories": "אין קטגוריות זמינות",
+        "noResults": "לא נמצאו קטגוריות",
+        "createNew": "צור קטגוריה חדשה",
+        "loading": "טוען קטגוריות...",
+        "modal": {
+          "title": "צור קטגוריה חדשה",
+          "placeholder": "שם הקטגוריה",
+          "create": "צור",
+          "creating": "יוצר..."
+        },
+        "errors": {
+          "loadFailed": "נכשל בטעינת קטגוריות",
+          "createFailed": "נכשל ביצירת קטגוריה"
+        }
+      },
+      "streamUrlInput": {
+        "streamType": "סוג שידור",
+        "copied": "כתובת URL הועתקה ללוח",
+        "supportedFormats": {
+          "title": "פורמטים נתמכים",
+          "hls": "HLS (.m3u8)",
+          "dash": "DASH (.mpd)",
+          "audio": "אודיו (.mp3, .aac)"
+        },
+        "errors": {
+          "required": "כתובת URL של שידור נדרשת",
+          "invalidFormat": "פורמט כתובת URL של שידור לא תקין"
+        }
+      },
+      "editor": {
+        "pageTitle": "ערוך תוכן",
+        "pageTitleNew": "הוסף תוכן חדש",
+        "sections": {
+          "basicInfo": "מידע בסיסי",
+          "media": "משאבי מדיה",
+          "streaming": "הגדרות שידור",
+          "details": "פרטי תוכן",
+          "publishing": "אפשרויות פרסום",
+          "accessControl": "בקרת גישה",
+          "channelDetails": "פרטי ערוץ",
+          "stationDetails": "פרטי תחנה",
+          "podcastDetails": "פרטי פודקאסט",
+          "episodeDetails": "פרטי פרק"
+        },
+        "fields": {
+          "title": "כותרת",
+          "titlePlaceholder": "הזן כותרת תוכן",
+          "titleRequired": "כותרת נדרשת",
+          "description": "תיאור",
+          "descriptionPlaceholder": "הזן תיאור...",
+          "year": "שנה",
+          "yearPlaceholder": "למשל, 2024",
+          "category": "קטגוריה",
+          "thumbnail": "תמונה ממוזערת (יחס רוחב-גובה 3:4)",
+          "backdrop": "רקע (יחס רוחב-גובה 16:9)",
+          "streamUrl": "כתובת URL של שידור",
+          "streamUrlPlaceholder": "https://example.com/stream.m3u8",
+          "streamType": "סוג שידור",
+          "drmProtected": "מוגן DRM",
+          "drmProtectedLabel": "הפעל הגנת DRM",
+          "duration": "משך (דקות)",
+          "durationPlaceholder": "למשל, 120",
+          "rating": "דירוג",
+          "ratingPlaceholder": "למשל, PG-13",
+          "genre": "ז'אנר",
+          "genrePlaceholder": "למשל, אקשן",
+          "director": "במאי",
+          "directorPlaceholder": "שם הבמאי",
+          "isSeries": "תוכן סדרה",
+          "isSeriesLabel": "זוהי סדרה",
+          "season": "עונה",
+          "seasonNumber": "מספר עונה",
+          "episode": "פרק",
+          "episodeNumber": "מספר פרק",
+          "isPublishedLabel": "פורסם",
+          "isFeaturedLabel": "מובחר",
+          "isKidsContentLabel": "תוכן לילדים",
+          "requiredSubscription": "רמת מנוי",
+          "seriesId": "מזהה סדרה",
+          "seriesIdPlaceholder": "מזהה סדרת אב",
+          "channelLogo": "לוגו ערוץ",
+          "epgSource": "מקור EPG",
+          "epgSourcePlaceholder": "כתובת URL של EPG",
+          "currentShow": "תוכנית נוכחית",
+          "currentShowPlaceholder": "שם התוכנית",
+          "nextShow": "תוכנית הבאה",
+          "nextShowPlaceholder": "תוכנית הבאה",
+          "stationLogo": "לוגו תחנה",
+          "website": "אתר אינטרנט",
+          "websitePlaceholder": "https://station.com",
+          "currentSong": "שיר נוכחי",
+          "currentSongPlaceholder": "שם השיר",
+          "rssFeed": "עדכון RSS",
+          "rssFeedPlaceholder": "https://podcast.com/feed.xml",
+          "posterCover": "פוסטר/כיסוי",
+          "podcastCategory": "קטגוריית פודקאסט",
+          "podcastCategoryPlaceholder": "למשל, טכנולוגיה",
+          "author": "מחבר",
+          "authorPlaceholder": "שם המחבר",
+          "audioUrl": "כתובת URL של אודיו",
+          "audioUrlPlaceholder": "https://example.com/episode.mp3",
+          "audioUrlRequired": "כתובת URL של אודיו נדרשת",
+          "publishedDate": "תאריך פרסום",
+          "isActiveLabel": "פעיל"
+        },
+        "subscriptionTiers": {
+          "basic": "בסיסי",
+          "premium": "פרימיום",
+          "family": "משפחתי"
+        },
+        "actions": {
+          "save": "שמור",
+          "saving": "שומר...",
+          "cancel": "ביטול"
+        },
+        "imageUpload": {
+          "dropHere": "גרור תמונה כאן או לחץ לעיון",
+          "orPasteUrl": "או הדבק כתובת URL של תמונה למטה",
+          "urlPlaceholder": "https://example.com/image.jpg",
+          "validateButton": "אמת URL",
+          "validating": "מאמת...",
+          "uploading": "מעלה...",
+          "success": "התמונה הועלתה בהצלחה",
+          "errors": {
+            "uploadFailed": "נכשל בהעלאת תמונה",
+            "imageOnly": "רק קבצי תמונה מותרים",
+            "invalidUrl": "כתובת URL של תמונה לא תקינה"
+          }
+        },
+        "validation": {
+          "titleRequired": "כותרת נדרשת",
+          "requiredFields": "אנא מלא את כל השדות הנדרשים"
+        }
+      }
+    },
+    "categories": {
+      "form": {
+        "titleNew": "קטגוריה חדשה",
+        "titleEdit": "ערוך קטגוריה",
+        "nameHebrew": "שם קטגוריה (עברית)",
+        "nameHebrewPlaceholder": "שם קטגוריה (עברית)",
+        "nameEnglish": "שם קטגוריה (אנגלית)",
+        "nameEnglishPlaceholder": "שם קטגוריה (אנגלית)",
+        "slug": "Slug",
+        "slugPlaceholder": "Slug (למשל, סרטים)"
+      }
+    },
     "recordings": {
       "title": "ניהול הקלטות",
       "subtitle": "נהל הקלטות משתמשים בפלטפורמה",
@@ -1677,8 +1867,26 @@
       "queuedUploads": "העלאות בתור",
       "queued": "בתור",
       "andMore": "ועוד {{count}} נוספים",
-      "monitoredFolders": "תיקיות מנוטרות",
-      "monitoredFoldersSubtitle": "Configure folders for automatic content monitoring and upload",
+      "monitoredFolders": {
+        "title": "תיקיות מנוטרות",
+        "subtitle": "הגדר תיקיות לניטור ותוכן אוטומטי והעלאה",
+        "noMonitoredFolders": "לא הוגדרו תיקיות מנוטרות",
+        "configureFoldersHelp": "לחץ על 'הוסף תיקייה' להגדרת תיקיות מנוטרות להעלאות אוטומטיות",
+        "addFolder": "הוסף תיקייה",
+        "editFolder": "ערוך תיקייה",
+        "deleteFolder": "מחק תיקייה",
+        "confirmDelete": "למחוק תיקייה זו?",
+        "scanFolder": "סרוק תיקייה",
+        "scanSuccess": "סריקת התיקייה הושלמה בהצלחה",
+        "scanFailed": "סריקת התיקייה נכשלה",
+        "contentType": "סוג תוכן",
+        "lastScan": "סריקה אחרונה",
+        "filesFound": "קבצים שנמצאו"
+      },
+      "queueDashboard": {
+        "title": "מצב תור העלאות"
+      },
+      "monitoredFoldersSubtitle": "הגדר תיקיות לניטור תוכן אוטומטי והעלאה",
       "noMonitoredFolders": "לא הוגדרו תיקיות מנוטרות",
       "configureFoldersHelp": "לחץ על 'הוסף תיקייה' להגדרת תיקיות מנוטרות להעלאות אוטומטיות",
       "addFolder": "הוסף תיקייה",

@@ -7,11 +7,15 @@
  *
  * This service wraps the Porcupine Web SDK for browser-based wake word detection.
  * For React Native (iOS/Android), use the @picovoice/porcupine-react-native package.
- * 
+ *
  * NOTE: This module is web-only. React Native apps should use native wake word modules.
  */
 
 import { supportConfig, WakeWordSystemConfig } from '../config/supportConfig';
+import { logger } from './logger';
+
+// Scoped logger for wake word detection with voice-specific context
+const wakeWordLogger = logger.scope('WakeWord');
 
 // Check if we're in React Native environment
 const isReactNative = typeof navigator !== 'undefined' && navigator.product === 'ReactNative';
@@ -31,7 +35,7 @@ if (!isReactNative && typeof window !== 'undefined') {
     PorcupineWorker = porcupineWeb.PorcupineWorker;
     WebVoiceProcessor = webVoiceProcessor.WebVoiceProcessor;
   } catch (e) {
-    console.warn('[PorcupineWakeWord] Web SDK not available:', e);
+    wakeWordLogger.warn('Web SDK not available', e);
   }
 }
 
@@ -87,7 +91,7 @@ function getBuiltInKeyword(wakeWord: string): any {
   try {
     const porcupineWeb = require('@picovoice/porcupine-web');
     const BuiltInKeywordEnum = porcupineWeb.BuiltInKeyword;
-    
+
     const wakeWordMap: Record<string, any> = {
       'Alexa': BuiltInKeywordEnum?.Alexa,
       'Americano': BuiltInKeywordEnum?.Americano,
@@ -149,18 +153,24 @@ export class PorcupineWakeWordDetector {
   ): Promise<void> {
     // React Native check - use native wake word module instead
     if (isReactNative) {
-      console.warn('[PorcupineWakeWord] Web SDK not available in React Native. Use native WakeWordModule instead.');
+      wakeWordLogger.warn('Web SDK not available in React Native. Use native WakeWordModule instead', {
+        platform: 'react-native',
+        recommendation: 'Use native WakeWordModule',
+      });
       throw new Error('Porcupine Web SDK is not available in React Native. Use the native WakeWordModule.');
     }
 
     // Check if web modules are available
     if (!PorcupineWorker || !WebVoiceProcessor) {
-      console.error('[PorcupineWakeWord] Web SDK modules not loaded');
+      wakeWordLogger.error('Web SDK modules not loaded', {
+        PorcupineWorker: !!PorcupineWorker,
+        WebVoiceProcessor: !!WebVoiceProcessor,
+      });
       throw new Error('Porcupine Web SDK not available. Ensure @picovoice/porcupine-web is installed.');
     }
 
     if (this.isInitialized) {
-      console.log('[PorcupineWakeWord] Already initialized');
+      wakeWordLogger.debug('Already initialized', { system });
       return;
     }
 
@@ -173,7 +183,10 @@ export class PorcupineWakeWordDetector {
     this.systemType = system;
 
     try {
-      console.log('[PorcupineWakeWord] Initializing Porcupine...');
+      wakeWordLogger.info('Initializing Porcupine', {
+        system,
+        sensitivity: this.sensitivity,
+      });
 
       // Determine keyword configuration
       let keyword: PorcupineKeyword | BuiltInKeyword;
@@ -191,7 +204,10 @@ export class PorcupineWakeWordDetector {
 
       if (useCustomModel && keywordPath) {
         // Use custom wake word model "Hey Buyit"
-        console.log('[PorcupineWakeWord] Using custom keyword model:', keywordPath);
+        wakeWordLogger.info('Using custom keyword model', {
+          keywordPath,
+          label: 'hey_buyit',
+        });
         keyword = {
           publicPath: keywordPath,
           label: 'hey_buyit',
@@ -203,8 +219,11 @@ export class PorcupineWakeWordDetector {
         const configuredWakeWord = wakeWordConfig.builtInKeyword;
         const builtInKeyword = getBuiltInKeyword(configuredWakeWord);
         const systemLabel = this.systemType === 'support' ? 'Support (Olorin)' : 'Voice Search';
-        console.log(`[PorcupineWakeWord] ${systemLabel}: Using built-in "${configuredWakeWord}" (say "${configuredWakeWord}" to activate)`);
-        console.log(`[PorcupineWakeWord] ${systemLabel}: Custom phrase will be "${wakeWordConfig.customPhrase}" once trained`);
+        wakeWordLogger.info('Using built-in wake word', {
+          system: systemLabel,
+          wakeWord: configuredWakeWord,
+          futureCustomPhrase: wakeWordConfig.customPhrase,
+        });
         keyword = {
           builtin: builtInKeyword,
           sensitivity: this.sensitivity,
@@ -221,9 +240,12 @@ export class PorcupineWakeWordDetector {
         if (!modelCheck.ok) {
           throw new Error(`Model file not found at ${modelPath} (status: ${modelCheck.status})`);
         }
-        console.log('[PorcupineWakeWord] Model file verified at:', modelPath);
+        wakeWordLogger.debug('Model file verified', { modelPath });
       } catch (fetchError) {
-        console.error('[PorcupineWakeWord] Cannot access model file:', fetchError);
+        wakeWordLogger.error('Cannot access model file', {
+          error: fetchError,
+          modelPath,
+        });
         throw new Error(`Porcupine model file not accessible at ${modelPath}`);
       }
 
@@ -234,8 +256,8 @@ export class PorcupineWakeWordDetector {
       };
 
       // Create Porcupine worker with model
-      console.log('[PorcupineWakeWord] Creating PorcupineWorker with:', {
-        keywordType: useCustomModel ? 'custom' : 'built-in Computer',
+      wakeWordLogger.debug('Creating PorcupineWorker', {
+        keywordType: useCustomModel ? 'custom' : 'built-in',
         modelPath: porcupineModel.publicPath,
         sensitivity: this.sensitivity,
       });
@@ -244,7 +266,13 @@ export class PorcupineWakeWordDetector {
         this.accessKey,
         [keyword],
         (detection) => {
-          console.log('[PorcupineWakeWord] 🎉 Detection callback fired:', detection);
+          // VOICE-SPECIFIC: Async logging in detection callback (<100ms requirement)
+          queueMicrotask(() => {
+            wakeWordLogger.debug('Detection callback fired', {
+              index: detection.index,
+              timestamp: Date.now(),
+            });
+          });
           this.handleDetection(detection.index);
         },
         porcupineModel
@@ -254,10 +282,16 @@ export class PorcupineWakeWordDetector {
       const wakeWordConfig = getWakeWordConfig(this.systemType);
       const activeWakeWord = wakeWordConfig.builtInKeyword;
       const systemLabel = this.systemType === 'support' ? 'Support (Olorin)' : 'Voice Search';
-      console.log(`[PorcupineWakeWord] ✅ ${systemLabel} initialized - say "${activeWakeWord}" to activate`);
+      wakeWordLogger.info('Initialized successfully', {
+        system: systemLabel,
+        activeWakeWord,
+      });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error('[PorcupineWakeWord] Failed to initialize:', errorMessage);
+      wakeWordLogger.error('Failed to initialize', {
+        error: errorMessage,
+        system: this.systemType,
+      });
       this.isInitialized = false;
       throw new Error(`Failed to initialize Porcupine: ${errorMessage}`);
     }
@@ -265,21 +299,38 @@ export class PorcupineWakeWordDetector {
 
   /**
    * Handle wake word detection event
+   * CRITICAL: Must be <100ms latency for responsive voice activation
    */
   private handleDetection(keywordIndex: number): void {
     const now = Date.now();
 
     // Check cooldown to prevent rapid re-triggering
     if (now - this.lastDetectionTime < this.cooldownMs) {
-      console.log('[PorcupineWakeWord] Detection ignored (cooldown)');
+      // VOICE-SPECIFIC: Async logging (non-blocking)
+      queueMicrotask(() => {
+        wakeWordLogger.debug('Detection ignored (cooldown)', {
+          cooldownMs: this.cooldownMs,
+          timeSinceLastDetection: now - this.lastDetectionTime,
+        });
+      });
       return;
     }
 
     this.lastDetectionTime = now;
     const systemLabel = this.systemType === 'support' ? 'Support (Olorin)' : 'Voice Search';
     const wakeWordConfig = getWakeWordConfig(this.systemType);
-    console.log(`[PorcupineWakeWord] 🎤 ${systemLabel} wake word "${wakeWordConfig.builtInKeyword}" detected!`);
 
+    // VOICE-SPECIFIC: Async logging (non-blocking)
+    queueMicrotask(() => {
+      wakeWordLogger.info('Wake word detected', {
+        system: systemLabel,
+        wakeWord: wakeWordConfig.builtInKeyword,
+        keywordIndex,
+        timestamp: now,
+      });
+    });
+
+    // Execute callback IMMEDIATELY (no blocking)
     if (this.detectionCallback) {
       this.detectionCallback(keywordIndex, this.systemType);
     }
@@ -295,20 +346,22 @@ export class PorcupineWakeWordDetector {
     }
 
     if (this.isListening) {
-      console.log('[PorcupineWakeWord] Already listening');
+      wakeWordLogger.debug('Already listening', { system: this.systemType });
       return;
     }
 
     this.detectionCallback = onDetection;
 
     try {
-      console.log('[PorcupineWakeWord] Starting audio capture via WebVoiceProcessor...');
+      wakeWordLogger.debug('Starting audio capture via WebVoiceProcessor', {
+        system: this.systemType,
+      });
 
       // Check if microphone is accessible first
       try {
         const testStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const tracks = testStream.getAudioTracks();
-        console.log('[PorcupineWakeWord] Microphone test passed:', {
+        wakeWordLogger.debug('Microphone test passed', {
           tracks: tracks.length,
           label: tracks[0]?.label,
           enabled: tracks[0]?.enabled,
@@ -317,7 +370,10 @@ export class PorcupineWakeWordDetector {
         testStream.getTracks().forEach(t => t.stop());
       } catch (micError) {
         const errorMsg = micError instanceof Error ? micError.message : String(micError);
-        console.error('[PorcupineWakeWord] Microphone access failed:', errorMsg);
+        wakeWordLogger.error('Microphone access failed', {
+          error: errorMsg,
+          system: this.systemType,
+        });
         throw new Error(`Microphone access denied: ${errorMsg}`);
       }
 
@@ -327,10 +383,16 @@ export class PorcupineWakeWordDetector {
       this.isListening = true;
       const wakeWordConfig = getWakeWordConfig(this.systemType);
       const systemLabel = this.systemType === 'support' ? 'Support (Olorin)' : 'Voice Search';
-      console.log(`[PorcupineWakeWord] ✅ ${systemLabel} listening for "${wakeWordConfig.builtInKeyword}"...`);
+      wakeWordLogger.info('Listening for wake word', {
+        system: systemLabel,
+        wakeWord: wakeWordConfig.builtInKeyword,
+      });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error('[PorcupineWakeWord] Failed to start listening:', errorMessage);
+      wakeWordLogger.error('Failed to start listening', {
+        error: errorMessage,
+        system: this.systemType,
+      });
       throw new Error(`Failed to start wake word detection: ${errorMessage}`);
     }
   }
@@ -340,12 +402,12 @@ export class PorcupineWakeWordDetector {
    */
   async stop(): Promise<void> {
     if (!this.isListening) {
-      console.log('[PorcupineWakeWord] Not listening');
+      wakeWordLogger.debug('Not listening', { system: this.systemType });
       return;
     }
 
     try {
-      console.log('[PorcupineWakeWord] Stopping audio capture...');
+      wakeWordLogger.debug('Stopping audio capture', { system: this.systemType });
 
       if (this.porcupine) {
         await WebVoiceProcessor.unsubscribe(this.porcupine);
@@ -353,10 +415,13 @@ export class PorcupineWakeWordDetector {
 
       this.isListening = false;
       this.detectionCallback = null;
-      console.log('[PorcupineWakeWord] Stopped listening');
+      wakeWordLogger.info('Stopped listening', { system: this.systemType });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error('[PorcupineWakeWord] Failed to stop listening:', errorMessage);
+      wakeWordLogger.error('Failed to stop listening', {
+        error: errorMessage,
+        system: this.systemType,
+      });
     }
   }
 
@@ -365,7 +430,7 @@ export class PorcupineWakeWordDetector {
    */
   async release(): Promise<void> {
     try {
-      console.log('[PorcupineWakeWord] Releasing resources...');
+      wakeWordLogger.debug('Releasing resources', { system: this.systemType });
 
       await this.stop();
 
@@ -375,10 +440,13 @@ export class PorcupineWakeWordDetector {
       }
 
       this.isInitialized = false;
-      console.log('[PorcupineWakeWord] Resources released');
+      wakeWordLogger.info('Resources released', { system: this.systemType });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error('[PorcupineWakeWord] Failed to release resources:', errorMessage);
+      wakeWordLogger.error('Failed to release resources', {
+        error: errorMessage,
+        system: this.systemType,
+      });
     }
   }
 
@@ -433,7 +501,7 @@ export class PorcupineWakeWordDetector {
 export function getPicovoiceAccessKey(): string {
   // Check if we're in React Native environment
   const isReactNative = typeof navigator !== 'undefined' && navigator.product === 'ReactNative';
-  
+
   if (isReactNative) {
     // React Native: use react-native-config or return empty
     // The mobile app should set this via native modules or config
@@ -444,13 +512,17 @@ export function getPicovoiceAccessKey(): string {
       const globalConfig = (globalThis as any).__REACT_NATIVE_CONFIG__;
       if (globalConfig?.PICOVOICE_ACCESS_KEY) {
         const key = globalConfig.PICOVOICE_ACCESS_KEY;
-        console.log('[PorcupineWakeWord] Access key found (React Native global):', key ? `${key.slice(0, 10)}...` : 'empty');
+        wakeWordLogger.debug('Access key found (React Native global)', {
+          keyPreview: key ? `${key.slice(0, 10)}...` : 'empty',
+        });
         return key;
       }
     } catch {
       // Global config not available
     }
-    console.warn('[PorcupineWakeWord] React Native: No Picovoice access key found');
+    wakeWordLogger.warn('React Native: No Picovoice access key found', {
+      platform: 'react-native',
+    });
     return '';
   }
 
@@ -460,7 +532,9 @@ export function getPicovoiceAccessKey(): string {
     const viteEnv = (globalThis as any).__VITE_ENV__ || (typeof window !== 'undefined' && (window as any).__VITE_ENV__);
     if (viteEnv?.VITE_PICOVOICE_ACCESS_KEY) {
       const key = viteEnv.VITE_PICOVOICE_ACCESS_KEY;
-      console.log('[PorcupineWakeWord] Access key found (Vite global):', key ? `${key.slice(0, 10)}...` : 'empty');
+      wakeWordLogger.debug('Access key found (Vite global)', {
+        keyPreview: key ? `${key.slice(0, 10)}...` : 'empty',
+      });
       return key;
     }
   } catch {
@@ -471,14 +545,18 @@ export function getPicovoiceAccessKey(): string {
   try {
     if (typeof process !== 'undefined' && process.env?.VITE_PICOVOICE_ACCESS_KEY) {
       const key = process.env.VITE_PICOVOICE_ACCESS_KEY;
-      console.log('[PorcupineWakeWord] Access key found (process.env):', key ? `${key.slice(0, 10)}...` : 'empty');
+      wakeWordLogger.debug('Access key found (process.env)', {
+        keyPreview: key ? `${key.slice(0, 10)}...` : 'empty',
+      });
       return key;
     }
   } catch {
     // process.env not available
   }
 
-  console.warn('[PorcupineWakeWord] No Picovoice access key found in environment');
+  wakeWordLogger.warn('No Picovoice access key found in environment', {
+    checkedSources: ['globalConfig', 'viteEnv', 'process.env'],
+  });
   return '';
 }
 
@@ -489,19 +567,26 @@ export function getPicovoiceAccessKey(): string {
 export function isPorcupineSupported(): boolean {
   // React Native uses native wake word modules, not web SDK
   if (isReactNative) {
-    console.log('[PorcupineWakeWord] React Native detected - use native WakeWordModule');
+    wakeWordLogger.debug('React Native detected - use native WakeWordModule', {
+      platform: 'react-native',
+    });
     return false;
   }
 
   // Check for browser environment
   if (typeof window === 'undefined') {
-    console.log('[PorcupineWakeWord] Not browser environment');
+    wakeWordLogger.debug('Not browser environment', {
+      hasWindow: false,
+    });
     return false;
   }
 
   // Check if web modules were loaded
   if (!PorcupineWorker || !WebVoiceProcessor) {
-    console.log('[PorcupineWakeWord] Web SDK modules not available');
+    wakeWordLogger.debug('Web SDK modules not available', {
+      PorcupineWorker: !!PorcupineWorker,
+      WebVoiceProcessor: !!WebVoiceProcessor,
+    });
     return false;
   }
 
@@ -523,7 +608,7 @@ export function isPorcupineSupported(): boolean {
   // Check secure context
   const isSecureContext = window.isSecureContext;
 
-  console.log('[PorcupineWakeWord] Support check:', {
+  wakeWordLogger.debug('Support check', {
     hasAudioContext,
     hasWorkers,
     hasMediaDevices,
@@ -534,8 +619,9 @@ export function isPorcupineSupported(): boolean {
 
   // SharedArrayBuffer is preferred but not strictly required (falls back to ArrayBuffer)
   if (!hasSharedArrayBuffer) {
-    console.warn('[PorcupineWakeWord] SharedArrayBuffer not available - Porcupine will use slower ArrayBuffer fallback');
-    console.warn('[PorcupineWakeWord] To enable SharedArrayBuffer, server must send COOP/COEP headers');
+    wakeWordLogger.warn('SharedArrayBuffer not available - Porcupine will use slower ArrayBuffer fallback', {
+      recommendation: 'Server must send COOP/COEP headers to enable SharedArrayBuffer',
+    });
   }
 
   return hasAudioContext && hasWorkers && hasMediaDevices;
