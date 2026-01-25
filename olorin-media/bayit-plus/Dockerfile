@@ -45,8 +45,8 @@ WORKDIR /app
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Copy local package source directories (needed for editable installs)
-COPY --from=builder /build/packages /app/packages
+# Copy local package source directories to the same path as builder (needed for editable installs)
+COPY --from=builder /build/packages /build/packages
 
 # Copy application code
 COPY --chown=bayit:bayit backend/app ./app
