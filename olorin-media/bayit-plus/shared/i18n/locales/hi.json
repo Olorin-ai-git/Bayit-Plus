@@ -555,7 +555,9 @@
     "select": "प्लान चुनें",
     "selected": "चयनित",
     "processing": "प्रोसेसिंग...",
-    "startTrial": "मुफ्त ट्रायल शुरू करें"
+    "startTrial": "मुफ्त ट्रायल शुरू करें",
+    "viewComparison": "पूर्ण तुलना देखें",
+    "viewCards": "योजनाएं देखें"
   },
   "footer": {
     "brandDescription": "USA में आपका घर। हिब्रू में TV प्रसारण, VOD, रेडियो और पॉडकास्ट।",
@@ -637,6 +639,37 @@
         "5 फैमिली प्रोफाइल",
         "ऑफ़लाइन डाउनलोड"
       ]
+    },
+    "non_registered": {
+      "name": "केवल ब्राउज़ करें",
+      "description": "हमारी सामग्री लाइब्रेरी का अन्वेषण करें"
+    },
+    "registered_free": {
+      "name": "निःशुल्क खाता",
+      "description": "निःशुल्क सुविधाओं के लिए खाता बनाएं"
+    },
+    "comparison": {
+      "title": "योजनाओं की तुलना करें",
+      "subtitle": "अपनी आवश्यकताओं के लिए सही योजना खोजें",
+      "categories": {
+        "content": "सामग्री पहुंच",
+        "quality": "गुणवत्ता और प्रदर्शन",
+        "devices": "उपकरण और स्ट्रीमिंग",
+        "features": "प्रीमियम सुविधाएं",
+        "support": "ग्राहक सहायता"
+      },
+      "features": {
+        "browseContent": "सामग्री लाइब्रेरी ब्राउज़ करें",
+        "vodAccess": "ऑन-डिमांड फिल्में और सीरीज़",
+        "liveChannels": "लाइव टीवी चैनल",
+        "radioPodcasts": "रेडियो और पॉडकास्ट",
+        "videoQuality": "वीडियो गुणवत्ता",
+        "simultaneousDevices": "समवर्ती उपकरण",
+        "aiAssistant": "AI स्मार्ट असिस्टेंट",
+        "familyProfiles": "परिवार प्रोफाइल",
+        "offlineDownloads": "ऑफ़लाइन डाउनलोड करें",
+        "customerSupport": "ग्राहक सहायता"
+      }
     }
   },
   "admin": {

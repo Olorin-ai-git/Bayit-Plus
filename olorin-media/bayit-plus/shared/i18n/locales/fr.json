@@ -678,6 +678,37 @@
         "Téléchargement hors ligne"
       ],
       "notIncluded": []
+    },
+    "non_registered": {
+      "name": "Navigation uniquement",
+      "description": "Explorez notre bibliothèque de contenu"
+    },
+    "registered_free": {
+      "name": "Compte gratuit",
+      "description": "Créez un compte pour les fonctionnalités gratuites"
+    },
+    "comparison": {
+      "title": "Comparer les forfaits",
+      "subtitle": "Trouvez le forfait parfait pour vos besoins",
+      "categories": {
+        "content": "Accès au contenu",
+        "quality": "Qualité et performance",
+        "devices": "Appareils et streaming",
+        "features": "Fonctionnalités premium",
+        "support": "Support client"
+      },
+      "features": {
+        "browseContent": "Parcourir la bibliothèque de contenu",
+        "vodAccess": "Films et séries à la demande",
+        "liveChannels": "Chaînes TV en direct",
+        "radioPodcasts": "Radio et podcasts",
+        "videoQuality": "Qualité vidéo",
+        "simultaneousDevices": "Appareils simultanés",
+        "aiAssistant": "Assistant intelligent IA",
+        "familyProfiles": "Profils familiaux",
+        "offlineDownloads": "Télécharger pour le hors ligne",
+        "customerSupport": "Support client"
+      }
     }
   },
   "subscribe": {
@@ -693,7 +724,9 @@
     "selected": "Sélectionné",
     "processing": "Traitement...",
     "startTrial": "Commencer l'essai gratuit",
-    "noCharge": "Votre carte de crédit ne sera pas débitée pendant la période d'essai"
+    "noCharge": "Votre carte de crédit ne sera pas débitée pendant la période d'essai",
+    "viewComparison": "Voir la comparaison complète",
+    "viewCards": "Voir les forfaits"
   },
   "footer": {
     "brandDescription": "Votre maison aux États-Unis. Émissions TV, VOD, radio et podcasts en hébreu.",

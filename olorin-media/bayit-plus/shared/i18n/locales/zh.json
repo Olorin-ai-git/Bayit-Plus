@@ -1305,6 +1305,37 @@
         "离线下载"
       ],
       "notIncluded": []
+    },
+    "non_registered": {
+      "name": "仅浏览",
+      "description": "探索我们的内容库"
+    },
+    "registered_free": {
+      "name": "免费账户",
+      "description": "创建账户享受免费功能"
+    },
+    "comparison": {
+      "title": "比较套餐",
+      "subtitle": "找到最适合您的套餐",
+      "categories": {
+        "content": "内容访问",
+        "quality": "质量与性能",
+        "devices": "设备和流媒体",
+        "features": "高级功能",
+        "support": "客户支持"
+      },
+      "features": {
+        "browseContent": "浏览内容库",
+        "vodAccess": "点播电影和电视剧",
+        "liveChannels": "直播电视频道",
+        "radioPodcasts": "广播和播客",
+        "videoQuality": "视频质量",
+        "simultaneousDevices": "同时使用设备数",
+        "aiAssistant": "AI智能助手",
+        "familyProfiles": "家庭档案",
+        "offlineDownloads": "离线下载",
+        "customerSupport": "客户支持"
+      }
     }
   },
   "subscribe": {
@@ -1320,7 +1351,9 @@
     "selected": "已选择",
     "processing": "处理中...",
     "startTrial": "开始免费试用",
-    "noCharge": "试用期间不会收取您的信用卡费用"
+    "noCharge": "试用期间不会收取您的信用卡费用",
+    "viewComparison": "查看完整比较",
+    "viewCards": "查看套餐"
   },
   "notFound": {
     "title": "页面未找到",
@@ -1902,17 +1935,182 @@
       "createSuccess": "Content created successfully",
       "updateSuccess": "Content updated successfully",
       "deleteSuccess": "Content deleted successfully",
-      "columns": {"title": "Title", "category": "Category", "year": "Year", "subtitles": "Subtitles", "status": "Status", "actions": "Actions"},
-      "filters": {"contentType": "Content Type", "allStatus": "All Status", "series": "Series", "movies": "Movies", "podcasts": "Podcasts", "radioStations": "Radio Stations"},
-      "status": {"published": "Published", "draft": "Draft"},
-      "type": {"movie": "Movie", "series": "Series"},
-      "merge": {"mergeSuccess": "Series merged successfully"},
-      "categoryPicker": {"selectPlaceholder": "Select category", "searchPlaceholder": "Search categories...", "noCategories": "No categories available", "noResults": "No categories found", "createNew": "Create new category", "loading": "Loading categories...", "modal": {"title": "Create New Category", "placeholder": "Category name", "create": "Create", "creating": "Creating..."}, "errors": {"loadFailed": "Failed to load categories", "createFailed": "Failed to create category"}},
-      "streamUrlInput": {"streamType": "Stream Type", "copied": "URL copied to clipboard", "supportedFormats": {"title": "Supported formats", "hls": "HLS (.m3u8)", "dash": "DASH (.mpd)", "audio": "Audio (.mp3, .aac)"}, "errors": {"required": "Stream URL is required", "invalidFormat": "Invalid stream URL format"}},
-      "editor": {"pageTitle": "Edit Content", "pageTitleNew": "Add New Content", "sections": {"basicInfo": "Basic Information", "media": "Media Assets", "streaming": "Streaming Configuration", "details": "Content Details", "publishing": "Publishing Options", "accessControl": "Access Control", "channelDetails": "Channel Details", "stationDetails": "Station Details", "podcastDetails": "Podcast Details", "episodeDetails": "Episode Details"}, "fields": {"title": "Title", "titlePlaceholder": "Enter content title", "titleRequired": "Title is required", "description": "Description", "descriptionPlaceholder": "Enter description...", "year": "Year", "yearPlaceholder": "e.g., 2024", "category": "Category", "thumbnail": "Thumbnail (3:4 aspect ratio)", "backdrop": "Backdrop (16:9 aspect ratio)", "streamUrl": "Stream URL", "streamUrlPlaceholder": "https://example.com/stream.m3u8", "streamType": "Stream Type", "drmProtected": "DRM Protected", "drmProtectedLabel": "Enable DRM protection", "duration": "Duration (minutes)", "durationPlaceholder": "e.g., 120", "rating": "Rating", "ratingPlaceholder": "e.g., PG-13", "genre": "Genre", "genrePlaceholder": "e.g., Action", "director": "Director", "directorPlaceholder": "Director name", "isSeries": "Series Content", "isSeriesLabel": "This is a series", "season": "Season", "seasonNumber": "Season number", "episode": "Episode", "episodeNumber": "Episode number", "isPublishedLabel": "Published", "isFeaturedLabel": "Featured", "isKidsContentLabel": "Kids Content", "requiredSubscription": "Subscription Tier", "seriesId": "Series ID", "seriesIdPlaceholder": "Parent series ID", "channelLogo": "Channel Logo", "epgSource": "EPG Source", "epgSourcePlaceholder": "EPG URL", "currentShow": "Current Show", "currentShowPlaceholder": "Show name", "nextShow": "Next Show", "nextShowPlaceholder": "Upcoming show", "stationLogo": "Station Logo", "website": "Website", "websitePlaceholder": "https://station.com", "currentSong": "Current Song", "currentSongPlaceholder": "Song name", "rssFeed": "RSS Feed", "rssFeedPlaceholder": "https://podcast.com/feed.xml", "posterCover": "Poster/Cover", "podcastCategory": "Podcast Category", "podcastCategoryPlaceholder": "e.g., Technology", "author": "Author", "authorPlaceholder": "Author name", "audioUrl": "Audio URL", "audioUrlPlaceholder": "https://example.com/episode.mp3", "audioUrlRequired": "Audio URL is required", "publishedDate": "Published Date", "isActiveLabel": "Active"}, "subscriptionTiers": {"basic": "Basic", "premium": "Premium", "family": "Family"}, "actions": {"save": "Save", "saving": "Saving...", "cancel": "Cancel"}, "imageUpload": {"dropHere": "Drop image here or click to browse", "orPasteUrl": "Or paste image URL below", "urlPlaceholder": "https://example.com/image.jpg", "validateButton": "Validate URL", "validating": "Validating...", "uploading": "Uploading...", "success": "Image uploaded successfully", "errors": {"uploadFailed": "Failed to upload image", "imageOnly": "Only image files are allowed", "invalidUrl": "Invalid image URL"}}, "validation": {"titleRequired": "Title is required", "requiredFields": "Please fill in all required fields"}}
+      "columns": {
+        "title": "Title",
+        "category": "Category",
+        "year": "Year",
+        "subtitles": "Subtitles",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "filters": {
+        "contentType": "Content Type",
+        "allStatus": "All Status",
+        "series": "Series",
+        "movies": "Movies",
+        "podcasts": "Podcasts",
+        "radioStations": "Radio Stations"
+      },
+      "status": {
+        "published": "Published",
+        "draft": "Draft"
+      },
+      "type": {
+        "movie": "Movie",
+        "series": "Series"
+      },
+      "merge": {
+        "mergeSuccess": "Series merged successfully"
+      },
+      "categoryPicker": {
+        "selectPlaceholder": "Select category",
+        "searchPlaceholder": "Search categories...",
+        "noCategories": "No categories available",
+        "noResults": "No categories found",
+        "createNew": "Create new category",
+        "loading": "Loading categories...",
+        "modal": {
+          "title": "Create New Category",
+          "placeholder": "Category name",
+          "create": "Create",
+          "creating": "Creating..."
+        },
+        "errors": {
+          "loadFailed": "Failed to load categories",
+          "createFailed": "Failed to create category"
+        }
+      },
+      "streamUrlInput": {
+        "streamType": "Stream Type",
+        "copied": "URL copied to clipboard",
+        "supportedFormats": {
+          "title": "Supported formats",
+          "hls": "HLS (.m3u8)",
+          "dash": "DASH (.mpd)",
+          "audio": "Audio (.mp3, .aac)"
+        },
+        "errors": {
+          "required": "Stream URL is required",
+          "invalidFormat": "Invalid stream URL format"
+        }
+      },
+      "editor": {
+        "pageTitle": "Edit Content",
+        "pageTitleNew": "Add New Content",
+        "sections": {
+          "basicInfo": "Basic Information",
+          "media": "Media Assets",
+          "streaming": "Streaming Configuration",
+          "details": "Content Details",
+          "publishing": "Publishing Options",
+          "accessControl": "Access Control",
+          "channelDetails": "Channel Details",
+          "stationDetails": "Station Details",
+          "podcastDetails": "Podcast Details",
+          "episodeDetails": "Episode Details"
+        },
+        "fields": {
+          "title": "Title",
+          "titlePlaceholder": "Enter content title",
+          "titleRequired": "Title is required",
+          "description": "Description",
+          "descriptionPlaceholder": "Enter description...",
+          "year": "Year",
+          "yearPlaceholder": "e.g., 2024",
+          "category": "Category",
+          "thumbnail": "Thumbnail (3:4 aspect ratio)",
+          "backdrop": "Backdrop (16:9 aspect ratio)",
+          "streamUrl": "Stream URL",
+          "streamUrlPlaceholder": "https://example.com/stream.m3u8",
+          "streamType": "Stream Type",
+          "drmProtected": "DRM Protected",
+          "drmProtectedLabel": "Enable DRM protection",
+          "duration": "Duration (minutes)",
+          "durationPlaceholder": "e.g., 120",
+          "rating": "Rating",
+          "ratingPlaceholder": "e.g., PG-13",
+          "genre": "Genre",
+          "genrePlaceholder": "e.g., Action",
+          "director": "Director",
+          "directorPlaceholder": "Director name",
+          "isSeries": "Series Content",
+          "isSeriesLabel": "This is a series",
+          "season": "Season",
+          "seasonNumber": "Season number",
+          "episode": "Episode",
+          "episodeNumber": "Episode number",
+          "isPublishedLabel": "Published",
+          "isFeaturedLabel": "Featured",
+          "isKidsContentLabel": "Kids Content",
+          "requiredSubscription": "Subscription Tier",
+          "seriesId": "Series ID",
+          "seriesIdPlaceholder": "Parent series ID",
+          "channelLogo": "Channel Logo",
+          "epgSource": "EPG Source",
+          "epgSourcePlaceholder": "EPG URL",
+          "currentShow": "Current Show",
+          "currentShowPlaceholder": "Show name",
+          "nextShow": "Next Show",
+          "nextShowPlaceholder": "Upcoming show",
+          "stationLogo": "Station Logo",
+          "website": "Website",
+          "websitePlaceholder": "https://station.com",
+          "currentSong": "Current Song",
+          "currentSongPlaceholder": "Song name",
+          "rssFeed": "RSS Feed",
+          "rssFeedPlaceholder": "https://podcast.com/feed.xml",
+          "posterCover": "Poster/Cover",
+          "podcastCategory": "Podcast Category",
+          "podcastCategoryPlaceholder": "e.g., Technology",
+          "author": "Author",
+          "authorPlaceholder": "Author name",
+          "audioUrl": "Audio URL",
+          "audioUrlPlaceholder": "https://example.com/episode.mp3",
+          "audioUrlRequired": "Audio URL is required",
+          "publishedDate": "Published Date",
+          "isActiveLabel": "Active"
+        },
+        "subscriptionTiers": {
+          "basic": "Basic",
+          "premium": "Premium",
+          "family": "Family"
+        },
+        "actions": {
+          "save": "Save",
+          "saving": "Saving...",
+          "cancel": "Cancel"
+        },
+        "imageUpload": {
+          "dropHere": "Drop image here or click to browse",
+          "orPasteUrl": "Or paste image URL below",
+          "urlPlaceholder": "https://example.com/image.jpg",
+          "validateButton": "Validate URL",
+          "validating": "Validating...",
+          "uploading": "Uploading...",
+          "success": "Image uploaded successfully",
+          "errors": {
+            "uploadFailed": "Failed to upload image",
+            "imageOnly": "Only image files are allowed",
+            "invalidUrl": "Invalid image URL"
+          }
+        },
+        "validation": {
+          "titleRequired": "Title is required",
+          "requiredFields": "Please fill in all required fields"
+        }
+      }
     },
     "categories": {
-      "form": {"titleNew": "New Category", "titleEdit": "Edit Category", "nameHebrew": "Category name (Hebrew)", "nameHebrewPlaceholder": "Category name (Hebrew)", "nameEnglish": "Category name (English)", "nameEnglishPlaceholder": "Category name (English)", "slug": "Slug", "slugPlaceholder": "Slug (e.g., movies)"}
+      "form": {
+        "titleNew": "New Category",
+        "titleEdit": "Edit Category",
+        "nameHebrew": "Category name (Hebrew)",
+        "nameHebrewPlaceholder": "Category name (Hebrew)",
+        "nameEnglish": "Category name (English)",
+        "nameEnglishPlaceholder": "Category name (English)",
+        "slug": "Slug",
+        "slugPlaceholder": "Slug (e.g., movies)"
+      }
     }
   },
   "cultures": {

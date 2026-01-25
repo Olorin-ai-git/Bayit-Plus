@@ -3221,6 +3221,14 @@
     }
   },
   "plans": {
+    "non_registered": {
+      "name": "דפדוף בלבד",
+      "description": "גלה את ספריית התוכן שלנו"
+    },
+    "registered_free": {
+      "name": "חשבון חינם",
+      "description": "צור חשבון לתכונות בחינם"
+    },
     "basic": {
       "name": "בסיסי",
       "features": [
@@ -3263,6 +3271,29 @@
         "הורדה לצפייה אופליין"
       ],
       "notIncluded": []
+    },
+    "comparison": {
+      "title": "השווה מסלולים",
+      "subtitle": "מצא את המסלול המושלם עבורך",
+      "categories": {
+        "content": "גישה לתוכן",
+        "quality": "איכות וביצועים",
+        "devices": "מכשירים ושידור",
+        "features": "תכונות פרימיום",
+        "support": "תמיכת לקוחות"
+      },
+      "features": {
+        "browseContent": "דפדוף בספריית תוכן",
+        "vodAccess": "סרטים וסדרות לפי דרישה",
+        "liveChannels": "ערוצי טלוויזיה חיה",
+        "radioPodcasts": "רדיו ופודקאסטים",
+        "videoQuality": "איכות וידאו",
+        "simultaneousDevices": "מכשירים בו-זמניים",
+        "aiAssistant": "עוזר AI חכם",
+        "familyProfiles": "פרופילים משפחתיים",
+        "offlineDownloads": "הורדה לצפייה אופליין",
+        "customerSupport": "תמיכת לקוחות"
+      }
     }
   },
   "subscribe": {
@@ -3278,7 +3309,9 @@
     "selected": "נבחר",
     "processing": "מעבד...",
     "startTrial": "התחל ניסיון חינם",
-    "noCharge": "לא יחויב כרטיס האשראי במהלך תקופת הניסיון"
+    "noCharge": "לא יחויב כרטיס האשראי במהלך תקופת הניסיון",
+    "viewComparison": "הצג השוואה מלאה",
+    "viewCards": "הצג מסלולים"
   },
   "notFound": {
     "title": "הדף לא נמצא",

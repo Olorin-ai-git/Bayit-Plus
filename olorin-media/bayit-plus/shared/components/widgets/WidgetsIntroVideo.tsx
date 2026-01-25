@@ -3,7 +3,6 @@
  * Reusable full-screen intro video component with fade animations
  * Supports dismiss functionality and loading/error states
  * Cross-platform: Uses HTML5 video on web, react-native-video on native
- * NOW WITH SEQUENCE SUPPORT: Plays Marty Jr. BTTF2 video, then widgets intro
  */
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
@@ -24,7 +23,6 @@ import { getCaptionUrls } from './WidgetsIntroVideo.utils';
 import { styles } from './WidgetsIntroVideo.styles';
 import { WebVideoPlayer } from './WebVideoPlayer';
 import { NativeVideoPlayer } from './NativeVideoPlayer';
-import { config } from '../../config/appConfig';
 
 export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
   videoUrl,
@@ -41,46 +39,28 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
   const completedRef = useRef(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-
-  // Video sequence: Marty Jr. BTTF2 first, then widgets intro
-  const videoSequence = [
-    config.media.martyJrBttf2Video,
-    videoUrl,
-  ];
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const currentVideoUrl = videoSequence[currentVideoIndex];
-  const captionUrls = getCaptionUrls(currentVideoUrl);
+  const captionUrls = getCaptionUrls(videoUrl);
 
   useEffect(() => {
     if (visible) {
       completedRef.current = false;
-      setCurrentVideoIndex(0); // Reset to first video
       setIsLoading(true);
       setHasError(false);
     }
   }, [visible]);
 
   const handleVideoComplete = useCallback(() => {
-    // Check if there are more videos in the sequence
-    if (currentVideoIndex < videoSequence.length - 1) {
-      // Move to next video
-      setCurrentVideoIndex(prev => prev + 1);
-      setIsLoading(true);
-      setHasError(false);
-    } else {
-      // All videos completed
-      if (completedRef.current) return;
-      completedRef.current = true;
+    if (completedRef.current) return;
+    completedRef.current = true;
 
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 500,
-        useNativeDriver: true,
-      }).start(() => {
-        onComplete();
-      });
-    }
-  }, [currentVideoIndex, videoSequence.length, fadeAnim, onComplete]);
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start(() => {
+      onComplete();
+    });
+  }, [fadeAnim, onComplete]);
 
   const handleSkipAll = useCallback(() => {
     if (completedRef.current) return;
@@ -120,17 +100,11 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
   const handleVideoError = useCallback(() => {
     setIsLoading(false);
     setHasError(true);
-    // If video fails, wait 2 seconds then try next video or complete
+    // If video fails, wait 2 seconds then complete
     setTimeout(() => {
-      if (currentVideoIndex < videoSequence.length - 1) {
-        setCurrentVideoIndex(prev => prev + 1);
-        setIsLoading(true);
-        setHasError(false);
-      } else {
-        handleSkipAll();
-      }
+      handleSkipAll();
     }, 2000);
-  }, [currentVideoIndex, videoSequence.length, handleSkipAll]);
+  }, [handleSkipAll]);
 
   useEffect(() => {
     if (visible) {
@@ -162,28 +136,12 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
   return (
     <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
       <View style={styles.container}>
-        {/* Video progress indicator */}
-        <View style={styles.progressContainer}>
-          {videoSequence.map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.progressDot,
-                index === currentVideoIndex && styles.progressDotActive,
-                index < currentVideoIndex && styles.progressDotCompleted,
-              ]}
-            />
-          ))}
-        </View>
-
         {/* Loading indicator */}
         {isLoading && !hasError && (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.primary} />
             <Text style={styles.loadingText}>
-              {currentVideoIndex === 0
-                ? t('widgets.intro.loadingMartyJr', 'Loading Marty Jr...')
-                : t('widgets.intro.loadingWidgets', 'Loading widgets intro...')}
+              {t('widgets.intro.loading', 'Loading widgets intro...')}
             </Text>
           </View>
         )}
@@ -202,8 +160,7 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
           <GlassView style={styles.videoContainer}>
             {Platform.OS === 'web' ? (
               <WebVideoPlayer
-                key={currentVideoIndex} // Force remount on video change
-                videoUrl={currentVideoUrl}
+                videoUrl={videoUrl}
                 captionUrls={captionUrls}
                 videoRef={videoRef}
                 isLoading={isLoading}
@@ -214,8 +171,7 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
               />
             ) : (
               <NativeVideoPlayer
-                key={currentVideoIndex} // Force remount on video change
-                videoUrl={currentVideoUrl}
+                videoUrl={videoUrl}
                 captionUrls={captionUrls}
                 autoPlay={autoPlay}
                 onLoad={handleVideoLoaded}

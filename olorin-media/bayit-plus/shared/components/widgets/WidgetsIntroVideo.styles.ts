@@ -59,30 +59,6 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
-  progressContainer: {
-    position: 'absolute',
-    top: 40,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing.sm,
-    zIndex: 2,
-  },
-  progressDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  progressDotActive: {
-    width: 32,
-    backgroundColor: colors.primary[600],
-  },
-  progressDotCompleted: {
-    backgroundColor: colors.success[600],
-  },
   buttonContainer: {
     position: 'absolute',
     bottom: 40,
