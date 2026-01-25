@@ -13,6 +13,10 @@ import { GlassView } from './ui/GlassView';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { subtitlesService } from '../services/api';
 import { isTV } from '../utils/platform';
+import { logger } from '../utils/logger';
+
+// Scoped logger for interactive subtitles
+const subtitlesLogger = logger.scope('UI:InteractiveSubtitles');
 
 interface SubtitleWord {
   word: string;
@@ -85,7 +89,13 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
         setCues(response.cues || []);
         setHasNikud(response.has_nikud || false);
       } catch (err) {
-        console.error('Failed to fetch subtitles:', err);
+        subtitlesLogger.error('Failed to fetch subtitles', {
+          contentId,
+          language,
+          showNikud,
+          error: err instanceof Error ? err.message : String(err),
+          stack: err instanceof Error ? err.stack : undefined,
+        });
         setCues([]);
       } finally {
         setIsLoading(false);
@@ -138,7 +148,12 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
       setTranslation(result);
       onWordTranslate?.(result);
     } catch (err) {
-      console.error('Translation failed:', err);
+      subtitlesLogger.error('Translation failed', {
+        word: word.word,
+        isHebrew: word.is_hebrew,
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       setTranslation({ word: word.word, translation: t('subtitles.unavailable') });
     } finally {
       setIsTranslating(false);
@@ -153,7 +168,12 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
         await subtitlesService.generateNikud(contentId, language);
         setHasNikud(true);
       } catch (err) {
-        console.error('Failed to generate nikud:', err);
+        subtitlesLogger.error('Failed to generate nikud', {
+          contentId,
+          language,
+          error: err instanceof Error ? err.message : String(err),
+          stack: err instanceof Error ? err.stack : undefined,
+        });
         return;
       }
     }

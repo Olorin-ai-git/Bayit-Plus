@@ -21,6 +21,10 @@ import {
   type HierarchicalTableColumn,
   type HierarchicalTableRow,
 } from '@bayit/shared/ui';
+import { logger } from '../../utils/logger';
+
+// Scoped logger for hierarchical table example
+const tableExampleLogger = logger.scope('UI:HierarchicalTableExample');
 
 // ============================================
 // Data Types
@@ -282,19 +286,19 @@ export const ContentLibraryTableExample: React.FC = () => {
   // ============================================
 
   const handleView = (id: string) => {
-    console.log('View:', id);
+    tableExampleLogger.info('View action', { id });
   };
 
   const handleEdit = (id: string) => {
-    console.log('Edit:', id);
+    tableExampleLogger.info('Edit action', { id });
   };
 
   const handleDelete = (id: string) => {
-    console.log('Delete:', id);
+    tableExampleLogger.info('Delete action', { id });
   };
 
   const handleToggleFeatured = (id: string) => {
-    console.log('Toggle Featured:', id);
+    tableExampleLogger.info('Toggle featured action', { id });
   };
 
   // ============================================
@@ -316,7 +320,7 @@ export const ContentLibraryTableExample: React.FC = () => {
           pageSize: 10,
           total: 50,
         }}
-        onPageChange={(page) => console.log('Page:', page)}
+        onPageChange={(page) => tableExampleLogger.info('Page change', { page })}
         emptyMessage="No content found"
         isRTL={false}
       />

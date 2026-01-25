@@ -20,6 +20,10 @@ import { Refund } from '../../types/rbac';
 
 import { formatDate, formatCurrency } from '../../utils/formatters';
 import { getStatusColor } from '../../utils/adminConstants';
+import { logger } from '../../utils/logger';
+
+// Scoped logger for refunds screen
+const refundsLogger = logger.scope('Admin:Refunds');
 
 export const RefundsScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -47,7 +51,12 @@ export const RefundsScreen: React.FC = () => {
       setRefunds(response.items);
       setTotalRefunds(response.total);
     } catch (err) {
-      console.error('Error loading refunds:', err);
+      refundsLogger.error('Error loading refunds', {
+        filters,
+        statusFilter,
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       setError(err instanceof Error ? err.message : 'Failed to load refunds');
       setRefunds([]);
       setTotalRefunds(0);
@@ -79,7 +88,12 @@ export const RefundsScreen: React.FC = () => {
             loadRefunds();
             notifications.showSuccess(t('admin.refunds.approvedMessage', 'Refund has been approved.'), t('admin.refunds.approved', 'Approved'));
           } catch (error) {
-            console.error('Error approving refund:', error);
+            refundsLogger.error('Error approving refund', {
+              refundId: refund.id,
+              amount: refund.amount,
+              error: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            });
           }
         },
       },
@@ -104,7 +118,12 @@ export const RefundsScreen: React.FC = () => {
       loadRefunds();
       notifications.showSuccess(t('admin.refunds.rejectedMessage', 'Refund has been rejected.'), t('admin.refunds.rejected', 'Rejected'));
     } catch (error) {
-      console.error('Error rejecting refund:', error);
+      refundsLogger.error('Error rejecting refund', {
+        refundId: selectedRefund.id,
+        rejectReason,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 

@@ -22,9 +22,13 @@ import { Campaign } from '../../types/rbac';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { formatDate } from '../../utils/formatters';
 import { getStatusColor, getCampaignTypeIcon } from '../../utils/adminConstants';
+import { logger } from '../../utils/logger';
 
 type CampaignStatus = 'draft' | 'active' | 'scheduled' | 'ended' | 'all';
 type CampaignType = 'discount' | 'trial' | 'referral' | 'promotional' | 'all';
+
+// Scoped logger for campaigns list screen
+const campaignsListLogger = logger.scope('Admin:CampaignsList');
 
 export const CampaignsListScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -58,7 +62,11 @@ export const CampaignsListScreen: React.FC = () => {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load campaigns';
       setError(message);
-      console.error('Error loading campaigns:', err);
+      campaignsListLogger.error('Error loading campaigns', {
+        filters,
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
     } finally {
       setLoading(false);
     }
@@ -95,7 +103,12 @@ export const CampaignsListScreen: React.FC = () => {
       setCampaignStats(stats);
       setShowStatsModal(true);
     } catch (err) {
-      console.error('Error loading campaign stats:', err);
+      campaignsListLogger.error('Error loading campaign stats', {
+        campaignId: campaign.id,
+        campaignName: campaign.name,
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       notifications.showError(t('admin.campaigns.statsError', 'Failed to load campaign statistics'), t('common.error', 'Error'));
     }
   };
@@ -105,7 +118,12 @@ export const CampaignsListScreen: React.FC = () => {
       await campaignsService.activateCampaign(campaign.id);
       loadCampaigns();
     } catch (error) {
-      console.error('Error activating campaign:', error);
+      campaignsListLogger.error('Error activating campaign', {
+        campaignId: campaign.id,
+        campaignName: campaign.name,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 
@@ -114,7 +132,12 @@ export const CampaignsListScreen: React.FC = () => {
       await campaignsService.deactivateCampaign(campaign.id);
       loadCampaigns();
     } catch (error) {
-      console.error('Error deactivating campaign:', error);
+      campaignsListLogger.error('Error deactivating campaign', {
+        campaignId: campaign.id,
+        campaignName: campaign.name,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 
@@ -132,7 +155,12 @@ export const CampaignsListScreen: React.FC = () => {
             await campaignsService.deleteCampaign(campaign.id);
             loadCampaigns();
           } catch (error) {
-            console.error('Error deleting campaign:', error);
+            campaignsListLogger.error('Error deleting campaign', {
+              campaignId: campaign.id,
+              campaignName: campaign.name,
+              error: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            });
           }
         },
       },

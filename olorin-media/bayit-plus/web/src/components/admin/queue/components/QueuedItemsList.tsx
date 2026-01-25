@@ -6,11 +6,12 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Inbox, Upload } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { QueueJob } from '../types';
 import { formatFileSize } from '../utils';
 import { StatusIcon } from './StatusIcon';
+import { EmptyState } from '@/pages/admin/UploadsPage/components/EmptyState';
 import { format } from 'date-fns';
 
 interface QueuedItemsListProps {
@@ -48,9 +49,12 @@ export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue = [], is
           showsVerticalScrollIndicator={false}
         >
           {queueItems.length === 0 ? (
-            <Text style={[styles.emptyText, { textAlign, color: colors.textMuted }]}>
-              {t('admin.uploads.noQueuedItems', 'No items in queue')}
-            </Text>
+            <EmptyState
+              icon={Inbox}
+              iconColor="rgba(59, 130, 246, 0.4)"
+              title={t('admin.uploads.queueDashboard.noQueuedJobs')}
+              description={t('admin.uploads.queueDashboard.noQueuedJobsDescription')}
+            />
           ) : (
             queueItems.map((job) => (
               <View key={job.job_id} style={[styles.jobCard, { backgroundColor: colors.backgroundLight, borderColor: colors.glassBorder }]}>

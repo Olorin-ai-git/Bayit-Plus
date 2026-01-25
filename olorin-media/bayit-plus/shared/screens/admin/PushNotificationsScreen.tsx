@@ -22,6 +22,10 @@ import { PushNotification, AudienceFilter } from '../../types/rbac';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { formatDate, formatDateTime } from '../../utils/formatters';
 import { getStatusColor } from '../../utils/adminConstants';
+import { logger } from '../../utils/logger';
+
+// Scoped logger for push notifications screen
+const pushNotificationsLogger = logger.scope('Admin:PushNotifications');
 
 export const PushNotificationsScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -53,7 +57,11 @@ export const PushNotificationsScreen: React.FC = () => {
       setNotifications(response.items);
       setTotalNotifications(response.total);
     } catch (err) {
-      console.error('Error loading notifications:', err);
+      pushNotificationsLogger.error('Error loading notifications', {
+        filters,
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       setError(t('admin.push.loadError', 'Failed to load notifications. Please try again.'));
       setNotifications([]);
       setTotalNotifications(0);
@@ -108,7 +116,17 @@ export const PushNotificationsScreen: React.FC = () => {
       setShowComposer(false);
       loadNotifications();
     } catch (error) {
-      console.error('Error saving notification:', error);
+      pushNotificationsLogger.error('Error saving notification', {
+        isEdit: !!selectedNotification,
+        notificationId: selectedNotification?.id,
+        formData: {
+          title: formData.title,
+          body: formData.body,
+          deep_link: formData.deep_link,
+        },
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     } finally {
       setSaving(false);
     }
@@ -129,7 +147,12 @@ export const PushNotificationsScreen: React.FC = () => {
             loadNotifications();
             notificationSystem.showSuccess(t('admin.push.sentMessage', 'Notification is being sent'), t('admin.push.sent', 'Sent'));
           } catch (error) {
-            console.error('Error sending:', error);
+            pushNotificationsLogger.error('Error sending notification', {
+              notificationId: notification.id,
+              title: notification.title,
+              error: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            });
           }
         },
       },
@@ -150,7 +173,12 @@ export const PushNotificationsScreen: React.FC = () => {
       loadNotifications();
       notificationSystem.showSuccess(t('admin.push.scheduledMessage', 'Notification has been scheduled'), t('admin.push.scheduled', 'Scheduled'));
     } catch (error) {
-      console.error('Error scheduling:', error);
+      pushNotificationsLogger.error('Error scheduling notification', {
+        notificationId: selectedNotification.id,
+        scheduleDate,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 
@@ -168,7 +196,12 @@ export const PushNotificationsScreen: React.FC = () => {
             await marketingService.deletePushNotification(notification.id);
             loadNotifications();
           } catch (error) {
-            console.error('Error deleting:', error);
+            pushNotificationsLogger.error('Error deleting notification', {
+              notificationId: notification.id,
+              title: notification.title,
+              error: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            });
           }
         },
       },

@@ -6,12 +6,13 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Text } from 'react-native';
 import { GlassButton, GlassModal, GlassCard } from '@bayit/shared/ui';
-import { Plus, AlertTriangle } from 'lucide-react';
+import { Plus, AlertTriangle, Folder } from 'lucide-react';
 import { spacing, colors, fontSize } from '@olorin/design-tokens';
 import { useTranslation } from 'react-i18next';
 import { useMonitoredFolders } from '../../hooks/useMonitoredFolders';
 import { FolderCard } from './FolderCard';
 import { FolderFormModal } from './FolderFormModal';
+import { EmptyState } from '../EmptyState';
 import type { MonitoredFolder, FolderFormData } from '../../types';
 
 export const MonitoredFolders: React.FC = () => {
@@ -67,18 +68,30 @@ export const MonitoredFolders: React.FC = () => {
         </GlassButton>
       </View>
 
-      <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
-        {folders.map((folder, index) => (
-          <FolderCard
-            key={folder._id || `folder-${index}`}
-            folder={folder}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onScan={handleScan}
-            actionInProgress={actionInProgress}
-          />
-        ))}
-      </ScrollView>
+      {folders.length === 0 ? (
+        <EmptyState
+          icon={Folder}
+          iconColor="rgba(234, 179, 8, 0.4)"
+          title={t('admin.uploads.monitoredFolders.noFolders')}
+          description={t('admin.uploads.monitoredFolders.noFoldersDescription')}
+          actionLabel={t('admin.uploads.monitoredFolders.addFolder')}
+          actionIcon={Plus}
+          onAction={handleAdd}
+        />
+      ) : (
+        <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
+          {folders.map((folder, index) => (
+            <FolderCard
+              key={folder._id || `folder-${index}`}
+              folder={folder}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onScan={handleScan}
+              actionInProgress={actionInProgress}
+            />
+          ))}
+        </ScrollView>
+      )}
 
       <FolderFormModal
         visible={showModal}

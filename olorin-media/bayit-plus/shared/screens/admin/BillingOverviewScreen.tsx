@@ -21,6 +21,10 @@ import { billingService } from '../../services/adminApi';
 import { Transaction } from '../../types/rbac';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { formatCurrency, formatNumber } from '../../utils/formatters';
+import { logger } from '../../utils/logger';
+
+// Scoped logger for billing overview screen
+const billingOverviewLogger = logger.scope('Admin:BillingOverview');
 
 const { width } = Dimensions.get('window');
 
@@ -52,7 +56,10 @@ export const BillingOverviewScreen: React.FC = () => {
       setOverview(overviewData);
       setRecentTransactions(transactionsData.items);
     } catch (err) {
-      console.error('Error loading billing data:', err);
+      billingOverviewLogger.error('Error loading billing data', {
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       setError(err instanceof Error ? err.message : 'Failed to load billing data');
     } finally {
       setLoading(false);

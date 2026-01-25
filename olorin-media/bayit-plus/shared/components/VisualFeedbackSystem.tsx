@@ -20,6 +20,10 @@ import { View, Animated } from 'react-native';
 import { ttsService } from '../services/ttsService';
 import { GlassParticleLayer } from './ui/GlassParticleLayer';
 import { colors } from '@olorin/design-tokens';
+import { logger } from '../utils/logger';
+
+// Scoped logger for visual feedback system
+const feedbackLogger = logger.scope('UI:VisualFeedback');
 
 export type FeedbackState = 'idle' | 'loading' | 'processing' | 'success' | 'error' | 'navigation';
 
@@ -119,22 +123,22 @@ export const VisualFeedbackSystem: React.FC<VisualFeedbackSystemProps> = ({
       case 'processing':
         // Play thinking/processing tone
         // In production: play audio file with processing tone
-        console.log('[Feedback] Playing processing tone');
+        feedbackLogger.debug('Playing processing tone', { state: feedbackState });
         break;
 
       case 'success':
         // Play success chime
-        console.log('[Feedback] Playing success chime');
+        feedbackLogger.debug('Playing success chime');
         break;
 
       case 'error':
         // Play error sound
-        console.log('[Feedback] Playing error sound');
+        feedbackLogger.debug('Playing error sound');
         break;
 
       case 'navigation':
         // Play transition sound
-        console.log('[Feedback] Playing transition sound');
+        feedbackLogger.debug('Playing transition sound');
         break;
 
       default:

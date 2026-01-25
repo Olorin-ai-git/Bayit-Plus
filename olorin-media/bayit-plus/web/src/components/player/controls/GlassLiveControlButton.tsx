@@ -3,8 +3,8 @@
  * Consistent glassmorphic button for live player controls (Live Translate, Live Dubbing)
  */
 
-import { useState, ReactNode } from 'react'
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
+import { useState, useEffect, useRef, ReactNode } from 'react'
+import { View, Text, Pressable, ActivityIndicator, Animated, StyleSheet } from 'react-native'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 
@@ -28,6 +28,31 @@ export function GlassLiveControlButton({
   premiumLabel = '⭐ Premium',
 }: GlassLiveControlButtonProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const pulseAnim = useRef(new Animated.Value(1)).current
+
+  // Pulsing animation for the connected indicator
+  useEffect(() => {
+    if (isEnabled && !isConnecting) {
+      const pulse = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 0.2,
+            duration: 800,
+            useNativeDriver: false,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: false,
+          }),
+        ])
+      )
+      pulse.start()
+      return () => pulse.stop()
+    } else {
+      pulseAnim.setValue(1)
+    }
+  }, [isEnabled, isConnecting, pulseAnim])
 
   const displayLabel = isPremium ? label : premiumLabel
 
@@ -72,8 +97,15 @@ export function GlassLiveControlButton({
         />
       )}
 
-      {/* Connected indicator */}
-      {isEnabled && !isConnecting && <View style={styles.connectedDot} />}
+      {/* Connected indicator - Blinking green dot */}
+      {isEnabled && !isConnecting && (
+        <Animated.View
+          style={[
+            styles.connectedDot,
+            { opacity: pulseAnim }
+          ]}
+        />
+      )}
     </Pressable>
   )
 }
@@ -83,14 +115,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    paddingHorizontal: isTV ? spacing.md : spacing.sm + 4,
-    paddingVertical: isTV ? spacing.sm + 2 : spacing.xs + 4,
+    paddingHorizontal: isTV ? spacing.lg : spacing.md,
+    paddingVertical: isTV ? spacing.sm + 2 : spacing.sm,
     borderRadius: borderRadius.xl,
     backgroundColor: 'rgba(17, 17, 34, 0.85)',
     backdropFilter: 'blur(20px)',
     borderWidth: 1.5,
     borderColor: 'rgba(139, 92, 246, 0.3)',
-    minHeight: isTV ? 44 : 36,
+    minHeight: isTV ? 44 : 40,
+    minWidth: isTV ? 180 : 150,
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.15,

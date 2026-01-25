@@ -3,10 +3,9 @@
  * Captures audio from video element, streams to WebSocket for real-time dubbing,
  * and plays back dubbed audio while mixing with original video audio.
  *
- * Uses AudioWorklet for audio capture (replaces deprecated ScriptProcessorNode).
+ * Uses ScriptProcessorNode for reliable audio capture (matches Live Subtitles approach).
  */
 
-import { createProcessorBlobUrl, PROCESSOR_CONFIG } from './audio/dubbing-capture-processor'
 import logger from '@/utils/logger'
 
 // API configuration from environment - no fallback allowed per coding standards
@@ -36,10 +35,10 @@ if (!API_BASE_URL) {
 
 // Audio configuration - can be overridden via environment variables
 const AUDIO_CONFIG = {
-  // Audio context sample rate for high-quality playback (Hz)
-  contextSampleRate: parseInt(import.meta.env.VITE_DUBBING_CONTEXT_SAMPLE_RATE || '48000', 10),
-  // Target sample rate for server (Hz) - must be 16000 for STT
-  serverSampleRate: parseInt(import.meta.env.VITE_DUBBING_SERVER_SAMPLE_RATE || '16000', 10),
+  // Audio context sample rate - MUST be 16000Hz for ElevenLabs STT (matches Live Subtitles)
+  sampleRate: parseInt(import.meta.env.VITE_DUBBING_SAMPLE_RATE || '16000', 10),
+  // Buffer size for ScriptProcessorNode - 2048 samples = ~128ms latency at 16kHz
+  bufferSize: parseInt(import.meta.env.VITE_DUBBING_BUFFER_SIZE || '2048', 10),
   // Default sync delay for video synchronization (ms)
   defaultSyncDelayMs: parseInt(import.meta.env.VITE_DUBBING_SYNC_DELAY_MS || '600', 10),
   // Default original audio volume (0 = muted)
@@ -51,9 +50,6 @@ const AUDIO_CONFIG = {
   // Log interval for chunk statistics
   chunkLogInterval: parseInt(import.meta.env.VITE_DUBBING_CHUNK_LOG_INTERVAL || '100', 10),
 } as const
-
-// Calculate downsampling ratio from sample rates
-const DOWNSAMPLE_RATIO = Math.round(AUDIO_CONFIG.contextSampleRate / AUDIO_CONFIG.serverSampleRate)
 
 export interface DubbedAudioMessage {
   type: 'dubbed_audio'
@@ -107,7 +103,7 @@ class LiveDubbingService {
   private ws: WebSocket | null = null
   private audioContext: AudioContext | null = null
   private mediaStreamSource: MediaStreamAudioSourceNode | null = null
-  private workletNode: AudioWorkletNode | null = null
+  private processor: ScriptProcessorNode | null = null
   private isConnected = false
   private syncDelayMs = AUDIO_CONFIG.defaultSyncDelayMs
   private chunkCount = 0
@@ -215,15 +211,14 @@ class LiveDubbingService {
   }
 
   /**
-   * Set up audio pipeline using AudioWorklet for capture and mixing.
-   * Uses single AudioContext to avoid memory leaks.
+   * Set up audio pipeline using ScriptProcessorNode for reliable capture.
+   * Uses 16kHz sample rate to match ElevenLabs STT requirements (same as Live Subtitles).
    */
   private async setupAudioPipeline(videoElement: HTMLVideoElement, onError: ErrorCallback): Promise<void> {
     try {
-      // Create single audio context for both capture (resampled) and playback
-      // Sample rate from config (default 48kHz for high quality playback)
-      this.audioContext = new AudioContext({ sampleRate: AUDIO_CONFIG.contextSampleRate })
-      logger.debug(`AudioContext created at ${AUDIO_CONFIG.contextSampleRate}Hz`, 'liveDubbingService')
+      // Create AudioContext at 16kHz for direct STT compatibility (no downsampling needed)
+      this.audioContext = new AudioContext({ sampleRate: AUDIO_CONFIG.sampleRate })
+      logger.debug(`AudioContext created at ${AUDIO_CONFIG.sampleRate}Hz`, 'liveDubbingService')
 
       // Validate AudioContext was created successfully
       if (!this.audioContext) {
@@ -249,74 +244,83 @@ class LiveDubbingService {
       }
 
       const stream = captureMethod.call(videoElement)
+      if (!stream) {
+        throw new Error('captureStream() returned null - video may have CORS restrictions')
+      }
+
       const audioTracks = stream.getAudioTracks()
       logger.debug(`Video stream captured with ${audioTracks.length} audio track(s)`, 'liveDubbingService')
 
       if (audioTracks.length === 0) {
+        logger.error('No audio tracks in video stream', 'liveDubbingService', {
+          message: 'This usually means: 1. The video has no audio, OR 2. CORS is blocking audio capture (cross-origin video) 3. The video element is muted'
+        })
         throw new Error('No audio tracks available from video element')
       }
 
-      // Create source from video stream and connect to original gain
-      this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream)
-      this.mediaStreamSource.connect(this.originalGain)
-
-      // Register AudioWorklet module for capture processing
-      const processorUrl = createProcessorBlobUrl()
-      await this.audioContext.audioWorklet.addModule(processorUrl)
-      URL.revokeObjectURL(processorUrl) // Clean up blob URL
-
-      // Validate AudioContext state before creating AudioWorkletNode
-      if (!this.audioContext || this.audioContext.state === 'closed') {
-        throw new Error('AudioContext is not available or has been closed')
-      }
-
-      // Resume AudioContext if it's suspended (required by browser security policy)
-      if (this.audioContext.state === 'suspended') {
-        logger.debug('AudioContext is suspended, resuming...', 'liveDubbingService')
-        await this.audioContext.resume()
-        logger.debug('AudioContext resumed', 'liveDubbingService')
-      }
-
-      // Verify AudioContext is now running
-      if (this.audioContext.state !== 'running') {
-        throw new Error(`AudioContext state is ${this.audioContext.state}, expected 'running'`)
-      }
-
-      // Create worklet node for audio capture with configuration
-      // Note: AudioWorklet runs at context sample rate, downsampling done on main thread
-      if (!this.audioContext) {
-        throw new Error('AudioContext lost before creating AudioWorkletNode')
-      }
-
-      this.workletNode = new AudioWorkletNode(this.audioContext, 'dubbing-capture-processor', {
-        processorOptions: PROCESSOR_CONFIG,
+      // Log audio track details for debugging
+      audioTracks.forEach((track, i) => {
+        logger.debug(`Track ${i}: ${track.label || 'unnamed'}, enabled=${track.enabled}, muted=${track.muted}`, 'liveDubbingService')
       })
 
-      // Handle messages from worklet (audio data, warnings)
-      this.workletNode.port.onmessage = (event) => {
-        const { type, data, amplitude, message } = event.data
+      // Create ScriptProcessorNode for audio capture
+      // Buffer size 2048 samples at 16kHz = ~128ms latency (matches Live Subtitles)
+      this.processor = this.audioContext.createScriptProcessor(AUDIO_CONFIG.bufferSize, 1, 1)
+      logger.debug(`Audio processor created (buffer size: ${AUDIO_CONFIG.bufferSize}, ~${(AUDIO_CONFIG.bufferSize / AUDIO_CONFIG.sampleRate * 1000).toFixed(0)}ms latency)`, 'liveDubbingService')
 
-        if (type === 'audio' && this.ws?.readyState === WebSocket.OPEN) {
-          // Downsample from context sample rate to server sample rate
-          const downsampled = this.downsample(new Int16Array(data), DOWNSAMPLE_RATIO)
-          this.ws.send(downsampled.buffer)
-          this.chunkCount++
+      let silentChunks = 0
 
-          if (this.chunkCount % AUDIO_CONFIG.chunkLogInterval === 0) {
-            const dbLevel = amplitude > 0 ? 20 * Math.log10(amplitude) : -100
-            logger.debug(`Sent ${this.chunkCount} chunks, level: ${dbLevel.toFixed(1)}dB`, 'liveDubbingService')
+      this.processor.onaudioprocess = (e) => {
+        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+          if (this.chunkCount % 100 === 0) {
+            logger.warn('WebSocket not ready, skipping audio chunk', 'liveDubbingService')
           }
-        } else if (type === 'warning') {
-          logger.warn(message, 'liveDubbingService')
+          return
+        }
+
+        const inputData = e.inputBuffer.getChannelData(0)
+
+        // Check if audio is silent (all zeros = likely CORS blocked or muted)
+        let maxAmplitude = 0
+        for (let i = 0; i < inputData.length; i++) {
+          maxAmplitude = Math.max(maxAmplitude, Math.abs(inputData[i]))
+        }
+
+        if (maxAmplitude < 0.001) {
+          silentChunks++
+          // Warn if we're getting only silence
+          if (silentChunks === 100) {
+            logger.warn('100 consecutive silent chunks detected - Audio may be blocked by CORS or video is muted', 'liveDubbingService')
+          }
+        } else {
+          silentChunks = 0
+        }
+
+        // Convert float32 to int16 PCM (same as Live Subtitles)
+        const int16Data = new Int16Array(inputData.length)
+        for (let i = 0; i < inputData.length; i++) {
+          const s = Math.max(-1, Math.min(1, inputData[i]))
+          int16Data[i] = s < 0 ? s * 0x8000 : s * 0x7fff
+        }
+
+        this.ws.send(int16Data.buffer)
+        this.chunkCount++
+
+        // Log every 100 chunks with audio level info
+        if (this.chunkCount % AUDIO_CONFIG.chunkLogInterval === 0) {
+          const dbLevel = maxAmplitude > 0 ? 20 * Math.log10(maxAmplitude) : -100
+          logger.debug(`Sent ${this.chunkCount} chunks, level: ${dbLevel.toFixed(1)}dB`, 'liveDubbingService')
         }
       }
 
-      // Create downsampling source (need separate source for worklet)
-      const captureSource = this.audioContext.createMediaStreamSource(stream)
-      captureSource.connect(this.workletNode)
-      // Don't connect worklet to destination - it's just for capture
+      // Create ONE MediaStreamSource from video stream (cannot create multiple sources from same stream!)
+      // Connect it to BOTH the processor (for capture) AND the original gain (for passthrough audio)
+      this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream)
+      this.mediaStreamSource.connect(this.processor)
+      this.mediaStreamSource.connect(this.originalGain)
+      this.processor.connect(this.audioContext.destination)
 
-      logger.debug('AudioWorklet pipeline ready', 'liveDubbingService')
+      logger.debug('Audio capture pipeline ready - capturing DIRECTLY from video (not microphone)', 'liveDubbingService')
     } catch (error) {
       logger.error('Audio pipeline setup error', 'liveDubbingService', error)
       onError(error instanceof Error ? error.message : 'Audio setup failed', false)
@@ -324,57 +328,6 @@ class LiveDubbingService {
     }
   }
 
-  /**
-   * Lanczos kernel function for high-quality resampling.
-   * Provides ~40dB stopband attenuation for anti-aliasing.
-   * @param x - Distance from center
-   * @param a - Lanczos parameter (window size)
-   */
-  private lanczosKernel(x: number, a: number): number {
-    if (x === 0) return 1
-    if (Math.abs(x) >= a) return 0
-    const pix = Math.PI * x
-    return (a * Math.sin(pix) * Math.sin(pix / a)) / (pix * pix)
-  }
-
-  /**
-   * Downsample int16 audio data with Lanczos anti-aliasing filter.
-   * Provides ≥40dB stopband attenuation to prevent audible aliasing.
-   * @param data - Input int16 audio samples
-   * @param ratio - Downsampling ratio (e.g., 3 for 48kHz → 16kHz)
-   */
-  private downsample(data: Int16Array, ratio: number): Int16Array {
-    const outputLength = Math.floor(data.length / ratio)
-    const output = new Int16Array(outputLength)
-
-    // Lanczos parameter (window size) - a=3 provides ~40dB attenuation
-    const a = 3
-    // Filter support size
-    const filterRadius = a * ratio
-
-    for (let i = 0; i < outputLength; i++) {
-      const centerPos = i * ratio
-      let sum = 0
-      let weightSum = 0
-
-      // Apply Lanczos filter kernel
-      const startIdx = Math.max(0, Math.ceil(centerPos - filterRadius))
-      const endIdx = Math.min(data.length - 1, Math.floor(centerPos + filterRadius))
-
-      for (let j = startIdx; j <= endIdx; j++) {
-        const x = (j - centerPos) / ratio
-        const weight = this.lanczosKernel(x, a)
-        sum += data[j] * weight
-        weightSum += weight
-      }
-
-      // Normalize by weight sum and clamp to int16 range
-      const normalized = weightSum > 0 ? Math.round(sum / weightSum) : 0
-      output[i] = Math.max(-32768, Math.min(32767, normalized))
-    }
-
-    return output
-  }
 
   /**
    * Play dubbed audio through the dubbed gain node.
@@ -465,9 +418,9 @@ class LiveDubbingService {
    * Stop audio processing and cleanup all resources.
    */
   private stopAudioCapture(): void {
-    if (this.workletNode) {
-      this.workletNode.disconnect()
-      this.workletNode = null
+    if (this.processor) {
+      this.processor.disconnect()
+      this.processor = null
     }
 
     if (this.mediaStreamSource) {

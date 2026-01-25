@@ -17,6 +17,10 @@ import { GlassPlaceholder } from '@olorin/glass-ui';
 import { SubtitleFlags } from './SubtitleFlags';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 import { useDirection } from '../hooks/useDirection';
+import { logger } from '../utils/logger';
+
+// Scoped logger for glass carousel component
+const carouselLogger = logger.scope('UI:GlassCarousel');
 
 type ContentType = 'vod' | 'live' | 'podcast' | 'radio' | 'movie' | 'series' | 'channel';
 
@@ -111,7 +115,12 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
       const result = await favoritesService.toggleFavorite(item.id, item.contentType);
       setFavoriteStates(prev => ({ ...prev, [item.id]: result.is_favorite }));
     } catch (error) {
-      console.error('Failed to toggle favorite:', error);
+      carouselLogger.error('Failed to toggle favorite', {
+        itemId: item.id,
+        contentType: item.contentType,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     } finally {
       setActionLoading(prev => ({ ...prev, [`fav-${item.id}`]: false }));
     }
@@ -129,7 +138,12 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
       const result = await watchlistService.toggleWatchlist(item.id, item.contentType);
       setWatchlistStates(prev => ({ ...prev, [item.id]: result.in_watchlist }));
     } catch (error) {
-      console.error('Failed to toggle watchlist:', error);
+      carouselLogger.error('Failed to toggle watchlist', {
+        itemId: item.id,
+        contentType: item.contentType,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     } finally {
       setActionLoading(prev => ({ ...prev, [`wl-${item.id}`]: false }));
     }
@@ -345,7 +359,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
               style={[styles.navButton, styles.navButtonLeft]}
               activeOpacity={0.8}
               onPress={() => {
-                console.log('[GlassCarousel] Left arrow pressed, isRTL:', isRTL);
+                carouselLogger.debug('Left arrow pressed', { isRTL });
                 if (isRTL) {
                   transitionToNext();
                 } else {
@@ -353,11 +367,11 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                 }
               }}
               onFocus={() => {
-                console.log('[GlassCarousel] Left arrow focused');
+                carouselLogger.debug('Left arrow focused');
                 setLeftArrowFocused(true);
               }}
               onBlur={() => {
-                console.log('[GlassCarousel] Left arrow blurred');
+                carouselLogger.debug('Left arrow blurred');
                 setLeftArrowFocused(false);
               }}
               accessible={true}
@@ -379,7 +393,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
               style={[styles.navButton, styles.navButtonRight]}
               activeOpacity={0.8}
               onPress={() => {
-                console.log('[GlassCarousel] Right arrow pressed, isRTL:', isRTL);
+                carouselLogger.debug('Right arrow pressed', { isRTL });
                 if (isRTL) {
                   transitionToPrevious();
                 } else {
@@ -387,11 +401,11 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                 }
               }}
               onFocus={() => {
-                console.log('[GlassCarousel] Right arrow focused');
+                carouselLogger.debug('Right arrow focused');
                 setRightArrowFocused(true);
               }}
               onBlur={() => {
-                console.log('[GlassCarousel] Right arrow blurred');
+                carouselLogger.debug('Right arrow blurred');
                 setRightArrowFocused(false);
               }}
               accessible={true}

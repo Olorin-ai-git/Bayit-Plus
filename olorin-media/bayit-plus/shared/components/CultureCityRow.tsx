@@ -24,6 +24,10 @@ import { cultureService } from '../services/api';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
 import { useCultureStore, CultureCity, CultureCityCategory } from '../contexts/CultureContext';
+import { logger } from '../utils/logger';
+
+// Scoped logger for culture city row
+const cultureCityLogger = logger.scope('UI:CultureCityRow');
 
 // Fallback background images
 const FallbackBackground = require('../assets/images/Scenery/Jerusalem.png');
@@ -126,7 +130,12 @@ export const CultureCityRow: React.FC<CultureCityRowProps> = ({
       const cityData: CultureCity = response.data || response;
       setCity(cityData);
     } catch (err) {
-      console.error('Failed to fetch city:', err);
+      cultureCityLogger.error('Failed to fetch city', {
+        cultureId,
+        cityId,
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
     }
   }, [cultureId, cityId]);
 
@@ -138,7 +147,13 @@ export const CultureCityRow: React.FC<CultureCityRowProps> = ({
       const contentData: CultureContentData = response.data || response;
       setData(contentData);
     } catch (err) {
-      console.error('Failed to fetch city content:', err);
+      cultureCityLogger.error('Failed to fetch city content', {
+        cultureId,
+        cityId,
+        category,
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
     } finally {
       setLoading(false);
     }
@@ -158,7 +173,12 @@ export const CultureCityRow: React.FC<CultureCityRowProps> = ({
     } else {
       // Default: open URL in browser
       Linking.openURL(item.url).catch(err =>
-        console.error('Failed to open URL:', err)
+        cultureCityLogger.error('Failed to open URL', {
+          url: item.url,
+          itemId: item.id,
+          error: err instanceof Error ? err.message : String(err),
+          stack: err instanceof Error ? err.stack : undefined,
+        })
       );
     }
   }, [onItemPress]);

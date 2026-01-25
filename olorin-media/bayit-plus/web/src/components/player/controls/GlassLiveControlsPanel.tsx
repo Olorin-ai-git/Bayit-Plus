@@ -60,7 +60,7 @@ export function GlassLiveControlsPanel({
 
   const panelWidth = expandAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [260, 580],
+    outputRange: [300, 720],
   })
 
   const contentOpacity = expandAnim.interpolate({

@@ -23,6 +23,10 @@ import { EmailCampaign, AudienceFilter } from '../../types/rbac';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { formatDate, formatDateTime, formatNumber } from '../../utils/formatters';
 import { getStatusColor } from '../../utils/adminConstants';
+import { logger } from '../../utils/logger';
+
+// Scoped logger for email campaigns screen
+const emailCampaignsLogger = logger.scope('Admin:EmailCampaigns');
 
 export const EmailCampaignsScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -54,7 +58,11 @@ export const EmailCampaignsScreen: React.FC = () => {
       setCampaigns(response.items);
       setTotalCampaigns(response.total);
     } catch (err) {
-      console.error('Error loading campaigns:', err);
+      emailCampaignsLogger.error('Error loading campaigns', {
+        filters,
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       setError(t('admin.email.loadError', 'Failed to load email campaigns'));
       setCampaigns([]);
       setTotalCampaigns(0);
@@ -109,7 +117,16 @@ export const EmailCampaignsScreen: React.FC = () => {
       setShowComposer(false);
       loadCampaigns();
     } catch (error) {
-      console.error('Error saving campaign:', error);
+      emailCampaignsLogger.error('Error saving campaign', {
+        isEdit: !!selectedCampaign,
+        campaignId: selectedCampaign?.id,
+        formData: {
+          name: formData.name,
+          subject: formData.subject,
+        },
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     } finally {
       setSaving(false);
     }
@@ -130,7 +147,12 @@ export const EmailCampaignsScreen: React.FC = () => {
             loadCampaigns();
             notifications.showSuccess(t('admin.email.sentMessage', 'Campaign is being sent'), t('admin.email.sent', 'Sent'));
           } catch (error) {
-            console.error('Error sending campaign:', error);
+            emailCampaignsLogger.error('Error sending campaign', {
+              campaignId: campaign.id,
+              name: campaign.name,
+              error: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            });
           }
         },
       },
@@ -144,7 +166,12 @@ export const EmailCampaignsScreen: React.FC = () => {
       setShowTestModal(false);
       notifications.showSuccess(t('admin.email.testSentMessage', `Test email sent to ${testEmail}`), t('admin.email.testSent', 'Test Sent'));
     } catch (error) {
-      console.error('Error sending test:', error);
+      emailCampaignsLogger.error('Error sending test email', {
+        campaignId: selectedCampaign.id,
+        testEmail,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 
@@ -162,7 +189,12 @@ export const EmailCampaignsScreen: React.FC = () => {
             await marketingService.deleteEmailCampaign(campaign.id);
             loadCampaigns();
           } catch (error) {
-            console.error('Error deleting:', error);
+            emailCampaignsLogger.error('Error deleting campaign', {
+              campaignId: campaign.id,
+              name: campaign.name,
+              error: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            });
           }
         },
       },
