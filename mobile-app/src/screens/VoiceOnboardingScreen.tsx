@@ -24,7 +24,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { speechService, wakeWordService, ttsService } from '../services';
 import { VoiceWaveform } from '../components/voice';
-import { colors, spacing } from '../theme';
+import { colors, spacing } from '@olorin/design-tokens';
 
 import logger from '@/utils/logger';
 

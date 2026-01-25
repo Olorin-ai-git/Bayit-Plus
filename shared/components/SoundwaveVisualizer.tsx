@@ -13,7 +13,7 @@ import {
   Easing,
   ViewStyle,
 } from 'react-native';
-import { colors } from '../theme';
+import { colors } from '@olorin/design-tokens';
 
 export interface AudioLevel {
   average: number;  // 0-1 normalized

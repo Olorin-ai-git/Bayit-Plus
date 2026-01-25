@@ -328,8 +328,16 @@ async def scene_search(
 
                 # Build episode info for series (e.g., "S2E5")
                 episode_info = None
+                series_id = None
+                series_title = None
+
                 if content.season and content.episode:
                     episode_info = f"S{content.season}E{content.episode}"
+
+                # For episodes, include parent series information
+                if hasattr(content, "series_id") and content.series_id:
+                    series_id = str(content.series_id)
+                    series_title = getattr(content, "series_title", None)
 
                 # Generate deep-link URL
                 deep_link = f"/watch/{content_id}?t={int(timestamp_seconds)}"
@@ -337,8 +345,11 @@ async def scene_search(
                 results.append(
                     SceneSearchResult(
                         content_id=content_id,
+                        content_type=content.content_type or "unknown",
                         title=content.title or "",
                         title_en=content.title_en,
+                        series_id=series_id,
+                        series_title=series_title,
                         episode_info=episode_info,
                         thumbnail_url=content.thumbnail,
                         matched_text=metadata.get("text", ""),

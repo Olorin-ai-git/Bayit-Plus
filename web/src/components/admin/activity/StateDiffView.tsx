@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 interface StateDiff {
   key: string;
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     marginBottom: 2,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   valueRow: {
     flexDirection: 'row',
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'monospace',
     textDecorationLine: 'line-through',
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
   arrowText: {
     fontSize: 11,
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   afterText: {
     fontSize: 11,
     fontFamily: 'monospace',
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
 });
 

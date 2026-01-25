@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react'
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { ChatRecommendations } from './ChatRecommendations'
 import type { Message } from './types'
 

@@ -4,7 +4,7 @@
  */
 
 import { StyleSheet } from 'react-native'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 
 export const styles = StyleSheet.create({

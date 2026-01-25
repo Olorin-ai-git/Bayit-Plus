@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { View, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { UploadStages } from '../types';
 import { UPLOAD_STAGES, CRITICAL_STAGES } from '../constants';
 import { StageTooltip } from './StageTooltip';
@@ -49,21 +49,21 @@ export const StageIndicator: React.FC<StageIndicatorProps> = ({
           let borderColor = colors.glassBorder;
 
           if (isCompleted) {
-            iconColor = colors.success;
-            bgColor = colors.success + '20';
-            borderColor = colors.success + '40';
+            iconColor = colors.success.DEFAULT;
+            bgColor = colors.success.DEFAULT + '20';
+            borderColor = colors.success.DEFAULT + '40';
           } else if (isActive) {
-            iconColor = colors.primary;
-            bgColor = colors.primary + '20';
-            borderColor = colors.primary + '40';
+            iconColor = colors.primary.DEFAULT;
+            bgColor = colors.primary.DEFAULT + '20';
+            borderColor = colors.primary.DEFAULT + '40';
           } else if (isSkipped) {
-            iconColor = colors.warning;
-            bgColor = colors.warning + '15';
-            borderColor = colors.warning + '30';
+            iconColor = colors.warning.DEFAULT;
+            bgColor = colors.warning.DEFAULT + '15';
+            borderColor = colors.warning.DEFAULT + '30';
           } else if (isScheduled) {
-            iconColor = colors.info || colors.primary;
-            bgColor = (colors.info || colors.primary) + '15';
-            borderColor = (colors.info || colors.primary) + '30';
+            iconColor = colors.info.DEFAULT;
+            bgColor = colors.info.DEFAULT + '15';
+            borderColor = colors.info.DEFAULT + '30';
           }
 
           const showSeparator = index === criticalStagesCount;
@@ -74,7 +74,7 @@ export const StageIndicator: React.FC<StageIndicatorProps> = ({
                 <View
                   style={[
                     styles.connector,
-                    { backgroundColor: isCompleted ? colors.success : colors.glassBorder }
+                    { backgroundColor: isCompleted ? colors.success.DEFAULT : colors.glassBorder }
                   ]}
                 />
               )}
@@ -97,7 +97,7 @@ export const StageIndicator: React.FC<StageIndicatorProps> = ({
                 <Icon size={isEnrichmentStage ? 10 : 12} color={iconColor} />
                 {isActive && (
                   <View style={styles.activityIndicator}>
-                    <ActivityIndicator size={8} color={colors.primary} />
+                    <ActivityIndicator size={8} color={colors.primary.DEFAULT} />
                   </View>
                 )}
               </Pressable>

@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { PlayCircle, Star } from 'lucide-react';
 import { GlassView } from '@bayit/shared/ui';
 import { useAuthStore } from '@/stores/authStore';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import type { RecentActivity } from '../types';
 
 interface OverviewTabProps {

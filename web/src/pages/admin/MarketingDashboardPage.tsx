@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { RefreshCw, Mail, Bell, Users, TrendingUp } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import { marketingService } from '@/services/adminApi';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';

@@ -121,12 +121,18 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false }:
         return
       }
 
-      setState((prev) => ({ ...prev, isConnecting: true, error: null }))
+      // Prevent multiple simultaneous connection attempts
+      setState((prev) => {
+        if (prev.isConnecting || prev.isConnected) {
+          return prev
+        }
+        return { ...prev, isConnecting: true, error: null }
+      })
 
       try {
         await liveDubbingService.connect(
           channelId,
-          targetLang || state.targetLanguage,
+          targetLang,
           videoElement,
           handleDubbedAudio,
           handleLatency,
@@ -142,7 +148,7 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false }:
         }))
       }
     },
-    [channelId, videoElement, state.targetLanguage, handleDubbedAudio, handleLatency, handleConnected, handleError]
+    [channelId, videoElement, handleDubbedAudio, handleLatency, handleConnected, handleError]
   )
 
   // Disconnect from dubbing service
@@ -163,12 +169,16 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false }:
   const setTargetLanguage = useCallback(
     (lang: string) => {
       setState((prev) => ({ ...prev, targetLanguage: lang }))
-      if (state.isConnected) {
-        disconnect()
-        setTimeout(() => connect(lang), 500)
-      }
+      // Only reconnect if currently connected, pass the new language explicitly
+      setState((prevState) => {
+        if (prevState.isConnected) {
+          disconnect()
+          setTimeout(() => connect(lang), 500)
+        }
+        return prevState
+      })
     },
-    [state.isConnected, disconnect, connect]
+    [disconnect, connect]
   )
 
   // Volume controls

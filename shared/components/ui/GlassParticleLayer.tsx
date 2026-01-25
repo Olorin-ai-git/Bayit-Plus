@@ -18,7 +18,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { colors, borderRadius } from '../../theme';
+import { colors, borderRadius } from '@olorin/design-tokens';
 
 interface Particle {
   id: number;

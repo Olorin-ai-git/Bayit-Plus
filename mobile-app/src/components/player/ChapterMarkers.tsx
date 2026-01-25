@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { colors } from '../../theme';
+import { colors } from '@olorin/design-tokens';
 
 export interface Chapter {
   id?: string;

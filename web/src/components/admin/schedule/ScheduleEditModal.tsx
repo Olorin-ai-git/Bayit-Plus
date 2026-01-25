@@ -1,7 +1,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { z } from 'zod';
 import { GlassModal, GlassInput, GlassButton } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 
 /**
  * Zod schema for ScheduleEditModal props
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   statusButtonActive: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     backgroundColor: 'rgba(168, 85, 247, 0.2)',
   },
   statusButtonInactive: {
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
   },
   statusTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   statusTextInactive: {

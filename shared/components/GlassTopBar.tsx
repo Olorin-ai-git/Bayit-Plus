@@ -12,7 +12,7 @@ import { UserAccountMenu } from './UserAccountMenu';
 import { VoiceSearchButton } from './VoiceSearchButton';
 import { SoundwaveVisualizer } from './SoundwaveVisualizer';
 import { UpgradeButton } from './UpgradeButton';
-import { colors, spacing, borderRadius } from '../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { isWeb, isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
 import { useConstantListening } from '../hooks/useConstantListening';

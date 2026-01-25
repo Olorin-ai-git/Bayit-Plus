@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { Trash2, Eye, EyeOff, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { Widget } from '@/types/widget';
 
 interface WidgetCardProps {
@@ -50,6 +50,7 @@ export default function WidgetCard({
 }: WidgetCardProps) {
   const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
+  const [imageLoading, setImageLoading] = useState(!!widget.cover_url);
 
   return (
     <View
@@ -64,8 +65,26 @@ export default function WidgetCard({
           isHidden && styles.cardHidden,
         ]}
       >
-        <View style={styles.iconContainer}>
-          <Text style={styles.iconText}>{getWidgetIcon(widget)}</Text>
+        <View style={styles.posterContainer}>
+          {widget.cover_url ? (
+            <>
+              <Image
+                source={{ uri: widget.cover_url }}
+                style={styles.posterImage}
+                onLoadEnd={() => setImageLoading(false)}
+                onError={() => setImageLoading(false)}
+              />
+              {imageLoading && (
+                <View style={styles.loadingOverlay}>
+                  <ActivityIndicator size="large" color={colors.primary} />
+                </View>
+              )}
+            </>
+          ) : (
+            <View style={styles.iconContainer}>
+              <Text style={styles.iconText}>{getWidgetIcon(widget)}</Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.contentContainer}>
@@ -154,13 +173,34 @@ const styles = StyleSheet.create({
   cardHidden: {
     opacity: 0.6,
   },
-  iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+  posterContainer: {
+    width: 120,
+    height: 68,
+    borderRadius: borderRadius.md,
+    overflow: 'hidden',
+    position: 'relative',
     backgroundColor: colors.glassPurple,
     borderWidth: 1,
     borderColor: colors.glassBorderLight,
+  },
+  posterImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -203,10 +243,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   statusActive: {
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
   statusInactive: {
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
   },
   hiddenBadge: {
     backgroundColor: 'rgba(234, 179, 8, 0.2)',
@@ -218,7 +258,7 @@ const styles = StyleSheet.create({
   },
   hiddenBadgeText: {
     fontSize: 11,
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
   },
   actionButtons: {
     flexDirection: 'row',

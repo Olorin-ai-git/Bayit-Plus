@@ -143,4 +143,27 @@ export const triviaStyles = StyleSheet.create({
     borderRadius: 1,
     width: '100%',
   },
+  // NEW: Multilingual display styles
+  multilingualContainer: {
+    marginBottom: 8,
+    gap: 6,
+  },
+  languageRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  languageRowRTL: {
+    flexDirection: 'row-reverse',
+  },
+  flagIcon: {
+    fontSize: 16,
+    lineHeight: 20,
+    marginTop: 2,
+  },
+  flagIconTV: {
+    fontSize: 24,
+    lineHeight: 32,
+    marginTop: 4,
+  },
 })

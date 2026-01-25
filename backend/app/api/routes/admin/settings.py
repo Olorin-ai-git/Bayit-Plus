@@ -122,11 +122,36 @@ async def update_settings(
     }
 
 
+@router.get("/settings/feature-flags/public")
+async def get_public_feature_flags():
+    """
+    Get feature flags (public endpoint, no authentication required).
+
+    Returns a dictionary of feature flag names and their enabled status.
+    This is used by frontend to conditionally enable/disable features.
+    """
+    settings = await SystemSettings.find_one(SystemSettings.key == "system_settings")
+    if not settings:
+        # Return default flags if no settings found
+        return {
+            "new_player": True,
+            "dark_mode": True,
+            "offline_mode": False,
+            "recommendations": True,
+            "social_features": False,
+            "live_chat": True,
+            "analytics_v2": False,
+            "scene_search": True,
+        }
+
+    return settings.feature_flags
+
+
 @router.get("/settings/feature-flags")
 async def get_feature_flags(
     current_user: User = Depends(has_permission(Permission.SYSTEM_CONFIG)),
 ):
-    """Get feature flags."""
+    """Get feature flags (admin endpoint, requires authentication)."""
     settings = await SystemSettings.find_one(SystemSettings.key == "system_settings")
     if not settings:
         settings = SystemSettings(key="system_settings")

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { CheckCircle, XCircle, Smartphone, Tv, Lock } from 'lucide-react';
 import { GlassView, GlassButton, GlassInput } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { devicePairingService } from '@bayit/shared-services';
 import { useAuthStore } from '@bayit/shared-stores';
 import { AnimatedLogo } from '@bayit/shared';
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   errorText: {
-    color: colors.error,
+    color: colors.error.DEFAULT,
     fontSize: fontSize.sm,
     textAlign: 'center',
   },

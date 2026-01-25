@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassView, GlassBadge } from '@bayit/shared/ui'
 import { useAuthStore } from '@/stores/authStore'
 import {

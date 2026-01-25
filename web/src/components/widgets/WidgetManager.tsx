@@ -32,6 +32,7 @@ export default function WidgetManager() {
     getWidgetState,
     toggleMute,
     closeWidget,
+    toggleMinimize,
     updatePosition,
     localState,
   } = useWidgetStore();
@@ -174,6 +175,23 @@ export default function WidgetManager() {
     }
   }, [closeWidget]);
 
+  // Toggle minimize handler
+  const handleToggleMinimize = useCallback(async (widgetId: string) => {
+    const state = getWidgetState(widgetId);
+    if (!state) return;
+
+    const newIsMinimized = !state.isMinimized;
+    toggleMinimize(widgetId);
+
+    try {
+      await adminWidgetsService.toggleWidgetMinimize(widgetId, newIsMinimized);
+    } catch (err) {
+      logger.error('Failed to toggle widget minimize', { error: err, widgetId, component: 'WidgetManager' });
+      // Revert on error
+      toggleMinimize(widgetId);
+    }
+  }, [toggleMinimize, getWidgetState]);
+
   // Get visible widgets
   const visibleWidgets = getVisibleWidgets();
 
@@ -195,6 +213,7 @@ export default function WidgetManager() {
             state={state}
             onToggleMute={() => toggleMute(widget.id)}
             onClose={() => handleClose(widget.id)}
+            onToggleMinimize={() => handleToggleMinimize(widget.id)}
             onPositionChange={(pos) => handlePositionChange(widget.id, pos)}
             getContentStreamUrl={getContentStreamUrl}
           />
@@ -207,9 +226,10 @@ export default function WidgetManager() {
 // Separate component to handle async stream URL loading
 interface WidgetItemProps {
   widget: Widget;
-  state: { isMuted: boolean; isVisible: boolean; position: WidgetPosition };
+  state: { isMuted: boolean; isVisible: boolean; isMinimized: boolean; position: WidgetPosition };
   onToggleMute: () => void;
   onClose: () => void;
+  onToggleMinimize: () => void;
   onPositionChange: (position: Partial<WidgetPosition>) => void;
   getContentStreamUrl: (widget: Widget) => Promise<string | undefined>;
 }
@@ -219,6 +239,7 @@ function WidgetItem({
   state,
   onToggleMute,
   onClose,
+  onToggleMinimize,
   onPositionChange,
   getContentStreamUrl,
 }: WidgetItemProps) {
@@ -243,9 +264,11 @@ function WidgetItem({
     <WidgetContainer
       widget={currentWidget}
       isMuted={state.isMuted}
+      isMinimized={state.isMinimized}
       position={state.position}
       onToggleMute={onToggleMute}
       onClose={onClose}
+      onToggleMinimize={onToggleMinimize}
       onPositionChange={onPositionChange}
       streamUrl={streamUrl}
     />

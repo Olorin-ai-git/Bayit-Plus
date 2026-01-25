@@ -2,7 +2,7 @@ import { useState, ReactNode } from 'react';
 import { View, Text, StyleSheet, Pressable, ActivityIndicator, ScrollView } from 'react-native';
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassCard, GlassView, GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 

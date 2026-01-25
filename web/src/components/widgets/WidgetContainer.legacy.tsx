@@ -9,7 +9,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { X, Volume2, VolumeX, GripHorizontal, Minimize2, Maximize2, RefreshCw } from 'lucide-react';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
 import { YnetMivzakimWidget } from './YnetMivzakimWidget';

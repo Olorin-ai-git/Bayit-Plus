@@ -30,7 +30,7 @@ import { useProfile, Profile } from '@bayit/shared-contexts';
 import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
-import { spacing, colors, borderRadius } from '../theme';
+import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 
 import logger from '@/utils/logger';
 

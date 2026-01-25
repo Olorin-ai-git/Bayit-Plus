@@ -9,7 +9,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { X, Volume2, VolumeX, GripHorizontal, Minimize2, Maximize2, RefreshCw } from 'lucide-react';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
 import { YnetMivzakimWidget } from './YnetMivzakimWidget';
@@ -20,9 +20,11 @@ import logger from '@/utils/logger';
 interface WidgetContainerProps {
   widget: Widget;
   isMuted: boolean;
+  isMinimized: boolean;
   position: WidgetPosition;
   onToggleMute: () => void;
   onClose: () => void;
+  onToggleMinimize: () => void;
   onPositionChange: (position: Partial<WidgetPosition>) => void;
   streamUrl?: string;
 }
@@ -36,9 +38,11 @@ const WIDGET_MOVE_STEP = 20; // pixels per arrow key press on TV
 export default function WidgetContainer({
   widget,
   isMuted,
+  isMinimized,
   position,
   onToggleMute,
   onClose,
+  onToggleMinimize,
   onPositionChange,
   streamUrl,
 }: WidgetContainerProps) {
@@ -50,7 +54,6 @@ export default function WidgetContainer({
   const [loading, setLoading] = useState(!streamUrl && widget.content.content_type !== 'iframe' && widget.content.content_type !== 'custom');
   const [error, setError] = useState<string | null>(null);
   const [isFocused, setIsFocused] = useState(IS_TV_BUILD); // Start focused on TV
-  const [isMinimized, setIsMinimized] = useState(false);
   const [savedPosition, setSavedPosition] = useState<{ x: number; y: number } | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [isResizing, setIsResizing] = useState(false);
@@ -117,19 +120,19 @@ export default function WidgetContainer({
   const handleMinimize = useCallback(() => {
     // Save current position before minimizing
     setSavedPosition({ x: position.x, y: position.y });
-    setIsMinimized(true);
-  }, [position.x, position.y]);
+    onToggleMinimize();
+  }, [position.x, position.y, onToggleMinimize]);
 
   // Restore widget to original position
   const handleRestore = useCallback(() => {
-    setIsMinimized(false);
+    onToggleMinimize();
     // Restore saved position if available
     if (savedPosition) {
       onPositionChange({ x: savedPosition.x, y: savedPosition.y });
       // Clear saved position after animation completes
       setTimeout(() => setSavedPosition(null), 350);
     }
-  }, [savedPosition, onPositionChange]);
+  }, [savedPosition, onPositionChange, onToggleMinimize]);
 
   // Resize handlers
   const MIN_WIDTH = 200;

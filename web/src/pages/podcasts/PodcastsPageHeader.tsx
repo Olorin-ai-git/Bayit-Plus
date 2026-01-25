@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { Podcast, RefreshCw, Search, X } from 'lucide-react';
 import { GlassView, GlassInput } from '@bayit/shared/ui';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 import { z } from 'zod';
 
 const PodcastsPageHeaderPropsSchema = z.object({

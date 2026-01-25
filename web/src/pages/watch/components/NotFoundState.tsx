@@ -5,7 +5,7 @@
 
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useNavigate } from 'react-router-dom';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 
 interface NotFoundStateProps {
   notFoundLabel: string;
@@ -52,6 +52,6 @@ const styles = StyleSheet.create({
   },
   link: {
     fontSize: fontSize.base,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
 });

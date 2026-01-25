@@ -17,7 +17,7 @@ import {
   Send,
   GripHorizontal,
 } from 'lucide-react';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassView, GlassCard, GlassInput, GlassButton, AnimatedLogo } from '@bayit/shared';
 
 const LANGUAGE_CODES = [
@@ -632,7 +632,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: borderRadius.md,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     justifyContent: 'center',
     alignItems: 'center',
     // @ts-ignore
@@ -645,7 +645,7 @@ const styles = StyleSheet.create({
   },
   subscribedText: {
     fontSize: 11,
-    color: colors.success,
+    color: colors.success.DEFAULT,
     fontWeight: '500',
   },
   languageSelector: {
@@ -700,7 +700,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   languageOptionTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   appDownloads: {

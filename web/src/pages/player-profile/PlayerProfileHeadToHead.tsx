@@ -15,7 +15,7 @@
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 
 const IS_TV_BUILD = Platform.isTV || false;
 
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   statValueWins: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: colors.success,
+    color: colors.success.DEFAULT,
     marginBottom: 4,
   },
 
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
   statValueLosses: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: colors.error,
+    color: colors.error.DEFAULT,
     marginBottom: 4,
   },
 

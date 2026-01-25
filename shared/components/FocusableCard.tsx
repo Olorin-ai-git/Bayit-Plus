@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing } from '../theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { useDirection } from '../hooks/useDirection';
 import { useTVFocus } from './hooks/useTVFocus';
 

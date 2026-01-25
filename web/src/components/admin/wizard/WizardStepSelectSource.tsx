@@ -7,7 +7,7 @@ import React from 'react'
 import { View, Text, Pressable, ActivityIndicator, ScrollView, StyleSheet } from 'react-native'
 import { ChevronRight, AlertCircle, ChevronLeft } from 'lucide-react'
 import { z } from 'zod'
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
 
 // Zod schema for prop validation
 const SourceSchema = z.object({

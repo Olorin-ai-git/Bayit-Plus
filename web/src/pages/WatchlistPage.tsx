@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Play, X } from 'lucide-react';
 import { GlassView, GlassCard } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { watchlistService } from '@/services/api';
 import { useDirection } from '@/hooks/useDirection';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
@@ -259,11 +259,11 @@ const styles = StyleSheet.create({
   filterButton: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: colors.backgroundLight, borderWidth: 2, borderColor: 'transparent' },
   filterButtonActive: { backgroundColor: 'rgba(138, 43, 226, 0.2)', borderColor: colors.secondary },
   filterText: { fontSize: 14, color: colors.textMuted },
-  filterTextActive: { color: colors.secondary, fontWeight: 'bold' },
+  filterTextActive: { color: colors.secondary.DEFAULT, fontWeight: 'bold' },
   grid: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl, paddingTop: spacing.md },
   cardTouchable: { flex: 1, margin: spacing.sm, maxWidth: '20%' },
   card: { backgroundColor: colors.backgroundLight, borderRadius: borderRadius.lg, overflow: 'visible' as any, borderWidth: 3, borderColor: 'transparent' },
-  cardHovered: { borderColor: colors.secondary, transform: [{ scale: 1.05 }] },
+  cardHovered: { borderColor: colors.secondary.DEFAULT, transform: [{ scale: 1.05 }] },
   cardImage: { width: '100%', aspectRatio: 16 / 9 },
   cardImagePlaceholder: { width: '100%', aspectRatio: 16 / 9, backgroundColor: colors.backgroundLighter, justifyContent: 'center', alignItems: 'center' },
   placeholderIcon: { fontSize: 32 },
@@ -274,10 +274,10 @@ const styles = StyleSheet.create({
   cardContent: { padding: spacing.sm },
   cardTitle: { fontSize: 14, fontWeight: '600', color: colors.text },
   cardMeta: { fontSize: 12, color: colors.textSecondary, marginTop: 2 },
-  progressText: { fontSize: 11, color: colors.secondary, marginTop: 2, fontWeight: '600' },
+  progressText: { fontSize: 11, color: colors.secondary.DEFAULT, marginTop: 2, fontWeight: '600' },
   overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.4)', justifyContent: 'center', alignItems: 'center' },
   overlayButtons: { flexDirection: 'row', gap: spacing.md },
-  playButton: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.secondary, justifyContent: 'center', alignItems: 'center' },
+  playButton: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.secondary.DEFAULT, justifyContent: 'center', alignItems: 'center' },
   removeButton: { width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255, 255, 255, 0.2)', justifyContent: 'center', alignItems: 'center' },
   emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 60 },
   emptyCard: { padding: spacing.xxl, alignItems: 'center' },

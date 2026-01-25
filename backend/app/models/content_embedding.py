@@ -5,10 +5,11 @@ Vector embeddings for semantic search with timestamp deep-linking.
 """
 
 from datetime import datetime, timezone
-from typing import List, Literal, Optional
+from typing import ClassVar, List, Literal, Optional
+import re
 
 from beanie import Document, PydanticObjectId
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 EmbeddingType = Literal[
     "title", "description", "subtitle_segment", "dialogue", "summary"
@@ -120,6 +121,8 @@ class DialogueSearchQuery(BaseModel):
 class SceneSearchQuery(BaseModel):
     """Search for scenes within specific content or series."""
 
+    model_config = ConfigDict(extra="forbid")
+
     query: str = Field(..., min_length=2, max_length=500)
     content_id: Optional[str] = Field(
         default=None, description="Search within specific content"
@@ -131,13 +134,78 @@ class SceneSearchQuery(BaseModel):
     limit: int = Field(default=20, ge=1, le=100)
     min_score: float = Field(default=0.5, ge=0.0, le=1.0)
 
+    # NoSQL injection patterns to reject
+    DANGEROUS_PATTERNS: ClassVar[List[str]] = [
+        r"\$where",
+        r"\$regex",
+        r"\$ne",
+        r"\$gt",
+        r"\$lt",
+        r"\$in",
+        r"\$nin",
+        r"\$exists",
+        r"javascript:",
+        r"<script",
+    ]
+
+    # Allowed languages whitelist
+    ALLOWED_LANGUAGES: ClassVar[List[str]] = ["he", "en", "ar", "ru", "fr", "es"]
+
+    @field_validator("query")
+    @classmethod
+    def validate_query_safe(cls, v: str) -> str:
+        """Prevent NoSQL injection in query string."""
+        query_lower = v.lower()
+        for pattern in cls.DANGEROUS_PATTERNS:
+            if re.search(pattern, query_lower, re.IGNORECASE):
+                raise ValueError(
+                    f"Query contains potentially dangerous pattern: {pattern}"
+                )
+        return v
+
+    @field_validator("content_id")
+    @classmethod
+    def validate_content_id(cls, v: Optional[str]) -> Optional[str]:
+        """Validate ObjectId format for content_id."""
+        if v is None:
+            return v
+        # MongoDB ObjectId is 24 hex characters
+        if not re.match(r"^[0-9a-fA-F]{24}$", v):
+            raise ValueError("content_id must be a valid ObjectId (24 hex characters)")
+        return v
+
+    @field_validator("series_id")
+    @classmethod
+    def validate_series_id(cls, v: Optional[str]) -> Optional[str]:
+        """Validate ObjectId format for series_id."""
+        if v is None:
+            return v
+        if not re.match(r"^[0-9a-fA-F]{24}$", v):
+            raise ValueError("series_id must be a valid ObjectId (24 hex characters)")
+        return v
+
+    @field_validator("language")
+    @classmethod
+    def validate_language(cls, v: str) -> str:
+        """Validate language against whitelist."""
+        if v not in cls.ALLOWED_LANGUAGES:
+            raise ValueError(
+                f"Language must be one of: {', '.join(cls.ALLOWED_LANGUAGES)}"
+            )
+        return v
+
 
 class SceneSearchResult(BaseModel):
     """Scene search result with deep-linking."""
 
+    model_config = ConfigDict(extra="forbid")
+
     content_id: str
+    content_type: str  # "movie", "episode", "series", etc.
     title: str
     title_en: Optional[str] = None
+    series_id: Optional[str] = None  # For episodes: parent series ID
+    series_title: Optional[str] = None  # For episodes: parent series title
     episode_info: Optional[str] = None  # "S2E5" for series
     thumbnail_url: Optional[str] = None
     matched_text: str

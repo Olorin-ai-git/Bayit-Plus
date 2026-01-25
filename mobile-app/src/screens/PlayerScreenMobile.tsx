@@ -62,7 +62,7 @@ import {
   Chapter,
 } from "../components/player";
 import { GlassView, GlassButton } from "@bayit/shared";
-import { colors } from "../theme";
+import { colors } from '@olorin/design-tokens';
 import type { RootStackParamList } from "../navigation/types";
 import logger from '@/utils/logger';
 
@@ -89,9 +89,10 @@ export const PlayerScreenMobile: React.FC = () => {
   const { isRTL, direction } = useDirection();
   const { isPhone, orientation } = useResponsive();
 
-  const { id, title, type } = route.params;
+  const { id, title, type, t: initialSeekTime } = route.params;
 
   const videoRef = useRef<VideoRef>(null);
+  const initialSeekPerformed = useRef(false);
   const [showControls, setShowControls] = useState(true);
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [chaptersVisible, setChaptersVisible] = useState(false);
@@ -263,6 +264,20 @@ export const PlayerScreenMobile: React.FC = () => {
 
   const handleLoad = (data: any) => {
     setDuration(data.duration);
+
+    // Handle deep link timestamp seeking (scene search)
+    if (
+      initialSeekTime != null &&
+      initialSeekTime > 0 &&
+      !initialSeekPerformed.current
+    ) {
+      // Only seek if timestamp is within video duration
+      if (initialSeekTime < data.duration) {
+        videoRef.current?.seek(initialSeekTime);
+        initialSeekPerformed.current = true;
+        moduleLogger.info('Deep link seek performed', { timestamp: initialSeekTime });
+      }
+    }
   };
 
   const toggleControls = () => {

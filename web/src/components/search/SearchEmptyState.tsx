@@ -11,7 +11,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
-import { colors, borderRadius, spacing } from '../../theme/colors';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 interface SearchEmptyStateProps {
   /** Current search query */
@@ -33,23 +33,23 @@ export function SearchEmptyState({
   onRetry,
   onClear,
 }: SearchEmptyStateProps) {
-  const { t } = useTranslation('search');
+  const { t } = useTranslation();
 
   // Error state
   if (error) {
     return (
       <View style={styles.container}>
         <Text style={styles.icon}>⚠️</Text>
-        <Text style={styles.title}>{t('errors.somethingWrong')}</Text>
+        <Text style={styles.title}>{t('search.errors.somethingWrong')}</Text>
         <Text style={styles.message}>{error}</Text>
         {onRetry && (
           <GlassButton
             variant="primary"
             style={styles.button}
             onPress={onRetry}
-            accessibilityLabel={t('errors.retrySearch')}
+            accessibilityLabel={t('search.errors.retrySearch')}
           >
-            <Text style={styles.buttonText}>{t('errors.retrySearch')}</Text>
+            <Text style={styles.buttonText}>{t('search.errors.retrySearch')}</Text>
           </GlassButton>
         )}
       </View>
@@ -61,17 +61,17 @@ export function SearchEmptyState({
     return (
       <View style={styles.container}>
         <Text style={styles.icon}>🔍</Text>
-        <Text style={styles.title}>{t('empty.noResults')}</Text>
+        <Text style={styles.title}>{t('search.empty.noResults')}</Text>
         <Text style={styles.message}>
-          {t('empty.noResultsMessage', { query })}
+          {t('search.empty.noResultsMessage', { query })}
         </Text>
 
         <View style={styles.suggestions}>
-          <Text style={styles.suggestionsTitle}>{t('empty.tryAgain')}</Text>
-          <Text style={styles.suggestionText}>{t('empty.checkSpelling')}</Text>
-          <Text style={styles.suggestionText}>{t('empty.differentKeywords')}</Text>
-          <Text style={styles.suggestionText}>{t('empty.searchLanguage')}</Text>
-          <Text style={styles.suggestionText}>{t('empty.useVoice')}</Text>
+          <Text style={styles.suggestionsTitle}>{t('search.empty.tryAgain')}</Text>
+          <Text style={styles.suggestionText}>{t('search.empty.checkSpelling')}</Text>
+          <Text style={styles.suggestionText}>{t('search.empty.differentKeywords')}</Text>
+          <Text style={styles.suggestionText}>{t('search.empty.searchLanguage')}</Text>
+          <Text style={styles.suggestionText}>{t('search.empty.useVoice')}</Text>
         </View>
 
         {onClear && (
@@ -79,9 +79,9 @@ export function SearchEmptyState({
             variant="secondary"
             style={styles.button}
             onPress={onClear}
-            accessibilityLabel={t('empty.clearSearch')}
+            accessibilityLabel={t('search.empty.clearSearch')}
           >
-            <Text style={styles.buttonText}>{t('empty.clearSearch')}</Text>
+            <Text style={styles.buttonText}>{t('search.empty.clearSearch')}</Text>
           </GlassButton>
         )}
       </View>
@@ -92,9 +92,9 @@ export function SearchEmptyState({
   return (
     <View style={styles.container}>
       <Text style={styles.icon}>🎬</Text>
-      <Text style={styles.title}>{t('empty.startSearching')}</Text>
+      <Text style={styles.title}>{t('search.empty.startSearching')}</Text>
       <Text style={styles.message}>
-        {t('empty.startSearchingMessage')}
+        {t('search.empty.startSearchingMessage')}
       </Text>
     </View>
   );

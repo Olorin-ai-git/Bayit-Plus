@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Bot, RefreshCw, Zap, Calendar } from 'lucide-react';
 import { GlassCard } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { LibrarianStatus } from '@/services/librarianService';
 import { format } from 'date-fns';
 

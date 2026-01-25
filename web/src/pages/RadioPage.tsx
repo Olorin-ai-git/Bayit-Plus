@@ -5,8 +5,16 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { Radio, Volume2, Play } from 'lucide-react';
 import { radioService } from '@/services/api';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassView, GlassBadge, GlassCategoryPill } from '@bayit/shared/ui';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import {
+  GlassCard,
+  GlassView,
+  GlassBadge,
+  GlassCategoryPill,
+  GlassPageHeader,
+  GridSkeleton,
+  RadioPlaceholder,
+} from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
@@ -48,9 +56,7 @@ function StationCard({ station }: { station: Station }) {
                 resizeMode="contain"
               />
             ) : (
-              <View style={styles.logoPlaceholder}>
-                <Radio size={32} color={colors.secondary} />
-              </View>
+              <RadioPlaceholder size="medium" />
             )}
             {isHovered && (
               <View style={styles.playOverlay}>
@@ -136,22 +142,27 @@ export default function RadioPage() {
 
   if (loading) {
     return (
-      <LoadingState
-        message={t('radio.loading', 'Loading stations...')}
-        spinnerColor={colors.secondary}
-      />
+      <View style={styles.container}>
+        <GlassPageHeader
+          title={t('radio.title')}
+          pageType="radio"
+          isRTL={isRTL}
+        />
+        <View style={styles.categoriesSkeleton} />
+        <GridSkeleton numColumns={numColumns} numRows={2} />
+      </View>
     );
   }
 
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection, justifyContent }]}>
-        <GlassView style={styles.headerIcon}>
-          <Radio size={24} color={colors.secondary} />
-        </GlassView>
-        <Text style={[styles.title, { textAlign }]}>{t('radio.title')}</Text>
-      </View>
+      <GlassPageHeader
+        title={t('radio.title')}
+        pageType="radio"
+        badge={stations.length}
+        isRTL={isRTL}
+      />
 
       {/* Category Filter */}
       <ScrollView
@@ -235,24 +246,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 
-  // Header Styles
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
+  categoriesSkeleton: {
+    height: 40,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
     marginBottom: spacing.xl,
-  },
-  headerIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: colors.text,
   },
 
   // Category Scroll Styles
@@ -314,7 +312,7 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.secondary.DEFAULT,
     shadowColor: colors.secondary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
@@ -328,7 +326,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   stationNameHovered: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   currentShowContainer: {
     flexDirection: 'row',

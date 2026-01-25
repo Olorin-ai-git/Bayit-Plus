@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Bot } from 'lucide-react';
 import { GlassButton } from '@bayit/shared/ui';
 import { GlassDraggableExpander } from '@bayit/shared/ui/web';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { LibrarianStatus, AuditReport } from '@/services/librarianService';
 
 interface KidsContentDashboardProps {

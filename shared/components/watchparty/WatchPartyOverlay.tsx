@@ -11,7 +11,7 @@ import WatchPartyHeader from './WatchPartyHeader';
 import WatchPartyParticipants from './WatchPartyParticipants';
 import WatchPartyChat from './WatchPartyChat';
 import WatchPartyChatInput from './WatchPartyChatInput';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;

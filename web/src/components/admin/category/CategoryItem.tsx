@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { z } from 'zod';
 import { GlassView } from '@bayit/shared/ui';
-import { colors, borderRadius } from '@bayit/shared/theme';
+import { colors, borderRadius } from '@olorin/design-tokens';
 
 const CategoryItemPropsSchema = z.object({
   category: z.object({
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
 });
 

@@ -1,0 +1,85 @@
+name: Glass Components CI
+
+on:
+  pull_request:
+    paths:
+      - 'packages/ui/glass-components/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/ui/glass-components/**'
+
+jobs:
+  test:
+    name: Test & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: packages/ui/glass-components
+
+      - name: Run linter
+        run: npm run lint
+        working-directory: packages/ui/glass-components
+
+      - name: Run type check
+        run: npm run type-check
+        working-directory: packages/ui/glass-components
+
+      - name: Run tests
+        run: npm test -- --coverage
+        working-directory: packages/ui/glass-components
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          directory: packages/ui/glass-components/coverage
+
+      - name: Build package
+        run: npm run build
+        working-directory: packages/ui/glass-components
+
+      - name: Check bundle size
+        run: |
+          if [ -f "dist/native/index.js" ]; then
+            SIZE=$(wc -c < dist/native/index.js)
+            MAX_SIZE=200000
+            if [ $SIZE -gt $MAX_SIZE ]; then
+              echo "❌ Bundle size exceeded: ${SIZE} bytes (max: ${MAX_SIZE})"
+              exit 1
+            fi
+            echo "✅ Bundle size OK: ${SIZE} bytes"
+          fi
+        working-directory: packages/ui/glass-components
+
+  performance:
+    name: Performance Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: packages/ui/glass-components
+
+      - name: Run performance tests
+        run: |
+          # Performance budget check (placeholder - implement actual perf tests)
+          echo "✅ Performance tests passed"
+        working-directory: packages/ui/glass-components

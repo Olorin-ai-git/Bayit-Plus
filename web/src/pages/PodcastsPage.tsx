@@ -5,8 +5,16 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { Podcast, Headphones, Clock, Search, X, RefreshCw } from 'lucide-react';
 import { podcastService } from '@/services/api';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassView, GlassCard, GlassCategoryPill, GlassInput } from '@bayit/shared/ui';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import {
+  GlassView,
+  GlassCard,
+  GlassCategoryPill,
+  GlassInput,
+  GlassPageHeader,
+  RowSkeleton,
+  PodcastPlaceholder,
+} from '@bayit/shared/ui';
 import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
 import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
@@ -44,9 +52,7 @@ function ShowCard({ show, episodesLabel, isRTL }: { show: Show; episodesLabel: s
                 resizeMode="cover"
               />
             ) : (
-              <View style={styles.coverPlaceholder}>
-                <Podcast size={32} color={colors.success} />
-              </View>
+              <PodcastPlaceholder size="medium" />
             )}
 
             {/* Language flags */}
@@ -204,10 +210,17 @@ export default function PodcastsPage() {
 
   if (loading) {
     return (
-      <LoadingState
-        message={t('podcasts.loading', 'Loading podcasts...')}
-        spinnerColor={colors.success}
-      />
+      <View style={styles.container}>
+        <GlassPageHeader
+          title={t('podcasts.title')}
+          pageType="podcasts"
+          isRTL={isRTL}
+        />
+        <View style={styles.searchContainer}>
+          <View style={styles.skeletonInput} />
+        </View>
+        <RowSkeleton numCards={5} />
+      </View>
     );
   }
 
@@ -215,12 +228,13 @@ export default function PodcastsPage() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={[styles.headerLeft, { flexDirection }]}>
-          <GlassView style={styles.headerIcon}>
-            <Podcast size={24} color={colors.success} />
-          </GlassView>
-          <Text style={[styles.title, { textAlign }]}>{t('podcasts.title')}</Text>
-        </View>
+        <GlassPageHeader
+          title={t('podcasts.title')}
+          pageType="podcasts"
+          badge={shows.length}
+          isRTL={isRTL}
+          style={styles.pageHeader}
+        />
         <Pressable
           onPress={syncPodcasts}
           disabled={syncing}
@@ -247,12 +261,7 @@ export default function PodcastsPage() {
       />
 
       {/* Category Filter */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.categoriesScroll}
-        contentContainerStyle={styles.categoriesContent}
-      >
+      <View style={styles.categoriesContainer}>
         <GlassCategoryPill
           label={t('podcasts.categories.all')}
           emoji="🎧"
@@ -260,21 +269,42 @@ export default function PodcastsPage() {
           onPress={() => setSelectedCategory('all')}
         />
         {categories.map((category) => {
-          // Map common categories to emojis
+          // Map common categories to emojis with enhanced variety
           const emojiMap: Record<string, string> = {
-            'news': '📰',
-            'politics': '🏛️',
+            'קומי': '😂',
+            'comedy': '😂',
+            'פסיכולוגיה': '🧠',
+            'psychology': '🧠',
+            'כללה': '📌',
+            'general': '📌',
+            'טכנולוגיה': '💻',
+            'technology': '💻',
             'tech': '💻',
+            'חדשות ואקטואליה': '📰',
+            'news': '📰',
+            'היסטוריה': '📚',
+            'history': '📚',
+            'politics': '🏛️',
             'business': '💼',
             'entertainment': '🎭',
             'sports': '⚽',
             'jewish': '✡️',
-            'history': '📚',
+            'judaism': '✡️',
             'educational': '🎓',
-            'general': '📌',
+            'science': '🔬',
+            'health': '🏥',
+            'fitness': '💪',
+            'arts': '🎨',
+            'music': '🎵',
+            'food': '🍽️',
+            'travel': '✈️',
+            'lifestyle': '🌟',
+            'relationships': '❤️',
+            'parenting': '👶',
+            'spirituality': '🙏',
           };
 
-          const emoji = emojiMap[category.id] || '🎙️';
+          const emoji = emojiMap[category.id.toLowerCase()] || emojiMap[category.name?.toLowerCase()] || '🎙️';
           const label = t(`podcasts.categories.${category.id}`, category.name);
 
           return (
@@ -287,7 +317,7 @@ export default function PodcastsPage() {
             />
           );
         })}
-      </ScrollView>
+      </View>
 
       {/* Shows Grid */}
       <FlatList
@@ -327,35 +357,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    marginBottom: spacing.lg,
     justifyContent: 'space-between',
   },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
+  pageHeader: {
+    flex: 1,
+    marginBottom: 0,
   },
   searchContainer: {
     marginBottom: spacing.lg,
   },
-  headerIcon: {
-    width: 48,
+  skeletonInput: {
     height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
   },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  categoriesScroll: {
-    marginBottom: spacing.lg,
-  },
-  categoriesContent: {
+  categoriesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: spacing.sm,
+    marginBottom: spacing.lg,
     paddingBottom: spacing.sm,
   },
   grid: {
@@ -403,7 +423,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   showTitleHovered: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   showAuthor: {
     fontSize: 14,

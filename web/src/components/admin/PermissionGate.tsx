@@ -7,7 +7,7 @@ import React, { ReactNode } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { usePermissions } from '@/hooks/usePermissions';
 import { Permission, Role } from '@/types/rbac';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 
 interface PermissionGateProps {
   permission?: Permission;

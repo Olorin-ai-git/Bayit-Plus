@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, AlertCircle, Save, CheckCircle } from 'lucide-react'
 import { GlassView, GlassInput, GlassButton, GlassCheckbox, GlassTextarea } from '@bayit/shared/ui'
 import { adminContentService } from '@/services/adminApi'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
 import logger from '@/utils/logger'
 import { ImageUploader } from '@/components/admin/ImageUploader'
@@ -441,4 +441,97 @@ export default function ContentEditorPage() {
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+    gap: spacing.md,
+  },
+  backButton: {
+    minWidth: 40,
+  },
+  pageTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  errorBox: {
+    backgroundColor: '#ef444420',
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: '#ef4444',
+    marginBottom: spacing.lg,
+  },
+  successContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    marginBottom: spacing.lg,
+  },
+  successText: {
+    fontSize: 14,
+    color: colors.success.DEFAULT,
+    flex: 1,
+  },
+  formContainer: {
+    gap: spacing.lg,
+  },
+  section: {
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
+    gap: spacing.md,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  formGroup: {
+    gap: spacing.sm,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  required: {
+    color: colors.error.DEFAULT,
+    marginLeft: spacing.xs,
+  },
+  typeButtons: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    flexWrap: 'wrap',
+  },
+  typeButton: {
+    flex: 1,
+    minWidth: 100,
+  },
+  formActions: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginTop: spacing.lg,
+    paddingTop: spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: colors.glassBorder,
+  },
+})
 

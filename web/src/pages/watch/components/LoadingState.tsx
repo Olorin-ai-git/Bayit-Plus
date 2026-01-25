@@ -4,7 +4,7 @@
  */
 
 import { View, StyleSheet } from 'react-native';
-import { spacing, borderRadius } from '@bayit/shared/theme';
+import { spacing, borderRadius } from '@olorin/design-tokens';
 
 export function LoadingState() {
   return (

@@ -8,7 +8,7 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { ChevronLeft } from 'lucide-react'
 import { z } from 'zod'
 import { GlassCheckbox, GlassButton } from '@bayit/shared/ui'
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
 
 // Zod schema for prop validation
 const ItemSchema = z.object({

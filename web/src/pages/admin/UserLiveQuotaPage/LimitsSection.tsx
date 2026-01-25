@@ -2,7 +2,7 @@ import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Clock, Save } from 'lucide-react';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { QuotaData } from './types';
 
 interface LimitsSectionProps {

@@ -10,7 +10,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui/GlassView';
 import { ChapterItem, Chapter } from './ChapterItem';
-import { colors, borderRadius, spacing } from '../../theme';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 interface ChaptersOverlayProps {
   chapters: Chapter[];

@@ -5,8 +5,8 @@ import { Star, Play, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { favoritesService } from '@/services/api';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
-import { GlassCard, GlassView } from '@bayit/shared/ui';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
+import { GlassCard, GlassView, GlassPageHeader } from '@bayit/shared/ui';
 import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
 
@@ -148,15 +148,12 @@ export default function FavoritesPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection, justifyContent }]}>
-        <View style={styles.headerIcon}>
-          <Star size={28} color={colors.warning} />
-        </View>
-        <View>
-          <Text style={[styles.headerTitle, { textAlign }]}>{t('favorites.title')}</Text>
-          <Text style={[styles.headerSubtitle, { textAlign }]}>{favorites.length} {t('favorites.items')}</Text>
-        </View>
-      </View>
+      <GlassPageHeader
+        title={t('favorites.title')}
+        pageType="favorites"
+        badge={favorites.length}
+        isRTL={isRTL}
+      />
 
       {/* Loading State */}
       {loading ? (
@@ -321,7 +318,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     justifyContent: 'center',
     alignItems: 'center',
   },

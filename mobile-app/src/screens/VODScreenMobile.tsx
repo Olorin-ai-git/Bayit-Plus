@@ -27,7 +27,7 @@ import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { ContentCardMobile } from '../components';
-import { colors } from '../theme';
+import { colors } from '@olorin/design-tokens';
 
 import logger from '@/utils/logger';
 

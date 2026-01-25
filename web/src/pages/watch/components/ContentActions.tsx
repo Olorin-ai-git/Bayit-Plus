@@ -6,7 +6,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Plus, ThumbsUp, Share2 } from 'lucide-react-native';
 import { GlassButton } from '@bayit/shared/ui';
-import { colors, spacing, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, fontSize } from '@olorin/design-tokens';
 
 interface ContentActionsProps {
   addToListLabel: string;

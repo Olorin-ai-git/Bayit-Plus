@@ -4,7 +4,7 @@ import { X, CheckCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { GlassView } from '@bayit/shared/ui';
-import { colors, borderRadius } from '@bayit/shared/theme';
+import { colors, borderRadius } from '@olorin/design-tokens';
 
 const ImagePreviewPropsSchema = z.object({
   imageUrl: z.string().url(),
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
   successText: {
     fontSize: 12,
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
 });
 

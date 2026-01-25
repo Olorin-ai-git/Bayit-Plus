@@ -5,7 +5,7 @@
 
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 
 interface CastSectionProps {
   cast?: string[];

@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Image, Pressable, useWindowDimensions, Platform
 import { Link } from 'react-router-dom'
 import { Play, Info, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassBadge } from '@bayit/shared/ui'
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore'
 
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.md,

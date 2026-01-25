@@ -128,8 +128,24 @@ function App() {
   useEffect(() => {
     const initI18n = async () => {
       try {
+        // Check for language query parameter (?lng=en)
+        const urlParams = new URLSearchParams(window.location.search)
+        const langParam = urlParams.get('lng')
+
         await initWebI18n()
         setupWebDirectionListener()
+
+        // If language is specified in URL, switch to it
+        if (langParam) {
+          const i18n = await import('@bayit/shared-i18n').then(m => m.default)
+          const validLanguages = ['he', 'en', 'es', 'zh', 'fr', 'it', 'hi', 'ta', 'bn', 'ja']
+
+          if (validLanguages.includes(langParam)) {
+            await i18n.changeLanguage(langParam)
+            logger.info('Language switched from URL parameter', 'App', { language: langParam })
+          }
+        }
+
         logger.info('i18n initialized successfully', 'App')
       } catch (error) {
         logger.error('Failed to initialize i18n', 'App', error)

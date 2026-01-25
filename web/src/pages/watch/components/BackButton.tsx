@@ -5,7 +5,7 @@
 
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { ArrowRight } from 'lucide-react';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 
 interface BackButtonProps {
   label: string;

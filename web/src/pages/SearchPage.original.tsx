@@ -31,7 +31,7 @@ import {
 } from '@bayit/shared/search';
 
 // Theme
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
@@ -491,7 +491,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   filterPillActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary[600],
     borderColor: colors.primaryLight,
   },
   filterPillInactive: {

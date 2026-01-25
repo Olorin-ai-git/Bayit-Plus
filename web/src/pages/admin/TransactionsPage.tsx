@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Download, Eye, FileText } from 'lucide-react';
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web';
 import { billingService } from '@/services/adminApi';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassButton, GlassModal } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';

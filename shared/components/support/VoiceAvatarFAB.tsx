@@ -12,7 +12,7 @@ import {
   Easing,
   Image,
 } from 'react-native';
-import { colors, spacing } from '../../theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
 import { useSupportStore } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   fab: {
     backgroundColor: 'rgba(13, 13, 26, 0.9)',
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.primary,
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     height: isTV ? 64 : 44,
     borderRadius: isTV ? 32 : 22,
     borderWidth: 2,
-    borderColor: colors.warning,
+    borderColor: colors.warning.DEFAULT,
     borderTopColor: 'transparent',
   },
 });

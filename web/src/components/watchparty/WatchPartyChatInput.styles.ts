@@ -4,7 +4,7 @@
  */
 
 import { StyleSheet } from 'react-native'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 
 export const styles = StyleSheet.create({
@@ -45,6 +45,18 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: borderRadius.sm,
+  },
+  micButton: {
+    width: isTV ? 80 : 44,
+    height: isTV ? 80 : 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: borderRadius.sm,
+    transition: 'all 0.2s ease',
+  } as any,
+  micButtonActive: {
+    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    transform: [{ scale: 1.1 }],
   },
   inputContainer: {
     flex: 1,

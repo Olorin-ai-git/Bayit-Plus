@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { BatchProgress } from '../types';
 
 interface AuditProgressProps {
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   percentageText: {
     fontSize: fontSize.base,
     fontWeight: '700',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   itemsText: {
     fontSize: fontSize.xs,
@@ -97,6 +97,6 @@ const styles = StyleSheet.create({
   progressBarFill: {
     height: '100%',
     borderRadius: borderRadius.lg,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
 });

@@ -9,7 +9,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { GlassView } from './ui';
-import { colors, spacing, borderRadius } from '../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '../hooks/useDirection';
 import { useAuthStore } from '../stores/authStore';
 import { useTVFocus } from './hooks/useTVFocus';

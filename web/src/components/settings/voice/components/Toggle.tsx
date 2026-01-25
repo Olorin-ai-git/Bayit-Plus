@@ -4,7 +4,7 @@
  */
 
 import { View, Pressable, StyleSheet } from 'react-native';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 import { ToggleProps } from '../types';
 
 export function Toggle({ value, onToggle, disabled }: ToggleProps) {

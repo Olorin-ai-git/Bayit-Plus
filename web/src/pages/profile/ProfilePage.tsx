@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useAISettingsStore } from '@/stores/aiSettingsStore';
 import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
 import { GlassTabs, GlassModal } from '@bayit/shared/ui';
-import { spacing } from '@bayit/shared/theme';
+import { spacing } from '@olorin/design-tokens';
 import { HeroSection } from './components/HeroSection';
 import { QuickActions } from './components/QuickActions';
 import { OverviewTab } from './tabs/OverviewTab';

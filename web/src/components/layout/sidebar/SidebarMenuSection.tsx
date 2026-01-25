@@ -15,7 +15,7 @@ import { View, Text, Animated, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import SidebarMenuItem from './SidebarMenuItem';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 
 const MenuItemSchema = z.object({
   id: z.string(),

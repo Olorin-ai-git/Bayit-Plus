@@ -5,8 +5,8 @@
 
 const path = require('path');
 
-// Import shared design tokens (CJS format)
-const colors = require('../shared/design-tokens/colors.cjs');
+// Import shared design tokens from local workspace package
+const colors = require('../packages/ui/design-tokens/dist/colors.cjs');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {

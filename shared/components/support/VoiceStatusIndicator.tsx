@@ -10,7 +10,7 @@ import {
   Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 import { VoiceState } from '../../stores/supportStore';
@@ -23,10 +23,10 @@ interface VoiceStatusIndicatorProps {
 
 const stateConfig: Record<VoiceState, { color: string; icon: string; pulseEnabled: boolean }> = {
   idle: { color: colors.textSecondary, icon: '🎤', pulseEnabled: false },
-  listening: { color: colors.success, icon: '🎤', pulseEnabled: true },
-  processing: { color: colors.warning, icon: '⚙️', pulseEnabled: true },
-  speaking: { color: colors.primary, icon: '🔊', pulseEnabled: true },
-  error: { color: colors.error, icon: '⚠️', pulseEnabled: false },
+  listening: { color: colors.success.DEFAULT, icon: '🎤', pulseEnabled: true },
+  processing: { color: colors.warning.DEFAULT, icon: '⚙️', pulseEnabled: true },
+  speaking: { color: colors.primary.DEFAULT, icon: '🔊', pulseEnabled: true },
+  error: { color: colors.error.DEFAULT, icon: '⚠️', pulseEnabled: false },
 };
 
 export const VoiceStatusIndicator: React.FC<VoiceStatusIndicatorProps> = ({

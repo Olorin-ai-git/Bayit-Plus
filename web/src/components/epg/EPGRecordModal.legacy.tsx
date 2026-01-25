@@ -4,7 +4,7 @@ import { Check, Clock, HardDrive, AlertCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { DateTime } from 'luxon'
 import { GlassModal, GlassToggle } from '@bayit/shared/ui'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { EPGProgram } from '@/services/epgApi'
 import { recordingApi } from '@/services/recordingApi'
 import { useAuthStore } from '@/stores/authStore'
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   },
   languageButtonSelected: {
     backgroundColor: 'rgba(168, 85, 247, 0.15)',
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   languageFlag: {
     fontSize: 18,
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
   warningTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
     marginBottom: spacing.xs,
   },
   warningText: {
@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   confirmButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   confirmButtonText: {
     fontSize: 14,

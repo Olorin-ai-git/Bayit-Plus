@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView, GlassModal } from './ui';
-import { colors, spacing, borderRadius } from '../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useVoiceSettingsStore } from '../stores/voiceSettingsStore';
 import { useWakeWordListening } from '../hooks/useWakeWordListening';
 import { VoiceListeningContext } from '../contexts/VoiceListeningContext';
@@ -24,6 +24,9 @@ interface VoiceSearchButtonProps {
   showConstantListening?: boolean;
   /** Show larger UI for TV mode */
   tvMode?: boolean;
+  /** Auto-enable listening when component mounts or prop changes */
+  autoEnable?: boolean;
+  testID?: string;
 }
 
 // Check if this is a TV build (set by webpack)
@@ -48,6 +51,8 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
   transcribeAudio,
   showConstantListening,
   tvMode = IS_TV_BUILD,
+  autoEnable = false,
+  testID,
 }) => {
   const { t } = useTranslation();
   const [isRecording, setIsRecording] = useState(false);
@@ -208,6 +213,17 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
       });
     }
   }, [isRecording, isTranscribing, isProcessingTranscription, isListeningToggle, isConstantListening]);
+
+  // Auto-enable listening when autoEnable prop is true
+  useEffect(() => {
+    if (autoEnable && !isListeningToggle) {
+      logger.info('Auto-enabling voice listening');
+      setIsListeningToggle(true);
+    } else if (!autoEnable && isListeningToggle) {
+      logger.info('Auto-disabling voice listening');
+      setIsListeningToggle(false);
+    }
+  }, [autoEnable]);
 
   const handleTranscription = useCallback(async (audioBlob: Blob) => {
     if (!transcribeAudio) {
@@ -394,6 +410,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
         accessibilityRole="button"
         accessibilityLabel="Toggle voice listening"
         style={getButtonStyle()}
+        testID={testID}
       >
         <Animated.View
           style={[
@@ -440,7 +457,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
                 styles.audioLevelBar,
                 {
                   width: `${Math.min(100, audioLevel.average * 500)}%`,
-                  backgroundColor: colors.primary,
+                  backgroundColor: colors.primary.DEFAULT,
                 },
               ]}
             />
@@ -532,27 +549,27 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   buttonDebug: {
-    backgroundColor: colors.success,
-    borderColor: colors.success,
+    backgroundColor: colors.success.DEFAULT,
+    borderColor: colors.success.DEFAULT,
   },
   buttonRecording: {
     backgroundColor: colors.glassOverlayPurple,
-    borderColor: colors.error,
+    borderColor: colors.error.DEFAULT,
   },
   buttonWakeWord: {
     backgroundColor: colors.glassPurple,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   buttonProcessing: {
     backgroundColor: colors.glassOverlay,
-    borderColor: colors.warning,
+    borderColor: colors.warning.DEFAULT,
   },
   buttonListeningActive: {
     backgroundColor: colors.glassPurpleLight,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   buttonFocused: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     backgroundColor: colors.glassPurpleLight,
   },
   buttonListening: {
@@ -600,13 +617,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.textMuted,
   },
   statusDotRecording: {
-    backgroundColor: colors.error,
+    backgroundColor: colors.error.DEFAULT,
   },
   statusDotWakeWord: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   statusDotListening: {
-    backgroundColor: colors.success,
+    backgroundColor: colors.success.DEFAULT,
   },
   modalContent: {
     alignItems: 'center',
@@ -623,15 +640,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 3,
     backgroundColor: colors.glassPurpleLight,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   modalIconRecording: {
     backgroundColor: colors.glassOverlayPurple,
-    borderColor: colors.error,
+    borderColor: colors.error.DEFAULT,
   },
   modalIconTranscribing: {
     backgroundColor: colors.glassPurpleLight,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   modalIconText: {
     fontSize: 40,
@@ -644,7 +661,7 @@ const styles = StyleSheet.create({
   },
   modalError: {
     fontSize: 14,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     marginBottom: spacing.md,
     textAlign: 'center',
   },

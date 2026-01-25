@@ -28,7 +28,7 @@ import { GlassView, GlassButton } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
 import { subscriptionService } from '@bayit/shared-services';
-import { spacing, colors, borderRadius } from '../theme';
+import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 
 import logger from '@/utils/logger';
 

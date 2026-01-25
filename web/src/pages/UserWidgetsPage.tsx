@@ -1,10 +1,9 @@
 import { View, Text, StyleSheet, useWindowDimensions, ScrollView } from 'react-native';
-import { Grid3x3 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDirection } from '@/hooks/useDirection';
 import { useWidgetsPage } from '@/hooks/useWidgetsPage';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassCard } from '@bayit/shared/ui';
 import WidgetFormModal from '@/components/widgets/WidgetFormModal';
 import { SystemWidgetGallery } from '@/components/widgets/SystemWidgetGallery';
@@ -124,7 +123,7 @@ export default function UserWidgetsPage() {
       {widgets.length === 0 && (
         <View style={styles.emptyState}>
           <GlassCard style={styles.emptyCard}>
-            <Grid3x3 size={64} color="rgba(168, 85, 247, 0.5)" />
+            <Text style={styles.emptyIcon}>⊞</Text>
             <Text style={styles.emptyTitle}>{t('widgets.emptyPersonal') || 'No personal widgets yet'}</Text>
             <Text style={styles.emptyDescription}>
               {t('widgets.emptyPersonalHint') || 'Create your first personal widget or add system widgets above'}
@@ -158,6 +157,10 @@ const styles = StyleSheet.create({
   emptyCard: {
     padding: spacing.xl * 1.5,
     alignItems: 'center',
+  },
+  emptyIcon: {
+    fontSize: 64,
+    color: 'rgba(168, 85, 247, 0.5)',
   },
   emptyTitle: {
     fontSize: 20,

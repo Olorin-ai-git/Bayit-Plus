@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../ui/GlassButton';
 import { GlassView } from '../ui/GlassView';
 import { useDirection } from '../../hooks/useDirection';
-import { colors } from '../../theme';
+import { colors } from '@olorin/design-tokens';
 import { WidgetsIntroVideoProps } from './WidgetsIntroVideo.types';
 import { getCaptionUrls } from './WidgetsIntroVideo.utils';
 import { styles } from './WidgetsIntroVideo.styles';

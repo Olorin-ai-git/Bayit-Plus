@@ -7,7 +7,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Check } from 'lucide-react';
 import { GlassView } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { ContentTypesSectionProps, ContentOption, ContentType } from '../types';
 
 export function ContentTypesSection({

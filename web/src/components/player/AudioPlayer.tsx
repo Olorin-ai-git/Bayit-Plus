@@ -15,7 +15,7 @@ import { useRef, useState, useEffect, useCallback } from 'react'
 import { View, Text, Pressable, Image, ActivityIndicator, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react'
-import { colors, borderRadius, spacing } from '@bayit/shared/theme'
+import { colors, borderRadius, spacing } from '@olorin/design-tokens'
 import { GlassView, GlassBadge, GlassSlider } from '@bayit/shared/ui'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 import { useDirection } from '@bayit/shared/hooks'
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: colors.error,
+    backgroundColor: colors.error.DEFAULT,
     shadowColor: colors.error,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
     borderRadius: PLAY_BUTTON_SIZE / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   playIcon: {
     marginLeft: 2,

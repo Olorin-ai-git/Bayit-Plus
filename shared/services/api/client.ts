@@ -67,6 +67,7 @@ export const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
   headers: SECURITY_HEADERS,
+  withCredentials: true, // Enable cookies for CSRF token handling
   validateStatus: (status) => status >= 200 && status < 500, // Don't throw on 4xx/5xx
 });
 
@@ -75,11 +76,49 @@ export const contentApi = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000,
   headers: SECURITY_HEADERS,
+  withCredentials: true, // Enable cookies for CSRF token handling
   validateStatus: (status) => status >= 200 && status < 500,
 });
 
 // Passkey session header name
 const PASSKEY_SESSION_HEADER = "X-Passkey-Session";
+
+// CSRF token header and cookie names (matches backend)
+const CSRF_HEADER_NAME = "X-CSRF-Token";
+const CSRF_CLIENT_COOKIE_NAME = "csrf_token_client"; // Client-readable cookie (non-HttpOnly)
+
+/**
+ * Get CSRF token from cookie
+ *
+ * CSRF Flow (Cross-Site Request Forgery Protection):
+ * 1. On first GET request, server generates CSRF token and sets TWO cookies:
+ *    - csrf_token (httpOnly=true) - secure, cannot be read by JavaScript
+ *    - csrf_token_client (httpOnly=false) - readable by JavaScript
+ * 2. For state-changing requests (POST, PUT, PATCH, DELETE):
+ *    - Client reads token from csrf_token_client cookie
+ *    - Client sends token in X-CSRF-Token header
+ *    - Server validates header token matches csrf_token (the httpOnly cookie)
+ * 3. If tokens don't match or are missing, server returns 403 Forbidden
+ *
+ * This dual-cookie approach provides defense-in-depth:
+ * - HttpOnly cookie prevents XSS attacks from stealing token
+ * - Client-readable cookie allows legitimate JavaScript to send token in header
+ * - SameSite attribute prevents CSRF attacks from other origins
+ */
+const getCsrfToken = (): string | null => {
+  if (Platform.OS === "web") {
+    const cookies = document.cookie.split(";");
+    for (const cookie of cookies) {
+      const [name, value] = cookie.trim().split("=");
+      if (name === CSRF_CLIENT_COOKIE_NAME) {
+        return decodeURIComponent(value);
+      }
+    }
+  }
+  // For native platforms, cookies are handled by the HTTP client
+  // Token will be automatically included via withCredentials
+  return null;
+};
 
 /**
  * Validate request URL to prevent SSRF and open redirect attacks
@@ -111,7 +150,7 @@ const validateRequestUrl = (url: string): boolean => {
 };
 
 /**
- * Add correlation ID, auth token, and passkey session to request.
+ * Add correlation ID, auth token, passkey session, and CSRF token to request.
  * Validates URLs and prevents credential leakage.
  */
 const addRequestHeaders = (
@@ -132,6 +171,16 @@ const addRequestHeaders = (
   const passkeySessionToken = useAuthStore.getState().passkeySessionToken;
   if (passkeySessionToken) {
     config.headers[PASSKEY_SESSION_HEADER] = passkeySessionToken;
+  }
+
+  // Add CSRF token for state-changing methods (POST, PUT, PATCH, DELETE)
+  const method = config.method?.toUpperCase();
+  const stateMethods = ["POST", "PUT", "PATCH", "DELETE"];
+  if (method && stateMethods.includes(method)) {
+    const csrfToken = getCsrfToken();
+    if (csrfToken) {
+      config.headers[CSRF_HEADER_NAME] = csrfToken;
+    }
   }
 
   // Add correlation ID - use existing or generate new one

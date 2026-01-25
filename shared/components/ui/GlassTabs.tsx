@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { GlassView } from './GlassView';
-import { colors, borderRadius, spacing, fontSize } from '../theme';
+import { colors, borderRadius, spacing, fontSize } from '@olorin/design-tokens';
 import { isTV } from '../utils/platform';
 import { useTVFocus } from '../hooks/useTVFocus';
 
@@ -201,8 +201,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   pillButtonActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.primary[600],
+    borderColor: colors.primary.DEFAULT,
   },
   pillButtonInactive: {
     backgroundColor: colors.glass,
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: fontSize.xs,
     fontWeight: '600',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   underlineIndicator: {
     position: 'absolute',
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 2,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
 });
 

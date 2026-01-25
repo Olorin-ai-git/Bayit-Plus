@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { GlassInput } from '@bayit/shared/ui'
 import { VoiceSearchButton } from '@bayit/shared/components/VoiceSearchButton'
 import { sceneSearchStyles as styles } from './sceneSearchStyles'
+import { PLATFORM_CONFIG } from './platformConfig'
 
 interface SceneSearchInputProps {
   value: string
@@ -16,10 +17,11 @@ interface SceneSearchInputProps {
   onChangeText: (text: string) => void
   onSubmit: () => void
   onVoiceResult: (transcript: string) => void
+  isOpen?: boolean
 }
 
 const SceneSearchInput = forwardRef<any, SceneSearchInputProps>(
-  ({ value, isRTL, onChangeText, onSubmit, onVoiceResult }, ref) => {
+  ({ value, isRTL, onChangeText, onSubmit, onVoiceResult, isOpen = false }, ref) => {
     const { t } = useTranslation()
 
     return (
@@ -31,11 +33,18 @@ const SceneSearchInput = forwardRef<any, SceneSearchInputProps>(
           placeholder={t('player.sceneSearch.placeholder')}
           onSubmitEditing={onSubmit}
           returnKeyType="search"
-          style={styles.input}
+          style={[styles.input, { fontSize: PLATFORM_CONFIG.input.fontSize }]}
           testID="scene-search-input"
           accessibilityLabel={t('player.sceneSearch.inputLabel')}
+          autoCorrect={PLATFORM_CONFIG.input.autoCorrect}
+          autoCapitalize={PLATFORM_CONFIG.input.autoCapitalize as any}
+          keyboardType={PLATFORM_CONFIG.input.keyboardType}
         />
-        <VoiceSearchButton onResult={onVoiceResult} testID="scene-search-voice-button" />
+        <VoiceSearchButton
+          onResult={onVoiceResult}
+          testID="scene-search-voice-button"
+          autoEnable={isOpen}
+        />
       </View>
     )
   }

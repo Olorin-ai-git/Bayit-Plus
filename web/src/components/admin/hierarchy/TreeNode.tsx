@@ -9,7 +9,7 @@ import { GlassChevron } from '@bayit/shared/ui/web';
 import { adminContentService } from '@/services/adminApi';
 import logger from '@/utils/logger';
 import { z } from 'zod';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 import type { Episode } from './TreeRow';
 
 // Schema for tree node state

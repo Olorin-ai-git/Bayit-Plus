@@ -12,7 +12,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { GlassView, GlassCard, GlassBadge, GlassButton, GlassSelect, GlassModal } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import { LibrarianAction, LibrarianConfig } from '@/services/librarianService';
 import { format } from 'date-fns';
@@ -61,12 +61,12 @@ const LibrarianActivityLog: React.FC<LibrarianActivityLogProps> = ({
   // Helper to get color value from color name
   function getColorValue(colorName: string): string {
     const colorMap: Record<string, string> = {
-      success: colors.success,
-      primary: colors.primary,
-      warning: colors.warning,
-      secondary: colors.secondary,
+      success: colors.success.DEFAULT,
+      primary: colors.primary.DEFAULT,
+      warning: colors.warning.DEFAULT,
+      secondary: colors.secondary.DEFAULT,
       info: '#3B82F6',
-      error: colors.error,
+      error: colors.error.DEFAULT,
     };
     return colorMap[colorName] || colors.textMuted;
   }
@@ -132,7 +132,7 @@ const LibrarianActivityLog: React.FC<LibrarianActivityLogProps> = ({
 
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
         </View>
       ) : paginatedActions.length === 0 ? (
         <View style={styles.emptyContainer}>
@@ -311,8 +311,8 @@ const ActivityItem: React.FC<ActivityItemProps> = ({
           </View>
           <Text style={styles.timestamp}>{formattedDate}</Text>
           {action.rolled_back && (
-            <View style={[styles.badgeContainer, { backgroundColor: colors.error + '20', borderColor: colors.error }]}>
-              <Text style={[styles.badgeText, { color: colors.error }]}>
+            <View style={[styles.badgeContainer, { backgroundColor: colors.error.DEFAULT + '20', borderColor: colors.error.DEFAULT }]}>
+              <Text style={[styles.badgeText, { color: colors.error.DEFAULT }]}>
                 {t('admin.librarian.activityLog.rolledBack')}
               </Text>
             </View>
@@ -340,7 +340,7 @@ const ActivityItem: React.FC<ActivityItemProps> = ({
             </Text>
           )}
           {action.auto_approved && (
-            <Text style={[styles.metadataText, { textAlign, color: colors.success }]}>
+            <Text style={[styles.metadataText, { textAlign, color: colors.success.DEFAULT }]}>
               {t('admin.librarian.activityLog.autoApproved')}
             </Text>
           )}
@@ -377,7 +377,7 @@ const ActivityItem: React.FC<ActivityItemProps> = ({
 
       {onRollback && !action.rolled_back && (
         <Pressable style={styles.rollbackButton} onPress={(e) => { e.stopPropagation(); onRollback(); }}>
-          <RotateCcw size={16} color={colors.warning} />
+          <RotateCcw size={16} color={colors.warning.DEFAULT} />
         </Pressable>
       )}
     </Pressable>
@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderRadius: borderRadius.sm,
     borderLeftWidth: 2,
-    borderLeftColor: colors.primary,
+    borderLeftColor: colors.primary.DEFAULT,
   },
   stateChangesTitle: {
     fontSize: 12,
@@ -512,7 +512,7 @@ const styles = StyleSheet.create({
   stateChangeKey: {
     fontSize: 11,
     fontWeight: '600',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     marginBottom: 2,
   },
   stateChangeValues: {
@@ -523,7 +523,7 @@ const styles = StyleSheet.create({
   },
   stateChangeBefore: {
     fontSize: 11,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     fontFamily: 'monospace',
     textDecorationLine: 'line-through',
   },
@@ -533,7 +533,7 @@ const styles = StyleSheet.create({
   },
   stateChangeAfter: {
     fontSize: 11,
-    color: colors.success,
+    color: colors.success.DEFAULT,
     fontFamily: 'monospace',
   },
   contentId: {
@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
     borderRadius: borderRadius.sm,
     borderWidth: 1,
-    borderColor: colors.warning,
+    borderColor: colors.warning.DEFAULT,
   },
   pagination: {
     marginTop: spacing.lg,

@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { View, Text, ViewStyle, StyleProp } from 'react-native';
-import { colors, spacing, borderRadius } from '../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 type QualityTier = '4k' | '1080p' | '720p' | '480p' | 'unknown';
 
@@ -21,7 +21,7 @@ interface ContentBadgesProps {
 
 const qualityColors: Record<QualityTier, { bg: string; text: string }> = {
   '4k': { bg: 'rgba(255, 215, 0, 0.25)', text: '#FFD700' },
-  '1080p': { bg: 'rgba(107, 33, 168, 0.3)', text: colors.primary },
+  '1080p': { bg: 'rgba(107, 33, 168, 0.3)', text: colors.primary.DEFAULT },
   '720p': { bg: 'rgba(59, 130, 246, 0.25)', text: '#3B82F6' },
   '480p': { bg: 'rgba(156, 163, 175, 0.25)', text: '#9CA3AF' },
   'unknown': { bg: 'rgba(156, 163, 175, 0.2)', text: '#9CA3AF' },

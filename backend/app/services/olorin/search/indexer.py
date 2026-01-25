@@ -187,6 +187,11 @@ async def index_subtitles(
         content = await content_metadata_service.get_content(content_id)
         content_type = content.content_type if content else None
 
+        # Extract series information for episodes
+        series_id = None
+        if content and hasattr(content, "series_id") and content.series_id:
+            series_id = str(content.series_id)
+
         # Group subtitles into segments
         segments = group_subtitles(subtitles, segment_duration)
 
@@ -204,20 +209,27 @@ async def index_subtitles(
 
             vector_id = generate_vector_id(content_id, "subtitle_segment", idx)
 
+            # Build metadata with optional series_id
+            metadata = {
+                "content_id": content_id,
+                "content_type": content_type,
+                "embedding_type": "subtitle_segment",
+                "segment_index": idx,
+                "start_time": segment["start_time"],
+                "end_time": segment["end_time"],
+                "language": subtitle_language,
+                "text": text[:1000],
+            }
+
+            # Add series_id for episodes
+            if series_id:
+                metadata["series_id"] = series_id
+
             vectors_to_upsert.append(
                 {
                     "id": vector_id,
                     "values": embedding,
-                    "metadata": {
-                        "content_id": content_id,
-                        "content_type": content_type,
-                        "embedding_type": "subtitle_segment",
-                        "segment_index": idx,
-                        "start_time": segment["start_time"],
-                        "end_time": segment["end_time"],
-                        "language": subtitle_language,
-                        "text": text[:1000],
-                    },
+                    "metadata": metadata,
                 }
             )
 

@@ -31,7 +31,7 @@ import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { BottomSheet } from '../components';
-import { spacing, colors, typography } from '../theme';
+import { spacing, colors, typography } from '@olorin/design-tokens';
 
 import logger from '@/utils/logger';
 
@@ -287,31 +287,64 @@ export const PodcastsScreenMobile: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Category filters - horizontal scroll */}
+      {/* Category filters - wrapping layout */}
       {categories.length > 0 && (
         <View style={styles.categoriesSection}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoriesContent}
-          >
-            <GlassCategoryPill
-              category={{ id: 'all', name: t('podcasts.allPodcasts') }}
-              selected={selectedCategory === null}
-              onPress={() => setSelectedCategory(null)}
-            />
-            {categories.map((category) => (
+          <GlassCategoryPill
+            label={t('podcasts.allPodcasts')}
+            emoji="🎧"
+            isActive={selectedCategory === null}
+            onPress={() => setSelectedCategory(null)}
+          />
+          {categories.map((category) => {
+            // Enhanced emoji mappings for categories
+            const emojiMap: Record<string, string> = {
+              'קומי': '😂',
+              'comedy': '😂',
+              'פסיכולוגיה': '🧠',
+              'psychology': '🧠',
+              'כללה': '📌',
+              'general': '📌',
+              'טכנולוגיה': '💻',
+              'technology': '💻',
+              'tech': '💻',
+              'חדשות ואקטואליה': '📰',
+              'news': '📰',
+              'היסטוריה': '📚',
+              'history': '📚',
+              'politics': '🏛️',
+              'business': '💼',
+              'entertainment': '🎭',
+              'sports': '⚽',
+              'jewish': '✡️',
+              'judaism': '✡️',
+              'educational': '🎓',
+              'science': '🔬',
+              'health': '🏥',
+              'fitness': '💪',
+              'arts': '🎨',
+              'music': '🎵',
+              'food': '🍽️',
+              'travel': '✈️',
+              'lifestyle': '🌟',
+              'relationships': '❤️',
+              'parenting': '👶',
+              'spirituality': '🙏',
+            };
+
+            const categoryName = getLocalizedName(category, currentLang);
+            const emoji = emojiMap[category.id.toLowerCase()] || emojiMap[categoryName?.toLowerCase()] || '🎙️';
+
+            return (
               <GlassCategoryPill
                 key={category.id}
-                category={{
-                  id: category.id,
-                  name: getLocalizedName(category, currentLang),
-                }}
-                selected={selectedCategory === category.id}
+                label={categoryName}
+                emoji={emoji}
+                isActive={selectedCategory === category.id}
                 onPress={() => handleCategoryPress(category.id)}
               />
-            ))}
-          </ScrollView>
+            );
+          })}
         </View>
       )}
 
@@ -389,9 +422,9 @@ const styles = StyleSheet.create({
   },
   categoriesSection: {
     paddingVertical: spacing.md,
-  },
-  categoriesContent: {
     paddingHorizontal: spacing.lg,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: spacing.sm,
   },
   row: {

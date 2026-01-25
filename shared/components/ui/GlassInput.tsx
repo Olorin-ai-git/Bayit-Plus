@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './GlassView';
-import { colors, spacing } from '../theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { useTVFocus } from '../hooks/useTVFocus';
 
 interface GlassInputProps extends TextInputProps {
@@ -25,6 +25,7 @@ interface GlassInputProps extends TextInputProps {
   containerStyle?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
   hasTVPreferredFocus?: boolean;
+  disableFocusBorder?: boolean;
 }
 
 export const GlassInput: React.FC<GlassInputProps> = ({
@@ -36,6 +37,7 @@ export const GlassInput: React.FC<GlassInputProps> = ({
   containerStyle,
   inputStyle,
   hasTVPreferredFocus = false,
+  disableFocusBorder = false,
   ...props
 }) => {
   const { i18n } = useTranslation();
@@ -59,17 +61,10 @@ export const GlassInput: React.FC<GlassInputProps> = ({
           style={[
             styles.inputContainer,
             isRTL && styles.rowReverse,
-            !error && focusStyle,
             error && styles.errorBorder,
           ]}
           intensity="medium"
-          borderColor={
-            error
-              ? colors.error
-              : isFocused
-              ? colors.primary
-              : undefined
-          }
+          borderColor={error ? colors.error : undefined}
         >
           {icon && <View>{icon}</View>}
           <TextInput
@@ -135,11 +130,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   errorBorder: {
-    borderColor: colors.error,
+    borderColor: colors.error.DEFAULT,
   },
   errorText: {
     fontSize: 12,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     marginTop: spacing.xs,
   },
   rightIconButton: {

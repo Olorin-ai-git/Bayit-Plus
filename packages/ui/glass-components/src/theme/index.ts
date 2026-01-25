@@ -1,224 +1,177 @@
 /**
- * Olorin Glass UI - Theme Configuration
- * Provides consistent theming for Glass components across platforms
+ * Glass UI Theme - TV Focus and Animation Constants
+ *
+ * Provides platform-specific focus styles and animation configurations
+ * for tvOS, Android TV, and web platforms.
  */
 
-import {
-  primary,
-  secondary,
-  dark,
-  success,
-  warning,
-  error,
-  info,
-  glass,
-  live,
-  gold,
-  type ColorScale,
-  type SemanticColorScale,
-  type GlassColors,
-} from '@olorin/design-tokens/colors';
-
-import {
-  spacing as sharedSpacing,
-  borderRadius as sharedBorderRadius,
-  type SpacingScale,
-  type BorderRadiusScale,
-} from '@olorin/design-tokens/spacing';
-
-import { fontSizeTV, fontFamily, fontWeight, lineHeight } from '@olorin/design-tokens/typography';
-
-import { shadowRN, boxShadow, backdropBlur } from '@olorin/design-tokens/shadows';
+import { Platform, Animated } from 'react-native';
+import type { WithSpringConfig } from 'react-native-reanimated';
 
 /**
- * Glass UI Colors - mapped from design tokens
- */
-export const colors = {
-  // Primary brand color
-  primary: primary.DEFAULT,
-  primaryDark: primary[700],
-  primaryLight: primary[300],
-  primary50: primary[50],
-  primary100: primary[100],
-  primary200: primary[200],
-  primary300: primary[300],
-  primary400: primary[400],
-  primary500: primary[500],
-  primary600: primary[600],
-  primary700: primary[700],
-  primary800: primary[800],
-  primary900: primary[900],
-  primary950: primary[950],
-
-  // Secondary (purple for accents)
-  secondary: secondary.DEFAULT,
-  secondaryDark: secondary[700],
-  secondaryLight: secondary[400],
-
-  // Backgrounds (dark theme)
-  background: dark[950],
-  backgroundLight: dark[900],
-  backgroundLighter: dark[800],
-
-  // Glass effects
-  glass: glass.bg,
-  glassLight: glass.bgLight,
-  glassMedium: glass.bgMedium,
-  glassStrong: glass.bgStrong,
-  glassBorder: glass.border,
-  glassBorderLight: glass.borderLight,
-  glassBorderFocus: glass.borderFocus,
-  glassBorderWhite: 'rgba(255, 255, 255, 0.1)',
-  glassPurpleLight: glass.purpleLight,
-  glassPurpleStrong: glass.purpleStrong,
-  glassPurpleGlow: glass.purpleGlow,
-  glassOverlay: 'rgba(0, 0, 0, 0.5)',
-
-  // Text
-  text: '#ffffff',
-  textSecondary: dark[400],
-  textMuted: dark[500],
-
-  // Semantic
-  success: success.DEFAULT,
-  warning: warning.DEFAULT,
-  error: error.DEFAULT,
-  info: info.DEFAULT,
-  live: live,
-  gold: gold,
-
-  // Overlays
-  overlay: 'rgba(0, 0, 0, 0.5)',
-  overlayDark: 'rgba(0, 0, 0, 0.8)',
-
-  // Utility
-  transparent: 'transparent',
-  white: '#ffffff',
-  black: '#000000',
-};
-
-/**
- * Spacing scale for Glass UI
- */
-export const spacing = {
-  xs: sharedSpacing[1], // 4
-  sm: sharedSpacing[2], // 8
-  md: sharedSpacing[4], // 16
-  lg: sharedSpacing[6], // 24
-  xl: sharedSpacing[8], // 32
-  xxl: sharedSpacing[12], // 48
-  ...sharedSpacing,
-};
-
-/**
- * Border radius scale for Glass UI
- */
-export const borderRadius = {
-  ...sharedBorderRadius,
-};
-
-/**
- * Font sizes - TV-optimized by default
- */
-export const fontSize = fontSizeTV;
-
-/**
- * Shadows for React Native
- */
-export const shadows = {
-  sm: shadowRN.sm,
-  md: shadowRN.md,
-  lg: shadowRN.lg,
-  glass: shadowRN.glass,
-  glow: (color: string) => ({
-    shadowColor: color,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
-    elevation: 10,
-  }),
-};
-
-/**
- * TV Focus configuration
+ * TV Focus Constants
  */
 export const TV_FOCUS = {
   SCALE_FOCUSED: 1.05,
-  SCALE_UNFOCUSED: 1.0,
+  SCALE_NORMAL: 1.0,
+  DURATION_MS: 200,
   BORDER_WIDTH_FOCUSED: 3,
-  BORDER_COLOR_FOCUSED: colors.primary,
-  GLOW_COLOR: colors.primary,
-  ANIMATION_DURATION: 200,
-};
+  BORDER_WIDTH_NORMAL: 1,
+} as const;
 
 /**
- * Spring configuration for focus animations
+ * Spring Animation Configuration for Focus
  */
-export const focusSpringConfig = {
+export const focusSpringConfig: Animated.SpringAnimationConfig = {
   toValue: TV_FOCUS.SCALE_FOCUSED,
-  friction: 5,
-  tension: 100,
   useNativeDriver: true,
-};
-
-export const blurSpringConfig = {
-  toValue: TV_FOCUS.SCALE_UNFOCUSED,
-  friction: 5,
-  tension: 100,
-  useNativeDriver: true,
+  friction: 8,
+  tension: 40,
 };
 
 /**
- * Focus styles for different component types
+ * Spring Animation Configuration for Blur
+ */
+export const blurSpringConfig: Animated.SpringAnimationConfig = {
+  toValue: TV_FOCUS.SCALE_NORMAL,
+  useNativeDriver: true,
+  friction: 8,
+  tension: 40,
+};
+
+/**
+ * Card Focused Style
  */
 export const cardFocusedStyle = {
   borderWidth: TV_FOCUS.BORDER_WIDTH_FOCUSED,
-  borderColor: TV_FOCUS.BORDER_COLOR_FOCUSED,
-  ...shadows.glow(TV_FOCUS.GLOW_COLOR),
-};
+  borderColor: 'rgba(96, 165, 250, 0.8)', // blue-400 with opacity
+  shadowColor: '#3b82f6',
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.5,
+  shadowRadius: 8,
+  elevation: 8,
+} as const;
 
+/**
+ * Button Focused Style
+ */
 export const buttonFocusedStyle = {
-  borderWidth: 2,
-  borderColor: TV_FOCUS.BORDER_COLOR_FOCUSED,
-  ...shadows.glow(TV_FOCUS.GLOW_COLOR),
-};
+  borderWidth: TV_FOCUS.BORDER_WIDTH_FOCUSED,
+  borderColor: 'rgba(96, 165, 250, 1.0)', // blue-400
+  backgroundColor: 'rgba(59, 130, 246, 0.2)', // blue-500 with low opacity
+  shadowColor: '#3b82f6',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.4,
+  shadowRadius: 6,
+  elevation: 6,
+} as const;
 
+/**
+ * Input Focused Style
+ */
 export const inputFocusedStyle = {
   borderWidth: 2,
-  borderColor: TV_FOCUS.BORDER_COLOR_FOCUSED,
-};
+  borderColor: 'rgba(96, 165, 250, 0.9)', // blue-400
+  backgroundColor: 'rgba(59, 130, 246, 0.1)',
+  shadowColor: '#3b82f6',
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+  elevation: 4,
+} as const;
 
-export const webOutlineStyle = {
-  outline: `2px solid ${TV_FOCUS.BORDER_COLOR_FOCUSED}`,
+/**
+ * Web Outline Style (for web platform keyboard navigation)
+ */
+export const webOutlineStyle = Platform.OS === 'web' ? {
+  outlineWidth: 2,
+  outlineStyle: 'solid',
+  outlineColor: '#3b82f6',
   outlineOffset: 2,
+} as const : {};
+
+/**
+ * Re-export design tokens for convenience
+ */
+export * from '@olorin/design-tokens';
+
+/**
+ * Import specific items from design-tokens for direct export
+ */
+import {
+  colors as designColors,
+  spacing as designSpacing,
+  spacingAliases,
+  borderRadius as designBorderRadius,
+  fontSize as designFontSize,
+  boxShadow,
+  shadowRN,
+  glass as glassColors,
+} from '@olorin/design-tokens';
+
+/**
+ * Extended colors object with convenience aliases for backwards compatibility
+ */
+export const colors = {
+  ...designColors,
+  // Override primary/secondary/semantic colors with their DEFAULT string values for direct use
+  primary: designColors.primary.DEFAULT,
+  secondary: designColors.secondary.DEFAULT,
+  error: designColors.error.DEFAULT,
+  success: designColors.success.DEFAULT,
+  warning: designColors.warning.DEFAULT,
+  info: designColors.info.DEFAULT,
+  // Convenience aliases for GlassView component
+  glassLight: glassColors.bgLight,
+  glassMedium: glassColors.bgMedium,
+  glass: glassColors.bg,
+  glassStrong: glassColors.bgStrong,
+  // Convenience aliases for GlassButton component
+  primary700: designColors.primary[700],
+  primary800: designColors.primary[800],
+  glassPurpleLight: glassColors.purpleLight,
+  glassPurpleStrong: glassColors.purpleStrong,
+  glassBorder: glassColors.border,
+  glassBorderLight: glassColors.borderLight,
+  glassBorderFocus: glassColors.borderFocus,
+  glassBorderWhite: 'rgba(255, 255, 255, 0.2)', // White glass border
+  glassOverlay: 'rgba(0, 0, 0, 0.5)', // Glass overlay
+  overlay: 'rgba(0, 0, 0, 0.75)', // Overlay/backdrop color
+  background: glassColors.bg, // Background color
+  backgroundLighter: glassColors.bgLight, // Lighter background
+  text: '#ffffff', // Default text color
+  textMuted: 'rgba(255, 255, 255, 0.6)', // Muted text color
+  textSecondary: 'rgba(255, 255, 255, 0.8)', // Secondary text color
+  primaryLight: designColors.primary[400],
 };
 
 /**
- * Complete Glass theme object
+ * Shadows export for useGlassTheme
+ */
+export const shadows = {
+  boxShadow,
+  shadowRN,
+};
+
+/**
+ * Extended spacing with aliases merged for convenience
+ */
+export const spacing = {
+  ...designSpacing,
+  ...spacingAliases, // Add sm, md, lg, xl, etc.
+};
+
+export const borderRadius = designBorderRadius;
+export const fontSize = designFontSize;
+
+/**
+ * Complete glass theme configuration
  */
 export const glassTheme = {
   colors,
   spacing,
   borderRadius,
   fontSize,
-  fontFamily,
-  fontWeight,
-  lineHeight,
   shadows,
-  boxShadow,
-  backdropBlur,
-  focus: {
-    TV_FOCUS,
-    focusSpringConfig,
-    blurSpringConfig,
-    cardFocusedStyle,
-    buttonFocusedStyle,
-    inputFocusedStyle,
-    webOutlineStyle,
-  },
+  glass: glassColors,
 };
-
-export default glassTheme;
-
-// Re-export design tokens for convenience
-export { fontFamily, fontWeight, lineHeight, boxShadow, backdropBlur };

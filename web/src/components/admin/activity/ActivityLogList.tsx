@@ -3,7 +3,7 @@ import { View, Text, ScrollView, ActivityIndicator, Pressable, StyleSheet } from
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { LibrarianAction } from '@/services/librarianService';
 import ActivityLogItem from './ActivityLogItem';
 

@@ -4,7 +4,7 @@ import { Film, Tv, ChevronLeft, ChevronRight } from 'lucide-react';
 import { z } from 'zod';
 import ContentCard from '@/components/content/ContentCard';
 import AnimatedCard from '@/components/common/AnimatedCard';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import { platformClass } from '@/utils/platformClass';
 import VODPageEmptyState from './VODPageEmptyState';

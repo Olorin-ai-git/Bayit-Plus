@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 import { GlassButton } from '@bayit/shared/ui';
 import { GlassDraggableExpander } from '@bayit/shared/ui/web';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import logger from '@/utils/logger';
 
 interface VoiceLibrarianControlProps {
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 13,
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
   processingContainer: {
     backgroundColor: 'rgba(107, 33, 168, 0.2)',
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
   processingText: {
     fontSize: 13,
     fontWeight: '500',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   speakingContainer: {
     flexDirection: 'row',
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   speakingText: {
     fontSize: 13,
     fontWeight: '500',
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
   examplesContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',

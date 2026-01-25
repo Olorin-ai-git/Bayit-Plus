@@ -10,6 +10,8 @@ import { useTranslation } from 'react-i18next'
 import { X, Lightbulb, ChevronRight } from 'lucide-react-native'
 import { GlassButton } from '@bayit/shared/components/ui/GlassButton'
 import { TriviaFact, getCategoryInfo } from '@bayit/shared-types/trivia'
+import { useTriviaStore } from '@bayit/shared/stores/trivia'
+import { MultilingualTextDisplay } from '@bayit/shared/components/player/trivia/MultilingualTextDisplay'
 import { triviaStyles as styles, getTvStyles } from './triviaStyles'
 
 interface TriviaCardProps {
@@ -22,6 +24,11 @@ export function TriviaCard({ fact, onDismiss, isRTL = false }: TriviaCardProps) 
   const { t, i18n } = useTranslation()
   const isTV = Platform.isTV || Platform.OS === 'tvos'
   const tvStyles = getTvStyles(isTV)
+
+  // NEW: Get user's language display preferences
+  const displayLanguages = useTriviaStore(state =>
+    state.preferences.display_languages || ['he', 'en']
+  )
 
   const categoryInfo = getCategoryInfo(fact.category)
   const isHebrew = i18n.language === 'he' || isRTL
@@ -38,7 +45,7 @@ export function TriviaCard({ fact, onDismiss, isRTL = false }: TriviaCardProps) 
         </View>
         <GlassButton
           title=""
-          icon={<X size={isTV ? 24 : 18} color="#9CA3AF" />}
+          icon={<X size={isTV ? 24 : 14} color="#9CA3AF" />}
           onPress={onDismiss}
           variant="ghost"
           size={isTV ? 'md' : 'sm'}
@@ -58,13 +65,12 @@ export function TriviaCard({ fact, onDismiss, isRTL = false }: TriviaCardProps) 
         </View>
       )}
 
-      {/* Fact Text */}
-      <Text
-        style={[styles.factText, isHebrew && styles.factTextRTL, tvStyles.factText]}
-        numberOfLines={4}
-      >
-        {fact.text}
-      </Text>
+      {/* UPDATED: Multilingual Fact Text */}
+      <MultilingualTextDisplay
+        fact={fact}
+        displayLanguages={displayLanguages}
+        isTV={isTV}
+      />
 
       {/* Related Person */}
       {fact.related_person && (

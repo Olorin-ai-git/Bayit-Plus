@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Pressable, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing } from '../theme';
+import { colors, spacing } from '@olorin/design-tokens';
 
 interface ContentActionButtonsProps {
   contentId: string;

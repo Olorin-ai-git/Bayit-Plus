@@ -9,8 +9,8 @@ import { useTranslation } from 'react-i18next'
 import { Circle, Trash2, Calendar, HardDrive } from 'lucide-react'
 import { useDirection } from '@/hooks/useDirection'
 import { recordingApi, Recording } from '@/services/recordingApi'
-import { colors } from '@bayit/shared/theme'
-import { GlassView } from '@bayit/shared/ui'
+import { colors } from '@olorin/design-tokens'
+import { GlassView, GlassPageHeader } from '@bayit/shared/ui'
 import { RecordingCard } from '@/components/recordings/RecordingCard'
 import { LoadingState, EmptyState } from '@bayit/shared/components/states'
 import logger from '@/utils/logger'
@@ -93,10 +93,14 @@ export default function MyRecordingsPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
+      <GlassPageHeader
+        title={t('recordings.title')}
+        pageType="recordings"
+        badge={recordings.length}
+        isRTL={isRTL}
+      />
+
       <View style={[styles.header, { flexDirection }]}>
-        <View style={styles.headerIcon}>
-          <Circle size={28} color={colors.primary} />
-        </View>
         <View style={styles.headerContent}>
           <Text style={[styles.headerTitle, { textAlign }]}>
             {t('recordings.title')}
@@ -346,7 +350,7 @@ const styles = StyleSheet.create({
     opacity: 0.3,
   },
   paginationButtonText: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   paginationText: {

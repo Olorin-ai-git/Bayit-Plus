@@ -23,7 +23,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { languages as sharedLanguages } from '@bayit/shared-i18n';
-import { spacing, colors, typography, touchTarget } from '../theme';
+import { spacing, colors, typography, touchTarget } from '@olorin/design-tokens';
 
 type Language = {
   code: string;

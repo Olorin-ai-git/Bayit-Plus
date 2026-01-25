@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
-import { colors } from '../../theme';
+import { colors } from '@olorin/design-tokens';
 
 export interface Chapter {
   id?: string;

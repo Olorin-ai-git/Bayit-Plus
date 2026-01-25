@@ -12,20 +12,63 @@ logger = logging.getLogger(__name__)
 
 @router.get("/categories")
 async def get_podcast_categories(
+    request: Request,
     culture_id: Optional[str] = Query(None, description="Filter by culture ID"),
 ):
-    """Get all unique podcast categories, optionally filtered by culture."""
+    """Get all unique podcast categories, optionally filtered by culture.
+    Returns localized category names based on Accept-Language header.
+    """
     try:
+        # Get user's preferred language from Accept-Language header
+        accept_language = request.headers.get("Accept-Language", "he")
+        preferred_lang = accept_language.split(",")[0].split("-")[0].lower()
+
+        # Map language codes to model fields
+        lang_field_map = {
+            "he": "category",
+            "en": "category_en",
+            "es": "category_es",
+            "fr": "category_fr",
+            "it": "category_it",
+            "hi": "category_hi",
+            "ta": "category_ta",
+            "bn": "category_bn",
+            "ja": "category_ja",
+            "zh": "category_zh",
+        }
+
         # Build query conditions
         query_conditions = [Podcast.is_active == True]
         if culture_id:
             query_conditions.append(Podcast.culture_id == culture_id)
 
         all_podcasts = await Podcast.find(*query_conditions).to_list()
-        categories = sorted(list(set(p.category for p in all_podcasts if p.category)))
+
+        # Get unique categories with localization
+        categories_map = {}
+        for p in all_podcasts:
+            if not p.category:
+                continue
+
+            # Use localized category name if available, fallback to Hebrew
+            category_field = lang_field_map.get(preferred_lang, "category")
+            localized_name = getattr(p, category_field, None) or p.category
+
+            # Use Hebrew category as ID (consistent across all languages)
+            cat_id = p.category
+            if cat_id not in categories_map:
+                categories_map[cat_id] = localized_name
+
+        # Sort by localized names
+        categories = [
+            {"id": cat_id, "name": name}
+            for cat_id, name in sorted(
+                categories_map.items(), key=lambda x: x[1]
+            )
+        ]
 
         return {
-            "categories": [{"id": cat, "name": cat} for cat in categories],
+            "categories": categories,
             "total": len(categories),
         }
     except Exception as e:
@@ -86,13 +129,33 @@ async def refresh_all_content():
 
 @router.get("")
 async def get_podcasts(
+    request: Request,
     culture_id: Optional[str] = Query(None, description="Filter by culture ID"),
     category: Optional[str] = None,
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
 ):
-    """Get podcasts with pagination, optionally filtered by culture and category."""
+    """Get podcasts with pagination, optionally filtered by culture and category.
+    Returns localized category names based on Accept-Language header.
+    """
     try:
+        # Get user's preferred language from Accept-Language header
+        accept_language = request.headers.get("Accept-Language", "he")
+        preferred_lang = accept_language.split(",")[0].split("-")[0].lower()
+
+        # Map language codes to model fields
+        lang_field_map = {
+            "he": "category",
+            "en": "category_en",
+            "es": "category_es",
+            "fr": "category_fr",
+            "it": "category_it",
+            "hi": "category_hi",
+            "ta": "category_ta",
+            "bn": "category_bn",
+            "ja": "category_ja",
+            "zh": "category_zh",
+        }
         query = {"is_active": True}
         if culture_id:
             query["culture_id"] = culture_id
@@ -146,12 +209,27 @@ async def get_podcasts(
                     languages.add(ep.original_language)
             show_languages[show_id] = sorted(list(languages))
 
-        # Get unique categories (filtered by culture if specified)
+        # Get unique categories (filtered by culture if specified) with localization
         category_query = {"is_active": True}
         if culture_id:
             category_query["culture_id"] = culture_id
         all_podcasts = await Podcast.find(category_query).to_list()
-        categories = sorted(list(set(p.category for p in all_podcasts if p.category)))
+
+        # Build localized category list
+        categories_map = {}
+        category_field = lang_field_map.get(preferred_lang, "category")
+        for p in all_podcasts:
+            if not p.category:
+                continue
+            localized_name = getattr(p, category_field, None) or p.category
+            cat_id = p.category
+            if cat_id not in categories_map:
+                categories_map[cat_id] = localized_name
+
+        categories = [
+            {"id": cat_id, "name": name}
+            for cat_id, name in sorted(categories_map.items(), key=lambda x: x[1])
+        ]
 
         return {
             "shows": [
@@ -160,7 +238,7 @@ async def get_podcasts(
                     "title": show.title,
                     "author": show.author,
                     "cover": show.cover,
-                    "category": show.category,
+                    "category": getattr(show, category_field, None) or show.category,
                     "culture_id": show.culture_id,
                     "episodeCount": show.episode_count,
                     "latestEpisode": (
@@ -172,7 +250,7 @@ async def get_podcasts(
                 }
                 for show in shows
             ],
-            "categories": [{"id": cat, "name": cat} for cat in categories],
+            "categories": categories,
             "total": total,
             "page": page,
             "pages": (total + limit - 1) // limit,
@@ -183,12 +261,36 @@ async def get_podcasts(
 
 
 @router.get("/{show_id}")
-async def get_podcast(show_id: str):
-    """Get podcast details with episodes."""
+async def get_podcast(show_id: str, request: Request):
+    """Get podcast details with episodes.
+    Returns localized category name based on Accept-Language header.
+    """
     try:
+        # Get user's preferred language from Accept-Language header
+        accept_language = request.headers.get("Accept-Language", "he")
+        preferred_lang = accept_language.split(",")[0].split("-")[0].lower()
+
+        # Map language codes to model fields
+        lang_field_map = {
+            "he": "category",
+            "en": "category_en",
+            "es": "category_es",
+            "fr": "category_fr",
+            "it": "category_it",
+            "hi": "category_hi",
+            "ta": "category_ta",
+            "bn": "category_bn",
+            "ja": "category_ja",
+            "zh": "category_zh",
+        }
+
         show = await Podcast.get(show_id)
         if not show or not show.is_active:
             raise HTTPException(status_code=404, detail="Podcast not found")
+
+        # Get localized category name
+        category_field = lang_field_map.get(preferred_lang, "category")
+        localized_category = getattr(show, category_field, None) or show.category
 
         # Get latest episodes
         episodes = (
@@ -204,7 +306,7 @@ async def get_podcast(show_id: str):
             "description": show.description,
             "author": show.author,
             "cover": show.cover,
-            "category": show.category,
+            "category": localized_category,
             "website": show.website,
             "episodeCount": show.episode_count,
             "episodes": [

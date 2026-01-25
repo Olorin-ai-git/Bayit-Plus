@@ -2,7 +2,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Calendar, Brain, Edit2 } from 'lucide-react';
 import { z } from 'zod';
 import { GlassBadge } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 /**
  * Zod schema for ScheduleCardHeader props
@@ -107,10 +107,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconBgAI: {
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.secondary.DEFAULT,
   },
   iconBgRuleBased: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   titleRow: {
     flexDirection: 'row',

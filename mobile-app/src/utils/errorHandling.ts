@@ -7,12 +7,13 @@
  * - Offline mode detection
  * - Error logging with Sentry integration
  * - User-friendly error messages
+ * - Notifications via GlassToast system
  */
 
-import { Alert } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { ttsService } from '@bayit/shared-services';
 import i18n from '@bayit/shared-i18n';
+import { Notifications } from '@olorin/glass-ui/hooks';
 import logger from './logger';
 
 export type ErrorSeverity = 'info' | 'warning' | 'error' | 'critical';
@@ -65,10 +66,9 @@ class ErrorHandler {
   private handleOffline(): void {
     logger.warn('Device went offline', 'ErrorHandler');
 
-    Alert.alert(
-      i18n.t('errors.offline.title'),
+    Notifications.showWarning(
       i18n.t('errors.offline.message'),
-      [{ text: i18n.t('errors.buttons.ok') }]
+      i18n.t('errors.offline.title')
     );
 
     // Announce to screen reader
@@ -81,10 +81,9 @@ class ErrorHandler {
   private handleOnline(): void {
     logger.info('Device is back online', 'ErrorHandler');
 
-    Alert.alert(
-      i18n.t('errors.online.title'),
+    Notifications.showSuccess(
       i18n.t('errors.online.message'),
-      [{ text: i18n.t('errors.buttons.ok') }]
+      i18n.t('errors.online.title')
     );
 
     // Announce to screen reader
@@ -305,13 +304,22 @@ class ErrorHandler {
    * Show error alert to user
    */
   showErrorAlert(errorDetails: ErrorDetails, onRetry?: () => void): void {
-    const buttons: any[] = [{ text: i18n.t('errors.buttons.ok') }];
+    let notification: any = {
+      level: errorDetails.severity === 'critical' ? 'error' : 'warning',
+      message: errorDetails.userMessage,
+      title: i18n.t('errors.title'),
+      dismissable: true,
+    };
 
     if (errorDetails.canRetry && onRetry) {
-      buttons.unshift({ text: i18n.t('errors.buttons.retry'), onPress: onRetry });
+      notification.action = {
+        label: i18n.t('errors.buttons.retry'),
+        type: 'retry' as const,
+        onPress: onRetry,
+      };
     }
 
-    Alert.alert(i18n.t('errors.title'), errorDetails.userMessage, buttons);
+    Notifications.show(notification);
 
     // Announce error to screen reader
     ttsService.speak(errorDetails.userMessage).catch(() => {});

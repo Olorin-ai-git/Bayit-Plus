@@ -40,7 +40,17 @@
       "@bayit/shared-utils": ["../shared/utils"],
       "@bayit/shared-utils/*": ["../shared/utils/*"],
       "@bayit/shared-assets": ["../shared/assets"],
-      "@bayit/shared-assets/*": ["../shared/assets/*"]
+      "@bayit/shared-assets/*": ["../shared/assets/*"],
+      "@olorin/design-tokens": ["../packages/ui/design-tokens/src"],
+      "@olorin/design-tokens/*": ["../packages/ui/design-tokens/src/*"],
+      "@olorin/shared-hooks": ["../packages/ui/shared-hooks/src"],
+      "@olorin/shared-hooks/*": ["../packages/ui/shared-hooks/src/*"],
+      "@olorin/shared-i18n": ["../packages/ui/shared-i18n/src"],
+      "@olorin/shared-i18n/*": ["../packages/ui/shared-i18n/src/*"],
+      "@olorin/shared-services": ["../packages/ui/shared-services/src"],
+      "@olorin/shared-services/*": ["../packages/ui/shared-services/src/*"],
+      "@olorin/shared-stores": ["../packages/ui/shared-stores/src"],
+      "@olorin/shared-stores/*": ["../packages/ui/shared-stores/src/*"]
     }
   },
   "include": ["src/**/*"],

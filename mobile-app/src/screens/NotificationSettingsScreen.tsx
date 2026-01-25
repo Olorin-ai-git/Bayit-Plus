@@ -17,7 +17,6 @@ import {
   Text,
   ScrollView,
   Switch,
-  Alert,
   Platform,
   Linking,
 } from 'react-native';
@@ -25,7 +24,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView, GlassButton } from '@bayit/shared';
-import { spacing, colors, typography, touchTarget } from '../theme';
+import { useNotifications } from '@olorin/glass-ui/hooks';
+import { spacing, colors, typography, touchTarget } from '@olorin/design-tokens';
 
 type NotificationSetting = {
   id: string;
@@ -38,6 +38,7 @@ type NotificationSetting = {
 export const NotificationSettingsScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const notifications = useNotifications();
 
   // Notification settings state
   const [masterNotifications, setMasterNotifications] = useState(true);
@@ -100,19 +101,19 @@ export const NotificationSettingsScreen: React.FC = () => {
 
     if (value && !masterNotifications) {
       // Request permissions if enabling
-      Alert.alert(
-        t('notifications.enableTitle'),
-        t('notifications.enableMessage'),
-        [
-          { text: t('common.cancel'), style: 'cancel' },
-          {
-            text: t('settings.openSettings'),
-            onPress: () => {
-              Linking.openSettings();
-            },
+      notifications.show({
+        level: 'info',
+        title: t('notifications.enableTitle'),
+        message: t('notifications.enableMessage'),
+        action: {
+          label: t('settings.openSettings'),
+          type: 'action',
+          onPress: () => {
+            Linking.openSettings();
           },
-        ]
-      );
+        },
+        dismissable: true,
+      });
     }
 
     setMasterNotifications(value);

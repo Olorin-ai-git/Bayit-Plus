@@ -7,7 +7,7 @@ import React, { ReactNode, CSSProperties } from 'react';
 import { View, Text, Pressable, ActivityIndicator, Platform, StyleSheet } from 'react-native';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { GlassView } from './GlassView';
-import { colors, spacing, borderRadius } from '../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 export interface GlassTableColumn<T = any> {
   key: string;

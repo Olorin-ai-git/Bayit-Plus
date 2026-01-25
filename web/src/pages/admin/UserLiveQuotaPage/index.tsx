@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, RotateCcw } from 'lucide-react';
 import { liveQuotasService } from '@/services/adminApi';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(239, 68, 68, 0.3)',
   },
-  errorText: { color: colors.error, fontSize: 14, flex: 1 },
+  errorText: { color: colors.error.DEFAULT, fontSize: 14, flex: 1 },
   card: { padding: spacing.lg },
   resetButton: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   buttonText: { color: colors.white, fontSize: 14, fontWeight: '600' },

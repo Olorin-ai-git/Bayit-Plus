@@ -14,7 +14,7 @@
 import { View, StyleSheet } from 'react-native';
 import { z } from 'zod';
 import { GlassButton } from '@bayit/shared/ui';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 
 const SidebarToggleButtonPropsSchema = z.object({
   isExpanded: z.boolean(),
@@ -76,6 +76,6 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     backgroundColor: 'transparent',
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
 });

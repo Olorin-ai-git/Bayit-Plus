@@ -96,8 +96,12 @@ async def _batch_get_podcast_languages(podcast_ids: list) -> dict:
             }
         },
     ]
-    results = await PodcastEpisode.aggregate(pipeline).to_list(length=None)
-    return {r["_id"]: sorted([lang for lang in r["languages"] if lang]) for r in results}
+    try:
+        results = await PodcastEpisode.aggregate(pipeline).to_list(length=None)
+        return {r["_id"]: sorted([lang for lang in r["languages"] if lang]) for r in results}
+    except Exception:
+        # If aggregation fails, return empty dict (podcasts will show without language info)
+        return {}
 
 
 @router.get("/podcasts")

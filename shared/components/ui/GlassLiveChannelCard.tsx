@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Pressable, Image, ViewStyle, Platform, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Play, Star } from 'lucide-react-native';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 
 interface GlassLiveChannelCardProps {
   channel: {
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   channelNameHovered: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   currentShow: {
     fontSize: 11,

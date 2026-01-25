@@ -6,7 +6,7 @@ import {
   Animated,
   StyleSheet,
 } from 'react-native';
-import { colors, spacing } from '../theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { isTV } from '../utils/platform';
 import { useTVFocus } from '../hooks/useTVFocus';
 import { useDirection } from '../../hooks/useDirection';
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 12,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     marginTop: spacing.xs,
   },
 });

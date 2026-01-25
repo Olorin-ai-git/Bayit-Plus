@@ -12,7 +12,7 @@
 import { Pressable, StyleSheet } from 'react-native'
 import { Play, Pause } from 'lucide-react'
 import { z } from 'zod'
-import { colors, borderRadius } from '@bayit/shared/theme'
+import { colors, borderRadius } from '@olorin/design-tokens'
 
 const PlayButtonPropsSchema = z.object({
   isPlaying: z.boolean(),

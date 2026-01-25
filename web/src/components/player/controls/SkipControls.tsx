@@ -20,7 +20,7 @@ import {
   ChevronRight,
 } from 'lucide-react'
 import { z } from 'zod'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { Chapter } from '../types'
 
 const SkipControlsPropsSchema = z.object({

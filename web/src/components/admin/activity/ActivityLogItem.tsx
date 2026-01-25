@@ -3,7 +3,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { Image, FileText, Tag, Link as LinkIcon, Type, RotateCcw } from 'lucide-react';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { LibrarianAction } from '@/services/librarianService';
 import { format } from 'date-fns';
 import { StateDiffView } from './StateDiffView';
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
   autoApprovedText: {
     fontSize: 12,
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
   idText: {
     fontSize: 11,
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 2,
     borderWidth: 1,
-    borderColor: colors.warning,
+    borderColor: colors.warning.DEFAULT,
   },
 });
 

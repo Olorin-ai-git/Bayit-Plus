@@ -22,6 +22,8 @@ import ta from './locales/ta.json';
 import bn from './locales/bn.json';
 import ja from './locales/ja.json';
 
+// Web-specific search translations are now merged into main translation files
+
 import type { LanguageCode, LanguageInfo } from './types';
 import { getInitialLanguageWeb } from './web';
 
@@ -62,6 +64,8 @@ i18n
     resources,
     lng: initialLang,
     fallbackLng: 'he',
+    ns: ['translation'],
+    defaultNS: 'translation',
     interpolation: {
       escapeValue: false,
     },

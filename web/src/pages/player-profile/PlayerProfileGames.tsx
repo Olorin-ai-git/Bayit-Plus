@@ -16,7 +16,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { Gamepad2 } from 'lucide-react';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 
 const IS_TV_BUILD = process.env.REACT_APP_PLATFORM === 'tv';
 

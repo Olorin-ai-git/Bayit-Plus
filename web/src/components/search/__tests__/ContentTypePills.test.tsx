@@ -29,11 +29,11 @@ describe('ContentTypePills', () => {
       />
     );
 
-    expect(screen.getByText('controls.contentTypes.all')).toBeInTheDocument();
-    expect(screen.getByText('controls.contentTypes.vod')).toBeInTheDocument();
-    expect(screen.getByText('controls.contentTypes.live')).toBeInTheDocument();
-    expect(screen.getByText('controls.contentTypes.radio')).toBeInTheDocument();
-    expect(screen.getByText('controls.contentTypes.podcast')).toBeInTheDocument();
+    expect(screen.getByText('search.controls.contentTypes.all')).toBeInTheDocument();
+    expect(screen.getByText('search.controls.contentTypes.vod')).toBeInTheDocument();
+    expect(screen.getByText('search.controls.contentTypes.live')).toBeInTheDocument();
+    expect(screen.getByText('search.controls.contentTypes.radio')).toBeInTheDocument();
+    expect(screen.getByText('search.controls.contentTypes.podcast')).toBeInTheDocument();
   });
 
   it('renders content type emojis', () => {
@@ -58,7 +58,7 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const allPill = screen.getByText('controls.contentTypes.all').closest('button');
+    const allPill = screen.getByText('search.controls.contentTypes.all').closest('button');
     expect(allPill).toHaveAttribute('data-variant', 'primary');
   });
 
@@ -70,7 +70,7 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const vodPill = screen.getByText('controls.contentTypes.vod').closest('button');
+    const vodPill = screen.getByText('search.controls.contentTypes.vod').closest('button');
     expect(vodPill).toHaveAttribute('data-variant', 'primary');
   });
 
@@ -82,8 +82,8 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const allPill = screen.getByText('controls.contentTypes.all').closest('button');
-    const livePill = screen.getByText('controls.contentTypes.live').closest('button');
+    const allPill = screen.getByText('search.controls.contentTypes.all').closest('button');
+    const livePill = screen.getByText('search.controls.contentTypes.live').closest('button');
 
     expect(allPill).toHaveAttribute('data-variant', 'ghost');
     expect(livePill).toHaveAttribute('data-variant', 'ghost');
@@ -97,7 +97,7 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const vodPill = screen.getByText('controls.contentTypes.vod');
+    const vodPill = screen.getByText('search.controls.contentTypes.vod');
     fireEvent.press(vodPill);
 
     expect(mockOnChange).toHaveBeenCalledWith('vod');
@@ -111,7 +111,7 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const livePill = screen.getByText('controls.contentTypes.live');
+    const livePill = screen.getByText('search.controls.contentTypes.live');
     fireEvent.press(livePill);
 
     expect(mockOnChange).toHaveBeenCalledWith('live');
@@ -125,7 +125,7 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const radioPill = screen.getByText('controls.contentTypes.radio');
+    const radioPill = screen.getByText('search.controls.contentTypes.radio');
     fireEvent.press(radioPill);
 
     expect(mockOnChange).toHaveBeenCalledWith('radio');
@@ -139,7 +139,7 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const podcastPill = screen.getByText('controls.contentTypes.podcast');
+    const podcastPill = screen.getByText('search.controls.contentTypes.podcast');
     fireEvent.press(podcastPill);
 
     expect(mockOnChange).toHaveBeenCalledWith('podcast');
@@ -153,7 +153,7 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const allPill = screen.getByText('controls.contentTypes.all');
+    const allPill = screen.getByText('search.controls.contentTypes.all');
     fireEvent.press(allPill);
 
     expect(mockOnChange).toHaveBeenCalledWith('all');
@@ -167,8 +167,8 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const livePill = screen.getByText('controls.contentTypes.live').closest('button');
-    const vodPill = screen.getByText('controls.contentTypes.vod').closest('button');
+    const livePill = screen.getByText('search.controls.contentTypes.live').closest('button');
+    const vodPill = screen.getByText('search.controls.contentTypes.vod').closest('button');
 
     expect(livePill).toHaveAttribute('aria-selected', 'true');
     expect(vodPill).toHaveAttribute('aria-selected', 'false');
@@ -210,7 +210,7 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const firstPill = screen.getByText('controls.contentTypes.all').closest('button');
+    const firstPill = screen.getByText('search.controls.contentTypes.all').closest('button');
     expect(firstPill).toHaveAttribute('focusable', 'true');
   });
 
@@ -222,7 +222,7 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const vodPill = screen.getByText('controls.contentTypes.vod').closest('button');
+    const vodPill = screen.getByText('search.controls.contentTypes.vod').closest('button');
     expect(vodPill).toHaveProperty('hasTVPreferredFocus', true);
   });
 
@@ -234,7 +234,7 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const firstPill = screen.getByText('controls.contentTypes.all').closest('button');
+    const firstPill = screen.getByText('search.controls.contentTypes.all').closest('button');
     fireEvent.focus(firstPill);
 
     // Check for focus styles (border, scale)
@@ -262,9 +262,9 @@ describe('ContentTypePills', () => {
     );
 
     // Check VOD pill has both emoji and label
-    const vodPill = screen.getByText('controls.contentTypes.vod').closest('button');
+    const vodPill = screen.getByText('search.controls.contentTypes.vod').closest('button');
     expect(vodPill?.textContent).toContain('🎬');
-    expect(vodPill?.textContent).toContain('controls.contentTypes.vod');
+    expect(vodPill?.textContent).toContain('search.controls.contentTypes.vod');
   });
 
   it('applies active styles to selected pill', () => {
@@ -275,7 +275,7 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const livePill = screen.getByText('controls.contentTypes.live').closest('button');
+    const livePill = screen.getByText('search.controls.contentTypes.live').closest('button');
     expect(livePill?.className).toContain('pillActive');
   });
 
@@ -287,8 +287,8 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const allPill = screen.getByText('controls.contentTypes.all');
-    const vodPill = screen.getByText('controls.contentTypes.vod');
+    const allPill = screen.getByText('search.controls.contentTypes.all');
+    const vodPill = screen.getByText('search.controls.contentTypes.vod');
 
     // Tab to next element
     fireEvent.keyDown(allPill, { key: 'Tab' });
@@ -306,10 +306,10 @@ describe('ContentTypePills', () => {
     const pills = container.querySelectorAll('button');
     const labels = Array.from(pills).map(pill => pill.textContent);
 
-    expect(labels[0]).toContain('controls.contentTypes.all');
-    expect(labels[1]).toContain('controls.contentTypes.vod');
-    expect(labels[2]).toContain('controls.contentTypes.live');
-    expect(labels[3]).toContain('controls.contentTypes.radio');
-    expect(labels[4]).toContain('controls.contentTypes.podcast');
+    expect(labels[0]).toContain('search.controls.contentTypes.all');
+    expect(labels[1]).toContain('search.controls.contentTypes.vod');
+    expect(labels[2]).toContain('search.controls.contentTypes.live');
+    expect(labels[3]).toContain('search.controls.contentTypes.radio');
+    expect(labels[4]).toContain('search.controls.contentTypes.podcast');
   });
 });

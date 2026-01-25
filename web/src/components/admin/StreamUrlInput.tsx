@@ -3,7 +3,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, CheckCircle, Copy } from 'lucide-react';
 import { GlassView, GlassInput } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 
 interface StreamUrlInputProps {
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   },
   copiedText: {
     fontSize: 12,
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
   typeSection: {
     marginTop: spacing.md,
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
   errorText: {
     flex: 1,
     fontSize: 12,
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
   successContainer: {
     flexDirection: 'row',
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
   successText: {
     flex: 1,
     fontSize: 12,
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
   helpContainer: {
     marginTop: spacing.md,

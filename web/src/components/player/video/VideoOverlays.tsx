@@ -7,7 +7,7 @@
 
 import { View, ActivityIndicator, StyleSheet } from 'react-native'
 import { z } from 'zod'
-import { colors } from '@bayit/shared/theme'
+import { colors } from '@olorin/design-tokens'
 import { RecordingStatusIndicator } from '../RecordingStatusIndicator'
 import SubtitleOverlay from '../SubtitleOverlay'
 import LiveSubtitleOverlay from '../LiveSubtitleOverlay'

@@ -4,7 +4,7 @@ import { Outlet, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Menu } from 'lucide-react'
 import AdminSidebar from './AdminSidebar'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useAuthStore } from '@/stores/authStore'
 
 const SIDEBAR_DEFAULT_WIDTH = 280
@@ -221,16 +221,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     backgroundColor: 'transparent',
   },
   toggleButtonHovered: {
-    backgroundColor: colors.primary + '30',
+    backgroundColor: colors.primary.DEFAULT + '30',
   },
   toggleIcon: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   mobileOverlay: {
     position: 'fixed' as any,

@@ -4,7 +4,7 @@
  */
 
 import { StyleSheet, I18nManager } from 'react-native'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 
 export const styles = StyleSheet.create({
@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
   },
   buttonHovered: {
     backgroundColor: colors.glassLight,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   buttonText: {
     fontSize: isTV ? 16 : 13,
@@ -50,15 +50,15 @@ export const styles = StyleSheet.create({
   },
   activeButtonHovered: {
     backgroundColor: 'rgba(168, 85, 247, 0.3)',
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   activeText: {
     fontSize: isTV ? 16 : 13,
     fontWeight: '600',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   hostText: {
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
   },
   pulseContainer: {
     position: 'relative',
@@ -70,20 +70,20 @@ export const styles = StyleSheet.create({
     width: isTV ? 12 : 10,
     height: isTV ? 12 : 10,
     borderRadius: isTV ? 6 : 5,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   hostPulseDot: {
-    backgroundColor: colors.warning,
+    backgroundColor: colors.warning.DEFAULT,
   },
   pulseRing: {
     position: 'absolute',
     width: isTV ? 12 : 10,
     height: isTV ? 12 : 10,
     borderRadius: isTV ? 6 : 5,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   hostPulseRing: {
-    backgroundColor: colors.warning,
+    backgroundColor: colors.warning.DEFAULT,
   },
   dropdown: {
     position: 'absolute',

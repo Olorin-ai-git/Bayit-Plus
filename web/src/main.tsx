@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import '../../shared/styles/globals.css'
-import '@bayit/shared-i18n'
+import './config/i18n'
 
 // Load microphone diagnostics for debugging (exposes window.runMicDiagnostics)
 import '@bayit/shared-utils/microphoneDiagnostics'
@@ -53,17 +53,16 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>,
 )
 
-// Signal that React is ready and can hide splash screen
-// The splash screen will respect minimum display time (3 seconds)
-// Only trigger on home page and first session load
+// Signal that React is ready
+// NOTE: Don't call hideSplashWhenReady here - let the video control when to hide
+// The splash screen will hide when the intro video ends
 setTimeout(() => {
   const splashShown = sessionStorage.getItem('splashShown') === 'true';
   const isHomePage = window.location.pathname === '/' || window.location.pathname === '';
-  
-  if (typeof window.hideSplashWhenReady === 'function' && !splashShown && isHomePage) {
-    window.hideSplashWhenReady()
-  } else {
-    // Mark as removed if splash wasn't shown
+
+  // Only mark as removed if splash wasn't shown (not on home page or already shown)
+  if (splashShown || !isHomePage) {
     window.splashScreenRemoved = true;
   }
+  // If splash is showing, let the video's 'ended' event trigger the hide
 }, 100)

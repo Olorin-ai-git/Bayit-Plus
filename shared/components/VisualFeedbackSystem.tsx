@@ -19,7 +19,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Animated } from 'react-native';
 import { ttsService } from '../services/ttsService';
 import { GlassParticleLayer } from './ui/GlassParticleLayer';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 
 export type FeedbackState = 'idle' | 'loading' | 'processing' | 'success' | 'error' | 'navigation';
 
@@ -151,40 +151,40 @@ export const VisualFeedbackSystem: React.FC<VisualFeedbackSystemProps> = ({
       case 'loading':
         return {
           icon: 'thinking',
-          color: colors.primary,
+          color: colors.primary.DEFAULT,
           label: 'טוען...',
         };
 
       case 'processing':
         return {
           icon: 'processing',
-          color: colors.primary,
+          color: colors.primary.DEFAULT,
           label: 'מעבד...',
         };
 
       case 'success':
         return {
           icon: 'checkmark',
-          color: colors.success,
+          color: colors.success.DEFAULT,
           label: 'בוצע!',
         };
 
       case 'error':
         return {
           icon: 'error',
-          color: colors.error,
+          color: colors.error.DEFAULT,
           label: 'שגיאה',
         };
 
       case 'navigation':
         return {
           icon: 'navigation',
-          color: colors.primary,
+          color: colors.primary.DEFAULT,
           label: 'ניווט...',
         };
 
       default:
-        return { icon: 'idle', color: colors.primary, label: '' };
+        return { icon: 'idle', color: colors.primary.DEFAULT, label: '' };
     }
   };
 

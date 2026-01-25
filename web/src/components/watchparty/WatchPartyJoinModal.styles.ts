@@ -4,7 +4,7 @@
  */
 
 import { StyleSheet } from 'react-native'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 
 export const styles = StyleSheet.create({
@@ -52,7 +52,7 @@ export const styles = StyleSheet.create({
     letterSpacing: isTV ? 8 : 6,
   },
   inputError: {
-    borderColor: colors.error,
+    borderColor: colors.error.DEFAULT,
     borderWidth: 2,
   },
   characterCount: {
@@ -92,7 +92,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     minHeight: isTV ? 80 : 44,
     paddingVertical: isTV ? spacing.md : spacing.sm,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: borderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',

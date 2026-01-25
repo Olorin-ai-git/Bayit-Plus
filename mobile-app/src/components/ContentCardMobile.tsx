@@ -16,7 +16,7 @@ import { GlassView } from '@bayit/shared';
 import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
 import { responsive } from '../utils/responsive';
 import { optimizeTMDBImageUrl } from '../utils/imageUtils';
-import { typography, spacing, borderRadius, colors } from '../theme';
+import { typography, spacing, borderRadius, colors } from '@olorin/design-tokens';
 
 export interface ContentCardMobileProps {
   /** Content item to display */

@@ -6,7 +6,7 @@
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Play } from 'lucide-react';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 import { SubtitleFlags } from '@bayit/shared/components';
 import type { Episode } from '../types/series.types';
 

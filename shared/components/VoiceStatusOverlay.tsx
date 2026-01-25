@@ -7,7 +7,7 @@
 
 import React, { useEffect } from 'react';
 import { SoundwaveVisualizer } from './SoundwaveVisualizer';
-import { colors, spacing, borderRadius } from '../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 interface VoiceStatusOverlayProps {
   isListening: boolean;
@@ -181,7 +181,7 @@ const styles = {
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     zIndex: 1,
   },
   statusText: {

@@ -28,7 +28,7 @@ import { getLocalizedName, getLocalizedCurrentProgram } from '@bayit/shared-util
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { ChannelCardMobile } from '../components';
-import { spacing, colors, typography } from '../theme';
+import { spacing, colors, typography } from '@olorin/design-tokens';
 
 import logger from '@/utils/logger';
 

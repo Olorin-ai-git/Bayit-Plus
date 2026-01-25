@@ -1,0 +1,510 @@
+name: Scene Search Feature Deployment
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'web/src/components/player/SceneSearchPanel.tsx'
+      - 'web/src/components/player/panel/**'
+      - 'web/src/components/player/hooks/useSceneSearch.ts'
+      - 'backend/app/api/routes/search_scenes.py'
+      - 'backend/app/services/olorin/search/**'
+      - 'backend/app/models/content_embedding.py'
+      - '.github/workflows/scene-search-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      skip_tests:
+        description: 'Skip tests before deploy'
+        required: false
+        default: 'false'
+        type: boolean
+      enable_feature_flag:
+        description: 'Enable scene search feature flag'
+        required: false
+        default: 'true'
+        type: boolean
+
+concurrency:
+  group: scene-search-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  PYTHON_VERSION: '3.11'
+  PROJECT_ID: ${{ vars.GCP_PROJECT_ID || 'bayit-plus' }}
+  REGION: ${{ vars.GCP_REGION || 'us-east1' }}
+  ARTIFACT_REGISTRY: ${{ vars.GCP_REGION || 'us-east1' }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID || 'bayit-plus' }}/bayit-plus
+
+jobs:
+  # Frontend Tests - Scene Search Components
+  frontend-scene-search-tests:
+    name: Frontend Scene Search Tests
+    runs-on: ubuntu-latest
+    if: github.event.inputs.skip_tests != 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build:packages
+
+      - name: Run unit tests for scene search components
+        run: |
+          npm run test -- \
+            SceneSearchPanel \
+            SceneSearchResultCard \
+            SceneSearchInput \
+            useSceneSearch \
+            --coverage
+
+      - name: Upload test coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: web/coverage/lcov.info
+          flags: frontend-scene-search
+          name: scene-search-frontend
+
+  # Backend Tests - Scene Search API
+  backend-scene-search-tests:
+    name: Backend Scene Search Tests
+    runs-on: ubuntu-latest
+    if: github.event.inputs.skip_tests != 'true'
+
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand(\"ping\").ok'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        working-directory: backend
+        run: poetry install --no-interaction
+
+      - name: Run scene search backend tests
+        working-directory: backend
+        env:
+          MONGODB_URL: mongodb://localhost:27017
+          MONGODB_DB_NAME: bayit_test
+          SECRET_KEY: ${{ github.run_id }}-${{ github.sha }}
+          DEBUG: "true"
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY_TEST || 'test-key' }}
+          PINECONE_ENVIRONMENT: ${{ vars.PINECONE_ENVIRONMENT_TEST || 'test' }}
+        run: |
+          poetry run pytest tests/ \
+            -k "scene_search or semantic_search or content_embedding" \
+            -v --tb=short --cov=app/services/olorin/search \
+            --cov=app/api/routes/search_scenes.py \
+            --cov-report=xml
+
+      - name: Upload backend coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: backend/coverage.xml
+          flags: backend-scene-search
+          name: scene-search-backend
+
+  # Security Scan - Scene Search Endpoints
+  security-scan:
+    name: Security Scan (NoSQL Injection & IDOR)
+    runs-on: ubuntu-latest
+    if: github.event.inputs.skip_tests != 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        working-directory: backend
+        run: poetry install --no-interaction
+
+      - name: Run Bandit security scan
+        working-directory: backend
+        run: |
+          poetry run bandit -r app/api/routes/search_scenes.py \
+            app/services/olorin/search/ \
+            app/models/content_embedding.py \
+            -f json -o security-report.json || true
+
+      - name: Run safety check for dependencies
+        working-directory: backend
+        run: poetry run safety check --json
+
+      - name: Verify NoSQL injection prevention
+        working-directory: backend
+        run: |
+          poetry run pytest tests/ \
+            -k "test_nosql_injection or test_query_validation" \
+            -v --tb=short
+
+  # E2E Tests - Scene Search Feature
+  e2e-scene-search-tests:
+    name: E2E Scene Search Tests
+    runs-on: ubuntu-latest
+    if: github.event.inputs.skip_tests != 'true'
+    needs: [frontend-scene-search-tests, backend-scene-search-tests]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Build web application
+        run: npm run build:web
+
+      - name: Start test server
+        run: |
+          npm run serve:web &
+          npx wait-on http://localhost:3200 --timeout 60000
+
+      - name: Run scene search E2E tests
+        env:
+          BASE_URL: http://localhost:3200
+        run: |
+          npx playwright test tests/e2e/scene-search.spec.ts \
+            --project=chromium-desktop \
+            --reporter=html
+
+      - name: Upload E2E test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scene-search-e2e-results
+          path: |
+            web/playwright-report/
+            web/test-results/screenshots/
+          retention-days: 7
+
+  # Accessibility Tests - WCAG 2.1 Level AA
+  accessibility-tests:
+    name: Accessibility Tests (WCAG 2.1 AA)
+    runs-on: ubuntu-latest
+    if: github.event.inputs.skip_tests != 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run axe accessibility tests
+        run: |
+          npx playwright test tests/e2e/scene-search.spec.ts \
+            --grep "@accessibility" \
+            --reporter=html
+
+      - name: Verify ARIA compliance
+        run: |
+          npx playwright test tests/e2e/scene-search.spec.ts \
+            --grep "ARIA" \
+            --reporter=line
+
+  # Build and Push Docker Image
+  build-and-push:
+    name: Build and Push to Artifact Registry
+    runs-on: ubuntu-latest
+    needs: [
+      frontend-scene-search-tests,
+      backend-scene-search-tests,
+      security-scan,
+      e2e-scene-search-tests,
+      accessibility-tests
+    ]
+    if: always() && (
+      needs.frontend-scene-search-tests.result == 'success' &&
+      needs.backend-scene-search-tests.result == 'success' &&
+      needs.security-scan.result == 'success' &&
+      (needs.e2e-scene-search-tests.result == 'success' || needs.e2e-scene-search-tests.result == 'skipped') &&
+      (needs.accessibility-tests.result == 'success' || needs.accessibility-tests.result == 'skipped')
+    )
+
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }}
+      image_digest: ${{ steps.build.outputs.digest }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Determine environment
+        id: env
+        run: |
+          if [[ "${{ github.event.inputs.environment }}" == "production" ]]; then
+            echo "tag_prefix=prod" >> $GITHUB_OUTPUT
+            echo "service_suffix=" >> $GITHUB_OUTPUT
+          else
+            echo "tag_prefix=staging" >> $GITHUB_OUTPUT
+            echo "service_suffix=-staging" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.ARTIFACT_REGISTRY }}/backend
+          tags: |
+            type=sha,prefix=${{ steps.env.outputs.tag_prefix }}-scene-search-
+            type=raw,value=${{ steps.env.outputs.tag_prefix }}-scene-search
+            type=raw,value=${{ steps.env.outputs.tag_prefix }}-scene-search-${{ github.run_number }}
+
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.ARTIFACT_REGISTRY }}/backend:${{ steps.env.outputs.tag_prefix }}
+          cache-to: type=inline
+
+  # Deploy to Cloud Run
+  deploy:
+    name: Deploy Scene Search to Cloud Run
+    runs-on: ubuntu-latest
+    needs: [build-and-push]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Determine environment
+        id: env
+        run: |
+          if [[ "${{ github.event.inputs.environment }}" == "production" ]]; then
+            echo "service_name=bayit-plus-backend" >> $GITHUB_OUTPUT
+            echo "tag_prefix=prod" >> $GITHUB_OUTPUT
+            echo "sentry_env=production" >> $GITHUB_OUTPUT
+            echo "log_level=INFO" >> $GITHUB_OUTPUT
+            echo "min_instances=1" >> $GITHUB_OUTPUT
+            echo "max_instances=10" >> $GITHUB_OUTPUT
+          else
+            echo "service_name=bayit-plus-backend-staging" >> $GITHUB_OUTPUT
+            echo "tag_prefix=staging" >> $GITHUB_OUTPUT
+            echo "sentry_env=staging" >> $GITHUB_OUTPUT
+            echo "log_level=DEBUG" >> $GITHUB_OUTPUT
+            echo "min_instances=0" >> $GITHUB_OUTPUT
+            echo "max_instances=3" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set feature flag
+        id: feature_flag
+        run: |
+          if [[ "${{ github.event.inputs.enable_feature_flag }}" == "true" ]]; then
+            echo "flag_value=true" >> $GITHUB_OUTPUT
+          else
+            echo "flag_value=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ${{ steps.env.outputs.service_name }} \
+            --image ${{ env.ARTIFACT_REGISTRY }}/backend:${{ steps.env.outputs.tag_prefix }}-scene-search-${{ github.run_number }} \
+            --region ${{ env.REGION }} \
+            --platform managed \
+            --allow-unauthenticated \
+            --memory 1Gi \
+            --cpu 1 \
+            --timeout 300 \
+            --max-instances ${{ steps.env.outputs.max_instances }} \
+            --min-instances ${{ steps.env.outputs.min_instances }} \
+            --concurrency 80 \
+            --port 8080 \
+            --cpu-boost \
+            --set-env-vars "FEATURE_SCENE_SEARCH_ENABLED=${{ steps.feature_flag.outputs.flag_value }},API_V1_PREFIX=/api/v1,STORAGE_TYPE=gcs,DEBUG=true,GCP_PROJECT_ID=${{ env.PROJECT_ID }},SENTRY_ENVIRONMENT=${{ steps.env.outputs.sentry_env }},LOG_LEVEL=${{ steps.env.outputs.log_level }}" \
+            --set-secrets "SECRET_KEY=bayit-secret-key-${{ steps.env.outputs.tag_prefix }}:latest,MONGODB_URL=mongodb-${{ steps.env.outputs.tag_prefix }}-url:latest,MONGODB_DB_NAME=mongodb-${{ steps.env.outputs.tag_prefix }}-db-name:latest,PINECONE_API_KEY=bayit-pinecone-api-key-${{ steps.env.outputs.tag_prefix }}:latest,PINECONE_ENVIRONMENT=bayit-pinecone-environment-${{ steps.env.outputs.tag_prefix }}:latest,ANTHROPIC_API_KEY=bayit-anthropic-api-key-${{ steps.env.outputs.tag_prefix }}:latest"
+
+      - name: Get service URL
+        id: service
+        run: |
+          SERVICE_URL=$(gcloud run services describe ${{ steps.env.outputs.service_name }} \
+            --region ${{ env.REGION }} \
+            --format 'value(status.url)')
+          echo "url=$SERVICE_URL" >> $GITHUB_OUTPUT
+
+      - name: Run health check
+        run: |
+          echo "Waiting for service to be ready..."
+          sleep 30
+
+          SERVICE_URL="${{ steps.service.outputs.url }}"
+          echo "Testing health endpoint at: $SERVICE_URL/health"
+
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$SERVICE_URL/health")
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "Health check passed!"
+              exit 0
+            fi
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "Health check attempt $RETRY_COUNT returned $HTTP_CODE, retrying in 10s..."
+            sleep 10
+          done
+
+          echo "Health check failed after $MAX_RETRIES attempts"
+          exit 1
+
+    outputs:
+      service_url: ${{ steps.service.outputs.url }}
+
+  # Scene Search Specific Smoke Tests
+  scene-search-smoke-tests:
+    name: Scene Search Smoke Tests
+    runs-on: ubuntu-latest
+    needs: [deploy]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run comprehensive scene search smoke tests
+        env:
+          SERVICE_URL: ${{ needs.deploy.outputs.service_url }}
+          VERBOSE: "true"
+        run: |
+          chmod +x scripts/backend/production/deployment/scene_search_smoke_tests.sh
+          ./scripts/backend/production/deployment/scene_search_smoke_tests.sh "$SERVICE_URL"
+
+  # Deployment Summary
+  notify:
+    name: Deployment Summary
+    runs-on: ubuntu-latest
+    needs: [deploy, scene-search-smoke-tests]
+    if: always()
+
+    steps:
+      - name: Generate deployment summary
+        run: |
+          echo "# 🔍 Scene Search Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Feature | Scene Search (Semantic Video Search) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | ${{ github.event.inputs.environment || 'staging' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deploy Status | ${{ needs.deploy.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Smoke Tests | ${{ needs.scene-search-smoke-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Feature Flag | ${{ github.event.inputs.enable_feature_flag || 'true' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Service URL | ${{ needs.deploy.outputs.service_url }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend Tests: ${{ needs.frontend-scene-search-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend Tests: ${{ needs.backend-scene-search-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Security Scan: ${{ needs.security-scan.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- E2E Tests: ${{ needs.e2e-scene-search-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Accessibility: ${{ needs.accessibility-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Features Deployed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Semantic search within video content" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Natural language queries with Pinecone vector search" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Timestamp deep-linking (bayitplus://watch/ID?t=120)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Series-wide search across episodes" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ WCAG 2.1 Level AA accessibility" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Mobile/tablet/desktop responsive design" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ tvOS support (Siri, Top Shelf, spatial nav)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ NoSQL injection prevention" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Tiered rate limiting" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Premium feature gating" >> $GITHUB_STEP_SUMMARY
+
+      - name: Send Slack notification (if configured)
+        if: vars.SLACK_WEBHOOK_URL != ''
+        run: |
+          curl -X POST "${{ vars.SLACK_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "text": "Scene Search Deployment",
+              "attachments": [{
+                "color": "${{ needs.deploy.result == '\''success'\'' && '\''good'\'' || '\''danger'\'' }}",
+                "fields": [
+                  {"title": "Environment", "value": "${{ github.event.inputs.environment || '\''staging'\'' }}", "short": true},
+                  {"title": "Status", "value": "${{ needs.deploy.result }}", "short": true},
+                  {"title": "Commit", "value": "${{ github.sha }}", "short": true},
+                  {"title": "URL", "value": "${{ needs.deploy.outputs.service_url }}", "short": false}
+                ]
+              }]
+            }'

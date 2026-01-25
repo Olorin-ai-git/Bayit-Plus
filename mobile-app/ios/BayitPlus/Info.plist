@@ -66,5 +66,16 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>bayitplus</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>tv.bayit.app</string>
+		</dict>
+	</array>
 </dict>
 </plist>

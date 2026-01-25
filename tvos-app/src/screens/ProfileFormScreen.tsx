@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { useProfile } from '@bayit/shared-contexts';
 import { useDirection } from '@bayit/shared-hooks';
 import { GlassView, GlassButton } from '@bayit/shared';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 // Avatar options
 const AVATAR_COLORS = [
@@ -120,7 +120,7 @@ export const ProfileFormScreen: React.FC = () => {
 
   return (
     <ScrollView
-      className="flex-1 bg-[#0d0d1a]"
+      className="flex-1 bg-black"
       contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 40 }}
     >
       <GlassView intensity="medium" className="p-10 max-w-[600px] self-center w-full">
@@ -143,7 +143,7 @@ export const ProfileFormScreen: React.FC = () => {
           </Text>
           <TextInput
             className={`bg-white/10 rounded-lg p-4 text-lg text-white border-2 ${
-              focusedItem === 'name' ? 'border-purple-500 bg-[rgba(107,33,168,0.3)]' : 'border-white/20'
+              focusedItem === 'name' ? 'border-purple-500 bg-purple-500/30' : 'border-white/20'
             }`}
             style={{ textAlign }}
             value={name}
@@ -166,7 +166,7 @@ export const ProfileFormScreen: React.FC = () => {
               <TouchableOpacity
                 key={emoji}
                 className={`w-[60px] h-[60px] rounded-full bg-white/10 justify-center items-center border-[3px] ${
-                  selectedEmoji === emoji ? 'border-purple-500 bg-[rgba(107,33,168,0.3)]' : 'border-transparent'
+                  selectedEmoji === emoji ? 'border-purple-500 bg-purple-500/30' : 'border-transparent'
                 } ${
                   focusedItem === `emoji-${emoji}` ? 'border-white scale-110' : ''
                 }`}
@@ -243,7 +243,7 @@ export const ProfileFormScreen: React.FC = () => {
                   onBlur={() => setFocusedItem(null)}
                 >
                   <Text className={`text-base font-semibold ${
-                    kidsAgeLimit === option.value ? 'text-[#0d0d1a]' : 'text-white'
+                    kidsAgeLimit === option.value ? 'text-black' : 'text-white'
                   }`}>
                     {option.label}
                   </Text>
@@ -274,7 +274,7 @@ export const ProfileFormScreen: React.FC = () => {
             <View className="mt-4 gap-2">
               <TextInput
                 className={`bg-white/10 rounded-lg p-4 text-lg text-white border-2 text-center tracking-[8px] text-2xl ${
-                  focusedItem === 'pin' ? 'border-purple-500 bg-[rgba(107,33,168,0.3)]' : 'border-white/20'
+                  focusedItem === 'pin' ? 'border-purple-500 bg-purple-500/30' : 'border-white/20'
                 }`}
                 value={pin}
                 onChangeText={(text) => setPin(text.replace(/[^0-9]/g, ''))}
@@ -288,7 +288,7 @@ export const ProfileFormScreen: React.FC = () => {
               />
               <TextInput
                 className={`bg-white/10 rounded-lg p-4 text-lg text-white border-2 text-center tracking-[8px] text-2xl ${
-                  focusedItem === 'confirmPin' ? 'border-purple-500 bg-[rgba(107,33,168,0.3)]' : 'border-white/20'
+                  focusedItem === 'confirmPin' ? 'border-purple-500 bg-purple-500/30' : 'border-white/20'
                 }`}
                 value={confirmPin}
                 onChangeText={(text) => setConfirmPin(text.replace(/[^0-9]/g, ''))}
@@ -332,7 +332,7 @@ export const ProfileFormScreen: React.FC = () => {
             {saving ? (
               <ActivityIndicator color="#fff" size="small" />
             ) : (
-              <Text className="text-lg text-[#0d0d1a] font-bold">
+              <Text className="text-lg text-black font-bold">
                 {t('common.save', 'Save')}
               </Text>
             )}

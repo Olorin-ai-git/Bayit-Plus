@@ -1,11 +1,11 @@
 # Comprehensive Production Parity Report
-Date: 2026-01-24T03:12:15.441Z
+Date: 2026-01-24T13:21:11.389Z
 
 ## Summary
 
-Total Screenshots Captured: 76
+Total Screenshots Captured: 80
 - Production: 40
-- Local: 36
+- Local: 40
 
 ## Routes Tested
 
@@ -87,14 +87,17 @@ Total Routes: 30
 - local-login-en-desktop.png
 - local-login-he-desktop.png
 - local-podcasts-en-desktop.png
+- local-podcasts-he-desktop.png
 - local-privacy-en-desktop.png
 - local-profiles-en-desktop.png
 - local-profiles-he-desktop.png
 - local-radio-en-desktop.png
+- local-radio-he-desktop.png
 - local-recordings-en-desktop.png
 - local-register-en-desktop.png
 - local-register-he-desktop.png
 - local-search-en-desktop.png
+- local-search-he-desktop.png
 - local-settings-en-desktop.png
 - local-settings-language-en-desktop.png
 - local-settings-profile-en-desktop.png
@@ -103,6 +106,7 @@ Total Routes: 30
 - local-tv-login-en-desktop.png
 - local-tv-login-he-desktop.png
 - local-vod-en-desktop.png
+- local-vod-he-desktop.png
 - local-watchlist-en-desktop.png
 
 ## Comparison Matrix
@@ -115,10 +119,10 @@ Total Routes: 30
 | tv-login | ✅ | ✅ | ✅ | ✅ | ✅ PASS |
 | home | ✅ | ✅ | ✅ | ✅ | ✅ PASS |
 | live | ✅ | ✅ | ✅ | ✅ | ✅ PASS |
-| vod | ✅ | ✅ | ✅ | - | ✅ PASS |
-| radio | ✅ | ✅ | ✅ | - | ✅ PASS |
-| podcasts | ✅ | ✅ | ✅ | - | ✅ PASS |
-| search | ✅ | ✅ | ✅ | - | ✅ PASS |
+| vod | ✅ | ✅ | ✅ | ✅ | ✅ PASS |
+| radio | ✅ | ✅ | ✅ | ✅ | ✅ PASS |
+| podcasts | ✅ | ✅ | ✅ | ✅ | ✅ PASS |
+| search | ✅ | ✅ | ✅ | ✅ | ✅ PASS |
 | epg | ✅ | ✅ | - | - | ✅ PASS |
 | favorites | ✅ | ✅ | - | - | ✅ PASS |
 | watchlist | ✅ | ✅ | - | - | ✅ PASS |

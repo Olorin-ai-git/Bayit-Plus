@@ -10,7 +10,7 @@ import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import type { ViewMode } from '../../hooks/useSearchViewMode';
-import { colors, borderRadius, spacing } from '../../theme/colors';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 // Platform-specific touch target sizes
 const TOUCH_TARGET_SIZE = Platform.select({
@@ -36,7 +36,7 @@ const VIEW_MODE_OPTIONS: { mode: ViewMode; icon: string; label: string }[] = [
  * Toggle component for switching search result view modes
  */
 export function SearchViewModeToggle({ value, onChange }: SearchViewModeToggleProps) {
-  const { t } = useTranslation('search');
+  const { t } = useTranslation();
   const [focusedMode, setFocusedMode] = React.useState<ViewMode | null>(null);
 
   return (
@@ -59,7 +59,7 @@ export function SearchViewModeToggle({ value, onChange }: SearchViewModeTogglePr
             onBlur={() => setFocusedMode(null)}
             focusable={Platform.isTV}
             hasTVPreferredFocus={isSelected && Platform.isTV}
-            accessibilityLabel={t(`viewMode.${mode}`)}
+            accessibilityLabel={t(`search.viewMode.${mode}`)}
             accessibilityState={{ selected: isSelected }}
           >
             <Text style={[styles.icon, isSelected && styles.iconActive]}>{icon}</Text>
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   },
   buttonFocused: {
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     transform: [{ scale: 1.05 }],
   },
   icon: {

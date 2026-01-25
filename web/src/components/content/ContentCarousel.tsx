@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ContentCard from './ContentCard';
 import AnimatedCard from '@/components/common/AnimatedCard';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { GlassView } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   },
   seeAllText: {
     fontSize: fontSize.sm,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   carouselContainer: {
     position: 'relative',

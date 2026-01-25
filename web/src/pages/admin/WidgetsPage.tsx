@@ -13,7 +13,7 @@ import { GlassButton, GlassCard } from '@bayit/shared/ui';
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web';
 import WidgetFormModal from '@/components/widgets/WidgetFormModal';
 import { adminWidgetsService } from '@/services/adminApi';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
 import logger from '@/utils/logger';

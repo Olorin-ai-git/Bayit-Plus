@@ -3,7 +3,7 @@ import { View, Text, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../hooks/useDirection';
 import { GlassView } from './ui/GlassView';
-import { colors, spacing, fontSize } from '../theme';
+import { colors, spacing, fontSize } from '@olorin/design-tokens';
 import { zmanService } from '../services/api';
 
 interface TimeData {
@@ -355,7 +355,7 @@ export const DualClock: React.FC<DualClockProps> = ({
             <View className="flex-row items-center justify-between" style={{ flexDirection }}>
               <View className="flex-row items-center gap-2" style={{ flexDirection }}>
                 <Text className="text-base" style={{ color: colors.warning }}>✡</Text>
-                <Text className="text-base font-semibold" style={{ color: colors.warning, textAlign }}>{t('clock.shabbatShalom')}</Text>
+                <Text className="text-base font-semibold" style={{ color: colors.warning.DEFAULT, textAlign }}>{t('clock.shabbatShalom')}</Text>
               </View>
               {shabbat.countdown && (
                 <View className="flex-row items-center" style={{ flexDirection }}>
@@ -368,7 +368,7 @@ export const DualClock: React.FC<DualClockProps> = ({
             <View className="flex-row items-center justify-between" style={{ flexDirection }}>
               <View className="flex-row items-center gap-2" style={{ flexDirection }}>
                 <Text className="text-base">🕯️</Text>
-                <Text className="text-base font-semibold" style={{ color: colors.secondary, textAlign }}>{t('clock.erevShabbat')}</Text>
+                <Text className="text-base font-semibold" style={{ color: colors.secondary.DEFAULT, textAlign }}>{t('clock.erevShabbat')}</Text>
               </View>
               <View className="flex-row items-center" style={{ flexDirection }}>
                 {shabbat.candle_lighting && (

@@ -6,7 +6,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Gauge } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 const TTS_SPEEDS = [0.75, 1.0, 1.25, 1.5];
 

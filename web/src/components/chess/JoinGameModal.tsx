@@ -3,7 +3,7 @@
  */
 import React, { useState } from 'react';
 import { View, Pressable, Text, StyleSheet } from 'react-native';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { useTranslation } from 'react-i18next';
 import { GlassInput, GlassModal } from '@bayit/shared/ui';
 

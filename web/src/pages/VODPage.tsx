@@ -7,8 +7,17 @@ import { Film, Tv, Search, ChevronLeft, ChevronRight, SlidersHorizontal, Mic, X 
 import ContentCard from '@/components/content/ContentCard';
 import AnimatedCard from '@/components/common/AnimatedCard';
 import { contentService } from '@/services/api';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassView, GlassCard, GlassCategoryPill, GlassInput, GlassButton, GlassCheckbox } from '@bayit/shared/ui';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import {
+  GlassView,
+  GlassCard,
+  GlassCategoryPill,
+  GlassInput,
+  GlassButton,
+  GlassCheckbox,
+  GlassPageHeader,
+  GridSkeleton,
+} from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import logger from '@/utils/logger';
 
@@ -176,21 +185,14 @@ export default function VODPage() {
   if (loading && movies.length === 0 && series.length === 0) {
     return (
       <View style={styles.container}>
-        {/* Header */}
-        <View style={[styles.header, { flexDirection, justifyContent }]}>
-          <Text style={[styles.title, { textAlign }]}>{t('vod.title')}</Text>
-          <GlassView style={styles.headerIcon}>
-            <Film size={24} color={colors.primary} />
-          </GlassView>
-        </View>
-
-        {/* Loading Spinner */}
-        <View style={styles.loadingContainer}>
-          <GlassCard style={styles.loadingCard}>
-            <ActivityIndicator size="large" color={colors.primary} />
-            <Text style={styles.loadingText}>{t('common.loading')}</Text>
-          </GlassCard>
-        </View>
+        <GlassPageHeader
+          title={t('vod.title')}
+          pageType="vod"
+          isRTL={isRTL}
+        />
+        <View style={styles.searchSkeleton} />
+        <View style={styles.categoriesSkeleton} />
+        <GridSkeleton numColumns={numColumns} numRows={2} />
       </View>
     );
   }
@@ -199,12 +201,12 @@ export default function VODPage() {
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
         {/* Header */}
-        <View style={[styles.header, { flexDirection, justifyContent }]}>
-          <Text style={[styles.title, { textAlign }]}>{t('vod.title')}</Text>
-          <GlassView style={styles.headerIcon}>
-            <Film size={24} color={colors.primary} />
-          </GlassView>
-        </View>
+        <GlassPageHeader
+          title={t('vod.title')}
+          pageType="vod"
+          badge={totalMovies + totalSeries}
+          isRTL={isRTL}
+        />
 
         {/* Search Input with Filter and Voice Buttons */}
         <View style={styles.searchContainer}>
@@ -411,39 +413,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
     width: '100%',
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: 400,
-  },
-  loadingCard: {
-    padding: spacing.xl * 2,
-    alignItems: 'center',
-    gap: spacing.lg,
-  },
-  loadingText: {
-    fontSize: 16,
-    color: colors.text,
-    marginTop: spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
+  searchSkeleton: {
+    height: 48,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
     marginBottom: spacing.lg,
   },
-  headerIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.text,
+  categoriesSkeleton: {
+    height: 40,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.lg,
   },
   searchContainer: {
     marginBottom: spacing.lg,
@@ -473,7 +453,7 @@ const styles = StyleSheet.create({
   },
   iconButtonActive: {
     backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   iconButtonWithBadge: {
     position: 'relative',
@@ -485,7 +465,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   filterPanel: {
     position: 'absolute',

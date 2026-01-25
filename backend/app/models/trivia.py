@@ -103,7 +103,7 @@ class ContentTrivia(Document):
         if is_enriched:
             update_data["$set"]["enriched_at"] = now
 
-        collection = cls.get_motor_collection()
+        collection = cls.get_pymongo_collection()
         result = await collection.find_one_and_update(
             {"content_id": content_id, "content_type": content_type},
             update_data,
@@ -119,7 +119,13 @@ class TriviaFactResponse(BaseModel):
     """API response for a single trivia fact."""
 
     fact_id: str
-    text: str
+    text: str  # Kept for backward compatibility (Hebrew)
+
+    # NEW: Optional multilingual fields
+    text_he: Optional[str] = None
+    text_en: Optional[str] = None
+    text_es: Optional[str] = None
+
     trigger_time: Optional[float] = None
     category: str
     display_duration: int
@@ -150,6 +156,14 @@ class TriviaPreferencesRequest(BaseModel):
     )
     display_duration: int = Field(10, ge=5, le=30)
 
+    # NEW: Language display preferences
+    display_languages: List[str] = Field(
+        default_factory=lambda: ["he", "en"],
+        min_length=1,
+        max_length=3,
+        description="Languages to display (1-3 languages)",
+    )
+
     @field_validator("categories")
     @classmethod
     def validate_categories(cls, v: List[str]) -> List[str]:
@@ -159,3 +173,14 @@ class TriviaPreferencesRequest(BaseModel):
         if invalid:
             raise ValueError(f"Invalid categories: {invalid}")
         return list(set(v))
+
+    @field_validator("display_languages")
+    @classmethod
+    def validate_display_languages(cls, v: List[str]) -> List[str]:
+        """Validate display languages are from allowed list and remove duplicates."""
+        allowed = {"he", "en", "es"}
+        invalid = set(v) - allowed
+        if invalid:
+            raise ValueError(f"Invalid language codes: {invalid}")
+        # Remove duplicates while preserving order
+        return list(dict.fromkeys(v))

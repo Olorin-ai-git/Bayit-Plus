@@ -14,7 +14,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
 import { GlassModal, GlassButton, GlassInput, GlassToggle } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 import type { ContentItem } from './form/ContentSelectionSection';
@@ -512,8 +512,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modeButtonActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.primary[600],
+    borderColor: colors.primary.DEFAULT,
   },
   modeButtonText: {
     fontSize: 13,
@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     backgroundColor: 'rgba(107, 33, 168, 0.2)',
     borderWidth: 1,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   selectedContentText: {
     fontSize: 13,
@@ -543,7 +543,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.sm,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   changeButtonText: {
     fontSize: 12,
@@ -557,12 +557,12 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     gap: spacing.sm,
   },
   selectContentButtonText: {
     fontSize: 14,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '500',
   },
   iframeFields: {

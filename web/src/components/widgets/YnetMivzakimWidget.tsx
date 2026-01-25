@@ -15,7 +15,7 @@ import {
   Linking,
 } from 'react-native';
 import { RefreshCw, ExternalLink, AlertCircle } from 'lucide-react';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import axios from 'axios';
 import logger from '@/utils/logger';
 

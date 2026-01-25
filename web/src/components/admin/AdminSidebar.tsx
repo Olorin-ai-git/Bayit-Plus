@@ -24,7 +24,7 @@ import {
   Clock,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 
 const LANGUAGE_OPTIONS = [
   { code: 'en', flag: '🇺🇸', label: 'English' },
@@ -490,7 +490,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   navTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '500',
   },
   textRTL: {
@@ -544,6 +544,6 @@ const styles = StyleSheet.create({
   footerTextLogout: {
     flex: 1,
     fontSize: 14,
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
 })

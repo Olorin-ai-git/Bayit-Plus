@@ -5,7 +5,7 @@
 
 import { useState, ReactNode } from 'react'
 import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 
 interface GlassLiveControlButtonProps {
@@ -33,18 +33,20 @@ export function GlassLiveControlButton({
 
   return (
     <Pressable
-      onPress={onPress}
-      onHoverIn={() => setIsHovered(true)}
+      onPress={isConnecting ? undefined : onPress}
+      disabled={isConnecting}
+      onHoverIn={() => !isConnecting && setIsHovered(true)}
       onHoverOut={() => setIsHovered(false)}
       style={[
         styles.button,
         isEnabled && styles.buttonEnabled,
         !isPremium && styles.buttonPremium,
-        isHovered && styles.buttonHovered,
+        isHovered && !isConnecting && styles.buttonHovered,
+        isConnecting && styles.buttonDisabled,
       ]}
       accessibilityRole="button"
       accessibilityLabel={displayLabel}
-      accessibilityState={{ pressed: isEnabled }}
+      accessibilityState={{ pressed: isEnabled, disabled: isConnecting }}
     >
       {/* Icon */}
       <View style={styles.iconContainer}>{icon}</View>
@@ -91,7 +93,7 @@ const styles = StyleSheet.create({
   },
   buttonEnabled: {
     backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.3,
@@ -105,6 +107,10 @@ const styles = StyleSheet.create({
   buttonHovered: {
     backgroundColor: 'rgba(168, 85, 247, 0.15)',
     transform: [{ scale: 1.02 }],
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+    cursor: 'not-allowed',
   },
   iconContainer: {
     width: 20,
@@ -131,7 +137,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.success,
+    backgroundColor: colors.success.DEFAULT,
     marginLeft: spacing.xs,
   },
 })

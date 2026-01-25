@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Film } from 'lucide-react';
 import { z } from 'zod';
 import { GlassView } from '@bayit/shared/ui';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import { platformClass } from '@/utils/platformClass';
 

@@ -2,8 +2,7 @@ import { useEffect, useRef } from 'react'
 import { View, Text, Pressable, ScrollView, ActivityIndicator, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { List, X } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
-import { GlassView } from '@bayit/shared/ui'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import ChapterCard from './ChapterCard'
 
 interface Chapter {
@@ -55,111 +54,152 @@ export default function ChaptersPanel({
 
   if (!isOpen) return null
 
-  return (
-    <GlassView
-      style={[styles.panel, isOpen ? styles.panelOpen : styles.panelClosed]}
-      intensity="high"
-    >
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <List size={18} color={colors.primary} />
-          <Text style={styles.headerTitle}>{t('chapters.title')}</Text>
-          <Text style={styles.headerCount}>({chapters.length})</Text>
-        </View>
-        <Pressable
-          onPress={onClose}
-          style={styles.closeButton}
-          accessibilityLabel={t('common.close')}
-        >
-          <X size={18} color={colors.textSecondary} />
-        </Pressable>
-      </View>
+  const handleBackdropClick = (e: any) => {
+    e?.stopPropagation?.()
+    e?.preventDefault?.()
+    onClose?.()
+  }
 
-      {/* Chapters List */}
-      <ScrollView
-        ref={panelRef}
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+  const stopPropagation = (e: any) => {
+    e?.stopPropagation?.()
+    e?.preventDefault?.()
+  }
+
+  return (
+    <>
+      {/* Backdrop to close panel when clicking outside */}
+      <View
+        style={styles.backdrop}
+        onClick={handleBackdropClick}
+        onMouseDown={stopPropagation}
+        onMouseUp={stopPropagation}
+      />
+
+      {/* Panel */}
+      <View
+        style={[styles.panel, isOpen ? styles.panelOpen : styles.panelClosed]}
+        onClick={stopPropagation}
+        onMouseDown={stopPropagation}
+        onMouseUp={stopPropagation}
       >
-        {isLoading ? (
-          <View style={styles.emptyState}>
-            <ActivityIndicator size="small" color={colors.primary} />
-            <Text style={styles.emptyText}>{t('chapters.generating')}</Text>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Text style={styles.headerTitle}>{t('chapters.title')}</Text>
+            <Text style={styles.headerCount}>({chapters.length})</Text>
           </View>
-        ) : chapters.length === 0 ? (
-          <View style={styles.emptyState}>
-            <List size={32} color={colors.textMuted} style={styles.emptyIcon} />
-            <Text style={styles.emptyText}>{t('chapters.noChapters')}</Text>
-          </View>
-        ) : (
-          chapters.map((chapter, index) => (
-            <View key={`${chapter.start_time}-${index}`} style={styles.chapterItem}>
-              <ChapterCard
-                chapter={chapter}
-                isActive={index === activeChapterIndex}
-                onClick={() => handleChapterClick(chapter)}
-              />
+          <Pressable
+            onPress={onClose}
+            style={styles.closeButton}
+            accessibilityLabel={t('common.close')}
+          >
+            <X size={24} color={colors.white} />
+          </Pressable>
+        </View>
+
+        {/* Chapters List */}
+        <ScrollView
+          ref={panelRef}
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {isLoading ? (
+            <View style={styles.emptyState}>
+              <ActivityIndicator size="small" color={colors.primary.DEFAULT} />
+              <Text style={styles.emptyText}>{t('chapters.generating')}</Text>
             </View>
-          ))
-        )}
-      </ScrollView>
-    </GlassView>
+          ) : chapters.length === 0 ? (
+            <View style={styles.emptyState}>
+              <List size={32} color={colors.textMuted} style={styles.emptyIcon} />
+              <Text style={styles.emptyText}>{t('chapters.noChapters')}</Text>
+            </View>
+          ) : (
+            chapters.map((chapter, index) => (
+              <View key={`${chapter.start_time}-${index}`} style={styles.chapterItem}>
+                <ChapterCard
+                  chapter={chapter}
+                  isActive={index === activeChapterIndex}
+                  onClick={() => handleChapterClick(chapter)}
+                />
+              </View>
+            ))
+          )}
+        </ScrollView>
+      </View>
+    </>
   )
 }
 
 const styles = StyleSheet.create({
+  backdrop: {
+    position: 'absolute' as any,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'transparent',
+    zIndex: 89,
+    // @ts-ignore - Web-specific CSS
+    pointerEvents: 'auto',
+    cursor: 'default',
+  },
   panel: {
     position: 'absolute',
     top: 0,
     right: 0,
     height: '100%',
-    width: 288,
-    zIndex: 40,
-    borderTopLeftRadius: borderRadius.lg,
-    borderBottomLeftRadius: borderRadius.lg,
+    width: 360,
+    zIndex: 90,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    // @ts-ignore - Web-specific CSS
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    pointerEvents: 'auto',
   },
   panelOpen: {
     transform: [{ translateX: 0 }],
   },
   panelClosed: {
-    transform: [{ translateX: 288 }],
+    transform: [{ translateX: 360 }],
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorderWhite,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.xs,
   },
   headerTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.white,
   },
   headerCount: {
-    fontSize: 12,
-    color: colors.textMuted,
+    fontSize: 16,
+    color: colors.textSecondary,
+    fontWeight: '400',
   },
   closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: borderRadius.lg,
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.full,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    padding: spacing.sm,
-    gap: spacing.sm,
+    padding: spacing.md,
+    gap: spacing.xs,
   },
   emptyState: {
     flex: 1,
@@ -168,16 +208,17 @@ const styles = StyleSheet.create({
     paddingVertical: 64,
   },
   emptyIcon: {
-    opacity: 0.5,
-    marginBottom: spacing.sm,
+    opacity: 0.3,
+    marginBottom: spacing.md,
   },
   emptyText: {
     fontSize: 14,
-    color: colors.textMuted,
+    color: colors.textSecondary,
     marginTop: spacing.sm,
+    textAlign: 'center',
   },
   chapterItem: {
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs,
   },
 });
 

@@ -6,7 +6,7 @@ module.exports = {
     '../shared/components/**/*.{js,jsx,ts,tsx}',
     '../shared/screens/**/*.{js,jsx,ts,tsx}',
   ],
-  presets: [require('../shared/design-tokens/tailwind.preset.js')],
+  presets: [require('@olorin/design-tokens/tailwind.preset')],
   theme: {
     extend: {},
   },

@@ -7,7 +7,7 @@ import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { X, Play } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { PlaylistItem } from '../types/watch.types';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 
 interface PlaylistPanelProps {
   playlist: PlaylistItem[];

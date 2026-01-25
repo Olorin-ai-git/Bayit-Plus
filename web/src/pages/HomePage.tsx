@@ -16,11 +16,17 @@ import {
   CultureTrendingRow,
 } from '@bayit/shared';
 import { useCultureStore } from '@bayit/shared-contexts/CultureContext';
-import { GlassLiveChannelCard, GlassCheckbox } from '@bayit/shared/ui';
+import {
+  GlassLiveChannelCard,
+  GlassCheckbox,
+  GlassPageHeader,
+  HeroCarouselSkeleton,
+  RowSkeleton,
+} from '@bayit/shared/ui';
 import MorningRitual from '@/components/ritual/MorningRitual';
 import { contentService, liveService, historyService, ritualService } from '@/services/api';
 import { ShabbatModeBanner, ShabbatEveSection } from '@/components/judaism';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
 import { getContentPosterUrl } from '@bayit/shared-utils/youtube';
@@ -267,6 +273,15 @@ export default function HomePage() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
+      {/* Page Header */}
+      <View style={styles.headerSection}>
+        <GlassPageHeader
+          title={t('nav.home')}
+          pageType="home"
+          isRTL={isRTL}
+        />
+      </View>
+
       {/* Header Bar - Culture Time Clocks */}
       <View style={[styles.headerBar, isRTL && styles.headerBarRTL]}>
         {/* Israeli Clock - Left side */}
@@ -456,6 +471,11 @@ const styles = StyleSheet.create({
   pageContent: {
     paddingBottom: spacing.xl * 2,
   },
+  // Header Section
+  headerSection: {
+    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
+    paddingTop: spacing.lg,
+  },
   // Header Bar - Compact clocks
   headerBar: {
     flexDirection: 'row',
@@ -534,13 +554,13 @@ const styles = StyleSheet.create({
   },
   seeAll: {
     fontSize: IS_TV_BUILD ? 18 : 14,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '500',
   },
   liveBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.error,
+    backgroundColor: colors.error.DEFAULT,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
     borderRadius: 4,

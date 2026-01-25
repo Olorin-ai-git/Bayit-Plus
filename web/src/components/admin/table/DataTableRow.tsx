@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { z } from 'zod';
 import { useDirection } from '@/hooks/useDirection';
 import { Column } from './DataTableHeader';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 
 const DataTableRowPropsSchema = z.object({
   row: z.record(z.any()),

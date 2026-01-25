@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { AlertCircle } from 'lucide-react';
 import { z } from 'zod';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 
 const CategoryPickerStateMessagesPropsSchema = z.object({
   error: z.string().nullable(),
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 12,
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
 });
 

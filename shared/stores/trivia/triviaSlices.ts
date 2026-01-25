@@ -34,7 +34,15 @@ export const createPreferencesSlice: TriviaStateCreator = (set, get) => ({
     set({ isLoading: true, error: null })
     try {
       const prefs = await triviaApi.getPreferences()
-      set({ preferences: { ...DEFAULT_TRIVIA_PREFERENCES, ...prefs }, isLoading: false })
+
+      // Ensure display_languages has default if not present
+      const mergedPrefs = {
+        ...DEFAULT_TRIVIA_PREFERENCES,
+        ...prefs,
+        display_languages: prefs.display_languages || ['he', 'en'],
+      }
+
+      set({ preferences: mergedPrefs, isLoading: false })
     } catch (err: unknown) {
       // Handle 401 gracefully - user not authenticated, use defaults
       const isUnauthorized = (err as any)?.response?.status === 401 || (err as any)?.status === 401
@@ -50,6 +58,18 @@ export const createPreferencesSlice: TriviaStateCreator = (set, get) => ({
   },
 
   updatePreferences: async (updates: Partial<TriviaPreferences>) => {
+    // Validate display_languages if provided
+    if (updates.display_languages) {
+      const validLanguages = ['he', 'en', 'es']
+      const filtered = updates.display_languages
+        .filter(lang => validLanguages.includes(lang))
+        .slice(0, 3)  // Max 3 languages
+      if (filtered.length === 0) {
+        filtered.push('he')  // At least one language
+      }
+      updates.display_languages = filtered
+    }
+
     const current = get().preferences
     const updated = { ...current, ...updates }
     set({ preferences: updated, error: null })

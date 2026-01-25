@@ -3,7 +3,7 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { Search, Plus, AlertCircle } from 'lucide-react';
 import { z } from 'zod';
 import { GlassView, GlassInput } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { CategoryItem } from './CategoryItem';
 
 const CategoryPickerListPropsSchema = z.object({
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
   list: {
     maxHeight: 240,
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   },
   createButtonText: {
     fontSize: 14,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '500',
   },
 });

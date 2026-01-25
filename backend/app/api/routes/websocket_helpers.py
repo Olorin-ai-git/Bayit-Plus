@@ -20,7 +20,7 @@ from app.models.live_dubbing import LiveDubbingSession
 from app.models.live_feature_quota import FeatureType, UsageSessionStatus
 from app.models.user import User
 from app.services.live_dubbing_service import LiveDubbingService
-from app.services.live_feature_quota_service import LiveFeatureQuotaService
+from app.services.live_feature_quota_service import live_feature_quota_service
 
 logger = logging.getLogger(__name__)
 
@@ -162,7 +162,7 @@ async def check_and_start_quota_session(
 
     Returns: (allowed, quota_session, usage_stats)
     """
-    allowed, error_msg, usage_stats = await LiveFeatureQuotaService.check_quota(
+    allowed, error_msg, usage_stats = await live_feature_quota_service.check_quota(
         user_id=str(user.id),
         feature_type=feature_type,
         estimated_duration_minutes=1.0,
@@ -182,7 +182,7 @@ async def check_and_start_quota_session(
     # Start quota session tracking
     quota_session = None
     try:
-        quota_session = await LiveFeatureQuotaService.start_session(
+        quota_session = await live_feature_quota_service.start_session(
             user_id=str(user.id),
             channel_id=channel_id,
             feature_type=feature_type,
@@ -290,14 +290,14 @@ async def update_quota_during_session(
         return True, last_update
 
     try:
-        await LiveFeatureQuotaService.update_session(
+        await live_feature_quota_service.update_session(
             session_id=quota_session.session_id,
             audio_seconds_delta=update_interval,
             segments_delta=0,
         )
 
         # Check if still under quota
-        allowed, error_msg, _ = await LiveFeatureQuotaService.check_quota(
+        allowed, error_msg, _ = await live_feature_quota_service.check_quota(
             user_id=str(user.id),
             feature_type=feature_type,
             estimated_duration_minutes=0,
@@ -324,7 +324,7 @@ async def end_quota_session(
     """End quota session with given status."""
     if quota_session:
         try:
-            await LiveFeatureQuotaService.end_session(
+            await live_feature_quota_service.end_session(
                 session_id=quota_session.session_id,
                 status=status,
             )

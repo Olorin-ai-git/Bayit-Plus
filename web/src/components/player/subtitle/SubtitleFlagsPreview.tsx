@@ -5,7 +5,7 @@
 
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { z } from 'zod'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { SubtitleTrack, getLanguageInfo } from '@/types/subtitle'
 
 // Zod schema for props

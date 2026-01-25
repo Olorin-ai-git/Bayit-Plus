@@ -10,7 +10,7 @@ import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import { SearchCardBadges } from './SearchCardBadges';
 import { SearchCardMetadata } from './SearchCardMetadata';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
-import { colors, borderRadius, spacing } from '../../theme/colors';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 interface SearchResultCardProps {
   /** Search result data */
@@ -150,6 +150,6 @@ const styles = StyleSheet.create({
   },
   genreText: {
     fontSize: 13,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
 });

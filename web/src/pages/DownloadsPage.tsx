@@ -5,8 +5,8 @@ import { Download, Play, Trash2, HardDrive } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { downloadsService } from '@/services/api';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
-import { GlassCard, GlassView } from '@bayit/shared/ui';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
+import { GlassCard, GlassView, GlassPageHeader } from '@bayit/shared/ui';
 import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
 
@@ -193,15 +193,12 @@ export default function DownloadsPage() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.headerContainer, flexDirection === 'row-reverse' && styles.headerContainerRTL]}>
-        <View style={styles.iconContainer}>
-          <Download size={28} color={colors.primary} />
-        </View>
-        <View>
-          <Text style={[styles.headerTitle, textAlign === 'right' && styles.textRight]}>{t('downloads.title')}</Text>
-          <Text style={[styles.headerSubtitle, textAlign === 'right' && styles.textRight]}>{downloads.length} {t('downloads.items')}</Text>
-        </View>
-      </View>
+      <GlassPageHeader
+        title={t('downloads.title')}
+        pageType="downloads"
+        badge={downloads.length}
+        isRTL={isRTL}
+      />
 
       {/* Storage Bar */}
       <GlassCard style={styles.storageCard}>
@@ -328,7 +325,7 @@ const styles = StyleSheet.create({
   },
   storageBarFill: {
     height: '100%',
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: borderRadius.full,
   },
 
@@ -414,7 +411,7 @@ const styles = StyleSheet.create({
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
 
   // Badges
@@ -483,7 +480,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     justifyContent: 'center',
     alignItems: 'center',
   },

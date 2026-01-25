@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ViewStyle, StyleProp, StyleSheet } from 'react-native';
-import { colors, borderRadius, spacing } from '../theme';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 type BadgeVariant = 'default' | 'primary' | 'success' | 'danger' | 'warning' | 'purple' | 'info';
 type BadgeSize = 'sm' | 'default' | 'lg';

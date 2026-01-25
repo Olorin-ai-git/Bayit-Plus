@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore, useChatbotStore, useVoiceSettingsStore } from '@bayit/shared-stores';
 import { VoiceSearchButton, LanguageSelector, AnimatedLogo, SoundwaveVisualizer } from '@bayit/shared';
 import { ProfileDropdown } from '@bayit/shared/ProfileDropdown';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import LinearGradient from 'react-native-linear-gradient';
 import { chatService } from '@bayit/shared-services';
 import { useConstantListening } from '@bayit/shared-hooks';
@@ -134,7 +134,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
       onFocus={() => setFocusedNav('logo')}
       onBlur={() => setFocusedNav(null)}
       className={`p-2 rounded-lg border-2 ${
-        focusedNav === 'logo' ? 'border-purple-500 bg-[rgba(168,85,247,0.3)] scale-105' : 'border-transparent'
+        focusedNav === 'logo' ? 'border-purple-500 bg-purple-500/30 scale-105' : 'border-transparent'
       }`}
     >
       <AnimatedLogo size="small" />
@@ -156,7 +156,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
             className={`px-4 py-2.5 rounded-lg border-2 ${
               isActive ? 'bg-purple-500' : 'bg-white/5'
             } ${
-              isFocused ? 'border-purple-500 bg-[rgba(168,85,247,0.3)] scale-105' : 'border-transparent'
+              isFocused ? 'border-purple-500 bg-purple-500/30 scale-105' : 'border-transparent'
             }`}
           >
             <Text className={`text-xl font-medium ${
@@ -179,7 +179,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
         onFocus={() => setFocusedAction('recordings')}
         onBlur={() => setFocusedAction(null)}
         className={`w-[60px] h-[60px] rounded-lg bg-white/5 justify-center items-center border-2 ${
-          focusedAction === 'recordings' ? 'border-purple-500 bg-[rgba(168,85,247,0.3)] scale-105' : 'border-transparent'
+          focusedAction === 'recordings' ? 'border-purple-500 bg-purple-500/30 scale-105' : 'border-transparent'
         }`}
       >
         <Text className="text-[32px]">📹</Text>
@@ -191,7 +191,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
         onFocus={() => setFocusedAction('settings')}
         onBlur={() => setFocusedAction(null)}
         className={`w-[60px] h-[60px] rounded-lg bg-white/5 justify-center items-center border-2 ${
-          focusedAction === 'settings' ? 'border-purple-500 bg-[rgba(168,85,247,0.3)] scale-105' : 'border-transparent'
+          focusedAction === 'settings' ? 'border-purple-500 bg-purple-500/30 scale-105' : 'border-transparent'
         }`}
       >
         <Text className="text-[32px]">⚙️</Text>
@@ -226,7 +226,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
         onFocus={() => setFocusedAction('search')}
         onBlur={() => setFocusedAction(null)}
         className={`w-[60px] h-[60px] rounded-lg bg-white/5 justify-center items-center border-2 ${
-          focusedAction === 'search' ? 'border-purple-500 bg-[rgba(168,85,247,0.3)] scale-105' : 'border-transparent'
+          focusedAction === 'search' ? 'border-purple-500 bg-purple-500/30 scale-105' : 'border-transparent'
         }`}
       >
         <Text className="text-[32px]">🔍</Text>
@@ -234,7 +234,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
 
       {/* Soundwave Visualizer - for TV wake word listening mode */}
       {showSoundwave && (
-        <View className="h-[60px] min-w-[120px] justify-center items-center px-2 bg-[rgba(168,85,247,0.3)] rounded-lg border-2 border-purple-500">
+        <View className="h-[60px] min-w-[120px] justify-center items-center px-2 bg-purple-500/30 rounded-lg border-2 border-purple-500">
           <SoundwaveVisualizer
             audioLevel={audioLevel || 0}
             isListening={isListening || wakeWordActive}
@@ -250,8 +250,8 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
         onPress={onChatbotOpen}
         onFocus={() => setFocusedAction('voice')}
         onBlur={() => setFocusedAction(null)}
-        className={`w-[60px] h-[60px] rounded-lg bg-[rgba(168,85,247,0.3)] border-2 border-purple-500 justify-center items-center ${
-          focusedAction === 'voice' ? 'border-purple-500 bg-[rgba(168,85,247,0.3)] scale-105' : ''
+        className={`w-[60px] h-[60px] rounded-lg bg-purple-500/30 border-2 border-purple-500 justify-center items-center ${
+          focusedAction === 'voice' ? 'border-purple-500 bg-purple-500/30 scale-105' : ''
         }`}
       >
         <Text className="text-[32px]">🎙️</Text>
@@ -260,9 +260,9 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
   );
 
   return (
-    <View className="h-[100px] w-full border-b border-[rgba(168,85,247,0.2)] bg-black/80">
+    <View className="h-[100px] w-full border-b border-purple-500/20 bg-black/80">
       <LinearGradient
-        colors={['rgba(0, 0, 0, 0.95)', 'rgba(0, 0, 0, 0.98)']}
+        colors={[colors.dark['950'], colors.dark['950']]}
         className="flex-1 flex-row items-center justify-between px-12 w-full"
       >
         {LogoSection}

@@ -7,7 +7,7 @@ import React from 'react'
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native'
 import { CheckCircle } from 'lucide-react'
 import { z } from 'zod'
-import { colors, spacing, fontSize } from '@bayit/shared/theme'
+import { colors, spacing, fontSize } from '@olorin/design-tokens'
 
 // Zod schema for prop validation
 const WizardStepImportingPropsSchema = z.object({

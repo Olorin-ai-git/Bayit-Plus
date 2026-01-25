@@ -9,7 +9,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import { GlassInput } from '../../../../shared/components/ui/GlassInput';
-import { colors, borderRadius, spacing } from '../../theme/colors';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 interface SearchInputProps {
   /** Current search query */
@@ -25,7 +25,7 @@ interface SearchInputProps {
  * Uses Glass components for consistent UI
  */
 export function SearchInput({ value, onChangeText, placeholder }: SearchInputProps) {
-  const { t } = useTranslation('search');
+  const { t } = useTranslation();
   const [isFocused, setIsFocused] = useState(false);
 
   return (
@@ -37,17 +37,17 @@ export function SearchInput({ value, onChangeText, placeholder }: SearchInputPro
         onChangeText={onChangeText}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        placeholder={placeholder || t('controls.placeholder')}
+        placeholder={placeholder || t('search.controls.placeholder')}
         placeholderTextColor={colors.textMuted}
-        accessibilityLabel={t('controls.placeholder')}
-        accessibilityHint={t('controls.hints.searchInput')}
+        accessibilityLabel={t('search.controls.placeholder')}
+        accessibilityHint={t('search.controls.hints.searchInput')}
       />
       {value.length > 0 && (
         <GlassButton
           variant="ghost"
           onPress={() => onChangeText('')}
           style={styles.clearButton}
-          accessibilityLabel={t('empty.clearSearch')}
+          accessibilityLabel={t('search.empty.clearSearch')}
         >
           <Text style={styles.clearIcon}>✕</Text>
         </GlassButton>

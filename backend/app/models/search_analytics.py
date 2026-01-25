@@ -165,7 +165,7 @@ class SearchQuery(Document):
             {"$project": {"query": "$_id", "count": 1, "avg_results": 1, "_id": 0}},
         ]
 
-        results = await cls.get_motor_collection().aggregate(pipeline).to_list(None)
+        results = await cls.get_pymongo_collection().aggregate(pipeline).to_list(None)
         return results
 
     @classmethod
@@ -194,7 +194,7 @@ class SearchQuery(Document):
             {"$project": {"query": "$_id", "count": 1, "_id": 0}},
         ]
 
-        results = await cls.get_motor_collection().aggregate(pipeline).to_list(None)
+        results = await cls.get_pymongo_collection().aggregate(pipeline).to_list(None)
         return results
 
     @classmethod
@@ -225,7 +225,7 @@ class SearchQuery(Document):
             },
         ]
 
-        results = await cls.get_motor_collection().aggregate(pipeline).to_list(None)
+        results = await cls.get_pymongo_collection().aggregate(pipeline).to_list(None)
 
         if not results or results[0]["total_searches"] == 0:
             return 0.0
@@ -254,7 +254,7 @@ class SearchQuery(Document):
             {"$project": {"search_type": "$_id", "count": 1, "_id": 0}},
         ]
 
-        results = await cls.get_motor_collection().aggregate(pipeline).to_list(None)
+        results = await cls.get_pymongo_collection().aggregate(pipeline).to_list(None)
         return {r["search_type"]: r["count"] for r in results}
 
 

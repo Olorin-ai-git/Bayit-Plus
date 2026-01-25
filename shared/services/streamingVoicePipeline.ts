@@ -118,9 +118,7 @@ class AudioProcessor {
       this.sourceNode.connect(scriptProcessor);
       scriptProcessor.connect(this.audioContext.destination);
 
-      console.log('[AudioProcessor] Started capturing audio at 16kHz');
     } catch (error) {
-      console.error('[AudioProcessor] Failed to start:', error);
       throw error;
     }
   }
@@ -147,7 +145,6 @@ class AudioProcessor {
     }
 
     this.onAudioChunk = null;
-    console.log('[AudioProcessor] Stopped');
   }
 }
 
@@ -180,7 +177,6 @@ class StreamingAudioPlayer {
         this.playNext();
       }
     } catch (error) {
-      console.warn('[StreamingAudioPlayer] Failed to decode audio chunk:', error);
     }
   }
 
@@ -268,7 +264,6 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
     if (typeof window !== 'undefined') {
       i18n.on('languageChanged', (lng: string) => {
         this.config.language = lng;
-        console.log('[StreamingVoicePipeline] Language changed to:', lng);
       });
     }
   }
@@ -294,7 +289,6 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
    */
   async startInteraction(conversationId?: string): Promise<void> {
     if (this.isConnected) {
-      console.warn('[StreamingVoicePipeline] Already connected');
       return;
     }
 
@@ -332,7 +326,6 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
       });
 
     } catch (error) {
-      console.error('[StreamingVoicePipeline] Failed to start:', error);
       this.emitError(error instanceof Error ? error : new Error('Failed to start'));
     }
   }
@@ -341,7 +334,6 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
     if (!this.ws) return;
 
     this.ws.onopen = async () => {
-      console.log('[StreamingVoicePipeline] WebSocket connected');
       this.isConnected = true;
       this.reconnectAttempts = 0;
       this.emit('connected');
@@ -353,7 +345,6 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
         });
         this.isRecording = true;
       } catch (error) {
-        console.error('[StreamingVoicePipeline] Failed to start audio capture:', error);
         this.emitError(new Error('Microphone access denied'));
       }
 
@@ -368,17 +359,14 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
         const message: ServerMessage = JSON.parse(event.data);
         this.handleServerMessage(message);
       } catch (error) {
-        console.error('[StreamingVoicePipeline] Failed to parse message:', error);
       }
     };
 
     this.ws.onerror = (event) => {
-      console.error('[StreamingVoicePipeline] WebSocket error:', event);
       this.emitError(new Error('WebSocket connection error'));
     };
 
     this.ws.onclose = (event) => {
-      console.log('[StreamingVoicePipeline] WebSocket closed:', event.code, event.reason);
       this.isConnected = false;
       this.cleanup();
       this.emit('disconnected');
@@ -386,7 +374,6 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
       // Auto-reconnect if not intentional close
       if (event.code !== 1000 && this.reconnectAttempts < this.maxReconnectAttempts) {
         this.reconnectAttempts++;
-        console.log(`[StreamingVoicePipeline] Reconnecting (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
         setTimeout(() => {
           this.startInteraction(this.config.conversationId);
         }, 1000 * this.reconnectAttempts);
@@ -453,7 +440,6 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
         break;
 
       case 'error':
-        console.error('[StreamingVoicePipeline] Server error:', message.message);
         this.emitError(new Error(message.message || 'Server error'));
         break;
 
@@ -462,7 +448,6 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
         break;
 
       default:
-        console.warn('[StreamingVoicePipeline] Unknown message type:', message.type);
     }
   }
 
@@ -553,7 +538,6 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
   }
 
   private emitError(error: Error): void {
-    console.error('[StreamingVoicePipeline] Error:', error);
     this.emit('error', error);
     useSupportStore.getState().setError(error.message);
     setTimeout(() => {
@@ -632,13 +616,11 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
    */
   async prewarm(): Promise<void> {
     if (!this.isSupported()) {
-      console.log('[StreamingVoicePipeline] Not supported, skipping prewarm');
       return;
     }
 
     const token = this.getAuthToken();
     if (!token) {
-      console.log('[StreamingVoicePipeline] No auth token, skipping prewarm');
       return;
     }
 
@@ -646,14 +628,11 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
       // Request microphone permission proactively
       const hasPermission = await this.requestPermission();
       if (hasPermission) {
-        console.log('[StreamingVoicePipeline] Microphone permission granted');
       }
 
       // Could also pre-connect WebSocket here for even faster first interaction
       // but that would require keeping the connection alive with pings
-      console.log('[StreamingVoicePipeline] Prewarm complete');
     } catch (error) {
-      console.warn('[StreamingVoicePipeline] Prewarm failed:', error);
     }
   }
 

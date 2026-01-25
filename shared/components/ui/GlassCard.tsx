@@ -11,7 +11,7 @@ import {
   StyleProp,
 } from 'react-native';
 import { GlassView } from './GlassView';
-import { colors, borderRadius, spacing } from '../theme';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 import { useTVFocus } from '../hooks/useTVFocus';
 
 interface GlassCardProps {
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: '100%',
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
 });
 

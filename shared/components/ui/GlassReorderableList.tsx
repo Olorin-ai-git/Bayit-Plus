@@ -11,7 +11,7 @@ import {
   LayoutChangeEvent,
   StyleSheet,
 } from 'react-native';
-import { colors, spacing } from '../theme';
+import { colors, spacing } from '@olorin/design-tokens';
 
 interface GlassReorderableListProps<T> {
   /** Items to display in the list */

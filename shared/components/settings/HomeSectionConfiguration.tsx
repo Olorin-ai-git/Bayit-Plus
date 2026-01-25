@@ -18,7 +18,7 @@ import { GlassReorderableList } from '../ui/GlassReorderableList';
 import { GlassSectionItem } from '../ui/GlassSectionItem';
 import { useHomePageConfigStore } from '../../stores/homePageConfigStore';
 import { useDirection } from '../../hooks/useDirection';
-import { colors, spacing, borderRadius, fontSize } from '../theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
 import type { HomeSectionConfig, HomeSectionId } from '../../types/homePageConfig';
 

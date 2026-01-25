@@ -4,7 +4,7 @@
  */
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, Platform, StyleSheet } from 'react-native';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { Send, Mic, MicOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLiveKitRoom } from '../../hooks/useLiveKitRoom';

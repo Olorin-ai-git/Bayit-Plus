@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Sunrise, Check } from 'lucide-react'
 import { ritualService } from '@/services/api'
 import logger from '@/utils/logger'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassView, GlassSelect } from '@bayit/shared/ui'
 
 interface Preferences {
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     padding: 2,
   },
   toggleActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary[600],
   },
   toggleKnob: {
     width: 20,
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   saveButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.lg,
     alignItems: 'center',

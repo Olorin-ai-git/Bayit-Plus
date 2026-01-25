@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { GlassView } from './ui';
 import { useAuthStore } from '../stores/authStore';
-import { colors, spacing, borderRadius } from '../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '../hooks/useDirection';
 
 export const UserAccountMenu: React.FC = () => {
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   buttonFocused: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   avatarPlaceholder: {
     width: 36,
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatarAuthenticated: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   avatarText: {
     fontSize: 18,
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.md,
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
   },
   subscriptionText: {
     fontSize: 12,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: 'bold',
   },
   divider: {
@@ -323,13 +323,13 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   logoutText: {
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
   loginOption: {
     marginTop: spacing.xs,
   },
   loginText: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
 });
 

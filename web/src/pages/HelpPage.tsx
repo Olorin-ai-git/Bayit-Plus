@@ -1,8 +1,8 @@
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
-import { GlassView } from '@bayit/shared/ui';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
+import { GlassView, GlassPageHeader } from '@bayit/shared/ui';
 import { HelpCircle, Mail, Phone, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 
@@ -29,8 +29,11 @@ export default function HelpPage() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <Text style={[styles.title, { textAlign }]}>{t('nav.help')}</Text>
-      <Text style={[styles.subtitle, { textAlign }]}>{t('help.subtitle', 'How can we help you?')}</Text>
+      <GlassPageHeader
+        title={t('nav.help')}
+        pageType="help"
+        isRTL={isRTL}
+      />
 
       {/* Contact Options */}
       <View style={[styles.contactContainer, isRTL && styles.contactContainerRTL]}>

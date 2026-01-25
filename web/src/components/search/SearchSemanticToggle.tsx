@@ -9,7 +9,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
-import { colors, borderRadius } from '../../theme/colors';
+import { colors, borderRadius } from '@olorin/design-tokens';
 
 // Platform-specific touch target sizes
 const TOUCH_TARGET_SIZE = Platform.select({
@@ -35,7 +35,7 @@ export function SearchSemanticToggle({
   onToggle,
   showInfo = true,
 }: SearchSemanticToggleProps) {
-  const { t } = useTranslation('search');
+  const { t } = useTranslation();
   const [showTooltip, setShowTooltip] = useState(false);
   const [isSwitchFocused, setIsSwitchFocused] = useState(false);
   const [isInfoFocused, setIsInfoFocused] = useState(false);
@@ -44,7 +44,7 @@ export function SearchSemanticToggle({
     <View style={styles.container}>
       {/* Toggle Switch */}
       <View style={styles.toggleContainer}>
-        <Text style={[styles.label, !enabled && styles.labelActive]}>{t('semantic.keyword')}</Text>
+        <Text style={[styles.label, !enabled && styles.labelActive]}>{t('search.semantic.keyword')}</Text>
 
         <GlassButton
           variant="ghost"
@@ -56,12 +56,12 @@ export function SearchSemanticToggle({
           hasTVPreferredFocus={Platform.isTV}
           accessibilityRole="switch"
           accessibilityState={{ checked: enabled }}
-          accessibilityLabel={t('semantic.keyword') + ' / ' + t('semantic.semantic')}
+          accessibilityLabel={t('search.semantic.keyword') + ' / ' + t('search.semantic.semantic')}
         >
           <View style={[styles.switchThumb, enabled && styles.switchThumbActive]} />
         </GlassButton>
 
-        <Text style={[styles.label, enabled && styles.labelActive]}>{t('semantic.semantic')}</Text>
+        <Text style={[styles.label, enabled && styles.labelActive]}>{t('search.semantic.semantic')}</Text>
 
         {/* Info Button */}
         {showInfo && (
@@ -72,7 +72,7 @@ export function SearchSemanticToggle({
             onFocus={() => setIsInfoFocused(true)}
             onBlur={() => setIsInfoFocused(false)}
             focusable={Platform.isTV}
-            accessibilityLabel={t('semantic.infoTitle')}
+            accessibilityLabel={t('search.semantic.infoTitle')}
           >
             <Text style={styles.infoIcon}>ℹ️</Text>
           </GlassButton>
@@ -82,9 +82,9 @@ export function SearchSemanticToggle({
       {/* Info Tooltip */}
       {showTooltip && (
         <View style={styles.tooltip}>
-          <Text style={styles.tooltipTitle}>{t('semantic.infoTitle')}</Text>
+          <Text style={styles.tooltipTitle}>{t('search.semantic.infoTitle')}</Text>
           <Text style={styles.tooltipText}>
-            {t('semantic.info')}
+            {t('search.semantic.info')}
           </Text>
         </View>
       )}
@@ -129,11 +129,11 @@ const styles = StyleSheet.create({
   },
   switchThumbActive: {
     transform: [{ translateX: 22 }],
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary[600],
   },
   switchFocused: {
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     transform: [{ scale: 1.05 }],
   },
   infoButton: {
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   },
   infoButtonFocused: {
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     borderRadius: TOUCH_TARGET_SIZE / 2,
     transform: [{ scale: 1.05 }],
   },

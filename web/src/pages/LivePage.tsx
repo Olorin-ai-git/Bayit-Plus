@@ -3,13 +3,32 @@ import { View, Text, ScrollView, StyleSheet, useWindowDimensions } from 'react-n
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useDirection } from '@/hooks/useDirection';
-import { Radio } from 'lucide-react';
 import { liveService } from '@/services/api';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
-import { GlassView, GlassCard, GlassCategoryPill, GlassLiveChannelCard } from '@bayit/shared/ui';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
+import {
+  GlassView,
+  GlassCard,
+  GlassCategoryPill,
+  GlassLiveChannelCard,
+  GlassPageHeader,
+  GridSkeleton,
+} from '@bayit/shared/ui';
 import AnimatedCard from '@/components/common/AnimatedCard';
 import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
+
+// Live TV Icon Component (React Native Web compatible)
+// Broadcast/Radio waves icon
+const LiveTVIcon = ({ size = 24, color = colors.error.DEFAULT }: { size?: number; color?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    {/* Center dot */}
+    <circle cx="12" cy="12" r="2" fill={color} />
+    {/* Inner wave */}
+    <path d="M15 9a4 4 0 0 0-6 0m6 6a4 4 0 0 1-6 0" />
+    {/* Outer wave */}
+    <path d="M18 6a8 8 0 0 0-12 0m12 12a8 8 0 0 1-12 0" />
+  </svg>
+);
 
 interface Channel {
   id: string;
@@ -54,10 +73,15 @@ export default function LivePage() {
 
   if (loading) {
     return (
-      <LoadingState
-        message={t('live.loading', 'Loading live channels...')}
-        spinnerColor={colors.error}
-      />
+      <View style={styles.container}>
+        <GlassPageHeader
+          title={t('live.title')}
+          pageType="live"
+          isRTL={isRTL}
+        />
+        <View style={styles.categoriesSkeleton} />
+        <GridSkeleton numColumns={numColumns} numRows={2} />
+      </View>
     );
   }
 
@@ -65,26 +89,13 @@ export default function LivePage() {
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
         {/* Header */}
-        <View style={[
-          styles.header,
-          flexDirection === 'row-reverse' && styles.headerRTL,
-          justifyContent === 'flex-end' && styles.headerJustifyEnd
-        ]}>
-          <GlassView style={styles.iconContainer}>
-            <Radio size={24} color={colors.error} />
-          </GlassView>
-          <Text style={[
-            styles.title,
-            textAlign === 'right' && styles.titleRight
-          ]}>
-            {t('live.title')}
-          </Text>
-          {filteredChannels.length > 0 && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{filteredChannels.length}</Text>
-            </View>
-          )}
-        </View>
+        <GlassPageHeader
+          title={t('live.title')}
+          pageType="live"
+          badge={filteredChannels.length}
+          icon={<LiveTVIcon size={24} color={colors.error.DEFAULT} />}
+          isRTL={isRTL}
+        />
 
         {/* Category Filter */}
         <ScrollView
@@ -146,7 +157,7 @@ export default function LivePage() {
           </View>
         ) : (
           <EmptyState
-            icon={<Radio size={72} color={colors.textMuted} />}
+            icon={<LiveTVIcon size={72} color={colors.textMuted} />}
             title={t('live.noChannels')}
             description={t('live.tryLater')}
           />
@@ -171,54 +182,20 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
     width: '100%',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
+  categoriesSkeleton: {
+    height: 40,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
     marginBottom: spacing.lg,
-  },
-  headerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  headerJustifyEnd: {
-    justifyContent: 'flex-end',
-  },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: borderRadius.full,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-  },
-  title: {
-    fontSize: fontSize['3xl'],
-    fontWeight: 'bold',
-    color: colors.text,
-    flex: 1,
-  },
-  titleRight: {
-    textAlign: 'right',
-  },
-  badge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  badgeText: {
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.7)',
   },
   categoryScroll: {
     marginBottom: spacing.lg,
+    maxHeight: 56, // Fixed height to prevent stretching
   },
   categoryContent: {
     gap: spacing.sm,
     paddingBottom: spacing.sm,
+    alignItems: 'center', // Center vertically
   },
   gridContainer: {
     flexDirection: 'row',

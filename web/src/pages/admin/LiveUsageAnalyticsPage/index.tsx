@@ -3,7 +3,7 @@ import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-nat
 import { useTranslation } from 'react-i18next';
 import { Users, DollarSign, Clock, Activity } from 'lucide-react';
 import { liveQuotasService } from '@/services/adminApi';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import AdminLayout from '@/components/admin/AdminLayout';
 import logger from '@/utils/logger';
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(239, 68, 68, 0.3)',
   },
   errorText: {
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
   statsGrid: {
     flexDirection: 'row',

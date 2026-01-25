@@ -14,10 +14,12 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
 import { GlassModal, GlassButton, GlassInput, GlassToggle } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
+import { adminWidgetsService } from '@/services/adminApi';
 import logger from '@/utils/logger';
 import type { ContentItem } from './form/ContentSelectionSection';
+import ContentPickerModal from './ContentPickerModal';
 
 interface WidgetFormModalProps {
   visible: boolean;
@@ -59,8 +61,8 @@ const DEFAULT_FORM_STATE: FormState = {
   iframe_title: '',
   position_x: 20,
   position_y: 100,
-  position_width: 350,
-  position_height: 197,
+  position_width: 640,
+  position_height: 360,
   is_muted: true,
   is_closable: true,
   is_draggable: true,
@@ -85,6 +87,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null);
+  const [validatingName, setValidatingName] = useState(false);
 
   // Initialize form
   useEffect(() => {
@@ -100,8 +103,8 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
           iframe_title: initialData.content?.iframe_title || '',
           position_x: initialData.position?.x || 20,
           position_y: initialData.position?.y || 100,
-          position_width: initialData.position?.width || 350,
-          position_height: initialData.position?.height || 197,
+          position_width: initialData.position?.width || 640,
+          position_height: initialData.position?.height || 360,
           is_muted: initialData.is_muted ?? true,
           is_closable: initialData.is_closable ?? true,
           is_draggable: initialData.is_draggable ?? true,
@@ -119,6 +122,27 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
   const handleUpdateField = (field: keyof FormState, value: any) => {
     setFormState((prev) => ({ ...prev, [field]: value }));
     setError(null);
+  };
+
+  const handleTitleBlur = async () => {
+    // Validate title on blur for immediate feedback
+    if (formState.title.trim()) {
+      setValidatingName(true);
+      try {
+        const result = await adminWidgetsService.checkWidgetName(
+          formState.title.trim(),
+          initialData?.id
+        );
+
+        if (result.exists) {
+          setError(t('widgets.form.errors.nameExists', 'A widget with this name already exists'));
+        }
+      } catch (err) {
+        logger.error('Failed to check widget name on blur', 'WidgetFormModal', err);
+      } finally {
+        setValidatingName(false);
+      }
+    }
   };
 
   const handleSwitchToContent = () => {
@@ -146,10 +170,31 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
     setShowContentPicker(false);
   };
 
-  const validateForm = (): boolean => {
+  const validateForm = async (): Promise<boolean> => {
+    // Check if title is provided
     if (!formState.title.trim()) {
       setError(t('widgets.form.errors.titleRequired', 'Title is required'));
       return false;
+    }
+
+    // Check if widget name already exists
+    setValidatingName(true);
+    try {
+      const result = await adminWidgetsService.checkWidgetName(
+        formState.title.trim(),
+        initialData?.id // Exclude current widget when editing
+      );
+
+      if (result.exists) {
+        setError(t('widgets.form.errors.nameExists', 'A widget with this name already exists'));
+        setValidatingName(false);
+        return false;
+      }
+    } catch (err) {
+      logger.error('Failed to check widget name', 'WidgetFormModal', err);
+      // Continue with validation even if check fails
+    } finally {
+      setValidatingName(false);
     }
 
     if (formState.content_type === 'iframe') {
@@ -168,7 +213,8 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
   };
 
   const handleSave = async () => {
-    if (!validateForm()) return;
+    const isValid = await validateForm();
+    if (!isValid) return;
 
     setSaving(true);
     try {
@@ -230,6 +276,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
         title={t('widgets.form.title')}
         onClose={onClose}
         dismissable
+        buttons={[]}
       >
         <ScrollView style={styles.content} contentContainerStyle={styles.contentInner}>
           {/* Basic Info */}
@@ -240,6 +287,8 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
               placeholder={t('widgets.form.titlePlaceholder')}
               value={formState.title}
               onChangeText={(v) => handleUpdateField('title', v)}
+              onBlur={handleTitleBlur}
+              error={error && error.includes('name') ? error : undefined}
             />
             <GlassInput
               inputStyle={styles.input}
@@ -248,13 +297,6 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
               onChangeText={(v) => handleUpdateField('description', v)}
               multiline
               numberOfLines={2}
-            />
-            <GlassInput
-              inputStyle={styles.input}
-              placeholder={t('widgets.form.iconPlaceholder')}
-              value={formState.icon}
-              onChangeText={(v) => handleUpdateField('icon', v)}
-              maxLength={2}
             />
           </View>
 
@@ -357,7 +399,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                 <GlassInput
                   inputStyle={styles.positionInput}
                   value={String(formState.position_width)}
-                  onChangeText={(v) => handleUpdateField('position_width', parseInt(v) || 350)}
+                  onChangeText={(v) => handleUpdateField('position_width', parseInt(v) || 640)}
                   keyboardType="number-pad"
                 />
               </View>
@@ -366,7 +408,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                 <GlassInput
                   inputStyle={styles.positionInput}
                   value={String(formState.position_height)}
-                  onChangeText={(v) => handleUpdateField('position_height', parseInt(v) || 197)}
+                  onChangeText={(v) => handleUpdateField('position_height', parseInt(v) || 360)}
                   keyboardType="number-pad"
                 />
               </View>
@@ -439,87 +481,87 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
             style={styles.actionButton}
           />
           <GlassButton
-            title={saving ? t('widgets.form.saving') : t('widgets.form.saveWidget')}
+            title={
+              saving
+                ? t('widgets.form.saving')
+                : validatingName
+                ? t('widgets.form.validating', 'Validating...')
+                : t('widgets.form.saveWidget')
+            }
             variant="primary"
             onPress={handleSave}
-            loading={saving}
-            disabled={saving}
+            loading={saving || validatingName}
+            disabled={saving || validatingName}
             style={styles.actionButton}
           />
         </View>
       </GlassModal>
 
-      {/* Content Picker Modal - TODO: Implement ContentPickerModal */}
-      {showContentPicker && (
-        <GlassModal
-          visible={showContentPicker}
-          onClose={() => setShowContentPicker(false)}
-          title={t('widgets.form.selectContent', 'Select Content')}
-        >
-          <View style={{ padding: spacing.md }}>
-            <Text style={{ color: colors.text, marginBottom: spacing.md }}>
-              {t('widgets.form.contentPickerPlaceholder', 'Content picker will be implemented here')}
-            </Text>
-            <GlassButton
-              title={t('common.close', 'Close')}
-              variant="ghost"
-              onPress={() => setShowContentPicker(false)}
-            />
-          </View>
-        </GlassModal>
-      )}
+      {/* Content Picker Modal */}
+      <ContentPickerModal
+        visible={showContentPicker}
+        onClose={() => setShowContentPicker(false)}
+        onSelect={handleContentSelected}
+      />
     </>
   );
 };
 
 const styles = StyleSheet.create({
   content: {
-    maxHeight: 400,
+    maxHeight: 500,
+    paddingHorizontal: spacing.sm,
   },
   contentInner: {
-    gap: spacing.lg,
+    gap: spacing.xl,
+    paddingBottom: spacing.md,
   },
   section: {
     gap: spacing.md,
+    paddingHorizontal: spacing.xs,
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.textSecondary,
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.primary.DEFAULT,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
+    marginBottom: spacing.xs,
   },
   input: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    width: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.md,
+    borderColor: colors.glassBorder,
+    borderRadius: borderRadius.lg,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    fontSize: 14,
+    paddingVertical: spacing.md,
+    fontSize: 15,
     color: colors.text,
-    minHeight: 44,
+    minHeight: 48,
+    outlineStyle: 'none' as any,
   },
   modeToggle: {
     gap: spacing.sm,
   },
   modeButton: {
     flex: 1,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.md,
     paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
+    borderRadius: borderRadius.lg,
+    borderWidth: 2,
     borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
     alignItems: 'center',
   },
   modeButtonActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.glassPurple,
+    borderColor: colors.primary.DEFAULT,
   },
   modeButtonText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: colors.textMuted,
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.textSecondary,
   },
   modeButtonTextActive: {
     color: colors.text,
@@ -533,7 +575,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     backgroundColor: 'rgba(107, 33, 168, 0.2)',
     borderWidth: 1,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   selectedContentText: {
     fontSize: 13,
@@ -544,7 +586,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.sm,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   changeButtonText: {
     fontSize: 12,
@@ -554,17 +596,20 @@ const styles = StyleSheet.create({
   selectContentButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: spacing.md,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.primary,
+    borderRadius: borderRadius.lg,
+    borderWidth: 2,
+    borderColor: colors.primary.DEFAULT,
+    backgroundColor: 'rgba(107, 33, 168, 0.1)',
     gap: spacing.sm,
+    minHeight: 52,
   },
   selectContentButtonText: {
-    fontSize: 14,
-    color: colors.primary,
-    fontWeight: '500',
+    fontSize: 15,
+    color: colors.primary.DEFAULT,
+    fontWeight: '600',
   },
   iframeFields: {
     gap: spacing.sm,
@@ -617,12 +662,15 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     gap: spacing.md,
-    paddingTop: spacing.md,
+    paddingTop: spacing.lg,
+    paddingHorizontal: spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    borderTopColor: colors.glassBorder,
+    marginTop: spacing.md,
   },
   actionButton: {
     flex: 1,
+    minHeight: 48,
   },
 });
 

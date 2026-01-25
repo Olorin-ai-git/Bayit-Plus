@@ -4,7 +4,7 @@
  */
 
 import { QueueJob } from './types';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 
 export const formatFileSize = (bytes: number): string => {
   if (bytes < 1024) return `${bytes}B`;

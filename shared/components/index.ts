@@ -4,9 +4,6 @@
 // UI Components
 export * from './ui';
 
-// Theme
-export * from './theme';
-
 // Utils
 export * from './utils/platform';
 

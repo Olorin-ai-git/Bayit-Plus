@@ -13,7 +13,7 @@ import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import { historyService } from '@/services/api';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import {
   BackButton,
   ContentActions,

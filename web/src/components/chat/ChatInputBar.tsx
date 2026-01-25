@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Mic, Square, Send } from 'lucide-react'
 import { GlassInput, GlassBadge } from '@bayit/shared/ui'
 import { SoundwaveVisualizer } from '@bayit/shared'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 
 declare const __TV__: boolean
 const IS_TV = typeof __TV__ !== 'undefined' && __TV__

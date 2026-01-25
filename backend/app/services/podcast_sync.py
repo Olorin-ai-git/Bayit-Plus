@@ -28,6 +28,62 @@ HEADERS = {
 }
 
 
+async def parse_feed(rss_url: str) -> Optional[dict]:
+    """
+    Parse RSS feed and extract feed-level metadata including artwork.
+
+    Args:
+        rss_url: The RSS feed URL
+
+    Returns:
+        Dictionary with feed metadata or None if fetch failed
+    """
+    try:
+        async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
+            response = await client.get(rss_url, headers=HEADERS)
+            response.raise_for_status()
+
+            # Parse RSS feed
+            try:
+                soup = BeautifulSoup(response.text, "xml")
+            except:
+                soup = BeautifulSoup(response.text, "html.parser")
+
+            channel = soup.find("channel")
+            if not channel:
+                return None
+
+            # Extract feed-level metadata
+            feed_data = {"feed": {}}
+
+            # Try to find artwork - check multiple locations
+            # 1. iTunes image
+            itunes_image = channel.find("itunes:image")
+            if itunes_image and itunes_image.get("href"):
+                feed_data["feed"]["itunes_image"] = itunes_image.get("href")
+
+            # 2. Channel image
+            image_elem = channel.find("image")
+            if image_elem:
+                url_elem = image_elem.find("url")
+                if url_elem:
+                    feed_data["feed"]["image"] = {"href": url_elem.get_text(strip=True)}
+
+            # 3. Media thumbnail
+            if not feed_data["feed"].get("itunes_image") and not feed_data["feed"].get(
+                "image"
+            ):
+                media_thumbnail = channel.find("media:thumbnail")
+                if media_thumbnail and media_thumbnail.get("url"):
+                    feed_data["feed"]["itunes_image"] = media_thumbnail.get("url")
+
+            return feed_data
+
+    except Exception as e:
+        logger.warning(f"Failed to parse RSS feed {rss_url}: {str(e)}")
+        return None
+
+
 async def fetch_rss_episodes(
     rss_url: str, max_episodes: int = 3
 ) -> Optional[List[dict]]:

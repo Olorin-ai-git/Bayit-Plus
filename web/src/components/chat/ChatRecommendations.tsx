@@ -1,7 +1,7 @@
 import { View, Text, Pressable, Image, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { GlassCard } from '@bayit/shared/ui'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import type { ContentRecommendation } from './types'
 
 interface ChatRecommendationsProps {

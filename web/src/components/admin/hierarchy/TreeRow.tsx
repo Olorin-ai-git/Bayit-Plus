@@ -8,7 +8,7 @@ import { View, Text, Pressable, StyleSheet, ImageBackground } from 'react-native
 import { Link } from 'react-router-dom';
 import { Star, Eye, Trash2, Film, Tv } from 'lucide-react';
 import { GlassTableCell, GlassCheckbox } from '@bayit/shared/ui/web';
-import { colors, borderRadius } from '@bayit/shared/theme';
+import { colors, borderRadius } from '@olorin/design-tokens';
 import { z } from 'zod';
 
 const ContentItemSchema = z.object({

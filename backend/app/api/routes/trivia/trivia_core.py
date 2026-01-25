@@ -40,11 +40,18 @@ async def get_trivia(
     request: Request,
     content_id: str,
     language: str = "he",
+    multilingual: bool = False,
     current_user: Optional[User] = Depends(get_optional_user),
 ) -> dict:
     """
     Get trivia facts for a specific content item.
     Returns cached trivia if available, or generates new trivia from TMDB.
+
+    Args:
+        content_id: Content item ID
+        language: Preferred language for single-language mode (default: "he")
+        multilingual: If True, return all language fields. If False, return single language
+        current_user: Optional authenticated user
     """
     if not settings.TRIVIA_ENABLED:
         raise HTTPException(status_code=503, detail="Trivia feature is disabled")
@@ -53,7 +60,7 @@ async def get_trivia(
 
     existing = await ContentTrivia.get_for_content(validated_id)
     if existing:
-        return format_trivia_response(existing, language)
+        return format_trivia_response(existing, language, multilingual)
 
     content = await Content.get(validated_id)
     if not content:
@@ -62,7 +69,7 @@ async def get_trivia(
     generator = TriviaGenerationService()
     trivia = await generator.generate_trivia(content, enrich=False)
 
-    return format_trivia_response(trivia, language)
+    return format_trivia_response(trivia, language, multilingual)
 
 
 @router.get("/{content_id}/enriched")
@@ -71,11 +78,18 @@ async def get_enriched_trivia(
     request: Request,
     content_id: str,
     language: str = "he",
+    multilingual: bool = False,
     current_user: Optional[User] = Depends(get_optional_user),
 ) -> dict:
     """
     Get full enriched trivia bundle for offline playback.
     Includes AI-generated facts in addition to TMDB data.
+
+    Args:
+        content_id: Content item ID
+        language: Preferred language for single-language mode (default: "he")
+        multilingual: If True, return all language fields. If False, return single language
+        current_user: Optional authenticated user
     """
     if not settings.TRIVIA_ENABLED:
         raise HTTPException(status_code=503, detail="Trivia feature is disabled")
@@ -84,7 +98,7 @@ async def get_enriched_trivia(
 
     existing = await ContentTrivia.get_for_content(validated_id)
     if existing and existing.is_enriched:
-        return format_trivia_response(existing, language, include_metadata=True)
+        return format_trivia_response(existing, language, multilingual, include_metadata=True)
 
     content = await Content.get(validated_id)
     if not content:
@@ -93,4 +107,4 @@ async def get_enriched_trivia(
     generator = TriviaGenerationService()
     trivia = await generator.generate_trivia(content, enrich=True)
 
-    return format_trivia_response(trivia, language, include_metadata=True)
+    return format_trivia_response(trivia, language, multilingual, include_metadata=True)

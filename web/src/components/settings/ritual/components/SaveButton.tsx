@@ -6,7 +6,7 @@
 import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Check } from 'lucide-react';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 import { SaveButtonProps } from '../types';
 
 export function SaveButton({ onSave, saving, saved, isRTL }: SaveButtonProps) {

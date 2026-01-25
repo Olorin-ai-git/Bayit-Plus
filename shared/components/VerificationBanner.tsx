@@ -10,7 +10,7 @@ import { GlassView } from './ui/GlassView';
 import { GlassButton } from './ui/GlassButton';
 import { VerificationModal } from './VerificationModal';
 import { useAuthStore } from '../stores/authStore';
-import { colors, spacing, fontSize, borderRadius } from '../theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 
 interface VerificationBannerProps {
   onDismiss?: () => void;

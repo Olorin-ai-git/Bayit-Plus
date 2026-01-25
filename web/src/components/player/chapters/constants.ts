@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { colors } from '@bayit/shared/theme'
+import { colors } from '@olorin/design-tokens'
 
 // Category colors for chapter markers (shared with ChapterCard)
 export const categoryColors: Record<string, string> = {

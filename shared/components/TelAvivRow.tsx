@@ -30,7 +30,7 @@ import { GlassView } from './ui/GlassView';
 import { GlassCard } from './ui/GlassCard';
 import { GlassBadge } from './ui/GlassBadge';
 import { apiTelAvivService } from '../services/api/cultureServices';
-import { colors, spacing, borderRadius, fontSize, shadows } from '../theme';
+import { colors, spacing, borderRadius, fontSize, shadowRN } from '@olorin/design-tokens';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
 import logger from '../utils/logger';
@@ -131,7 +131,6 @@ export const TelAvivRow: React.FC<TelAvivRowProps> = ({
       setError(null);
       const result = await apiTelAvivService.getContent(category);
       setData(result.data || result);
-      logger.info('Tel Aviv content loaded', { itemCount: result.data?.items?.length || 0 });
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
       logger.error('Failed to fetch Tel Aviv content', { error: errorMsg });
@@ -615,7 +614,7 @@ const styles = StyleSheet.create({
   cardFocused: {
     borderColor: TELAVIV_COLOR,
     backgroundColor: `${TELAVIV_COLOR}33`,
-    ...shadows.glass,
+    ...shadowRN.glass,
   },
   cardHeader: {
     flexDirection: 'row',

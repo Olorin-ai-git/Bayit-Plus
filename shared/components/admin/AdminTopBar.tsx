@@ -12,7 +12,7 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../../hooks/useDirection';
-import { spacing } from '../../theme';
+import { spacing } from '@olorin/design-tokens';
 
 interface Breadcrumb {
   label: string;

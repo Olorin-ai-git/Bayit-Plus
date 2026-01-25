@@ -9,12 +9,11 @@
  */
 
 import { View, Text, StyleSheet } from 'react-native';
-import { Plus, Grid3x3 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { useDirection } from '@/hooks/useDirection';
 import { GlassButton } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 const WidgetsPageHeaderPropsSchema = z.object({
   widgetCount: z.number(),
@@ -35,7 +34,7 @@ export default function WidgetsPageHeader({ widgetCount, onCreateWidget }: Widge
       {/* Left side: Icon + Title */}
       <View style={styles.leftSection}>
         <View style={styles.iconContainer}>
-          <Grid3x3 size={28} color={colors.primary} />
+          <Text style={styles.iconText}>⊞</Text>
         </View>
         <View>
           <Text
@@ -53,11 +52,10 @@ export default function WidgetsPageHeader({ widgetCount, onCreateWidget }: Widge
 
       {/* Right side: Create button */}
       <GlassButton
-        title={t('common.new') || 'New Widget'}
+        title={`+ ${t('common.new') || 'New'}`}
         onPress={onCreateWidget}
         variant="primary"
         size="md"
-        icon={<Plus size={20} color={colors.text} />}
       />
     </View>
   );
@@ -84,6 +82,10 @@ const styles = StyleSheet.create({
     borderColor: colors.glassBorder,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  iconText: {
+    fontSize: 32,
+    color: colors.primary.DEFAULT,
   },
   title: {
     fontSize: 32,

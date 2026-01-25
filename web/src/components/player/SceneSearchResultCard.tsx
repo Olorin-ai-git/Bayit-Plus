@@ -8,7 +8,7 @@
 import { View, Text, Pressable, I18nManager } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Clock, Play } from 'lucide-react'
-import { colors } from '@bayit/shared/theme'
+import { colors } from '@olorin/design-tokens'
 import { GlassView } from '@bayit/shared/ui'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 import { isTV } from '@bayit/shared/utils/platform'

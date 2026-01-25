@@ -28,7 +28,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { epgApi, EPGProgram, Channel } from '@bayit/shared-services';
 import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
-import { spacing, colors, borderRadius } from '../theme';
+import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 
 import logger from '@/utils/logger';
 

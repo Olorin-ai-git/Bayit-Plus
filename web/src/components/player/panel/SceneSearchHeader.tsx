@@ -6,7 +6,7 @@
 import { View, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Search, X } from 'lucide-react'
-import { colors } from '@bayit/shared/theme'
+import { colors } from '@olorin/design-tokens'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 import { isTV } from '@bayit/shared/utils/platform'
 import { sceneSearchStyles as styles } from './sceneSearchStyles'

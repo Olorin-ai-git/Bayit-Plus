@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Play, Star, Bookmark } from 'lucide-react';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassCard, GlassBadge } from '@bayit/shared/ui';
 import { SubtitleFlags, ContentBadges } from '@bayit/shared';
 import { useModeEnforcement } from '@bayit/shared-hooks';
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     right: spacing.sm,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.error,
+    backgroundColor: colors.error.DEFAULT,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
     borderRadius: borderRadius.sm,
@@ -420,7 +420,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: '100%',
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     // @ts-ignore
     boxShadow: `0 0 8px ${colors.primary}`,
   },
@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   titleHovered: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   meta: {
     flexDirection: 'row',

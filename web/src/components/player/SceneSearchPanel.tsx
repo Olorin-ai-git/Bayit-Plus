@@ -3,16 +3,25 @@
  */
 
 import { useEffect, useRef, useCallback, useState } from 'react'
-import { FlatList, Platform, I18nManager, Animated, BackHandler, AccessibilityInfo } from 'react-native'
+import { View, FlatList, Platform, I18nManager, BackHandler, AccessibilityInfo, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { GlassView } from '@bayit/shared/ui'
 import { isTV } from '@bayit/shared/utils/platform'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useSceneSearch, SceneSearchResult } from './hooks/useSceneSearch'
 import SceneSearchResultCard from './SceneSearchResultCard'
 import {
   SceneSearchHeader, SceneSearchInput, SceneSearchNavigation, SceneSearchEmptyState,
-  sceneSearchStyles as styles, RESULT_CARD_HEIGHT, announceToScreenReader, handleFocusTrap,
+  RESULT_CARD_HEIGHT,
 } from './panel'
+import { PLATFORM_CONFIG } from './panel/platformConfig'
+import {
+  announceToScreenReader,
+  handleFocusTrap,
+  useLiveRegion,
+  useFocusManagement,
+  getSearchStatusARIA,
+  ARIA_ROLES,
+} from './panel/accessibilityEnhancements'
 
 interface SceneSearchPanelProps {
   contentId?: string
@@ -29,29 +38,38 @@ export default function SceneSearchPanel({
   const isRTL = I18nManager.isRTL || i18n.language === 'he' || i18n.language === 'ar'
   const inputRef = useRef<any>(null)
   const scrollRef = useRef<FlatList>(null)
+  const panelRef = useRef<any>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
   const [inputValue, setInputValue] = useState('')
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
-  const slideAnim = useRef(new Animated.Value(isTV ? 400 : 320)).current
 
   const {
     results, loading, error, currentIndex,
     search, goToNext, goToPrevious, goToResult, clearResults,
   } = useSceneSearch({ contentId, seriesId, language: i18n.language })
 
-  // Check for reduced motion accessibility preference
-  useEffect(() => {
-    AccessibilityInfo.isReduceMotionEnabled().then(setPrefersReducedMotion)
-    const sub = AccessibilityInfo.addEventListener('reduceMotionChanged', setPrefersReducedMotion)
-    return () => sub.remove()
-  }, [])
+  // WCAG 2.1 Accessibility: Live region for search status
+  const searchStatusMessage = loading
+    ? t('player.sceneSearch.searching')
+    : error
+    ? t('player.sceneSearch.error')
+    : results.length > 0
+    ? t('player.sceneSearch.results.found', { count: results.length })
+    : inputValue.length >= 2
+    ? t('player.sceneSearch.noResults')
+    : ''
 
-  // Slide animation (respects reduced motion preference)
-  useEffect(() => {
-    const target = isOpen ? 0 : (isTV ? 400 : 320)
-    if (prefersReducedMotion) { slideAnim.setValue(target) }
-    else { Animated.spring(slideAnim, { toValue: target, friction: 8, tension: 40, useNativeDriver: true }).start() }
-  }, [isOpen, slideAnim, prefersReducedMotion])
+  useLiveRegion({
+    enabled: isOpen,
+    message: searchStatusMessage,
+    assertive: !!error,
+  })
+
+  // WCAG 2.1 Accessibility: Focus management
+  useFocusManagement({
+    isOpen,
+    panelRef,
+    returnFocusRef: previousFocusRef,
+  })
 
   // Focus management
   useEffect(() => {
@@ -141,15 +159,39 @@ export default function SceneSearchPanel({
 
   if (!isOpen) return null
 
+  const handleBackdropClick = (e: any) => {
+    e?.stopPropagation?.()
+    e?.preventDefault?.()
+    onClose?.()
+  }
+
+  const stopPropagation = (e: any) => {
+    e?.stopPropagation?.()
+    e?.preventDefault?.()
+  }
+
   return (
-    <Animated.View style={[styles.panelContainer, { transform: [{ translateX: slideAnim }] }]}>
-      <GlassView
+    <>
+      {/* Backdrop to close panel when clicking outside */}
+      <View
+        style={styles.backdrop}
+        onClick={handleBackdropClick}
+        onMouseDown={stopPropagation}
+        onMouseUp={stopPropagation}
+      />
+
+      {/* Panel */}
+      <View
+        ref={panelRef}
         style={styles.panel}
-        intensity="high"
+        onClick={stopPropagation}
+        onMouseDown={stopPropagation}
+        onMouseUp={stopPropagation}
         testID="scene-search-panel"
         data-testid="scene-search-panel"
-        accessibilityRole="dialog"
+        accessibilityRole={ARIA_ROLES.panel as any}
         accessibilityLabel={t('player.sceneSearch.title')}
+        {...getSearchStatusARIA(loading, error, results.length)}
       >
         <SceneSearchHeader resultCount={results.length} isRTL={isRTL} onClose={onClose} />
         <SceneSearchInput
@@ -159,6 +201,7 @@ export default function SceneSearchPanel({
           onChangeText={setInputValue}
           onSubmit={handleSearch}
           onVoiceResult={handleVoiceResult}
+          isOpen={isOpen}
         />
         <FlatList
           ref={scrollRef}
@@ -166,11 +209,16 @@ export default function SceneSearchPanel({
           renderItem={renderResultCard}
           keyExtractor={(item, index) => `${item.content_id}-${item.timestamp_seconds}-${index}`}
           getItemLayout={getItemLayout}
-          windowSize={5}
-          maxToRenderPerBatch={10}
-          initialNumToRender={10}
-          removeClippedSubviews={Platform.OS !== 'web'}
+          windowSize={PLATFORM_CONFIG.list.windowSize}
+          maxToRenderPerBatch={PLATFORM_CONFIG.list.maxToRenderPerBatch}
+          initialNumToRender={PLATFORM_CONFIG.list.initialNumToRender}
+          removeClippedSubviews={PLATFORM_CONFIG.list.removeClippedSubviews}
           contentContainerStyle={styles.listContent}
+          accessibilityRole={ARIA_ROLES.resultsList as any}
+          accessibilityLabel={t('player.sceneSearch.results.label', {
+            count: results.length,
+            current: currentIndex + 1,
+          })}
           ListEmptyComponent={
             <SceneSearchEmptyState loading={loading} error={error} hasQuery={inputValue.length >= 2} />
           }
@@ -184,7 +232,39 @@ export default function SceneSearchPanel({
             onNext={goToNext}
           />
         )}
-      </GlassView>
-    </Animated.View>
+      </View>
+    </>
   )
 }
+
+const styles = StyleSheet.create({
+  backdrop: {
+    position: 'absolute' as any,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'transparent',
+    zIndex: 89,
+    // @ts-ignore - Web-specific CSS
+    pointerEvents: 'auto',
+    cursor: 'default',
+  },
+  panel: {
+    position: 'absolute',
+    bottom: 80,
+    right: spacing.md,
+    width: 360,
+    maxHeight: 500,
+    borderRadius: borderRadius.xl,
+    zIndex: 90,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    // @ts-ignore - Web-specific CSS
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    pointerEvents: 'auto',
+  },
+  listContent: {
+    padding: spacing.md,
+  },
+});

@@ -7,7 +7,7 @@ import { Film, Tv, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import ContentCard from '@/components/content/ContentCard';
 import AnimatedCard from '@/components/common/AnimatedCard';
 import { contentService } from '@/services/api';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassView, GlassCard, GlassCategoryPill, GlassInput, GlassButton, GlassCheckbox } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import logger from '@/utils/logger';

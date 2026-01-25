@@ -3,7 +3,7 @@ import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-nati
 import { useTranslation } from 'react-i18next';
 import { Sparkles, Shield } from 'lucide-react';
 import { useAISettingsStore } from '@/stores/aiSettingsStore';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassView } from '@bayit/shared/ui';
 
 export default function AISettings() {
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   toggleActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary[600],
     justifyContent: 'flex-end',
   },
   toggleInactive: {
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   },
   privacyNoteText: {
     fontSize: 13,
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
 
   // Saving indicator

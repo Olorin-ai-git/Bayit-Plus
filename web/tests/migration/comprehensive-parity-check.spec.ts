@@ -87,8 +87,16 @@ test.describe('Production Screenshots - ALL ROUTES', () => {
       const url = `${PRODUCTION_URL}${route.path}?lng=en`;
 
       try {
-        await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
-        await page.waitForTimeout(2000);
+        // Use 'load' instead of 'networkidle' since continuous polling prevents network idle
+        await page.goto(url, { waitUntil: 'load', timeout: 30000 });
+
+        // Wait for React to render
+        await page.waitForFunction(() => {
+          const root = document.getElementById('root');
+          return root && root.children.length > 0;
+        }, { timeout: 10000 }).catch(() => {});
+
+        await page.waitForTimeout(3000);
 
         const filename = await captureScreenshot(page, 'production', route, 'en', 'desktop');
         console.log(`✓ Captured production: ${filename}`);
@@ -106,8 +114,16 @@ test.describe('Production Screenshots - Hebrew (RTL)', () => {
       const url = `${PRODUCTION_URL}${route.path}?lng=he`;
 
       try {
-        await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
-        await page.waitForTimeout(2000);
+        // Use 'load' instead of 'networkidle' since continuous polling prevents network idle
+        await page.goto(url, { waitUntil: 'load', timeout: 30000 });
+
+        // Wait for React to render
+        await page.waitForFunction(() => {
+          const root = document.getElementById('root');
+          return root && root.children.length > 0;
+        }, { timeout: 10000 }).catch(() => {});
+
+        await page.waitForTimeout(3000);
 
         // Verify RTL
         const dir = await page.evaluate(() => document.documentElement.dir);
@@ -139,21 +155,31 @@ test.describe('Local Build Screenshots - ALL ROUTES', () => {
           });
         });
 
-        await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
-        // Wait longer for local content to fully load
-        await page.waitForTimeout(5000);
+        // Use 'load' instead of 'networkidle' since continuous polling prevents network idle
+        await page.goto(url, { waitUntil: 'load', timeout: 30000 });
+
+        // Wait for React to render - check for root element content
+        await page.waitForFunction(() => {
+          const root = document.getElementById('root');
+          return root && root.children.length > 0;
+        }, { timeout: 10000 }).catch(() => {
+          console.log(`⚠️  React root may not have rendered on ${route.name}`);
+        });
+
+        // Additional wait for content to stabilize
+        await page.waitForTimeout(3000);
 
         // For home page, wait for key sections to load
         if (route.name === 'home') {
           try {
             // Wait for Jerusalem section or Tel Aviv section
-            const jerusalemSelector = await page.waitForSelector('text=/ירושלים|Jerusalem/i', { timeout: 10000 });
+            const jerusalemSelector = await page.waitForSelector('text=/ירושלים|Jerusalem/i', { timeout: 15000 });
             console.log(`✓ Jerusalem section found on local`);
 
             // Scroll to Jerusalem section to ensure it's loaded and visible
             if (jerusalemSelector) {
               await jerusalemSelector.scrollIntoViewIfNeeded();
-              await page.waitForTimeout(1000);
+              await page.waitForTimeout(1500);
             }
 
             // Check if Tel Aviv section is also present
@@ -162,7 +188,7 @@ test.describe('Local Build Screenshots - ALL ROUTES', () => {
 
             // Scroll back to top for full page screenshot
             await page.evaluate(() => window.scrollTo(0, 0));
-            await page.waitForTimeout(1000);
+            await page.waitForTimeout(2000);
           } catch (e) {
             console.log(`⚠️  Jerusalem/Tel Aviv sections may not be loaded on ${route.name}: ${e.message}`);
           }

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Play, Clock, Users, Lock, TrendingUp, Newspaper } from 'lucide-react';
 import { useProfileStore } from '@/stores/profileStore';
 import { youngstersService } from '../services/api';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassCard, GlassButton, GlassCategoryPill, GlassModal } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import { useDirection } from '@/hooks/useDirection';
@@ -768,7 +768,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     textAlign: 'center',
     marginBottom: spacing.md,
   },

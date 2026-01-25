@@ -9,7 +9,7 @@ import React, { useCallback, memo } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { SearchResultCard } from './SearchResultCard';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
-import { colors, borderRadius, spacing } from '../../theme/colors';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 interface SearchResultsCardsProps {
   /** Search results to display */

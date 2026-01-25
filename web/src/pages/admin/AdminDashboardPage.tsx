@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { RefreshCw, UserPlus, Tag, Mail, BarChart3 } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import { dashboardService } from '@/services/adminApi';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: fontSize.base,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     marginBottom: spacing.md,
   },
   loadingContainer: {

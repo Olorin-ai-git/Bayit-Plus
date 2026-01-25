@@ -15,7 +15,7 @@ import {
   StyleProp,
 } from 'react-native';
 import LinearGradient from 'react-native-web-linear-gradient';
-import { colors, borderRadius, spacing, shadows } from '../theme';
+import { colors, borderRadius, spacing, shadows } from '@olorin/design-tokens';
 import { isTV } from '../utils/platform';
 
 type FABSize = 'sm' | 'md' | 'lg';
@@ -311,7 +311,7 @@ const styles = {
   // Focus/hover state
   focusedBorder: {
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     backgroundColor: 'rgba(15, 15, 25, 0.6)',
   },
 

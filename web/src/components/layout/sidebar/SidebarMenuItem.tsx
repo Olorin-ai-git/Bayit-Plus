@@ -16,7 +16,7 @@
 import { View, Text, TouchableOpacity, Animated, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 // Check if this is a TV build
 declare const __TV__: boolean;
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   containerFocused: {
     backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderWidth: 1,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   iconContainer: {
     justifyContent: 'center',
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   labelActive: {
-    color: colors.primary,
+    color: colors.white,
     fontWeight: 'bold',
   },
   activeIndicator: {
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     marginTop: -12,
     width: 4,
     height: 24,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: 2,
   },
   activeIndicatorLTR: {

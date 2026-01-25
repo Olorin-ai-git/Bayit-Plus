@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, Image } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react'
-import { GlassInput } from '@bayit/shared/ui'
+import { GlassInput, GlassCheckbox } from '@bayit/shared/ui'
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web'
 import { adminContentService } from '@/services/adminApi'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassButton } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
@@ -45,13 +45,13 @@ export default function RadioStationsPage() {
       setItems(response.items || [])
       setPagination((prev) => ({ ...prev, total: response.total || 0 }))
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to load radio stations'
+      const msg = err instanceof Error ? err.message : t('admin.radioStations.errors.loadFailed', 'Failed to load radio stations')
       logger.error(msg, 'RadioStationsPage', err)
       setError(msg)
     } finally {
       setIsLoading(false)
     }
-  }, [pagination.page, pagination.pageSize])
+  }, [pagination.page, pagination.pageSize, t])
 
   useEffect(() => {
     loadStations()
@@ -64,20 +64,24 @@ export default function RadioStationsPage() {
 
   const handleSaveEdit = async () => {
     if (!editData.name) {
-      setError(t('admin.content.validation.nameRequired', { defaultValue: 'Name is required' }))
+      setError(t('admin.content.validation.nameRequired', 'Name is required'))
       return
     }
     if (!editData.stream_url) {
-      setError(t('admin.content.validation.streamUrlRequired', { defaultValue: 'Stream URL is required' }))
+      setError(t('admin.content.validation.streamUrlRequired', 'Stream URL is required'))
       return
     }
     try {
-      await adminContentService.updateRadioStation(editingId!, editData)
+      if (editingId === 'new') {
+        await adminContentService.createRadioStation(editData)
+      } else {
+        await adminContentService.updateRadioStation(editingId!, editData)
+      }
       setEditingId(null)
       setEditData({})
       await loadStations()
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to update radio station'
+      const msg = err instanceof Error ? err.message : t('admin.radioStations.errors.saveFailed', 'Failed to save radio station')
       logger.error(msg, 'RadioStationsPage', err)
       setError(msg)
     }
@@ -85,14 +89,14 @@ export default function RadioStationsPage() {
 
   const handleDelete = (id: string) => {
     showConfirm(
-      t('admin.content.confirmDelete'),
+      t('admin.content.confirmDelete', 'Delete this radio station?'),
       async () => {
         try {
           setDeleting(id)
           await adminContentService.deleteRadioStation(id)
           setItems(items.filter((item) => item.id !== id))
         } catch (err) {
-          const msg = err instanceof Error ? err.message : 'Failed to delete radio station'
+          const msg = err instanceof Error ? err.message : t('admin.radioStations.errors.deleteFailed', 'Failed to delete radio station')
           logger.error(msg, 'RadioStationsPage', err)
           setError(msg)
         } finally {
@@ -105,18 +109,34 @@ export default function RadioStationsPage() {
 
   const columns = [
     {
+      key: 'logo',
+      label: t('admin.content.columns.logo', 'Logo'),
+      width: 80,
+      render: (logo: string | undefined) => (
+        <View style={styles.logoCell}>
+          {logo ? (
+            <Image source={{ uri: logo }} style={styles.logo} resizeMode="cover" />
+          ) : (
+            <View style={styles.logoPlaceholder}>
+              <Text style={styles.logoPlaceholderText}>📻</Text>
+            </View>
+          )}
+        </View>
+      ),
+    },
+    {
       key: 'name',
-      label: t('admin.content.columns.name', { defaultValue: 'Name' }),
-      render: (name: string) => <Text className="text-sm text-white">{name}</Text>,
+      label: t('admin.content.columns.name', 'Name'),
+      render: (name: string) => <Text style={styles.cellText}>{name}</Text>,
     },
     {
       key: 'genre',
-      label: t('admin.content.columns.genre', { defaultValue: 'Genre' }),
-      render: (genre: string | undefined) => <Text className="text-sm text-white">{genre || '-'}</Text>,
+      label: t('admin.content.columns.genre', 'Genre'),
+      render: (genre: string | undefined) => <Text style={styles.cellText}>{genre || '-'}</Text>,
     },
     {
       key: 'stream_url',
-      label: t('admin.content.columns.streamUrl', { defaultValue: 'Stream URL' }),
+      label: t('admin.content.columns.streamUrl', 'Stream URL'),
       render: (url: string) => (
         <Text style={[styles.cellText, styles.urlText]} numberOfLines={1}>
           {url}
@@ -125,19 +145,20 @@ export default function RadioStationsPage() {
     },
     {
       key: 'is_active',
-      label: t('admin.content.columns.status', { defaultValue: 'Status' }),
+      label: t('admin.content.columns.status', 'Status'),
       render: (isActive: boolean) => (
         <View style={[styles.badge, { backgroundColor: isActive ? '#10b98120' : '#6b728020' }]}>
           <Text style={[styles.badgeText, { color: isActive ? '#10b981' : '#6b7280' }]}>
-            {isActive ? 'Active' : 'Inactive'}
+            {isActive ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}
           </Text>
         </View>
       ),
     },
     {
       key: 'order',
-      label: t('admin.content.columns.order', { defaultValue: 'Order' }),
-      render: (order: number) => <Text className="text-sm text-white">{order}</Text>,
+      label: t('admin.content.columns.order', 'Order'),
+      width: 80,
+      render: (order: number) => <Text style={styles.cellText}>{order}</Text>,
     },
     {
       key: 'actions',
@@ -167,9 +188,9 @@ export default function RadioStationsPage() {
     <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
       <View style={[styles.header, { flexDirection }]}>
         <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.radioStations', { defaultValue: 'Radio Stations' })}</Text>
+          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.radioStations', 'Radio Stations')}</Text>
           <Text style={[styles.subtitle, { textAlign }]}>
-            {t('admin.radioStations.subtitle', { defaultValue: 'Manage radio stations' })}
+            {t('admin.radioStations.subtitle', 'Manage radio stations')}
           </Text>
         </View>
         <Pressable
@@ -180,7 +201,7 @@ export default function RadioStationsPage() {
           style={styles.addButton}
         >
           <Plus size={18} color={colors.text} />
-          <Text style={styles.addButtonText}>{t('admin.actions.new', { defaultValue: 'New' })}</Text>
+          <Text style={styles.addButtonText}>{t('admin.actions.new', 'New')}</Text>
         </Pressable>
       </View>
 
@@ -197,67 +218,74 @@ export default function RadioStationsPage() {
       {editingId && (
         <View style={styles.editForm}>
           <Text style={styles.formTitle}>
-            {editingId === 'new' ? 'New Radio Station' : 'Edit Radio Station'}
+            {editingId === 'new'
+              ? t('admin.radioStations.form.titleNew', 'New Radio Station')
+              : t('admin.radioStations.form.titleEdit', 'Edit Radio Station')
+            }
           </Text>
           <GlassInput
             label={t('admin.radioStations.form.name', 'Station name')}
             containerStyle={styles.input}
-            placeholder="Station name"
+            placeholder={t('admin.radioStations.form.namePlaceholder', 'Station name')}
             value={editData.name || ''}
             onChangeText={(value) => setEditData({ ...editData, name: value })}
           />
           <GlassInput
+            label={t('admin.content.editor.fields.stationLogo', 'Station Logo')}
+            containerStyle={styles.input}
+            placeholder={t('admin.content.editor.fields.logoPlaceholder', 'Logo URL')}
+            value={editData.logo || ''}
+            onChangeText={(value) => setEditData({ ...editData, logo: value })}
+          />
+          <GlassInput
             label={t('admin.radioStations.form.genre', 'Genre')}
             containerStyle={styles.input}
-            placeholder="Genre (e.g., Electronic, News)"
+            placeholder={t('admin.radioStations.form.genrePlaceholder', 'Genre (e.g., Electronic, News)')}
             value={editData.genre || ''}
             onChangeText={(value) => setEditData({ ...editData, genre: value })}
           />
           <GlassInput
             label={t('admin.radioStations.form.streamUrl', 'Stream URL')}
             containerStyle={styles.input}
-            placeholder="Stream URL (HLS/Audio)"
+            placeholder={t('admin.radioStations.form.streamUrlPlaceholder', 'Stream URL (HLS/Audio)')}
             value={editData.stream_url || ''}
             onChangeText={(value) => setEditData({ ...editData, stream_url: value })}
           />
           <GlassInput
             label={t('admin.radioStations.form.currentShow', 'Current Show (optional)')}
             containerStyle={styles.input}
-            placeholder="Current Show (optional)"
+            placeholder={t('admin.radioStations.form.currentShowPlaceholder', 'Current Show (optional)')}
             value={editData.current_show || ''}
             onChangeText={(value) => setEditData({ ...editData, current_show: value })}
           />
           <GlassInput
             label={t('admin.radioStations.form.currentSong', 'Current Song (optional)')}
             containerStyle={styles.input}
-            placeholder="Current Song (optional)"
+            placeholder={t('admin.radioStations.form.currentSongPlaceholder', 'Current Song (optional)')}
             value={editData.current_song || ''}
             onChangeText={(value) => setEditData({ ...editData, current_song: value })}
           />
           <GlassInput
             label={t('admin.radioStations.form.order', 'Order')}
             containerStyle={styles.input}
-            placeholder="Order"
+            placeholder={t('admin.radioStations.form.orderPlaceholder', 'Order')}
             value={String(editData.order || '')}
             onChangeText={(value) => setEditData({ ...editData, order: parseInt(value) || 0 })}
             keyboardType="number-pad"
           />
           <View style={styles.checkboxRow}>
-            <input
-              type="checkbox"
-              id="is_active"
+            <GlassCheckbox
               checked={editData.is_active || false}
-              onChange={(e) => setEditData({ ...editData, is_active: e.target.checked })}
-              style={styles.checkbox}
+              onCheckedChange={(checked) => setEditData({ ...editData, is_active: checked })}
+              label={t('admin.common.active', 'Active')}
             />
-            <Text style={styles.checkboxLabel}>{t('admin.common.active')}</Text>
           </View>
           <View style={styles.formActions}>
             <Pressable onPress={() => setEditingId(null)} style={styles.cancelBtn}>
-              <Text style={styles.cancelBtnText}>{t('admin.common.cancel')}</Text>
+              <Text style={styles.cancelBtnText}>{t('common.cancel', 'Cancel')}</Text>
             </Pressable>
             <Pressable onPress={handleSaveEdit} style={styles.saveBtn}>
-              <Text style={styles.saveBtnText}>{t('admin.common.save')}</Text>
+              <Text style={styles.saveBtnText}>{t('common.save', 'Save')}</Text>
             </Pressable>
           </View>
         </View>
@@ -275,4 +303,149 @@ export default function RadioStationsPage() {
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+    gap: spacing.md,
+  },
+  pageTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.primary.DEFAULT,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.md,
+  },
+  addButtonText: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: '#ef444420',
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: '#ef4444',
+  },
+  logoCell: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logo: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.md,
+    objectFit: 'cover',
+  },
+  logoPlaceholder: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoPlaceholderText: {
+    fontSize: 24,
+  },
+  cellText: {
+    fontSize: 14,
+    color: colors.text,
+  },
+  urlText: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+  badge: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: borderRadius.sm,
+    alignSelf: 'flex-start',
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  actionsCell: {
+    display: 'flex',
+    gap: spacing.sm,
+    alignItems: 'center',
+  },
+  actionButton: {
+    padding: spacing.sm,
+    borderRadius: borderRadius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  editForm: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backdropFilter: 'blur(12px)',
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  formTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  input: {
+    marginBottom: spacing.md,
+  },
+  checkboxRow: {
+    marginBottom: spacing.md,
+  },
+  formActions: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    justifyContent: 'flex-end',
+    marginTop: spacing.md,
+  },
+  cancelBtn: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  cancelBtnText: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  saveBtn: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.primary.DEFAULT,
+  },
+  saveBtnText: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+})
 

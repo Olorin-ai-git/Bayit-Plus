@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { Podcast, Headphones, Clock, Search, X, RefreshCw } from 'lucide-react';
 import { podcastService } from '@/services/api';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassView, GlassCard, GlassCategoryPill, GlassInput } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
@@ -405,7 +405,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   showTitleHovered: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   showAuthor: {
     fontSize: 14,

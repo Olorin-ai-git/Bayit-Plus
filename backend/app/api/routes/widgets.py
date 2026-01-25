@@ -49,6 +49,7 @@ def _widget_dict(w: Widget) -> dict:
         "is_active": w.is_active,
         "is_muted": w.is_muted,
         "is_visible": w.is_visible,
+        "is_minimized": w.is_minimized,
         "is_closable": w.is_closable,
         "is_draggable": w.is_draggable,
         "visible_to_roles": w.visible_to_roles,
@@ -146,6 +147,7 @@ async def get_my_widgets(
                 }
             widget_data["is_muted"] = sub.is_muted
             widget_data["is_visible"] = sub.is_visible
+            widget_data["is_minimized"] = sub.is_minimized
 
             subscribed_system_widgets.append(widget_data)
 
@@ -250,6 +252,8 @@ async def update_personal_widget(
         widget.is_muted = data.is_muted
     if data.is_visible is not None:
         widget.is_visible = data.is_visible
+    if data.is_minimized is not None:
+        widget.is_minimized = data.is_minimized
     if data.is_closable is not None:
         widget.is_closable = data.is_closable
     if data.is_draggable is not None:
@@ -396,3 +400,47 @@ async def close_widget(
         await subscription.save()
 
     return {"message": "Widget closed"}
+
+
+@router.post("/{widget_id}/minimize")
+async def toggle_widget_minimize(
+    widget_id: str,
+    is_minimized: bool,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Toggle widget minimized state for the current user.
+
+    For personal widgets: updates is_minimized on the widget.
+    For system widgets: updates is_minimized on user's subscription.
+    """
+    user_id = str(current_user.id)
+
+    try:
+        widget = await Widget.get(widget_id)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Widget not found")
+
+    if not widget:
+        raise HTTPException(status_code=404, detail="Widget not found")
+
+    if widget.type == WidgetType.PERSONAL:
+        # For personal widgets, update minimized state on the widget itself
+        if widget.user_id != user_id:
+            raise HTTPException(status_code=403, detail="Access denied")
+        widget.is_minimized = is_minimized
+        widget.updated_at = datetime.utcnow()
+        await widget.save()
+    else:
+        # For system widgets, update user's subscription
+        subscription = await UserSystemWidget.find_one(
+            UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
+        )
+
+        if not subscription:
+            raise HTTPException(status_code=404, detail="Widget not in your collection")
+
+        subscription.is_minimized = is_minimized
+        await subscription.save()
+
+    return {"message": f"Widget {'minimized' if is_minimized else 'restored'}"}

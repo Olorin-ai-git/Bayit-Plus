@@ -3,7 +3,7 @@ import { View, Text, Pressable, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { ChevronDown, Plus, Search, AlertCircle } from 'lucide-react'
 import { GlassView, GlassInput, GlassButton, GlassModal } from '@bayit/shared/ui'
-import { colors } from '@bayit/shared/theme'
+import { colors } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
 import type { Category } from '../../types/content'
 
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     minHeight: 48,
   },
   selectButtonError: {
-    borderColor: colors.error,
+    borderColor: colors.error.DEFAULT,
     borderWidth: 1,
   },
   selectedText: {
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
   categoryList: {
     maxHeight: 240,
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   createButton: {
     borderTopWidth: 1,
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
   },
   createButtonText: {
     fontSize: 14,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '500',
   },
   errorContainer: {
@@ -363,6 +363,6 @@ const styles = StyleSheet.create({
   },
   errorTextSmall: {
     fontSize: 12,
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
 })

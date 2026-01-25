@@ -5,7 +5,7 @@ import { Plus, Edit2, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useProfileStore } from '@/stores/profileStore';
 import { useAuthStore } from '@/stores/authStore';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassButton, GlassModal, GlassInput } from '@bayit/shared/ui';
 
 const AVATAR_COLORS = [
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
     height: 320,
     top: -160,
     right: -160,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     opacity: 0.5,
   },
   blurCirclePurple: {
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     height: 256,
     bottom: 80,
     left: -128,
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.secondary.DEFAULT,
     opacity: 0.4,
   },
   content: {
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(30, 30, 30, 0.3)',
   },
   addAvatarHovered: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     backgroundColor: 'rgba(30, 30, 30, 0.5)',
   },
   addProfileText: {
@@ -473,7 +473,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     textAlign: 'center',
     marginTop: spacing.md,
   },

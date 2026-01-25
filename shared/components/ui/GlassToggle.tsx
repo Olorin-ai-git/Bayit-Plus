@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, Pressable, StyleSheet, ViewStyle, Platform } from 'react-native';
-import { colors } from '../../theme';
+import { colors } from '@olorin/design-tokens';
 
 export interface GlassToggleProps {
   value: boolean;
@@ -57,7 +57,7 @@ export const GlassToggle: React.FC<GlassToggleProps> = ({
     borderRadius: dimensions.height / 2,
     alignItems: value ? 'flex-end' : 'flex-start',
     ...(value
-      ? { backgroundColor: colors.primary, borderColor: colors.primary }
+      ? { backgroundColor: colors.primary.DEFAULT, borderColor: colors.primary }
       : { backgroundColor: 'rgba(255, 255, 255, 0.1)', borderColor: 'rgba(255, 255, 255, 0.1)' }),
   }), [dimensions, value]);
 
@@ -166,10 +166,7 @@ const styles = StyleSheet.create({
   },
   knob: {
     elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
+    boxShadow: '0 1px 1px rgba(0, 0, 0, 0.2)',
   },
   disabled: {
     opacity: 0.5,

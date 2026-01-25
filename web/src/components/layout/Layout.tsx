@@ -10,7 +10,7 @@ import SoundwaveParticles from '../content/SoundwaveParticles';
 import { WidgetManager } from '../widgets';
 import { useVoiceListeningContext } from '@bayit/shared-contexts';
 import { ttsService } from '@bayit/shared-services';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { useTizenRemoteKeys } from '@/hooks/useTizenRemoteKeys';
 import { useSamsungVoice } from '@/hooks/useSamsungVoice';
 import { useChatbotStore } from '@/stores/chatbotStore';
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
     height: 384,
     top: -192,
     right: -192,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     opacity: 0.5,
   },
   blurCirclePurple: {
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     height: 288,
     top: '33%' as any,
     left: -144,
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.secondary.DEFAULT,
     opacity: 0.4,
   },
   blurCircleSuccess: {
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     height: 256,
     bottom: '25%' as any,
     right: '25%' as any,
-    backgroundColor: colors.success,
+    backgroundColor: colors.success.DEFAULT,
     opacity: 0.3,
   },
   main: {

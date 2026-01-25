@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { View, Platform, Pressable, I18nManager, StyleSheet } from 'react-native';
-import { colors, spacing, borderRadius } from '../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 interface GlassSplitterHandleProps {
   isCollapsed: boolean;
@@ -112,7 +112,7 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
         }}
       >
         <span style={{
-          color: colors.primary,
+          color: colors.primary.DEFAULT,
           fontSize: 16,
           fontWeight: 'bold',
           lineHeight: 1,

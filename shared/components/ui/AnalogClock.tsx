@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleProp, ViewStyle } from 'react-native';
-import { colors } from '../theme';
+import { colors } from '@olorin/design-tokens';
 
 export interface AnalogClockProps {
   hours: number;

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, ScrollView, Image } from 'react-nati
 import { Check, AlertTriangle, ArrowRight, X, CheckCircle2, Info } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { GlassModal, GlassButton } from '@bayit/shared/ui'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
 
 export interface ContentItem {
@@ -744,11 +744,11 @@ const styles = StyleSheet.create({
   },
   stepDotActive: {
     backgroundColor: 'rgba(168, 85, 247, 0.2)',
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   stepDotCompleted: {
     backgroundColor: 'rgba(34, 197, 94, 0.2)',
-    borderColor: colors.success,
+    borderColor: colors.success.DEFAULT,
   },
   stepNumber: {
     fontSize: 16,
@@ -763,7 +763,7 @@ const styles = StyleSheet.create({
     maxWidth: 60,
   },
   stepLineActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary[600],
   },
   stepContent: {
     flex: 1,
@@ -788,7 +788,7 @@ const styles = StyleSheet.create({
   errorTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.error,
+    color: colors.error.DEFAULT,
     marginTop: spacing.md,
   },
   errorCard: {
@@ -801,7 +801,7 @@ const styles = StyleSheet.create({
   },
   errorReason: {
     fontSize: 14,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     lineHeight: 20,
   },
   suggestionsCard: {
@@ -815,7 +815,7 @@ const styles = StyleSheet.create({
   suggestionsTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     marginBottom: spacing.sm,
   },
   suggestionRow: {
@@ -837,7 +837,7 @@ const styles = StyleSheet.create({
   successTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.success,
+    color: colors.success.DEFAULT,
     marginTop: spacing.md,
   },
   itemsList: {
@@ -864,7 +864,7 @@ const styles = StyleSheet.create({
   },
   selectableItemActive: {
     backgroundColor: 'rgba(168, 85, 247, 0.15)',
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   itemThumbnail: {
     width: 60,
@@ -927,8 +927,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   checkboxChecked: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
+    borderColor: colors.primary.DEFAULT,
   },
   configOptionText: {
     flex: 1,
@@ -953,7 +953,7 @@ const styles = StyleSheet.create({
   metadataLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     marginBottom: spacing.xs,
   },
   metadataValue: {
@@ -969,7 +969,7 @@ const styles = StyleSheet.create({
   previewTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     marginBottom: spacing.md,
   },
   previewRow: {
@@ -1068,7 +1068,7 @@ const styles = StyleSheet.create({
   errorText: {
     flex: 1,
     fontSize: 13,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     lineHeight: 18,
   },
   wizardActions: {

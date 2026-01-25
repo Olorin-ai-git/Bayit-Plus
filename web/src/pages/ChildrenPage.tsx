@@ -5,8 +5,16 @@ import { useTranslation } from 'react-i18next';
 import { Play, Clock, Baby, Lock } from 'lucide-react';
 import { useProfileStore } from '@/stores/profileStore';
 import { childrenService } from '../services/api';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassButton, GlassCategoryPill, GlassModal } from '@bayit/shared/ui';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import {
+  GlassCard,
+  GlassButton,
+  GlassCategoryPill,
+  GlassModal,
+  GlassPageHeader,
+  GridSkeleton,
+  GlassContentPlaceholder,
+} from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import { useDirection } from '@/hooks/useDirection';
 import { LoadingState, EmptyState } from '@bayit/shared/components/states';
@@ -98,9 +106,13 @@ function KidsContentCard({ item }: { item: KidsContentItem }) {
             {item.thumbnail ? (
               <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} resizeMode="cover" />
             ) : (
-              <View style={styles.thumbnailPlaceholder}>
-                <Text style={styles.categoryIconLarge}>{categoryIcon}</Text>
-              </View>
+              <GlassContentPlaceholder
+                type="generic"
+                aspectRatio="16:9"
+                size="medium"
+                icon={<Text style={styles.categoryIconLarge}>{categoryIcon}</Text>}
+                label={item.category || 'Kids'}
+              />
             )}
             <View style={styles.categoryBadge}>
               <Text style={styles.categoryBadgeText}>{categoryIcon}</Text>
@@ -337,15 +349,13 @@ export default function ChildrenPage() {
       />
       <View style={styles.content}>
         <View style={[styles.header, flexDirection === 'row-reverse' && styles.headerReversed]}>
-          <View style={[styles.headerLeft, flexDirection === 'row-reverse' && styles.headerLeftReversed]}>
-            <View style={styles.iconContainer}>
-              <Baby size={32} color="#facc15" />
-            </View>
-            <View>
-              <Text style={[styles.pageTitle, textAlign === 'right' && styles.textRight]}>{t('children.title')}</Text>
-              <Text style={[styles.itemsCount, textAlign === 'right' && styles.textRight]}>{content.length} {t('children.items')}</Text>
-            </View>
-          </View>
+          <GlassPageHeader
+            title={t('children.title')}
+            pageType="kids"
+            badge={content.length}
+            isRTL={flexDirection === 'row-reverse'}
+            style={styles.pageHeader}
+          />
           {isKidsMode && isKidsMode() && (
             <Pressable onPress={() => setShowExitModal(true)} style={styles.exitButton}>
               <Lock size={16} color={colors.textMuted} />
@@ -418,11 +428,10 @@ export default function ChildrenPage() {
         )}
 
         {isLoading ? (
-          <LoadingState
-            message={t('children.loading', 'Loading content...')}
-            spinnerColor="#facc15"
-            backgroundColor="rgba(250, 204, 21, 0.1)"
-          />
+          <>
+            <View style={styles.categoriesSkeleton} />
+            <GridSkeleton numColumns={numColumns} numRows={2} />
+          </>
         ) : content.length > 0 ? (
           <FlatList
             data={content}
@@ -489,33 +498,15 @@ const styles = StyleSheet.create({
   headerReversed: {
     flexDirection: 'row-reverse',
   },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.lg,
+  pageHeader: {
+    flex: 1,
+    marginBottom: 0,
   },
-  headerLeftReversed: {
-    flexDirection: 'row-reverse',
-  },
-  iconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: 'rgba(250, 204, 21, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  pageTitle: {
-    color: '#facc15',
-    fontSize: 30,
-    fontWeight: 'bold',
-  },
-  itemsCount: {
-    color: colors.textMuted,
-    fontSize: 14,
-  },
-  textRight: {
-    textAlign: 'right',
+  categoriesSkeleton: {
+    height: 40,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.lg,
   },
   exitButton: {
     flexDirection: 'row',

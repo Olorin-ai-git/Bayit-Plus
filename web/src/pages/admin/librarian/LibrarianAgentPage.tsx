@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { RefreshCw, Activity, DollarSign, Clock, Play, Bot, FileText, Eye, Minus, Plus, MessageSquare, Settings } from 'lucide-react';
 import { GlassButton, GlassToggle, GlassStatCard, GlassBadge, GlassModal, GlassTextarea } from '@bayit/shared/ui';
 import { GlassLog, GlassTable, GlassDraggableExpander } from '@bayit/shared/ui/web';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import {
   getAuditReportDetails,
@@ -338,7 +338,7 @@ const LibrarianAgentPage = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
         <Text style={[styles.loadingText, { color: colors.textMuted }]}>{t('admin.librarian.loading')}</Text>
       </View>
     );
@@ -348,7 +348,7 @@ const LibrarianAgentPage = () => {
   if (configError) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={[styles.errorTitle, { textAlign, color: colors.error }]}>{t('admin.librarian.errors.configError')}</Text>
+        <Text style={[styles.errorTitle, { textAlign, color: colors.error.DEFAULT }]}>{t('admin.librarian.errors.configError')}</Text>
         <Text style={[styles.errorMessage, { textAlign, color: colors.text }]}>{configError}</Text>
         <GlassButton
           title={t('admin.librarian.modal.retry')}
@@ -363,7 +363,7 @@ const LibrarianAgentPage = () => {
   if (!config) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
         <Text style={[styles.loadingText, { color: colors.textMuted }]}>{t('admin.librarian.loadingConfig')}</Text>
       </View>
     );
@@ -391,14 +391,14 @@ const LibrarianAgentPage = () => {
       {/* Status Bar - 3 stat cards inline */}
       <View style={[styles.statusBar, { flexDirection }]}>
         <GlassStatCard
-          icon={<Activity size={20} color={isAuditRunning ? colors.warning : colors.success} />}
+          icon={<Activity size={20} color={isAuditRunning ? colors.warning.DEFAULT : colors.success.DEFAULT} />}
           label={t('admin.librarian.reports.columns.status', 'Status')}
           value={getStatusValue()}
           compact
           style={styles.statCard}
         />
         <GlassStatCard
-          icon={<DollarSign size={20} color={colors.primary} />}
+          icon={<DollarSign size={20} color={colors.primary.DEFAULT} />}
           label={t('admin.librarian.quickActions.monthlyBudgetUsed', 'Budget Used')}
           value={`$${budgetUsed.toFixed(2)}`}
           subtitle={t('admin.librarian.quickActions.monthlyBudgetLimit', '/ ${{limit}} monthly', { limit: (config.audit_limits.max_budget_usd * 30).toFixed(0) })}
@@ -418,7 +418,7 @@ const LibrarianAgentPage = () => {
       <GlassDraggableExpander
         title={t('admin.librarian.quickActions.title', 'Run Configuration')}
         subtitle={dryRun ? t('admin.librarian.quickActions.previewMode', 'Preview Mode') : t('admin.librarian.quickActions.liveMode', 'Live Mode')}
-        icon={<Settings size={18} color={colors.primary} />}
+        icon={<Settings size={18} color={colors.primary.DEFAULT} />}
         defaultExpanded={true}
         draggable={false}
         minHeight={320}
@@ -540,10 +540,10 @@ const LibrarianAgentPage = () => {
 
         {/* Running notice with controls */}
         {isAuditRunning && !triggering && (
-          <View style={[styles.runningNotice, { borderColor: colors.warning + '40' }]}>
+          <View style={[styles.runningNotice, { borderColor: colors.warning.DEFAULT + '40' }]}>
             <View style={[styles.runningNoticeHeader, { flexDirection }]}>
-              <ActivityIndicator size="small" color={colors.warning} />
-              <Text style={[styles.runningNoticeText, { textAlign, color: colors.warning }]}>
+              <ActivityIndicator size="small" color={colors.warning.DEFAULT} />
+              <Text style={[styles.runningNoticeText, { textAlign, color: colors.warning.DEFAULT }]}>
                 {t('admin.librarian.quickActions.auditRunningNotice', 'An audit is currently running')}
               </Text>
             </View>
@@ -587,7 +587,7 @@ const LibrarianAgentPage = () => {
 
         {connectingToLiveLog ? (
           <View style={styles.liveLogConnecting}>
-            <ActivityIndicator size="large" color={colors.primary} />
+            <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
             <Text style={[styles.liveLogConnectingText, { textAlign, color: colors.textMuted }]}>
               {t('admin.librarian.logs.connecting', 'Connecting...')}
             </Text>
@@ -598,7 +598,7 @@ const LibrarianAgentPage = () => {
             {livePanelReport.status === 'in_progress' && batchProgress && (
               <View style={styles.progressBarContainer}>
                 <View style={[styles.progressBarTrack, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                  <View style={[styles.progressBarFill, { width: `${batchProgress.percentage}%`, backgroundColor: colors.primary }]} />
+                  <View style={[styles.progressBarFill, { width: `${batchProgress.percentage}%`, backgroundColor: colors.primary.DEFAULT }]} />
                 </View>
                 <Text style={[styles.progressBarText, { textAlign, color: colors.textMuted }]}>
                   {batchProgress.percentage}% - {batchProgress.itemsProcessed}/{batchProgress.totalItems} {t('admin.librarian.logs.items', 'items')}
@@ -690,7 +690,7 @@ const LibrarianAgentPage = () => {
       <GlassDraggableExpander
         title={t('admin.librarian.reports.title', 'Recent Reports')}
         subtitle={t('admin.librarian.reports.totalReports', '{{count}} report(s)', { count: reports.length })}
-        icon={<FileText size={18} color={colors.primary} />}
+        icon={<FileText size={18} color={colors.primary.DEFAULT} />}
         defaultExpanded={false}
         draggable={false}
         minHeight={300}
@@ -762,7 +762,7 @@ const LibrarianAgentPage = () => {
                     title=""
                     variant="ghost"
                     size="sm"
-                    icon={<Eye size={16} color={colors.primary} />}
+                    icon={<Eye size={16} color={colors.primary.DEFAULT} />}
                     onPress={() => handleViewReport(row.audit_id)}
                     loading={loadingAuditId === row.audit_id}
                   />

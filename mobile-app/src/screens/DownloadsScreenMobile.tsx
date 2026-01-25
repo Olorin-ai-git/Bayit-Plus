@@ -34,7 +34,7 @@ import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
-import { colors } from '../theme';
+import { colors } from '@olorin/design-tokens';
 
 import logger from '@/utils/logger';
 

@@ -2,7 +2,7 @@ import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-nat
 import { useTranslation } from 'react-i18next';
 import { FileText } from 'lucide-react';
 import { GlassModal, GlassButton, GlassCard, GlassBadge } from '@bayit/shared/ui';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { AuditReportDetail, LibrarianConfig } from '@/services/librarianService';
 
 interface ReportDetailModalProps {
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     marginBottom: spacing.xs,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   metricLabel: {
     fontSize: fontSize.xs,
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     fontSize: 48,
     fontWeight: 'bold',
     marginBottom: spacing.xs,
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
   fixesLabel: {
     fontSize: fontSize.sm,
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     fontSize: fontSize.base,
     marginTop: 2,
     marginRight: spacing.xs,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   insightText: {
     flex: 1,

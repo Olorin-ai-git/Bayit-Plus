@@ -13,7 +13,7 @@ import Video from 'react-native-video';
 import LinearGradient from 'react-native-linear-gradient';
 import { GlassView } from '../ui/GlassView';
 import { GlassButton } from '../ui/GlassButton';
-import { colors, spacing, fontSize, borderRadius } from '../../theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');

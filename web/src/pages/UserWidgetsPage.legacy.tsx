@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDirection } from '@/hooks/useDirection';
 import { adminWidgetsService } from '@/services/adminApi';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassCard } from '@bayit/shared/ui';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { DEFAULT_WIDGET_POSITION } from '@/types/widget';
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.lg,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   createButtonText: {
     fontSize: 14,

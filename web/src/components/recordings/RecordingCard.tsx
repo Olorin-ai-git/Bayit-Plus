@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { Play, Trash2, Calendar, HardDrive } from 'lucide-react'
 import { useNavigation } from '@react-navigation/native'
 import { GlassView } from '@bayit/shared/ui'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { Recording } from '@/services/recordingApi'
 import { useModal } from '@/contexts/ModalContext'
 
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   subtitleText: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontSize: 12,
     fontWeight: '600',
   },
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   },
   playButton: {
     flex: 1,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

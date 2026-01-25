@@ -66,7 +66,6 @@ class VoiceSupportService extends EventEmitter {
     if (typeof window !== 'undefined') {
       i18n.on('languageChanged', (lng: string) => {
         this.config.language = lng;
-        console.log('[VoiceSupport] Language changed to:', lng);
       });
 
       // Set up streaming pipeline event handlers
@@ -89,9 +88,7 @@ class VoiceSupportService extends EventEmitter {
     try {
       await streamingVoicePipeline.prewarm();
       this.isPrewarmed = true;
-      console.log('[VoiceSupport] Pipeline prewarmed');
     } catch (error) {
-      console.warn('[VoiceSupport] Prewarm failed:', error);
     }
   }
 
@@ -121,7 +118,6 @@ class VoiceSupportService extends EventEmitter {
       if (this.streamingModeActive) {
         this.emit('error', error);
         // Fall back to batch mode on streaming error
-        console.log('[VoiceSupport] Streaming failed, falling back to batch mode');
         this.config.useStreamingMode = false;
         this.streamingModeActive = false;
       }
@@ -136,26 +132,22 @@ class VoiceSupportService extends EventEmitter {
    */
   async startListening(): Promise<void> {
     if (this.isRecording || this.streamingModeActive) {
-      console.warn('[VoiceSupport] Already recording');
       return;
     }
 
     // Try streaming mode first (lower latency)
     if (this.config.useStreamingMode && streamingVoicePipeline.isSupported()) {
       try {
-        console.log('[VoiceSupport] Starting streaming mode for low-latency voice interaction');
         this.streamingModeActive = true;
         streamingVoicePipeline.setConfig({ language: this.config.language });
         await streamingVoicePipeline.startInteraction(this.conversationId || undefined);
         return;
       } catch (error) {
-        console.warn('[VoiceSupport] Streaming mode failed, falling back to batch mode:', error);
         this.streamingModeActive = false;
       }
     }
 
     // Fall back to batch mode
-    console.log('[VoiceSupport] Using batch mode for voice interaction');
     try {
       this.emitStateChange('listening');
 
@@ -185,7 +177,6 @@ class VoiceSupportService extends EventEmitter {
       };
 
       this.mediaRecorder.onerror = (event) => {
-        console.error('[VoiceSupport] MediaRecorder error:', event);
         this.handleError(new Error('Recording error'));
       };
 
@@ -197,9 +188,7 @@ class VoiceSupportService extends EventEmitter {
         this.stopListening();
       }, this.config.maxRecordingDuration);
 
-      console.log('[VoiceSupport] Recording started');
     } catch (error) {
-      console.error('[VoiceSupport] Error starting recording:', error);
       this.handleError(error instanceof Error ? error : new Error('Failed to start recording'));
     }
   }
@@ -211,7 +200,6 @@ class VoiceSupportService extends EventEmitter {
     // Handle streaming mode
     if (this.streamingModeActive) {
       streamingVoicePipeline.commit('button');
-      console.log('[VoiceSupport] Streaming mode: sent commit signal');
       return;
     }
 
@@ -240,7 +228,6 @@ class VoiceSupportService extends EventEmitter {
       this.audioStream = null;
     }
 
-    console.log('[VoiceSupport] Recording stopped');
   }
 
   /**
@@ -278,7 +265,6 @@ class VoiceSupportService extends EventEmitter {
 
       // Check minimum size (avoid sending silent recordings)
       if (audioBlob.size < 1000) {
-        console.log('[VoiceSupport] Audio too short, skipping');
         this.emitStateChange('idle');
         return;
       }
@@ -287,7 +273,6 @@ class VoiceSupportService extends EventEmitter {
       const transcript = await this.transcribeAudio(audioBlob);
 
       if (!transcript || transcript.trim().length === 0) {
-        console.log('[VoiceSupport] No transcript detected');
         this.emitStateChange('idle');
         return;
       }
@@ -309,7 +294,6 @@ class VoiceSupportService extends EventEmitter {
 
       this.emitStateChange('idle');
     } catch (error) {
-      console.error('[VoiceSupport] Error processing recording:', error);
       this.handleError(error instanceof Error ? error : new Error('Processing failed'));
     }
   }
@@ -418,7 +402,6 @@ class VoiceSupportService extends EventEmitter {
    * Handle errors
    */
   private handleError(error: Error): void {
-    console.error('[VoiceSupport] Error:', error);
     this.emitStateChange('error');
     this.emit('error', error);
 
@@ -458,7 +441,6 @@ class VoiceSupportService extends EventEmitter {
    */
   setStreamingMode(enabled: boolean): void {
     this.config.useStreamingMode = enabled;
-    console.log(`[VoiceSupport] Streaming mode ${enabled ? 'enabled' : 'disabled'}`);
   }
 
   /**
@@ -490,7 +472,6 @@ class VoiceSupportService extends EventEmitter {
       stream.getTracks().forEach((track) => track.stop());
       return true;
     } catch (error) {
-      console.error('[VoiceSupport] Permission denied:', error);
       return false;
     }
   }

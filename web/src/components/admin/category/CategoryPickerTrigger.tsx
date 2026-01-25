@@ -3,7 +3,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { ChevronDown } from 'lucide-react';
 import { z } from 'zod';
 import { GlassView } from '@bayit/shared/ui';
-import { colors, borderRadius } from '@bayit/shared/theme';
+import { colors, borderRadius } from '@olorin/design-tokens';
 
 const CategoryPickerTriggerPropsSchema = z.object({
   selectedCategory: z.object({
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   },
   containerError: {
     borderWidth: 1,
-    borderColor: colors.error,
+    borderColor: colors.error.DEFAULT,
   },
   text: {
     flex: 1,
