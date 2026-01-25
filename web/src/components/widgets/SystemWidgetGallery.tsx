@@ -204,12 +204,26 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
   const [error, setError] = useState<string | null>(null);
 
   // Get local state to check which widgets are hidden
-  const { localState, showWidget, updatePosition } = useWidgetStore();
+  const { localState, showWidget, updatePosition, toggleMinimize } = useWidgetStore();
 
   // Reset widget position to defaults
   const handleResetPosition = useCallback((widgetId: string) => {
+    logger.debug('Reset position clicked (SystemWidget)', 'SystemWidgetGallery', { widgetId });
+
+    // If widget is minimized, un-minimize it first
+    const state = localState[widgetId];
+    if (state?.isMinimized) {
+      logger.debug('Widget is minimized, un-minimizing first', 'SystemWidgetGallery', { widgetId });
+      toggleMinimize(widgetId);
+    }
+
     const widget = widgets.find(w => w.id === widgetId);
     if (widget?.position) {
+      logger.debug('Resetting position to defaults', 'SystemWidgetGallery', {
+        widgetId,
+        position: widget.position
+      });
+
       updatePosition(widgetId, {
         x: widget.position.x,
         y: widget.position.y,
@@ -217,7 +231,7 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
         height: widget.position.height,
       });
     }
-  }, [widgets, updatePosition]);
+  }, [widgets, localState, updatePosition, toggleMinimize]);
 
   const numColumns = width >= 1280 ? 4 : width >= 1024 ? 3 : width >= 768 ? 2 : 1;
 

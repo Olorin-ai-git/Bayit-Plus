@@ -131,6 +131,13 @@ export default function DubbingControls({
             isConnecting={isConnecting}
             isPremium={isPremium}
             onPress={handlePress}
+            tooltip={
+              isEnabled
+                ? t('dubbing.active', 'Live Dubbing Active')
+                : isPremium
+                ? t('dubbing.clickToEnable', 'Click to enable live dubbing')
+                : t('dubbing.premiumRequired', 'Premium subscription required')
+            }
           />
         </View>
 

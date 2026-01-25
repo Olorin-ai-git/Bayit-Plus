@@ -1,11 +1,12 @@
 /**
  * SearchCardBadges Component
  *
- * Displays badges for search result cards (Premium, Kids, Featured)
+ * Displays badges for search result cards (Premium, Kids, Featured, Auth Required)
  */
 
 import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Lock } from 'lucide-react';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 interface SearchCardBadgesProps {
@@ -15,6 +16,8 @@ interface SearchCardBadgesProps {
   isKidsContent?: boolean;
   /** Is featured content */
   isFeatured?: boolean;
+  /** Requires authentication to view */
+  requiresAuth?: boolean;
 }
 
 /**
@@ -25,13 +28,20 @@ export const SearchCardBadges = memo(function SearchCardBadges({
   requiresSubscription,
   isKidsContent,
   isFeatured,
+  requiresAuth,
 }: SearchCardBadgesProps) {
-  if (!requiresSubscription && !isKidsContent && !isFeatured) {
+  if (!requiresSubscription && !isKidsContent && !isFeatured && !requiresAuth) {
     return null;
   }
 
   return (
     <View style={styles.badges}>
+      {requiresAuth && (
+        <View style={styles.badge}>
+          <Lock size={12} color={colors.text} strokeWidth={2} />
+          <Text style={styles.badgeText}>Login</Text>
+        </View>
+      )}
       {requiresSubscription !== 'free' && (
         <View style={styles.badge}>
           <Text style={styles.badgeText}>👑 Premium</Text>
@@ -59,6 +69,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     backgroundColor: colors.glassOverlay,
     borderRadius: 8,
     paddingHorizontal: 12,

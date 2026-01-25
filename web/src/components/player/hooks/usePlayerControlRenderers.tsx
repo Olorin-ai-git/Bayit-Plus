@@ -17,6 +17,7 @@ interface UsePlayerControlRenderersParams {
   isLive: boolean
   containerRef: React.RefObject<HTMLDivElement>
   videoRef: React.RefObject<HTMLVideoElement>
+  isWidget?: boolean
 
   // Watch Party
   party: WatchParty | null
@@ -59,6 +60,7 @@ export function usePlayerControlRenderers({
   isLive,
   containerRef,
   videoRef,
+  isWidget = false,
   party,
   showPartyPanel,
   setShowCreateModal,
@@ -116,7 +118,7 @@ export function usePlayerControlRenderers({
      fetchAvailableSubtitles, subtitlesLoading, containerRef])
 
   const renderLiveSubtitleControls = useCallback(() =>
-    isLive && contentId ? (
+    isLive && contentId && !isWidget ? (
       <LiveSubtitleControls
         channelId={contentId}
         isLive={isLive}
@@ -130,11 +132,11 @@ export function usePlayerControlRenderers({
         onHoveredButtonChange={onHoveredButtonChange}
       />
     ) : null
-  , [isLive, contentId, isPremium, videoRef, handleLiveSubtitleCue, onShowUpgrade,
+  , [isLive, contentId, isWidget, isPremium, videoRef, handleLiveSubtitleCue, onShowUpgrade,
      liveSubtitleLang, setLiveSubtitleLang, dubbing.disconnect, onHoveredButtonChange])
 
   const renderDubbingControls = useCallback(() =>
-    isLive && contentId ? (
+    isLive && contentId && !isWidget ? (
       <DubbingControls
         isEnabled={dubbing.isConnected}
         isConnecting={dubbing.isConnecting}
@@ -172,7 +174,7 @@ export function usePlayerControlRenderers({
         onHoveredButtonChange={onHoveredButtonChange}
       />
     ) : null
-  , [isLive, contentId, isPremium, dubbing, onShowUpgrade, onHoveredButtonChange])
+  , [isLive, contentId, isWidget, isPremium, dubbing, onShowUpgrade, onHoveredButtonChange])
 
   const renderRecordButton = useCallback(() =>
     isLive && contentId ? (

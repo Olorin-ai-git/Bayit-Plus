@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { Widget } from '@/types/widget';
+import logger from '@/utils/logger';
 
 interface WidgetCardProps {
   widget: Widget;
@@ -120,8 +121,8 @@ export default function WidgetCard({
           <View style={styles.actionButtons}>
             <GlassButton
               title=""
-              onPress={(e) => {
-                e?.stopPropagation?.();
+              onPress={() => {
+                logger.debug('Reset button clicked in WidgetCard', 'WidgetCard', { widgetId: widget.id });
                 onResetPosition(widget.id);
               }}
               variant="ghost"
@@ -276,6 +277,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs / 2,
+    zIndex: 10,
   },
   iconButton: {
     width: 32,

@@ -48,6 +48,9 @@ interface VideoPlayerOverlaysProps {
 
   // Loading
   loading: boolean
+
+  // Widget mode
+  isWidget?: boolean
 }
 
 export default function VideoPlayerOverlays({
@@ -71,6 +74,7 @@ export default function VideoPlayerOverlays({
   isTTSPlaying,
   usageStats,
   loading,
+  isWidget = false,
 }: VideoPlayerOverlaysProps) {
   const { t, i18n } = useTranslation()
 
@@ -93,11 +97,11 @@ export default function VideoPlayerOverlays({
         />
       )}
 
-      {/* Live Subtitle Overlay (Premium) */}
-      {isLive && <LiveSubtitleOverlay cues={visibleLiveSubtitles} />}
+      {/* Live Subtitle Overlay (Premium) - Hidden in widget mode */}
+      {isLive && !isWidget && <LiveSubtitleOverlay cues={visibleLiveSubtitles} />}
 
-      {/* Live Dubbing Overlay (Premium) */}
-      {isLive && (
+      {/* Live Dubbing Overlay (Premium) - Hidden in widget mode */}
+      {isLive && !isWidget && (
         <DubbingOverlay
           isActive={dubbingIsConnected}
           originalText={dubbingLastTranscript}
@@ -116,8 +120,8 @@ export default function VideoPlayerOverlays({
         />
       )}
 
-      {/* Live Subtitle Usage Indicator (Premium) */}
-      {isLive && usageStats && liveSubtitleService.isServiceConnected() && (
+      {/* Live Subtitle Usage Indicator (Premium) - Hidden in widget mode */}
+      {isLive && !isWidget && usageStats && liveSubtitleService.isServiceConnected() && (
         <LiveFeatureUsageIndicator
           featureType="subtitle"
           usageStats={usageStats}
@@ -125,8 +129,8 @@ export default function VideoPlayerOverlays({
         />
       )}
 
-      {/* Live Dubbing Usage Indicator (Premium) */}
-      {isLive && usageStats && dubbingIsConnected && (
+      {/* Live Dubbing Usage Indicator (Premium) - Hidden in widget mode */}
+      {isLive && !isWidget && usageStats && dubbingIsConnected && (
         <LiveFeatureUsageIndicator
           featureType="dubbing"
           usageStats={usageStats}

@@ -252,17 +252,92 @@ export const useWidgetStore = create<WidgetState>()(
       toggleMinimize: (widgetId) => {
         const { localState } = get();
         const widgetState = localState[widgetId];
-        if (widgetState) {
-          const newIsMinimized = !widgetState.isMinimized;
+        if (!widgetState) return;
+
+        const newIsMinimized = !widgetState.isMinimized;
+
+        // Minimized widget dimensions
+        const MINIMIZED_WIDTH = 200;
+        const MINIMIZED_HEIGHT = 60;
+        const MINIMIZED_SPACING = 10;
+        const BOTTOM_MARGIN = 10;
+
+        if (newIsMinimized) {
+          // Calculate position in horizontal stack at bottom of screen
+          const minimizedWidgets = Object.entries(localState).filter(
+            ([id, state]) => state.isMinimized && id !== widgetId
+          );
+
+          const stackIndex = minimizedWidgets.length;
+          const x = MINIMIZED_SPACING + (stackIndex * (MINIMIZED_WIDTH + MINIMIZED_SPACING));
+          const y = window.innerHeight - MINIMIZED_HEIGHT - BOTTOM_MARGIN;
+
+          // Save current position before minimizing
+          const savedPosition = {
+            x: widgetState.position.x,
+            y: widgetState.position.y,
+            width: widgetState.position.width,
+            height: widgetState.position.height,
+          };
+
           set({
             localState: {
               ...localState,
               [widgetId]: {
                 ...widgetState,
-                isMinimized: newIsMinimized,
+                isMinimized: true,
+                savedPosition,
+                position: {
+                  ...widgetState.position,
+                  x,
+                  y,
+                  width: MINIMIZED_WIDTH,
+                  height: MINIMIZED_HEIGHT,
+                },
               },
             },
           });
+        } else {
+          // Restore from minimized state
+          const restoredPosition = widgetState.savedPosition || {
+            x: widgetState.position.x,
+            y: 100,
+            width: 630,
+            height: 230,
+          };
+
+          // Build complete updated state in one go
+          const updatedState = { ...localState };
+
+          // Restore the widget
+          updatedState[widgetId] = {
+            ...widgetState,
+            isMinimized: false,
+            savedPosition: undefined,
+            position: {
+              ...widgetState.position,
+              ...restoredPosition,
+            },
+          };
+
+          // Reposition other minimized widgets to fill the gap
+          const remainingMinimized = Object.entries(localState)
+            .filter(([id, state]) => state.isMinimized && id !== widgetId)
+            .sort((a, b) => a[1].position.x - b[1].position.x);
+
+          remainingMinimized.forEach(([id, state], index) => {
+            const newX = MINIMIZED_SPACING + (index * (MINIMIZED_WIDTH + MINIMIZED_SPACING));
+            updatedState[id] = {
+              ...state,
+              position: {
+                ...state.position,
+                x: newX,
+              },
+            };
+          });
+
+          // Single state update with all changes
+          set({ localState: updatedState });
         }
       },
 

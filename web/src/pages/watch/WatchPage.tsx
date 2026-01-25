@@ -9,12 +9,14 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
+import { useAuthStore } from '@/stores/authStore';
 import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import { historyService } from '@/services/api';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import {
+  AuthRequiredOverlay,
   BackButton,
   ContentActions,
   ContentMetadata,
@@ -35,7 +37,8 @@ import { WatchPageProps } from './types';
 export function WatchPage({ type = 'vod' }: WatchPageProps) {
   const { t } = useTranslation();
   const { isRTL } = useDirection();
-  const { showConfirm } = useModal();
+  const { showConfirm, showError } = useModal();
+  const user = useAuthStore((s) => s.user);
   const params = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -123,6 +126,19 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
     );
   };
 
+  // Show notification if user tries to access content without being logged in
+  useEffect(() => {
+    if (!loading && content && !streamUrl && !user) {
+      showError(
+        t('auth.loginToWatch', { title: content.title || content.name || t('common.thisContent') }),
+        {
+          title: t('auth.loginRequired'),
+          onClose: () => navigate('/auth/login'),
+        }
+      );
+    }
+  }, [loading, content, streamUrl, user, showError, navigate, t]);
+
   if (loading) {
     return <LoadingState />;
   }
@@ -138,13 +154,19 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
 
   const isAudio = effectiveType === 'radio' || effectiveType === 'podcast';
   const title = content.title || content.name || '';
+  const requiresAuth = !streamUrl && !user;
 
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
       <BackButton label={t('common.back')} onPress={() => window.history.back()} />
 
       <View style={styles.playerContainer}>
-        {isAudio ? (
+        {requiresAuth ? (
+          <AuthRequiredOverlay
+            title={title}
+            poster={content.backdrop || content.thumbnail}
+          />
+        ) : isAudio ? (
           <AudioPlayer
             src={streamUrl}
             title={title}
