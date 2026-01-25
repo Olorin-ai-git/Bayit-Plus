@@ -985,7 +985,28 @@
     "phoneUnverified": "電話未認証",
     "completeVerification": "すべての機能をアンロックするには認証を完了してください",
     "unlockPremium": "プレミアム機能をアンロック",
-    "unlockPremiumDescription": "限定コンテンツと機能を楽しむためにアップグレード"
+    "unlockPremiumDescription": "限定コンテンツと機能を楽しむためにアップグレード",
+    "tabs": {
+      "devices": "デバイス"
+    },
+    "devices": {
+      "registeredDevices": "登録済みデバイス",
+      "description": "アカウントにアクセスできるデバイスを管理します。デバイスを切断してストリーミングスロットを解放できます。",
+      "noDevices": "デバイスが接続されていません",
+      "noDevicesDescription": "異なるプラットフォームでログインすると、デバイスがここに表示されます",
+      "activeNow": "現在アクティブ",
+      "minutesAgo": "{{count}}分前",
+      "hoursAgo": "{{count}}時間前",
+      "daysAgo": "{{count}}日前",
+      "disconnect": "切断",
+      "confirmDisconnect": "デバイスを切断しますか？",
+      "confirmDisconnectMessage": "このデバイス上のすべてのアクティブな再生セッションを終了し、アカウントから削除します。",
+      "disconnectSuccess": "デバイスが切断されました",
+      "disconnectSuccessMessage": "デバイスが正常に切断されました。",
+      "disconnectSuccessWithSessions": "デバイスが切断され、{{count}}個のアクティブセッションが終了しました。",
+      "thisDevice": "このデバイス",
+      "loading": "デバイスを読み込み中..."
+    }
   },
   "settings": {
     "title": "設定",
@@ -1116,7 +1137,14 @@
     "relatedContent": "関連コンテンツ",
     "upNext": "次のコンテンツ",
     "autoPlayIn": "{{seconds}}秒後に自動再生",
-    "cancelAutoPlay": "自動再生をキャンセル"
+    "cancelAutoPlay": "自動再生をキャンセル",
+    "streamLimit": {
+      "title": "ストリーミング制限に達しました",
+      "message": "プランの同時ストリーミング数の上限（{{maxStreams}}）に達しました。",
+      "activeDevices": "現在{{count}}台のデバイスでストリーミング中:",
+      "hint": "デバイスを切断してストリーミングスロットを解放するか、プランをアップグレードして同時ストリーミング数を増やしてください。",
+      "manageDevices": "デバイスを管理"
+    }
   },
   "content": {
     "title": "タイトル",
@@ -1454,7 +1482,45 @@
     "alreadySubscribed": "既に登録されています",
     "manageSubscription": "サブスクリプション管理",
     "viewComparison": "完全な比較を表示",
-    "viewCards": "プランを表示"
+    "viewCards": "プランを表示",
+    "premiumShowcase": {
+      "title": "プレミアムインテリジェンスを体験",
+      "subtitle": "視聴方法に適応するAI駆動機能",
+      "videoTitle": "ウィジェットの実際の動作を見る",
+      "videoDescription": "フローティングウィジェットの2分間の紹介をご覧ください",
+      "widgetTitle": "インタラクティブライブデモ",
+      "widgetDescription": "Kan11でドラッグ、サイズ変更、マルチタスク",
+      "aiAssistant": {
+        "title": "AIスマートアシスタント",
+        "description": "機械学習によるパーソナライズされた推奨事項"
+      },
+      "floatingWidgets": {
+        "title": "フローティングウィジェット",
+        "description": "コンテンツを閲覧しながら複数のチャンネルを視聴"
+      },
+      "a11y": {
+        "playVideo": "ウィジェット紹介ビデオを再生",
+        "playVideoHint": "フルスクリーンでビデオデモを開きます"
+      },
+      "badges": {
+        "aiPowered": "AI駆動",
+        "interactiveDemo": "インタラクティブデモ"
+      }
+    },
+    "comparison": {
+      "title": "プランを比較",
+      "subtitle": "あなたにぴったりのプランを見つける",
+      "features": "機能",
+      "perMonth": "/月",
+      "scrollHint": "← スクロールしてすべてのプランを表示 →",
+      "categories": {
+        "content": "コンテンツアクセス",
+        "quality": "品質とパフォーマンス",
+        "devices": "デバイスとストリーミング",
+        "features": "機能",
+        "support": "サポート"
+      }
+    }
   },
   "footer": {
     "about": "会社概要",

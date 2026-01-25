@@ -6,6 +6,7 @@
     "cancel": "キャンセル",
     "save": "保存",
     "delete": "削除",
+    "disconnect": "切断",
     "edit": "編集",
     "close": "閉じる",
     "back": "戻る",
@@ -1094,6 +1095,15 @@
     "restart": "最初から再生",
     "subtitlesOff": "オフ",
     "speed": "速度",
+    "cast": {
+      "start": "テレビにキャストする",
+      "connected": "{{device}}にキャスト中",
+      "disconnect": "{{device}}から切断",
+      "connecting": "キャストデバイスに接続中...",
+      "error": "キャストデバイスへの接続に失敗しました",
+      "noDevices": "キャストデバイスが見つかりません",
+      "unsupported": "このコンテンツはキャストできません"
+    },
     "relatedContent": "関連コンテンツ",
     "upNext": "次のコンテンツ",
     "autoPlayIn": "{{seconds}}秒後に自動再生",
@@ -1413,6 +1423,44 @@
     "mostPopular": "人気",
     "bestValue": "お得",
     "features": "機能",
+    "premiumShowcase": {
+      "title": "プレミアムインテリジェンスを体験",
+      "subtitle": "視聴方法に適応するAI駆動機能",
+      "videoTitle": "ウィジェットの実際の動作を見る",
+      "videoDescription": "フローティングウィジェットの2分間の紹介をご覧ください",
+      "widgetTitle": "インタラクティブライブデモ",
+      "widgetDescription": "Kan11でドラッグ、サイズ変更、マルチタスク",
+      "aiAssistant": {
+        "title": "AIスマートアシスタント",
+        "description": "機械学習によるパーソナライズされた推奨事項"
+      },
+      "floatingWidgets": {
+        "title": "フローティングウィジェット",
+        "description": "コンテンツを閲覧しながら複数のチャンネルを視聴"
+      },
+      "a11y": {
+        "playVideo": "ウィジェット紹介ビデオを再生",
+        "playVideoHint": "フルスクリーンでビデオデモを開きます"
+      },
+      "badges": {
+        "aiPowered": "AI駆動",
+        "interactiveDemo": "インタラクティブデモ"
+      }
+    },
+    "comparison": {
+      "title": "プランを比較",
+      "subtitle": "あなたにぴったりのプランを見つける",
+      "features": "機能",
+      "perMonth": "/月",
+      "scrollHint": "← スクロールしてすべてのプランを表示 →",
+      "categories": {
+        "content": "コンテンツアクセス",
+        "quality": "品質とパフォーマンス",
+        "devices": "デバイスとストリーミング",
+        "features": "機能",
+        "support": "サポート"
+      }
+    },
     "included": "含まれる機能",
     "notIncluded": "含まれない機能",
     "compare": "プランを比較",

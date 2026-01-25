@@ -636,7 +636,8 @@
       "notifications": "通知",
       "security": "安全",
       "ai": "AI与语音",
-      "voice": "语音与无障碍"
+      "voice": "语音与无障碍",
+      "devices": "设备"
     },
     "subscription": {
       "currentPlan": "当前套餐",
@@ -766,7 +767,25 @@
     "phoneUnverified": "手机未验证",
     "completeVerification": "完成验证以解锁所有功能",
     "unlockPremium": "解锁高级功能",
-    "unlockPremiumDescription": "升级以享受独家内容和功能"
+    "unlockPremiumDescription": "升级以享受独家内容和功能",
+    "devices": {
+      "registeredDevices": "已注册设备",
+      "description": "管理有权访问您账户的设备。您可以断开设备连接以释放流媒体插槽。",
+      "noDevices": "没有连接的设备",
+      "noDevicesDescription": "当您在不同平台上登录时，设备将显示在此处",
+      "activeNow": "当前活跃",
+      "minutesAgo": "{{count}}分钟前",
+      "hoursAgo": "{{count}}小时前",
+      "daysAgo": "{{count}}天前",
+      "disconnect": "断开连接",
+      "confirmDisconnect": "断开设备连接？",
+      "confirmDisconnectMessage": "这将结束此设备上的所有活动播放会话并将其从您的账户中删除。",
+      "disconnectSuccess": "设备已断开",
+      "disconnectSuccessMessage": "设备已成功断开连接。",
+      "disconnectSuccessWithSessions": "设备已断开连接，{{count}}个活动会话已结束。",
+      "thisDevice": "此设备",
+      "loading": "正在加载设备..."
+    }
   },
   "voiceMode": {
     "voiceOnly": "仅语音",
@@ -920,6 +939,13 @@
       "requiredMessage": "需要付费订阅",
       "upgradeInfo": "升级您的订阅以访问高级内容",
       "upgrade": "立即升级"
+    },
+    "streamLimit": {
+      "title": "已达到流媒体限制",
+      "message": "您已达到套餐的最大并发流媒体数（{{maxStreams}}）。",
+      "activeDevices": "当前正在{{count}}个设备上流式传输:",
+      "hint": "断开一个设备以释放流媒体插槽，或升级您的套餐以获得更多并发流媒体。",
+      "manageDevices": "管理设备"
     }
   },
   "empty": {
@@ -1353,7 +1379,45 @@
     "startTrial": "开始免费试用",
     "noCharge": "试用期间不会收取您的信用卡费用",
     "viewComparison": "查看完整比较",
-    "viewCards": "查看套餐"
+    "viewCards": "查看套餐",
+    "premiumShowcase": {
+      "title": "体验高级智能",
+      "subtitle": "AI驱动的功能，适应您的观看方式",
+      "videoTitle": "观看小部件实际操作",
+      "videoDescription": "观看我们2分钟的浮动小部件介绍",
+      "widgetTitle": "交互式实时演示",
+      "widgetDescription": "拖动、调整大小并与Kan11多任务处理",
+      "aiAssistant": {
+        "title": "AI智能助手",
+        "description": "由机器学习驱动的个性化推荐"
+      },
+      "floatingWidgets": {
+        "title": "浮动小部件",
+        "description": "浏览内容时观看多个频道"
+      },
+      "a11y": {
+        "playVideo": "播放小部件介绍视频",
+        "playVideoHint": "打开全屏视频演示"
+      },
+      "badges": {
+        "aiPowered": "AI驱动",
+        "interactiveDemo": "交互式演示"
+      }
+    },
+    "comparison": {
+      "title": "比较计划",
+      "subtitle": "找到最适合您的计划",
+      "features": "功能",
+      "perMonth": "/月",
+      "scrollHint": "← 滚动查看所有计划 →",
+      "categories": {
+        "content": "内容访问",
+        "quality": "质量和性能",
+        "devices": "设备和流媒体",
+        "features": "功能",
+        "support": "支持"
+      }
+    }
   },
   "notFound": {
     "title": "页面未找到",

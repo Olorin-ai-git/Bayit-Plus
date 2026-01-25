@@ -8,6 +8,29 @@ from pydantic import BaseModel, EmailStr, Field, validator
 from app.models.recording import RecordingQuota
 
 
+class Device(BaseModel):
+    """
+    Represents a registered device for a user.
+
+    Device fingerprinting is based on user agent, screen resolution, and platform.
+    Device ID is a SHA-256 hash for uniqueness and privacy.
+    """
+
+    device_id: str  # SHA-256 hash of UA+screen+platform
+    device_name: str  # e.g., "iPhone 15 Pro", "Chrome on Windows 11"
+    device_type: str  # mobile, desktop, tv, tablet
+    browser: Optional[str] = None  # Chrome, Safari, Firefox
+    os: Optional[str] = None  # iOS 17.2, Windows 11
+    platform: Optional[str] = None  # iOS, Android, Web, tvOS
+    ip_address: Optional[str] = None
+    last_active: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    registered_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    is_current: bool = False  # Flag for current device
+
+    class Config:
+        from_attributes = True
+
+
 class UserBase(BaseModel):
     email: EmailStr
     name: str
@@ -86,7 +109,7 @@ class UserAdminResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     last_login: Optional[datetime] = None
-    devices: List[dict] = []
+    devices: List[Device] = []
     stripe_customer_id: Optional[str] = None
 
     class Config:
@@ -203,7 +226,7 @@ class User(Document):
     )
 
     # Device management
-    devices: List[dict] = Field(default_factory=list)
+    devices: List[Device] = Field(default_factory=list)
     max_concurrent_streams: int = 1
 
     # Recording quota (for premium users)
@@ -328,6 +351,28 @@ class User(Document):
             self.phone_verified = True
         else:
             self.is_verified = self.email_verified and self.phone_verified
+
+    def get_concurrent_stream_limit(self) -> int:
+        """
+        Get the concurrent stream limit based on subscription tier.
+
+        Returns:
+            Maximum number of concurrent streams allowed for user's subscription.
+            Defaults to 1 (basic plan) if no subscription tier is set.
+        """
+        # Import here to avoid circular dependency
+        from app.models.subscription import SUBSCRIPTION_PLANS
+
+        # Admin users get unlimited streams (family plan limit)
+        if self.is_admin_role():
+            return SUBSCRIPTION_PLANS["family"].max_streams
+
+        # Return limit based on subscription tier
+        if self.subscription_tier and self.subscription_tier in SUBSCRIPTION_PLANS:
+            return SUBSCRIPTION_PLANS[self.subscription_tier].max_streams
+
+        # Default to basic plan limit
+        return SUBSCRIPTION_PLANS["basic"].max_streams
 
 
 class TokenResponse(BaseModel):

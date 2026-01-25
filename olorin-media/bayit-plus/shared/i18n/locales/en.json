@@ -688,7 +688,8 @@
       "notifications": "Notifications",
       "security": "Security",
       "ai": "AI & Voice",
-      "voice": "Voice & Accessibility"
+      "voice": "Voice & Accessibility",
+      "devices": "Devices"
     },
     "subscription": {
       "currentPlan": "Current Plan",
@@ -769,6 +770,31 @@
       "voiceFeedback": "Voice feedback on actions",
       "voiceFeedbackDesc": "Get voice confirmation when you use the remote or click buttons",
       "feedbackExample": "Example: Click a movie → App says \"Playing [Movie Name]\""
+    },
+    "devices": {
+      "registeredDevices": "Registered Devices",
+      "description": "Manage devices that have access to your account. You can disconnect devices to free up stream slots.",
+      "noDevices": "No devices connected",
+      "noDevicesDescription": "Devices will appear here when you log in on different platforms",
+      "loading": "Loading devices...",
+      "thisDevice": "This device",
+      "activeNow": "Active now",
+      "minutesAgo": "{{count}} minutes ago",
+      "minutesAgo_one": "1 minute ago",
+      "minutesAgo_other": "{{count}} minutes ago",
+      "hoursAgo": "{{count}} hours ago",
+      "hoursAgo_one": "1 hour ago",
+      "hoursAgo_other": "{{count}} hours ago",
+      "daysAgo": "{{count}} days ago",
+      "daysAgo_one": "1 day ago",
+      "daysAgo_other": "{{count}} days ago",
+      "disconnect": "Disconnect",
+      "confirmDisconnect": "Disconnect Device?",
+      "confirmDisconnectMessage": "This will end all active playback sessions on this device and remove it from your account.",
+      "disconnectSuccess": "Device Disconnected",
+      "disconnectSuccessMessage": "Device has been successfully disconnected.",
+      "disconnectSuccessWithSessions": "Device disconnected and {{count}} active session(s) ended.",
+      "disconnectDevice": "Disconnect Device"
     },
     "dropdown": {
       "myProfile": "My Profile",
@@ -1060,6 +1086,13 @@
       "panelOpened": "Scene search panel opened",
       "navigation": "Scene search navigation",
       "position": "Result {{current}} of {{total}}"
+    },
+    "streamLimit": {
+      "title": "Stream Limit Reached",
+      "message": "You have reached the maximum number of concurrent streams ({{maxStreams}}) for your plan.",
+      "activeDevices": "Currently streaming on {{count}} device(s):",
+      "hint": "Disconnect a device to free up a streaming slot, or upgrade your plan for more concurrent streams.",
+      "manageDevices": "Manage Devices"
     }
   },
   "empty": {
@@ -3318,7 +3351,45 @@
     "startTrial": "Start Free Trial",
     "noCharge": "Your credit card won't be charged during the trial period",
     "viewComparison": "View Full Comparison",
-    "viewCards": "View Plans"
+    "viewCards": "View Plans",
+    "premiumShowcase": {
+      "title": "Experience Premium Intelligence",
+      "subtitle": "AI-powered features that adapt to how you watch",
+      "videoTitle": "See Widgets in Action",
+      "videoDescription": "Watch our 2-minute intro to floating widgets",
+      "widgetTitle": "Interactive Live Demo",
+      "widgetDescription": "Drag, resize, and multitask with Kan11",
+      "aiAssistant": {
+        "title": "AI Smart Assistant",
+        "description": "Personalized recommendations powered by machine learning"
+      },
+      "floatingWidgets": {
+        "title": "Floating Widgets",
+        "description": "Watch multiple channels while browsing content"
+      },
+      "a11y": {
+        "playVideo": "Play widgets intro video",
+        "playVideoHint": "Opens full-screen video demonstration"
+      },
+      "badges": {
+        "aiPowered": "AI-POWERED",
+        "interactiveDemo": "INTERACTIVE DEMO"
+      }
+    },
+    "comparison": {
+      "title": "Compare Plans",
+      "subtitle": "Find the perfect plan for you",
+      "features": "Features",
+      "perMonth": "/mo",
+      "scrollHint": "← Scroll to see all plans →",
+      "categories": {
+        "content": "Content Access",
+        "quality": "Quality & Performance",
+        "devices": "Devices & Streaming",
+        "features": "Features",
+        "support": "Support"
+      }
+    }
   },
   "notFound": {
     "title": "Page Not Found",

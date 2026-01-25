@@ -44,12 +44,13 @@ def register_all_routers(app: FastAPI) -> None:
                                 admin_uploads, admin_widgets,
                                 admin_youngsters_content, auth, chapters, chat,
                                 chess, children, content, content_taxonomy,
-                                cultures, device_pairing, direct_messages,
-                                downloads, epg, family_controls, favorites,
-                                friends, health, history, jerusalem, judaism,
-                                librarian, live, live_dubbing, live_quota,
-                                news, notifications, onboarding, party,
-                                password_reset, podcasts, profile_stats,
+                                cultures, device_pairing, devices,
+                                direct_messages, downloads, epg,
+                                family_controls, favorites, friends, health,
+                                history, jerusalem, judaism, librarian, live,
+                                live_dubbing, live_quota, news, notifications,
+                                onboarding, party, password_reset,
+                                playback_session, podcasts, profile_stats,
                                 profiles, radio, recordings, ritual, search,
                                 search_analytics, search_llm, search_scenes,
                                 search_suggestions, stats, subscriptions,
@@ -159,6 +160,12 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(users.router, prefix=f"{prefix}/users", tags=["users"])
     app.include_router(profile_stats.router, prefix=prefix, tags=["profile"])
+    app.include_router(devices.router, prefix=f"{prefix}/devices", tags=["devices"])
+    app.include_router(
+        playback_session.router,
+        prefix=f"{prefix}/playback/session",
+        tags=["playback", "session"],
+    )
     logger.debug("Registered user routes")
 
     # ============================================

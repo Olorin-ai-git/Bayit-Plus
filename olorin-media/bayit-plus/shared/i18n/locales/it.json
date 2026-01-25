@@ -442,6 +442,13 @@
       "requiredMessage": "richiede un abbonamento a pagamento",
       "upgradeInfo": "Aggiorna il tuo abbonamento per accedere ai contenuti premium",
       "upgrade": "Aggiorna ora"
+    },
+    "streamLimit": {
+      "title": "Limite di streaming raggiunto",
+      "message": "Hai raggiunto il numero massimo di streaming simultanei ({{maxStreams}}) per il tuo piano.",
+      "activeDevices": "Attualmente in streaming su {{count}} dispositivo(i):",
+      "hint": "Disconnetti un dispositivo per liberare uno slot di streaming, o aggiorna il tuo piano per più streaming simultanei.",
+      "manageDevices": "Gestisci dispositivi"
     }
   },
   "content": {
@@ -636,7 +643,45 @@
     "startTrial": "Inizia prova gratuita",
     "noCharge": "La tua carta non verrà addebitata durante il periodo di prova",
     "viewComparison": "Vedi confronto completo",
-    "viewCards": "Vedi piani"
+    "viewCards": "Vedi piani",
+    "premiumShowcase": {
+      "title": "Sperimenta l'Intelligenza Premium",
+      "subtitle": "Funzionalità basate sull'IA che si adattano al tuo modo di guardare",
+      "videoTitle": "Vedi i Widget in Azione",
+      "videoDescription": "Guarda la nostra introduzione di 2 minuti ai widget flottanti",
+      "widgetTitle": "Demo Interattiva dal Vivo",
+      "widgetDescription": "Trascina, ridimensiona e multitasking con Kan11",
+      "aiAssistant": {
+        "title": "Assistente Intelligente AI",
+        "description": "Raccomandazioni personalizzate basate sull'apprendimento automatico"
+      },
+      "floatingWidgets": {
+        "title": "Widget Flottanti",
+        "description": "Guarda più canali mentre navighi nei contenuti"
+      },
+      "a11y": {
+        "playVideo": "Riproduci video introduttivo dei widget",
+        "playVideoHint": "Apre dimostrazione video a schermo intero"
+      },
+      "badges": {
+        "aiPowered": "ALIMENTATO DA IA",
+        "interactiveDemo": "DEMO INTERATTIVA"
+      }
+    },
+    "comparison": {
+      "title": "Confronta i Piani",
+      "subtitle": "Trova il piano perfetto per te",
+      "features": "Caratteristiche",
+      "perMonth": "/mese",
+      "scrollHint": "← Scorri per vedere tutti i piani →",
+      "categories": {
+        "content": "Accesso ai Contenuti",
+        "quality": "Qualità e Prestazioni",
+        "devices": "Dispositivi e Streaming",
+        "features": "Caratteristiche",
+        "support": "Supporto"
+      }
+    }
   },
   "footer": {
     "brandDescription": "La tua casa negli USA. Trasmissioni TV, VOD, radio e podcast in ebraico.",
@@ -830,7 +875,28 @@
     "phoneUnverified": "Telefono non verificato",
     "completeVerification": "Completa la verifica per sbloccare tutte le funzionalità",
     "unlockPremium": "Sblocca Funzionalità Premium",
-    "unlockPremiumDescription": "Effettua l'upgrade per goderti contenuti e funzionalità esclusive"
+    "unlockPremiumDescription": "Effettua l'upgrade per goderti contenuti e funzionalità esclusive",
+    "tabs": {
+      "devices": "Dispositivi"
+    },
+    "devices": {
+      "registeredDevices": "Dispositivi Registrati",
+      "description": "Gestisci i dispositivi che hanno accesso al tuo account. Puoi disconnettere i dispositivi per liberare slot di streaming.",
+      "noDevices": "Nessun dispositivo connesso",
+      "noDevicesDescription": "I dispositivi appariranno qui quando accedi su piattaforme diverse",
+      "activeNow": "Attivo ora",
+      "minutesAgo": "{{count}} minuti fa",
+      "hoursAgo": "{{count}} ore fa",
+      "daysAgo": "{{count}} giorni fa",
+      "disconnect": "Disconnetti",
+      "confirmDisconnect": "Disconnettere il Dispositivo?",
+      "confirmDisconnectMessage": "Questo terminerà tutte le sessioni di riproduzione attive su questo dispositivo e lo rimuoverà dal tuo account.",
+      "disconnectSuccess": "Dispositivo Disconnesso",
+      "disconnectSuccessMessage": "Il dispositivo è stato disconnesso con successo.",
+      "disconnectSuccessWithSessions": "Dispositivo disconnesso e {{count}} sessione/i attiva/e terminata/e.",
+      "thisDevice": "Questo dispositivo",
+      "loading": "Caricamento dispositivi..."
+    }
   },
   "voiceOnboarding": {
     "welcome": {

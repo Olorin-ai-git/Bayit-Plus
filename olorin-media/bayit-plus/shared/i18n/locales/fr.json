@@ -526,6 +526,13 @@
       "requiredMessage": "nécessite un abonnement payant",
       "upgradeInfo": "Mettez à niveau votre abonnement pour accéder au contenu premium",
       "upgrade": "Mettre à niveau"
+    },
+    "streamLimit": {
+      "title": "Limite de diffusion atteinte",
+      "message": "Vous avez atteint le nombre maximum de diffusions simultanées ({{maxStreams}}) pour votre forfait.",
+      "activeDevices": "Diffusion en cours sur {{count}} appareil(s):",
+      "hint": "Déconnectez un appareil pour libérer un emplacement de diffusion, ou mettez à niveau votre forfait pour plus de diffusions simultanées.",
+      "manageDevices": "Gérer les appareils"
     }
   },
   "content": {
@@ -726,7 +733,45 @@
     "startTrial": "Commencer l'essai gratuit",
     "noCharge": "Votre carte de crédit ne sera pas débitée pendant la période d'essai",
     "viewComparison": "Voir la comparaison complète",
-    "viewCards": "Voir les forfaits"
+    "viewCards": "Voir les forfaits",
+    "premiumShowcase": {
+      "title": "Découvrez l'Intelligence Premium",
+      "subtitle": "Fonctionnalités alimentées par l'IA qui s'adaptent à votre façon de regarder",
+      "videoTitle": "Voir les Widgets en Action",
+      "videoDescription": "Regardez notre introduction de 2 minutes aux widgets flottants",
+      "widgetTitle": "Démo Interactive en Direct",
+      "widgetDescription": "Faites glisser, redimensionnez et multitâchez avec Kan11",
+      "aiAssistant": {
+        "title": "Assistant Intelligent AI",
+        "description": "Recommandations personnalisées alimentées par l'apprentissage automatique"
+      },
+      "floatingWidgets": {
+        "title": "Widgets Flottants",
+        "description": "Regardez plusieurs chaînes tout en naviguant dans le contenu"
+      },
+      "a11y": {
+        "playVideo": "Lire la vidéo d'introduction aux widgets",
+        "playVideoHint": "Ouvre une démonstration vidéo en plein écran"
+      },
+      "badges": {
+        "aiPowered": "ALIMENTÉ PAR IA",
+        "interactiveDemo": "DÉMO INTERACTIVE"
+      }
+    },
+    "comparison": {
+      "title": "Comparer les Plans",
+      "subtitle": "Trouvez le plan parfait pour vous",
+      "features": "Fonctionnalités",
+      "perMonth": "/mois",
+      "scrollHint": "← Faites défiler pour voir tous les plans →",
+      "categories": {
+        "content": "Accès au Contenu",
+        "quality": "Qualité et Performance",
+        "devices": "Appareils et Streaming",
+        "features": "Fonctionnalités",
+        "support": "Assistance"
+      }
+    }
   },
   "footer": {
     "brandDescription": "Votre maison aux États-Unis. Émissions TV, VOD, radio et podcasts en hébreu.",
@@ -955,7 +1000,28 @@
     "phoneUnverified": "Téléphone non vérifié",
     "completeVerification": "Complétez la vérification pour débloquer toutes les fonctionnalités",
     "unlockPremium": "Débloquer les Fonctionnalités Premium",
-    "unlockPremiumDescription": "Passez à la version supérieure pour profiter du contenu et des fonctionnalités exclusives"
+    "unlockPremiumDescription": "Passez à la version supérieure pour profiter du contenu et des fonctionnalités exclusives",
+    "tabs": {
+      "devices": "Appareils"
+    },
+    "devices": {
+      "registeredDevices": "Appareils Enregistrés",
+      "description": "Gérez les appareils qui ont accès à votre compte. Vous pouvez déconnecter des appareils pour libérer des emplacements de streaming.",
+      "noDevices": "Aucun appareil connecté",
+      "noDevicesDescription": "Les appareils apparaîtront ici lorsque vous vous connecterez sur différentes plateformes",
+      "activeNow": "Actif maintenant",
+      "minutesAgo": "il y a {{count}} minutes",
+      "hoursAgo": "il y a {{count}} heures",
+      "daysAgo": "il y a {{count}} jours",
+      "disconnect": "Déconnecter",
+      "confirmDisconnect": "Déconnecter l'Appareil ?",
+      "confirmDisconnectMessage": "Cela mettra fin à toutes les sessions de lecture actives sur cet appareil et le supprimera de votre compte.",
+      "disconnectSuccess": "Appareil Déconnecté",
+      "disconnectSuccessMessage": "L'appareil a été déconnecté avec succès.",
+      "disconnectSuccessWithSessions": "Appareil déconnecté et {{count}} session(s) active(s) terminée(s).",
+      "thisDevice": "Cet appareil",
+      "loading": "Chargement des appareils..."
+    }
   },
   "voiceOnboarding": {
     "welcome": {

@@ -78,8 +78,8 @@ from app.models.watchlist import Conversation, WatchHistory, WatchlistItem
 from app.models.widget import Widget
 from app.models.youngsters_content import YoungstersContentSource
 from app.services.mcp_content_discovery import ContentDiscoveryQueue
-# Migration tracking models (script infrastructure)
-from scripts.backend.migrations.models import MigrationRecord, RollbackData
+# Migration tracking models
+from app.models.migration import MigrationRecord, RollbackData
 
 
 class Database:

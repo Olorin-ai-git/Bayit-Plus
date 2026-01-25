@@ -20,6 +20,7 @@
     "recommended": "Recommended",
     "edit": "Edit",
     "delete": "Delete",
+    "disconnect": "Disconnect",
     "add": "Add",
     "enabled": "Enabled",
     "disabled": "Disabled",
@@ -963,6 +964,15 @@
     "restart": "Restart from beginning",
     "subtitlesOff": "Off",
     "speed": "Speed",
+    "cast": {
+      "start": "Cast to TV",
+      "connected": "Casting to {{device}}",
+      "disconnect": "Disconnect from {{device}}",
+      "connecting": "Connecting to cast device...",
+      "error": "Failed to connect to cast device",
+      "noDevices": "No cast devices found",
+      "unsupported": "Casting not available for this content"
+    },
     "subscription": {
       "requiredTitle": "Subscription Required",
       "requiredMessage": "requires a paid subscription",
@@ -2797,7 +2807,45 @@
     "selected": "Selected",
     "processing": "Processing...",
     "startTrial": "Start Free Trial",
-    "noCharge": "Your credit card won't be charged during the trial period"
+    "noCharge": "Your credit card won't be charged during the trial period",
+    "premiumShowcase": {
+      "title": "Experience Premium Intelligence",
+      "subtitle": "AI-powered features that adapt to how you watch",
+      "videoTitle": "See Widgets in Action",
+      "videoDescription": "Watch our 2-minute intro to floating widgets",
+      "widgetTitle": "Interactive Live Demo",
+      "widgetDescription": "Drag, resize, and multitask with Kan11",
+      "aiAssistant": {
+        "title": "AI Smart Assistant",
+        "description": "Personalized recommendations powered by machine learning"
+      },
+      "floatingWidgets": {
+        "title": "Floating Widgets",
+        "description": "Watch multiple channels while browsing content"
+      },
+      "a11y": {
+        "playVideo": "Play widgets intro video",
+        "playVideoHint": "Opens full-screen video demonstration"
+      },
+      "badges": {
+        "aiPowered": "AI-POWERED",
+        "interactiveDemo": "INTERACTIVE DEMO"
+      }
+    },
+    "comparison": {
+      "title": "Compare Plans",
+      "subtitle": "Find the perfect plan for you",
+      "features": "Features",
+      "perMonth": "/mo",
+      "scrollHint": "← Scroll to see all plans →",
+      "categories": {
+        "content": "Content Access",
+        "quality": "Quality & Performance",
+        "devices": "Devices & Streaming",
+        "features": "Features",
+        "support": "Support"
+      }
+    }
   },
   "notFound": {
     "title": "Page Not Found",

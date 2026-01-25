@@ -657,7 +657,8 @@
       "notifications": "Notificaciones",
       "security": "Seguridad",
       "ai": "IA y Voz",
-      "voice": "Voz y Accesibilidad"
+      "voice": "Voz y Accesibilidad",
+      "devices": "Dispositivos"
     },
     "subscription": {
       "currentPlan": "Plan Actual",
@@ -787,7 +788,25 @@
     "phoneUnverified": "Teléfono no verificado",
     "completeVerification": "Completa la verificación para desbloquear todas las funciones",
     "unlockPremium": "Desbloquear Funciones Premium",
-    "unlockPremiumDescription": "Actualiza para disfrutar de contenido y funciones exclusivas"
+    "unlockPremiumDescription": "Actualiza para disfrutar de contenido y funciones exclusivas",
+    "devices": {
+      "registeredDevices": "Dispositivos Registrados",
+      "description": "Gestiona los dispositivos que tienen acceso a tu cuenta. Puedes desconectar dispositivos para liberar espacios de transmisión.",
+      "noDevices": "No hay dispositivos conectados",
+      "noDevicesDescription": "Los dispositivos aparecerán aquí cuando inicies sesión en diferentes plataformas",
+      "activeNow": "Activo ahora",
+      "minutesAgo": "hace {{count}} minutos",
+      "hoursAgo": "hace {{count}} horas",
+      "daysAgo": "hace {{count}} días",
+      "disconnect": "Desconectar",
+      "confirmDisconnect": "¿Desconectar Dispositivo?",
+      "confirmDisconnectMessage": "Esto finalizará todas las sesiones de reproducción activas en este dispositivo y lo eliminará de tu cuenta.",
+      "disconnectSuccess": "Dispositivo Desconectado",
+      "disconnectSuccessMessage": "El dispositivo se ha desconectado correctamente.",
+      "disconnectSuccessWithSessions": "Dispositivo desconectado y {{count}} sesión/sesiones activa(s) finalizada(s).",
+      "thisDevice": "Este dispositivo",
+      "loading": "Cargando dispositivos..."
+    }
   },
   "settings": {
     "title": "Configuración",
@@ -929,6 +948,13 @@
       "panelOpened": "Panel de búsqueda de escenas abierto",
       "navigation": "Navegación de búsqueda de escenas",
       "position": "Resultado {{current}} de {{total}}"
+    },
+    "streamLimit": {
+      "title": "Límite de transmisión alcanzado",
+      "message": "Has alcanzado el número máximo de transmisiones simultáneas ({{maxStreams}}) para tu plan.",
+      "activeDevices": "Transmitiendo actualmente en {{count}} dispositivo(s):",
+      "hint": "Desconecta un dispositivo para liberar un espacio de transmisión, o mejora tu plan para más transmisiones simultáneas.",
+      "manageDevices": "Administrar dispositivos"
     }
   },
   "empty": {
@@ -2801,7 +2827,45 @@
     "startTrial": "Comenzar Prueba Gratis",
     "noCharge": "Tu tarjeta de crédito no será cobrada durante el período de prueba",
     "viewComparison": "Ver comparación completa",
-    "viewCards": "Ver planes"
+    "viewCards": "Ver planes",
+    "premiumShowcase": {
+      "title": "Experimenta la Inteligencia Premium",
+      "subtitle": "Funciones impulsadas por IA que se adaptan a tu forma de ver",
+      "videoTitle": "Ver Widgets en Acción",
+      "videoDescription": "Mira nuestra introducción de 2 minutos a los widgets flotantes",
+      "widgetTitle": "Demo Interactiva en Vivo",
+      "widgetDescription": "Arrastra, redimensiona y multitarea con Kan11",
+      "aiAssistant": {
+        "title": "Asistente Inteligente AI",
+        "description": "Recomendaciones personalizadas impulsadas por aprendizaje automático"
+      },
+      "floatingWidgets": {
+        "title": "Widgets Flotantes",
+        "description": "Mira múltiples canales mientras navegas por el contenido"
+      },
+      "a11y": {
+        "playVideo": "Reproducir vídeo de introducción a widgets",
+        "playVideoHint": "Abre demostración en vídeo a pantalla completa"
+      },
+      "badges": {
+        "aiPowered": "IMPULSADO POR IA",
+        "interactiveDemo": "DEMO INTERACTIVA"
+      }
+    },
+    "comparison": {
+      "title": "Comparar Planes",
+      "subtitle": "Encuentra el plan perfecto para ti",
+      "features": "Características",
+      "perMonth": "/mes",
+      "scrollHint": "← Desplázate para ver todos los planes →",
+      "categories": {
+        "content": "Acceso al Contenido",
+        "quality": "Calidad y Rendimiento",
+        "devices": "Dispositivos y Streaming",
+        "features": "Características",
+        "support": "Soporte"
+      }
+    }
   },
   "notFound": {
     "title": "Página no encontrada",

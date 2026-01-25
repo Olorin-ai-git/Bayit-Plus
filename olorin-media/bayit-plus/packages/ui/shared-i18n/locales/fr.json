@@ -20,6 +20,7 @@
     "recommended": "Recommandé",
     "edit": "Modifier",
     "delete": "Supprimer",
+    "disconnect": "Déconnecter",
     "add": "Ajouter",
     "enabled": "Activé",
     "disabled": "Désactivé",
@@ -508,6 +509,15 @@
     "restart": "Recommencer depuis le début",
     "subtitlesOff": "Désactivés",
     "speed": "Vitesse",
+    "cast": {
+      "start": "Diffuser sur TV",
+      "connected": "Diffusion vers {{device}}",
+      "disconnect": "Déconnecter de {{device}}",
+      "connecting": "Connexion à l'appareil de diffusion...",
+      "error": "Échec de la connexion à l'appareil de diffusion",
+      "noDevices": "Aucun appareil de diffusion trouvé",
+      "unsupported": "La diffusion n'est pas disponible pour ce contenu"
+    },
     "subscription": {
       "requiredTitle": "Abonnement requis",
       "requiredMessage": "nécessite un abonnement payant",
@@ -680,7 +690,45 @@
     "selected": "Sélectionné",
     "processing": "Traitement...",
     "startTrial": "Commencer l'essai gratuit",
-    "noCharge": "Votre carte de crédit ne sera pas débitée pendant la période d'essai"
+    "noCharge": "Votre carte de crédit ne sera pas débitée pendant la période d'essai",
+    "premiumShowcase": {
+      "title": "Découvrez l'Intelligence Premium",
+      "subtitle": "Fonctionnalités alimentées par l'IA qui s'adaptent à votre façon de regarder",
+      "videoTitle": "Voir les Widgets en Action",
+      "videoDescription": "Regardez notre introduction de 2 minutes aux widgets flottants",
+      "widgetTitle": "Démo Interactive en Direct",
+      "widgetDescription": "Faites glisser, redimensionnez et multitâchez avec Kan11",
+      "aiAssistant": {
+        "title": "Assistant Intelligent AI",
+        "description": "Recommandations personnalisées alimentées par l'apprentissage automatique"
+      },
+      "floatingWidgets": {
+        "title": "Widgets Flottants",
+        "description": "Regardez plusieurs chaînes tout en naviguant dans le contenu"
+      },
+      "a11y": {
+        "playVideo": "Lire la vidéo d'introduction aux widgets",
+        "playVideoHint": "Ouvre une démonstration vidéo en plein écran"
+      },
+      "badges": {
+        "aiPowered": "ALIMENTÉ PAR IA",
+        "interactiveDemo": "DÉMO INTERACTIVE"
+      }
+    },
+    "comparison": {
+      "title": "Comparer les Plans",
+      "subtitle": "Trouvez le plan parfait pour vous",
+      "features": "Fonctionnalités",
+      "perMonth": "/mois",
+      "scrollHint": "← Faites défiler pour voir tous les plans →",
+      "categories": {
+        "content": "Accès au Contenu",
+        "quality": "Qualité et Performance",
+        "devices": "Appareils et Streaming",
+        "features": "Fonctionnalités",
+        "support": "Assistance"
+      }
+    }
   },
   "footer": {
     "brandDescription": "Votre maison aux États-Unis. Émissions TV, VOD, radio et podcasts en hébreu.",

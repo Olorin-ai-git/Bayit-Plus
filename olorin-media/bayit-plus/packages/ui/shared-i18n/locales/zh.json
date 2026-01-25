@@ -20,6 +20,7 @@
     "recommended": "推荐",
     "edit": "编辑",
     "delete": "删除",
+    "disconnect": "断开连接",
     "add": "添加",
     "enabled": "已启用",
     "disabled": "已禁用",
@@ -902,6 +903,15 @@
     "restart": "从头开始",
     "subtitlesOff": "关闭",
     "speed": "速度",
+    "cast": {
+      "start": "投屏到电视",
+      "connected": "正在投屏到{{device}}",
+      "disconnect": "断开与{{device}}的连接",
+      "connecting": "正在连接投屏设备...",
+      "error": "连接投屏设备失败",
+      "noDevices": "未找到投屏设备",
+      "unsupported": "此内容不支持投屏"
+    },
     "subscription": {
       "requiredTitle": "需要订阅",
       "requiredMessage": "需要付费订阅",
@@ -1307,7 +1317,45 @@
     "selected": "已选择",
     "processing": "处理中...",
     "startTrial": "开始免费试用",
-    "noCharge": "试用期间不会收取您的信用卡费用"
+    "noCharge": "试用期间不会收取您的信用卡费用",
+    "premiumShowcase": {
+      "title": "体验高级智能",
+      "subtitle": "AI驱动的功能，适应您的观看方式",
+      "videoTitle": "观看小部件实际操作",
+      "videoDescription": "观看我们2分钟的浮动小部件介绍",
+      "widgetTitle": "交互式实时演示",
+      "widgetDescription": "拖动、调整大小并与Kan11多任务处理",
+      "aiAssistant": {
+        "title": "AI智能助手",
+        "description": "由机器学习驱动的个性化推荐"
+      },
+      "floatingWidgets": {
+        "title": "浮动小部件",
+        "description": "浏览内容时观看多个频道"
+      },
+      "a11y": {
+        "playVideo": "播放小部件介绍视频",
+        "playVideoHint": "打开全屏视频演示"
+      },
+      "badges": {
+        "aiPowered": "AI驱动",
+        "interactiveDemo": "交互式演示"
+      }
+    },
+    "comparison": {
+      "title": "比较计划",
+      "subtitle": "找到最适合您的计划",
+      "features": "功能",
+      "perMonth": "/月",
+      "scrollHint": "← 滚动查看所有计划 →",
+      "categories": {
+        "content": "内容访问",
+        "quality": "质量和性能",
+        "devices": "设备和流媒体",
+        "features": "功能",
+        "support": "支持"
+      }
+    }
   },
   "notFound": {
     "title": "页面未找到",
