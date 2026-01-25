@@ -99,6 +99,13 @@ export const triviaSettingsStyles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
+  sectionHint: {
+    color: '#6B7280',
+    fontSize: 11,
+    fontStyle: 'italic',
+    marginTop: -4,
+    marginBottom: 4,
+  },
   optionsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',

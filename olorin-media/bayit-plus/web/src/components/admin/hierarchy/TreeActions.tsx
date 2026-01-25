@@ -7,7 +7,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { GlassCheckbox } from '@bayit/shared/ui/web';
 import { z } from 'zod';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 
 // Language flag mapping
 export const getLanguageFlag = (lang: string): string => {
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     bottom: 4,
     width: 12,
     height: 2,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: 1,
   },
 });

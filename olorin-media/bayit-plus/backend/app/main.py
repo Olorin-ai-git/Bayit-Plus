@@ -30,7 +30,7 @@ from app.services.startup import (init_default_cultures, init_default_widgets,
                                   stop_background_tasks)
 
 # Initialize structured logging for Cloud Run
-setup_logging(debug=settings.DEBUG)
+setup_logging(level=settings.LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 # Initialize Sentry error tracking (before app startup)

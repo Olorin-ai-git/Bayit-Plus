@@ -47,12 +47,28 @@ module.exports = {
           '0%, 100%': { boxShadow: '0 0 20px rgba(176, 38, 255, 0.5)' },
           '50%': { boxShadow: '0 0 40px rgba(176, 38, 255, 0.8)' },
         },
+        'pulse-glow': {
+          '0%, 100%': {
+            opacity: '1',
+            boxShadow: '0 0 20px rgba(176, 38, 255, 0.5)'
+          },
+          '50%': {
+            opacity: '0.7',
+            boxShadow: '0 0 40px rgba(176, 38, 255, 0.8)'
+          },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
+        },
       },
       animation: {
         breathe: 'breathe 4s ease-in-out infinite',
         'breathe-reduced': 'breathe-reduced 6s ease-in-out infinite',
         'pulse-slow': 'pulse 3s ease-in-out infinite',
         glow: 'glow 2s ease-in-out infinite',
+        'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
+        shimmer: 'shimmer 3s linear infinite',
       },
     },
   },

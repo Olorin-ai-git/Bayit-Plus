@@ -10,7 +10,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Animated, Platform } from 'react-native';
 import { VoiceState } from '../../stores/supportStore';
-import { colors } from '../../theme';
+import { colors } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
 
 interface WizardEffectsProps {
@@ -57,7 +57,7 @@ const GlowPulse: React.FC<{ size: number; intensity?: number }> = ({
         width: size + 40,
         height: size + 40,
         borderRadius: (size + 40) / 2,
-        backgroundColor: colors.primary,
+        backgroundColor: colors.primary.DEFAULT,
         opacity: Animated.multiply(pulseAnim, intensity),
         ...(Platform.OS === 'web'
           ? {
@@ -131,7 +131,7 @@ const RippleRings: React.FC<{ size: number }> = ({ size }) => {
           width: size,
           height: size,
           borderRadius: size / 2,
-          borderColor: colors.primary,
+          borderColor: colors.primary.DEFAULT,
           transform: [{ scale }],
           opacity,
         }}

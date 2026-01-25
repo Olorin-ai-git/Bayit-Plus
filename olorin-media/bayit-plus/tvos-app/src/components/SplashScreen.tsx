@@ -98,7 +98,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   };
 
   return (
-    <Animated.View className="absolute inset-0 bg-[#0d0d1a] z-[9999]" style={{ opacity: fadeAnim }}>
+    <Animated.View className="absolute inset-0 bg-black z-[9999]" style={{ opacity: fadeAnim }}>
       <Video
         source={videoSource}
         className="absolute inset-0"
@@ -117,7 +117,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       {/* Skip button - visible after video loads */}
       {videoLoaded && (
         <Pressable
-          className="absolute bottom-[60px] right-[60px] px-8 py-4 bg-white/20 rounded-xl border-2 border-transparent focus:bg-[rgba(168,85,247,0.4)] focus:border-purple-500 focus:scale-105"
+          className="absolute bottom-[60px] right-[60px] px-8 py-4 bg-white/20 rounded-xl border-2 border-transparent focus:bg-purple-500/40 focus:border-purple-500 focus:scale-105"
           onPress={handleSkip}
         >
           <Text className="text-white text-xl font-semibold">Skip</Text>

@@ -839,6 +839,23 @@
       "users": "Utilisateurs",
       "revenue": "Revenus",
       "subscriptions": "Abonnements"
+    },
+    "content": {
+      "filters": {
+        "title": "Filtres",
+        "contentType": "Type de Contenu",
+        "all": "Tout",
+        "allContent": "Tout",
+        "series": "Séries",
+        "movies": "Films",
+        "podcasts": "Podcasts",
+        "radioStations": "Stations de Radio",
+        "status": "Statut",
+        "allStatus": "Tous les Statuts",
+        "subtitles": "Sous-titres"
+      },
+      "podcastsComingSoon": "Gestion des podcasts à venir. Utilisez la section Podcasts.",
+      "radioComingSoon": "Gestion des stations de radio à venir. Utilisez la section Stations de Radio."
     }
   },
   "cultures": {
@@ -955,5 +972,155 @@
       "startUsing": "Commencer à Utiliser le Contrôle Vocal"
     },
     "skip": "Passer pour l'instant"
+  },
+  "portal": {
+    "nav": {
+      "home": "Accueil",
+      "features": "Fonctionnalités",
+      "solutions": "Solutions",
+      "pricing": "Tarification",
+      "demo": "Démo en Direct",
+      "contact": "Contact",
+      "getStarted": "Commencer"
+    },
+    "hero": {
+      "ctaExplore": "Explorer les Fonctionnalités",
+      "ctaDemo": "Demander une Démo"
+    },
+    "cta": {
+      "title": "Prêt à Commencer?",
+      "subtitle": "Discutons de la façon dont nous pouvons aider à transformer votre entreprise",
+      "button": "Nous Contacter"
+    },
+    "contactPage": {
+      "title": "Nous Contacter",
+      "subtitle": "Intéressé par nos solutions? Parlons-en",
+      "formTitle": "Envoyez-nous un Message",
+      "infoTitle": "Informations de Contact",
+      "form": {
+        "name": "Nom Complet",
+        "email": "Adresse E-mail",
+        "company": "Nom de l'Entreprise",
+        "phone": "Numéro de Téléphone",
+        "message": "Votre Message",
+        "messagePlaceholder": "Parlez-nous de vos besoins..."
+      },
+      "submit": "Envoyer le Message",
+      "sending": "Envoi en cours...",
+      "success": "Message envoyé avec succès! Nous vous recontacterons bientôt.",
+      "error": "Échec de l'envoi du message. Veuillez réessayer.",
+      "scheduleTitle": "Vous Préférez Planifier un Appel?",
+      "scheduleSubtitle": "Réservez une démo personnalisée avec notre équipe",
+      "scheduleCta": "Planifier un Appel de Démo"
+    },
+    "pricingPage": {
+      "title": "Abordable",
+      "titleHighlight": "Plans Tarifaires",
+      "subtitle": "Choisissez le plan qui correspond à vos besoins",
+      "comparisonTitle": "Comparaison des Fonctionnalités",
+      "faqTitle": "Questions Fréquemment Posées",
+      "faq": {
+        "q1": "Comment est calculée la tarification?",
+        "a1": "La tarification est basée sur vos besoins spécifiques et votre utilisation. Contactez-nous pour un devis personnalisé.",
+        "q2": "Puis-je mettre à niveau mon plan plus tard?",
+        "a2": "Oui, vous pouvez mettre à niveau à tout moment. Nous vous aiderons à migrer vos données en douceur.",
+        "q3": "Quel support est inclus?",
+        "a3": "Tous les plans incluent un support par e-mail. Les plans Professional et Enterprise incluent un support prioritaire avec des gestionnaires de compte dédiés."
+      },
+      "professional": {
+        "name": "Professionnel",
+        "price": "Contactez pour un Devis",
+        "priceNote": "Tarification personnalisée",
+        "description": "Pour les entreprises en croissance avec des besoins avancés",
+        "cta": "Obtenir un Devis"
+      },
+      "enterprise": {
+        "name": "Entreprise",
+        "price": "Personnalisé",
+        "priceNote": "Basé sur le volume",
+        "description": "Pour les grandes organisations et les déploiements d'entreprise",
+        "cta": "Contacter les Ventes"
+      },
+      "ctaTitle": "Prêt à Commencer?",
+      "ctaSubtitle": "Discutons de vos besoins et trouvons le plan parfait",
+      "ctaButton": "Contacter les Ventes"
+    },
+    "featuresPage": {
+      "title": "Puissantes",
+      "titleHighlight": "Fonctionnalités",
+      "subtitle": "Tout ce dont vous avez besoin pour réussir",
+      "techSpecsTitle": "Spécifications Techniques",
+      "workflowTitle": "Comment ça Marche",
+      "workflow": {
+        "s1": {
+          "title": "Importer",
+          "description": "Téléchargez et organisez votre contenu"
+        },
+        "s2": {
+          "title": "Configurer",
+          "description": "Définissez vos préférences et paramètres"
+        },
+        "s3": {
+          "title": "Déployer",
+          "description": "Mettez en ligne votre solution"
+        },
+        "s4": {
+          "title": "Surveiller",
+          "description": "Suivez les performances et optimisez"
+        }
+      },
+      "ctaTitle": "Prêt à Explorer les Fonctionnalités?",
+      "ctaSubtitle": "Voyez toutes les fonctionnalités en action avec une démo personnalisée",
+      "ctaButton": "Planifier une Démo"
+    },
+    "demoPage": {
+      "title": "Découvrez Notre",
+      "titleHighlight": "Plateforme",
+      "subtitle": "Expérimentez la puissance de notre solution",
+      "scheduleCta": "Planifier une Démo en Direct",
+      "stepsTitle": "Comment ça Marche",
+      "steps": {
+        "analyze": {
+          "title": "Analyser",
+          "description": "Suivez et améliorez les performances"
+        }
+      },
+      "featuresTitle": "Points Forts de la Plateforme",
+      "platformsTitle": "Disponible Sur",
+      "ctaTitle": "Prêt pour Votre Démo Personnalisée?",
+      "ctaSubtitle": "Planifiez une démonstration personnalisée adaptée à vos besoins",
+      "ctaButton": "Planifier une Démo"
+    },
+    "workflow": {
+      "sectionTitle": "Flux de Travail Intelligent",
+      "sectionSubtitle": "Processus rationalisé en 4 étapes",
+      "step1": {
+        "title": "Configurer",
+        "description": "Configurez votre compte et vos préférences"
+      },
+      "step2": {
+        "title": "Personnaliser",
+        "description": "Personnalisez les paramètres selon vos besoins"
+      },
+      "step3": {
+        "title": "Déployer",
+        "description": "Lancez votre solution"
+      },
+      "step4": {
+        "title": "Surveiller",
+        "description": "Suivez les performances et optimisez"
+      }
+    }
+  },
+  "trivia": {
+    "didYouKnow": "Le Saviez-Vous?",
+    "dismissHint": "Fermer l'anecdote",
+    "settings": {
+      "displayLanguages": "Langues d'Affichage",
+      "languageHint": "Sélectionnez 1-3 langues à afficher pour chaque fait",
+      "language": "langue",
+      "selectLanguage": "Sélectionner cette langue",
+      "deselectLanguage": "Désélectionner cette langue"
+    }
   }
 }

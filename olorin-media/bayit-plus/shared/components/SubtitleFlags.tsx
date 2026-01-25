@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
 import { getLanguageInfo } from '../types/subtitle';
-import { colors, spacing, borderRadius } from '../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 interface SubtitleFlagsProps {
   languages: string[];

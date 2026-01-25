@@ -30,7 +30,7 @@ import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import { useProfile } from "@bayit/shared-contexts";
 import { useDirection } from "@bayit/shared-hooks";
 import api from "@bayit/shared-services/api";
-import { spacing, colors, borderRadius } from "../theme";
+import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 
 import logger from '@/utils/logger';
 

@@ -1,39 +1,26 @@
-/**
- * Language Switcher Component
- *
- * Allows users to switch between supported languages.
- * Updates document direction (LTR/RTL) automatically.
- */
-
 import { useTranslation } from 'react-i18next';
-import { GlassButton } from '@/components/glass';
-
-const LANGUAGES = [
-  { code: 'en', name: 'English', dir: 'ltr' },
-  { code: 'he', name: 'עברית', dir: 'rtl' },
-] as const;
+import { languages } from '@olorin/shared-i18n';
+import { saveLanguageWeb } from '@olorin/shared-i18n/web';
+import { GlassButton } from './glass';
 
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
 
-  const changeLanguage = (languageCode: string, direction: 'ltr' | 'rtl') => {
-    i18n.changeLanguage(languageCode);
-    document.documentElement.dir = direction;
-    document.documentElement.lang = languageCode;
+  const handleLanguageChange = async (langCode: string) => {
+    await i18n.changeLanguage(langCode);
+    await saveLanguageWeb(langCode as any);
   };
 
   return (
-    <div className="flex gap-2" role="group" aria-label="Language selection">
-      {LANGUAGES.map((lang) => (
+    <div className="flex gap-2 flex-wrap">
+      {languages.map((lang) => (
         <GlassButton
           key={lang.code}
           variant={i18n.language === lang.code ? 'primary' : 'outline'}
           size="sm"
-          onClick={() => changeLanguage(lang.code, lang.dir)}
-          aria-label={`Switch to ${lang.name}`}
-          aria-pressed={i18n.language === lang.code}
+          onClick={() => handleLanguageChange(lang.code)}
         >
-          {lang.name}
+          {lang.flag} {lang.name}
         </GlassButton>
       ))}
     </div>

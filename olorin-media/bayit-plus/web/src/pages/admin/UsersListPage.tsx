@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { UserPlus, Edit, Ban, Key, Trash2 } from 'lucide-react';
 import { usersService } from '@/services/adminApi';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassButton, GlassModal, GlassInput } from '@bayit/shared/ui';
 import { GlassTable, GlassTableCell, type GlassTableColumn } from '@bayit/shared/ui/web';
 import { useDirection } from '@/hooks/useDirection';

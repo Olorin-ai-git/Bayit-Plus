@@ -64,6 +64,16 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({
       border: 'border-wizard-accent-omen',
       hover: 'hover:bg-wizard-accent-omen/20 hover:shadow-glow-omen',
     },
+    station: {
+      text: 'text-wizard-accent-station',
+      border: 'border-wizard-accent-station',
+      hover: 'hover:bg-wizard-accent-station/20 hover:shadow-glow-station',
+    },
+    cvplus: {
+      text: 'text-wizard-accent-cvplus',
+      border: 'border-wizard-accent-cvplus',
+      hover: 'hover:bg-wizard-accent-cvplus/20 hover:shadow-glow-cvplus',
+    },
   };
 
   const colors = colorClasses[accentColor];

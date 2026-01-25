@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, ReactNode } from 'react'
 import { View, Text, StyleSheet, Pressable, Image, Animated } from 'react-native'
 import { useNavigate } from 'react-router-dom'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassView } from '@bayit/shared/ui'
 
 interface FeedItem {
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
   },
   feedCategory: {
     fontSize: 12,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     backgroundColor: 'rgba(107, 33, 168, 0.3)',
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   feedDots: {
     position: 'absolute',
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
   dotActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary[600],
     height: 20,
     borderRadius: 4,
   },

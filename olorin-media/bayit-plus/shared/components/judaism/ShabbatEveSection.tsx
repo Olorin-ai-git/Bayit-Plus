@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui/GlassView';
-import { colors, spacing, fontSize, borderRadius } from '../../theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { judaismService } from '../../services/api';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
@@ -130,7 +130,7 @@ export const ShabbatEveSection: React.FC<ShabbatEveSectionProps> = ({
       id: 'music',
       emoji: '🎵',
       label: t('judaism.erevShabbat.shabbatSongs', 'Shabbat Songs'),
-      color: colors.warning,
+      color: colors.warning.DEFAULT,
       bgColor: 'rgba(245, 158, 11, 0.2)',
       route: 'Judaism?category=music',
     },
@@ -146,7 +146,7 @@ export const ShabbatEveSection: React.FC<ShabbatEveSectionProps> = ({
       id: 'recipes',
       emoji: '🍽️',
       label: t('judaism.erevShabbat.shabbatRecipes', 'Recipes'),
-      color: colors.success,
+      color: colors.success.DEFAULT,
       bgColor: 'rgba(16, 185, 129, 0.2)',
       route: 'Judaism?category=holidays',
     },
@@ -154,7 +154,7 @@ export const ShabbatEveSection: React.FC<ShabbatEveSectionProps> = ({
       id: 'tefila',
       emoji: '✨',
       label: t('judaism.erevShabbat.prayers', 'Prayers'),
-      color: colors.primary,
+      color: colors.primary.DEFAULT,
       bgColor: 'rgba(126, 34, 206, 0.2)',
       route: 'Judaism?category=tefila',
     },
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: isTV ? fontSize.lg : fontSize.md,
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
     marginTop: spacing.xs,
   },
   countdownBox: {
@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
   },
   countdownLabel: {
     fontSize: isTV ? fontSize.md : fontSize.sm,
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
     fontWeight: '500',
   },
   countdownTime: {

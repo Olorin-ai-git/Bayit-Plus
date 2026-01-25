@@ -45,7 +45,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 downloads, epg, family_controls, favorites,
                                 friends, health, history, jerusalem,
                                 judaism, librarian, live, live_dubbing, live_quota, news,
-                                onboarding, party, password_reset, podcasts,
+                                notifications, onboarding, party, password_reset, podcasts,
                                 profile_stats, profiles, radio, recordings,
                                 ritual, search, stats, subscriptions,
                                 subtitle_preferences, subtitles, support,
@@ -182,6 +182,7 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(news.router, prefix=f"{prefix}/news", tags=["news"])
     app.include_router(support.router, prefix=f"{prefix}/support", tags=["support"])
     app.include_router(trivia.router, prefix=f"{prefix}/trivia", tags=["trivia"])
+    app.include_router(notifications.router, prefix=f"{prefix}/notifications", tags=["notifications"])
     logger.debug("Registered feature routes")
 
     # ============================================

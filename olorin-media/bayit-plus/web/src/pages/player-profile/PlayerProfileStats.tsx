@@ -25,7 +25,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { GlassStatCard } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 
 const IS_TV_BUILD = process.env.REACT_APP_PLATFORM === 'tv';
 

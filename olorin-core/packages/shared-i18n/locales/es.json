@@ -1323,8 +1323,20 @@
       "episodes_one": "episodio",
       "episodes_other": "episodios",
       "filters": {
-        "allStatus": "Todos los Estados"
+        "title": "Filtros",
+        "contentType": "Tipo de Contenido",
+        "all": "Todo",
+        "allContent": "Todo",
+        "series": "Series",
+        "movies": "Películas",
+        "podcasts": "Podcasts",
+        "radioStations": "Estaciones de Radio",
+        "status": "Estado",
+        "allStatus": "Todos los Estados",
+        "subtitles": "Subtítulos"
       },
+      "podcastsComingSoon": "Gestión de podcasts próximamente. Use la sección de Podcasts.",
+      "radioComingSoon": "Gestión de estaciones de radio próximamente. Use la sección de Estaciones de Radio.",
       "showOnlyWithSubtitles": "Mostrar solo con subtítulos",
       "import": {
         "categoryPlaceholder": "Selecciona una categoría...",
@@ -3244,125 +3256,6 @@
     "skip": "Omitir por ahora"
   },
   "taxonomy": {
-    "title": "Clasificación de Contenido",
-    "sections": {
-      "title": "Secciones",
-      "description": "Categorías de navegación principal",
-      "movies": "Películas",
-      "series": "Series",
-      "kids": "Niños",
-      "judaism": "Judaísmo",
-      "documentaries": "Documentales",
-      "live": "En Vivo"
-    },
-    "formats": {
-      "title": "Formato",
-      "description": "Tipo estructural del contenido",
-      "movie": "Película",
-      "series": "Serie",
-      "documentary": "Documental",
-      "short": "Corto",
-      "clip": "Clip"
-    },
-    "genres": {
-      "title": "Géneros",
-      "description": "Estado de ánimo y estilo",
-      "drama": "Drama",
-      "comedy": "Comedia",
-      "action": "Acción",
-      "thriller": "Suspenso",
-      "animation": "Animación",
-      "musical": "Musical",
-      "romance": "Romance",
-      "horror": "Terror",
-      "sci-fi": "Ciencia Ficción",
-      "documentary": "Documental",
-      "family": "Familiar",
-      "adventure": "Aventura",
-      "fantasy": "Fantasía",
-      "crime": "Crimen",
-      "mystery": "Misterio",
-      "war": "Guerra",
-      "western": "Western",
-      "biography": "Biografía",
-      "history": "Historia",
-      "sport": "Deporte"
-    },
-    "audiences": {
-      "title": "Audiencia",
-      "description": "Adecuación por edad",
-      "general": "General",
-      "kids": "Niños",
-      "family": "Familiar",
-      "mature": "Adultos"
-    },
-    "topicTags": {
-      "title": "Temas",
-      "description": "Temas del contenido",
-      "jewish": "Judío",
-      "israeli": "Israelí",
-      "educational": "Educativo",
-      "historical": "Histórico",
-      "sports": "Deportes",
-      "nature": "Naturaleza",
-      "science": "Ciencia",
-      "music": "Música",
-      "art": "Arte",
-      "cooking": "Cocina",
-      "travel": "Viajes",
-      "technology": "Tecnología"
-    },
-    "subcategories": {
-      "title": "Subcategorías",
-      "kids": {
-        "cartoons": "Dibujos Animados",
-        "educational": "Educativo",
-        "music": "Música",
-        "hebrew-learning": "Aprender Hebreo",
-        "stories": "Cuentos",
-        "jewish": "Judío",
-        "learning-hebrew": "Aprender Hebreo",
-        "young-science": "Ciencia Joven",
-        "math-fun": "Matemáticas Divertidas",
-        "nature-animals": "Naturaleza y Animales",
-        "interactive": "Interactivo",
-        "hebrew-songs": "Canciones en Hebreo",
-        "nursery-rhymes": "Canciones de Cuna",
-        "kids-movies": "Películas para Niños",
-        "kids-series": "Series para Niños",
-        "jewish-holidays": "Fiestas Judías",
-        "torah-stories": "Historias de la Torá",
-        "bedtime-stories": "Cuentos para Dormir"
-      },
-      "ageGroups": {
-        "title": "Grupos de Edad",
-        "toddlers": "Bebés (0-3)",
-        "preschool": "Preescolar (3-5)",
-        "elementary": "Primaria (5-10)",
-        "preteen": "Preadolescentes (10-12)"
-      },
-      "judaism": {
-        "shiurim": "Clases de Torá",
-        "tefila": "Oración",
-        "jewish-music": "Música Judía",
-        "holidays": "Festividades",
-        "documentaries": "Documentales"
-      }
-    },
-    "admin": {
-      "selectSection": "Seleccionar Sección",
-      "selectSections": "Seleccionar Secciones",
-      "primarySection": "Sección Principal",
-      "selectFormat": "Seleccionar Formato",
-      "selectAudience": "Seleccionar Audiencia",
-      "selectGenres": "Seleccionar Géneros",
-      "selectTopics": "Seleccionar Temas",
-      "selectSubcategories": "Seleccionar Subcategorías",
-      "crossListing": "Publicación Cruzada",
-      "crossListingHint": "El contenido puede aparecer en múltiples secciones"
-    }
-  },
-  "taxonomy": {
     "sections": {
       "movies": "Películas",
       "series": "Series",
@@ -3510,6 +3403,156 @@
       "create_session_failed": "Error al crear sesión",
       "add_transcript_failed": "Error al agregar transcripción",
       "generate_recap_failed": "Error al generar resumen"
+    }
+  },
+  "portal": {
+    "nav": {
+      "home": "Inicio",
+      "features": "Características",
+      "solutions": "Soluciones",
+      "pricing": "Precios",
+      "demo": "Demo en Vivo",
+      "contact": "Contacto",
+      "getStarted": "Comenzar"
+    },
+    "hero": {
+      "ctaExplore": "Explorar Características",
+      "ctaDemo": "Solicitar Demo"
+    },
+    "cta": {
+      "title": "¿Listo para Comenzar?",
+      "subtitle": "Hablemos sobre cómo podemos ayudar a transformar su negocio",
+      "button": "Contáctenos"
+    },
+    "contactPage": {
+      "title": "Póngase en Contacto",
+      "subtitle": "¿Interesado en nuestras soluciones? Hablemos",
+      "formTitle": "Envíenos un Mensaje",
+      "infoTitle": "Información de Contacto",
+      "form": {
+        "name": "Nombre Completo",
+        "email": "Correo Electrónico",
+        "company": "Nombre de la Empresa",
+        "phone": "Número de Teléfono",
+        "message": "Su Mensaje",
+        "messagePlaceholder": "Cuéntenos sobre sus necesidades..."
+      },
+      "submit": "Enviar Mensaje",
+      "sending": "Enviando...",
+      "success": "¡Mensaje enviado con éxito! Nos pondremos en contacto pronto.",
+      "error": "Error al enviar el mensaje. Por favor, inténtelo de nuevo.",
+      "scheduleTitle": "¿Prefiere Programar una Llamada?",
+      "scheduleSubtitle": "Reserve una demo personalizada con nuestro equipo",
+      "scheduleCta": "Programar Llamada de Demo"
+    },
+    "pricingPage": {
+      "title": "Asequible",
+      "titleHighlight": "Planes de Precios",
+      "subtitle": "Elija el plan que se adapte a sus necesidades",
+      "comparisonTitle": "Comparación de Características",
+      "faqTitle": "Preguntas Frecuentes",
+      "faq": {
+        "q1": "¿Cómo se calcula el precio?",
+        "a1": "El precio se basa en sus necesidades específicas y uso. Contáctenos para un presupuesto personalizado.",
+        "q2": "¿Puedo actualizar mi plan más tarde?",
+        "a2": "Sí, puede actualizar en cualquier momento. Ayudaremos a migrar sus datos sin problemas.",
+        "q3": "¿Qué soporte está incluido?",
+        "a3": "Todos los planes incluyen soporte por correo electrónico. Los planes Professional y Enterprise incluyen soporte prioritario con gerentes de cuenta dedicados."
+      },
+      "professional": {
+        "name": "Profesional",
+        "price": "Contacte para Presupuesto",
+        "priceNote": "Precio personalizado",
+        "description": "Para empresas en crecimiento con necesidades avanzadas",
+        "cta": "Obtener Presupuesto"
+      },
+      "enterprise": {
+        "name": "Empresarial",
+        "price": "Personalizado",
+        "priceNote": "Basado en volumen",
+        "description": "Para grandes organizaciones e implementaciones empresariales",
+        "cta": "Contactar Ventas"
+      },
+      "ctaTitle": "¿Listo para Comenzar?",
+      "ctaSubtitle": "Hablemos sobre sus necesidades y encontremos el plan perfecto",
+      "ctaButton": "Contactar Ventas"
+    },
+    "featuresPage": {
+      "title": "Poderosas",
+      "titleHighlight": "Características",
+      "subtitle": "Todo lo que necesita para tener éxito",
+      "techSpecsTitle": "Especificaciones Técnicas",
+      "workflowTitle": "Cómo Funciona",
+      "workflow": {
+        "s1": {
+          "title": "Importar",
+          "description": "Suba y organice su contenido"
+        },
+        "s2": {
+          "title": "Configurar",
+          "description": "Establezca sus preferencias y ajustes"
+        },
+        "s3": {
+          "title": "Implementar",
+          "description": "Ponga en marcha su solución"
+        },
+        "s4": {
+          "title": "Monitorear",
+          "description": "Rastree el rendimiento y optimice"
+        }
+      },
+      "ctaTitle": "¿Listo para Explorar las Características?",
+      "ctaSubtitle": "Vea todas las características en acción con una demo personalizada",
+      "ctaButton": "Programar Demo"
+    },
+    "demoPage": {
+      "title": "Vea Nuestra",
+      "titleHighlight": "Plataforma",
+      "subtitle": "Experimente el poder de nuestra solución",
+      "scheduleCta": "Programar Demo en Vivo",
+      "stepsTitle": "Cómo Funciona",
+      "steps": {
+        "analyze": {
+          "title": "Analizar",
+          "description": "Rastree y mejore el rendimiento"
+        }
+      },
+      "featuresTitle": "Aspectos Destacados de la Plataforma",
+      "platformsTitle": "Disponible En",
+      "ctaTitle": "¿Listo para Su Demo Personalizada?",
+      "ctaSubtitle": "Programe una demostración personalizada adaptada a sus necesidades",
+      "ctaButton": "Programar Demo"
+    },
+    "workflow": {
+      "sectionTitle": "Flujo de Trabajo Inteligente",
+      "sectionSubtitle": "Proceso optimizado en 4 pasos",
+      "step1": {
+        "title": "Configurar",
+        "description": "Configure su cuenta y preferencias"
+      },
+      "step2": {
+        "title": "Personalizar",
+        "description": "Personalice ajustes para sus necesidades"
+      },
+      "step3": {
+        "title": "Implementar",
+        "description": "Lance su solución"
+      },
+      "step4": {
+        "title": "Monitorear",
+        "description": "Rastree el rendimiento y optimice"
+      }
+    }
+  },
+  "trivia": {
+    "didYouKnow": "¿Sabías Que?",
+    "dismissHint": "Descartar dato curioso",
+    "settings": {
+      "displayLanguages": "Idiomas de Visualización",
+      "languageHint": "Selecciona 1-3 idiomas para mostrar en cada dato",
+      "language": "idioma",
+      "selectLanguage": "Seleccionar este idioma",
+      "deselectLanguage": "Deseleccionar este idioma"
     }
   }
 }

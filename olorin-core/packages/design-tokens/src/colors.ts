@@ -203,6 +203,28 @@ export const colors = {
   current: 'currentColor',
   white: '#ffffff',
   black: '#000000',
+
+  // Semantic text colors
+  text: '#ffffff',              // Primary text color (white for dark theme)
+  textSecondary: 'rgba(255, 255, 255, 0.7)',  // Secondary text
+  textMuted: 'rgba(255, 255, 255, 0.5)',      // Muted/disabled text
+  textDisabled: 'rgba(255, 255, 255, 0.3)',   // Disabled text
+
+  // Flattened glass properties (for convenience/backward compatibility)
+  glassLight: glass.bgLight,
+  glassMedium: glass.bgMedium,
+  glassStrong: glass.bgStrong,
+  glassBorder: glass.border,
+  glassBorderLight: glass.borderLight,
+  glassBorderFocus: glass.borderFocus,
+  glassBorderStrong: glass.border,  // Alias for border
+  glassBorderWhite: 'rgba(255, 255, 255, 0.1)',  // White tinted border
+  glassPurple: glass.purpleStrong,
+  glassPurpleLight: glass.purpleLight,
+  glassGlowStrong: 'rgba(126, 34, 206, 0.5)',  // Strong purple glow
+  glassOverlay: 'rgba(10, 10, 10, 0.8)',  // Overlay background
+  glassOverlayStrong: 'rgba(10, 10, 10, 0.95)',  // Strong overlay
+  glassOverlayPurple: 'rgba(88, 28, 135, 0.4)',  // Purple-tinted overlay
 };
 
 export default colors;

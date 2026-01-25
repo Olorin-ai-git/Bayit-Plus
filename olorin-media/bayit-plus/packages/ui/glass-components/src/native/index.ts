@@ -44,6 +44,20 @@ export { GlassModal, type GlassModalProps, type ModalType } from './components/G
 export { GlassTooltip, type GlassTooltipProps } from './components/GlassTooltip';
 export { GlassProgressBar, type GlassProgressBarProps, type ProgressSize, type ProgressVariant } from './components/GlassProgressBar';
 
+// Notification components
+export { GlassToast, default as GlassToastComponent } from './components/GlassToast';
+export { GlassToastContainer, default as GlassToastContainerComponent } from './components/GlassToastContainer';
+export {
+  type NotificationLevel,
+  type NotificationPosition,
+  type NotificationAction,
+  type Notification,
+  type NotificationOptions,
+  type I18nNotificationOptions,
+  type GlassToastProps,
+  type GlassToastContainerProps,
+} from './components/GlassToast/types';
+
 // Navigation components (additional)
 export { GlassBreadcrumbs, type GlassBreadcrumbsProps, type BreadcrumbItem } from './components/GlassBreadcrumbs';
 
@@ -70,7 +84,7 @@ export { GlassAnalogClock, type GlassAnalogClockProps } from './components/Glass
 export { GlassTVSwitch, type GlassTVSwitchProps } from './components/GlassTVSwitch';
 
 // Re-export hooks
-export * from '../hooks';
+export * from '../hooks/index';
 
 // Re-export theme
 export * from '../theme';

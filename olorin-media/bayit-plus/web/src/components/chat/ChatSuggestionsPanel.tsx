@@ -1,6 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 
 declare const __TV__: boolean
 const IS_TV = typeof __TV__ !== 'undefined' && __TV__
@@ -44,7 +44,7 @@ export function ChatSuggestionsPanel({
 const styles = StyleSheet.create({
   hovered: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   textTV: {
     fontSize: 18,

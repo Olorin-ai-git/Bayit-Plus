@@ -6,7 +6,7 @@
 import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { SubtitleTrack, getLanguageInfo } from '@/types/subtitle'
 
 // Zod schema for props
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   textActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   textInactive: {
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     marginLeft: spacing.sm,
   },
   loadingContainer: {

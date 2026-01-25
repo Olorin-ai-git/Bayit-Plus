@@ -3,7 +3,7 @@
  */
 
 import { StyleSheet } from 'react-native';
-import { colors, spacing } from '../../theme';
+import { colors, spacing } from '@olorin/design-tokens';
 
 export const styles = StyleSheet.create({
   overlay: {
@@ -78,10 +78,10 @@ export const styles = StyleSheet.create({
   },
   progressDotActive: {
     width: 32,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary[600],
   },
   progressDotCompleted: {
-    backgroundColor: colors.success,
+    backgroundColor: colors.success[600],
   },
   buttonContainer: {
     position: 'absolute',

@@ -7,7 +7,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, Pressable, useWindowDimensions, Platform, Image, Animated, StyleSheet } from 'react-native';
 import { Chess } from 'chess.js';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { useTranslation } from 'react-i18next';
 import { isRTL as checkIsRTL } from '@bayit/shared-i18n';
 import logger from '@/utils/logger';

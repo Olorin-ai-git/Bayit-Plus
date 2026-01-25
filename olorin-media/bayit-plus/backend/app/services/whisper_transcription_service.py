@@ -181,9 +181,22 @@ class WhisperTranscriptionService:
 
             logger.info(f"📝 Transcribing audio file: {audio_path}")
 
+            # Check if file exists
+            if not os.path.exists(audio_path):
+                raise FileNotFoundError(f"Audio file not found: {audio_path}")
+
             # Check file size
             file_size_mb = os.path.getsize(audio_path) / (1024 * 1024)
-            logger.info(f"   File size: {file_size_mb:.2f} MB")
+            logger.info(f"   Original file size: {file_size_mb:.2f} MB")
+
+            # Get file format info
+            import subprocess
+            try:
+                probe_cmd = ["ffprobe", "-v", "error", "-show_format", "-show_streams", audio_path]
+                probe_result = subprocess.run(probe_cmd, capture_output=True, text=True)
+                logger.info(f"   File format info: {probe_result.stdout[:200]}...")
+            except Exception as e:
+                logger.warning(f"   Could not probe file format: {e}")
 
             # Whisper API has 25MB limit
             MAX_SIZE_MB = 24  # Use 24MB to be safe
@@ -194,24 +207,81 @@ class WhisperTranscriptionService:
                 )
                 return await self._transcribe_large_file(audio_path, language)
 
-            # File is small enough, transcribe directly
-            with open(audio_path, "rb") as audio_file:
-                # Call Whisper API with auto-detection or specified language
-                if language:
-                    lang_code = WHISPER_LANGUAGE_CODES.get(language, language)
-                    transcript = await self.client.audio.transcriptions.create(
-                        model="whisper-1",
-                        file=audio_file,
-                        language=lang_code,
-                        response_format="verbose_json",  # Get language info
-                    )
-                else:
-                    # Auto-detect language
-                    transcript = await self.client.audio.transcriptions.create(
-                        model="whisper-1",
-                        file=audio_file,
-                        response_format="verbose_json",  # Get language info
-                    )
+            # Convert to wav format for better compatibility
+            import subprocess
+            import tempfile
+
+            logger.info("   Converting audio to WAV format for better API compatibility...")
+
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_wav:
+                temp_wav_path = temp_wav.name
+
+            try:
+                # Convert to WAV using ffmpeg (16kHz mono for optimal Whisper performance)
+                ffmpeg_cmd = [
+                    "ffmpeg",
+                    "-i", audio_path,
+                    "-acodec", "pcm_s16le",  # 16-bit PCM
+                    "-ar", "16000",           # 16kHz sample rate
+                    "-ac", "1",               # Mono
+                    "-y",                     # Overwrite
+                    temp_wav_path
+                ]
+
+                result = subprocess.run(
+                    ffmpeg_cmd,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    check=True
+                )
+
+                wav_size_mb = os.path.getsize(temp_wav_path) / (1024 * 1024)
+                logger.info(f"   Converted to WAV: {wav_size_mb:.2f} MB")
+
+                # If converted file is still too large, use chunking
+                if wav_size_mb > MAX_SIZE_MB:
+                    logger.info(f"   WAV file still exceeds {MAX_SIZE_MB}MB, using chunking...")
+                    return await self._transcribe_large_file(temp_wav_path, language)
+
+                # Transcribe the WAV file
+                logger.info(f"   Sending WAV file to Whisper API...")
+                logger.info(f"   WAV file path: {temp_wav_path}")
+
+                try:
+                    with open(temp_wav_path, "rb") as audio_file:
+                        logger.info(f"   File opened, size: {os.path.getsize(temp_wav_path)} bytes")
+
+                        if language:
+                            lang_code = WHISPER_LANGUAGE_CODES.get(language, language)
+                            logger.info(f"   Requesting transcription with language: {lang_code}")
+                            transcript = await self.client.audio.transcriptions.create(
+                                model="whisper-1",
+                                file=audio_file,
+                                language=lang_code,
+                                response_format="verbose_json",
+                            )
+                        else:
+                            logger.info(f"   Requesting transcription with auto-detection")
+                            # Auto-detect language
+                            transcript = await self.client.audio.transcriptions.create(
+                                model="whisper-1",
+                                file=audio_file,
+                                response_format="verbose_json",
+                            )
+
+                        logger.info(f"   Transcription successful!")
+
+                except Exception as api_error:
+                    logger.error(f"   Whisper API error details:")
+                    logger.error(f"     Error type: {type(api_error).__name__}")
+                    logger.error(f"     Error message: {str(api_error)}")
+                    if hasattr(api_error, 'response'):
+                        logger.error(f"     Response: {api_error.response}")
+                    raise
+            finally:
+                # Clean up temp WAV file
+                if os.path.exists(temp_wav_path):
+                    os.remove(temp_wav_path)
 
             # Extract text and language from response
             text = transcript.text
@@ -299,9 +369,9 @@ class WhisperTranscriptionService:
 
                     subprocess.run(
                         ffmpeg_cmd,
-                        capture_output=True,
-                        check=True,
-                        stderr=subprocess.DEVNULL,  # Suppress ffmpeg output
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                        check=True
                     )
 
                     # Verify chunk was created and has reasonable size

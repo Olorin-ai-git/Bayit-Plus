@@ -6,7 +6,7 @@
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '@bayit/shared/ui';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 import type { Season } from '../types/series.types';
 
 interface SeasonSelectorProps {

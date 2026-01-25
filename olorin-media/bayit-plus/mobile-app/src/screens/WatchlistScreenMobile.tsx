@@ -31,7 +31,7 @@ import { GlassView, GlassCategoryPill } from '@bayit/shared';
 import { getLocalizedName } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
-import { spacing, colors, typography } from '../theme';
+import { spacing, colors, typography } from '@olorin/design-tokens';
 import type { RootStackParamList } from '../navigation/types';
 
 import logger from '@/utils/logger';

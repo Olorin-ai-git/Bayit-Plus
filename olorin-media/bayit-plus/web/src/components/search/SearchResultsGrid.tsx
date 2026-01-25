@@ -9,7 +9,7 @@ import React, { memo, useCallback, useState, useMemo } from 'react';
 import { View, Text, Image, FlatList, StyleSheet, Platform, ActivityIndicator } from 'react-native';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
-import { colors, borderRadius, spacing } from '../../theme/colors';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 interface SearchResultsGridProps {
   /** Search results to display */
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   },
   gridItemFocused: {
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     borderRadius: 12,
     transform: [{ scale: 1.05 }],
   },

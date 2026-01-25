@@ -6,7 +6,7 @@
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { Circle } from 'lucide-react'
-import { spacing, borderRadius, colors } from '@bayit/shared/theme'
+import { spacing, borderRadius, colors } from '@olorin/design-tokens'
 
 interface RecordingStatusIndicatorProps {
   isRecording: boolean

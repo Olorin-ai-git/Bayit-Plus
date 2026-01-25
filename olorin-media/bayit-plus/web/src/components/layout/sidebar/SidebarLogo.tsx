@@ -15,7 +15,7 @@ import { View, Text, Image, Animated, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 const SidebarLogoPropsSchema = z.object({
   showLabels: z.boolean(),

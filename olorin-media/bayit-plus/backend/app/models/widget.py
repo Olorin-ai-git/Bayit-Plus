@@ -83,6 +83,7 @@ class Widget(Document):
     title: str
     description: Optional[str] = None
     icon: Optional[str] = None  # Icon URL or emoji
+    cover_url: Optional[str] = None  # Cover image/poster URL
 
     # Content
     content: WidgetContent
@@ -94,6 +95,7 @@ class Widget(Document):
     is_active: bool = True  # Whether widget is enabled
     is_muted: bool = True  # Default mute state (all muted by default)
     is_visible: bool = True  # Default visibility state
+    is_minimized: bool = False  # Default minimized state
     is_closable: bool = True  # Allow users to close
     is_draggable: bool = True  # Allow users to reposition
 
@@ -150,11 +152,13 @@ class WidgetUpdateRequest(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     icon: Optional[str] = None
+    cover_url: Optional[str] = None
     content: Optional[WidgetContent] = None
     position: Optional[WidgetPosition] = None
     is_active: Optional[bool] = None
     is_muted: Optional[bool] = None
     is_visible: Optional[bool] = None
+    is_minimized: Optional[bool] = None
     is_closable: Optional[bool] = None
     is_draggable: Optional[bool] = None
     visible_to_roles: Optional[List[str]] = None
@@ -181,11 +185,13 @@ class WidgetResponse(BaseModel):
     title: str
     description: Optional[str] = None
     icon: Optional[str] = None
+    cover_url: Optional[str] = None
     content: WidgetContent
     position: WidgetPosition
     is_active: bool
     is_muted: bool
     is_visible: bool
+    is_minimized: bool
     is_closable: bool
     is_draggable: bool
     visible_to_roles: List[str]

@@ -17,7 +17,11 @@ export default defineConfig([
       'react-native',
       'react-native-linear-gradient',
       'react-native-reanimated',
+      'react-native-safe-area-context',
+      'react-native-gesture-handler',
       '@olorin/design-tokens',
+      'zustand',
+      'nanoid',
     ],
     esbuildOptions(options) {
       options.resolveExtensions = ['.native.tsx', '.native.ts', '.tsx', '.ts'];
@@ -61,5 +65,35 @@ export default defineConfig([
     splitting: false,
     treeshake: true,
     external: ['@olorin/design-tokens'],
+  },
+  // Stores build
+  {
+    entry: {
+      'stores/index': 'src/stores/index.ts',
+    },
+    format: ['cjs', 'esm'],
+    dts: true,
+    sourcemap: true,
+    splitting: false,
+    treeshake: true,
+    external: ['react', 'zustand', 'nanoid'],
+  },
+  // Contexts build
+  {
+    entry: {
+      'contexts/index': 'src/contexts/index.ts',
+    },
+    format: ['cjs', 'esm'],
+    dts: true,
+    sourcemap: true,
+    splitting: false,
+    treeshake: true,
+    external: [
+      'react',
+      'react-native',
+      'react-native-safe-area-context',
+      '@olorin/design-tokens',
+      'zustand',
+    ],
   },
 ]);

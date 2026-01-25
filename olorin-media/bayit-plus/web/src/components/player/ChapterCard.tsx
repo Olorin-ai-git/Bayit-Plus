@@ -1,28 +1,29 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Play } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassView } from '@bayit/shared/ui'
 
 // Category colors for chapter markers
 const categoryColors: Record<string, string> = {
-  intro: colors.primary,
-  news: colors.error,
+  general: colors.textMuted,
+  intro: colors.primary.DEFAULT,
+  news: colors.error.DEFAULT,
   security: '#F97316',
-  politics: colors.primary,
-  economy: colors.success,
-  sports: colors.warning,
+  politics: colors.primary.DEFAULT,
+  economy: colors.success.DEFAULT,
+  sports: colors.warning.DEFAULT,
   weather: '#06B6D4',
   culture: '#EC4899',
   conclusion: colors.textMuted,
   flashback: '#6366F1',
   journey: '#14B8A6',
   climax: '#F43F5E',
-  setup: colors.warning,
-  action: colors.error,
+  setup: colors.warning.DEFAULT,
+  action: colors.error.DEFAULT,
   conflict: '#EA580C',
   cliffhanger: '#8B5CF6',
-  main: colors.primary,
+  main: colors.primary.DEFAULT,
 }
 
 function formatTime(seconds: number): string {
@@ -52,7 +53,7 @@ export default function ChapterCard({
   showCategory = true,
 }: ChapterCardProps) {
   const { t } = useTranslation()
-  const categoryColor = categoryColors[chapter.category || ''] || colors.primary
+  const categoryColor = categoryColors[chapter.category || 'general'] || colors.primary.DEFAULT
 
   return (
     <Pressable onPress={onClick}>
@@ -62,10 +63,10 @@ export default function ChapterCard({
             styles.card,
             isActive && styles.cardActive,
             hovered && !isActive && styles.cardHovered,
-            isActive && { shadowColor: colors.primary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.3, shadowRadius: 8 }
+            isActive && { shadowColor: colors.primary.DEFAULT, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.3, shadowRadius: 8 }
           ]}
           intensity={isActive ? 'high' : 'medium'}
-          borderColor={isActive ? colors.primary : undefined}
+          borderColor={isActive ? colors.primary.DEFAULT : undefined}
         >
           <View style={styles.cardContent}>
             {/* Category indicator */}
@@ -97,7 +98,7 @@ export default function ChapterCard({
                     </Text>
                   </View>
                   {isActive && (
-                    <Text style={[styles.currentText, { color: colors.primary }]}>
+                    <Text style={[styles.currentText, { color: colors.primary.DEFAULT }]}>
                       {t('chapters.current')}
                     </Text>
                   )}
@@ -109,14 +110,14 @@ export default function ChapterCard({
             <View
               style={[
                 styles.playButton,
-                isActive && { backgroundColor: colors.primary },
+                isActive && { backgroundColor: colors.primary.DEFAULT },
                 !isActive && (hovered ? styles.playBgHovered : styles.playBgDefault),
               ]}
             >
               <Play
                 size={14}
-                fill={isActive ? colors.text : 'none'}
-                color={isActive ? colors.text : colors.textMuted}
+                fill={isActive ? colors.white : 'none'}
+                color={isActive ? colors.white : colors.textMuted}
               />
             </View>
           </View>
@@ -165,10 +166,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   textActive: {
-    color: colors.primaryLight,
+    color: colors.white,
+    fontWeight: '600',
   },
   textInactive: {
-    color: colors.text,
+    color: colors.textSecondary,
   },
   timeText: {
     fontSize: 12,

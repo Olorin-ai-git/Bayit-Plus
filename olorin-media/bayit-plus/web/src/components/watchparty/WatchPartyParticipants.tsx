@@ -6,7 +6,7 @@
 import { View, Text } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Crown, Mic, MicOff, User } from 'lucide-react'
-import { colors } from '@bayit/shared/theme'
+import { colors } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 import { styles } from './WatchPartyParticipants.styles'
 

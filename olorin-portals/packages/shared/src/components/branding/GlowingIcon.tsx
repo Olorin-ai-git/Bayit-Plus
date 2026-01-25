@@ -33,6 +33,8 @@ export const GlowingIcon: React.FC<GlowingIconProps> = ({
     streaming: 'text-wizard-accent-streaming glow-streaming',
     radio: 'text-wizard-accent-radio glow-radio',
     omen: 'text-wizard-accent-omen glow-omen',
+    station: 'text-wizard-accent-station glow-station',
+    cvplus: 'text-wizard-accent-cvplus glow-cvplus',
     purple: 'text-wizard-accent-purple glow-purple', // Backward compatibility
   };
 

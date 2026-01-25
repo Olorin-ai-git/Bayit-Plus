@@ -7,7 +7,7 @@ import { useRef, useEffect } from 'react'
 import { View, Text, Animated, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { RefreshCw, Check, Pause, Loader } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 
 interface WatchPartySyncOverlayProps {

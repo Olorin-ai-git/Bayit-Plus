@@ -15,23 +15,23 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
 import { useSupportStore, SupportTicket } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
 import { SupportTicketForm } from './SupportTicketForm';
 
 const statusConfig: Record<string, { color: string; icon: string }> = {
-  open: { color: colors.warning, icon: '📝' },
-  in_progress: { color: colors.primary, icon: '⚙️' },
-  resolved: { color: colors.success, icon: '✅' },
+  open: { color: colors.warning.DEFAULT, icon: '📝' },
+  in_progress: { color: colors.primary.DEFAULT, icon: '⚙️' },
+  resolved: { color: colors.success.DEFAULT, icon: '✅' },
   closed: { color: colors.textSecondary, icon: '📁' },
 };
 
 const priorityConfig: Record<string, { color: string; label: string }> = {
-  low: { color: colors.success, label: 'Low' },
-  medium: { color: colors.warning, label: 'Medium' },
-  high: { color: colors.error, label: 'High' },
+  low: { color: colors.success.DEFAULT, label: 'Low' },
+  medium: { color: colors.warning.DEFAULT, label: 'Medium' },
+  high: { color: colors.error.DEFAULT, label: 'High' },
   urgent: { color: '#FF0000', label: 'Urgent' },
 };
 
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: borderRadius.lg,
     gap: spacing.xs,
   },
@@ -468,14 +468,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(168, 85, 247, 0.2)',
   },
   filterButtonFocused: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   filterText: {
     fontSize: isTV ? 14 : 12,
     color: colors.textSecondary,
   },
   filterTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   listContent: {
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   ticketCardFocused: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   ticketHeader: {
     flexDirection: 'row',
@@ -586,10 +586,10 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: isTV ? 14 : 12,
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
   retryButton: {
-    backgroundColor: colors.error,
+    backgroundColor: colors.error.DEFAULT,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.lg,
@@ -614,7 +614,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   emptyButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.lg,

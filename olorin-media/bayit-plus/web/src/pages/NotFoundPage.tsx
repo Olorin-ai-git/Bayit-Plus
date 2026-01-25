@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { Home, Search, ArrowRight } from 'lucide-react';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { GlassCard, GlassView } from '@bayit/shared/ui';
 
 export default function NotFoundPage() {
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   errorCode: {
     fontSize: 140,
     fontWeight: '800',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     marginBottom: spacing.lg,
     letterSpacing: -4,
     textShadowColor: `${colors.primary}40` as any,
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.xs,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     borderRadius: 8,
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
   },
   quickLinkText: {
     fontSize: 14,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '500',
   },
 });

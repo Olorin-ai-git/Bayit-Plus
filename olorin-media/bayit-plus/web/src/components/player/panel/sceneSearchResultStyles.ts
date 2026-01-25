@@ -3,7 +3,7 @@
  */
 
 import { StyleSheet } from 'react-native'
-import { colors, tvFontSize } from '@bayit/shared/theme'
+import { colors, fontSizeTV } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 
 export const MIN_TOUCH_TARGET = 44
@@ -51,11 +51,11 @@ export const resultCardStyles = StyleSheet.create({
   timestamp: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontVariant: ['tabular-nums'],
   },
   timestampTV: {
-    fontSize: tvFontSize.sm,
+    fontSize: fontSizeTV.sm,
   },
   textContainer: {
     flex: 1,
@@ -77,7 +77,7 @@ export const resultCardStyles = StyleSheet.create({
     flex: 1,
   },
   titleTV: {
-    fontSize: tvFontSize.lg,
+    fontSize: fontSizeTV.lg,
   },
   titleActive: {
     color: colors.primaryLight,
@@ -98,7 +98,7 @@ export const resultCardStyles = StyleSheet.create({
     color: colors.primaryLight,
   },
   episodeTextTV: {
-    fontSize: tvFontSize.xs,
+    fontSize: fontSizeTV.xs,
   },
   matchedText: {
     fontSize: 13,
@@ -106,7 +106,7 @@ export const resultCardStyles = StyleSheet.create({
     lineHeight: 18,
   },
   matchedTextTV: {
-    fontSize: tvFontSize.base,
+    fontSize: fontSizeTV.base,
     lineHeight: 26,
   },
   scoreRow: {
@@ -127,7 +127,7 @@ export const resultCardStyles = StyleSheet.create({
   },
   scoreBar: {
     height: '100%',
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: 2,
   },
   scoreText: {
@@ -137,7 +137,7 @@ export const resultCardStyles = StyleSheet.create({
     minWidth: 28,
   },
   scoreTextTV: {
-    fontSize: tvFontSize.xs,
+    fontSize: fontSizeTV.xs,
     minWidth: 40,
   },
   // RTL fix: Use textAlign: 'left' instead of 'right' for RTL
@@ -161,7 +161,7 @@ export const resultCardStyles = StyleSheet.create({
     borderRadius: 28,
   },
   playButtonActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary[600],
   },
   playButtonHovered: {
     backgroundColor: colors.glassLight,

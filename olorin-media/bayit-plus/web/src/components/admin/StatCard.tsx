@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
-import { colors, borderRadius, spacing } from '@bayit/shared/theme';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 interface Trend {
   value: number;

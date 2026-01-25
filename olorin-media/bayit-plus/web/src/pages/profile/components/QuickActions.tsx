@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { MessageSquare, Mic, CreditCard } from 'lucide-react';
 import { GlassView } from '@bayit/shared/ui';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import type { TabId } from '../types';
 
 interface QuickActionsProps {

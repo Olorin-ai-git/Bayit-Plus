@@ -9,7 +9,7 @@ import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import { VoiceSearchButton } from '../../../../shared/components/VoiceSearchButton';
-import { colors, borderRadius, spacing } from '../../theme/colors';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 // Platform-specific touch target sizes
 const TOUCH_TARGET_SIZE = Platform.select({
@@ -44,7 +44,7 @@ export function SearchActionButtons({
   showFilters = true,
   onFiltersClick,
 }: SearchActionButtonsProps) {
-  const { t } = useTranslation('search');
+  const { t } = useTranslation();
   const [focusedButton, setFocusedButton] = React.useState<string | null>(null);
 
   return (
@@ -69,8 +69,8 @@ export function SearchActionButtons({
           onFocus={() => setFocusedButton('llm')}
           onBlur={() => setFocusedButton(null)}
           focusable={Platform.isTV}
-          accessibilityLabel={t('controls.llmSearch')}
-          accessibilityHint={t('controls.hints.llmSearch')}
+          accessibilityLabel={t('search.controls.llmSearch')}
+          accessibilityHint={t('search.controls.hints.llmSearch')}
         >
           <Text style={styles.buttonIcon}>✨</Text>
         </GlassButton>
@@ -88,8 +88,8 @@ export function SearchActionButtons({
           onFocus={() => setFocusedButton('filters')}
           onBlur={() => setFocusedButton(null)}
           focusable={Platform.isTV}
-          accessibilityLabel={t('controls.filters')}
-          accessibilityHint={t('controls.hints.filters')}
+          accessibilityLabel={t('search.controls.filters')}
+          accessibilityHint={t('search.controls.hints.filters')}
         >
           <Text style={styles.buttonIcon}>⚙️</Text>
         </GlassButton>
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   buttonFocused: {
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     transform: [{ scale: 1.05 }],
   },
   buttonIcon: {

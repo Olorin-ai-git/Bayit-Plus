@@ -19,7 +19,7 @@ import {
   Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, fontSize, borderRadius } from '../theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { cultureService } from '../services/api';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';

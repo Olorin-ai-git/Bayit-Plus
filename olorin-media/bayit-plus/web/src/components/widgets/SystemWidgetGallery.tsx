@@ -11,7 +11,7 @@ import { View, Text, Pressable, useWindowDimensions, ActivityIndicator, StyleShe
 import { useTranslation } from 'react-i18next';
 import { Plus, Check, Tv, Globe, Podcast, Radio, Film, RefreshCw, Eye, EyeOff, RotateCcw, Trash2 } from 'lucide-react';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { adminWidgetsService } from '@/services/adminApi';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { useDirection } from '@/hooks/useDirection';
@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   errorText: {
-    color: colors.error,
+    color: colors.error.DEFAULT,
     fontSize: 14,
     marginBottom: spacing.md,
   },

@@ -29,7 +29,7 @@ import { GlassCategoryPill, GlassView, GlassBadge } from '@bayit/shared';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
-import { spacing, colors, typography } from '../theme';
+import { spacing, colors, typography } from '@olorin/design-tokens';
 
 import logger from '@/utils/logger';
 

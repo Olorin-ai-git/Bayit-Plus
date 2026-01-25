@@ -23,16 +23,20 @@ import {
   VoiceSystemType,
   getWakeWordConfig,
 } from '../utils/porcupineWakeWordDetector';
+import { logger as baseLogger } from '../utils/logger';
+
+// Create scoped logger for this hook
+const logger = baseLogger.scope('WakeWordListening');
 
 /**
  * Log audio context state for debugging
  */
 function logAudioContextState(context: AudioContext | null, label: string): void {
   if (!context) {
-    console.log(`[WakeWordListening] ${label}: AudioContext is null`);
+    logger.debug(`${label}: AudioContext is null`);
     return;
   }
-  console.log(`[WakeWordListening] ${label}:`, {
+  logger.debug(`${label}`, {
     state: context.state,
     sampleRate: context.sampleRate,
     baseLatency: context.baseLatency,
@@ -140,7 +144,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
 
   // Log support status on mount (for debugging Tizen)
   useEffect(() => {
-    console.log('[WakeWordListening] Platform support check:', {
+    logger.info('Platform support check', {
       isWeb,
       hasAudioContext,
       hasNavigator,
@@ -157,12 +161,12 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
   const handlePorcupineDetection = useCallback((keywordIndex: number, system: VoiceSystemType) => {
     // Only respond to voiceSearch system wake word
     if (system !== 'voiceSearch') {
-      console.log('[WakeWordListening] Ignoring wake word - not for voiceSearch system:', system);
+      logger.debug('Ignoring wake word - not for voiceSearch system', { system });
       return;
     }
 
     const wakeWordConfig = getWakeWordConfig('voiceSearch');
-    console.log(`[WakeWordListening] Voice Search wake word "${wakeWordConfig.builtInKeyword}" detected!`);
+    logger.info(`Voice Search wake word "${wakeWordConfig.builtInKeyword}" detected!`);
 
     // Set wake word detected state
     setWakeWordDetected(true);
@@ -189,34 +193,34 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
   const initializeWakeWord = useCallback(async () => {
     // Skip if already initialized
     if (porcupineInitializedRef.current) {
-      console.log('[WakeWordListening] Porcupine already initialized');
+      logger.debug('Porcupine already initialized');
       return;
     }
 
     // Skip if wake word detection is disabled
     if (!wakeWordEnabled) {
-      console.log('[WakeWordListening] Wake word detection disabled');
+      logger.debug('Wake word detection disabled');
       return;
     }
 
     // Check if Porcupine is supported
     if (!isPorcupineSupported()) {
-      console.warn('[WakeWordListening] Porcupine not supported in this environment, using VAD-only mode');
+      logger.warn('Porcupine not supported in this environment, using VAD-only mode');
       return;
     }
 
     // Get Picovoice access key
     const accessKey = getPicovoiceAccessKey();
     if (!accessKey) {
-      console.warn('[WakeWordListening] Picovoice access key not configured, using VAD-only mode');
+      logger.warn('Picovoice access key not configured, using VAD-only mode');
       return;
     }
 
     try {
       // Get Voice Search wake word config
       const voiceSearchConfig = getWakeWordConfig('voiceSearch');
-      console.log('[WakeWordListening] Initializing Porcupine for Voice Search system...');
-      console.log(`[WakeWordListening] Wake word: "${voiceSearchConfig.builtInKeyword}" (intended: "${voiceSearchConfig.customPhrase}")`);
+      logger.info('Initializing Porcupine for Voice Search system...');
+      logger.info(`Wake word: "${voiceSearchConfig.builtInKeyword}" (intended: "${voiceSearchConfig.customPhrase}")`);
 
       // Create Porcupine detector
       porcupineDetectorRef.current = createPorcupineDetector('voiceSearch');
@@ -240,11 +244,11 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
 
       porcupineInitializedRef.current = true;
       setWakeWordReady(true);
-      console.log(`[WakeWordListening] Voice Search ready - say "${voiceSearchConfig.builtInKeyword}" to activate`);
+      logger.info(`Voice Search ready - say "${voiceSearchConfig.builtInKeyword}" to activate`);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.warn('[WakeWordListening] Failed to initialize Porcupine:', errorMessage);
-      console.warn('[WakeWordListening] Falling back to VAD-only mode');
+      logger.warn('Failed to initialize Porcupine', { error: errorMessage });
+      logger.warn('Falling back to VAD-only mode');
       // Don't throw - allow VAD-only fallback
       porcupineInitializedRef.current = false;
       setWakeWordReady(false);
@@ -282,7 +286,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
 
       setTimeout(() => audioContext.close(), 300);
     } catch (err) {
-      console.warn('[WakeWordListening] Failed to play feedback:', err);
+      logger.warn('Failed to play feedback', err);
     }
   }, []);
 
@@ -297,7 +301,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
 
     // Skip if audio is too short (less than 0.5 seconds)
     if (audioBlob.size < 16000) {
-      console.log('[WakeWordListening] Audio blob too short, skipping transcription');
+      logger.debug('Audio blob too short, skipping transcription', { size: audioBlob.size });
       vadRef.current?.reset();
       bufferRef.current.clear();
       setIsAwake(false);
@@ -308,18 +312,18 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
 
     // DEDUPLICATION: Skip if we're already transcribing the exact same audio blob
     if (lastTranscribedBlobRef.current === audioBlob) {
-      console.log('[WakeWordListening] Duplicate audio blob detected, skipping transcription');
+      logger.debug('Duplicate audio blob detected, skipping transcription');
       return;
     }
 
     // DEDUPLICATION: Skip if a transcription request is already in flight
     if (pendingTranscriptionRef.current) {
-      console.log('[WakeWordListening] Transcription already in flight, skipping duplicate request');
+      logger.debug('Transcription already in flight, skipping duplicate request');
       return;
     }
 
     setIsSendingToServer(true);
-    console.log('[WakeWordListening] Sending audio to transcription API, blob size:', audioBlob.size);
+    logger.info('Sending audio to transcription API', { blobSize: audioBlob.size });
 
     // Create a promise to track the in-flight request
     const transcriptionPromise = (async () => {
@@ -327,19 +331,19 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
         const result = await transcribeAudio(audioBlob);
 
         if (result.text && result.text.trim()) {
-          console.log('[WakeWordListening] Transcription received:', result.text.substring(0, 100));
+          logger.info('Transcription received', { text: result.text.substring(0, 100) });
           onTranscript(result.text.trim(), result.language);
         }
       } catch (err) {
         const error = err instanceof Error ? err : new Error('Transcription failed');
-        console.error('[WakeWordListening] Transcription error:', error);
+        logger.error('Transcription error', error);
         onError(error);
       } finally {
         setIsSendingToServer(false);
         isSendingToServerRef.current = false;
         // Keep isProcessing true - it will be reset by onTranscript or after timeout
         // Don't reset it here to avoid flickering
-        console.log('[WakeWordListening] Transcription complete, waiting for response');
+        logger.debug('Transcription complete, waiting for response');
         vadRef.current?.reset();
         bufferRef.current?.clear();
         setIsAwake(false);
@@ -374,10 +378,10 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
 
     // SKIP audio processing while TTS is speaking (prevent feedback loops)
     if (isTTSSpeakingRef.current) {
-      // Log only once per second to avoid flooding console
+      // Log only once per second to avoid flooding logs
       const now = Date.now();
       if (now - lastTTSLogRef.current > 1000) {
-        console.log('[WakeWordListening] TTS speaking, audio processing paused');
+        logger.debug('TTS speaking, audio processing paused');
         lastTTSLogRef.current = now;
       }
       return;
@@ -422,13 +426,13 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
     if (vadState === 'speech') {
       // Speech detected - continue recording
       if (!bufferRef.current.isRecording()) {
-        console.log('[WakeWordListening] Speech detected! Setting isProcessing=true');
+        logger.info('Speech detected! Setting isProcessing=true');
         bufferRef.current.startSpeech();
         setIsProcessing(true);
       }
     } else if (vadState === 'silence_after_speech' && vadRef.current.shouldSendToAPI() && !isSendingToServerRef.current) {
       // Silence after speech - send to API (prevent concurrent requests)
-      console.log('[WakeWordListening] Silence after speech detected! Sending to transcription API');
+      logger.info('Silence after speech detected! Sending to transcription API');
       bufferRef.current.endSpeech();
       // Keep isProcessing true while transcribing - shows "Processing" status in UI
       setIsSendingToServer(true);
@@ -443,12 +447,14 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
    */
   const startWebAudio = useCallback(async () => {
     try {
-      console.log('[WakeWordListening] Requesting microphone permission...');
+      logger.info('Requesting microphone permission...');
 
       // Check secure context (HTTPS or localhost required for getUserMedia)
       const isSecureContext = typeof window !== 'undefined' && window.isSecureContext;
-      console.log('[WakeWordListening] Secure context:', isSecureContext);
-      console.log('[WakeWordListening] Current URL:', typeof window !== 'undefined' ? window.location.href : 'N/A');
+      logger.info('Secure context check', {
+        isSecureContext,
+        url: typeof window !== 'undefined' ? window.location.href : 'N/A'
+      });
 
       if (!isSecureContext) {
         throw new Error('Microphone requires HTTPS. Please access this page over HTTPS or localhost.');
@@ -462,7 +468,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
         throw new Error('getUserMedia not available. Your browser may not support microphone access.');
       }
 
-      console.log('[WakeWordListening] mediaDevices available, requesting mic...');
+      logger.info('mediaDevices available, requesting mic...');
 
       // First, try to get microphone permission - this triggers the browser permission prompt
       // Device enumeration may be empty until permission is granted
@@ -476,35 +482,42 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
             sampleRate: 16000,
           },
         });
-        console.log('[WakeWordListening] Got stream with constraints');
+        logger.info('Got stream with constraints');
       } catch (constraintErr: any) {
-        console.warn('[WakeWordListening] Constraints failed:', constraintErr?.message || constraintErr, 'name:', constraintErr?.name);
+        logger.warn('Constraints failed', {
+          message: constraintErr?.message || constraintErr,
+          name: constraintErr?.name
+        });
 
         // Enumerate devices to provide better diagnostics
         try {
           const devices = await navigator.mediaDevices.enumerateDevices();
           const audioInputs = devices.filter(d => d.kind === 'audioinput');
-          console.log('[WakeWordListening] Available audio input devices:', audioInputs.length);
-          audioInputs.forEach((device, i) => {
-            console.log(`[WakeWordListening] Device ${i}: ${device.label || '(no label - permission not granted yet)'} (${device.deviceId ? device.deviceId.slice(0, 8) + '...' : 'no-id'})`);
+          logger.info('Available audio input devices', {
+            count: audioInputs.length,
+            devices: audioInputs.map((device, i) => ({
+              index: i,
+              label: device.label || '(no label - permission not granted yet)',
+              deviceId: device.deviceId ? device.deviceId.slice(0, 8) + '...' : 'no-id'
+            }))
           });
 
           if (audioInputs.length === 0) {
-            console.warn('[WakeWordListening] No audio input devices detected. This could mean:');
-            console.warn('  - No microphone is connected');
-            console.warn('  - The browser does not have permission to access microphone');
-            console.warn('  - The microphone is in use by another application');
+            logger.warn('No audio input devices detected. This could mean: No microphone is connected, browser does not have permission, or microphone is in use by another application');
           }
         } catch (enumErr) {
-          console.warn('[WakeWordListening] Could not enumerate devices:', enumErr);
+          logger.warn('Could not enumerate devices', enumErr);
         }
 
         // Fallback for devices that don't support specific constraints (e.g., Samsung TV)
         try {
           stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          console.log('[WakeWordListening] Got stream with simple audio:true');
+          logger.info('Got stream with simple audio:true');
         } catch (simpleErr: any) {
-          console.error('[WakeWordListening] Simple audio also failed:', simpleErr?.message || simpleErr, 'name:', simpleErr?.name);
+          logger.error('Simple audio also failed', {
+            message: simpleErr?.message || simpleErr,
+            name: simpleErr?.name
+          });
 
           // Provide more specific error message based on error type
           const errorName = simpleErr?.name || '';
@@ -524,13 +537,15 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
         }
       }
 
-      console.log('[WakeWordListening] Microphone granted, stream active:', stream.active);
-
-      // Log successful stream info
-      const audioTracks = stream.getAudioTracks();
-      console.log('[WakeWordListening] Audio tracks:', audioTracks.length);
-      audioTracks.forEach((track, i) => {
-        console.log(`[WakeWordListening] Track ${i}: ${track.label} (enabled: ${track.enabled}, muted: ${track.muted})`);
+      logger.info('Microphone granted', {
+        streamActive: stream.active,
+        trackCount: stream.getAudioTracks().length,
+        tracks: stream.getAudioTracks().map((track, i) => ({
+          index: i,
+          label: track.label,
+          enabled: track.enabled,
+          muted: track.muted
+        }))
       });
       streamRef.current = stream;
 
@@ -539,7 +554,7 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
       try {
         audioContext = new AudioContext({ sampleRate: 16000 });
       } catch (audioCtxErr) {
-        console.warn('[WakeWordListening] 16kHz AudioContext failed, using default:', audioCtxErr);
+        logger.warn('16kHz AudioContext failed, using default', audioCtxErr);
         audioContext = new AudioContext();
       }
       audioContextRef.current = audioContext;
@@ -547,19 +562,19 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
 
       // CRITICAL: Resume audio context if suspended (browsers suspend until user interaction)
       if (audioContext.state === 'suspended') {
-        console.log('[WakeWordListening] AudioContext is suspended, attempting to resume...');
+        logger.info('AudioContext is suspended, attempting to resume...');
         try {
           await audioContext.resume();
           logAudioContextState(audioContext, 'AudioContext after resume()');
         } catch (resumeErr) {
-          console.error('[WakeWordListening] Failed to resume AudioContext:', resumeErr);
+          logger.error('Failed to resume AudioContext', resumeErr);
           throw new Error('AudioContext could not be resumed. Please tap the screen to enable voice.');
         }
       }
 
       // Double-check context is running
       if (audioContext.state !== 'running') {
-        console.warn('[WakeWordListening] AudioContext state is not running:', audioContext.state);
+        logger.warn('AudioContext state is not running', { state: audioContext.state });
       }
 
       // Create analyser for visualization
@@ -608,7 +623,7 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
         source.connect(audioWorkletNode);
         audioWorkletNode.connect(audioContext.destination);
       } catch (err) {
-        console.warn('[WakeWordListening] AudioWorklet not supported, falling back to ScriptProcessor:', err);
+        logger.warn('AudioWorklet not supported, falling back to ScriptProcessor', err);
         // Fallback to ScriptProcessorNode if AudioWorklet is not available
         const scriptProcessor = audioContext.createScriptProcessor(4096, 1, 1);
 
@@ -645,8 +660,7 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
       return true;
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to start audio capture');
-      console.error('[WakeWordListening] Failed to start web audio:', error.message);
-      console.error('[WakeWordListening] Error details:', err);
+      logger.error('Failed to start web audio', { message: error.message, details: err });
       throw error;
     }
   }, [processAudioLevel]);
@@ -680,10 +694,10 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
    * Start listening
    */
   const start = useCallback(async () => {
-    console.log('[WakeWordListening] start() called with:', { isListening, enabled, isWeb, isSupported });
+    logger.debug('start() called', { isListening, enabled, isWeb, isSupported });
 
     if (isListening || !enabled) {
-      console.log('[WakeWordListening] start() skipped - isListening:', isListening, 'enabled:', enabled);
+      logger.debug('start() skipped', { isListening, enabled });
       return;
     }
 
@@ -692,7 +706,7 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
     await initializeWakeWord();
 
     try {
-      console.log('[WakeWordListening] Starting audio capture...');
+      logger.info('Starting audio capture...');
       if (!isWeb) {
         throw new Error('Not a web platform');
       }
@@ -713,10 +727,10 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
 
       isListeningRef.current = true;
       setIsListening(true);
-      console.log('[WakeWordListening] Started listening successfully');
+      logger.info('Started listening successfully');
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to start listening');
-      console.error('[WakeWordListening] Failed to start:', error.message);
+      logger.error('Failed to start', { message: error.message });
       setError(error);
       onError(error);
     }
@@ -747,7 +761,7 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
     // Cleanup Porcupine wake word detector
     if (porcupineDetectorRef.current) {
       porcupineDetectorRef.current.release().catch((err) => {
-        console.warn('[WakeWordListening] Error releasing Porcupine:', err);
+        logger.warn('Error releasing Porcupine', err);
       });
       porcupineDetectorRef.current = null;
       porcupineInitializedRef.current = false;
@@ -758,27 +772,27 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
     bufferRef.current?.clear();
     setWakeWordReady(false);
 
-    console.log('[WakeWordListening] Stopped listening');
+    logger.info('Stopped listening');
   }, [isWeb, stopWebAudio]);
 
   // Auto-start/stop based on enabled state
   // Note: Do NOT include isListening in dependencies to avoid circular dependency
   // isListening changes are triggered by start()/stop() which are called here
   useEffect(() => {
-    console.log('[WakeWordListening] useEffect triggered:', { enabled, isListening, isSupported });
+    logger.debug('useEffect triggered', { enabled, isListening, isSupported });
 
     if (enabled && !isListening && isSupported) {
-      console.log('[WakeWordListening] Triggering start()...');
+      logger.debug('Triggering start()...');
       start();
     } else if (!enabled && isListening) {
-      console.log('[WakeWordListening] Triggering stop()...');
+      logger.debug('Triggering stop()...');
       stop();
     }
 
     return () => {
       // Cleanup: stop listening if still active when effect unmounts or dependencies change
       if (isListeningRef.current) {
-        console.log('[WakeWordListening] Cleanup: stopping...');
+        logger.debug('Cleanup: stopping...');
         stop();
       }
     };
@@ -787,19 +801,19 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
   // Subscribe to TTS events to prevent feedback loops
   useEffect(() => {
     const handleTTSPlaying = () => {
-      console.log('[WakeWordListening] TTS playing - pausing audio processing');
+      logger.debug('TTS playing - pausing audio processing');
       isTTSSpeakingRef.current = true;
       setIsTTSSpeaking(true);
     };
 
     const handleTTSCompleted = () => {
-      console.log('[WakeWordListening] TTS completed - resuming audio processing');
+      logger.debug('TTS completed - resuming audio processing');
       isTTSSpeakingRef.current = false;
       setIsTTSSpeaking(false);
     };
 
     const handleTTSError = () => {
-      console.log('[WakeWordListening] TTS error - resuming audio processing');
+      logger.debug('TTS error - resuming audio processing');
       isTTSSpeakingRef.current = false;
       setIsTTSSpeaking(false);
     };
@@ -872,7 +886,7 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
   const resumeAudioContext = useCallback(async () => {
     const context = audioContextRef.current;
     if (!context) {
-      console.log('[WakeWordListening] resumeAudioContext: No audio context');
+      logger.debug('resumeAudioContext: No audio context');
       return;
     }
 
@@ -884,7 +898,7 @@ registerProcessor('audio-processor', AudioProcessorWorklet);
         logAudioContextState(context, 'resumeAudioContext: After resume()');
         setAudioContextState(context.state);
       } catch (err) {
-        console.error('[WakeWordListening] Failed to resume audio context:', err);
+        logger.error('Failed to resume audio context', err);
       }
     }
   }, []);

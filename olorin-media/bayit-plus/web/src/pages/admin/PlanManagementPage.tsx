@@ -3,7 +3,7 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit2, Trash2, Check } from 'lucide-react';
 import { subscriptionsService } from '@/services/adminApi';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { GlassCard, GlassButton, GlassModal, GlassToggle, GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
   priceAmount: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   priceInterval: {
     fontSize: 14,
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
   },
   trialText: {
     fontSize: 14,
-    color: colors.success,
+    color: colors.success.DEFAULT,
     marginBottom: spacing.md,
   },
   featuresContainer: {
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
   },
   intervalButtonActive: {
     backgroundColor: colors.glassPurple,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   intervalButtonText: {
     fontSize: 14,
@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   intervalButtonTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   toggleRow: {
     flexDirection: 'row',
@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     flex: 1,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     fontSize: 14,
   },
 });

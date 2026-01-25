@@ -9,7 +9,7 @@ import { Grid3x3 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { useDirection } from '@/hooks/useDirection';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 
 const WidgetsLoadingStatePropsSchema = z.object({
   numSkeletons: z.number().optional().default(8),

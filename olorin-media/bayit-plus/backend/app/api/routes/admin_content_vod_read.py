@@ -29,7 +29,16 @@ async def get_content(
     current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
 ):
     """Get paginated list of VOD content with filters."""
-    query = Content.find()
+    # Exclude merged items from results
+    query = Content.find(
+        {
+            "$or": [
+                {"review_issue_type": {"$ne": "merged"}},
+                {"review_issue_type": None},
+                {"review_issue_type": {"$exists": False}},
+            ]
+        }
+    )
     if search:
         query = query.find(
             {
@@ -78,6 +87,7 @@ async def get_content(
                 "age_rating": item.age_rating,
                 "view_count": item.view_count,
                 "avg_rating": item.avg_rating,
+                "review_issue_type": item.review_issue_type,
                 "created_at": item.created_at.isoformat(),
                 "updated_at": item.updated_at.isoformat(),
             }
@@ -102,13 +112,24 @@ async def get_content_hierarchical(
     current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
 ):
     """Get content in hierarchical structure - only parent items (series and movies), not episodes."""
-    # Build base query - exclude episodes (items with series_id set)
+    # Build base query - exclude episodes (items with series_id set) and merged items
     query = Content.find(
         {
-            "$or": [
-                {"series_id": None},
-                {"series_id": {"$exists": False}},
-                {"series_id": ""},
+            "$and": [
+                {
+                    "$or": [
+                        {"series_id": None},
+                        {"series_id": {"$exists": False}},
+                        {"series_id": ""},
+                    ]
+                },
+                {
+                    "$or": [
+                        {"review_issue_type": {"$ne": "merged"}},
+                        {"review_issue_type": None},
+                        {"review_issue_type": {"$exists": False}},
+                    ]
+                },
             ]
         }
     )
@@ -188,6 +209,7 @@ async def get_content_hierarchical(
             "view_count": item.view_count,
             "avg_rating": item.avg_rating,
             "available_subtitles": available_subtitles,
+            "review_issue_type": item.review_issue_type,
             "created_at": item.created_at.isoformat(),
             "updated_at": item.updated_at.isoformat(),
             "episode_count": (

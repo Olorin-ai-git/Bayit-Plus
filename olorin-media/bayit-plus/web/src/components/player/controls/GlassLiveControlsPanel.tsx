@@ -8,7 +8,7 @@ import { useRef, useEffect, useState } from 'react'
 import { View, Text, Pressable, Animated, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Languages, Maximize, Minimize } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     whiteSpace: 'nowrap',
   },
   textActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   flagBadge: {
     minWidth: 32,

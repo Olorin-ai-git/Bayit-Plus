@@ -9,7 +9,7 @@ import React, { memo, useCallback } from 'react';
 import { View, Text, Image, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
-import { colors, borderRadius, spacing } from '../../theme/colors';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 interface SearchResultsListProps {
   /** Search results to display */

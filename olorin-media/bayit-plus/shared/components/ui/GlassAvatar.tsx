@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 export interface GlassAvatarProps {
   uri?: string | null;
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     borderColor: colors.background,
   },
   onlineActive: {
-    backgroundColor: colors.success,
+    backgroundColor: colors.success[600],
   },
   onlineInactive: {
     backgroundColor: colors.gray500,

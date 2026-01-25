@@ -11,7 +11,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { GlassView } from './GlassView';
-import { colors, borderRadius, spacing, fontSize } from '../theme';
+import { colors, borderRadius, spacing, fontSize } from '@olorin/design-tokens';
 import { isTV } from '../utils/platform';
 import { useTVFocus } from '../hooks/useTVFocus';
 
@@ -124,7 +124,7 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
       </TouchableOpacity>
 
       {error && (
-        <Text style={[styles.errorText, { color: colors.error, textAlign }]}>
+        <Text style={[styles.errorText, { color: colors.error.DEFAULT, textAlign }]}>
           {error}
         </Text>
       )}

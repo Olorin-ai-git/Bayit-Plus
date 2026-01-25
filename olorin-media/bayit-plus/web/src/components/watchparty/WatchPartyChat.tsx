@@ -24,6 +24,7 @@ interface WatchPartyChatProps {
   currentUserId: string
   onSendMessage: (message: string, type?: string) => void
   chatEnabled: boolean
+  isPanelOpen?: boolean
 }
 
 function formatTime(timestamp: string): string {
@@ -76,6 +77,7 @@ export default function WatchPartyChat({
   currentUserId,
   onSendMessage,
   chatEnabled,
+  isPanelOpen = false,
 }: WatchPartyChatProps) {
   const { t } = useTranslation()
   const scrollViewRef = useRef<ScrollView>(null)
@@ -112,6 +114,7 @@ export default function WatchPartyChat({
         <WatchPartyChatInput
           onSend={onSendMessage}
           disabled={!chatEnabled}
+          autoEnableMicrophone={isPanelOpen}
         />
       </View>
     </View>

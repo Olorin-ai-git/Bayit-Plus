@@ -5,7 +5,8 @@
  * Uses native platform capabilities when available.
  */
 
-import { Platform, Alert } from 'react-native';
+import { Platform } from 'react-native';
+import { Notifications } from '@olorin/glass-ui/hooks';
 
 export enum AuthenticationType {
   FINGERPRINT = 1,
@@ -92,25 +93,28 @@ export async function authenticateAsync(
     };
   }
 
-  // Without a native biometric module, we'll show an alert and simulate success
+  // Without a native biometric module, we show a notification with action buttons
   // In production, you would use react-native-biometrics or expo-local-authentication
   return new Promise((resolve) => {
-    Alert.alert(
-      'Biometric Authentication',
-      promptMessage,
-      [
-        {
-          text: cancelLabel,
-          style: 'cancel',
-          onPress: () => resolve({ success: false, error: 'User cancelled' }),
-        },
-        {
-          text: 'Authenticate',
-          onPress: () => resolve({ success: true }),
-        },
-      ],
-      { cancelable: false }
-    );
+    Notifications.show({
+      level: 'info',
+      title: 'Biometric Authentication',
+      message: promptMessage,
+      dismissable: true,
+      action: {
+        label: 'Authenticate',
+        type: 'action',
+        onPress: () => resolve({ success: true }),
+      },
+    });
+
+    // Set timeout to simulate user cancellation after 30 seconds
+    const timeoutId = setTimeout(() => {
+      resolve({ success: false, error: 'User cancelled' });
+    }, 30000);
+
+    // Note: In a real implementation, we would need to handle the cancel label
+    // For now, we rely on the dismissable flag and timeout
   });
 }
 

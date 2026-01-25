@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { Award, UserPlus, Swords } from 'lucide-react';
 import { GlassButton } from '@bayit/shared/ui';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 
 const UserSchema = z.object({
   id: z.string(),
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   avatarInitial: {
     fontSize: fontSize['3xl'],
     fontWeight: 'bold',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   playerInfo: {
     flex: 1,
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   ratingText: {
     fontSize: fontSize.sm,
     fontWeight: '600',
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
   },
   peakText: {
     fontSize: fontSize.xs,

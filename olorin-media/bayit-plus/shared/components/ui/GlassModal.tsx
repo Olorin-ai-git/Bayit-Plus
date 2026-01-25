@@ -17,7 +17,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { colors, spacing, borderRadius, fontSize } from '../theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 
 export type ModalType = 'error' | 'success' | 'warning' | 'info' | 'confirm';
 
@@ -37,6 +37,7 @@ export interface GlassModalProps {
   onClose?: () => void;
   loading?: boolean;
   dismissable?: boolean;
+  showCloseButton?: boolean;
 }
 
 const getIconForType = (type: ModalType): string => {
@@ -72,7 +73,6 @@ export const GlassModal: React.FC<GlassModalProps> = ({
   loading = false,
   dismissable = true,
 }) => {
-  console.log('[GlassModal] Rendering:', { visible, hasChildren: !!children, title })
   const modalColor = getColorForType(type);
   const icon = getIconForType(type);
   const hasCustomContent = !!children;
@@ -218,8 +218,6 @@ export const GlassModal: React.FC<GlassModalProps> = ({
       </LinearGradient>
     );
   };
-
-  console.log('[GlassModal] Rendering Modal component with visible:', visible)
 
   return (
     <Modal
@@ -392,7 +390,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonDestructive: {
-    backgroundColor: colors.error,
+    backgroundColor: colors.error.DEFAULT,
   },
   buttonCancel: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',

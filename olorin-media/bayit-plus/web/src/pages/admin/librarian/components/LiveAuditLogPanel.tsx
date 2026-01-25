@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ScrollText } from 'lucide-react';
 import { GlassBadge } from '@bayit/shared/ui';
 import { GlassDraggableExpander, GlassLog } from '@bayit/shared/ui/web';
-import { colors, spacing, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, fontSize } from '@olorin/design-tokens';
 import { AuditReportDetail } from '@/services/librarianService';
 import { BatchProgress } from '../types';
 import { AuditInfoHeader } from './AuditInfoHeader';

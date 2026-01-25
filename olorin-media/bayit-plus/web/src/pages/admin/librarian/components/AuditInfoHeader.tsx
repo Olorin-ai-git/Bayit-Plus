@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Pause, PlayCircle, XCircle } from 'lucide-react';
 import { GlassButton } from '@bayit/shared/ui';
-import { colors, spacing, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, fontSize } from '@olorin/design-tokens';
 import { AuditReportDetail } from '@/services/librarianService';
 import { format } from 'date-fns';
 
@@ -164,11 +164,11 @@ const styles = StyleSheet.create({
   statusRunning: {
     fontSize: 13,
     marginLeft: spacing.md,
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
   },
   completedText: {
     fontSize: 13,
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
   lastLogText: {
     fontSize: fontSize.xs,
@@ -176,13 +176,13 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
   },
   lastLogStale: {
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
   },
   staleWarning: {
     fontSize: 11,
     marginTop: spacing.xs,
     fontStyle: 'italic',
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
   },
   pollingStatus: {
     fontSize: 10,

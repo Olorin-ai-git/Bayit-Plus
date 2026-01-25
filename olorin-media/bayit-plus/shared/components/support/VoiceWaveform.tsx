@@ -9,7 +9,7 @@ import {
   Animated,
   Easing,
 } from 'react-native';
-import { colors } from '../../theme';
+import { colors } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
 import { VoiceState } from '../../stores/supportStore';
 
@@ -181,7 +181,7 @@ const ProcessingIndicator: React.FC = () => {
     <Animated.View
       className={`absolute ${isTV ? 'w-15 h-15' : 'w-10 h-10'} ${isTV ? 'rounded-[30px]' : 'rounded-[20px]'} border-3 justify-center items-center`}
       style={{
-        borderColor: colors.warning,
+        borderColor: colors.warning.DEFAULT,
         borderTopColor: 'transparent',
         transform: [{ rotate: spin }, { scale: scaleAnim }],
       }}

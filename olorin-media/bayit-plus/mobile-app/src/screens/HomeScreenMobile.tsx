@@ -48,7 +48,7 @@ import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { optimizeTMDBImageUrl } from '../utils/imageUtils';
-import { spacing, colors, typography } from '../theme';
+import { spacing, colors, typography } from '@olorin/design-tokens';
 
 import logger from '@/utils/logger';
 

@@ -11,7 +11,7 @@
 import { View, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Volume2, VolumeX } from 'lucide-react'
-import { colors, borderRadius } from '@bayit/shared/theme'
+import { colors, borderRadius } from '@olorin/design-tokens'
 import { GlassSlider } from '@bayit/shared/ui'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 import { isTV } from '@bayit/shared/utils/platform'

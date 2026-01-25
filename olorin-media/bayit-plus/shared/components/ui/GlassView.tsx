@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Platform, ViewStyle, StyleProp, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { colors, borderRadius } from '../theme';
+import { colors, borderRadius } from '@olorin/design-tokens';
 
 interface GlassViewProps {
   children: React.ReactNode;

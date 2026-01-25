@@ -35,6 +35,7 @@ class UserSystemWidget(Document):
     position: Optional[WidgetPosition] = None  # Custom position override
     is_muted: bool = True  # User's mute preference
     is_visible: bool = True  # User hasn't closed it
+    is_minimized: bool = False  # User's minimized state preference
 
     # User's preferred order for this widget
     order: int = 0
@@ -62,6 +63,7 @@ class UserSystemWidgetResponse(BaseModel):
     position: Optional[WidgetPosition] = None
     is_muted: bool
     is_visible: bool
+    is_minimized: bool
     order: int
 
     class Config:
@@ -82,4 +84,5 @@ class UserSystemWidgetPreferencesUpdate(BaseModel):
 
     is_muted: Optional[bool] = None
     is_visible: Optional[bool] = None
+    is_minimized: Optional[bool] = None
     order: Optional[int] = None

@@ -69,6 +69,26 @@
         "default": "./dist/animations.cjs"
       }
     },
+    "./adminButtonStyles": {
+      "import": {
+        "types": "./dist/adminButtonStyles.d.ts",
+        "default": "./dist/adminButtonStyles.js"
+      },
+      "require": {
+        "types": "./dist/adminButtonStyles.d.cts",
+        "default": "./dist/adminButtonStyles.cjs"
+      }
+    },
+    "./touchTarget": {
+      "import": {
+        "types": "./dist/touchTarget.d.ts",
+        "default": "./dist/touchTarget.js"
+      },
+      "require": {
+        "types": "./dist/touchTarget.d.cts",
+        "default": "./dist/touchTarget.cjs"
+      }
+    },
     "./tailwind.preset": {
       "import": "./dist/tailwind.preset.js",
       "require": "./dist/tailwind.preset.cjs"

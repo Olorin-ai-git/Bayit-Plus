@@ -1,11 +1,14 @@
 /**
- * Admin API Service
+ * Admin API Service Factory
  * Provides API endpoints for admin dashboard operations
+ *
+ * FACTORY PATTERN: This file exports a factory function that accepts an auth store.
+ * Each platform (web, mobile, TV) should create its own instance by calling
+ * createAdminApi with its platform-specific auth store.
  */
 
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { Platform } from 'react-native';
-import { useAuthStore } from '../stores/authStore';
 import {
   User,
   Campaign,
@@ -22,6 +25,332 @@ import {
   AudienceFilter,
 } from '../types/rbac';
 
+// Auth Store Interface (any store implementing this can be used)
+export interface AuthStore {
+  getState: () => {
+    token: string | null;
+    logout: () => void;
+  };
+}
+
+// ============================================
+// Type Exports
+// ============================================
+
+export interface UsersFilter {
+  search?: string;
+  role?: string;
+  status?: 'active' | 'inactive' | 'all';
+  subscription?: string;
+  page?: number;
+  page_size?: number;
+  sort_by?: string;
+  sort_order?: 'asc' | 'desc';
+}
+
+export interface CampaignsFilter {
+  search?: string;
+  type?: string;
+  status?: string;
+  page?: number;
+  page_size?: number;
+}
+
+export interface BillingFilter {
+  search?: string;
+  status?: string;
+  date_from?: string;
+  date_to?: string;
+  amount_min?: number;
+  amount_max?: number;
+  page?: number;
+  page_size?: number;
+}
+
+export interface SubscriptionsFilter {
+  search?: string;
+  plan?: string;
+  status?: string;
+  renews_before?: string;
+  renews_after?: string;
+  page?: number;
+  page_size?: number;
+}
+
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  price: number;
+  currency: string;
+  interval: 'monthly' | 'yearly';
+  features: string[];
+  is_active: boolean;
+  trial_days: number;
+  created_at: string;
+}
+
+export interface MarketingFilter {
+  search?: string;
+  status?: string;
+  page?: number;
+  page_size?: number;
+}
+
+export interface MarketingMetrics {
+  emailsSent: number;
+  emailOpenRate: number;
+  emailClickRate: number;
+  pushSent: number;
+  pushOpenRate: number;
+  activeSegments: number;
+  conversionRate: number;
+  unsubscribeRate: number;
+}
+
+export interface RecentCampaign {
+  id: string;
+  name: string;
+  type: 'email' | 'push';
+  status: 'active' | 'completed' | 'scheduled' | 'draft';
+  sent: number;
+  opened: number;
+  clicked: number;
+}
+
+export interface AudienceSegment {
+  name: string;
+  count: number;
+}
+
+export interface AuditLogsFilter {
+  user_id?: string;
+  action?: string;
+  resource_type?: string;
+  date_from?: string;
+  date_to?: string;
+  page?: number;
+  page_size?: number;
+}
+
+export interface ContentFilter {
+  search?: string;
+  category_id?: string;
+  is_featured?: boolean;
+  is_published?: boolean;
+  is_kids_content?: boolean;
+  page?: number;
+  page_size?: number;
+}
+
+export interface Content {
+  id: string;
+  title: string;
+  description?: string;
+  thumbnail?: string;
+  backdrop?: string;
+  category_id?: string;
+  category_name?: string;
+  duration?: number;
+  year?: number;
+  rating?: string;
+  genre?: string[];
+  cast?: string[];
+  director?: string;
+  stream_url?: string;
+  stream_type?: string;
+  is_published?: boolean;
+  is_featured?: boolean;
+  featured_order?: number;
+  requires_subscription?: boolean;
+  is_kids_content?: boolean;
+  age_rating?: string;
+  view_count?: number;
+  avg_rating?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CategoryFilter {
+  is_active?: boolean;
+  page?: number;
+  page_size?: number;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  name_en?: string;
+  slug: string;
+  description?: string;
+  thumbnail?: string;
+  order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface WidgetFilter {
+  widget_type?: string;
+  is_active?: boolean;
+  page?: number;
+  page_size?: number;
+}
+
+export interface Widget {
+  id: string;
+  type: string;
+  user_id?: string;
+  title: string;
+  description?: string;
+  icon?: string;
+  content: {
+    content_type: string;
+    live_channel_id?: string;
+    podcast_id?: string;
+    content_id?: string;
+    station_id?: string;
+    iframe_url?: string;
+    iframe_title?: string;
+  };
+  position: {
+    x: number;
+    y: number;
+    width?: number;
+    height?: number;
+    z_index?: number;
+  };
+  is_active: boolean;
+  is_muted?: boolean;
+  is_visible?: boolean;
+  is_closable?: boolean;
+  is_draggable?: boolean;
+  visible_to_roles?: string[];
+  visible_to_subscription_tiers?: string[];
+  target_pages?: string[];
+  order?: number;
+  created_by?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PodcastFilter {
+  search?: string;
+  category?: string;
+  is_active?: boolean;
+  page?: number;
+  page_size?: number;
+}
+
+export interface Podcast {
+  id: string;
+  title: string;
+  title_en?: string;
+  title_es?: string;
+  description?: string;
+  description_en?: string;
+  description_es?: string;
+  author?: string;
+  author_en?: string;
+  author_es?: string;
+  cover?: string;
+  category?: string;
+  category_en?: string;
+  category_es?: string;
+  rss_feed?: string;
+  website?: string;
+  episode_count?: number;
+  latest_episode_date?: string;
+  is_active: boolean;
+  order?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PodcastEpisodeFilter {
+  translation_status?: 'pending' | 'processing' | 'completed' | 'failed';
+  page?: number;
+  page_size?: number;
+}
+
+export interface PodcastEpisode {
+  id: string;
+  podcast_id: string;
+  title: string;
+  description?: string;
+  audio_url?: string;
+  duration?: string;
+  episode_number?: number;
+  season_number?: number;
+  published_at: string;
+  thumbnail?: string;
+  translation_status?: 'pending' | 'processing' | 'completed' | 'failed';
+  available_languages?: string[];
+  original_language?: string;
+  retry_count?: number;
+}
+
+export interface TranslationStatusResponse {
+  pending: number;
+  processing: number;
+  completed: number;
+  failed: number;
+  total: number;
+}
+
+export interface FailedTranslationItem {
+  id: string;
+  podcast_id: string;
+  podcast_title: string;
+  title: string;
+  retry_count: number;
+  max_retries: number;
+  updated_at: string;
+}
+
+export interface LiveQuotaData {
+  user_id: string;
+  subtitle_minutes_per_hour: number;
+  subtitle_minutes_per_day: number;
+  subtitle_minutes_per_month: number;
+  dubbing_minutes_per_hour: number;
+  dubbing_minutes_per_day: number;
+  dubbing_minutes_per_month: number;
+  subtitle_usage_current_hour: number;
+  subtitle_usage_current_day: number;
+  subtitle_usage_current_month: number;
+  dubbing_usage_current_hour: number;
+  dubbing_usage_current_day: number;
+  dubbing_usage_current_month: number;
+  accumulated_subtitle_minutes: number;
+  accumulated_dubbing_minutes: number;
+  estimated_cost_current_month: number;
+  warning_threshold_percentage: number;
+  notes?: string;
+  limit_extended_by?: string;
+  limit_extended_at?: string;
+}
+
+export interface LiveUsageSession {
+  session_id: string;
+  user_id: string;
+  channel_id: string;
+  feature_type: 'subtitle' | 'dubbing';
+  started_at: string;
+  ended_at?: string;
+  duration_seconds: number;
+  audio_seconds_processed: number;
+  estimated_total_cost: number;
+  status: string;
+}
+
+export interface TopUser {
+  user_id: string;
+  user_name: string;
+  user_email: string;
+  subtitle_minutes: number;
+  dubbing_minutes: number;
+  total_cost: number;
+}
+
 // API Base URL configuration
 const getBaseUrl = () => {
   if (__DEV__) {
@@ -36,89 +365,111 @@ const getBaseUrl = () => {
   return 'https://api.bayit.tv/api/v1';
 };
 
-// Create admin API instance
-const adminApi = axios.create({
-  baseURL: getBaseUrl(),
-  timeout: 10000, // Reduced from 15s to 10s
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+/**
+ * Create an admin API instance with platform-specific auth store
+ * @param authStore - The auth store to use for token management
+ * @returns Configured axios instance
+ */
+const createAxiosInstance = (authStore: AuthStore): AxiosInstance => {
+  // Create admin API instance
+  const adminApi = axios.create({
+    baseURL: getBaseUrl(),
+    timeout: 10000, // Reduced from 15s to 10s
+    withCredentials: true, // Required for CSRF cookies
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 
-// Add auth token to requests
-adminApi.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().token;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+  // Add auth token and CSRF token to requests
+  adminApi.interceptors.request.use((config) => {
+    const token = authStore.getState().token;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
 
-// Handle response errors
-adminApi.interceptors.response.use(
-  (response) => response.data,
-  (error) => {
-    // Handle 401 Unauthorized - redirect to login
-    if (error.response?.status === 401) {
-      const authStore = useAuthStore.getState();
+    // Add CSRF token from cookie for state-changing requests
+    if (config.method && !['get', 'head', 'options'].includes(config.method.toLowerCase())) {
+      // Get CSRF token from cookie
+      const csrfToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('csrf_token='))
+        ?.split('=')[1];
 
-      // Logout to clear state
-      authStore.logout();
-
-      // Redirect to login page (web-specific)
-      if (Platform.OS === 'web' && typeof window !== 'undefined') {
-        // Store the current URL to redirect back after login
-        const currentPath = window.location.pathname;
-        if (!currentPath.includes('/login')) {
-          window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
-        }
+      if (csrfToken) {
+        config.headers['X-CSRF-Token'] = csrfToken;
       }
     }
 
-    // Reject with a proper error object
-    const errorResponse = error.response?.data || {
-      message: error.message || 'Request failed',
-      status: error.response?.status
-    };
+    return config;
+  });
 
-    return Promise.reject(errorResponse);
-  }
-);
+  // Handle response errors
+  adminApi.interceptors.response.use(
+    (response) => response.data,
+    (error) => {
+      // Handle 401 Unauthorized - redirect to login
+      if (error.response?.status === 401) {
+        const { logout } = authStore.getState();
 
-// ============================================
-// Dashboard Service
-// ============================================
+        // Logout to clear state
+        logout();
 
-export const dashboardService = {
-  getStats: (): Promise<DashboardStats> =>
-    adminApi.get('/admin/dashboard/stats'),
+        // Redirect to login page (web-specific)
+        if (Platform.OS === 'web' && typeof window !== 'undefined') {
+          // Store the current URL to redirect back after login
+          const currentPath = window.location.pathname;
+          if (!currentPath.includes('/login')) {
+            window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+          }
+        }
+      }
 
-  getRevenueChart: (period: 'daily' | 'weekly' | 'monthly' = 'daily'): Promise<ChartDataPoint[]> =>
-    adminApi.get('/admin/dashboard/charts/revenue', { params: { period } }),
+      // Reject with a proper error object
+      const errorResponse = error.response?.data || {
+        message: error.message || 'Request failed',
+        status: error.response?.status
+      };
 
-  getUserGrowthChart: (period: 'daily' | 'weekly' | 'monthly' = 'daily'): Promise<ChartDataPoint[]> =>
-    adminApi.get('/admin/dashboard/charts/users', { params: { period } }),
+      return Promise.reject(errorResponse);
+    }
+  );
 
-  getRecentActivity: (limit: number = 10): Promise<AuditLog[]> =>
-    adminApi.get('/admin/dashboard/activity', { params: { limit } }),
+  return adminApi;
 };
 
-// ============================================
-// Users Service
-// ============================================
+/**
+ * Factory function to create all admin services with a platform-specific auth store
+ * @param authStore - The auth store to use for authentication
+ * @returns Object containing all admin services
+ */
+export const createAdminApi = (authStore: AuthStore) => {
+  // Create axios instance with the provided auth store
+  const adminApi = createAxiosInstance(authStore);
 
-export interface UsersFilter {
-  search?: string;
-  role?: string;
-  status?: 'active' | 'inactive' | 'all';
-  subscription?: string;
-  page?: number;
-  page_size?: number;
-  sort_by?: string;
-  sort_order?: 'asc' | 'desc';
-}
+  // ============================================
+  // Dashboard Service
+  // ============================================
 
-export const usersService = {
+  const dashboardService = {
+    getStats: (): Promise<DashboardStats> =>
+      adminApi.get('/admin/dashboard/stats'),
+
+    getRevenueChart: (period: 'daily' | 'weekly' | 'monthly' = 'daily'): Promise<ChartDataPoint[]> =>
+      adminApi.get('/admin/dashboard/charts/revenue', { params: { period } }),
+
+    getUserGrowthChart: (period: 'daily' | 'weekly' | 'monthly' = 'daily'): Promise<ChartDataPoint[]> =>
+      adminApi.get('/admin/dashboard/charts/users', { params: { period } }),
+
+    getRecentActivity: (limit: number = 10): Promise<AuditLog[]> =>
+      adminApi.get('/admin/dashboard/activity', { params: { limit } }),
+  };
+
+  // ============================================
+  // Users Service
+  // ============================================
+
+  const usersService = {
   getUsers: (filters?: UsersFilter): Promise<PaginatedResponse<User>> =>
     adminApi.get('/admin/users', { params: filters }),
 
@@ -153,19 +504,11 @@ export const usersService = {
     adminApi.get(`/admin/users/${userId}/billing`),
 };
 
-// ============================================
-// Campaigns Service
-// ============================================
+  // ============================================
+  // Campaigns Service
+  // ============================================
 
-export interface CampaignsFilter {
-  search?: string;
-  type?: string;
-  status?: string;
-  page?: number;
-  page_size?: number;
-}
-
-export const campaignsService = {
+  const campaignsService = {
   getCampaigns: (filters?: CampaignsFilter): Promise<PaginatedResponse<Campaign>> =>
     adminApi.get('/admin/campaigns', { params: filters }),
 
@@ -198,22 +541,11 @@ export const campaignsService = {
     adminApi.get('/admin/campaigns/validate', { params: { code } }),
 };
 
-// ============================================
-// Billing Service
-// ============================================
+  // ============================================
+  // Billing Service
+  // ============================================
 
-export interface BillingFilter {
-  search?: string;
-  status?: string;
-  date_from?: string;
-  date_to?: string;
-  amount_min?: number;
-  amount_max?: number;
-  page?: number;
-  page_size?: number;
-}
-
-export const billingService = {
+  const billingService = {
   getOverview: (): Promise<{
     today: number;
     this_week: number;
@@ -256,33 +588,11 @@ export const billingService = {
     }),
 };
 
-// ============================================
-// Subscriptions Service
-// ============================================
+  // ============================================
+  // Subscriptions Service
+  // ============================================
 
-export interface SubscriptionsFilter {
-  search?: string;
-  plan?: string;
-  status?: string;
-  renews_before?: string;
-  renews_after?: string;
-  page?: number;
-  page_size?: number;
-}
-
-export interface SubscriptionPlan {
-  id: string;
-  name: string;
-  price: number;
-  currency: string;
-  interval: 'monthly' | 'yearly';
-  features: string[];
-  is_active: boolean;
-  trial_days: number;
-  created_at: string;
-}
-
-export const subscriptionsService = {
+  const subscriptionsService = {
   getSubscriptions: (filters?: SubscriptionsFilter): Promise<PaginatedResponse<Subscription & { user: User }>> =>
     adminApi.get('/admin/subscriptions', { params: filters }),
 
@@ -336,44 +646,11 @@ export const subscriptionsService = {
     adminApi.get('/admin/subscriptions/analytics/churn'),
 };
 
-// ============================================
-// Marketing Service
-// ============================================
+  // ============================================
+  // Marketing Service
+  // ============================================
 
-export interface MarketingFilter {
-  search?: string;
-  status?: string;
-  page?: number;
-  page_size?: number;
-}
-
-export interface MarketingMetrics {
-  emailsSent: number;
-  emailOpenRate: number;
-  emailClickRate: number;
-  pushSent: number;
-  pushOpenRate: number;
-  activeSegments: number;
-  conversionRate: number;
-  unsubscribeRate: number;
-}
-
-export interface RecentCampaign {
-  id: string;
-  name: string;
-  type: 'email' | 'push';
-  status: 'active' | 'completed' | 'scheduled' | 'draft';
-  sent: number;
-  opened: number;
-  clicked: number;
-}
-
-export interface AudienceSegment {
-  name: string;
-  count: number;
-}
-
-export const marketingService = {
+  const marketingService = {
   // Dashboard metrics
   getMetrics: (): Promise<MarketingMetrics> =>
     adminApi.get('/admin/marketing/metrics'),
@@ -445,11 +722,11 @@ export const marketingService = {
     adminApi.delete(`/admin/marketing/segments/${segmentId}`),
 };
 
-// ============================================
-// Settings Service
-// ============================================
+  // ============================================
+  // Settings Service
+  // ============================================
 
-export const settingsService = {
+  const settingsService = {
   getSettings: (): Promise<SystemSettings> =>
     adminApi.get('/admin/settings'),
 
@@ -469,21 +746,11 @@ export const settingsService = {
     adminApi.post('/admin/settings/analytics/reset'),
 };
 
-// ============================================
-// Audit Logs Service
-// ============================================
+  // ============================================
+  // Audit Logs Service
+  // ============================================
 
-export interface AuditLogsFilter {
-  user_id?: string;
-  action?: string;
-  resource_type?: string;
-  date_from?: string;
-  date_to?: string;
-  page?: number;
-  page_size?: number;
-}
-
-export const auditLogsService = {
+  const auditLogsService = {
   getLogs: (filters?: AuditLogsFilter): Promise<PaginatedResponse<AuditLog>> =>
     adminApi.get('/admin/logs', { params: filters }),
 
@@ -494,67 +761,11 @@ export const auditLogsService = {
     }),
 };
 
-// ============================================
-// Content Service
-// ============================================
+  // ============================================
+  // Content Service
+  // ============================================
 
-export interface ContentFilter {
-  search?: string;
-  category_id?: string;
-  is_featured?: boolean;
-  is_published?: boolean;
-  is_kids_content?: boolean;
-  page?: number;
-  page_size?: number;
-}
-
-export interface Content {
-  id: string;
-  title: string;
-  description?: string;
-  thumbnail?: string;
-  backdrop?: string;
-  category_id?: string;
-  category_name?: string;
-  duration?: number;
-  year?: number;
-  rating?: string;
-  genre?: string[];
-  cast?: string[];
-  director?: string;
-  stream_url?: string;
-  stream_type?: string;
-  is_published?: boolean;
-  is_featured?: boolean;
-  featured_order?: number;
-  requires_subscription?: boolean;
-  is_kids_content?: boolean;
-  age_rating?: string;
-  view_count?: number;
-  avg_rating?: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface CategoryFilter {
-  is_active?: boolean;
-  page?: number;
-  page_size?: number;
-}
-
-export interface Category {
-  id: string;
-  name: string;
-  name_en?: string;
-  slug: string;
-  description?: string;
-  thumbnail?: string;
-  order: number;
-  is_active: boolean;
-  created_at: string;
-}
-
-export const adminContentService = {
+  const adminContentService = {
   // Category management
   getCategories: (filters?: CategoryFilter): Promise<PaginatedResponse<Category>> =>
     adminApi.get('/admin/categories', { params: filters }),
@@ -640,57 +851,29 @@ export const adminContentService = {
     errors: string[];
   }> =>
     adminApi.post('/admin/content/batch/merge', request),
+
+  // Radio Stations
+  getRadioStations: (filters?: { search?: string; genre?: string; is_active?: boolean; page?: number; page_size?: number }): Promise<PaginatedResponse<any>> =>
+    adminApi.get('/admin/radio-stations', { params: filters }),
+
+  getRadioStation: (stationId: string): Promise<any> =>
+    adminApi.get(`/admin/radio-stations/${stationId}`),
+
+  createRadioStation: (data: any): Promise<any> =>
+    adminApi.post('/admin/radio-stations', data),
+
+  updateRadioStation: (stationId: string, data: any): Promise<any> =>
+    adminApi.patch(`/admin/radio-stations/${stationId}`, data),
+
+  deleteRadioStation: (stationId: string): Promise<void> =>
+    adminApi.delete(`/admin/radio-stations/${stationId}`),
 };
 
-// ============================================
-// Widgets Service
-// ============================================
+  // ============================================
+  // Widgets Service
+  // ============================================
 
-export interface WidgetFilter {
-  widget_type?: string;
-  is_active?: boolean;
-  page?: number;
-  page_size?: number;
-}
-
-export interface Widget {
-  id: string;
-  type: string;
-  user_id?: string;
-  title: string;
-  description?: string;
-  icon?: string;
-  content: {
-    content_type: string;
-    live_channel_id?: string;
-    podcast_id?: string;
-    content_id?: string;
-    station_id?: string;
-    iframe_url?: string;
-    iframe_title?: string;
-  };
-  position: {
-    x: number;
-    y: number;
-    width?: number;
-    height?: number;
-    z_index?: number;
-  };
-  is_active: boolean;
-  is_muted?: boolean;
-  is_visible?: boolean;
-  is_closable?: boolean;
-  is_draggable?: boolean;
-  visible_to_roles?: string[];
-  visible_to_subscription_tiers?: string[];
-  target_pages?: string[];
-  order?: number;
-  created_by?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export const adminWidgetsService = {
+  const adminWidgetsService = {
   getWidgets: (filters?: WidgetFilter): Promise<PaginatedResponse<Widget>> =>
     adminApi.get('/admin/widgets', { params: filters }),
 
@@ -699,6 +882,11 @@ export const adminWidgetsService = {
 
   getWidget: (widgetId: string): Promise<Widget> =>
     adminApi.get(`/admin/widgets/${widgetId}`),
+
+  checkWidgetName: (widgetTitle: string, excludeId?: string): Promise<{ exists: boolean; available: boolean }> =>
+    adminApi.get(`/admin/widgets/check-name/${encodeURIComponent(widgetTitle)}`, {
+      params: excludeId ? { exclude_id: excludeId } : undefined
+    }),
 
   createWidget: (data: Partial<Widget>): Promise<Widget> =>
     adminApi.post('/admin/widgets', data),
@@ -727,46 +915,26 @@ export const adminWidgetsService = {
 
   removeSystemWidget: (widgetId: string): Promise<{ message: string }> =>
     adminApi.delete(`/widgets/system/${widgetId}/remove`),
+
+  // Widget state management
+  updateWidgetPosition: (
+    widgetId: string,
+    position: { x: number; y: number; width?: number; height?: number }
+  ): Promise<{ message: string }> =>
+    adminApi.post(`/widgets/${widgetId}/position`, position),
+
+  closeWidget: (widgetId: string): Promise<{ message: string }> =>
+    adminApi.post(`/widgets/${widgetId}/close`),
+
+  toggleWidgetMinimize: (widgetId: string, isMinimized: boolean): Promise<{ message: string }> =>
+    adminApi.post(`/widgets/${widgetId}/minimize`, null, { params: { is_minimized: isMinimized } }),
 };
 
-// ============================================
-// Podcasts Service
-// ============================================
+  // ============================================
+  // Podcasts Service
+  // ============================================
 
-export interface PodcastFilter {
-  search?: string;
-  category?: string;
-  is_active?: boolean;
-  page?: number;
-  page_size?: number;
-}
-
-export interface Podcast {
-  id: string;
-  title: string;
-  title_en?: string;
-  title_es?: string;
-  description?: string;
-  description_en?: string;
-  description_es?: string;
-  author?: string;
-  author_en?: string;
-  author_es?: string;
-  cover?: string;
-  category?: string;
-  category_en?: string;
-  category_es?: string;
-  rss_feed?: string;
-  website?: string;
-  episode_count?: number;
-  latest_episode_date?: string;
-  is_active: boolean;
-  order?: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export const adminPodcastsService = {
+  const adminPodcastsService = {
   getPodcasts: (filters?: PodcastFilter): Promise<PaginatedResponse<Podcast>> =>
     adminApi.get('/admin/podcasts', { params: filters }),
 
@@ -793,52 +961,11 @@ export const adminPodcastsService = {
     adminApi.post(`/admin/podcasts/${podcastId}/translate-all`),
 };
 
-// ============================================
-// Podcast Episodes Service
-// ============================================
+  // ============================================
+  // Podcast Episodes Service
+  // ============================================
 
-export interface PodcastEpisodeFilter {
-  translation_status?: 'pending' | 'processing' | 'completed' | 'failed';
-  page?: number;
-  page_size?: number;
-}
-
-export interface PodcastEpisode {
-  id: string;
-  podcast_id: string;
-  title: string;
-  description?: string;
-  audio_url?: string;
-  duration?: string;
-  episode_number?: number;
-  season_number?: number;
-  published_at: string;
-  thumbnail?: string;
-  translation_status?: 'pending' | 'processing' | 'completed' | 'failed';
-  available_languages?: string[];
-  original_language?: string;
-  retry_count?: number;
-}
-
-export interface TranslationStatusResponse {
-  pending: number;
-  processing: number;
-  completed: number;
-  failed: number;
-  total: number;
-}
-
-export interface FailedTranslationItem {
-  id: string;
-  podcast_id: string;
-  podcast_title: string;
-  title: string;
-  retry_count: number;
-  max_retries: number;
-  updated_at: string;
-}
-
-export const adminPodcastEpisodesService = {
+  const adminPodcastEpisodesService = {
   getEpisodes: (
     podcastId: string,
     filters?: PodcastEpisodeFilter
@@ -881,56 +1008,11 @@ export const adminPodcastEpisodesService = {
     adminApi.get('/admin/translation/failed', { params }),
 };
 
-// ============================================
-// Live Quotas Service
-// ============================================
+  // ============================================
+  // Live Quotas Service
+  // ============================================
 
-export interface LiveQuotaData {
-  user_id: string;
-  subtitle_minutes_per_hour: number;
-  subtitle_minutes_per_day: number;
-  subtitle_minutes_per_month: number;
-  dubbing_minutes_per_hour: number;
-  dubbing_minutes_per_day: number;
-  dubbing_minutes_per_month: number;
-  subtitle_usage_current_hour: number;
-  subtitle_usage_current_day: number;
-  subtitle_usage_current_month: number;
-  dubbing_usage_current_hour: number;
-  dubbing_usage_current_day: number;
-  dubbing_usage_current_month: number;
-  accumulated_subtitle_minutes: number;
-  accumulated_dubbing_minutes: number;
-  estimated_cost_current_month: number;
-  warning_threshold_percentage: number;
-  notes?: string;
-  limit_extended_by?: string;
-  limit_extended_at?: string;
-}
-
-export interface LiveUsageSession {
-  session_id: string;
-  user_id: string;
-  channel_id: string;
-  feature_type: 'subtitle' | 'dubbing';
-  started_at: string;
-  ended_at?: string;
-  duration_seconds: number;
-  audio_seconds_processed: number;
-  estimated_total_cost: number;
-  status: string;
-}
-
-export interface TopUser {
-  user_id: string;
-  user_name: string;
-  user_email: string;
-  subtitle_minutes: number;
-  dubbing_minutes: number;
-  total_cost: number;
-}
-
-export const liveQuotasService = {
+  const liveQuotasService = {
   getUserQuota: (userId: string): Promise<{ quota: LiveQuotaData; usage: LiveQuotaData }> =>
     adminApi.get(`/admin/live-quotas/users/${userId}`),
 
@@ -974,19 +1056,46 @@ export const liveQuotasService = {
     adminApi.get('/admin/live-quotas/system-stats'),
 };
 
-// Export all services
-export default {
-  dashboard: dashboardService,
-  users: usersService,
-  campaigns: campaignsService,
-  billing: billingService,
-  subscriptions: subscriptionsService,
-  marketing: marketingService,
-  settings: settingsService,
-  auditLogs: auditLogsService,
-  content: adminContentService,
-  widgets: adminWidgetsService,
-  podcasts: adminPodcastsService,
-  podcastEpisodes: adminPodcastEpisodesService,
-  liveQuotas: liveQuotasService,
+  // ============================================
+  // Live Channels Service
+  // ============================================
+
+  const adminLiveChannelsService = {
+  getAll: (filters?: { is_active?: boolean; page?: number; page_size?: number }): Promise<PaginatedResponse<any>> =>
+    adminApi.get('/admin/live-channels', { params: filters }),
+
+  getById: (channelId: string): Promise<any> =>
+    adminApi.get(`/admin/live-channels/${channelId}`),
+};
+
+  // ============================================
+  // Radio Stations Service
+  // ============================================
+
+  const adminRadioStationsService = {
+    getAll: (filters?: { search?: string; genre?: string; is_active?: boolean; page?: number; page_size?: number }): Promise<PaginatedResponse<any>> =>
+      adminApi.get('/admin/radio-stations', { params: filters }),
+
+    getById: (stationId: string): Promise<any> =>
+      adminApi.get(`/admin/radio-stations/${stationId}`),
+  };
+
+  // Return all services
+  return {
+    dashboard: dashboardService,
+    users: usersService,
+    campaigns: campaignsService,
+    billing: billingService,
+    subscriptions: subscriptionsService,
+    marketing: marketingService,
+    settings: settingsService,
+    auditLogs: auditLogsService,
+    content: adminContentService,
+    widgets: adminWidgetsService,
+    podcasts: adminPodcastsService,
+    podcastEpisodes: adminPodcastEpisodesService,
+    liveQuotas: liveQuotasService,
+    liveChannels: adminLiveChannelsService,
+    radioStations: adminRadioStationsService,
+  };
 };

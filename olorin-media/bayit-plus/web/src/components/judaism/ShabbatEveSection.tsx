@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
 import { GlassCard } from '@bayit/shared/ui';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 import logger from '@/utils/logger';
 
 interface ShabbatStatus {
@@ -107,7 +107,7 @@ export function ShabbatEveSection({
       id: 'music',
       icon: Music,
       label: t('judaism.erevShabbat.shabbatSongs', 'Shabbat Songs'),
-      color: colors.warning,
+      color: colors.warning.DEFAULT,
       bgColor: `${colors.warning}33`,
       route: '/judaism?category=music',
     },
@@ -123,7 +123,7 @@ export function ShabbatEveSection({
       id: 'recipes',
       icon: Utensils,
       label: t('judaism.erevShabbat.shabbatRecipes', 'Recipes'),
-      color: colors.success,
+      color: colors.success.DEFAULT,
       bgColor: `${colors.success}33`,
       route: '/judaism?category=holidays',
     },
@@ -131,7 +131,7 @@ export function ShabbatEveSection({
       id: 'tefila',
       icon: Sparkles,
       label: t('judaism.erevShabbat.prayers', 'Prayers'),
-      color: colors.primary,
+      color: colors.primary.DEFAULT,
       bgColor: `${colors.primary}33`,
       route: '/judaism?category=tefila',
     },

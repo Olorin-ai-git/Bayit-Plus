@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@/stores/authStore';
 import { subscriptionService } from '@/services/api';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { GlassCard, GlassButton, GlassView } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     top: 0,
     right: 0,
     borderRadius: 9999,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     opacity: 0.3,
     // Note: blur filter not supported in RN, keeping for web compatibility
   },
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     borderRadius: 9999,
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.secondary.DEFAULT,
     opacity: 0.3,
   },
   header: {
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   billingOptionSelected: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   billingOptionText: {
     fontSize: 14,
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
   saveBadgeText: {
     fontSize: 10,
     fontWeight: '600',
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
   plansGrid: {
     flexDirection: 'row',
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
   },
   planCardSelected: {
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     transform: [{ scale: 1.02 }],
   },
   planCardHovered: {
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.secondary.DEFAULT,
   },
   popularBadgeText: {
     fontSize: 12,
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
   priceAmount: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   pricePeriod: {
     fontSize: 14,
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
   yearlyPrice: {
     fontSize: 14,
     marginTop: spacing.xs,
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
   featuresContainer: {
     marginBottom: spacing.lg,

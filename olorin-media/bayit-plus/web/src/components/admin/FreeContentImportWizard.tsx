@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native'
 import { ChevronRight, AlertCircle, CheckCircle, X, ChevronLeft } from 'lucide-react'
 import { GlassView, GlassButton, GlassCheckbox } from '@bayit/shared/ui'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import type { FreeContentSources } from '../../types/content'
 
 interface FreeContentImportWizardProps {
@@ -509,7 +509,7 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 14,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   typeGrid: {
     gap: spacing.md,
@@ -693,7 +693,7 @@ const styles = StyleSheet.create({
   },
   confirmBold: {
     fontWeight: '600',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   confirmNotes: {
     marginTop: spacing.md,
@@ -736,7 +736,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: '100%',
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   progressText: {
     fontSize: 14,

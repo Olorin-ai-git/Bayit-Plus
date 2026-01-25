@@ -9,7 +9,7 @@ import {
 import { useStatsStore } from '../stores/statsStore';
 import { useFriendsStore } from '../stores/friendsStore';
 import { useAuthStore } from '../stores/authStore';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassView, GlassButton, GlassCard, GlassTabs, GlassModal, GlassStatCard } from '@bayit/shared/ui';
 
 type TabId = 'stats' | 'history' | 'headtohead';
@@ -516,7 +516,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 16,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     textAlign: 'center',
   },
   // Profile Header
@@ -552,7 +552,7 @@ const styles = StyleSheet.create({
   avatarInitial: {
     fontSize: 32,
     fontWeight: '700',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   playerInfo: {
     flex: 1,
@@ -577,7 +577,7 @@ const styles = StyleSheet.create({
   ratingText: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
   },
   peakRating: {
     fontSize: 12,

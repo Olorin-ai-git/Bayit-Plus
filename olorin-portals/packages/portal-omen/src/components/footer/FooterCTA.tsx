@@ -27,7 +27,7 @@ export const FooterCTA: React.FC<FooterCTAProps> = ({ onCtaClick }) => {
           <div className="relative inline-block">
             <img
               src="/images/Omen.webp"
-              alt={t('hero.altDevice')}
+              alt={String(t('hero.altDevice'))}
               className="w-48 h-auto sm:w-56 md:w-64 mx-auto opacity-80"
               loading="lazy"
             />
@@ -83,7 +83,7 @@ export const FooterCTA: React.FC<FooterCTAProps> = ({ onCtaClick }) => {
               active:scale-95
               shadow-lg shadow-omen-neon-purple/50
             "
-            aria-label={t('footer.cta')}
+            aria-label={String(t('footer.cta'))}
           >
             {t('footer.cta')}
           </GlassButton>

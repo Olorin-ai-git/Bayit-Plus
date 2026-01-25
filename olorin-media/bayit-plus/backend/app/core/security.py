@@ -231,3 +231,54 @@ async def require_passkey_session(
             detail="Passkey authentication required to access this content",
         )
     return session
+
+
+async def verify_content_access(
+    content,
+    user: Optional[User],
+    action: str = "view",
+) -> None:
+    """
+    Verify that a user has permission to perform an action on content.
+
+    Args:
+        content: The content to check access for
+        user: The current user (or None for anonymous)
+        action: The action being performed (e.g., "view", "search", "stream")
+
+    Raises:
+        HTTPException: If access is denied
+    """
+    # Check if content is published
+    if not getattr(content, "is_published", True):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content not found",
+        )
+
+    # Check visibility mode
+    visibility_mode = getattr(content, "visibility_mode", "public")
+    if visibility_mode == "private":
+        # Private content requires authentication
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Authentication required to access this content",
+            )
+
+    # Check subscription requirements
+    requires_subscription = getattr(content, "requires_subscription", "none")
+    if requires_subscription != "none":
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Authentication required to access this content",
+            )
+
+        # Premium content requires premium or family subscription
+        if requires_subscription in ["premium", "family"]:
+            if not user.can_access_premium_features():
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Premium subscription required to access this content",
+                )

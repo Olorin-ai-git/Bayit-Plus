@@ -30,7 +30,7 @@ import { GlassView } from './ui/GlassView';
 import { GlassCard } from './ui/GlassCard';
 import { GlassBadge } from './ui/GlassBadge';
 import { apiJerusalemService } from '../services/api/cultureServices';
-import { colors, spacing, borderRadius, fontSize, shadows } from '../theme';
+import { colors, spacing, borderRadius, fontSize, shadowRN } from '@olorin/design-tokens';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
 import logger from '../utils/logger';
@@ -124,7 +124,6 @@ export const JerusalemRow: React.FC<JerusalemRowProps> = ({
       setError(null);
       const result = await apiJerusalemService.getContent(category);
       setData(result.data || result);
-      logger.info('Jerusalem content loaded', 'JerusalemRow', { itemCount: result.data?.items?.length || 0 });
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
       logger.error('Failed to fetch Jerusalem content', 'JerusalemRow', { error: errorMsg });
@@ -606,9 +605,9 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   cardFocused: {
-    borderColor: colors.primary,
-    backgroundColor: `${colors.primary}33`,
-    ...shadows.glass,
+    borderColor: colors.primary.DEFAULT,
+    backgroundColor: `${colors.primary.DEFAULT}33`,
+    ...shadowRN.glass,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -627,8 +626,8 @@ const styles = StyleSheet.create({
     marginLeft: spacing.sm,
   },
   badge: {
-    backgroundColor: `${colors.primary}4D`,
-    borderColor: `${colors.primary}99`,
+    backgroundColor: `${colors.primary.DEFAULT}4D`,
+    borderColor: `${colors.primary.DEFAULT}99`,
   },
   badgeMobile: {
     paddingHorizontal: spacing.sm,
@@ -636,7 +635,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: fontSize.sm,
-    color: `${colors.primary}E6`,
+    color: colors.white,
     fontWeight: '600',
   },
   badgeTextMobile: {
@@ -739,7 +738,7 @@ const styles = StyleSheet.create({
     marginRight: spacing.xs,
   },
   scoreDotActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary[600],
   },
 });
 

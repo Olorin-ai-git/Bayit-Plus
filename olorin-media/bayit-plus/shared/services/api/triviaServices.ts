@@ -30,6 +30,7 @@ export const triviaApi = {
   getTrivia: async (contentId: string, language: string = 'he'): Promise<TriviaResponse> => {
     const queryParams = new URLSearchParams()
     queryParams.append('language', language)
+    queryParams.append('multilingual', 'true')  // NEW: Request all language versions
     return await api.get(`/trivia/${contentId}?${queryParams.toString()}`)
   },
 
@@ -43,6 +44,7 @@ export const triviaApi = {
   ): Promise<TriviaEnrichedResponse> => {
     const queryParams = new URLSearchParams()
     queryParams.append('language', language)
+    queryParams.append('multilingual', 'true')  // NEW: Request all language versions
     return await api.get(`/trivia/${contentId}/enriched?${queryParams.toString()}`)
   },
 

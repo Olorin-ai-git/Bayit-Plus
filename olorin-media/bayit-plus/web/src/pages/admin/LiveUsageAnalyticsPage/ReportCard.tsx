@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Calendar } from 'lucide-react';
 import { GlassCard } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { UsageReport } from './types';
 
 interface ReportCardProps {

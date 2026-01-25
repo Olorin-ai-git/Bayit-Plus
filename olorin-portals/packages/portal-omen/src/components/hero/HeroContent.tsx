@@ -72,7 +72,7 @@ export const HeroContent: React.FC<HeroContentProps> = ({ onCtaClick }) => {
             active:scale-95
             shadow-lg shadow-omen-neon-purple/50
           "
-          aria-label={t('hero.cta')}
+          aria-label={String(t('hero.cta'))}
         >
           {t('hero.cta')}
         </GlassButton>

@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { TrendingUp, DollarSign } from 'lucide-react';
 import { GlassCard } from '@bayit/shared/ui';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { QuotaData } from './types';
 import UsageRow from './UsageRow';
 
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   costValue: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontSize: 16,
     fontWeight: '600',
   },

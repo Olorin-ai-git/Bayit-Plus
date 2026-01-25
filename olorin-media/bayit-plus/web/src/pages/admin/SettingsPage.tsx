@@ -3,7 +3,7 @@ import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-nat
 import { useTranslation } from 'react-i18next';
 import { Save, RefreshCw, Trash2, AlertTriangle } from 'lucide-react';
 import { settingsService } from '@/services/adminApi';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { GlassCard, GlassButton, GlassModal, GlassInput, GlassToggle, GlassView } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { useModal } from '@/contexts/ModalContext';
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   warningText: {
     flex: 1,
     fontSize: fontSize.xs,
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
   },
   modalText: {
     fontSize: fontSize.sm,

@@ -1,6 +1,7 @@
 """
 Image Storage Service
 Downloads images from URLs and stores them in MongoDB as base64-encoded data
+Includes SSRF protection via domain whitelisting
 """
 
 import base64
@@ -11,6 +12,8 @@ from typing import Optional, Tuple
 import httpx
 from PIL import Image
 
+from app.core.ssrf_protection import validate_image_url
+
 logger = logging.getLogger(__name__)
 
 
@@ -19,6 +22,7 @@ async def download_and_encode_image(
 ) -> Optional[str]:
     """
     Download image from URL, optimize it, and return as base64 data URI.
+    Includes SSRF protection via domain whitelisting.
 
     Args:
         url: The image URL to download
@@ -29,8 +33,9 @@ async def download_and_encode_image(
         Base64-encoded data URI (e.g., "data:image/jpeg;base64,/9j/4AAQ...")
         or None if download/processing fails
     """
-    if not url or not url.startswith(("http://", "https://")):
-        logger.warning(f"Invalid URL provided: {url}")
+    # SSRF Protection: Validate domain whitelist
+    if not validate_image_url(url):
+        logger.error(f"SSRF Protection: Blocked image download from {url}")
         return None
 
     try:
@@ -106,6 +111,7 @@ async def download_and_encode_image(
 async def is_valid_image_url(url: str) -> bool:
     """
     Check if URL points to a valid, accessible image.
+    Includes SSRF protection via domain whitelisting.
 
     Args:
         url: The URL to check
@@ -113,7 +119,8 @@ async def is_valid_image_url(url: str) -> bool:
     Returns:
         True if URL is valid and accessible, False otherwise
     """
-    if not url or not url.startswith(("http://", "https://")):
+    # SSRF Protection: Validate domain whitelist
+    if not validate_image_url(url):
         return False
 
     try:

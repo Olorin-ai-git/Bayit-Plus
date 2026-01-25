@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { GlassButton, GlassModal, GlassBadge } from '@bayit/shared/ui'
 import { isTV } from '../../utils/platform'
 import { useDirection } from '../../hooks/useDirection'
-import { colors } from '../theme'
+import { colors } from '@olorin/design-tokens'
 
 export interface LiveDubbingControlsProps {
   isEnabled: boolean
@@ -47,6 +47,11 @@ export const LiveDubbingControls: React.FC<LiveDubbingControlsProps> = ({
   if (!isAvailable) return null
 
   const handlePress = () => {
+    // Prevent toggling while connection is in progress
+    if (isConnecting) {
+      return
+    }
+
     if (!isPremium) {
       onShowUpgrade?.()
       return
@@ -229,20 +234,20 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.success,
+    backgroundColor: colors.success.DEFAULT,
   },
   // tvOS status indicator scaled for 10-foot visibility
   statusIndicatorTV: {
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: colors.success,
+    backgroundColor: colors.success.DEFAULT,
   },
   errorContainer: {
     position: 'absolute',
     bottom: '100%',
     marginBottom: 8,
-    backgroundColor: colors.error,
+    backgroundColor: colors.error.DEFAULT,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -253,7 +258,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: '100%',
     marginBottom: 16,
-    backgroundColor: colors.error,
+    backgroundColor: colors.error.DEFAULT,
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderRadius: 12,

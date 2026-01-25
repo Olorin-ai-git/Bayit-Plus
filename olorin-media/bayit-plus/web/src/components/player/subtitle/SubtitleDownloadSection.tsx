@@ -7,7 +7,7 @@ import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-nati
 import { useTranslation } from 'react-i18next'
 import { Download, Check, AlertCircle } from 'lucide-react'
 import { z } from 'zod'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 
 // Zod schema for download result
 const DownloadResultSchema = z.object({

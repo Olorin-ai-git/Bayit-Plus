@@ -43,7 +43,7 @@ async def create_content(
         thumbnail=data.thumbnail,
         backdrop=data.backdrop,
         category_id=data.category_id,
-        category_name=category.name,
+        category_name=category.slug,  # Using slug for legacy compatibility
         duration=data.duration,
         year=data.year,
         rating=data.rating,
@@ -117,7 +117,9 @@ async def update_content(
         if not category:
             raise HTTPException(status_code=400, detail="Category not found")
         changes["category_id"] = {"old": content.category_id, "new": data.category_id}
-        content.category_id, content.category_name = data.category_id, category.name
+        content.category_id = data.category_id
+        # category_name is deprecated, using slug for legacy compatibility
+        content.category_name = category.slug
     if data.description is not None:
         changes["description"] = {"old": content.description, "new": data.description}
         content.description = data.description

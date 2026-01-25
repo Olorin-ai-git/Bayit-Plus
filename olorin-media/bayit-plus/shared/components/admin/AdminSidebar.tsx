@@ -16,7 +16,7 @@ import { useDirection } from '../../hooks/useDirection';
 import { rtlSpacing, rtlMargin } from '../../utils/rtlHelpers';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useAuthStore } from '../../stores/authStore';
-import { spacing } from '../../theme';
+import { spacing } from '@olorin/design-tokens';
 
 interface NavItem {
   key: string;

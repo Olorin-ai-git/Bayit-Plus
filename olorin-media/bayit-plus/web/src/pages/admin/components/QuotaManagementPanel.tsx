@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Search, Save } from 'lucide-react';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { GlassCard, GlassButton, GlassInput } from '@bayit/shared/ui';
 import { voiceManagementService } from '@/services/voiceManagementApi';
 import logger from '@/utils/logger';

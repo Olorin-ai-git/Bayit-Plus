@@ -8,7 +8,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import { contentService, watchlistService, favoritesService, subtitlesService } from '@/services/api';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { getLanguageInfo, SubtitleTrack } from '@/types/subtitle';
 import { GlassCard, GlassButton, GlassView, GlassBadge, GlassTooltip } from '@bayit/shared/ui';
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
@@ -695,7 +695,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.error,
+    backgroundColor: colors.error.DEFAULT,
   },
   previewIndicatorText: {
     fontSize: fontSize.sm,

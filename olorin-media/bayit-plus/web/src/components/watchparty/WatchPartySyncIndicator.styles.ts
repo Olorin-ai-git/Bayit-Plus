@@ -4,7 +4,7 @@
  */
 
 import { StyleSheet } from 'react-native'
-import { spacing, borderRadius, colors } from '@bayit/shared/theme'
+import { spacing, borderRadius, colors } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 
 export const styles = StyleSheet.create({
@@ -33,13 +33,13 @@ export const styles = StyleSheet.create({
     borderColor: 'rgba(52, 211, 153, 0.2)',
   },
   textSynced: {
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
   containerSyncing: {
     backgroundColor: 'rgba(109, 40, 217, 0.2)',
     borderColor: 'rgba(109, 40, 217, 0.3)',
   },
   textSyncing: {
-    color: colors.info,
+    color: colors.info.DEFAULT,
   },
 })

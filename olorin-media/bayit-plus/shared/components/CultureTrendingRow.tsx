@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui/GlassView';
-import { colors, spacing, fontSize, borderRadius } from '../theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { cultureService } from '../services/api';
 import { useCultureStore } from '../contexts/CultureContext';
 import { isTV } from '../utils/platform';

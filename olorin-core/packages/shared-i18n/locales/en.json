@@ -2232,8 +2232,20 @@
         "noSourcesDescription": "No free content sources are currently available for {{type}}"
       },
       "filters": {
-        "allStatus": "All Status"
+        "title": "Filters",
+        "contentType": "Content Type",
+        "all": "All",
+        "allContent": "All",
+        "series": "Series",
+        "movies": "Movies",
+        "podcasts": "Podcasts",
+        "radioStations": "Radio Stations",
+        "status": "Status",
+        "allStatus": "All Status",
+        "subtitles": "Subtitles"
       },
+      "podcastsComingSoon": "Podcast management coming soon. Use the Podcasts section.",
+      "radioComingSoon": "Radio station management coming soon. Use the Radio Stations section.",
       "showOnlyWithSubtitles": "Show only with subtitles",
       "status": {
         "published": "Published",
@@ -3350,125 +3362,6 @@
     "skip": "Skip for now"
   },
   "taxonomy": {
-    "title": "Content Classification",
-    "sections": {
-      "title": "Sections",
-      "description": "Primary navigation categories",
-      "movies": "Movies",
-      "series": "Series",
-      "kids": "Kids",
-      "judaism": "Judaism",
-      "documentaries": "Documentaries",
-      "live": "Live"
-    },
-    "formats": {
-      "title": "Format",
-      "description": "Content structural type",
-      "movie": "Movie",
-      "series": "Series",
-      "documentary": "Documentary",
-      "short": "Short",
-      "clip": "Clip"
-    },
-    "genres": {
-      "title": "Genres",
-      "description": "Mood and style",
-      "drama": "Drama",
-      "comedy": "Comedy",
-      "action": "Action",
-      "thriller": "Thriller",
-      "animation": "Animation",
-      "musical": "Musical",
-      "romance": "Romance",
-      "horror": "Horror",
-      "sci-fi": "Sci-Fi",
-      "documentary": "Documentary",
-      "family": "Family",
-      "adventure": "Adventure",
-      "fantasy": "Fantasy",
-      "crime": "Crime",
-      "mystery": "Mystery",
-      "war": "War",
-      "western": "Western",
-      "biography": "Biography",
-      "history": "History",
-      "sport": "Sport"
-    },
-    "audiences": {
-      "title": "Audience",
-      "description": "Age appropriateness",
-      "general": "General",
-      "kids": "Kids",
-      "family": "Family",
-      "mature": "Mature"
-    },
-    "topicTags": {
-      "title": "Topics",
-      "description": "Content themes",
-      "jewish": "Jewish",
-      "israeli": "Israeli",
-      "educational": "Educational",
-      "historical": "Historical",
-      "sports": "Sports",
-      "nature": "Nature",
-      "science": "Science",
-      "music": "Music",
-      "art": "Art",
-      "cooking": "Cooking",
-      "travel": "Travel",
-      "technology": "Technology"
-    },
-    "subcategories": {
-      "title": "Subcategories",
-      "kids": {
-        "cartoons": "Cartoons",
-        "educational": "Educational",
-        "music": "Music",
-        "hebrew-learning": "Hebrew Learning",
-        "stories": "Stories",
-        "jewish": "Jewish",
-        "learning-hebrew": "Learning Hebrew",
-        "young-science": "Young Science",
-        "math-fun": "Fun Math",
-        "nature-animals": "Nature & Animals",
-        "interactive": "Interactive",
-        "hebrew-songs": "Hebrew Songs",
-        "nursery-rhymes": "Nursery Rhymes",
-        "kids-movies": "Kids Movies",
-        "kids-series": "Kids Series",
-        "jewish-holidays": "Jewish Holidays",
-        "torah-stories": "Torah Stories",
-        "bedtime-stories": "Bedtime Stories"
-      },
-      "ageGroups": {
-        "title": "Age Groups",
-        "toddlers": "Toddlers (0-3)",
-        "preschool": "Preschool (3-5)",
-        "elementary": "Elementary (5-10)",
-        "preteen": "Pre-teen (10-12)"
-      },
-      "judaism": {
-        "shiurim": "Torah Classes",
-        "tefila": "Prayer",
-        "jewish-music": "Jewish Music",
-        "holidays": "Holidays",
-        "documentaries": "Documentaries"
-      }
-    },
-    "admin": {
-      "selectSection": "Select Section",
-      "selectSections": "Select Sections",
-      "primarySection": "Primary Section",
-      "selectFormat": "Select Format",
-      "selectAudience": "Select Audience",
-      "selectGenres": "Select Genres",
-      "selectTopics": "Select Topics",
-      "selectSubcategories": "Select Subcategories",
-      "crossListing": "Cross-listing",
-      "crossListingHint": "Content can appear in multiple sections"
-    }
-  },
-  "taxonomy": {
     "sections": {
       "movies": "Movies",
       "series": "Series",
@@ -3616,6 +3509,156 @@
       "create_session_failed": "Failed to create session",
       "add_transcript_failed": "Failed to add transcript",
       "generate_recap_failed": "Failed to generate recap"
+    }
+  },
+  "portal": {
+    "nav": {
+      "home": "Home",
+      "features": "Features",
+      "solutions": "Solutions",
+      "pricing": "Pricing",
+      "demo": "Live Demo",
+      "contact": "Contact",
+      "getStarted": "Get Started"
+    },
+    "hero": {
+      "ctaExplore": "Explore Features",
+      "ctaDemo": "Request Demo"
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "subtitle": "Let's discuss how we can help transform your business",
+      "button": "Contact Us"
+    },
+    "contactPage": {
+      "title": "Get In Touch",
+      "subtitle": "Interested in our solutions? Let's talk",
+      "formTitle": "Send Us a Message",
+      "infoTitle": "Contact Information",
+      "form": {
+        "name": "Full Name",
+        "email": "Email Address",
+        "company": "Company Name",
+        "phone": "Phone Number",
+        "message": "Your Message",
+        "messagePlaceholder": "Tell us about your needs..."
+      },
+      "submit": "Send Message",
+      "sending": "Sending...",
+      "success": "Message sent successfully! We'll get back to you soon.",
+      "error": "Failed to send message. Please try again.",
+      "scheduleTitle": "Prefer to Schedule a Call?",
+      "scheduleSubtitle": "Book a personalized demo with our team",
+      "scheduleCta": "Schedule Demo Call"
+    },
+    "pricingPage": {
+      "title": "Affordable",
+      "titleHighlight": "Pricing Plans",
+      "subtitle": "Choose the plan that fits your needs",
+      "comparisonTitle": "Feature Comparison",
+      "faqTitle": "Frequently Asked Questions",
+      "faq": {
+        "q1": "How is pricing calculated?",
+        "a1": "Pricing is based on your specific needs and usage. Contact us for a custom quote.",
+        "q2": "Can I upgrade my plan later?",
+        "a2": "Yes, you can upgrade at any time. We'll help migrate your data seamlessly.",
+        "q3": "What support is included?",
+        "a3": "All plans include email support. Professional and Enterprise plans include priority support with dedicated account managers."
+      },
+      "professional": {
+        "name": "Professional",
+        "price": "Contact for Quote",
+        "priceNote": "Custom pricing",
+        "description": "For growing businesses with advanced needs",
+        "cta": "Get Quote"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Custom",
+        "priceNote": "Volume-based",
+        "description": "For large organizations and enterprise deployments",
+        "cta": "Contact Sales"
+      },
+      "ctaTitle": "Ready to Get Started?",
+      "ctaSubtitle": "Let's discuss your needs and find the perfect plan",
+      "ctaButton": "Contact Sales"
+    },
+    "featuresPage": {
+      "title": "Powerful",
+      "titleHighlight": "Features",
+      "subtitle": "Everything you need to succeed",
+      "techSpecsTitle": "Technical Specifications",
+      "workflowTitle": "How It Works",
+      "workflow": {
+        "s1": {
+          "title": "Import",
+          "description": "Upload and organize your content"
+        },
+        "s2": {
+          "title": "Configure",
+          "description": "Set up your preferences and settings"
+        },
+        "s3": {
+          "title": "Deploy",
+          "description": "Go live with your solution"
+        },
+        "s4": {
+          "title": "Monitor",
+          "description": "Track performance and optimize"
+        }
+      },
+      "ctaTitle": "Ready to Explore Features?",
+      "ctaSubtitle": "See all features in action with a personalized demo",
+      "ctaButton": "Schedule Demo"
+    },
+    "demoPage": {
+      "title": "See Our",
+      "titleHighlight": "Platform",
+      "subtitle": "Experience the power of our solution",
+      "scheduleCta": "Schedule Live Demo",
+      "stepsTitle": "How It Works",
+      "steps": {
+        "analyze": {
+          "title": "Analyze",
+          "description": "Track and improve performance"
+        }
+      },
+      "featuresTitle": "Platform Highlights",
+      "platformsTitle": "Available On",
+      "ctaTitle": "Ready for Your Custom Demo?",
+      "ctaSubtitle": "Schedule a personalized demonstration tailored to your needs",
+      "ctaButton": "Schedule Demo"
+    },
+    "workflow": {
+      "sectionTitle": "Intelligent Workflow",
+      "sectionSubtitle": "Streamlined process in 4 steps",
+      "step1": {
+        "title": "Setup",
+        "description": "Configure your account and preferences"
+      },
+      "step2": {
+        "title": "Configure",
+        "description": "Customize settings for your needs"
+      },
+      "step3": {
+        "title": "Deploy",
+        "description": "Launch your solution"
+      },
+      "step4": {
+        "title": "Monitor",
+        "description": "Track performance and optimize"
+      }
+    }
+  },
+  "trivia": {
+    "didYouKnow": "Did You Know?",
+    "dismissHint": "Dismiss trivia fact",
+    "settings": {
+      "displayLanguages": "Display Languages",
+      "languageHint": "Select 1-3 languages to display for each fact",
+      "language": "language",
+      "selectLanguage": "Select this language",
+      "deselectLanguage": "Deselect this language"
     }
   }
 }

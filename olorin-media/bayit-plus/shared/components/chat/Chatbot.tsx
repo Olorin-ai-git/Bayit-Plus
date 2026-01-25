@@ -15,7 +15,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { GlassView, GlassCard } from '../ui';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { chatService } from '../../services/api';
 import { useAuthStore } from '../../stores/authStore';
 import { getCurrentLanguage } from '../../i18n';

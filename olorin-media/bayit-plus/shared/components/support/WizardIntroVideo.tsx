@@ -12,7 +12,7 @@ import {
   Text,
   Platform,
 } from 'react-native';
-import { colors } from '../../theme';
+import { colors } from '@olorin/design-tokens';
 
 // Video URL - served from public folder
 const INTRO_VIDEO_URL = '/media/olorin-avatar-intro.mp4';

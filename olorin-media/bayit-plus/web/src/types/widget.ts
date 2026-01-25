@@ -41,6 +41,7 @@ export interface Widget {
   is_active: boolean;
   is_muted: boolean;
   is_visible: boolean;
+  is_minimized: boolean;
   is_closable: boolean;
   is_draggable: boolean;
   visible_to_roles: string[];
@@ -78,6 +79,7 @@ export interface WidgetUpdateRequest {
   is_active?: boolean;
   is_muted?: boolean;
   is_visible?: boolean;
+  is_minimized?: boolean;
   is_closable?: boolean;
   is_draggable?: boolean;
   visible_to_roles?: string[];
@@ -108,6 +110,7 @@ export interface WidgetsListResponse {
 export interface WidgetClientState {
   isMuted: boolean;
   isVisible: boolean;
+  isMinimized: boolean;
   position: WidgetPosition;
 }
 
@@ -175,8 +178,8 @@ export function formDataToCreateRequest(data: WidgetFormData): WidgetCreateReque
 export const DEFAULT_WIDGET_POSITION: WidgetPosition = {
   x: 20,
   y: 100,
-  width: 520,
-  height: 200,
+  width: 640,
+  height: 360,
   z_index: 100,
 };
 
@@ -189,6 +192,7 @@ export interface UserSystemWidget {
   position?: WidgetPosition;
   is_muted: boolean;
   is_visible: boolean;
+  is_minimized: boolean;
   order: number;
 }
 

@@ -4,7 +4,7 @@
  */
 
 import { StyleSheet } from 'react-native'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 
 export const styles = StyleSheet.create({
@@ -85,7 +85,7 @@ export const styles = StyleSheet.create({
   endButtonText: {
     fontSize: isTV ? 16 : 14,
     fontWeight: '500',
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
   leaveButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',

@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
 import { useSeriesData, useVideoPreview } from './hooks';
 import { SeriesHero, SeasonSelector, EpisodeList, CastSection } from './components';

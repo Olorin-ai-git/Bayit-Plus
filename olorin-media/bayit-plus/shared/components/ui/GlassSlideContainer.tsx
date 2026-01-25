@@ -17,7 +17,7 @@
 import { useEffect, useRef } from 'react'
 import { View, Pressable, StyleSheet, Animated, Dimensions } from 'react-native'
 import { X } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 
 interface GlassSlideContainerProps {
   /** Whether the container is open */

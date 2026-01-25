@@ -15,7 +15,7 @@ import {
   LayoutChangeEvent,
   AccessibilityInfo,
 } from 'react-native'
-import { colors, borderRadius } from '../../theme'
+import { colors, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '../../utils/platform'
 import { useTVFocus } from '../hooks/useTVFocus'
 
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: borderRadius.sm,
   },
   fillDragging: {
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   },
   thumbDragging: {
     transform: [{ scale: 1.2 }],
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
 })
 

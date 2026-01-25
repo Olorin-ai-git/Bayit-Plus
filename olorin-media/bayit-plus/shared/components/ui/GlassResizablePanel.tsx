@@ -7,7 +7,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { View, Platform, Pressable, I18nManager, StyleSheet } from 'react-native';
 import { GlassSplitterHandle } from './GlassSplitterHandle';
-import { colors, borderRadius } from '../theme';
+import { colors, borderRadius } from '@olorin/design-tokens';
 
 interface GlassResizablePanelProps {
   children: React.ReactNode;

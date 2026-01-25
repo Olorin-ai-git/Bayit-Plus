@@ -2685,6 +2685,7 @@
     "jumpTo": "קפוץ אל",
     "current": "עכשיו",
     "categories": {
+      "general": "כללי",
       "intro": "פתיחה",
       "news": "חדשות",
       "security": "ביטחון",
@@ -2693,7 +2694,15 @@
       "sports": "ספורט",
       "weather": "מזג אוויר",
       "culture": "תרבות",
-      "conclusion": "סיום"
+      "conclusion": "סיום",
+      "flashback": "פלאשבק",
+      "journey": "מסע",
+      "climax": "שיא",
+      "setup": "הקדמה",
+      "action": "אקשן",
+      "conflict": "קונפליקט",
+      "cliffhanger": "מתח",
+      "main": "ראשי"
     }
   },
   "placeholder": {

@@ -4,12 +4,19 @@ import './index.css';
 import './i18n/config';
 import App from './App';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+import { initWebI18n, setupWebDirectionListener } from '@olorin/shared-i18n/web';
 
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+(async () => {
+  await initWebI18n();
+  await setupWebDirectionListener();
+
+  const root = ReactDOM.createRoot(
+    document.getElementById('root') as HTMLElement
+  );
+
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+})();

@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { useDirection } from '../hooks/useDirection';
 import { useAuthStore } from '../stores/authStore';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { GlassResizablePanel } from '@bayit/shared/ui';
 import { Gamepad2 } from 'lucide-react';
 import logger from '@/utils/logger';

@@ -11,7 +11,7 @@ import {
   Brain,
 } from 'lucide-react';
 import { GlassView } from '@bayit/shared/ui';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { useAISettingsStore } from '@/stores/aiSettingsStore';
 import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
 import { SettingRow } from '../components/SettingRow';

@@ -3,10 +3,11 @@
  * Side panel for active Watch Party with participants, chat, and controls
  */
 
+import { createPortal } from 'react-dom'
 import { View, Text, Pressable, ScrollView, I18nManager } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
-import { colors } from '@bayit/shared/theme'
+import { colors } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 import WatchPartyHeader from './WatchPartyHeader'
@@ -83,7 +84,7 @@ export default function WatchPartyPanel({
 
   if (!party) return null
 
-  return (
+  return createPortal(
     <View
       style={[
         styles.panel,
@@ -156,10 +157,12 @@ export default function WatchPartyPanel({
               currentUserId={currentUserId}
               onSendMessage={onSendMessage}
               chatEnabled={party.chat_enabled}
+              isPanelOpen={isOpen}
             />
           </View>
         )}
       </ScrollView>
-    </View>
+    </View>,
+    document.body
   )
 }

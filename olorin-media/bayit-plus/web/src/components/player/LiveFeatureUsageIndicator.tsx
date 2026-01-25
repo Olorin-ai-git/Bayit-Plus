@@ -6,7 +6,7 @@
 
 import { View, Text, StyleSheet } from 'react-native'
 import { Clock, AlertCircle } from 'lucide-react'
-import { colors, spacing } from '@bayit/shared/theme'
+import { colors, spacing } from '@olorin/design-tokens'
 
 interface UsageStats {
   subtitle_usage_current_hour: number
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   usageTextError: {
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
   rolloverText: {
     color: '#10b981',

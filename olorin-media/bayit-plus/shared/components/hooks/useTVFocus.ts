@@ -24,7 +24,7 @@ import {
   buttonFocusedStyle,
   inputFocusedStyle,
   webOutlineStyle,
-} from '../theme/tvFocusStyles';
+} from './tvFocusStyles';
 import { isTV } from '../utils/platform';
 
 export type FocusStyleType = 'card' | 'button' | 'input' | 'outline' | 'none';

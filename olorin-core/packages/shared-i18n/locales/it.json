@@ -714,6 +714,23 @@
     "dashboard": {
       "title": "Dashboard",
       "subtitle": "Panoramica del sistema"
+    },
+    "content": {
+      "filters": {
+        "title": "Filtri",
+        "contentType": "Tipo di Contenuto",
+        "all": "Tutto",
+        "allContent": "Tutto",
+        "series": "Serie",
+        "movies": "Film",
+        "podcasts": "Podcast",
+        "radioStations": "Stazioni Radio",
+        "status": "Stato",
+        "allStatus": "Tutti gli Stati",
+        "subtitles": "Sottotitoli"
+      },
+      "podcastsComingSoon": "Gestione podcast in arrivo. Usa la sezione Podcast.",
+      "radioComingSoon": "Gestione stazioni radio in arrivo. Usa la sezione Stazioni Radio."
     }
   },
   "cultures": {
@@ -830,5 +847,155 @@
       "startUsing": "Inizia a Usare il Controllo Vocale"
     },
     "skip": "Salta per ora"
+  },
+  "portal": {
+    "nav": {
+      "home": "Home",
+      "features": "Caratteristiche",
+      "solutions": "Soluzioni",
+      "pricing": "Prezzi",
+      "demo": "Demo dal Vivo",
+      "contact": "Contatto",
+      "getStarted": "Inizia"
+    },
+    "hero": {
+      "ctaExplore": "Esplora le Caratteristiche",
+      "ctaDemo": "Richiedi Demo"
+    },
+    "cta": {
+      "title": "Pronto per Iniziare?",
+      "subtitle": "Parliamo di come possiamo aiutare a trasformare il tuo business",
+      "button": "Contattaci"
+    },
+    "contactPage": {
+      "title": "Mettiti in Contatto",
+      "subtitle": "Interessato alle nostre soluzioni? Parliamone",
+      "formTitle": "Inviaci un Messaggio",
+      "infoTitle": "Informazioni di Contatto",
+      "form": {
+        "name": "Nome Completo",
+        "email": "Indirizzo Email",
+        "company": "Nome Azienda",
+        "phone": "Numero di Telefono",
+        "message": "Il Tuo Messaggio",
+        "messagePlaceholder": "Raccontaci delle tue esigenze..."
+      },
+      "submit": "Invia Messaggio",
+      "sending": "Invio in corso...",
+      "success": "Messaggio inviato con successo! Ti ricontatteremo presto.",
+      "error": "Invio del messaggio fallito. Riprova.",
+      "scheduleTitle": "Preferisci Programmare una Chiamata?",
+      "scheduleSubtitle": "Prenota una demo personalizzata con il nostro team",
+      "scheduleCta": "Programma Chiamata Demo"
+    },
+    "pricingPage": {
+      "title": "Conveniente",
+      "titleHighlight": "Piani Tariffari",
+      "subtitle": "Scegli il piano adatto alle tue esigenze",
+      "comparisonTitle": "Confronto delle Caratteristiche",
+      "faqTitle": "Domande Frequenti",
+      "faq": {
+        "q1": "Come viene calcolato il prezzo?",
+        "a1": "Il prezzo si basa sulle tue esigenze specifiche e sull'utilizzo. Contattaci per un preventivo personalizzato.",
+        "q2": "Posso aggiornare il mio piano più tardi?",
+        "a2": "Sì, puoi aggiornare in qualsiasi momento. Ti aiuteremo a migrare i tuoi dati senza problemi.",
+        "q3": "Quale supporto è incluso?",
+        "a3": "Tutti i piani includono supporto via email. I piani Professional ed Enterprise includono supporto prioritario con account manager dedicati."
+      },
+      "professional": {
+        "name": "Professionale",
+        "price": "Contatta per Preventivo",
+        "priceNote": "Prezzi personalizzati",
+        "description": "Per aziende in crescita con esigenze avanzate",
+        "cta": "Ottieni Preventivo"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Personalizzato",
+        "priceNote": "Basato sul volume",
+        "description": "Per grandi organizzazioni e implementazioni aziendali",
+        "cta": "Contatta Vendite"
+      },
+      "ctaTitle": "Pronto per Iniziare?",
+      "ctaSubtitle": "Parliamo delle tue esigenze e troviamo il piano perfetto",
+      "ctaButton": "Contatta Vendite"
+    },
+    "featuresPage": {
+      "title": "Potenti",
+      "titleHighlight": "Caratteristiche",
+      "subtitle": "Tutto ciò di cui hai bisogno per avere successo",
+      "techSpecsTitle": "Specifiche Tecniche",
+      "workflowTitle": "Come Funziona",
+      "workflow": {
+        "s1": {
+          "title": "Importa",
+          "description": "Carica e organizza i tuoi contenuti"
+        },
+        "s2": {
+          "title": "Configura",
+          "description": "Imposta le tue preferenze e impostazioni"
+        },
+        "s3": {
+          "title": "Distribuisci",
+          "description": "Vai online con la tua soluzione"
+        },
+        "s4": {
+          "title": "Monitora",
+          "description": "Traccia le prestazioni e ottimizza"
+        }
+      },
+      "ctaTitle": "Pronto per Esplorare le Caratteristiche?",
+      "ctaSubtitle": "Vedi tutte le caratteristiche in azione con una demo personalizzata",
+      "ctaButton": "Programma Demo"
+    },
+    "demoPage": {
+      "title": "Vedi la Nostra",
+      "titleHighlight": "Piattaforma",
+      "subtitle": "Sperimenta la potenza della nostra soluzione",
+      "scheduleCta": "Programma Demo dal Vivo",
+      "stepsTitle": "Come Funziona",
+      "steps": {
+        "analyze": {
+          "title": "Analizza",
+          "description": "Traccia e migliora le prestazioni"
+        }
+      },
+      "featuresTitle": "Punti Salienti della Piattaforma",
+      "platformsTitle": "Disponibile Su",
+      "ctaTitle": "Pronto per la Tua Demo Personalizzata?",
+      "ctaSubtitle": "Programma una dimostrazione personalizzata su misura per le tue esigenze",
+      "ctaButton": "Programma Demo"
+    },
+    "workflow": {
+      "sectionTitle": "Flusso di Lavoro Intelligente",
+      "sectionSubtitle": "Processo semplificato in 4 passaggi",
+      "step1": {
+        "title": "Configura",
+        "description": "Configura il tuo account e le preferenze"
+      },
+      "step2": {
+        "title": "Personalizza",
+        "description": "Personalizza le impostazioni per le tue esigenze"
+      },
+      "step3": {
+        "title": "Lancia",
+        "description": "Avvia la tua soluzione"
+      },
+      "step4": {
+        "title": "Monitora",
+        "description": "Traccia le prestazioni e ottimizza"
+      }
+    }
+  },
+  "trivia": {
+    "didYouKnow": "Lo Sapevi?",
+    "dismissHint": "Chiudi curiosità",
+    "settings": {
+      "displayLanguages": "Lingue di Visualizzazione",
+      "languageHint": "Seleziona 1-3 lingue da visualizzare per ogni fatto",
+      "language": "lingua",
+      "selectLanguage": "Seleziona questa lingua",
+      "deselectLanguage": "Deseleziona questa lingua"
+    }
   }
 }

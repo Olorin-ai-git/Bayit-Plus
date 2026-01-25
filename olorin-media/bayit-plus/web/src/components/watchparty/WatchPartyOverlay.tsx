@@ -4,10 +4,11 @@
  */
 
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { View, Text, Pressable, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { X, Users, MessageSquare } from 'lucide-react'
-import { colors } from '@bayit/shared/theme'
+import { colors } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 import { GlassView } from '@bayit/shared/ui'
 import WatchPartyHeader from './WatchPartyHeader'
@@ -73,7 +74,7 @@ export default function WatchPartyOverlay({
 
   if (!party || !isOpen) return null
 
-  return (
+  return createPortal(
     <View style={styles.overlay}>
       <Pressable style={styles.backdrop} onPress={onClose} />
 
@@ -143,6 +144,7 @@ export default function WatchPartyOverlay({
           )}
         </ScrollView>
       </GlassView>
-    </View>
+    </View>,
+    document.body
   )
 }

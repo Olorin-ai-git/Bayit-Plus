@@ -54,11 +54,19 @@ export function useSearchSuggestions(): UseSearchSuggestionsReturn {
           throw new Error(`Failed to fetch categories: ${categoriesResponse.status}`);
         }
         const categoriesData = await categoriesResponse.json();
-        setCategories(categoriesData.categories || []);
+
+        // Map API response format (label) to frontend format (name)
+        const mappedCategories = (categoriesData.categories || []).map((cat: any) => ({
+          name: cat.label || cat.name,
+          emoji: cat.emoji,
+          filters: cat.filters,
+        }));
+
+        setCategories(mappedCategories);
 
         logger.info('Search suggestions loaded', LOG_CONTEXT, {
           trendingCount: trendingData.trending?.length || 0,
-          categoriesCount: categoriesData.categories?.length || 0,
+          categoriesCount: mappedCategories.length,
         });
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
@@ -67,9 +75,31 @@ export function useSearchSuggestions(): UseSearchSuggestionsReturn {
         });
         setError(errorMessage);
 
-        // Set empty arrays on error (no fallback data)
-        setTrendingSearches([]);
-        setCategories([]);
+        // Fallback categories when API fails
+        const fallbackCategories: Category[] = [
+          { name: 'Movies', emoji: '🎬', filters: { content_types: ['vod'] } },
+          { name: 'Series', emoji: '📺', filters: { content_types: ['vod'] } },
+          { name: 'Kids', emoji: '👶', filters: { is_kids_content: true } },
+          { name: 'Comedy', emoji: '😂', filters: { genres: ['Comedy'] } },
+          { name: 'Drama', emoji: '🎭', filters: { genres: ['Drama'] } },
+          { name: 'Documentaries', emoji: '🎥', filters: { genres: ['Documentary'] } },
+        ];
+
+        // Fallback trending searches
+        const fallbackTrending: string[] = [
+          'Fauda',
+          'Shtisel',
+          'Tehran',
+          'Valley of Tears',
+        ];
+
+        setTrendingSearches(fallbackTrending);
+        setCategories(fallbackCategories);
+
+        logger.info('Using fallback suggestions data', LOG_CONTEXT, {
+          categoriesCount: fallbackCategories.length,
+          trendingCount: fallbackTrending.length,
+        });
       } finally {
         setLoading(false);
       }

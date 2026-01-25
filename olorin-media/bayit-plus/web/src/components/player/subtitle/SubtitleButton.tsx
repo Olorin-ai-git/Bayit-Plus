@@ -6,7 +6,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { Subtitles } from 'lucide-react'
 import { z } from 'zod'
-import { colors, borderRadius, spacing } from '@bayit/shared/theme'
+import { colors, borderRadius, spacing } from '@olorin/design-tokens'
 import { getLanguageInfo } from '@/types/subtitle'
 
 // Zod schema for props validation
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: spacing.xs,
     right: spacing.xs,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: borderRadius.lg,
     paddingHorizontal: spacing.xs,
     paddingVertical: 2,

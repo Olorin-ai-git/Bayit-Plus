@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from app.api.routes.admin.auth import has_permission, log_audit
 from app.models.admin import AuditAction, Permission
 from app.models.user import User
-from app.services.live_feature_quota_service import LiveFeatureQuotaService
+from app.services.live_feature_quota_service import live_feature_quota_service
 
 router = APIRouter(prefix="/live-quotas", tags=["Admin - Live Quota Management"])
 logger = logging.getLogger(__name__)
@@ -38,8 +38,8 @@ async def get_user_quota(
 ):
     """Get quota settings and usage stats for a specific user"""
     try:
-        quota = await LiveFeatureQuotaService.get_or_create_quota(user_id)
-        usage_stats = await LiveFeatureQuotaService.get_usage_stats(user_id)
+        quota = await live_feature_quota_service.get_or_create_quota(user_id)
+        usage_stats = await live_feature_quota_service.get_usage_stats(user_id)
 
         # Get target user info
         user = await User.get(user_id)
@@ -87,7 +87,7 @@ async def update_user_limits(
         if not new_limits and not limits.notes:
             raise HTTPException(status_code=400, detail="No limits provided to update")
 
-        await LiveFeatureQuotaService.extend_user_limits(
+        await live_feature_quota_service.extend_user_limits(
             user_id=user_id,
             admin_id=str(current_user.id),
             new_limits=new_limits,
@@ -117,7 +117,7 @@ async def reset_user_quota(
 ):
     """Reset user's quota usage counters"""
     try:
-        await LiveFeatureQuotaService.reset_user_quota(user_id)
+        await live_feature_quota_service.reset_user_quota(user_id)
 
         await log_audit(
             user_id=str(current_user.id),

@@ -17,10 +17,10 @@ export const DeviceImage: React.FC<DeviceImageProps> = ({ imageSrc }) => {
     y: [-10, 10, -10],
   };
 
-  const breatheTransition = prefersReducedMotion ? {} : {
+  const breatheTransition = prefersReducedMotion ? undefined : {
     duration: 4,
     repeat: Infinity,
-    ease: 'easeInOut',
+    ease: 'easeInOut' as const,
   };
 
   if (imageError) {
@@ -43,7 +43,7 @@ export const DeviceImage: React.FC<DeviceImageProps> = ({ imageSrc }) => {
 
       <motion.img
         src={imageSrc}
-        alt={t('hero.altDevice')}
+        alt={String(t('hero.altDevice'))}
         className={`w-64 sm:w-80 md:w-96 h-auto drop-shadow-2xl ${!imageLoaded ? 'hidden' : ''}`}
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}

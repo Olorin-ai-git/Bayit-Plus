@@ -14,7 +14,7 @@ import {
   StyleProp,
   StyleSheet,
 } from 'react-native';
-import { colors, borderRadius, spacing } from '../../theme';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 import { isTV } from '../utils/platform';
 
 type ProgressSize = 'sm' | 'md' | 'lg';

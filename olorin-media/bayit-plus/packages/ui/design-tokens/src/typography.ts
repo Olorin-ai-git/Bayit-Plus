@@ -122,6 +122,73 @@ export const letterSpacing = {
   widest: '0.1em',
 };
 
+/** Composite typography styles for React Native */
+export const typography = {
+  /** Body text - default paragraph style */
+  body: {
+    fontSize: fontSize.base,
+    lineHeight: fontSize.base * 1.5,
+    fontWeight: fontWeight.normal,
+    letterSpacing: letterSpacing.normal,
+  },
+  /** Small body text */
+  bodySmall: {
+    fontSize: fontSize.sm,
+    lineHeight: fontSize.sm * 1.5,
+    fontWeight: fontWeight.normal,
+    letterSpacing: letterSpacing.normal,
+  },
+  /** Large body text */
+  bodyLarge: {
+    fontSize: fontSize.lg,
+    lineHeight: fontSize.lg * 1.5,
+    fontWeight: fontWeight.normal,
+    letterSpacing: letterSpacing.normal,
+  },
+  /** Heading 1 */
+  h1: {
+    fontSize: fontSize['4xl'],
+    lineHeight: fontSize['4xl'] * 1.2,
+    fontWeight: fontWeight.bold,
+    letterSpacing: letterSpacing.tight,
+  },
+  /** Heading 2 */
+  h2: {
+    fontSize: fontSize['3xl'],
+    lineHeight: fontSize['3xl'] * 1.25,
+    fontWeight: fontWeight.bold,
+    letterSpacing: letterSpacing.tight,
+  },
+  /** Heading 3 */
+  h3: {
+    fontSize: fontSize['2xl'],
+    lineHeight: fontSize['2xl'] * 1.3,
+    fontWeight: fontWeight.semibold,
+    letterSpacing: letterSpacing.normal,
+  },
+  /** Heading 4 */
+  h4: {
+    fontSize: fontSize.xl,
+    lineHeight: fontSize.xl * 1.35,
+    fontWeight: fontWeight.semibold,
+    letterSpacing: letterSpacing.normal,
+  },
+  /** Caption text */
+  caption: {
+    fontSize: fontSize.xs,
+    lineHeight: fontSize.xs * 1.4,
+    fontWeight: fontWeight.normal,
+    letterSpacing: letterSpacing.wide,
+  },
+  /** Label text */
+  label: {
+    fontSize: fontSize.sm,
+    lineHeight: fontSize.sm * 1.4,
+    fontWeight: fontWeight.medium,
+    letterSpacing: letterSpacing.wide,
+  },
+};
+
 export default {
   fontFamily,
   fontSize,
@@ -129,4 +196,5 @@ export default {
   fontWeight,
   lineHeight,
   letterSpacing,
+  typography,
 };

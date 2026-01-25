@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useDirection } from '../../hooks/useDirection';
-import { colors, spacing } from '../../theme';
+import { colors, spacing } from '@olorin/design-tokens';
 
 export interface StatCardProps {
   title: string;

@@ -8,12 +8,14 @@
  * - bayitplus://home
  * - bayitplus://live/{channelId}
  * - bayitplus://vod/{contentId}
+ * - bayitplus://vod/{contentId}?t={timestamp} (scene search timestamp)
  * - bayitplus://podcast/{podcastId}
  * - bayitplus://radio/{stationId}
  * - bayitplus://search?q={query}
  * - bayitplus://profile
  * - bayitplus://settings
  * - bayitplus://continue (continue watching)
+ * - bayitplus://player/{contentId}/{type}?t={timestamp} (with scene timestamp)
  */
 
 import type { LinkingOptions } from '@react-navigation/native';
@@ -41,12 +43,16 @@ export const linking: LinkingOptions<RootStackParamList> = {
         },
       },
 
-      // Player (with content ID)
+      // Player (with content ID and optional timestamp for scene search)
       Player: {
         path: 'player/:id/:type',
         parse: {
           id: (id: string) => id,
           type: (type: string) => type as 'vod' | 'live' | 'radio' | 'podcast',
+          t: (timestamp: string) => (timestamp ? parseFloat(timestamp) : undefined),
+        },
+        stringify: {
+          t: (timestamp?: number) => (timestamp !== undefined ? timestamp.toString() : ''),
         },
       },
 

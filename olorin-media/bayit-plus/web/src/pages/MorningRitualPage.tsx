@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { ChevronLeft, ChevronRight, X, SkipForward } from 'lucide-react';
 import { GlassView, GlassButton } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { ritualService } from '@/services/api';
 import logger from '@/utils/logger';
 

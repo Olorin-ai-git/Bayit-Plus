@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, Image, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { User, Star, Download, LogOut, ChevronRight } from 'lucide-react';
-import { colors } from '../theme';
+import { colors } from '@olorin/design-tokens';
 
 interface ProfileDropdownProps {
   user: {
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   buttonFocused: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     backgroundColor: 'rgba(139, 92, 246, 0.3)',
   },
   avatar: {
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   logoutText: {
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
 });
 

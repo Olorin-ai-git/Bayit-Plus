@@ -9,8 +9,10 @@
  * - streaming: Olorin.ai Media Enrichment (streaming services)
  * - radio: Olorin.ai Media Enrichment (radio management)
  * - omen: Olorin.AI Omen (speech translation)
+ * - station: Olorin.AI Station (media station management)
+ * - cvplus: Olorin.AI CVPlus (professional CV builder)
  */
-export type PortalDomain = 'main' | 'fraud' | 'streaming' | 'radio' | 'omen';
+export type PortalDomain = 'main' | 'fraud' | 'streaming' | 'radio' | 'omen' | 'station' | 'cvplus';
 
 /**
  * Extended accent color type including 'purple' for backward compatibility
@@ -61,5 +63,17 @@ export const PORTAL_BRANDS: Record<PortalDomain, PortalBrandConfig> = {
     shortName: 'Olorin Omen',
     fullName: 'Olorin.AI Omen',
     description: 'Real-Time Speech Translation',
+  },
+  station: {
+    logoText: 'OLORIN.AI STATION',
+    shortName: 'Olorin Station',
+    fullName: 'Olorin.AI Station',
+    description: 'Media Station Management',
+  },
+  cvplus: {
+    logoText: 'OLORIN.AI CVPLUS',
+    shortName: 'Olorin CVPlus',
+    fullName: 'Olorin.AI CVPlus',
+    description: 'Professional CV Builder',
   },
 };

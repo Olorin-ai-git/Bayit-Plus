@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui';
-import { colors } from '../../theme';
+import { colors } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 
@@ -36,9 +36,9 @@ interface SupportTicketCardProps {
 }
 
 const statusConfig: Record<string, { color: string; icon: string }> = {
-  open: { color: colors.warning, icon: '📝' },
-  in_progress: { color: colors.primary, icon: '⚙️' },
-  resolved: { color: colors.success, icon: '✅' },
+  open: { color: colors.warning.DEFAULT, icon: '📝' },
+  in_progress: { color: colors.primary.DEFAULT, icon: '⚙️' },
+  resolved: { color: colors.success.DEFAULT, icon: '✅' },
   closed: { color: colors.textSecondary, icon: '📁' },
 };
 

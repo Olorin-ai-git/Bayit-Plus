@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, Platform, StyleSheet, ViewStyle } from 'react-native';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassView } from './GlassView';
 
 interface GlassTooltipProps {

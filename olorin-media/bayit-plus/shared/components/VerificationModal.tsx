@@ -10,7 +10,7 @@ import { GlassButton } from './ui/GlassButton';
 import { GlassInput } from './ui/GlassInput';
 import { verificationService } from '../services/api';
 import { useAuthStore } from '../stores/authStore';
-import { colors } from '../theme';
+import { colors } from '@olorin/design-tokens';
 
 interface VerificationModalProps {
   visible: boolean;

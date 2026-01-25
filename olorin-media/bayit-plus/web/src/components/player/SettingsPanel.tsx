@@ -6,7 +6,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { X, Check } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassView } from '@bayit/shared/ui'
 import type { QualityOption } from './types'
 
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   optionTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   optionIcon: {
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     marginLeft: spacing.sm,
   },
   resolutionText: {

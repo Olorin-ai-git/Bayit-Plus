@@ -30,7 +30,7 @@ import { UpgradeButton } from '@bayit/shared/components/UpgradeButton';
 import { usePermissions, useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
 import { profilesService } from '@bayit/shared-services';
-import { spacing, colors, typography, touchTarget } from '../theme';
+import { spacing, colors, typography, touchTarget } from '@olorin/design-tokens';
 import { useResponsive } from '../hooks/useResponsive';
 
 import logger from '@/utils/logger';

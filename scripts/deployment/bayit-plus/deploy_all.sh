@@ -108,6 +108,7 @@ for arg in "$@"; do
             echo "  OLORIN_SEMANTIC_SEARCH_ENABLED    Enable semantic search (true/false)"
             echo "  OLORIN_CULTURAL_CONTEXT_ENABLED   Enable cultural context (true/false)"
             echo "  OLORIN_RECAP_ENABLED              Enable recap agent (true/false)"
+            echo "  FEATURE_SCENE_SEARCH_ENABLED      Enable scene search feature (true/false)"
             echo ""
             echo "  Turborepo Remote Cache (for faster CI/CD builds):"
             echo "  TURBO_TOKEN                       Vercel Turborepo remote cache token"

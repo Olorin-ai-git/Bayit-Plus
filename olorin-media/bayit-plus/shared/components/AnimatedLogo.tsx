@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, Image, Animated, Easing, Platform, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../hooks/useDirection';
-import { colors } from '../theme';
+import { colors } from '@olorin/design-tokens';
 
 // Platform-specific logo import
 let logo: any;
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     color: colors.text, // Use theme color for text
   },
   textPurple: {
-    color: colors.primary, // Use theme color for primary
+    color: colors.primary.DEFAULT, // Use theme color for primary
   },
   plusSpacing: {
     marginLeft: 4,

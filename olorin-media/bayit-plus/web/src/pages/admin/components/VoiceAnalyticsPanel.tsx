@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { GlassCard } from '@bayit/shared/ui';
 import { voiceManagementService } from '@/services/voiceManagementApi';
 import logger from '@/utils/logger';
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   },
   stat: {
     fontSize: fontSize.xs,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '500',
   },
 });

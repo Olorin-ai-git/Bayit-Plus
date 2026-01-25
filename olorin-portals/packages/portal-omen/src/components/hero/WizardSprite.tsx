@@ -22,7 +22,7 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
       {/* Wizard sprite */}
       <motion.img
         src={imageSrc}
-        alt={t('hero.altWizard')}
+        alt={String(t('hero.altWizard'))}
         className="absolute -top-16 left-1/2 -translate-x-1/2 w-24 h-24 sm:w-32 sm:h-32"
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

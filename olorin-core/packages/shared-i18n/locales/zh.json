@@ -1875,6 +1875,23 @@
       "radioStations": "电台",
       "podcasts": "播客",
       "settings": "设置"
+    },
+    "content": {
+      "filters": {
+        "title": "筛选",
+        "contentType": "内容类型",
+        "all": "全部",
+        "allContent": "全部",
+        "series": "剧集",
+        "movies": "电影",
+        "podcasts": "播客",
+        "radioStations": "电台",
+        "status": "状态",
+        "allStatus": "所有状态",
+        "subtitles": "字幕"
+      },
+      "podcastsComingSoon": "播客管理即将推出。请使用播客部分。",
+      "radioComingSoon": "电台管理即将推出。请使用电台部分。"
     }
   },
   "cultures": {
@@ -1981,5 +1998,155 @@
       "startUsing": "开始使用语音控制"
     },
     "skip": "暂时跳过"
+  },
+  "portal": {
+    "nav": {
+      "home": "首页",
+      "features": "功能",
+      "solutions": "解决方案",
+      "pricing": "定价",
+      "demo": "实时演示",
+      "contact": "联系我们",
+      "getStarted": "开始使用"
+    },
+    "hero": {
+      "ctaExplore": "探索功能",
+      "ctaDemo": "请求演示"
+    },
+    "cta": {
+      "title": "准备好开始了吗？",
+      "subtitle": "让我们讨论如何帮助改变您的业务",
+      "button": "联系我们"
+    },
+    "contactPage": {
+      "title": "联系我们",
+      "subtitle": "对我们的解决方案感兴趣？让我们交谈",
+      "formTitle": "给我们发消息",
+      "infoTitle": "联系信息",
+      "form": {
+        "name": "全名",
+        "email": "电子邮件地址",
+        "company": "公司名称",
+        "phone": "电话号码",
+        "message": "您的消息",
+        "messagePlaceholder": "告诉我们您的需求..."
+      },
+      "submit": "发送消息",
+      "sending": "发送中...",
+      "success": "消息已成功发送！我们很快会与您联系。",
+      "error": "发送消息失败。请重试。",
+      "scheduleTitle": "更喜欢安排通话？",
+      "scheduleSubtitle": "与我们的团队预订个性化演示",
+      "scheduleCta": "安排演示通话"
+    },
+    "pricingPage": {
+      "title": "实惠的",
+      "titleHighlight": "定价计划",
+      "subtitle": "选择适合您需求的计划",
+      "comparisonTitle": "功能比较",
+      "faqTitle": "常见问题",
+      "faq": {
+        "q1": "定价如何计算？",
+        "a1": "定价基于您的具体需求和使用情况。联系我们获取定制报价。",
+        "q2": "我以后可以升级我的计划吗？",
+        "a2": "是的，您可以随时升级。我们将帮助您无缝迁移数据。",
+        "q3": "包含什么支持？",
+        "a3": "所有计划都包括电子邮件支持。专业版和企业版计划包括专属客户经理的优先支持。"
+      },
+      "professional": {
+        "name": "专业版",
+        "price": "联系获取报价",
+        "priceNote": "定制定价",
+        "description": "适用于有高级需求的成长型企业",
+        "cta": "获取报价"
+      },
+      "enterprise": {
+        "name": "企业版",
+        "price": "定制",
+        "priceNote": "基于使用量",
+        "description": "适用于大型组织和企业部署",
+        "cta": "联系销售"
+      },
+      "ctaTitle": "准备好开始了吗？",
+      "ctaSubtitle": "让我们讨论您的需求并找到完美的计划",
+      "ctaButton": "联系销售"
+    },
+    "featuresPage": {
+      "title": "强大的",
+      "titleHighlight": "功能",
+      "subtitle": "成功所需的一切",
+      "techSpecsTitle": "技术规格",
+      "workflowTitle": "工作原理",
+      "workflow": {
+        "s1": {
+          "title": "导入",
+          "description": "上传和组织您的内容"
+        },
+        "s2": {
+          "title": "配置",
+          "description": "设置您的偏好和设置"
+        },
+        "s3": {
+          "title": "部署",
+          "description": "启动您的解决方案"
+        },
+        "s4": {
+          "title": "监控",
+          "description": "跟踪性能并优化"
+        }
+      },
+      "ctaTitle": "准备好探索功能了吗？",
+      "ctaSubtitle": "通过个性化演示查看所有功能的实际应用",
+      "ctaButton": "安排演示"
+    },
+    "demoPage": {
+      "title": "查看我们的",
+      "titleHighlight": "平台",
+      "subtitle": "体验我们解决方案的强大功能",
+      "scheduleCta": "安排实时演示",
+      "stepsTitle": "工作原理",
+      "steps": {
+        "analyze": {
+          "title": "分析",
+          "description": "跟踪和改进性能"
+        }
+      },
+      "featuresTitle": "平台亮点",
+      "platformsTitle": "可用平台",
+      "ctaTitle": "准备好您的定制演示了吗？",
+      "ctaSubtitle": "安排根据您的需求定制的个性化演示",
+      "ctaButton": "安排演示"
+    },
+    "workflow": {
+      "sectionTitle": "智能工作流",
+      "sectionSubtitle": "4步精简流程",
+      "step1": {
+        "title": "设置",
+        "description": "配置您的帐户和偏好"
+      },
+      "step2": {
+        "title": "自定义",
+        "description": "根据您的需求自定义设置"
+      },
+      "step3": {
+        "title": "部署",
+        "description": "启动您的解决方案"
+      },
+      "step4": {
+        "title": "监控",
+        "description": "跟踪性能并优化"
+      }
+    }
+  },
+  "trivia": {
+    "didYouKnow": "你知道吗？",
+    "dismissHint": "关闭小知识",
+    "settings": {
+      "displayLanguages": "显示语言",
+      "languageHint": "选择1-3种语言显示每个事实",
+      "language": "语言",
+      "selectLanguage": "选择此语言",
+      "deselectLanguage": "取消选择此语言"
+    }
   }
 }

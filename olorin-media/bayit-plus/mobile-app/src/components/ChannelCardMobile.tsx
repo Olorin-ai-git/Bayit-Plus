@@ -14,7 +14,7 @@ import React from 'react';
 import { View, Image, Text, Pressable, Dimensions } from 'react-native';
 import { GlassView, GlassBadge } from '@bayit/shared';
 import { responsive } from '../utils/responsive';
-import { typography, spacing, borderRadius, colors } from '../theme';
+import { typography, spacing, borderRadius, colors } from '@olorin/design-tokens';
 
 export interface ChannelCardMobileProps {
   /** Channel data */

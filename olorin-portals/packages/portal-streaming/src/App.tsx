@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Header, Footer, RTLProvider } from '@olorin/shared';
 import { useTranslation } from 'react-i18next';
+import './i18n/config';
 
 // Lazy load pages for better performance
 const HomePage = lazy(() => import('./pages/HomePage'));

@@ -8,7 +8,7 @@
 import { View, StyleSheet } from 'react-native'
 import { z } from 'zod'
 import { GlassView } from '@bayit/shared/ui'
-import { spacing, borderRadius } from '@bayit/shared/theme'
+import { spacing, borderRadius } from '@olorin/design-tokens'
 import PlayerControls from '../PlayerControls'
 import ProgressBar from '../ProgressBar'
 import type { PlayerState, PlayerControls as PlayerControlsType, Chapter } from '../types'

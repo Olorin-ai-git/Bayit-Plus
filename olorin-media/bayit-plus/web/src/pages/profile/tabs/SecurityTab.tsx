@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Shield, Clock, LogOut } from 'lucide-react';
 import { GlassView } from '@bayit/shared/ui';
 import { useAuthStore } from '@/stores/authStore';
-import { colors, spacing, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, fontSize } from '@olorin/design-tokens';
 
 interface SecurityTabProps {
   isRTL: boolean;
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   dangerTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.error,
+    color: colors.error.DEFAULT,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: 15,
     fontWeight: '500',
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
   flexOne: {
     flex: 1,

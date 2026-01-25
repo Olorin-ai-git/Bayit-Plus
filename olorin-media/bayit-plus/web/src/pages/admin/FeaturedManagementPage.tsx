@@ -2,13 +2,13 @@ import { useState, useEffect, useCallback } from 'react'
 import { View, Text, Pressable, ScrollView, Image } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Star, X, AlertCircle, RefreshCw, GripVertical, Film, Tv, Save } from 'lucide-react'
-import { adminContentService, Content } from '@bayit/shared/services/adminApi'
+import { adminContentService, Content } from '@/services/adminApi'
 import { GlassReorderableList } from '@bayit/shared/ui'
 import { GlassCard, GlassButton, GlassSelect } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
-import { spacing, colors, borderRadius } from '@bayit/shared/theme'
+import { spacing, colors, borderRadius } from '@olorin/design-tokens'
 
 type ContentType = 'all' | 'movie' | 'series'
 

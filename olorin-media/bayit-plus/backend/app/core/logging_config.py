@@ -23,18 +23,21 @@ def _get_correlation_id() -> str | None:
         return None
 
 
-def setup_logging(debug: bool = False):
-    """Configure structured logging for production using unified olorin-shared setup"""
-    level = "DEBUG" if debug else "INFO"
+def setup_logging(level: str = "INFO"):
+    """Configure structured logging for production using unified olorin-shared setup
 
+    Args:
+        level: Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    """
     # Use unified olorin-shared logging configuration
-    shared_configure_logging(level=level, use_json=True, use_structlog=True)
+    shared_configure_logging(level=level.upper(), use_json=True, use_structlog=True)
 
     # Suppress noisy libraries
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     logging.getLogger("stripe").setLevel(logging.WARNING)
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("anthropic").setLevel(logging.INFO)
+    logging.getLogger("pymongo.connection").setLevel(logging.WARNING)
 
     # Return configured root logger
     return logging.getLogger()

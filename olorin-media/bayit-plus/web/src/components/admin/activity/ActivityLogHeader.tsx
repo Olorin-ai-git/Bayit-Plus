@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { GlassSelect } from '@bayit/shared/ui';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { LibrarianConfig } from '@/services/librarianService';
 
 const ActivityLogHeaderPropsSchema = z.object({

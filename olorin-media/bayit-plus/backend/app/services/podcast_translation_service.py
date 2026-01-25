@@ -1,6 +1,10 @@
 """
 Podcast Translation Service
-Orchestrates the complete podcast translation pipeline with vocal separation and mixing.
+Orchestrates the complete podcast translation pipeline using Whisper STT on original audio.
+Supports resuming from previously completed stages.
+
+Pipeline: Download → Trim → Transcribe (Whisper) → Translate → TTS → Upload
+Note: Vocal separation SKIPPED - degrades transcription quality
 """
 
 import asyncio
@@ -19,19 +23,19 @@ from app.core.storage import StorageService
 from app.models.content import PodcastEpisode
 from app.services.audio_processing_service import AudioProcessingService
 from app.services.elevenlabs_tts_streaming_service import ElevenLabsTTSStreamingService
-from app.services.translation_service import TranslationService
+from app.services.olorin.dubbing.translation import TranslationProvider
+from app.services.google_speech_service import GoogleSpeechService
 from app.services.whisper_transcription_service import WhisperTranscriptionService
 
 logger = logging.getLogger(__name__)
 
 
 class PodcastTranslationService:
-    """Orchestrates podcast episode translation pipeline."""
+    """Orchestrates podcast episode translation pipeline with stage resumption support."""
 
     def __init__(
         self,
         audio_processor: Optional[AudioProcessingService] = None,
-        translation_service: Optional[TranslationService] = None,
         tts_service: Optional[ElevenLabsTTSStreamingService] = None,
         stt_service: Optional[WhisperTranscriptionService] = None,
         storage: Optional[StorageService] = None,
@@ -40,16 +44,16 @@ class PodcastTranslationService:
         Initialize podcast translation service with dependency injection.
 
         Args:
-            audio_processor: Audio processing service for vocal separation and mixing
-            translation_service: Translation service for text translation
+            audio_processor: Audio processing service (for trimming only)
             tts_service: ElevenLabs TTS service for generating translated audio
-            stt_service: Whisper STT service for transcription
+            stt_service: OpenAI Whisper service for transcription (default, more accurate than Google Speech)
             storage: Storage service for GCS uploads
+
+        Note: Translation provider is created on-demand during translation stage
         """
         self.audio_processor = audio_processor or AudioProcessingService(
             temp_dir=settings.TEMP_AUDIO_DIR
         )
-        self.translation_service = translation_service or TranslationService()
         self.tts_service = tts_service or ElevenLabsTTSStreamingService()
         self.stt_service = stt_service or WhisperTranscriptionService()
         self.storage = storage or StorageService()
@@ -57,14 +61,17 @@ class PodcastTranslationService:
         self.temp_dir.mkdir(parents=True, exist_ok=True)
 
     async def translate_episode(
-        self, episode: PodcastEpisode, force: bool = False
+        self, episode: PodcastEpisode, force: bool = False, max_duration_seconds: Optional[int] = None, gender: str = "female"
     ) -> Dict[str, str]:
         """
         Complete translation pipeline for a podcast episode.
+        Automatically resumes from the last completed stage if previous attempt failed.
 
         Args:
             episode: Episode to translate
-            force: Force translation even if already completed
+            force: Force translation from beginning even if stages completed
+            max_duration_seconds: Optional limit on audio duration (for testing). If provided, only first N seconds will be translated.
+            gender: Voice gender for TTS ('male' or 'female', default: 'female')
 
         Returns:
             Dictionary mapping language codes to translated audio URLs
@@ -94,101 +101,174 @@ class PodcastTranslationService:
                     f"Episode {episode.id} already being processed or completed"
                 )
 
-            # Step 1: Download original audio
-            logger.info(f"Downloading audio for episode {episode.id}")
-            original_path = await self._download_audio(episode.audio_url)
+            # Refresh episode to get latest data including translation_stages
+            episode = await PodcastEpisode.get(episode.id)
+            stages = episode.translation_stages if episode.translation_stages else {}
 
-            # Step 2: Separate vocals from background
-            logger.info(f"Separating vocals for episode {episode.id}")
-            episode_temp_dir = str(self.temp_dir / str(episode.id))
-            vocals_path, background_path = await self.audio_processor.separate_vocals(
-                original_path, episode_temp_dir
-            )
+            # Clear stages if force flag is set
+            if force:
+                stages = {}
+                await PodcastEpisode.find_one({"_id": episode.id}).update(
+                    {"$set": {"translation_stages": {}}}
+                )
 
-            # Step 3: Transcribe vocals using Whisper
-            logger.info(f"Transcribing vocals for episode {episode.id}")
-            transcript, detected_lang = await self._transcribe_audio(vocals_path)
+            # Stage 1: Download original audio (or reuse)
+            if "downloaded" in stages and Path(stages["downloaded"].get("audio_path", "")).exists():
+                logger.info(f"✅ Reusing downloaded audio from previous attempt")
+                original_path = stages["downloaded"]["audio_path"]
+            else:
+                logger.info(f"Step 1/6: Downloading audio for episode {episode.id}")
+                original_path = await self._download_audio(episode.audio_url)
+
+                # Trim audio if max_duration_seconds is specified
+                if max_duration_seconds:
+                    logger.info(f"Trimming audio to first {max_duration_seconds} seconds for testing")
+                    trimmed_path = str(Path(original_path).parent / f"trimmed_{Path(original_path).name}")
+                    await self._trim_audio(original_path, trimmed_path, max_duration_seconds)
+                    original_path = trimmed_path
+                    logger.info(f"✅ Audio trimmed to {max_duration_seconds} seconds: {original_path}")
+
+                await self._save_stage(episode.id, "downloaded", {"audio_path": original_path})
+
+            # Stage 2: Transcribe original audio using Whisper (or reuse)
+            # NOTE: Vocal separation SKIPPED - degrades transcription quality
+            if "transcribed" in stages:
+                logger.info(f"✅ Reusing transcript from previous attempt")
+                transcript = stages["transcribed"]["transcript"]
+                detected_lang = stages["transcribed"]["detected_lang"]
+            else:
+                logger.info(f"Step 2/6: Transcribing original audio with Whisper for episode {episode.id}")
+                transcript, detected_lang = await self._transcribe_audio(original_path)
+                await self._save_stage(episode.id, "transcribed", {
+                    "transcript": transcript,
+                    "detected_lang": detected_lang
+                })
 
             # Update original language if detected
             if not episode.original_language:
                 episode.original_language = detected_lang
+                await PodcastEpisode.find_one({"_id": episode.id}).update(
+                    {"$set": {"original_language": detected_lang}}
+                )
 
-            # Step 4: Determine target language
-            target_lang = "en" if detected_lang == "he" else "he"
+            # Stage 3: Determine target language
+            # Map detected language to target language code
+            # For English audio -> translate to Hebrew (he)
+            # For Hebrew audio -> translate to English (en)
+            # Whisper returns language names like "english", "hebrew"
+            lang_map = {
+                "en": "he",
+                "en-US": "he",
+                "english": "he",
+                "he": "en",
+                "he-IL": "en",
+                "hebrew": "en",
+            }
+            target_lang_code = lang_map.get(detected_lang.lower(), "he")
 
-            # Step 5: Translate transcript
-            logger.info(
-                f"Translating from {detected_lang} to {target_lang} for episode {episode.id}"
+            # Map to ISO codes for translation
+            source_lang_map = {
+                "english": "en",
+                "hebrew": "he",
+                "en": "en",
+                "en-US": "en",
+                "he": "he",
+                "he-IL": "he",
+            }
+            source_lang_code = source_lang_map.get(detected_lang.lower(), "en")
+
+            # Stage 4: Translate transcript (or reuse)
+            if "translated" in stages and stages["translated"].get("target_lang") == target_lang_code:
+                logger.info(f"✅ Reusing translation from previous attempt")
+                translated_text = stages["translated"]["translated_text"]
+            else:
+                logger.info(
+                    f"Step 3/6: Translating from {source_lang_code} to {target_lang_code} for episode {episode.id}"
+                )
+                # Create translation provider for target language
+                translation_provider = TranslationProvider(target_language=target_lang_code)
+                await translation_provider.initialize()
+
+                # Translate using Google Cloud Translate or Claude
+                translated_text = await translation_provider.translate(
+                    text=transcript,
+                    source_lang=source_lang_code
+                )
+                await self._save_stage(episode.id, "translated", {
+                    "translated_text": translated_text,
+                    "target_lang": target_lang_code
+                })
+
+            # Stage 5: Generate TTS for translated text (or reuse)
+            translated_audio_path = str(
+                self.temp_dir / str(episode.id) / f"translated_{target_lang_code}.mp3"
             )
-            translated_text = await self.translation_service.translate(
-                text=transcript, source_lang=detected_lang, target_lang=target_lang
-            )
+            if "tts_generated" in stages and Path(stages["tts_generated"].get("tts_path", "")).exists():
+                logger.info(f"✅ Reusing TTS audio from previous attempt")
+                translated_audio_path = stages["tts_generated"]["tts_path"]
+            else:
+                logger.info(f"Step 4/6: Generating TTS for episode {episode.id}")
+                translated_audio_path = await self._generate_tts(
+                    text=translated_text,
+                    language=target_lang_code,
+                    output_path=translated_audio_path,
+                    gender=gender,
+                )
+                await self._save_stage(episode.id, "tts_generated", {
+                    "tts_path": translated_audio_path
+                })
 
-            # Step 6: Generate TTS for translated text
-            logger.info(f"Generating TTS for episode {episode.id}")
-            translated_vocals_path = await self._generate_tts(
-                text=translated_text,
-                language=target_lang,
-                output_path=str(
-                    self.temp_dir / str(episode.id) / f"vocals_{target_lang}.mp3"
-                ),
-            )
-
-            # Step 7: Mix translated vocals with original background
-            logger.info(f"Mixing audio for episode {episode.id}")
-            final_audio_path = await self.audio_processor.mix_audio(
-                vocals_path=translated_vocals_path,
-                background_path=background_path,
-                output_path=str(
-                    self.temp_dir / str(episode.id) / f"final_{target_lang}.mp3"
-                ),
-            )
-
-            # Step 8: Upload to GCS
-            logger.info(f"Uploading translated audio for episode {episode.id}")
+            # Stage 6: Upload to GCS
+            # NOTE: Audio mixing SKIPPED - using TTS output directly (no background music)
+            logger.info(f"Step 5/6: Uploading translated audio for episode {episode.id}")
             translated_url = await self._upload_translated_audio(
-                audio_path=final_audio_path,
+                audio_path=translated_audio_path,
                 episode_id=str(episode.id),
-                language=target_lang,
+                language=target_lang_code,
             )
 
-            # Step 9: Atomic update of episode document
+            # Stage 7: Atomic update of episode document
+            logger.info(f"Step 6/6: Updating database for episode {episode.id}")
             translation_data = {
-                "language": target_lang,
+                "language": target_lang_code,
                 "audio_url": translated_url,
                 "transcript": transcript,
                 "translated_text": translated_text,
-                "voice_id": self._get_voice_id(target_lang),
+                "voice_id": self._get_voice_id(target_lang_code, gender),
                 "duration": str(
-                    await self.audio_processor.get_audio_duration(final_audio_path)
+                    await self.audio_processor.get_audio_duration(translated_audio_path)
                 ),
                 "created_at": datetime.utcnow(),
-                "file_size": Path(final_audio_path).stat().st_size,
+                "file_size": Path(translated_audio_path).stat().st_size,
             }
+
+            # Normalize detected language for storage
+            detected_lang_short = detected_lang.replace("-US", "").replace("-IL", "")
 
             await PodcastEpisode.find_one({"_id": episode.id}).update(
                 {
                     "$set": {
-                        f"translations.{target_lang}": translation_data,
-                        "available_languages": [detected_lang, target_lang],
-                        "original_language": detected_lang,
+                        f"translations.{target_lang_code}": translation_data,
+                        "available_languages": [detected_lang_short, target_lang_code],
+                        "original_language": detected_lang_short,
                         "translation_status": "completed",
                         "updated_at": datetime.utcnow(),
                         "retry_count": 0,
+                        "translation_stages": {},  # Clear stages on success
                     }
                 }
             )
 
-            # Step 10: Cleanup temporary files
+            # Stage 10: Cleanup temporary files
             await self.audio_processor.cleanup_temp_files(str(episode.id))
 
-            logger.info(f"Translation complete for episode {episode.id}")
-            return {target_lang: translated_url}
+            logger.info(f"✅ Translation complete for episode {episode.id}")
+            return {target_lang_code: translated_url}
 
         except Exception as e:
             logger.error(f"Translation failed for episode {episode.id}: {e}")
 
-            # Increment retry count and update status
+            # Increment retry count and update status (keep translation_stages for resumption)
             await PodcastEpisode.find_one({"_id": episode.id}).update(
                 {
                     "$set": {
@@ -199,6 +279,14 @@ class PodcastTranslationService:
                 }
             )
             raise
+
+    async def _save_stage(self, episode_id: str, stage_name: str, stage_data: dict):
+        """Save completed stage data to database for resumption."""
+        stage_data["timestamp"] = datetime.utcnow().isoformat()
+        await PodcastEpisode.find_one({"_id": episode_id}).update(
+            {"$set": {f"translation_stages.{stage_name}": stage_data}}
+        )
+        logger.info(f"✅ Stage '{stage_name}' completed and saved")
 
     async def _download_audio(self, url: str) -> str:
         """
@@ -216,12 +304,13 @@ class PodcastTranslationService:
         parsed = urlparse(url)
 
         # SSRF Protection: Validate URL against whitelist
-        if not settings.ALLOWED_AUDIO_DOMAINS:
+        allowed_domains = settings.parsed_audio_domains
+        if not allowed_domains:
             raise ValueError(
                 "ALLOWED_AUDIO_DOMAINS not configured - cannot download audio"
             )
 
-        if parsed.netloc not in settings.ALLOWED_AUDIO_DOMAINS:
+        if parsed.netloc not in allowed_domains:
             raise ValueError(f"Audio download from {parsed.netloc} not allowed")
 
         # Block internal IPs
@@ -247,98 +336,195 @@ class PodcastTranslationService:
 
             # Save to temp directory
             filename = f"{uuid.uuid4()}.mp3"
-            filepath = self.temp_dir / filename
+            file_path = self.temp_dir / filename
 
-            with open(filepath, "wb") as f:
+            with open(file_path, "wb") as f:
                 f.write(response.content)
 
-            return str(filepath)
+            logger.info(f"Downloaded audio: {file_path} ({content_length} bytes)")
+            return str(file_path)
 
     async def _transcribe_audio(self, audio_path: str) -> Tuple[str, str]:
         """
-        Transcribe audio using Whisper API with automatic language detection.
+        Transcribe audio using OpenAI Whisper with automatic language detection.
 
         Args:
             audio_path: Path to audio file
 
         Returns:
             Tuple of (transcript text, detected language code)
+
+        Note: Whisper is more accurate than Google Speech for podcast transcription
         """
-        # Use OpenAI Whisper API via WhisperTranscriptionService
-        logger.info(f"Transcribing audio using Whisper API: {audio_path}")
+        # Use OpenAI Whisper via WhisperTranscriptionService (default)
+        logger.info(f"Transcribing audio using OpenAI Whisper: {audio_path}")
         text, language = await self.stt_service.transcribe_audio_file(audio_path)
         logger.info(f"Transcription complete: {len(text)} characters, language: {language}")
         return text, language
 
     async def _generate_tts(
-        self, text: str, language: str, output_path: str
+        self, text: str, language: str, output_path: str, gender: str = "female"
     ) -> str:
         """
-        Generate TTS audio using ElevenLabs with optimal voice settings.
+        Generate TTS audio for translated text using ElevenLabs.
 
         Args:
-            text: Text to synthesize
-            language: Target language code
-            output_path: Where to save audio file
+            text: Text to convert to speech
+            language: Target language code ('he' or 'en')
+            output_path: Path to save generated audio
+            gender: Voice gender ('male' or 'female', default: 'female')
 
         Returns:
             Path to generated audio file
         """
-        voice_id = self._get_voice_id(language)
+        # Ensure output directory exists
+        Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
-        # Professional voice settings for podcast quality
-        voice_settings = {
-            "stability": settings.ELEVENLABS_STABILITY,  # 0.75 from config
-            "similarity_boost": settings.ELEVENLABS_SIMILARITY_BOOST,  # 0.85
-            "style": settings.ELEVENLABS_STYLE,  # 0.4
-            "use_speaker_boost": settings.ELEVENLABS_SPEAKER_BOOST,  # True
-        }
+        voice_id = self._get_voice_id(language, gender)
+        logger.info(f"Generating TTS with voice {voice_id} ({gender}) for {len(text)} characters (language: {language})")
 
-        # Use multilingual v2 model
-        model = settings.ELEVENLABS_MODEL  # "eleven_multilingual_v2"
+        # Use ElevenLabs multilingual v2 model (supports Hebrew)
+        # Note: eleven_turbo_v2_5 is faster but multilingual_v2 has better Hebrew quality
+        model_id = "eleven_multilingual_v2"
 
-        # Stream TTS with proper format specification
-        async with self.tts_service.stream_text_to_speech(
+        # Connect with v3 model and Hebrew voice
+        await self.tts_service.connect(
             voice_id=voice_id,
-            text=text,
-            model=model,
-            voice_settings=voice_settings,
-            output_format="mp3_44100_128",  # 44.1kHz, 128kbps
-        ) as stream:
-            await stream.save(output_path)
+            model_id=model_id,
+            output_format="mp3_44100_128"
+        )
+        logger.info(f"Connected to ElevenLabs TTS (model: {model_id}, voice: {voice_id})")
 
+        # Create async text stream from full text
+        async def text_stream():
+            # Split text into chunks for streaming (optimal chunk size for ElevenLabs)
+            chunk_size = 500  # Characters per chunk
+            for i in range(0, len(text), chunk_size):
+                chunk = text[i:i+chunk_size]
+                yield chunk
+                await asyncio.sleep(0.1)  # Small delay between chunks
+
+        # Collect audio chunks
+        audio_chunks = []
+        logger.info("Starting to collect TTS audio chunks...")
+        chunk_count = 0
+
+        # Stream text and collect audio (connection already established above)
+        async def send_text():
+            text_count = 0
+            try:
+                async for text_chunk in text_stream():
+                    if not self.tts_service._running:
+                        break
+                    await self.tts_service.send_text_chunk(text_chunk)
+                    text_count += 1
+                await self.tts_service.finish_stream()
+                logger.info(f"Sent {text_count} text chunks to TTS")
+            except Exception as e:
+                logger.error(f"Error sending text to TTS: {e}")
+
+        # Start sending task and receive audio concurrently
+        sender_task = asyncio.create_task(send_text())
+
+        try:
+            async for audio_chunk in self.tts_service.receive_audio():
+                audio_chunks.append(audio_chunk)
+                chunk_count += 1
+                if chunk_count % 100 == 0:
+                    logger.info(f"Received {chunk_count} audio chunks...")
+
+            await sender_task
+        finally:
+            if not sender_task.done():
+                sender_task.cancel()
+                try:
+                    await sender_task
+                except asyncio.CancelledError:
+                    pass
+            await self.tts_service.close()
+
+        logger.info(f"Received all {len(audio_chunks)} audio chunks, writing to file...")
+
+        # Write all audio chunks to file
+        with open(output_path, 'wb') as f:
+            for chunk in audio_chunks:
+                f.write(chunk)
+
+        logger.info(f"TTS audio generated: {output_path} ({len(audio_chunks)} chunks, {Path(output_path).stat().st_size} bytes)")
         return output_path
+
+    def _get_voice_id(self, language: str, gender: str = "female") -> str:
+        """
+        Get appropriate ElevenLabs voice ID for language and gender.
+
+        Args:
+            language: Language code ('he' or 'en')
+            gender: Voice gender ('male' or 'female', default: 'female')
+
+        Returns:
+            ElevenLabs voice ID
+        """
+        if gender == "male":
+            if language == "he":
+                return settings.ELEVENLABS_HEBREW_MALE_VOICE_ID
+            return settings.ELEVENLABS_ENGLISH_MALE_VOICE_ID
+        else:
+            if language == "he":
+                return settings.ELEVENLABS_HEBREW_VOICE_ID
+            return settings.ELEVENLABS_ENGLISH_VOICE_ID
+
+    async def _trim_audio(self, input_path: str, output_path: str, duration_seconds: int) -> None:
+        """
+        Trim audio file to specified duration using FFmpeg.
+
+        Args:
+            input_path: Path to input audio file
+            output_path: Path to save trimmed audio
+            duration_seconds: Duration to trim to in seconds
+        """
+        import subprocess
+
+        logger.info(f"Trimming audio to {duration_seconds} seconds: {input_path}")
+
+        # Use FFmpeg to trim audio
+        cmd = [
+            "ffmpeg",
+            "-i", input_path,
+            "-t", str(duration_seconds),  # Duration in seconds
+            "-c", "copy",  # Copy codec (fast, no re-encoding)
+            "-y",  # Overwrite output file
+            output_path
+        ]
+
+        process = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+
+        stdout, stderr = await process.communicate()
+
+        if process.returncode != 0:
+            error_msg = stderr.decode() if stderr else "Unknown error"
+            raise RuntimeError(f"FFmpeg trim failed: {error_msg}")
+
+        logger.info(f"✅ Audio trimmed successfully: {output_path}")
 
     async def _upload_translated_audio(
         self, audio_path: str, episode_id: str, language: str
     ) -> str:
         """
-        Upload translated audio to GCS.
+        Upload translated audio to Google Cloud Storage.
 
         Args:
             audio_path: Path to audio file
-            episode_id: Episode ID
-            language: Language code
+            episode_id: Episode ID for GCS path
+            language: Language code for GCS path
 
         Returns:
-            GCS URL of uploaded file
+            Public URL to uploaded audio
         """
         gcs_path = f"podcasts/translations/{episode_id}/{language}.mp3"
-        return await self.storage.upload_file(audio_path, gcs_path)
-
-    def _get_voice_id(self, language: str) -> str:
-        """
-        Get appropriate ElevenLabs voice ID for language.
-
-        Args:
-            language: Language code
-
-        Returns:
-            Voice ID from configuration
-        """
-        if language == "he":
-            return settings.ELEVENLABS_HEBREW_VOICE_ID
-        elif language == "en":
-            return settings.ELEVENLABS_ENGLISH_VOICE_ID
-        else:
-            return settings.ELEVENLABS_DEFAULT_VOICE_ID
+        url = await self.storage.upload_file(audio_path, gcs_path)
+        logger.info(f"Uploaded translated audio to: {url}")
+        return url

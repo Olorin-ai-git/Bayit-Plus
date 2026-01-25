@@ -20,7 +20,6 @@ import {
   RefreshControl,
   ActivityIndicator,
   SafeAreaView,
-  Alert,
   Switch,
   Platform,
 } from 'react-native';
@@ -31,8 +30,9 @@ import * as BiometricAuth from '../utils/biometricAuth';
 import { GlassView, GlassButton } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { securityService } from '@bayit/shared-services';
-import { spacing, colors, borderRadius } from '../theme';
+import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 
 import logger from '@/utils/logger';
 
@@ -60,6 +60,7 @@ export const SecurityScreenMobile: React.FC = () => {
   const navigation = useNavigation<any>();
   const { isRTL, textAlign } = useDirection();
   const { user } = useAuthStore();
+  const notifications = useNotifications();
 
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);

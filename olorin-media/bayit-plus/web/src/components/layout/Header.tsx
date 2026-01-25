@@ -11,7 +11,7 @@ import { chatService } from '@/services/api';
 import { VoiceSearchButton, LanguageSelector, SoundwaveVisualizer } from '@bayit/shared';
 import { useConstantListening } from '@bayit/shared-hooks';
 import { ProfileDropdown } from '../../../../shared/components/ProfileDropdown';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { GlassView } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
@@ -21,6 +21,7 @@ const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
 const navLinkKeys = [
   { to: '/', key: 'nav.home' },
+  { to: '/search', key: 'nav.search' },
   { to: '/live', key: 'nav.liveTV' },
   { to: '/epg', key: 'nav.epg' },
   { to: '/vod', key: 'nav.vod' },
@@ -28,6 +29,7 @@ const navLinkKeys = [
   { to: '/podcasts', key: 'nav.podcasts' },
   { to: '/judaism', key: 'nav.judaism' },
   { to: '/children', key: 'nav.children' },
+  { to: '/widgets', key: 'nav.widgets' },
 ];
 
 export default function Header() {
@@ -341,7 +343,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   navLinkActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary[600],
   },
   navLinkText: {
     fontSize: IS_TV_BUILD ? 24 : 14,
@@ -375,13 +377,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: IS_TV_BUILD ? spacing.lg : spacing.md,
     paddingVertical: IS_TV_BUILD ? spacing.md : spacing.sm,
     borderRadius: 8,
-    backgroundColor: IS_TV_BUILD ? 'rgba(255, 255, 255, 0.1)' : colors.primary,
+    backgroundColor: IS_TV_BUILD ? 'rgba(255, 255, 255, 0.1)' : colors.primary.DEFAULT,
     borderWidth: IS_TV_BUILD ? 1 : 0,
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   loginButtonFocused: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.primary[600],
+    borderColor: colors.primary.DEFAULT,
   },
   loginButtonText: {
     fontSize: IS_TV_BUILD ? 20 : 14,

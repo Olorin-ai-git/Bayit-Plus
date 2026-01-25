@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { TrendingUp } from 'lucide-react';
 import { GlassCard } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { TopUser } from './types';
 
 interface TopUsersTableProps {
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   },
   costCell: {
     fontWeight: '600',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   emptyState: {
     padding: spacing.xl,

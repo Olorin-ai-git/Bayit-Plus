@@ -4,7 +4,7 @@ import { Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { GlassView } from '@bayit/shared/ui';
-import { colors, borderRadius } from '@bayit/shared/theme';
+import { colors, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 
 const ImageDropZonePropsSchema = z.object({
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   dropZoneDragging: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   dropZoneUploading: {
     opacity: 0.5,
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   },
   uploadingText: {
     fontSize: 12,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
 });
 

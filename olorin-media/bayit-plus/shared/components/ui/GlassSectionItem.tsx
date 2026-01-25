@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './GlassView';
-import { colors, spacing, borderRadius, fontSize } from '../theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 
@@ -179,11 +179,11 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   containerFocused: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     backgroundColor: 'rgba(126, 34, 206, 0.15)',
   },
   containerDragging: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     backgroundColor: 'rgba(126, 34, 206, 0.2)',
   },
 

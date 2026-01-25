@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import Video from 'react-native-video';
 import LinearGradient from 'react-native-linear-gradient';
 import { GlassView } from '../ui/GlassView';
-import { colors, spacing, fontSize, borderRadius } from '../../theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     paddingHorizontal: isTV ? 32 : 24,
     paddingVertical: isTV ? 16 : 12,
     borderRadius: borderRadius.lg,
@@ -494,7 +494,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   indicatorActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary[600],
   },
   indicatorFocused: {
     backgroundColor: '#fff',

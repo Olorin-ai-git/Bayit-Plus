@@ -9,7 +9,7 @@ import { View, Text, ScrollView, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import type { ContentType } from './SearchControls';
-import { colors, borderRadius, spacing } from '../../theme/colors';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 // Platform-specific touch target sizes
 const TOUCH_TARGET_SIZE = Platform.select({
@@ -37,7 +37,7 @@ const CONTENT_TYPES: { type: ContentType; label: string; emoji: string }[] = [
  * Horizontal scrollable pills for content type filtering
  */
 export function ContentTypePills({ selected, onChange }: ContentTypePillsProps) {
-  const { t } = useTranslation('search');
+  const { t } = useTranslation();
   const [focusedType, setFocusedType] = React.useState<ContentType | null>(null);
 
   return (
@@ -64,12 +64,12 @@ export function ContentTypePills({ selected, onChange }: ContentTypePillsProps) 
             onBlur={() => setFocusedType(null)}
             focusable={Platform.isTV}
             hasTVPreferredFocus={isSelected && Platform.isTV}
-            accessibilityLabel={t(`controls.contentTypes.${label}`)}
+            accessibilityLabel={t(`search.controls.contentTypes.${label}`)}
             accessibilityState={{ selected: isSelected }}
           >
             <Text style={styles.emoji}>{emoji}</Text>
             <Text style={[styles.label, isSelected && styles.labelActive]}>
-              {t(`controls.contentTypes.${label}`)}
+              {t(`search.controls.contentTypes.${label}`)}
             </Text>
           </GlassButton>
         );
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   },
   pillFocused: {
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     transform: [{ scale: 1.05 }],
   },
   emoji: {

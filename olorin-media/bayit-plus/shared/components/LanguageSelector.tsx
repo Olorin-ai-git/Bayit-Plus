@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors } from '../theme';
+import { colors } from '@olorin/design-tokens';
 import { languages, saveLanguage, getCurrentLanguage } from '../i18n';
 
 export const LanguageSelector: React.FC = () => {
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   buttonFocused: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     backgroundColor: 'rgba(139, 92, 246, 0.3)',
   },
   flagText: {
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   checkmark: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     width: 24,
     textAlign: 'center',
   },
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   languageNameActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: 'bold',
   },
 });

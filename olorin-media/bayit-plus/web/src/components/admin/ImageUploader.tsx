@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, Image, ActivityIndicator } from 'rea
 import { Upload, X, AlertCircle, CheckCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { GlassView, GlassInput, GlassButton } from '@bayit/shared/ui'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
 
 interface ImageUploaderProps {
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   },
   successText: {
     fontSize: 12,
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
   dropZone: {
     borderRadius: borderRadius.lg,
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   dropZoneDragging: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   dropZoneDisabled: {
     opacity: 0.5,
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
   },
   uploadingText: {
     fontSize: 12,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   urlSection: {
     marginTop: spacing.md,
@@ -398,6 +398,6 @@ const styles = StyleSheet.create({
   errorText: {
     flex: 1,
     fontSize: 12,
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
 })

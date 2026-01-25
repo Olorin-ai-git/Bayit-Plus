@@ -6,7 +6,7 @@ import { Camera, Zap, Shield, Star, Download } from 'lucide-react';
 import { GlassView } from '@bayit/shared/ui';
 import { useAuthStore } from '@/stores/authStore';
 import { profilesService } from '@/services/api';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { StatCard } from './StatCard';
 import type { UserStats } from '../types';
 import logger from '@/utils/logger';
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
   adminBadgeText: {
     fontSize: IS_TV_BUILD ? fontSize.sm : 11,
     fontWeight: '600',
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
   },
   userEmail: {
     fontSize: IS_TV_BUILD ? fontSize.lg : 15,
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
   subscriptionText: {
     fontSize: IS_TV_BUILD ? fontSize.base : 13,
     fontWeight: '600',
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
   },
   upgradeButton: {
     backgroundColor: colors.primaryDark,

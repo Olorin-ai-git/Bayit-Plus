@@ -9,7 +9,7 @@ import { Play, Plus, Check } from 'lucide-react';
 import LinearGradient from 'react-native-linear-gradient';
 import { GlassView, GlassButton, GlassBadge, GlassTooltip } from '@bayit/shared/ui';
 import { SubtitleFlags } from '@bayit/shared/components';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 import type { SeriesData, Episode } from '../types/series.types';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');

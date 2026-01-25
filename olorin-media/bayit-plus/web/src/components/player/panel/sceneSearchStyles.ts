@@ -4,33 +4,22 @@
  */
 
 import { StyleSheet } from 'react-native'
-import { colors, tvFontSize } from '@bayit/shared/theme'
+import { colors, fontSizeTV } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
+import { PLATFORM_CONFIG, isPhone, isTablet } from './platformConfig'
 
-export const MIN_TOUCH_TARGET = 44
-export const RESULT_CARD_HEIGHT = 88
+export const MIN_TOUCH_TARGET = PLATFORM_CONFIG.touchTargets.minHeight
+export const RESULT_CARD_HEIGHT = isPhone ? 96 : isTablet ? 92 : isTV ? 100 : 88
 
 export const sceneSearchStyles = StyleSheet.create({
-  panelContainer: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    height: '100%',
-    width: isTV ? 400 : 320,
-    zIndex: 40,
-  },
-  panel: {
-    flex: 1,
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: isTV ? 20 : 16,
+    paddingHorizontal: isTV ? 24 : 20,
+    paddingVertical: isTV ? 20 : 16,
     borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorderLight,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   headerRTL: {
     flexDirection: 'row-reverse',
@@ -44,34 +33,37 @@ export const sceneSearchStyles = StyleSheet.create({
     flexDirection: 'row-reverse',
   },
   title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.white,
   },
   titleTV: {
-    fontSize: tvFontSize.xl,
+    fontSize: fontSizeTV.xl,
   },
   resultCount: {
-    fontSize: 12,
-    color: colors.textMuted,
+    fontSize: 16,
+    color: colors.textSecondary,
+    fontWeight: '400',
   },
   resultCountTV: {
-    fontSize: tvFontSize.base,
+    fontSize: fontSizeTV.base,
   },
   closeButton: {
-    width: MIN_TOUCH_TARGET,
-    height: MIN_TOUCH_TARGET,
-    borderRadius: 8,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: isTV ? 12 : 8,
-    padding: isTV ? 16 : 12,
+    paddingHorizontal: isTV ? 20 : 16,
+    paddingVertical: isTV ? 16 : 12,
     borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorderLight,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   searchRowRTL: {
     flexDirection: 'row-reverse',
@@ -95,15 +87,15 @@ export const sceneSearchStyles = StyleSheet.create({
     textAlign: 'center',
   },
   emptyTextTV: {
-    fontSize: tvFontSize.lg,
+    fontSize: fontSizeTV.lg,
   },
   errorText: {
     fontSize: 14,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     textAlign: 'center',
   },
   errorTextTV: {
-    fontSize: tvFontSize.lg,
+    fontSize: fontSizeTV.lg,
   },
   navRow: {
     flexDirection: 'row',
@@ -139,7 +131,7 @@ export const sceneSearchStyles = StyleSheet.create({
     color: colors.text,
   },
   navTextTV: {
-    fontSize: tvFontSize.base,
+    fontSize: fontSizeTV.base,
   },
   navCounter: {
     fontSize: 14,
@@ -147,6 +139,6 @@ export const sceneSearchStyles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
   },
   navCounterTV: {
-    fontSize: tvFontSize.lg,
+    fontSize: fontSizeTV.lg,
   },
 })

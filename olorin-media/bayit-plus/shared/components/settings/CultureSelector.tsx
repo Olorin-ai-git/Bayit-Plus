@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '../../hooks/useDirection';
 import { GlassView } from '../ui/GlassView';
 import { useCultureStore, Culture } from '../../contexts/CultureContext';
-import { colors, spacing, borderRadius, fontSize } from '../../theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
 
 interface CultureSelectorProps {

@@ -34,6 +34,7 @@ type HeaderNavProps = z.infer<typeof HeaderNavPropsSchema>;
 
 const DEFAULT_NAV_LINKS: NavLinkItem[] = [
   { to: '/', key: 'nav.home' },
+  { to: '/search', key: 'nav.search' },
   { to: '/live', key: 'nav.liveTV' },
   { to: '/epg', key: 'nav.epg' },
   { to: '/vod', key: 'nav.vod' },
@@ -41,6 +42,7 @@ const DEFAULT_NAV_LINKS: NavLinkItem[] = [
   { to: '/podcasts', key: 'nav.podcasts' },
   { to: '/judaism', key: 'nav.judaism' },
   { to: '/children', key: 'nav.children' },
+  { to: '/widgets', key: 'nav.widgets' },
 ];
 
 export default function HeaderNav({

@@ -4,12 +4,12 @@ import { useTranslation } from 'react-i18next'
 import { Search, X, AlertCircle, RefreshCw, Trash2, Star, StarOff, Filter, Merge } from 'lucide-react'
 import HierarchicalContentTable from '@/components/admin/HierarchicalContentTable'
 import MergeWizard from '@/components/admin/content/MergeWizard'
-import { adminContentService } from '@/services/adminApi'
+import { adminContentService } from '@/services/adminApi'  // Web-specific version with correct auth store
 import { GlassInput, GlassSelect, GlassButton, GlassCheckbox } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
-import { spacing, borderRadius, colors } from '@bayit/shared/theme'
+import { spacing, borderRadius, colors } from '@olorin/design-tokens'
 
 interface ContentItem {
   id: string
@@ -25,6 +25,7 @@ interface ContentItem {
   view_count?: number
   avg_rating?: number
   available_subtitles?: string[]
+  review_issue_type?: string
 }
 
 interface Pagination {
@@ -46,6 +47,7 @@ export default function ContentLibraryPage() {
   const [filters, setFilters] = useState({
     search: '',
     is_published: undefined as boolean | undefined,
+    content_type: '' as 'all' | 'series' | 'movies' | 'podcasts' | 'radio' | '',
   })
 
   // Selection state for batch operations
@@ -70,15 +72,38 @@ export default function ContentLibraryPage() {
     setIsLoading(true)
     setError(null)
     try {
+      // Handle podcasts and radio stations (separate collections)
+      if (filters.content_type === 'podcasts' || filters.content_type === 'radio') {
+        setItems([])
+        setPagination((prev) => ({ ...prev, total: 0 }))
+        setError(
+          filters.content_type === 'podcasts'
+            ? t('admin.content.podcastsComingSoon', { defaultValue: 'Podcast management coming soon. Use the Podcasts section.' })
+            : t('admin.content.radioComingSoon', { defaultValue: 'Radio station management coming soon. Use the Radio Stations section.' })
+        )
+        setIsLoading(false)
+        return
+      }
+
       // Use hierarchical endpoint - returns only parent items (series/movies) with episode counts
+      // Backend automatically excludes merged items (review_issue_type === "merged")
       const response = await adminContentService.getContentHierarchical({
         page: pagination.page,
         page_size: pagination.pageSize,
         search: filters.search || undefined,
         is_published: filters.is_published,
       })
-      setItems(response.items || [])
-      setPagination((prev) => ({ ...prev, total: response.total || 0 }))
+
+      // Apply client-side content type filtering
+      let filteredItems = response.items || []
+      if (filters.content_type === 'series') {
+        filteredItems = filteredItems.filter(item => item.is_series === true)
+      } else if (filters.content_type === 'movies') {
+        filteredItems = filteredItems.filter(item => item.is_series === false)
+      }
+
+      setItems(filteredItems)
+      setPagination((prev) => ({ ...prev, total: filteredItems.length }))
     } catch (err: any) {
       // Extract meaningful error message
       let msg = 'Failed to load content'
@@ -95,7 +120,7 @@ export default function ContentLibraryPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [pagination.page, pagination.pageSize, filters])
+  }, [pagination.page, pagination.pageSize, filters, t])
 
   useEffect(() => {
     loadContent()
@@ -468,6 +493,30 @@ export default function ContentLibraryPage() {
           </View>
 
           <View style={styles.filtersDropdownContent}>
+            {/* Content Type Filter */}
+            <View style={styles.filterSection}>
+              <Text style={[styles.filterLabel, { textAlign: isRTL ? 'right' : 'left' }]}>
+                {t('admin.content.filters.contentType', { defaultValue: 'Content Type' })}
+              </Text>
+              <GlassSelect
+                placeholder={t('admin.content.filters.allContent', { defaultValue: 'All' })}
+                value={filters.content_type || 'all'}
+                onChange={(value) =>
+                  setFilters({
+                    ...filters,
+                    content_type: value as 'all' | 'series' | 'movies' | 'podcasts' | 'radio' | '',
+                  })
+                }
+                options={[
+                  { value: 'all', label: t('admin.content.filters.all', { defaultValue: 'All' }) },
+                  { value: 'series', label: t('admin.content.filters.series', { defaultValue: 'Series' }) },
+                  { value: 'movies', label: t('admin.content.filters.movies', { defaultValue: 'Movies' }) },
+                  { value: 'podcasts', label: t('admin.content.filters.podcasts', { defaultValue: 'Podcasts' }) },
+                  { value: 'radio', label: t('admin.content.filters.radioStations', { defaultValue: 'Radio Stations' }) },
+                ]}
+              />
+            </View>
+
             {/* Status Filter */}
             <View style={styles.filterSection}>
               <Text style={[styles.filterLabel, { textAlign: isRTL ? 'right' : 'left' }]}>
@@ -629,7 +678,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     flex: 1,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     fontSize: 14,
   },
   batchActionBar: {

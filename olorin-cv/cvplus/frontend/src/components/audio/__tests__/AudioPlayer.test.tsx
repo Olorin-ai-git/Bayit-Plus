@@ -34,9 +34,8 @@ beforeEach(() => {
 
 describe('AudioPlayer Component', () => {
   const mockProps = {
-    audioUrl: 'https://example.com/test-audio.mp3',
+    src: 'https://example.com/test-audio.mp3',
     title: 'Test Audio File',
-    duration: 180,
   };
 
   it('renders without crashing', () => {

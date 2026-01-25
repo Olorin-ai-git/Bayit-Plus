@@ -1339,6 +1339,7 @@
     "jumpTo": "Jump to",
     "current": "Now",
     "categories": {
+      "general": "General",
       "intro": "Introduction",
       "news": "News",
       "security": "Security",
@@ -1347,7 +1348,15 @@
       "sports": "Sports",
       "weather": "Weather",
       "culture": "Culture",
-      "conclusion": "Conclusion"
+      "conclusion": "Conclusion",
+      "flashback": "Flashback",
+      "journey": "Journey",
+      "climax": "Climax",
+      "setup": "Setup",
+      "action": "Action",
+      "conflict": "Conflict",
+      "cliffhanger": "Cliffhanger",
+      "main": "Main"
     }
   },
   "admin": {

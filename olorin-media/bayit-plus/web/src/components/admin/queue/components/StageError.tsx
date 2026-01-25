@@ -6,7 +6,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { AlertCircle } from 'lucide-react';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { QueueJob } from '../types';
 
 interface StageErrorProps {
@@ -21,10 +21,10 @@ export const StageError: React.FC<StageErrorProps> = ({ job }) => {
   if (failedStages.length === 0 || !job.error_message) return null;
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.error + '10', borderLeftColor: colors.error }]}>
+    <View style={[styles.container, { backgroundColor: colors.error.DEFAULT + '10', borderLeftColor: colors.error.DEFAULT }]}>
       <View style={styles.headerRow}>
-        <AlertCircle size={14} color={colors.error} />
-        <Text style={[styles.headerText, { color: colors.error }]}>
+        <AlertCircle size={14} color={colors.error.DEFAULT} />
+        <Text style={[styles.headerText, { color: colors.error.DEFAULT }]}>
           Failed at: {failedStages.join(', ')}
         </Text>
       </View>

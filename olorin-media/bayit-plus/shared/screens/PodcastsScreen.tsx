@@ -215,21 +215,63 @@ export const PodcastsScreen: React.FC = () => {
       </View>
 
       {/* Category Filter */}
-      <View className={`flex-row px-12 mb-6 gap-3 z-10 ${isRTL ? 'flex-row justify-start' : 'flex-row-reverse justify-start'}`}>
+      <View className={`flex-row flex-wrap px-12 mb-6 gap-3 z-10 ${isRTL ? 'flex-row justify-start' : 'flex-row-reverse justify-start'}`}>
         <GlassCategoryPill
           label={t('podcasts.categories.all')}
+          emoji="🎧"
           isActive={selectedCategory === 'all'}
           onPress={() => setSelectedCategory('all')}
           hasTVPreferredFocus
         />
-        {(isRTL ? categories : [...categories].reverse()).map((category) => (
-          <GlassCategoryPill
-            key={category.id}
-            label={getLocalizedText(category, 'name')}
-            isActive={selectedCategory === category.id}
-            onPress={() => setSelectedCategory(category.id)}
-          />
-        ))}
+        {(isRTL ? categories : [...categories].reverse()).map((category) => {
+          // Enhanced emoji mappings for categories
+          const emojiMap: Record<string, string> = {
+            'קומי': '😂',
+            'comedy': '😂',
+            'פסיכולוגיה': '🧠',
+            'psychology': '🧠',
+            'כללה': '📌',
+            'general': '📌',
+            'טכנולוגיה': '💻',
+            'technology': '💻',
+            'tech': '💻',
+            'חדשות ואקטואליה': '📰',
+            'news': '📰',
+            'היסטוריה': '📚',
+            'history': '📚',
+            'politics': '🏛️',
+            'business': '💼',
+            'entertainment': '🎭',
+            'sports': '⚽',
+            'jewish': '✡️',
+            'judaism': '✡️',
+            'educational': '🎓',
+            'science': '🔬',
+            'health': '🏥',
+            'fitness': '💪',
+            'arts': '🎨',
+            'music': '🎵',
+            'food': '🍽️',
+            'travel': '✈️',
+            'lifestyle': '🌟',
+            'relationships': '❤️',
+            'parenting': '👶',
+            'spirituality': '🙏',
+          };
+
+          const categoryName = getLocalizedText(category, 'name');
+          const emoji = emojiMap[category.id.toLowerCase()] || emojiMap[categoryName?.toLowerCase()] || '🎙️';
+
+          return (
+            <GlassCategoryPill
+              key={category.id}
+              label={categoryName}
+              emoji={emoji}
+              isActive={selectedCategory === category.id}
+              onPress={() => setSelectedCategory(category.id)}
+            />
+          );
+        })}
       </View>
 
       {/* Shows Grid */}

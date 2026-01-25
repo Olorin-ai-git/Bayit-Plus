@@ -2116,8 +2116,20 @@
         "noSourcesDescription": "אין מקורות תוכן חינמיים זמינים כרגע עבור {{type}}"
       },
       "filters": {
-        "allStatus": "כל הסטטוסים"
+        "title": "פילטרים",
+        "contentType": "סוג תוכן",
+        "all": "הכל",
+        "allContent": "הכל",
+        "series": "סדרות",
+        "movies": "סרטים",
+        "podcasts": "פודקאסטים",
+        "radioStations": "תחנות רדיו",
+        "status": "סטטוס",
+        "allStatus": "כל הסטטוסים",
+        "subtitles": "כתוביות"
       },
+      "podcastsComingSoon": "ניהול פודקאסטים בקרוב. השתמש בסעיף הפודקאסטים.",
+      "radioComingSoon": "ניהול תחנות רדיו בקרוב. השתמש בסעיף תחנות הרדיו.",
       "showOnlyWithSubtitles": "הצג רק עם כתוביות",
       "status": {
         "published": "פורסם",
@@ -3349,125 +3361,6 @@
     "skip": "דלג לעת עתה"
   },
   "taxonomy": {
-    "title": "סיווג תוכן",
-    "sections": {
-      "title": "מדורים",
-      "description": "קטגוריות ניווט ראשיות",
-      "movies": "סרטים",
-      "series": "סדרות",
-      "kids": "ילדים",
-      "judaism": "יהדות",
-      "documentaries": "דוקומנטריים",
-      "live": "שידור חי"
-    },
-    "formats": {
-      "title": "פורמט",
-      "description": "סוג מבני של התוכן",
-      "movie": "סרט",
-      "series": "סדרה",
-      "documentary": "דוקומנטרי",
-      "short": "סרטון קצר",
-      "clip": "קליפ"
-    },
-    "genres": {
-      "title": "ז'אנרים",
-      "description": "מצב רוח וסגנון",
-      "drama": "דרמה",
-      "comedy": "קומדיה",
-      "action": "אקשן",
-      "thriller": "מותחן",
-      "animation": "אנימציה",
-      "musical": "מחזמר",
-      "romance": "רומנטיקה",
-      "horror": "אימה",
-      "sci-fi": "מדע בדיוני",
-      "documentary": "דוקומנטרי",
-      "family": "משפחה",
-      "adventure": "הרפתקאות",
-      "fantasy": "פנטזיה",
-      "crime": "פשע",
-      "mystery": "מסתורין",
-      "war": "מלחמה",
-      "western": "מערבון",
-      "biography": "ביוגרפיה",
-      "history": "היסטוריה",
-      "sport": "ספורט"
-    },
-    "audiences": {
-      "title": "קהל יעד",
-      "description": "התאמה גילאית",
-      "general": "כללי",
-      "kids": "ילדים",
-      "family": "משפחה",
-      "mature": "מבוגרים"
-    },
-    "topicTags": {
-      "title": "נושאים",
-      "description": "ערכות תוכן",
-      "jewish": "יהודי",
-      "israeli": "ישראלי",
-      "educational": "חינוכי",
-      "historical": "היסטורי",
-      "sports": "ספורט",
-      "nature": "טבע",
-      "science": "מדע",
-      "music": "מוזיקה",
-      "art": "אומנות",
-      "cooking": "בישול",
-      "travel": "טיולים",
-      "technology": "טכנולוגיה"
-    },
-    "subcategories": {
-      "title": "תתי-קטגוריות",
-      "kids": {
-        "cartoons": "סרטונים מצוירים",
-        "educational": "חינוכי",
-        "music": "מוזיקה",
-        "hebrew-learning": "לימוד עברית",
-        "stories": "סיפורים",
-        "jewish": "יהודי",
-        "learning-hebrew": "לימוד עברית",
-        "young-science": "מדע צעיר",
-        "math-fun": "מתמטיקה מהנה",
-        "nature-animals": "טבע וחיות",
-        "interactive": "אינטראקטיבי",
-        "hebrew-songs": "שירים בעברית",
-        "nursery-rhymes": "שירי פעוטות",
-        "kids-movies": "סרטי ילדים",
-        "kids-series": "סדרות לילדים",
-        "jewish-holidays": "חגי ישראל",
-        "torah-stories": "סיפורי תורה",
-        "bedtime-stories": "סיפורי ערב טוב"
-      },
-      "ageGroups": {
-        "title": "קבוצות גיל",
-        "toddlers": "פעוטות (0-3)",
-        "preschool": "גן ילדים (3-5)",
-        "elementary": "יסודי (5-10)",
-        "preteen": "לפני בר/בת מצווה (10-12)"
-      },
-      "judaism": {
-        "shiurim": "שיעורי תורה",
-        "tefila": "תפילה",
-        "jewish-music": "מוזיקה יהודית",
-        "holidays": "חגים",
-        "documentaries": "דוקומנטריים"
-      }
-    },
-    "admin": {
-      "selectSection": "בחר מדור",
-      "selectSections": "בחר מדורים",
-      "primarySection": "מדור ראשי",
-      "selectFormat": "בחר פורמט",
-      "selectAudience": "בחר קהל יעד",
-      "selectGenres": "בחר ז'אנרים",
-      "selectTopics": "בחר נושאים",
-      "selectSubcategories": "בחר תתי-קטגוריות",
-      "crossListing": "פרסום צולב",
-      "crossListingHint": "התוכן יכול להופיע במספר מדורים"
-    }
-  },
-  "taxonomy": {
     "sections": {
       "movies": "סרטים",
       "series": "סדרות",
@@ -3615,6 +3508,156 @@
       "create_session_failed": "יצירת הפעילות נכשלה",
       "add_transcript_failed": "הוספת התמלול נכשלה",
       "generate_recap_failed": "יצירת הסיכום נכשלה"
+    }
+  },
+  "portal": {
+    "nav": {
+      "home": "בית",
+      "features": "תכונות",
+      "solutions": "פתרונות",
+      "pricing": "תמחור",
+      "demo": "הדגמה חיה",
+      "contact": "צור קשר",
+      "getStarted": "התחל"
+    },
+    "hero": {
+      "ctaExplore": "גלה תכונות",
+      "ctaDemo": "בקש הדגמה"
+    },
+    "cta": {
+      "title": "מוכן להתחיל?",
+      "subtitle": "בוא נדבר איך אנחנו יכולים לעזור לשנות את העסק שלך",
+      "button": "צור קשר"
+    },
+    "contactPage": {
+      "title": "צור קשר",
+      "subtitle": "מעוניין בפתרונות שלנו? בוא נדבר",
+      "formTitle": "שלח לנו הודעה",
+      "infoTitle": "פרטי התקשרות",
+      "form": {
+        "name": "שם מלא",
+        "email": "כתובת דוא\"ל",
+        "company": "שם החברה",
+        "phone": "מספר טלפון",
+        "message": "ההודעה שלך",
+        "messagePlaceholder": "ספר לנו על הצרכים שלך..."
+      },
+      "submit": "שלח הודעה",
+      "sending": "שולח...",
+      "success": "ההודעה נשלחה בהצלחה! נחזור אליך בקרוב.",
+      "error": "שליחת ההודעה נכשלה. נסה שוב.",
+      "scheduleTitle": "מעדיף לתזמן שיחה?",
+      "scheduleSubtitle": "הזמן הדגמה אישית עם הצוות שלנו",
+      "scheduleCta": "תזמן שיחת הדגמה"
+    },
+    "pricingPage": {
+      "title": "משתלם",
+      "titleHighlight": "תוכניות תמחור",
+      "subtitle": "בחר את התוכנית המתאימה לצרכים שלך",
+      "comparisonTitle": "השוואת תכונות",
+      "faqTitle": "שאלות נפוצות",
+      "faq": {
+        "q1": "איך מחושב התמחור?",
+        "a1": "התמחור מבוסס על הצרכים והשימוש הספציפיים שלך. צור קשר לקבלת הצעת מחיר מותאמת.",
+        "q2": "האם אוכל לשדרג את התוכנית שלי מאוחר יותר?",
+        "a2": "כן, אתה יכול לשדרג בכל עת. נעזור להעביר את הנתונים שלך בצורה חלקה.",
+        "q3": "איזה תמיכה כלולה?",
+        "a3": "כל התוכניות כוללות תמיכה בדוא\"ל. תוכניות Professional ו-Enterprise כוללות תמיכה עדיפה עם מנהלי חשבונות ייעודיים."
+      },
+      "professional": {
+        "name": "מקצועי",
+        "price": "צור קשר לקבלת הצעת מחיר",
+        "priceNote": "תמחור מותאם",
+        "description": "לעסקים צומחים עם צרכים מתקדמים",
+        "cta": "קבל הצעת מחיר"
+      },
+      "enterprise": {
+        "name": "ארגוני",
+        "price": "מותאם אישית",
+        "priceNote": "מבוסס נפח",
+        "description": "לארגונים גדולים ופריסות ארגוניות",
+        "cta": "צור קשר עם המכירות"
+      },
+      "ctaTitle": "מוכן להתחיל?",
+      "ctaSubtitle": "בוא נדבר על הצרכים שלך ונמצא את התוכנית המושלמת",
+      "ctaButton": "צור קשר עם המכירות"
+    },
+    "featuresPage": {
+      "title": "עוצמתי",
+      "titleHighlight": "תכונות",
+      "subtitle": "כל מה שאתה צריך להצליח",
+      "techSpecsTitle": "מפרטים טכניים",
+      "workflowTitle": "איך זה עובד",
+      "workflow": {
+        "s1": {
+          "title": "ייבוא",
+          "description": "העלה וארגן את התוכן שלך"
+        },
+        "s2": {
+          "title": "הגדר",
+          "description": "קבע את ההעדפות וההגדרות שלך"
+        },
+        "s3": {
+          "title": "פרוס",
+          "description": "עלה לאוויר עם הפתרון שלך"
+        },
+        "s4": {
+          "title": "עקוב",
+          "description": "עקוב אחר ביצועים ובצע אופטימיזציה"
+        }
+      },
+      "ctaTitle": "מוכן לגלות תכונות?",
+      "ctaSubtitle": "ראה את כל התכונות בפעולה עם הדגמה אישית",
+      "ctaButton": "תזמן הדגמה"
+    },
+    "demoPage": {
+      "title": "ראה את",
+      "titleHighlight": "הפלטפורמה שלנו",
+      "subtitle": "חווה את העוצמה של הפתרון שלנו",
+      "scheduleCta": "תזמן הדגמה חיה",
+      "stepsTitle": "איך זה עובד",
+      "steps": {
+        "analyze": {
+          "title": "נתח",
+          "description": "עקוב ושפר ביצועים"
+        }
+      },
+      "featuresTitle": "נקודות בולטות של הפלטפורמה",
+      "platformsTitle": "זמין ב",
+      "ctaTitle": "מוכן להדגמה מותאמת אישית?",
+      "ctaSubtitle": "תזמן הדגמה אישית המותאמת לצרכים שלך",
+      "ctaButton": "תזמן הדגמה"
+    },
+    "workflow": {
+      "sectionTitle": "זרימת עבודה חכמה",
+      "sectionSubtitle": "תהליך מייעל ב-4 שלבים",
+      "step1": {
+        "title": "הגדר",
+        "description": "הגדר את החשבון וההעדפות שלך"
+      },
+      "step2": {
+        "title": "התאם אישית",
+        "description": "התאם הגדרות לצרכים שלך"
+      },
+      "step3": {
+        "title": "השק",
+        "description": "השק את הפתרון שלך"
+      },
+      "step4": {
+        "title": "עקוב",
+        "description": "עקוב אחר ביצועים ובצע אופטימיזציה"
+      }
+    }
+  },
+  "trivia": {
+    "didYouKnow": "?האם ידעת",
+    "dismissHint": "סגור עובדה מעניינת",
+    "settings": {
+      "displayLanguages": "שפות תצוגה",
+      "languageHint": "בחר 1-3 שפות להצגה עבור כל עובדה",
+      "language": "שפה",
+      "selectLanguage": "בחר שפה זו",
+      "deselectLanguage": "בטל בחירת שפה זו"
     }
   }
 }

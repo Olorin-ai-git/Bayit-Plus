@@ -34,6 +34,7 @@ async def get_trivia_preferences(
         "display_duration": trivia_prefs.get(
             "display_duration", settings.TRIVIA_DEFAULT_DISPLAY_DURATION_SECONDS
         ),
+        "display_languages": trivia_prefs.get("display_languages", ["he", "en"]),
     }
 
 
@@ -53,6 +54,7 @@ async def update_trivia_preferences(
         "frequency": prefs.frequency,
         "categories": prefs.categories,
         "display_duration": prefs.display_duration,
+        "display_languages": prefs.display_languages,
     }
 
     await current_user.save()

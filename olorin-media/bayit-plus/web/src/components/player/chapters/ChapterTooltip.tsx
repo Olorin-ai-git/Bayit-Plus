@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { GlassView } from '@bayit/shared/ui'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { Chapter, formatTime, getChapterColor } from './constants'
 
 interface ChapterTooltipProps {

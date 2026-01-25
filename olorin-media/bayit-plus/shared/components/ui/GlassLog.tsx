@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput, Animated, StyleSheet } from 'react-native';
 import { Search, X, ChevronDown, ChevronUp, Download, Trash2, Copy, CheckCircle, XCircle, Film, Layers } from 'lucide-react';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassView } from './GlassView';
 import { GlassButton } from './GlassButton';
 import { GlassBadge } from './GlassBadge';
@@ -905,7 +905,7 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
   },
   groupButtonTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   logContainer: {
     position: 'relative',

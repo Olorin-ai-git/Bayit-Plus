@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, ScrollView, TextInput, Image, Keyboa
 import { Check, AlertTriangle, AlertCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { GlassModal } from '@bayit/shared/ui'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
 
 export interface ContentItem {
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   countBadge: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: borderRadius.full,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
   },
   itemCardSelected: {
     backgroundColor: 'rgba(168, 85, 247, 0.15)',
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   thumbnailContainer: {
     marginHorizontal: spacing.md,
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
   },
   actionCardSelected: {
     backgroundColor: 'rgba(168, 85, 247, 0.1)',
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   radioButton: {
     width: 44,
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   actionInfo: {
     flex: 1,
@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
   errorText: {
     flex: 1,
     fontSize: 13,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     lineHeight: 18,
   },
   actions: {
@@ -510,10 +510,10 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   confirmButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   dangerButton: {
-    backgroundColor: colors.error,
+    backgroundColor: colors.error.DEFAULT,
   },
   confirmButtonText: {
     fontSize: 14,

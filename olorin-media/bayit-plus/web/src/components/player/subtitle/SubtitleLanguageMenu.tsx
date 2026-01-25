@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
 import { z } from 'zod'
 import { GlassView } from '@bayit/shared/ui'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import SubtitleFlagsPreview from './SubtitleFlagsPreview'
 import SubtitleLanguageList from './SubtitleLanguageList'
 
@@ -66,6 +66,7 @@ export default function SubtitleLanguageMenu({
 
   return (
     <GlassView
+      intensity="high"
       style={styles.container}
       onClick={stopPropagation}
       onMouseDown={stopPropagation}

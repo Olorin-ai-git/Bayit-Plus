@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { GlassView, GlassToggle } from '@bayit/shared/ui';
 import { useAuthStore } from '@bayit/shared-stores/authStore';
 import { Globe, Bell, Moon, Volume2, Shield, ChevronRight, Languages } from 'lucide-react';

@@ -11,7 +11,7 @@ import { chatService } from '@/services/api';
 import { VoiceSearchButton, LanguageSelector, SoundwaveVisualizer } from '@bayit/shared';
 import { useConstantListening } from '@bayit/shared-hooks';
 import { ProfileDropdown } from '@bayit/shared/ProfileDropdown';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { GlassView } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   navLinkActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary[600],
   },
   navLinkText: {
     fontSize: IS_TV_BUILD ? 24 : 14,
@@ -362,8 +362,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   loginButtonFocused: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.primary[600],
+    borderColor: colors.primary.DEFAULT,
   },
   loginButtonText: {
     fontSize: IS_TV_BUILD ? 20 : 14,

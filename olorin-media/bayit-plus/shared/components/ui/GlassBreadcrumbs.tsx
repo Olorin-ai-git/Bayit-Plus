@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, ScrollView, Platform, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { colors, spacing } from '../theme';
+import { colors, spacing } from '@olorin/design-tokens';
 
 interface BreadcrumbItem {
   path: string;
@@ -95,7 +95,7 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
   // Native: Use gradient fallback
   return (
     <LinearGradient
-      colors={[colors.glass, colors.glassStrong]}
+      colors={[colors.glass.bg, colors.glass.bgStrong]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
       style={styles.containerNative}
@@ -152,9 +152,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
   },
   itemButtonActive: {
-    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+    backgroundColor: colors.glass.purpleLight,
     borderWidth: 1,
-    borderColor: 'rgba(139, 92, 246, 0.4)',
+    borderColor: colors.glass.border,
+    // @ts-ignore - Web CSS for glassmorphism
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
   },
   homeIcon: {
     fontSize: 12,
@@ -173,7 +176,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   itemTextInactive: {
-    color: colors.primary,
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   chevronContainer: {
@@ -181,9 +184,8 @@ const styles = StyleSheet.create({
   },
   chevronText: {
     fontSize: 16,
-    color: colors.primary,
-    fontWeight: '600',
-    opacity: 0.7,
+    color: colors.textMuted,
+    fontWeight: '400',
   },
 });
 

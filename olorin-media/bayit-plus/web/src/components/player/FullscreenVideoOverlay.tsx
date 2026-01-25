@@ -9,7 +9,7 @@ import { View, Pressable, ActivityIndicator, Text, StyleSheet } from 'react-nati
 import { X } from 'lucide-react'
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore'
 import { contentService, liveService, chaptersService, historyService } from '@/services/api'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import VideoPlayer from './VideoPlayer'
 import logger from '@/utils/logger'
 
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[8],
     paddingVertical: spacing[4],
     borderRadius: borderRadius.lg,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   errorButtonText: {
     color: colors.text,

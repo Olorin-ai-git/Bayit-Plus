@@ -6,7 +6,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '@bayit/shared/ui';
-import { spacing, colors } from '@bayit/shared/theme';
+import { spacing, colors } from '@olorin/design-tokens';
 import { Toggle } from './Toggle';
 import { EnableToggleCardProps } from '../types';
 

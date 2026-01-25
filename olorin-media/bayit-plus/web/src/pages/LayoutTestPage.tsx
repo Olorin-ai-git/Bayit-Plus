@@ -12,7 +12,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import Header from '../components/layout/Header';
 import GlassSidebar from '../components/layout/GlassSidebar';
 import Footer from '../components/layout/Footer';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 
 export default function LayoutTestPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);

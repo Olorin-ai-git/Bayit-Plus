@@ -104,7 +104,7 @@ class DuplicateDetectionService:
         ]
 
         duplicates = []
-        async for group in Content.get_motor_collection().aggregate(pipeline):
+        async for group in Content.get_pymongo_collection().aggregate(pipeline):
             duplicates.append(
                 {
                     "file_hash": group["_id"],
@@ -146,7 +146,7 @@ class DuplicateDetectionService:
         ]
 
         duplicates = []
-        async for group in Content.get_motor_collection().aggregate(pipeline):
+        async for group in Content.get_pymongo_collection().aggregate(pipeline):
             duplicates.append(
                 {
                     "tmdb_id": group["_id"],
@@ -187,7 +187,7 @@ class DuplicateDetectionService:
         ]
 
         duplicates = []
-        async for group in Content.get_motor_collection().aggregate(pipeline):
+        async for group in Content.get_pymongo_collection().aggregate(pipeline):
             duplicates.append(
                 {
                     "imdb_id": group["_id"],
@@ -232,7 +232,7 @@ class DuplicateDetectionService:
         ]
 
         duplicates = []
-        async for group in Content.get_motor_collection().aggregate(pipeline):
+        async for group in Content.get_pymongo_collection().aggregate(pipeline):
             duplicates.append(
                 {
                     "exact_title": group["_id"],
@@ -367,7 +367,7 @@ class DuplicateDetectionService:
         ]
 
         quality_variants = []
-        async for group in Content.get_motor_collection().aggregate(pipeline):
+        async for group in Content.get_pymongo_collection().aggregate(pipeline):
             # Sort items by resolution height (highest first)
             sorted_items = sorted(
                 group["items"],

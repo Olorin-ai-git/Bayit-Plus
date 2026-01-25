@@ -6,7 +6,7 @@ import { Plus, Edit, Power, Trash2, Copy } from 'lucide-react';
 import { GlassModal } from '@bayit/shared/ui';
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web';
 import { campaignsService } from '@/services/adminApi';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassButton } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';

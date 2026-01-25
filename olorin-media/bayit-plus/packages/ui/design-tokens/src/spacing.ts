@@ -33,6 +33,13 @@ export interface SpacingScale {
   40: number;
   44: number;
   48: number;
+  // Named aliases (for convenience)
+  xs: number;
+  sm: number;
+  md: number;
+  lg: number;
+  xl: number;
+  '2xl': number;
 }
 
 export interface SpacingAliases {
@@ -56,7 +63,7 @@ export interface BorderRadiusScale {
 }
 
 /** Base spacing scale (in pixels for RN, rem for web via Tailwind) */
-export const spacing: SpacingScale = {
+const baseSpacing = {
   px: 1,
   0: 0,
   0.5: 2,
@@ -86,6 +93,18 @@ export const spacing: SpacingScale = {
   40: 160,
   44: 176,
   48: 192,
+};
+
+/** Spacing scale with named aliases */
+export const spacing: SpacingScale = {
+  ...baseSpacing,
+  // Named aliases for convenience
+  xs: 4,   // spacing[1]
+  sm: 8,   // spacing[2]
+  md: 16,  // spacing[4]
+  lg: 24,  // spacing[6]
+  xl: 32,  // spacing[8]
+  '2xl': 48, // spacing[12]
 };
 
 /** Named spacing aliases */

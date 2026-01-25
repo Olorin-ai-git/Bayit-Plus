@@ -4,7 +4,7 @@
  */
 
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { VoiceMode } from '@bayit/shared-types/voiceModes';
 import { useVoiceSettings } from './hooks';
 import {

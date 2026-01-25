@@ -5,8 +5,14 @@ import { Play, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
-import { GlassCard, GlassCategoryPill } from '@bayit/shared/ui';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import {
+  GlassCard,
+  GlassCategoryPill,
+  GlassPageHeader,
+  GridSkeleton,
+  GlassContentPlaceholder,
+} from '@bayit/shared/ui';
 import { JerusalemRow, TelAvivRow } from '@bayit/shared';
 import {
   JewishNewsFeed,
@@ -333,19 +339,12 @@ export default function JudaismPage() {
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
         {/* Header */}
-        <View style={[styles.header, { flexDirection, justifyContent }]}>
-          <View style={[styles.iconContainer, { backgroundColor: colors.glassLight }]}>
-            <Text style={styles.headerIcon}>✡️</Text>
-          </View>
-          <View>
-            <Text style={[styles.headerTitle, { textAlign }]}>
-              {t('judaism.title', 'Judaism')}
-            </Text>
-            <Text style={[styles.headerSubtitle, { textAlign }]}>
-              {content.length > 0 ? `${content.length} ${t('judaism.items', 'items')}` : t('judaism.dashboard', 'Your Jewish Dashboard')}
-            </Text>
-          </View>
-        </View>
+        <GlassPageHeader
+          title={t('judaism.title', 'Judaism')}
+          pageType="judaism"
+          badge={content.length > 0 ? content.length : undefined}
+          isRTL={isRTL}
+        />
 
         {/* Categories */}
         {categories.length > 0 && (
@@ -371,10 +370,10 @@ export default function JudaismPage() {
         {showSpecialView ? (
           renderSpecialView()
         ) : isLoading ? (
-          <LoadingState
-            message={t('judaism.loading', 'Loading content...')}
-            spinnerColor={colors.primary}
-          />
+          <>
+            <View style={styles.categoriesSkeleton} />
+            <GridSkeleton numColumns={numColumns} numRows={2} />
+          </>
         ) : content.length > 0 ? (
           <>
             {/* Show Shabbat Eve Section at top when viewing content */}
@@ -501,7 +500,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   contentTitleHovered: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   rabbiContainer: {
     flexDirection: 'row',
@@ -534,30 +533,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
     width: '100%',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+  categoriesSkeleton: {
+    height: 40,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
     marginBottom: spacing.lg,
-  },
-  iconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerIcon: {
-    fontSize: 36,
-  },
-  headerTitle: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
   },
   categoriesScroll: {
     marginBottom: spacing.lg,

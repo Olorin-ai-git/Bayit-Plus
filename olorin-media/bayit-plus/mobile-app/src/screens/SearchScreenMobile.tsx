@@ -32,7 +32,7 @@ import { useAuthStore } from '@bayit/shared-stores';
 import { getLocalizedName } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
-import { colors } from '../theme';
+import { colors } from '@olorin/design-tokens';
 import type { RootStackParamList } from '../navigation/types';
 
 // Shared search components

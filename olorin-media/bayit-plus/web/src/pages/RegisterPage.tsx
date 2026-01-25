@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { View, Text, Pressable, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Eye, EyeOff, Mail, Lock, User, ChevronDown, Globe, Check } from 'lucide-react';
+import { Eye, EyeOff, ChevronDown, Globe, Check } from 'lucide-react';
 import { useAuthStore } from '@bayit/shared-stores';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { AnimatedLogo } from '@bayit/shared';
 import { GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
@@ -167,7 +167,6 @@ export default function RegisterPage() {
                 value={name}
                 onChangeText={setName}
                 placeholder={t('register.namePlaceholder')}
-                icon={<User size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />}
                 autoCapitalize="words"
                 autoComplete="name"
               />
@@ -180,7 +179,6 @@ export default function RegisterPage() {
                 value={email}
                 onChangeText={setEmail}
                 placeholder={t('register.emailPlaceholder')}
-                icon={<Mail size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
@@ -194,7 +192,6 @@ export default function RegisterPage() {
                 value={password}
                 onChangeText={setPassword}
                 placeholder={t('register.passwordPlaceholder')}
-                icon={<Lock size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />}
                 rightIcon={
                   <Pressable onPress={() => setShowPassword(!showPassword)}>
                     {showPassword ? (
@@ -216,7 +213,6 @@ export default function RegisterPage() {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 placeholder={t('register.confirmPasswordPlaceholder')}
-                icon={<Lock size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />}
                 rightIcon={
                   <Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
                     {showConfirmPassword ? (
@@ -442,7 +438,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   languageMenuItemTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   // Main Content
@@ -529,8 +525,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   checkboxActive: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
+    backgroundColor: colors.primary[600],
   },
   termsText: {
     flex: 1,
@@ -543,7 +539,7 @@ const styles = StyleSheet.create({
   },
   // Register Button
   registerButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     paddingVertical: spacing.md,
     borderRadius: 8,
     alignItems: 'center',

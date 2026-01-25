@@ -4,7 +4,7 @@
  */
 
 import { StyleSheet } from 'react-native'
-import { colors, spacing, borderRadius, tvFontSize } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius, fontSizeTV } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 
 export const MIN_TOUCH_TARGET = 44
@@ -51,7 +51,7 @@ export const controlStyles = StyleSheet.create({
     fontWeight: '600',
   },
   skipTextTV: {
-    fontSize: tvFontSize.xs,
+    fontSize: fontSizeTV.xs,
   },
   volumeControls: {
     flexDirection: 'row',
@@ -74,19 +74,19 @@ export const controlStyles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
   },
   timeTextTV: {
-    fontSize: tvFontSize.base,
+    fontSize: fontSizeTV.base,
   },
   speedBadge: {
     fontSize: 11,
     fontWeight: '600',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     backgroundColor: colors.glassPurpleLight,
     paddingHorizontal: spacing.xs,
     paddingVertical: 2,
     borderRadius: borderRadius.sm,
   },
   speedBadgeTV: {
-    fontSize: tvFontSize.sm,
+    fontSize: fontSizeTV.sm,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
   },

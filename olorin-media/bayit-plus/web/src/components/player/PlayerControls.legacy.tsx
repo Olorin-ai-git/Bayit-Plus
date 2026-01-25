@@ -20,7 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { PlayerState, PlayerControls as PlayerControlsType, Chapter } from './types'
 
 interface PlayerControlsProps {
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   speedBadge: {
     fontSize: 11,
     fontWeight: '600',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     backgroundColor: colors.glassPurpleLight,
     paddingHorizontal: spacing.xs,
     paddingVertical: 2,

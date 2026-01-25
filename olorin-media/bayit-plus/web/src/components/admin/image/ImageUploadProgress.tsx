@@ -4,7 +4,7 @@ import { X, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { GlassView, GlassInput, GlassButton } from '@bayit/shared/ui';
-import { colors, borderRadius, spacing } from '@bayit/shared/theme';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 
 const ImageUploadProgressPropsSchema = z.object({
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   errorText: {
     flex: 1,
     fontSize: 12,
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
 });
 

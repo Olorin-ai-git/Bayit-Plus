@@ -389,6 +389,7 @@ class SystemSettings(Document):
             "social_features": False,
             "live_chat": True,
             "analytics_v2": False,
+            "scene_search": True,
         }
     )
     updated_at: datetime = Field(default_factory=datetime.utcnow)

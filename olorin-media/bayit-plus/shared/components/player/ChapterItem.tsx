@@ -8,7 +8,7 @@ import {
   Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, borderRadius, spacing } from '../../theme';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
 
 export interface Chapter {

@@ -16,7 +16,7 @@
 import { View, Text, TouchableOpacity, Image, Animated, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 // Check if this is a TV build
 declare const __TV__: boolean;
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   },
   containerFocused: {
     backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     borderWidth: 3,
   },
   avatar: {
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   },
   avatarText: {
     fontWeight: '700',
-    color: colors.primary,
+    color: colors.white,
   },
   onlineBadge: {
     position: 'absolute',
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   },
   subscriptionText: {
     fontSize: 11,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: 'bold',
   },
   loginPrompt: {

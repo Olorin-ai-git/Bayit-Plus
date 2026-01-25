@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Podcast, Headphones, Clock } from 'lucide-react';
 import { GlassCard } from '@bayit/shared/ui';
 import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 import { z } from 'zod';
 
 const ShowSchema = z.object({
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 1 }],
   },
   titleHovered: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   titleDefault: {
     color: '#ffffff',

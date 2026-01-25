@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, ChevronLeft, Languages, RefreshCw } from 'lucide-react'
 import { GlassInput, GlassSelect, GlassButton } from '@bayit/shared/ui'
 import { GlassTable } from '@bayit/shared/ui/web'
-import { adminPodcastsService, adminPodcastEpisodesService } from '@bayit/shared-services/adminApi'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { adminPodcastsService, adminPodcastEpisodesService } from '@/services/adminApi'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
 import { useModal } from '@/contexts/ModalContext'
 import logger from '@/utils/logger'
@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     marginBottom: spacing.md,
   },
-  breadcrumbText: { color: colors.primary, fontSize: 14 },
+  breadcrumbText: { color: colors.primary.DEFAULT, fontSize: 14 },
   header: {
     justifyContent: 'space-between',
     alignItems: 'flex-start',

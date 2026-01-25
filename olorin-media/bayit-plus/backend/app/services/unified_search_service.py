@@ -375,66 +375,88 @@ class UnifiedSearchService:
         Returns:
             Dictionary with filter options
         """
-        # Get unique genres
-        genres_pipeline = [
-            {
-                "$match": {
-                    "is_published": True,
-                    "genres": {"$exists": True, "$ne": None},
-                }
-            },
-            {"$unwind": "$genres"},
-            {"$group": {"_id": "$genres"}},
-            {"$sort": {"_id": 1}},
-        ]
-        genres_result = (
-            await Content.get_motor_collection()
-            .aggregate(genres_pipeline)
-            .to_list(None)
-        )
-        genres = [item["_id"] for item in genres_result if item["_id"]]
+        try:
+            # Get unique genres
+            genres_pipeline = [
+                {
+                    "$match": {
+                        "is_published": True,
+                        "genres": {"$exists": True, "$ne": None},
+                    }
+                },
+                {"$unwind": "$genres"},
+                {"$group": {"_id": "$genres"}},
+                {"$sort": {"_id": 1}},
+            ]
 
-        # Get year range
-        year_pipeline = [
-            {"$match": {"is_published": True, "year": {"$exists": True, "$ne": None}}},
-            {
-                "$group": {
-                    "_id": None,
-                    "min_year": {"$min": "$year"},
-                    "max_year": {"$max": "$year"},
-                }
-            },
-        ]
-        year_result = (
-            await Content.get_motor_collection().aggregate(year_pipeline).to_list(None)
-        )
-        year_min = year_result[0]["min_year"] if year_result else 1900
-        year_max = year_result[0]["max_year"] if year_result else datetime.now().year
+            try:
+                collection = Content.get_pymongo_collection()
+                genres_result = await collection.aggregate(genres_pipeline).to_list(None)
+                genres = [item["_id"] for item in genres_result if item["_id"]]
+            except Exception as e:
+                logger.warning(f"Failed to aggregate genres: {e}")
+                genres = []
 
-        # Get available subtitle languages
-        langs_pipeline = [
-            {
-                "$match": {
-                    "is_published": True,
-                    "available_subtitle_languages": {"$exists": True, "$ne": []},
-                }
-            },
-            {"$unwind": "$available_subtitle_languages"},
-            {"$group": {"_id": "$available_subtitle_languages"}},
-            {"$sort": {"_id": 1}},
-        ]
-        langs_result = (
-            await Content.get_motor_collection().aggregate(langs_pipeline).to_list(None)
-        )
-        subtitle_languages = [item["_id"] for item in langs_result if item["_id"]]
+            # Get year range
+            year_pipeline = [
+                {"$match": {"is_published": True, "year": {"$exists": True, "$ne": None}}},
+                {
+                    "$group": {
+                        "_id": None,
+                        "min_year": {"$min": "$year"},
+                        "max_year": {"$max": "$year"},
+                    }
+                },
+            ]
 
-        return {
-            "genres": genres,
-            "year_range": {"min": year_min, "max": year_max},
-            "subtitle_languages": subtitle_languages,
-            "content_types": ["vod", "live", "radio", "podcast"],
-            "subscription_tiers": ["basic", "premium", "family"],
-        }
+            try:
+                collection = Content.get_pymongo_collection()
+                year_result = await collection.aggregate(year_pipeline).to_list(None)
+                year_min = year_result[0]["min_year"] if year_result else 1900
+                year_max = year_result[0]["max_year"] if year_result else datetime.now().year
+            except Exception as e:
+                logger.warning(f"Failed to aggregate years: {e}")
+                year_min = 1900
+                year_max = datetime.now().year
+
+            # Get available subtitle languages
+            langs_pipeline = [
+                {
+                    "$match": {
+                        "is_published": True,
+                        "available_subtitle_languages": {"$exists": True, "$ne": []},
+                    }
+                },
+                {"$unwind": "$available_subtitle_languages"},
+                {"$group": {"_id": "$available_subtitle_languages"}},
+                {"$sort": {"_id": 1}},
+            ]
+
+            try:
+                collection = Content.get_pymongo_collection()
+                langs_result = await collection.aggregate(langs_pipeline).to_list(None)
+                subtitle_languages = [item["_id"] for item in langs_result if item["_id"]]
+            except Exception as e:
+                logger.warning(f"Failed to aggregate subtitle languages: {e}")
+                subtitle_languages = []
+
+            return {
+                "genres": genres,
+                "year_range": {"min": year_min, "max": year_max},
+                "subtitle_languages": subtitle_languages,
+                "content_types": ["vod", "live", "radio", "podcast"],
+                "subscription_tiers": ["basic", "premium", "family"],
+            }
+        except Exception as e:
+            logger.error(f"Failed to get filter options: {e}", exc_info=True)
+            # Return default values on error
+            return {
+                "genres": [],
+                "year_range": {"min": 1900, "max": datetime.now().year},
+                "subtitle_languages": [],
+                "content_types": ["vod", "live", "radio", "podcast"],
+                "subscription_tiers": ["basic", "premium", "family"],
+            }
 
     def _content_to_dict(self, content: Content) -> Dict[str, Any]:
         """

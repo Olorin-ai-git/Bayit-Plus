@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 interface UsageRowProps {
   label: string;
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     color: '#f59e0b',
   },
   usageError: {
-    color: colors.error,
+    color: colors.error.DEFAULT,
   },
   rolloverText: {
     color: '#10b981',
@@ -95,13 +95,13 @@ const styles = StyleSheet.create({
     bottom: -4,
     left: 0,
     height: 3,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: borderRadius.sm,
   },
   usageBarWarning: {
     backgroundColor: '#f59e0b',
   },
   usageBarError: {
-    backgroundColor: colors.error,
+    backgroundColor: colors.error.DEFAULT,
   },
 });

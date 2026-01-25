@@ -12,6 +12,7 @@ export type RootStackParamList = {
     id: string;
     title: string;
     type: 'vod' | 'live' | 'radio' | 'podcast';
+    t?: number; // Optional timestamp in seconds for scene search deep links
   };
   Search: { query?: string };
   MorningRitual: undefined;

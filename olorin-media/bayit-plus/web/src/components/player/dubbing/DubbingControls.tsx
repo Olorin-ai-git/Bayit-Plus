@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { MessageSquare, Languages, Volume2 } from 'lucide-react'
 import { GlassButton } from '@bayit/shared/components/ui/GlassButton'
 import { GlassSlider } from '@bayit/shared/components/ui/GlassSlider'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 import { GlassLiveControlButton } from '../controls/GlassLiveControlButton'
 import { DubbingOnboarding } from './DubbingOnboarding'
@@ -60,6 +60,7 @@ export default function DubbingControls({
   const [originalVolume, setOriginalVolume] = useState(0)
   const [dubbedVolume, setDubbedVolume] = useState(1)
   const [availableVoices, setAvailableVoices] = useState<Array<{ id: string; name: string; description: string }>>([])
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false)
 
   useEffect(() => {
     if (isEnabled && availableVoices.length === 0) {
@@ -75,16 +76,22 @@ export default function DubbingControls({
   if (!isAvailable) return null
 
   const handlePress = () => {
+    // Prevent action while connecting
+    if (isConnecting) {
+      return
+    }
+
     if (!isPremium) {
       onShowUpgrade?.()
       return
     }
 
-    // Disable subtitles before enabling dubbing (mutual exclusivity)
-    if (!isEnabled && onDisableSubtitles) {
+    // Show onboarding only on first use
+    if (!isEnabled && !hasSeenOnboarding && onDisableSubtitles) {
       logger.debug('Disabling subtitles for mutual exclusivity', 'DubbingControls', {})
       onDisableSubtitles()
       setShowOnboarding(true)
+      setHasSeenOnboarding(true)
       return
     }
 

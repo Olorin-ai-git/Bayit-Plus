@@ -11,7 +11,7 @@
 
 import { View, Text, StyleSheet } from 'react-native'
 import { z } from 'zod'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 
 const TimeDisplayPropsSchema = z.object({
   currentTime: z.number(),

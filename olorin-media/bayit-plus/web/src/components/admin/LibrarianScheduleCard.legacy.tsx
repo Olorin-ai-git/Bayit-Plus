@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Linking, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Calendar, Brain, ExternalLink, Edit2, Check, X } from 'lucide-react';
 import { GlassCard, GlassBadge, GlassButton, GlassModal, GlassInput } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 
 interface LibrarianScheduleCardProps {
@@ -298,11 +298,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     borderRadius: borderRadius.sm,
     borderWidth: 1,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   linkText: {
     fontSize: 14,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '500',
   },
   modalContent: {
@@ -338,15 +338,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statusButtonActive: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primary + '33',
+    borderColor: colors.primary.DEFAULT,
+    backgroundColor: colors.primary.DEFAULT + '33',
   },
   statusButtonText: {
     fontSize: 14,
     color: colors.textSecondary,
   },
   statusButtonTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   modalActions: {

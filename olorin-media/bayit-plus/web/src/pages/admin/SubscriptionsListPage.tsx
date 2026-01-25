@@ -6,7 +6,7 @@ import { GlassButton, GlassModal, GlassCheckbox, GlassInput } from '@bayit/share
 import { GlassTable } from '@bayit/shared/ui/web';
 import StatCard from '@/components/admin/StatCard';
 import { subscriptionsService } from '@/services/adminApi';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
 

@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Eye, EyeOff, Mail, Lock, ChevronDown, Globe } from 'lucide-react';
+import { Eye, EyeOff, ChevronDown, Globe } from 'lucide-react';
 import { useAuthStore } from '@bayit/shared-stores';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { AnimatedLogo } from '@bayit/shared';
 import { GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
@@ -154,7 +154,6 @@ export default function LoginPage() {
               value={email}
               onChangeText={setEmail}
               placeholder={t('login.emailPlaceholder')}
-              icon={<Mail size={20} color={colors.textMuted} />}
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
@@ -177,7 +176,6 @@ export default function LoginPage() {
               value={password}
               onChangeText={setPassword}
               placeholder={t('login.passwordPlaceholder')}
-              icon={<Lock size={20} color={colors.textMuted} />}
               rightIcon={
                 <Pressable onPress={() => setShowPassword(!showPassword)}>
                   {showPassword ? (
@@ -387,7 +385,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   languageMenuItemTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   // Main Content
@@ -472,7 +470,7 @@ const styles = StyleSheet.create({
   },
   // Login Button
   loginButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     paddingVertical: spacing.md,
     borderRadius: 8,
     alignItems: 'center',

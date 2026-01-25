@@ -14,7 +14,7 @@ import React from 'react';
 import { View, Modal, Pressable, ViewStyle } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { GlassView } from '@bayit/shared';
-import { spacing, borderRadius } from '../theme';
+import { spacing, borderRadius } from '@olorin/design-tokens';
 
 export interface BottomSheetProps {
   /** Whether the bottom sheet is visible */

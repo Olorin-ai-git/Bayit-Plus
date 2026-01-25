@@ -401,6 +401,9 @@ EOF
     create_or_update_secret "olorin-partner-api-key-salt" "PARTNER_API_KEY_SALT"
     create_or_update_secret "olorin-secret-key" "SECRET_KEY"
 
+    # Feature Flags
+    create_or_update_secret "bayit-feature-scene-search-enabled" "FEATURE_SCENE_SEARCH_ENABLED"
+
     # Turborepo Remote Cache Configuration
     create_or_update_secret "turbo-token" "TURBO_TOKEN"
     create_or_update_secret "turbo-team" "TURBO_TEAM"
@@ -438,6 +441,7 @@ EOF
                   bayit-torahanytime-rss-url \
                   bayit-apple-key-id bayit-apple-team-id bayit-apple-bundle-id-ios bayit-apple-bundle-id-tvos \
                   olorin-pinecone-api-key olorin-partner-api-key-salt olorin-secret-key \
+                  bayit-feature-scene-search-enabled \
                   turbo-token turbo-team; do
         gcloud secrets add-iam-policy-binding "$secret" \
             --member="serviceAccount:$SERVICE_ACCOUNT" \

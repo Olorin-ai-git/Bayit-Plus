@@ -4,7 +4,7 @@
  */
 
 import { StyleSheet, I18nManager } from 'react-native'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 
 const PANEL_WIDTH = isTV ? 400 : 320
@@ -15,25 +15,24 @@ export const styles = StyleSheet.create({
     top: 0,
     height: '100%',
     width: PANEL_WIDTH,
-    zIndex: 40,
-  },
+    zIndex: 100,
+    transition: 'transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)',
+  } as any,
   panelLTR: {
-    left: I18nManager.isRTL ? undefined : 0,
-    right: I18nManager.isRTL ? 0 : undefined,
+    right: 0,
+    left: undefined,
   },
   panelRTL: {
-    right: I18nManager.isRTL ? 0 : undefined,
-    left: I18nManager.isRTL ? undefined : 0,
+    left: 0,
+    right: undefined,
   },
   panelOpen: {
-    transform: I18nManager.isRTL
-      ? [{ translateX: 0 }]
-      : [{ translateX: 0 }],
+    transform: [{ translateX: 0 }],
   },
   panelClosed: {
     transform: I18nManager.isRTL
-      ? [{ translateX: PANEL_WIDTH }]
-      : [{ translateX: -PANEL_WIDTH }],
+      ? [{ translateX: -PANEL_WIDTH }]
+      : [{ translateX: PANEL_WIDTH }],
   },
   glassBackground: {
     position: 'absolute',

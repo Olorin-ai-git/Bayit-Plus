@@ -8,7 +8,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Pause, Play } from 'lucide-react';
 import { GlassButton } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 interface QueuePausedWarningProps {
   pauseReason?: string | null;
@@ -24,11 +24,11 @@ export const QueuePausedWarning: React.FC<QueuePausedWarningProps> = ({
   const { t } = useTranslation();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.error + '15', borderColor: colors.error + '40' }]}>
+    <View style={[styles.container, { backgroundColor: colors.error.DEFAULT + '15', borderColor: colors.error.DEFAULT + '40' }]}>
       <View style={[styles.contentRow, isRTL && styles.rowReverse]}>
-        <Pause size={20} color={colors.error} />
+        <Pause size={20} color={colors.error.DEFAULT} />
         <View style={styles.textContainer}>
-          <Text style={[styles.title, { color: colors.error }]}>
+          <Text style={[styles.title, { color: colors.error.DEFAULT }]}>
             {t('admin.uploads.queuePaused', 'Queue Paused')}
           </Text>
           <Text style={[styles.reason, { color: colors.textSecondary }]}>{pauseReason}</Text>
@@ -37,7 +37,7 @@ export const QueuePausedWarning: React.FC<QueuePausedWarningProps> = ({
           <GlassButton
             title={t('admin.uploads.resumeQueue', 'Resume')}
             variant="secondary"
-            icon={<Play size={16} color={colors.success} />}
+            icon={<Play size={16} color={colors.success.DEFAULT} />}
             onPress={onResumeQueue}
             style={{ paddingHorizontal: spacing.md, paddingVertical: spacing.sm }}
           />

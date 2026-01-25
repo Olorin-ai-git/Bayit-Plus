@@ -7,7 +7,7 @@
 
 import { View, Text, StyleSheet } from 'react-native'
 import { z } from 'zod'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 
 // Zod schema for prop validation
 const VideoCenterControlsPropsSchema = z.object({

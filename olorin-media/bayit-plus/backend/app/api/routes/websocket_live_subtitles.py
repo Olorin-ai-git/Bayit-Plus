@@ -11,7 +11,7 @@ from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
 from app.models.content import LiveChannel
 from app.models.live_feature_quota import FeatureType, UsageSessionStatus
-from app.services.live_feature_quota_service import LiveFeatureQuotaService
+from app.services.live_feature_quota_service import live_feature_quota_service
 from app.services.live_translation_service import LiveTranslationService
 from app.services.rate_limiter_live import get_rate_limiter
 from app.api.routes.websocket_helpers import (
@@ -34,8 +34,8 @@ async def create_audio_stream_with_quota_updates(websocket, session, user):
             current = asyncio.get_event_loop().time()
             if session and current - last_update >= 10.0:
                 try:
-                    await LiveFeatureQuotaService.update_session(session_id=session.session_id, audio_seconds_delta=10.0, segments_delta=0)
-                    allowed, error_msg, _ = await LiveFeatureQuotaService.check_quota(user_id=str(user.id), feature_type=FeatureType.SUBTITLE, estimated_duration_minutes=0)
+                    await live_feature_quota_service.update_session(session_id=session.session_id, audio_seconds_delta=10.0, segments_delta=0)
+                    allowed, error_msg, _ = await live_feature_quota_service.check_quota(user_id=str(user.id), feature_type=FeatureType.SUBTITLE, estimated_duration_minutes=0)
                     if not allowed:
                         await websocket.send_json({"type": "quota_exceeded", "message": "Usage limit reached", "recoverable": False})
                         raise WebSocketDisconnect(code=4029, reason="Quota exceeded")
@@ -106,7 +106,7 @@ async def websocket_live_subtitles(
         return
 
     # Check quota and start session
-    allowed, error_msg, usage_stats = await LiveFeatureQuotaService.check_quota(
+    allowed, error_msg, usage_stats = await live_feature_quota_service.check_quota(
         user_id=str(user.id), feature_type=FeatureType.SUBTITLE, estimated_duration_minutes=1.0
     )
     if not allowed:
@@ -115,7 +115,7 @@ async def websocket_live_subtitles(
         return
 
     try:
-        session = await LiveFeatureQuotaService.start_session(
+        session = await live_feature_quota_service.start_session(
             user_id=str(user.id), channel_id=channel_id, feature_type=FeatureType.SUBTITLE,
             source_language=channel.primary_language or "he", target_language=target_lang, platform="web"
         )

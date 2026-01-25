@@ -3,7 +3,7 @@ import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, Globe, ChevronDown, ChevronUp } from 'lucide-react'
 import { adminContentService } from '@/services/adminApi'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassButton, GlassInput, GlassView, GlassToggle, GlassSelect } from '@bayit/shared/ui'
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web'
 import { useDirection } from '@/hooks/useDirection'

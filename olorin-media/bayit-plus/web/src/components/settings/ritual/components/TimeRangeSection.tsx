@@ -6,7 +6,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView, GlassSelect } from '@bayit/shared/ui';
-import { spacing, borderRadius, colors } from '@bayit/shared/theme';
+import { spacing, borderRadius, colors } from '@olorin/design-tokens';
 import { TimeRangeSectionProps } from '../types';
 
 export function TimeRangeSection({

@@ -14,7 +14,7 @@ import { View, Platform } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { GlassView, GlassButton } from '@bayit/shared';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { spacing, colors } from '../theme';
+import { spacing, colors } from '@olorin/design-tokens';
 
 export interface SwipeableCardProps {
   /** Callback when delete action is triggered */

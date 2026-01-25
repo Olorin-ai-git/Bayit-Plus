@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ScrollView, View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassTabs, GlassModal } from '@bayit/shared/ui';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { StatsHeader } from './components';
 import { FriendsTab, RequestsTab, SearchTab } from './tabs';
 import { useFriendsData } from './hooks';
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     textAlign: 'center',
     marginTop: spacing.md,
   },

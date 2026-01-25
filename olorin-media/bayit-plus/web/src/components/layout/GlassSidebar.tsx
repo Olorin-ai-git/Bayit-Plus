@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import { GlassButton } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -577,7 +577,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     backgroundColor: 'transparent',
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   logoSection: {
     alignItems: 'center',
@@ -633,7 +633,7 @@ const styles = StyleSheet.create({
   },
   userProfileSectionFocused: {
     backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     borderWidth: 3,
   },
   userAvatar: {
@@ -644,7 +644,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -654,7 +654,7 @@ const styles = StyleSheet.create({
   userAvatarText: {
     fontSize: IS_TV_BUILD ? 24 : 20,
     fontWeight: '700',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   userAvatarImage: {
     width: '100%',
@@ -690,7 +690,7 @@ const styles = StyleSheet.create({
   },
   subscriptionText: {
     fontSize: 11,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: 'bold',
   },
   loginPrompt: {
@@ -736,7 +736,7 @@ const styles = StyleSheet.create({
   menuItemFocused: {
     backgroundColor: 'rgba(107, 33, 168, 0.3)',
     borderWidth: 1,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   iconContainer: {
     width: IS_TV_BUILD ? 48 : 36,
@@ -756,7 +756,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   menuLabelActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: 'bold',
   },
   activeIndicator: {
@@ -765,7 +765,7 @@ const styles = StyleSheet.create({
     marginTop: -12,
     width: 4,
     height: 24,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: 2,
   },
   divider: {

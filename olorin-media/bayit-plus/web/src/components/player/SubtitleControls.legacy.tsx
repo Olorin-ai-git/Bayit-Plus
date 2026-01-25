@@ -14,7 +14,7 @@ import {
   SUBTITLE_LANGUAGES,
   getLanguageInfo,
 } from '@/types/subtitle'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassView } from '@bayit/shared/ui'
 import { subtitlesService } from '@/services/api'
 
@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 4,
     right: 4,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: 8,
     paddingHorizontal: 4,
     paddingVertical: 2,
@@ -503,7 +503,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   menuItemTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   menuItemSubtext: {
@@ -518,7 +518,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     marginLeft: spacing.sm,
   },
   settingsPanel: {
@@ -562,7 +562,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   settingOptionActive: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   settingOptionText: {
@@ -608,7 +608,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   downloadMenuText: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   downloadResultContainer: {
     flexDirection: 'row',

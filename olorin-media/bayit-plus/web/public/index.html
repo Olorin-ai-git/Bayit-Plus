@@ -474,9 +474,6 @@
         var audioPermissionGranted = false;
         try {
           audioPermissionGranted = localStorage.getItem('bayit_audio_permission') === 'granted';
-          if (audioPermissionGranted) {
-            console.log('Audio permission previously granted, will attempt autoplay');
-          }
         } catch (e) {}
 
         // Get saved language from localStorage
@@ -486,9 +483,9 @@
           if (saved) {
             currentLang = saved.split('-')[0]; // Handle locales like 'en-US'
           }
-        } catch (e) {
-          console.warn('Could not read language from localStorage:', e);
-        }
+        } catch (e) {}
+
+
 
         // Localized prompt text
         var promptTexts = {
@@ -509,18 +506,14 @@
           audioPromptText.textContent = promptTexts[currentLang];
         }
 
-        // Backend base URL for static assets
-        var backendBaseUrl = 'http://localhost:8000';
-
-        // Map language to video file
+        // Map language to video file (from web public assets)
         var videoFiles = {
-          'he': backendBaseUrl + '/assets/video/intro/Bayit_Intro_Hebrew.mp4',
-          'en': backendBaseUrl + '/assets/video/intro/Bayit_Intro_English.mp4',
-          'es': backendBaseUrl + '/assets/video/intro/Bayit_Intro_English.mp4' // Use English for Spanish
+          'he': '/assets/video/intro/Bayit_Intro_Hebrew.mp4',
+          'en': '/assets/video/intro/Bayit_Intro_English.mp4',
+          'es': '/assets/video/intro/Bayit_Intro_English.mp4' // Use English for Spanish
         };
 
         var videoPath = videoFiles[currentLang] || videoFiles['en'];
-        console.log('Loading splash video for language:', currentLang, '→', videoPath);
 
         // Set volume and unmuted
         video.volume = 1.0;
@@ -531,13 +524,10 @@
         
         // Wait for video to be ready, then play
         video.addEventListener('canplay', function onCanPlay() {
-          console.log('Video ready, attempting to play with audio...');
-          
           var playPromise = video.play();
           
           if (playPromise !== undefined) {
             playPromise.then(function() {
-              console.log('✓ Video playing with audio!');
               // Save permission for future visits
               try {
                 localStorage.setItem('bayit_audio_permission', 'granted');
@@ -545,49 +535,39 @@
               // Audio worked, hide prompt
               if (audioPrompt) audioPrompt.classList.remove('show');
             }).catch(function(error) {
-              console.warn('Audio autoplay blocked, playing muted:', error.message);
               video.muted = true;
-              video.play().catch(function(err) {
-                console.error('Video playback failed:', err);
-              });
+              video.play();
               
               // Only show prompt if user hasn't previously granted permission
               // (On first visit they need to click, but after that we trust they want audio)
               if (!audioPermissionGranted) {
                 if (audioPrompt) {
                   audioPrompt.classList.add('show');
-                  
+
                   // Handle click to enable audio
                   function enableAudio() {
-                    console.log('User clicked to enable audio');
                     video.muted = false;
                     video.currentTime = 0; // Restart from beginning
                     video.play().then(function() {
-                      console.log('✓ Audio enabled!');
                       // Save permission for future visits
                       try {
                         localStorage.setItem('bayit_audio_permission', 'granted');
                       } catch (e) {}
                       if (audioPrompt) audioPrompt.classList.remove('show');
-                    }).catch(function(err) {
-                      console.warn('Still could not enable audio:', err);
                     });
                   }
-                  
+
                   audioPrompt.addEventListener('click', enableAudio);
                 }
-              } else {
-                console.log('Audio permission was granted before but still blocked - this is expected browser behavior');
               }
             });
           }
           
           video.removeEventListener('canplay', onCanPlay);
         });
-        
+
         // Handle video load errors (404, network failure, etc.)
         video.addEventListener('error', function(e) {
-          console.warn('Video failed to load, skipping splash video:', e);
           // Show slogan immediately as fallback
           var sloganContainer = document.querySelector('.slogan-container');
           if (sloganContainer) {
@@ -603,20 +583,24 @@
 
         // Also handle source error
         videoSource.addEventListener('error', function(e) {
-          console.warn('Video source failed to load:', e);
           video.dispatchEvent(new Event('error'));
         });
 
         // Load the video
         video.load();
 
-        // Show slogan when video ends
+        // Show slogan and hide splash when video ends
         video.addEventListener('ended', function() {
-          console.log('✓ Video ended, showing slogan...');
           var sloganContainer = document.querySelector('.slogan-container');
           if (sloganContainer) {
             sloganContainer.classList.add('show');
           }
+          // Hide splash screen after video completes
+          setTimeout(function() {
+            if (window.hideSplashWhenReady) {
+              window.hideSplashWhenReady();
+            }
+          }, 1500); // Show slogan for 1.5 seconds before hiding
         });
       })();
     </script>

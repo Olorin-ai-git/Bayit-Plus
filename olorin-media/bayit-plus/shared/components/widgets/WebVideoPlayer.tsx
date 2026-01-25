@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { colors } from '../../theme';
+import { colors } from '@olorin/design-tokens';
 import { CaptionUrls } from './WidgetsIntroVideo.types';
 
 interface WebVideoPlayerProps {

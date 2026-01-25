@@ -7,7 +7,7 @@ import {
   ImageURISource,
   Platform,
 } from 'react-native';
-import { colors } from '../theme';
+import { colors } from '@olorin/design-tokens';
 
 interface OptimizedImageProps extends Omit<ImageProps, 'source'> {
   source: ImageURISource;

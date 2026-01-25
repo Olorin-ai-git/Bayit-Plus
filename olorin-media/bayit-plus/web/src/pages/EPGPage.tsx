@@ -13,7 +13,7 @@ import { RecordingStatus } from '@/components/epg/EPGRecordingIndicator'
 import { useAuthStore } from '@/stores/authStore'
 import { recordingApi } from '@/services/recordingApi'
 import { useModal } from '@/contexts/ModalContext'
-import { GlassButton } from '@bayit/shared'
+import { GlassButton, GlassPageHeader } from '@bayit/shared/ui'
 import logger from '@/utils/logger'
 
 const EPGPage: React.FC = () => {
@@ -226,10 +226,11 @@ const EPGPage: React.FC = () => {
       <View style={styles.contentWrapper}>
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.title}>{t('epg.title')}</Text>
-            <Text style={styles.subtitle}>{t('epg.subtitle')}</Text>
-          </View>
+          <GlassPageHeader
+            title={t('epg.title')}
+            pageType="epg"
+            isRTL={false}
+          />
 
           {/* View Toggle */}
           <EPGViewToggle view={viewMode} onViewChange={setViewMode} />

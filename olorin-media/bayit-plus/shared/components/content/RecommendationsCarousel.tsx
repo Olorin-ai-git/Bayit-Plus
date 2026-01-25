@@ -8,7 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
 import { useYouTubeThumbnail } from '../../hooks/useYouTubeThumbnail';

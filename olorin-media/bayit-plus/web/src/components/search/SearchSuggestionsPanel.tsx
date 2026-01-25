@@ -10,7 +10,7 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import { sanitizeText, sanitizeCategory } from '../../utils/sanitize';
-import { colors, borderRadius, spacing } from '../../theme/colors';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 export interface Category {
   name: string;
@@ -41,7 +41,7 @@ export function SearchSuggestionsPanel({
   onSearchSelect,
   onClearRecent,
 }: SearchSuggestionsPanelProps) {
-  const { t } = useTranslation('search');
+  const { t } = useTranslation();
 
   // Sanitize all untrusted inputs to prevent XSS
   const sanitizedRecent = useMemo(() =>
@@ -64,7 +64,7 @@ export function SearchSuggestionsPanel({
       {/* Trending Searches */}
       {sanitizedTrending.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('suggestions.trendingTitle')}</Text>
+          <Text style={styles.sectionTitle}>{t('search.suggestions.trendingTitle')}</Text>
           <View style={styles.itemsContainer}>
             {sanitizedTrending.map((search, index) => (
               <GlassButton
@@ -84,7 +84,7 @@ export function SearchSuggestionsPanel({
       {/* Category Chips */}
       {sanitizedCategories.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('suggestions.categoriesTitle')}</Text>
+          <Text style={styles.sectionTitle}>{t('search.suggestions.categoriesTitle')}</Text>
           <View style={styles.categoriesGrid}>
             {sanitizedCategories.map((category, index) => (
               <GlassButton
@@ -106,14 +106,14 @@ export function SearchSuggestionsPanel({
       {sanitizedRecent.length > 0 && (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{t('suggestions.recentTitle')}</Text>
+            <Text style={styles.sectionTitle}>{t('search.suggestions.recentTitle')}</Text>
             {onClearRecent && (
               <GlassButton
                 variant="ghost"
                 onPress={onClearRecent}
-                accessibilityLabel={t('suggestions.clearRecent')}
+                accessibilityLabel={t('search.suggestions.clearRecent')}
               >
-                <Text style={styles.clearButton}>{t('suggestions.clearRecent')}</Text>
+                <Text style={styles.clearButton}>{t('search.suggestions.clearRecent')}</Text>
               </GlassButton>
             )}
           </View>
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     fontSize: 14,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '500',
   },
   itemsContainer: {

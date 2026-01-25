@@ -8,6 +8,7 @@ import {
   View,
   StyleSheet,
 } from 'react-native';
+import { colors } from '@olorin/design-tokens';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
@@ -50,13 +51,13 @@ export const GlassCategoryPill: React.FC<GlassCategoryPillProps> = ({
 
   // TV builds get larger sizes for 10-foot UI
   const sizeStyles = IS_TV_BUILD ? {
-    small: { px: 4, py: 2.5, fontSize: 18, iconSize: 18, gap: 2 },
-    medium: { px: 6, py: 3.5, fontSize: 22, iconSize: 22, gap: 3 },
-    large: { px: 8, py: 4.5, fontSize: 26, iconSize: 26, gap: 3 },
+    small: { px: 4, py: 2.5, fontSize: 18, iconSize: 20, gap: 2 },
+    medium: { px: 6, py: 3.5, fontSize: 22, iconSize: 24, gap: 3 },
+    large: { px: 8, py: 4.5, fontSize: 26, iconSize: 28, gap: 3 },
   } : {
-    small: { px: 3, py: 1.5, fontSize: 12, iconSize: 12, gap: 1 },
-    medium: { px: 4, py: 2, fontSize: 14, iconSize: 14, gap: 1.5 },
-    large: { px: 6, py: 2.5, fontSize: 16, iconSize: 16, gap: 2 },
+    small: { px: 3, py: 1.5, fontSize: 12, iconSize: 14, gap: 1 },
+    medium: { px: 4, py: 2, fontSize: 14, iconSize: 16, gap: 1.5 },
+    large: { px: 6, py: 2.5, fontSize: 16, iconSize: 18, gap: 2 },
   };
 
   const currentSize = sizeStyles[size];
@@ -119,9 +120,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    borderWidth: 1.5,
+    borderColor: colors.glassBorderLight,
+    backgroundColor: colors.glassLight,
+    alignSelf: 'flex-start', // Prevent vertical stretching
     // @ts-ignore - Web CSS
     backdropFilter: 'blur(16px)',
     WebkitBackdropFilter: 'blur(16px)',
@@ -129,15 +131,17 @@ const styles = StyleSheet.create({
     transition: 'all 0.2s ease',
   },
   pillActive: {
-    backgroundColor: 'rgb(147, 51, 234)', // purple-600
-    borderColor: 'rgb(147, 51, 234)',
+    backgroundColor: colors.primary[600],
+    borderColor: colors.primary[600],
+    // @ts-ignore - Web CSS
+    boxShadow: '0 4px 12px rgba(147, 51, 234, 0.4)',
   },
   pillHovered: {
-    backgroundColor: 'rgba(147, 51, 234, 0.3)', // purple-600/30
-    borderColor: 'rgba(126, 34, 206, 0.5)', // purple-500/50
+    backgroundColor: colors.glassPurpleLight,
+    borderColor: colors.primary[500],
   },
   pillFocused: {
-    borderColor: 'rgb(147, 51, 234)', // purple-600
+    borderColor: colors.primary[600],
     borderWidth: 3,
   },
   pillDisabled: {
@@ -149,17 +153,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   labelActive: {
-    color: '#000000',
+    color: colors.white,
     fontWeight: '600',
   },
   labelInactive: {
-    color: 'rgb(156, 163, 175)', // gray-400
+    color: colors.textMuted,
   },
   labelHighlighted: {
-    color: 'rgb(168, 85, 247)', // purple-500
+    color: colors.primary[500],
   },
   labelDisabled: {
-    color: 'rgb(75, 85, 99)', // gray-600
+    color: colors.textDisabled,
   },
 });
 

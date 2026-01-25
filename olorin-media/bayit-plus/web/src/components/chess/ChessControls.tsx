@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { colors, spacing } from '@bayit/shared/theme';
+import { colors, spacing } from '@olorin/design-tokens';
 import { Flag, RotateCcw, Lightbulb } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GlassCheckbox } from '@bayit/shared/ui';

@@ -17,11 +17,18 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
     """
     CSRF protection middleware for state-changing HTTP methods.
     Validates CSRF tokens for POST, PUT, PATCH, DELETE requests.
+
+    Uses dual-cookie approach:
+    - csrf_token (httpOnly=True) - secure cookie, cannot be read by JavaScript
+    - csrf_token_client (httpOnly=False) - readable by JavaScript client
+    Both contain the same value. Client reads from csrf_token_client and sends in header.
+    Server validates header matches csrf_token (the httpOnly one).
     """
 
     SAFE_METHODS = {"GET", "HEAD", "OPTIONS", "TRACE"}
     CSRF_HEADER_NAME = "X-CSRF-Token"
-    CSRF_COOKIE_NAME = "csrf_token"
+    CSRF_COOKIE_NAME = "csrf_token"  # HttpOnly cookie (secure)
+    CSRF_CLIENT_COOKIE_NAME = "csrf_token_client"  # Non-HttpOnly (client-readable)
     EXEMPT_PATHS = {
         "/api/v1/auth/login",
         "/api/v1/auth/register",
@@ -31,6 +38,7 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
         "/api/v1/history",  # History endpoints already protected by JWT authentication
         "/api/v1/subtitles",  # Subtitle endpoints already protected by JWT authentication
         "/api/v1/trivia",  # Trivia endpoints already protected by JWT authentication
+        "/api/v1/widgets",  # Widget endpoints already protected by JWT authentication
         "/docs",
         "/openapi.json",
         "/health",
@@ -44,12 +52,23 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
             # Add CSRF token to response for safe methods
             if request.method == "GET":
                 csrf_token = self._get_or_generate_csrf_token(request)
+                # Set dual cookies for CSRF protection:
+                # 1. HttpOnly cookie (secure, cannot be read by JavaScript)
                 response.set_cookie(
                     key=self.CSRF_COOKIE_NAME,
                     value=csrf_token,
                     httponly=True,
                     secure=not settings.DEBUG,
-                    samesite="strict",
+                    samesite="lax" if settings.DEBUG else "strict",  # Lax for local dev (different ports)
+                    max_age=3600 * 24,  # 24 hours
+                )
+                # 2. Client-readable cookie (non-HttpOnly, allows JavaScript access)
+                response.set_cookie(
+                    key=self.CSRF_CLIENT_COOKIE_NAME,
+                    value=csrf_token,
+                    httponly=False,  # Allows JavaScript to read for X-CSRF-Token header
+                    secure=not settings.DEBUG,
+                    samesite="lax" if settings.DEBUG else "strict",
                     max_age=3600 * 24,  # 24 hours
                 )
             return response

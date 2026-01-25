@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle, XCircle, RefreshCw } from 'lucide-react';
-import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { voiceManagementService } from '@/services/voiceManagementApi';
 import logger from '@/utils/logger';
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
   },
   healthError: {
     fontSize: fontSize.xs,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     marginTop: spacing.xs,
   },
   sectionTitle: {

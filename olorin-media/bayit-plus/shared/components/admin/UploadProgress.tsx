@@ -7,7 +7,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { GlassCard } from '../ui/GlassCard';
 import { GlassProgressBar } from '../ui/GlassProgressBar';
-import { colors } from '../../theme';
+import { colors } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
 import { UploadJob } from '../../services/uploadService';
 

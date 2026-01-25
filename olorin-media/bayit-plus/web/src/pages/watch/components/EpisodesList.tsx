@@ -5,7 +5,7 @@
 
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Play, Trash2 } from 'lucide-react';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { Episode } from '../types';
 
 interface EpisodesListProps {

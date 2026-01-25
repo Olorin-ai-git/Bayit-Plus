@@ -14,7 +14,7 @@ const FLAG_IMAGES: Record<string, any> = {
   israeli: require('../assets/images/flags/israel-waving.gif'),
   usa: require('../assets/images/flags/usa-waving.gif'),
 };
-import { colors, spacing, fontSize } from '../theme';
+import { colors, spacing, fontSize } from '@olorin/design-tokens';
 import { useCultureStore, CultureTime } from '../contexts/CultureContext';
 import { cultureService } from '../services/api';
 import { isTV } from '../utils/platform';

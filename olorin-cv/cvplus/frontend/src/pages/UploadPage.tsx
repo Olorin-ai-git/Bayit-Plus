@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { GlassCard, GlassButton } from '@/components/glass';
 import { useCVUpload } from '../hooks/useCVUpload';
 import { CVAnalysisResult } from '@/services/api';
@@ -8,6 +9,7 @@ const VALID_TYPES = ['application/pdf', 'application/vnd.openxmlformats-officedo
 const MAX_SIZE = 10 * 1024 * 1024;
 
 export function UploadPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -45,12 +47,12 @@ export function UploadPage() {
 
   const isValidFile = (file: File): boolean => {
     if (!VALID_TYPES.includes(file.type)) {
-      setError('Please upload a PDF or DOCX file');
+      setError(t('upload.invalidType'));
       return false;
     }
 
     if (file.size > MAX_SIZE) {
-      setError('File size must be less than 10MB');
+      setError(t('upload.fileTooBig'));
       return false;
     }
 
@@ -67,7 +69,7 @@ export function UploadPage() {
         navigate(`/enhance/${data.job_id}`);
       },
       onError: (error) => {
-        setError(error instanceof Error ? error.message : 'Upload failed. Please try again.');
+        setError(error instanceof Error ? error.message : t('upload.uploadFailed'));
       },
     });
   };
@@ -75,8 +77,8 @@ export function UploadPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-2">Upload Your CV</h1>
-        <p className="text-gray-400">Step 1 of 3</p>
+        <h1 className="text-4xl font-bold mb-2">{t('upload.title')}</h1>
+        <p className="text-gray-400">{t('upload.step', { number: 1 })}</p>
       </div>
 
       <GlassCard className="p-8">
@@ -108,21 +110,21 @@ export function UploadPage() {
                 onClick={() => setFile(null)}
                 className="mr-2"
               >
-                Remove
+                {t('upload.remove')}
               </GlassButton>
               <GlassButton
                 variant="primary"
                 onClick={handleUpload}
                 disabled={uploadMutation.isPending}
               >
-                {uploadMutation.isPending ? 'Uploading...' : 'Upload & Analyze'}
+                {uploadMutation.isPending ? t('upload.uploading') : t('upload.uploadAnalyze')}
               </GlassButton>
             </div>
           ) : (
             <div>
               <div className="text-6xl mb-4">📤</div>
               <p className="text-xl mb-4">
-                Drag & drop your CV here, or click to browse
+                {t('upload.dragDrop')}
               </p>
               <input
                 type="file"
@@ -133,11 +135,11 @@ export function UploadPage() {
               />
               <label htmlFor="cv-upload">
                 <GlassButton variant="primary" as="span">
-                  Choose File
+                  {t('upload.chooseFile')}
                 </GlassButton>
               </label>
               <p className="text-sm text-gray-500 mt-4">
-                Supported formats: PDF, DOCX (max 10MB)
+                {t('upload.supportedFormats')}
               </p>
             </div>
           )}

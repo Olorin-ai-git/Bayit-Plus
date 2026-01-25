@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { z } from 'zod';
-import { colors, fontSize } from '@bayit/shared/theme';
+import { colors, fontSize } from '@olorin/design-tokens';
 
 /**
  * Zod schema for ScheduleDetailRow props

@@ -114,6 +114,7 @@ interface WidgetLocalState {
   [widgetId: string]: {
     isMuted: boolean;
     isVisible: boolean;
+    isMinimized: boolean;
     position?: WidgetPosition;
   };
 }
@@ -139,6 +140,7 @@ interface WidgetState {
   toggleMute: (widgetId: string) => void;
   closeWidget: (widgetId: string) => void;
   showWidget: (widgetId: string) => void;
+  toggleMinimize: (widgetId: string) => void;
   updatePosition: (widgetId: string, position: Partial<WidgetPosition>) => void;
 
   // Actions - CRUD (calls API then updates local)
@@ -186,6 +188,7 @@ export const useWidgetStore = create<WidgetState>()(
             newLocalState[widget.id] = {
               isMuted: widget.is_muted,
               isVisible: widget.is_visible,
+              isMinimized: widget.is_minimized,
               position: widget.position,
             };
           }
@@ -246,6 +249,23 @@ export const useWidgetStore = create<WidgetState>()(
         }
       },
 
+      toggleMinimize: (widgetId) => {
+        const { localState } = get();
+        const widgetState = localState[widgetId];
+        if (widgetState) {
+          const newIsMinimized = !widgetState.isMinimized;
+          set({
+            localState: {
+              ...localState,
+              [widgetId]: {
+                ...widgetState,
+                isMinimized: newIsMinimized,
+              },
+            },
+          });
+        }
+      },
+
       updatePosition: (widgetId, position) => {
         const { localState } = get();
         const widgetState = localState[widgetId];
@@ -274,6 +294,7 @@ export const useWidgetStore = create<WidgetState>()(
             [widget.id]: {
               isMuted: widget.is_muted,
               isVisible: widget.is_visible,
+              isMinimized: widget.is_minimized,
               position: widget.position,
             },
           },
@@ -361,6 +382,7 @@ export const useWidgetStore = create<WidgetState>()(
           newLocalState[widgetId] = {
             isMuted: index > 0, // First widget unmuted
             isVisible: true,
+            isMinimized: false,
             position,
           };
         });
@@ -414,6 +436,7 @@ export const useWidgetStore = create<WidgetState>()(
         return {
           isMuted: state?.isMuted ?? widget.is_muted,
           isVisible: state?.isVisible ?? widget.is_visible,
+          isMinimized: state?.isMinimized ?? widget.is_minimized,
           position: state?.position ?? widget.position,
         };
       },

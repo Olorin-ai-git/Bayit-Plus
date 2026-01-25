@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui/GlassView';
-import { colors, spacing, fontSize, borderRadius } from '../../theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { judaismService } from '../../services/api';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: isTV ? fontSize.md : fontSize.sm,
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
     fontWeight: '600',
   },
   challahEmoji: {
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
   },
   havdalahText: {
     fontSize: fontSize.xs,
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
   },
   star: {
     position: 'absolute',

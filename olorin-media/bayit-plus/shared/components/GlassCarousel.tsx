@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { GlassView } from './ui';
 import { SubtitleFlags } from './SubtitleFlags';
-import { colors, borderRadius, spacing } from '../theme';
+import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 import { useDirection } from '../hooks/useDirection';
 
 type ContentType = 'vod' | 'live' | 'podcast' | 'radio' | 'movie' | 'series' | 'channel';
@@ -461,7 +461,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   carouselFocused: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     borderWidth: 3,
     // @ts-ignore - Web CSS property for glow effect
     boxShadow: `0 0 20px ${colors.primary}80`,
@@ -516,7 +516,7 @@ const styles = StyleSheet.create({
     paddingVertical: isMobilePhone ? 4 : 8,
   },
   badgeText: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontSize: isMobilePhone ? 11 : 14,
     fontWeight: 'bold',
   },
@@ -542,9 +542,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginBottom: isMobilePhone ? 4 : 8,
     // Text shadow for better readability
-    textShadowColor: 'rgba(0, 0, 0, 0.9)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: isMobilePhone ? 3 : 4,
+    textShadow: isMobilePhone ? '0 1px 3px rgba(0, 0, 0, 0.9)' : '0 1px 4px rgba(0, 0, 0, 0.9)',
   },
   subtitle: {
     fontSize: isMobilePhone ? 13 : 18,
@@ -554,9 +552,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     // Text shadow for mobile readability
     ...(isMobilePhone && {
-      textShadowColor: 'rgba(0, 0, 0, 0.8)',
-      textShadowOffset: { width: 0, height: 1 },
-      textShadowRadius: 2,
+      textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
     }),
   },
   description: {
@@ -566,9 +562,7 @@ const styles = StyleSheet.create({
     maxWidth: isMobilePhone ? 280 : 500,
     // Text shadow for mobile readability
     ...(isMobilePhone && {
-      textShadowColor: 'rgba(0, 0, 0, 0.8)',
-      textShadowOffset: { width: 0, height: 1 },
-      textShadowRadius: 2,
+      textShadow: '0 1px 2px rgba(0, 0, 0, 0.8)',
     }),
   },
   playButtonContainer: {
@@ -589,7 +583,7 @@ const styles = StyleSheet.create({
   },
   playIcon: {
     fontSize: isMobilePhone ? 14 : 18,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   playText: {
     fontSize: isMobilePhone ? 14 : 18,
@@ -625,7 +619,7 @@ const styles = StyleSheet.create({
   },
   navButtonFocused: {
     borderWidth: 3,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     backgroundColor: 'rgba(139, 92, 246, 0.3)',
     transform: [{ scale: 1.1 }],
   },
@@ -650,7 +644,7 @@ const styles = StyleSheet.create({
   },
   dotActive: {
     width: isMobilePhone ? 16 : 24,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary[600],
   },
   actionButtons: {
     position: 'absolute',

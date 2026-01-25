@@ -11,11 +11,11 @@ const {
   warning,
   error,
   glass,
-} = require('../shared/design-tokens/colors.cjs')
-const { fontFamily } = require('../shared/design-tokens/typography.cjs')
-const { boxShadow } = require('../shared/design-tokens/shadows.cjs')
-const { keyframes, animation } = require('../shared/design-tokens/animations.cjs')
-const { borderRadius } = require('../shared/design-tokens/spacing.cjs')
+} = require('@olorin/design-tokens/colors')
+const { fontFamily } = require('@olorin/design-tokens/typography')
+const { boxShadow } = require('@olorin/design-tokens/shadows')
+const { keyframes, animation } = require('@olorin/design-tokens/animations')
+const { borderRadius } = require('@olorin/design-tokens/spacing')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {

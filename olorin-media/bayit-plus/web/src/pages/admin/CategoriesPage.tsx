@@ -3,11 +3,11 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react'
 import { adminContentService } from '@/services/adminApi'
-import { colors, spacing, borderRadius } from '@bayit/shared/theme'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassInput } from '@bayit/shared/ui'
 import { GlassTable, GlassTableCell, type GlassTableColumn } from '@bayit/shared/ui/web'
 import { useDirection } from '@/hooks/useDirection'
-import { useModal } from '@/contexts/ModalContext'
+import { useNotifications } from '@/hooks/useNotifications'
 import logger from '@/utils/logger'
 import type { Category, PaginatedResponse } from '@/types/content'
 
@@ -24,7 +24,7 @@ interface EditingCategory extends Partial<Category> {
 export default function CategoriesPage() {
   const { t } = useTranslation()
   const { isRTL, textAlign, flexDirection } = useDirection()
-  const { showConfirm } = useModal()
+  const notifications = useNotifications()
   const [items, setItems] = useState<Category[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -79,23 +79,31 @@ export default function CategoriesPage() {
   }
 
   const handleDelete = (id: string) => {
-    showConfirm(
-      t('admin.content.confirmDelete'),
-      async () => {
-        try {
-          setDeleting(id)
-          await adminContentService.deleteCategory(id)
-          setItems(items.filter((item) => item.id !== id))
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : 'Failed to delete category'
-          logger.error(msg, 'CategoriesPage', err)
-          setError(msg)
-        } finally {
-          setDeleting(null)
-        }
+    notifications.show({
+      level: 'warning',
+      title: t('common.confirm', 'Confirm'),
+      message: t('admin.content.confirmDelete'),
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action' as const,
+        onPress: async () => {
+          try {
+            setDeleting(id)
+            await adminContentService.deleteCategory(id)
+            setItems(items.filter((item) => item.id !== id))
+            notifications.showSuccess(t('admin.content.deleteSuccess', 'Category deleted'), 'Success')
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : 'Failed to delete category'
+            logger.error(msg, 'CategoriesPage', err)
+            setError(msg)
+            notifications.showError(msg, 'Error')
+          } finally {
+            setDeleting(null)
+          }
+        },
       },
-      { destructive: true, confirmText: t('common.delete', 'Delete') }
-    )
+      dismissable: true,
+    })
   }
 
   const columns: GlassTableColumn<Category>[] = [
@@ -292,7 +300,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     flex: 1,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     fontSize: 14,
   },
   editForm: {
@@ -335,7 +343,7 @@ const styles = StyleSheet.create({
   saveBtn: {
     flex: 1,
     padding: spacing.md,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: borderRadius.md,
     alignItems: 'center',
   },

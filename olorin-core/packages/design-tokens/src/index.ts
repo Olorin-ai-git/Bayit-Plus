@@ -19,6 +19,8 @@ export * from './spacing';
 export * from './typography';
 export * from './shadows';
 export * from './animations';
+export * from './adminButtonStyles';
+export * from './touchTarget';
 
 // Import for composite objects
 import {
@@ -45,7 +47,10 @@ import {
   fontWeight,
   lineHeight,
   letterSpacing,
+  typography,
 } from './typography';
+
+import { touchTarget } from './touchTarget';
 
 import { boxShadow, shadowRN, backdropBlur } from './shadows';
 
@@ -146,6 +151,8 @@ export const reactNativeTheme = {
   fontSizeTV: theme.fontSizeTV,
   fontWeight: theme.fontWeight,
   lineHeight: theme.lineHeight,
+  typography: typography,
+  touchTarget: touchTarget,
   shadowRN: theme.shadowRN,
   glass: theme.glass,
 };

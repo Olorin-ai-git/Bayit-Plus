@@ -38,6 +38,9 @@ Implementation notes and session reports:
 - Frontend/backend updates
 - Data migration notes
 - Session completion reports
+- **UI/UX Implementations**:
+  - `MISSING_ASSETS_IMPLEMENTATION.md` - Complete technical specification for missing asset fixes
+  - `MISSING_ASSETS_SUMMARY.md` - Executive summary of missing assets implementation
 
 ### `/operations/`
 Database operations and maintenance:
@@ -45,6 +48,13 @@ Database operations and maintenance:
 - Content organization operations
 - Database maintenance tasks
 - Data cleanup operations
+
+### `/reviews/`
+Code reviews and assessments:
+- Multi-language portal MongoDB assessment
+- Security audits
+- Performance reviews
+- Data architecture assessments
 
 ## 🗂️ Additional Documentation Locations
 
@@ -96,6 +106,7 @@ Located in `/backend/docs/`:
 - **Deployment**: Check `/deployment/` and `/backend/docs/deployment/`
 - **Testing**: Check `/testing/` and `/backend/scripts/testing/`
 - **Localization**: Check `/backend/docs/localization/`
+- **Code Reviews**: Check `/reviews/` for assessments and audits
 
 ### By Platform
 - **Web**: `/web/` directory

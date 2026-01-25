@@ -436,9 +436,16 @@ class Podcast(Document):
     author_en: Optional[str] = None
     author_es: Optional[str] = None
     cover: Optional[str] = None
-    category: Optional[str] = None
-    category_en: Optional[str] = None
-    category_es: Optional[str] = None
+    category: Optional[str] = None  # Hebrew (default)
+    category_en: Optional[str] = None  # English
+    category_es: Optional[str] = None  # Spanish
+    category_fr: Optional[str] = None  # French
+    category_it: Optional[str] = None  # Italian
+    category_hi: Optional[str] = None  # Hindi
+    category_ta: Optional[str] = None  # Tamil
+    category_bn: Optional[str] = None  # Bengali
+    category_ja: Optional[str] = None  # Japanese
+    category_zh: Optional[str] = None  # Chinese
 
     # Culture association (Global Cultures feature)
     culture_id: str = "israeli"  # Default for backward compatibility
@@ -523,6 +530,17 @@ class PodcastEpisode(Document):
     available_languages: List[str] = Field(default_factory=list)  # ["he", "en"]
     original_language: str = ""  # Populated at runtime from detection or config
     translation_status: str = "pending"  # pending, processing, completed, failed
+
+    # Translation stage tracking (for resumption after failures)
+    translation_stages: Dict[str, Any] = Field(default_factory=dict)  # Stores completed stage data
+    # Example structure:
+    # {
+    #   "downloaded": {"audio_path": "/tmp/...", "timestamp": "..."},
+    #   "vocals_separated": {"vocals_path": "/tmp/...", "background_path": "/tmp/...", "timestamp": "..."},
+    #   "transcribed": {"transcript": "...", "detected_lang": "en", "timestamp": "..."},
+    #   "translated": {"translated_text": "...", "target_lang": "hebrew", "timestamp": "..."},
+    #   "tts_generated": {"tts_path": "/tmp/...", "timestamp": "..."}
+    # }
 
     # Retry tracking
     retry_count: int = 0

@@ -74,13 +74,17 @@ export default function SearchPage() {
     },
   });
 
-  // Semantic search hook
+  // Semantic search hook (scene search for timestamp-based results)
   const {
     results: semanticResults,
     loading: semanticLoading,
     error: semanticError,
-    performSearch: performSemanticSearch,
-  } = useSceneSearch();
+    search: performSemanticSearch,
+  } = useSceneSearch({
+    contentId: undefined, // Search across all content
+    seriesId: undefined,
+    language: 'he',
+  });
 
   // Sync query with URL params
   useEffect(() => {

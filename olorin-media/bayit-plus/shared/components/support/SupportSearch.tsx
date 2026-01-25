@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
 import { useSupportStore } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   searchContainerFocused: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   searchIcon: {
     fontSize: isTV ? 20 : 16,

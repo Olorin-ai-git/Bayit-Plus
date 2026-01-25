@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, fontSize, borderRadius } from '../../theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');

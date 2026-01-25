@@ -37,62 +37,87 @@ class LiveSubtitleService {
     onSubtitle: SubtitleCallback,
     onError: ErrorCallback
   ): Promise<void> {
-    try {
-      const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
-      const token = authData?.state?.token
-      if (!token) throw new Error('Not authenticated')
-
-      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      const wsHost = API_BASE_URL.replace(/^https?:\/\//, '')
-      const wsUrl = `${wsProtocol}//${wsHost}/ws/live/${channelId}/subtitles?target_lang=${targetLang}`
-
-      this.ws = new WebSocket(wsUrl)
-
-      this.ws.onopen = async () => {
-        logger.debug('WebSocket connected, sending authentication', 'liveSubtitleService')
-        // Send authentication message (SECURITY: token via message, not URL)
-        this.ws?.send(JSON.stringify({ type: 'authenticate', token }))
-      }
-
-      this.ws.onmessage = async (event) => {
-        try {
-          const msg = JSON.parse(event.data)
-          logger.debug('Message received', 'liveSubtitleService', { type: msg.type, msg })
-          if (msg.type === 'connected') {
-            logger.debug(`Authenticated - Source: ${msg.source_lang}, Target: ${msg.target_lang}`, 'liveSubtitleService')
-            this.isConnected = true
-            await this.startAudioCapture(videoElement)
-          } else if (msg.type === 'subtitle') {
-            logger.debug('Subtitle received', 'liveSubtitleService', { text: msg.data.text, data: msg.data })
-            logger.debug('Calling onSubtitle callback', 'liveSubtitleService', msg.data)
-            onSubtitle(msg.data)
-            logger.debug('onSubtitle callback completed', 'liveSubtitleService')
-          } else if (msg.type === 'quota_exceeded') {
-            logger.error('Quota exceeded', 'liveSubtitleService', msg.message)
-            onError(`Usage limit reached: ${msg.message}`)
-            this.disconnect()
-          } else if (msg.type === 'error') {
-            logger.error('Server error', 'liveSubtitleService', msg.message)
-            onError(msg.message)
-          }
-        } catch (error) {
-          logger.error('WebSocket parse error', 'liveSubtitleService', error)
+    return new Promise((resolve, reject) => {
+      try {
+        const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
+        const token = authData?.state?.token
+        if (!token) {
+          reject(new Error('Not authenticated'))
+          return
         }
-      }
 
-      this.ws.onerror = (error) => {
-        logger.error('WebSocket error', 'liveSubtitleService', error)
-        onError('Connection error')
-        this.isConnected = false
-      }
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+        const wsHost = API_BASE_URL.replace(/^https?:\/\//, '')
+        const wsUrl = `${wsProtocol}//${wsHost}/ws/live/${channelId}/subtitles?target_lang=${targetLang}`
 
-      this.ws.onclose = () => {
-        this.isConnected = false
-        this.stopAudioCapture()
+        this.ws = new WebSocket(wsUrl)
+
+        // Timeout if connection takes too long
+        const connectionTimeout = setTimeout(() => {
+          if (!this.isConnected) {
+            logger.error('Connection timeout', 'liveSubtitleService')
+            this.disconnect()
+            reject(new Error('Connection timeout'))
+          }
+        }, 10000) // 10 second timeout
+
+        this.ws.onopen = async () => {
+          logger.debug('WebSocket connected, sending authentication', 'liveSubtitleService')
+          // Send authentication message (SECURITY: token via message, not URL)
+          this.ws?.send(JSON.stringify({ type: 'authenticate', token }))
+        }
+
+        this.ws.onmessage = async (event) => {
+          try {
+            const msg = JSON.parse(event.data)
+            logger.debug('Message received', 'liveSubtitleService', { type: msg.type, msg })
+            if (msg.type === 'connected') {
+              logger.debug(`Authenticated - Source: ${msg.source_lang}, Target: ${msg.target_lang}`, 'liveSubtitleService')
+              this.isConnected = true
+              clearTimeout(connectionTimeout)
+              await this.startAudioCapture(videoElement)
+              resolve() // Connection successful
+            } else if (msg.type === 'subtitle') {
+              logger.debug('Subtitle received', 'liveSubtitleService', { text: msg.data.text, data: msg.data })
+              logger.debug('Calling onSubtitle callback', 'liveSubtitleService', msg.data)
+              onSubtitle(msg.data)
+              logger.debug('onSubtitle callback completed', 'liveSubtitleService')
+            } else if (msg.type === 'quota_exceeded') {
+              logger.error('Quota exceeded', 'liveSubtitleService', msg.message)
+              clearTimeout(connectionTimeout)
+              onError(`Usage limit reached: ${msg.message}`)
+              this.disconnect()
+              reject(new Error(msg.message))
+            } else if (msg.type === 'error') {
+              logger.error('Server error', 'liveSubtitleService', msg.message)
+              clearTimeout(connectionTimeout)
+              onError(msg.message)
+              reject(new Error(msg.message))
+            }
+          } catch (error) {
+            logger.error('WebSocket parse error', 'liveSubtitleService', error)
+          }
+        }
+
+        this.ws.onerror = (error) => {
+          logger.error('WebSocket error', 'liveSubtitleService', error)
+          clearTimeout(connectionTimeout)
+          onError('Connection error')
+          this.isConnected = false
+          reject(new Error('Connection error'))
+        }
+
+        this.ws.onclose = () => {
+          clearTimeout(connectionTimeout)
+          this.isConnected = false
+          this.stopAudioCapture()
+        }
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : 'Connection failed'
+        onError(errorMsg)
+        reject(error)
       }
-    } catch (error) {
-      onError(error instanceof Error ? error.message : 'Connection failed')
-    }
+    })
   }
 
   /**

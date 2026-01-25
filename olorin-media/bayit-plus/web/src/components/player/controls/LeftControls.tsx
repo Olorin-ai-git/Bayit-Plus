@@ -9,7 +9,7 @@ import {
   Play, Pause, SkipBack, SkipForward,
   ChevronLeft, ChevronRight, RotateCcw, Volume2, VolumeX,
 } from 'lucide-react'
-import { colors } from '@bayit/shared/theme'
+import { colors } from '@olorin/design-tokens'
 import { GlassSlider } from '@bayit/shared/ui'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 import { isTV } from '@bayit/shared/utils/platform'

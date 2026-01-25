@@ -17,7 +17,6 @@ import {
   ScrollView,
   Switch,
   Pressable,
-  Alert,
   Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -26,7 +25,8 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView, GlassButton } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
-import { spacing, colors, typography, touchTarget } from '../theme';
+import { useNotifications } from '@olorin/glass-ui/hooks';
+import { spacing, colors, typography, touchTarget } from '@olorin/design-tokens';
 
 type SettingsItemBase = {
   id: string;
@@ -65,6 +65,7 @@ export const SettingsScreenMobile: React.FC = () => {
   const navigation = useNavigation<any>();
   const { user } = useAuthStore();
   const { isRTL } = useDirection();
+  const notifications = useNotifications();
 
   // Settings state
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -154,7 +155,7 @@ export const SettingsScreenMobile: React.FC = () => {
           subtitle: user?.email || '',
           onPress: () => {
             handlePress();
-            Alert.alert(t('settings.editProfile'), t('settings.comingSoon'));
+            notifications.showInfo(t('settings.comingSoon'), t('settings.editProfile'));
           },
           showChevron: true,
         },
@@ -183,7 +184,7 @@ export const SettingsScreenMobile: React.FC = () => {
           title: t('settings.terms'),
           onPress: () => {
             handlePress();
-            Alert.alert(t('settings.terms'), t('settings.comingSoon'));
+            notifications.showInfo(t('settings.comingSoon'), t('settings.terms'));
           },
           showChevron: true,
         },
@@ -192,7 +193,7 @@ export const SettingsScreenMobile: React.FC = () => {
           title: t('settings.privacy'),
           onPress: () => {
             handlePress();
-            Alert.alert(t('settings.privacy'), t('settings.comingSoon'));
+            notifications.showInfo(t('settings.comingSoon'), t('settings.privacy'));
           },
           showChevron: true,
         },

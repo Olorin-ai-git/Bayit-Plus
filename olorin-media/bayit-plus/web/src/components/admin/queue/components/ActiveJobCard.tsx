@@ -8,7 +8,7 @@ import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-nati
 import { useTranslation } from 'react-i18next';
 import { XCircle } from 'lucide-react';
 import { GlassBadge } from '@bayit/shared/ui';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { QueueJob } from '../types';
 import { formatFileSize, formatSpeed, formatETA } from '../utils';
 import { StageIndicator } from './StageIndicator';
@@ -47,15 +47,15 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
         {onCancelJob && (
           <Pressable
             onPress={handleCancel}
-            style={[styles.cancelButton, { backgroundColor: colors.error + '15' }]}
+            style={[styles.cancelButton, { backgroundColor: colors.error.DEFAULT + '15' }]}
             disabled={cancellingJob}
           >
             {cancellingJob ? (
-              <ActivityIndicator size="small" color={colors.error} />
+              <ActivityIndicator size="small" color={colors.error.DEFAULT} />
             ) : (
-              <XCircle size={20} color={colors.error} />
+              <XCircle size={20} color={colors.error.DEFAULT} />
             )}
-            <Text style={[styles.cancelText, { color: colors.error }]}>
+            <Text style={[styles.cancelText, { color: colors.error.DEFAULT }]}>
               {t('admin.uploads.cancelUpload', 'Cancel')}
             </Text>
           </Pressable>
@@ -82,13 +82,13 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
         />
 
         {job.current_stage && (
-          <Text style={[styles.currentStage, { textAlign, color: colors.primary }]}>
+          <Text style={[styles.currentStage, { textAlign, color: colors.primary.DEFAULT }]}>
             {job.current_stage}
           </Text>
         )}
 
         <View style={[styles.progressBarBg, { backgroundColor: colors.glassBorder }]}>
-          <View style={[styles.progressBarFill, { width: `${job.progress}%`, backgroundColor: colors.primary }]} />
+          <View style={[styles.progressBarFill, { width: `${job.progress}%`, backgroundColor: colors.primary.DEFAULT }]} />
         </View>
 
         <StageError job={job} />

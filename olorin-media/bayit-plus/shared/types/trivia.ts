@@ -7,7 +7,13 @@
 
 export interface TriviaFact {
   fact_id: string
-  text: string
+  text: string  // Kept for backward compatibility
+
+  // NEW: Multilingual text fields (optional)
+  text_he?: string
+  text_en?: string
+  text_es?: string
+
   trigger_time: number | null
   trigger_type: 'time' | 'scene' | 'actor' | 'random'
   category: TriviaCategory
@@ -46,6 +52,7 @@ export interface TriviaPreferences {
   categories: TriviaCategory[]
   auto_dismiss: boolean
   display_duration: number
+  display_languages: string[]  // NEW: ['he', 'en', 'es']
 }
 
 export const DEFAULT_TRIVIA_PREFERENCES: TriviaPreferences = {
@@ -54,6 +61,7 @@ export const DEFAULT_TRIVIA_PREFERENCES: TriviaPreferences = {
   categories: ['cast', 'production', 'cultural'],
   auto_dismiss: true,
   display_duration: 10,
+  display_languages: ['he', 'en'],  // NEW: Default Hebrew + English
 }
 
 // ============ TRIVIA SETTINGS ============
@@ -132,4 +140,24 @@ export function getFrequencyInfo(frequency: TriviaFrequency): TriviaFrequencyInf
 export function getIntervalForFrequency(frequency: TriviaFrequency): number {
   const info = getFrequencyInfo(frequency)
   return info?.interval_seconds ?? 300
+}
+
+// ============ LANGUAGE INFO ============
+
+export interface TriviaLanguageInfo {
+  code: string
+  name: string
+  nativeName: string
+  flag: string
+  rtl: boolean
+}
+
+export const TRIVIA_LANGUAGES: TriviaLanguageInfo[] = [
+  { code: 'he', name: 'Hebrew', nativeName: 'עברית', flag: '🇮🇱', rtl: true },
+  { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸', rtl: false },
+  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸', rtl: false },
+]
+
+export function getTriviaLanguageInfo(code: string): TriviaLanguageInfo | undefined {
+  return TRIVIA_LANGUAGES.find(lang => lang.code === code)
 }

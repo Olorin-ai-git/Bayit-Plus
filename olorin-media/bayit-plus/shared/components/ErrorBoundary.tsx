@@ -6,7 +6,7 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, Text, Pressable, Platform } from 'react-native';
-import { colors, spacing, borderRadius } from '../theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import logger, { getCorrelationId } from '../utils/logger';
 
 // Sentry-like interface for error capture
@@ -131,7 +131,7 @@ export class ErrorBoundary extends Component<Props, State> {
               className="border-2"
               style={({ focused }) => [
                 {
-                  backgroundColor: colors.primary,
+                  backgroundColor: colors.primary.DEFAULT,
                   paddingHorizontal: spacing.xl,
                   paddingVertical: spacing.md,
                   borderRadius: borderRadius.full,

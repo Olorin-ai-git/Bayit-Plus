@@ -8,7 +8,7 @@ import { View, Text, ScrollView, Pressable, ActivityIndicator, StyleSheet } from
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { GlassBadge } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { QueueJob } from '../types';
 import { isDuplicate } from '../utils';
 import { StatusIcon } from './StatusIcon';
@@ -52,14 +52,14 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
         </Pressable>
         {onClearCompleted && showCompleted && (
           <Pressable
-            style={[styles.clearButton, { backgroundColor: colors.error + '15', borderColor: colors.error + '30' }]}
+            style={[styles.clearButton, { backgroundColor: colors.error.DEFAULT + '15', borderColor: colors.error.DEFAULT + '30' }]}
             onPress={onClearCompleted}
             disabled={clearingCompleted}
           >
             {clearingCompleted ? (
-              <ActivityIndicator size={14} color={colors.error} />
+              <ActivityIndicator size={14} color={colors.error.DEFAULT} />
             ) : (
-              <Trash2 size={14} color={colors.error} />
+              <Trash2 size={14} color={colors.error.DEFAULT} />
             )}
           </Pressable>
         )}
@@ -95,7 +95,7 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
                   <Text
                     style={[
                       styles.errorMessage,
-                      { color: isJobDuplicate ? (colors.info || colors.primary) : colors.error }
+                      { color: isJobDuplicate ? (colors.info.DEFAULT || colors.primary.DEFAULT) : colors.error.DEFAULT }
                     ]}
                     numberOfLines={2}
                   >

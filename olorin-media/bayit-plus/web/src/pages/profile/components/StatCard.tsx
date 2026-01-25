@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { GlassView } from '@bayit/shared/ui';
-import { colors, spacing, fontSize, borderRadius } from '@bayit/shared/theme';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 
 interface StatCardProps {
   icon: any;

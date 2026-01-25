@@ -15,6 +15,7 @@ import { TriviaToggleRow } from './TriviaToggleRow'
 import { TriviaFrequencySelector } from './TriviaFrequencySelector'
 import { TriviaCategorySelector } from './TriviaCategorySelector'
 import { TriviaDurationSelector } from './TriviaDurationSelector'
+import { TriviaLanguageSettings } from './TriviaLanguageSettings'
 import { triviaSettingsStyles as styles, getTvStyles } from './triviaSettingsStyles'
 
 interface TriviaSettingsSectionProps {
@@ -50,6 +51,25 @@ export function TriviaSettingsSection({ isRTL = false }: TriviaSettingsSectionPr
 
   const handleDisplayDurationChange = async (duration: number) => {
     await updatePreferences({ display_duration: duration })
+  }
+
+  const handleLanguageToggle = async (langCode: string) => {
+    const current = [...preferences.display_languages]
+    const index = current.indexOf(langCode)
+
+    if (index > -1) {
+      // Remove language (keep at least one)
+      if (current.length > 1) {
+        current.splice(index, 1)
+      }
+    } else {
+      // Add language (max 3)
+      if (current.length < 3) {
+        current.push(langCode)
+      }
+    }
+
+    await updatePreferences({ display_languages: current })
   }
 
   return (
@@ -97,6 +117,14 @@ export function TriviaSettingsSection({ isRTL = false }: TriviaSettingsSectionPr
             isLoading={isLoading}
             isHebrew={isHebrew}
             onDurationChange={handleDisplayDurationChange}
+          />
+
+          <View style={styles.divider} />
+          <TriviaLanguageSettings
+            displayLanguages={preferences.display_languages}
+            isLoading={isLoading}
+            isHebrew={isHebrew}
+            onLanguageToggle={handleLanguageToggle}
           />
         </>
       )}

@@ -5,7 +5,7 @@
 
 import { View, Text, StyleSheet } from 'react-native';
 import { GlassCard } from '@bayit/shared/ui';
-import { colors } from '@bayit/shared/theme';
+import { colors } from '@olorin/design-tokens';
 import { ReactNode } from 'react';
 
 interface EmptyStateProps {
