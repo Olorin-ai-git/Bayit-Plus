@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Platform, Alert } from "react-native";
+import { Platform } from "react-native";
 import { speechService } from "../services/speech";
 import type { SpeechRecognitionResult } from "../services/speech";
 import { ttsService } from "../services/tts";
@@ -21,6 +21,7 @@ import {
 import { useVoiceSettingsStore } from "@bayit/shared-stores";
 import { useNavigation } from "@react-navigation/native";
 import { usePiPWidgetStore } from "../stores/pipWidgetStore";
+import { Notifications } from "@olorin/glass-ui/hooks";
 
 import logger from '@/utils/logger';
 
@@ -88,7 +89,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
   // Request permissions
   const requestPermissions = useCallback(async (): Promise<boolean> => {
     if (Platform.OS !== "ios") {
-      Alert.alert("Not Supported", "Voice commands are only available on iOS");
+      Notifications.showWarning("Voice commands are only available on iOS", "Not Supported");
       return false;
     }
 
@@ -107,7 +108,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
         message = "Speech recognition is restricted on this device.";
       }
 
-      Alert.alert("Permission Required", message);
+      Notifications.showWarning(message, "Permission Required");
       setHasPermissions(false);
       return false;
     }
