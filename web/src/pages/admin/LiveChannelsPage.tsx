@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, Globe, ChevronDown, ChevronUp } from 'lucide-react'
 import { adminContentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
-import { GlassButton, GlassInput, GlassView, GlassToggle, GlassSelect } from '@bayit/shared/ui'
+import { GlassButton, GlassInput, GlassView, GlassToggle, GlassSelect, GlassPageHeader } from '@bayit/shared/ui'
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web'
 import { useDirection } from '@/hooks/useDirection'
-import { useModal } from '@/contexts/ModalContext'
+import { useNotifications } from '@olorin/glass-ui/hooks'
 import logger from '@/utils/logger'
 import type { LiveChannel, PaginatedResponse } from '@/types/content'
 
@@ -38,7 +39,7 @@ const SUPPORTED_LANGUAGES = [
 export default function LiveChannelsPage() {
   const { t } = useTranslation()
   const { isRTL, textAlign, flexDirection } = useDirection()
-  const { showConfirm } = useModal()
+  const notifications = useNotifications()
   const [items, setItems] = useState<LiveChannel[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -99,23 +100,28 @@ export default function LiveChannelsPage() {
   }
 
   const handleDelete = (id: string) => {
-    showConfirm(
-      t('admin.content.confirmDelete'),
-      async () => {
-        try {
-          setDeleting(id)
-          await adminContentService.deleteLiveChannel(id)
-          setItems(items.filter((item) => item.id !== id))
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : 'Failed to delete live channel'
-          logger.error(msg, 'LiveChannelsPage', err)
-          setError(msg)
-        } finally {
-          setDeleting(null)
-        }
+    notifications.show({
+      level: 'warning',
+      message: t('admin.content.confirmDelete'),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            setDeleting(id)
+            await adminContentService.deleteLiveChannel(id)
+            setItems(items.filter((item) => item.id !== id))
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : 'Failed to delete live channel'
+            logger.error(msg, 'LiveChannelsPage', err)
+            setError(msg)
+          } finally {
+            setDeleting(null)
+          }
+        },
       },
-      { destructive: true, confirmText: t('common.delete', 'Delete') }
-    )
+    })
   }
 
   const columns = [
@@ -191,33 +197,39 @@ export default function LiveChannelsPage() {
     },
   ]
 
+  const pageConfig = ADMIN_PAGE_CONFIG['live-channels'];
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.liveChannels', { defaultValue: 'Live Channels' })}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
-            {t('admin.liveChannels.subtitle', { defaultValue: 'Manage live TV channels' })}
-          </Text>
-        </View>
-        <Pressable
-          onPress={() => {
-            setEditingId('new')
-            setEditData({
-              is_active: true,
-              order: items.length + 1,
-              supports_live_subtitles: false,
-              primary_language: 'he',
-              available_translation_languages: ['en', 'es', 'ar']
-            })
-            setShowSubtitleSettings(false)
-          }}
-          style={styles.addButton}
-        >
-          <Plus size={18} color={colors.text} />
-          <Text style={styles.addButtonText}>{t('admin.actions.new', { defaultValue: 'New' })}</Text>
-        </Pressable>
-      </View>
+      <GlassPageHeader
+        title={t('admin.titles.liveChannels', { defaultValue: 'Live Channels' })}
+        subtitle={t('admin.liveChannels.subtitle', { defaultValue: 'Manage live TV channels' })}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        badge={items.length}
+        isRTL={isRTL}
+        action={
+          <Pressable
+            onPress={() => {
+              setEditingId('new')
+              setEditData({
+                is_active: true,
+                order: items.length + 1,
+                supports_live_subtitles: false,
+                primary_language: 'he',
+                available_translation_languages: ['en', 'es', 'ar']
+              })
+              setShowSubtitleSettings(false)
+            }}
+            style={styles.addButton}
+          >
+            <Plus size={18} color={colors.text} />
+            <Text style={styles.addButtonText}>{t('admin.actions.new', { defaultValue: 'New' })}</Text>
+          </Pressable>
+        }
+      />
 
       {error && (
         <View style={[styles.errorContainer, { marginBottom: spacing.lg }]}>
