@@ -379,10 +379,10 @@ export default function SubtitleControls({
           (enabled || showLanguageMenu) && styles.buttonActive,
         ]}
       >
-        <Subtitles size={24} color={enabled ? colors.primary : colors.textSecondary} />
+        <Subtitles size={22} color={enabled ? colors.primary.DEFAULT : colors.textSecondary} />
         {currentLangInfo && enabled && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{currentLangInfo.code.toUpperCase()}</Text>
+          <View style={styles.flagBadge}>
+            <Text style={styles.flagText}>{currentLangInfo.flag}</Text>
           </View>
         )}
       </Pressable>
@@ -406,23 +406,30 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.4)',
+    // @ts-ignore - Web-specific CSS
+    backdropFilter: 'blur(12px)',
+    // @ts-ignore - Web-specific CSS
+    boxShadow: '0 4px 12px rgba(139, 92, 246, 0.15)',
   },
-  badge: {
+  flagBadge: {
     position: 'absolute',
     bottom: 2,
     right: 2,
-    backgroundColor: colors.primary.DEFAULT,
-    borderRadius: 8,
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-    minWidth: 20,
+    width: 18,
+    height: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.5)',
   },
-  badgeText: {
-    color: colors.textPrimary,
-    fontSize: 9,
-    fontWeight: '700',
-    textAlign: 'center',
+  flagText: {
+    fontSize: 11,
+    lineHeight: 13,
   },
   langText: {
     fontSize: 20,
