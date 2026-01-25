@@ -2,10 +2,14 @@ import json
 import os
 from functools import lru_cache
 
+from dotenv import load_dotenv
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
 
 from app.core.olorin_config import OlorinSettings
+
+# Load .env file before initializing settings (required for nested configs)
+load_dotenv()
 
 
 class Settings(BaseSettings):
