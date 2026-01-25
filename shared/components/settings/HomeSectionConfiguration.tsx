@@ -9,10 +9,10 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { GlassView, GlassButton } from '../ui';
 import { GlassReorderableList } from '../ui/GlassReorderableList';
 import { GlassSectionItem } from '../ui/GlassSectionItem';
@@ -26,6 +26,7 @@ export const HomeSectionConfiguration: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const { isRTL, textAlign, flexDirection } = useDirection();
+  const notifications = useNotifications();
 
   const {
     preferences,
@@ -59,11 +60,8 @@ export const HomeSectionConfiguration: React.FC = () => {
   // Show error alert if error occurs
   useEffect(() => {
     if (error) {
-      Alert.alert(
-        t('common.error', 'Error'),
-        error,
-        [{ text: t('common.ok', 'OK'), onPress: clearError }]
-      );
+      notifications.showError(error, t('common.error', 'Error'));
+      clearError();
     }
   }, [error, t, clearError]);
 
@@ -99,18 +97,17 @@ export const HomeSectionConfiguration: React.FC = () => {
   };
 
   const handleReset = () => {
-    Alert.alert(
-      t('settings.resetToDefault', 'Reset to Default'),
-      t('settings.resetConfirmMessage', 'Are you sure you want to reset home page sections to their default configuration?'),
-      [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-        {
-          text: t('common.reset', 'Reset'),
-          style: 'destructive',
-          onPress: resetToDefaults,
-        },
-      ]
-    );
+    notifications.show({
+      level: 'warning',
+      title: t('settings.resetToDefault', 'Reset to Default'),
+      message: t('settings.resetConfirmMessage', 'Are you sure you want to reset home page sections to their default configuration?'),
+      dismissable: true,
+      action: {
+        label: t('common.reset', 'Reset'),
+        type: 'action',
+        onPress: resetToDefaults,
+      },
+    });
   };
 
   const renderVisibleSection = (
