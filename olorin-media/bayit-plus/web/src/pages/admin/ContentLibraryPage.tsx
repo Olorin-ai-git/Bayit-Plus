@@ -5,9 +5,10 @@ import { Search, X, AlertCircle, RefreshCw, Trash2, Star, StarOff, Filter, Merge
 import HierarchicalContentTable from '@/components/admin/HierarchicalContentTable'
 import MergeWizard from '@/components/admin/content/MergeWizard'
 import { adminContentService } from '@/services/adminApi'  // Web-specific version with correct auth store
-import { GlassInput, GlassSelect, GlassButton, GlassCheckbox } from '@bayit/shared/ui'
+import { GlassInput, GlassSelect, GlassButton, GlassCheckbox, GlassPageHeader } from '@bayit/shared/ui'
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { useDirection } from '@/hooks/useDirection'
-import { useModal } from '@/contexts/ModalContext'
+import { useNotifications } from '@olorin/glass-ui/hooks'
 import logger from '@/utils/logger'
 import { spacing, borderRadius, colors } from '@olorin/design-tokens'
 
@@ -37,7 +38,7 @@ interface Pagination {
 export default function ContentLibraryPage() {
   const { t } = useTranslation()
   const { isRTL, textAlign, flexDirection } = useDirection()
-  const { showConfirm, showSuccess } = useModal()
+  const notifications = useNotifications()
   const [items, setItems] = useState<ContentItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -133,21 +134,26 @@ export default function ContentLibraryPage() {
   }
 
   const handleDeleteContent = (id: string) => {
-    showConfirm(
-      t('admin.content.confirmDelete'),
-      async () => {
-        try {
-          await adminContentService.deleteContent(id)
-          // Reload content to reflect the deletion
-          await loadContent()
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : 'Failed to delete content'
-          logger.error(msg, 'ContentLibraryPage', err)
-          setError(msg)
-        }
+    notifications.show({
+      level: 'warning',
+      message: t('admin.content.confirmDelete'),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await adminContentService.deleteContent(id)
+            // Reload content to reflect the deletion
+            await loadContent()
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : 'Failed to delete content'
+            logger.error(msg, 'ContentLibraryPage', err)
+            setError(msg)
+          }
+        },
       },
-      { destructive: true, confirmText: t('common.delete', 'Delete') }
-    )
+    })
   }
 
   const handleTogglePublish = async (id: string) => {
@@ -186,28 +192,33 @@ export default function ContentLibraryPage() {
   const handleBatchDelete = () => {
     if (selectedIds.length === 0) return
 
-    showConfirm(
-      t('admin.content.confirmBatchDelete', {
+    notifications.show({
+      level: 'warning',
+      message: t('admin.content.confirmBatchDelete', {
         count: selectedIds.length,
         defaultValue: `Are you sure you want to delete ${selectedIds.length} item(s)?`,
       }),
-      async () => {
-        setIsBatchProcessing(true)
-        try {
-          await adminContentService.batchDeleteContent(selectedIds)
-          setSelectedIds([])
-          setSelectedItemsData([])
-          await loadContent()
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : 'Failed to delete content'
-          logger.error(msg, 'ContentLibraryPage', err)
-          setError(msg)
-        } finally {
-          setIsBatchProcessing(false)
-        }
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          setIsBatchProcessing(true)
+          try {
+            await adminContentService.batchDeleteContent(selectedIds)
+            setSelectedIds([])
+            setSelectedItemsData([])
+            await loadContent()
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : 'Failed to delete content'
+            logger.error(msg, 'ContentLibraryPage', err)
+            setError(msg)
+          } finally {
+            setIsBatchProcessing(false)
+          }
+        },
       },
-      { destructive: true, confirmText: t('common.delete', 'Delete') }
-    )
+    })
   }
 
   const handleBatchFeature = async (featured: boolean) => {
@@ -273,7 +284,7 @@ export default function ContentLibraryPage() {
           }
         }
 
-        showSuccess(
+        notifications.showSuccess(
           message,
           t('admin.merge.mergeSuccess', 'Merge Successful')
         )
@@ -304,29 +315,32 @@ export default function ContentLibraryPage() {
     setSelectedIds(ids)
   }, [])
 
+  const pageConfig = ADMIN_PAGE_CONFIG.contentLibrary;
+  const IconComponent = pageConfig.icon;
+
   return (
     <>
       <ScrollView style={styles.container}>
         <View style={styles.content}>
-        {/* Header */}
-        <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.pageTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
-              {t('admin.titles.content', { defaultValue: 'Content Library' })}
-            </Text>
-            <Text style={[styles.subtitle, { textAlign: isRTL ? 'right' : 'left' }]}>
-              {t('admin.content.subtitle', { defaultValue: 'Manage movies, series, and video content' })}
-            </Text>
-          </View>
-          <GlassButton
-            title=""
-            onPress={loadContent}
-            variant="ghost"
-            icon={<RefreshCw size={20} color="rgba(255,255,255,0.8)" />}
-            disabled={isLoading}
-            style={styles.refreshButton}
-          />
-        </View>
+        <GlassPageHeader
+          title={t('admin.titles.content', { defaultValue: 'Content Library' })}
+          subtitle={t('admin.content.subtitle', { defaultValue: 'Manage movies, series, and video content' })}
+          icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+          iconColor={pageConfig.iconColor}
+          iconBackgroundColor={pageConfig.iconBackgroundColor}
+          badge={pagination.total}
+          isRTL={isRTL}
+          action={
+            <GlassButton
+              title=""
+              onPress={loadContent}
+              variant="ghost"
+              icon={<RefreshCw size={20} color="rgba(255,255,255,0.8)" />}
+              disabled={isLoading}
+              style={styles.refreshButton}
+            />
+          }
+        />
 
         {/* Search and Filters */}
         <View style={[styles.filtersContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
