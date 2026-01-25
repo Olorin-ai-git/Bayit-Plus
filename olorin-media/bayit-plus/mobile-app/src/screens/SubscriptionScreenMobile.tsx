@@ -21,11 +21,11 @@ import {
   RefreshControl,
   ActivityIndicator,
   SafeAreaView,
-  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { GlassView, GlassButton } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
@@ -101,6 +101,7 @@ export const SubscriptionScreenMobile: React.FC = () => {
   const navigation = useNavigation<any>();
   const { isRTL, textAlign } = useDirection();
   const { user } = useAuthStore();
+  const notifications = useNotifications();
 
   const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -125,36 +126,32 @@ export const SubscriptionScreenMobile: React.FC = () => {
   const handleCancelSubscription = useCallback(() => {
     ReactNativeHapticFeedback.trigger('notificationWarning');
 
-    Alert.alert(
-      t('subscription.cancelConfirmTitle'),
-      t('subscription.cancelConfirmMessage'),
-      [
-        {
-          text: t('common.cancel'),
-          style: 'cancel',
+    notifications.show({
+      level: 'warning',
+      title: t('subscription.cancelConfirmTitle'),
+      message: t('subscription.cancelConfirmMessage'),
+      dismissable: true,
+      action: {
+        label: t('subscription.confirmCancel'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            setIsLoading(true);
+            await subscriptionService.cancelSubscription();
+            notifications.showSuccess(
+              t('subscription.cancelledMessage'),
+              t('subscription.cancelledTitle')
+            );
+          } catch (error) {
+            moduleLogger.error('Failed to cancel subscription:', error);
+            notifications.showError(t('subscription.cancelError'), t('common.error'));
+          } finally {
+            setIsLoading(false);
+          }
         },
-        {
-          text: t('subscription.confirmCancel'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              setIsLoading(true);
-              await subscriptionService.cancelSubscription();
-              Alert.alert(
-                t('subscription.cancelledTitle'),
-                t('subscription.cancelledMessage')
-              );
-            } catch (error) {
-              moduleLogger.error('Failed to cancel subscription:', error);
-              Alert.alert(t('common.error'), t('subscription.cancelError'));
-            } finally {
-              setIsLoading(false);
-            }
-          },
-        },
-      ]
-    );
-  }, [t]);
+      },
+    });
+  }, [t, notifications]);
 
   const renderCurrentPlan = () => {
     if (!user?.subscription) {
@@ -250,7 +247,7 @@ export const SubscriptionScreenMobile: React.FC = () => {
   if (isLoading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
         <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </SafeAreaView>
     );
@@ -264,7 +261,7 @@ export const SubscriptionScreenMobile: React.FC = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={colors.primary}
+            tintColor={colors.primary.DEFAULT}
             colors={[colors.primary]}
           />
         }
@@ -395,7 +392,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     backgroundColor: 'rgba(107, 33, 168, 0.1)',
   },
   currentPlanHeader: {
@@ -462,7 +459,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   planCardRecommended: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     backgroundColor: 'rgba(107, 33, 168, 0.15)',
   },
   planCardCurrent: {
@@ -472,7 +469,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -12,
     alignSelf: 'center',
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.md,
@@ -500,7 +497,7 @@ const styles = StyleSheet.create({
   planPrice: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   planPeriod: {
     fontSize: 16,
