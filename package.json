@@ -17,6 +17,16 @@
     "olorin:status": "./scripts/olorin.sh status",
     "olorin:health": "./scripts/olorin.sh health",
     "olorin:help": "./scripts/olorin.sh --help",
+    "olorin:agent": "./scripts/olorin.sh agent",
+    "olorin:skill": "./scripts/olorin.sh skill",
+    "olorin:start": "./scripts/olorin.sh start",
+    "olorin:stop": "./scripts/olorin.sh stop",
+    "olorin:start:backend": "./scripts/olorin.sh start bayit backend",
+    "olorin:start:web": "./scripts/olorin.sh start bayit web",
+    "olorin:start:all": "./scripts/olorin.sh start bayit",
+    "olorin:cli:install": "cd cli && npm install --legacy-peer-deps",
+    "olorin:cli:build": "cd cli && npm run build",
+    "olorin:cli:dev": "cd cli && npm run dev",
     "build": "turbo run build",
     "build:all": "turbo run build",
     "build:web": "turbo run build --filter=@olorin/bayit-web",
@@ -101,7 +111,7 @@
       "prettier --write",
       "eslint --fix"
     ],
-    "*.{json,md}": [
+    "*.json": [
       "prettier --write"
     ]
   },

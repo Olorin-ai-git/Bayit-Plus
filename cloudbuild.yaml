@@ -22,7 +22,6 @@ steps:
       - '--timeout=300'
       - '--min-instances=1'
       - '--max-instances=10'
-      - '--port=8000'
       - '--set-env-vars=ENVIRONMENT=production'
       - '--update-secrets=CSRF_ENABLED=csrf-enabled:latest'
 

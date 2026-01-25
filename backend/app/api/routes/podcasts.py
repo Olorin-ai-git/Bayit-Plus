@@ -1,9 +1,11 @@
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
+from app.core.security import get_optional_user
 from app.models.content import Podcast, PodcastEpisode
+from app.models.user import User
 from app.services.podcast_sync import sync_all_podcasts
 
 router = APIRouter()
@@ -382,8 +384,13 @@ async def get_episodes(
 
 
 @router.get("/{show_id}/episodes/{episode_id}")
-async def get_episode(show_id: str, episode_id: str, request: Request):
-    """Get single episode details with translation data."""
+async def get_episode(
+    show_id: str,
+    episode_id: str,
+    request: Request,
+    current_user: Optional[User] = Depends(get_optional_user),
+):
+    """Get single episode details with translation data (translations require premium)."""
     try:
         episode = await PodcastEpisode.get(episode_id)
         if not episode or episode.podcast_id != show_id:
@@ -393,15 +400,34 @@ async def get_episode(show_id: str, episode_id: str, request: Request):
         accept_language = request.headers.get("Accept-Language", "he")
         preferred_lang = accept_language.split(",")[0].split("-")[0]
 
+        # Check premium status for translation access
+        is_premium = current_user and current_user.can_access_premium_features()
+
         # Determine which audio URL to use
         audio_url = episode.audio_url  # Default to original
+
+        # Only provide translated audio if user has premium
         if (
-            preferred_lang in episode.available_languages
+            is_premium
+            and preferred_lang in episode.available_languages
             and preferred_lang != episode.original_language
         ):
             translation = episode.translations.get(preferred_lang)
             if translation:
                 audio_url = translation.audio_url
+
+        # Filter translation data based on premium status
+        exposed_translations = {}
+        if is_premium:
+            exposed_translations = {
+                lang: {
+                    "audioUrl": trans.audio_url,
+                    "transcript": trans.transcript,
+                    "translatedText": trans.translated_text,
+                    "duration": trans.duration,
+                }
+                for lang, trans in episode.translations.items()
+            }
 
         return {
             "id": str(episode.id),
@@ -414,18 +440,17 @@ async def get_episode(show_id: str, episode_id: str, request: Request):
             "seasonNumber": episode.season_number,
             "publishedAt": episode.published_at.isoformat(),
             "thumbnail": episode.thumbnail,
-            "availableLanguages": episode.available_languages,
+            "availableLanguages": (
+                episode.available_languages
+                if is_premium
+                else [episode.original_language or "he"]
+            ),
             "originalLanguage": episode.original_language,
-            "translations": {
-                lang: {
-                    "audioUrl": trans.audio_url,
-                    "transcript": trans.transcript,
-                    "translatedText": trans.translated_text,
-                    "duration": trans.duration,
-                }
-                for lang, trans in episode.translations.items()
-            },
+            "translations": exposed_translations,
             "translationStatus": episode.translation_status,
+            "requiresPremium": (
+                not is_premium and len(episode.available_languages or []) > 1
+            ),
         }
     except HTTPException:
         raise

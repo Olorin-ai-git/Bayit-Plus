@@ -1,0 +1,197 @@
+{
+  "$schema": "./platform.schema.json",
+  "platform": "bayit",
+  "version": "1.0.0",
+  "name": "Bayit+ Media Platform",
+  "description": "Multi-platform streaming service with live translation and dubbing",
+  "detection": {
+    "markers": [
+      "backend/pyproject.toml",
+      "mobile-app/package.json",
+      "web/package.json",
+      "tv-app/package.json",
+      "tvos-app/package.json",
+      "partner-portal/package.json"
+    ],
+    "gitRoot": true,
+    "requiredFiles": [
+      "package.json",
+      "turbo.json"
+    ]
+  },
+  "workspaces": [
+    "packages/*",
+    "packages/ui/*",
+    "web",
+    "tv-app",
+    "mobile-app",
+    "tvos-app",
+    "partner-portal"
+  ],
+  "services": {
+    "backend": {
+      "name": "FastAPI Backend",
+      "type": "python",
+      "runtime": "poetry",
+      "directory": "backend",
+      "command": "poetry run uvicorn app.main:app --reload",
+      "port": "${BACKEND_PORT:-8090}",
+      "healthCheck": "http://localhost:${BACKEND_PORT:-8090}/health",
+      "dependencies": {
+        "python": "^3.11",
+        "poetry": "^1.0.0"
+      },
+      "envFile": "backend/.env",
+      "requiredEnvVars": [
+        "SECRET_KEY",
+        "MONGODB_URI",
+        "GCP_PROJECT_ID",
+        "ANTHROPIC_API_KEY",
+        "OPENAI_API_KEY",
+        "ELEVENLABS_API_KEY"
+      ]
+    },
+    "web": {
+      "name": "Web Application",
+      "type": "vite-react",
+      "runtime": "npm",
+      "directory": "web",
+      "command": "npm run dev",
+      "port": "${WEB_PORT:-3200}",
+      "healthCheck": "http://localhost:${WEB_PORT:-3200}",
+      "dependencies": {
+        "node": ">=20.0.0"
+      },
+      "envFile": "web/.env",
+      "requiredEnvVars": [
+        "VITE_API_URL"
+      ]
+    },
+    "mobile": {
+      "name": "Mobile App (iOS/Android)",
+      "type": "react-native",
+      "runtime": "npm",
+      "directory": "mobile-app",
+      "command": "npm run start",
+      "port": "${MOBILE_PORT:-19006}",
+      "platforms": ["ios", "android"],
+      "dependencies": {
+        "node": ">=20.0.0"
+      }
+    },
+    "tv": {
+      "name": "TV App (Android TV/Tizen/WebOS)",
+      "type": "react-native-tv",
+      "runtime": "npm",
+      "directory": "tv-app",
+      "command": "npm run dev",
+      "port": "${TV_PORT:-3201}",
+      "platforms": ["android-tv", "tizen", "webos"],
+      "dependencies": {
+        "node": ">=20.0.0"
+      }
+    },
+    "tvos": {
+      "name": "Apple TV (tvOS)",
+      "type": "react-native-tvos",
+      "runtime": "npm",
+      "directory": "tvos-app",
+      "command": "npm run start",
+      "port": "${TVOS_PORT:-8081}",
+      "platforms": ["tvos"],
+      "dependencies": {
+        "node": ">=20.0.0",
+        "xcode": ">=14.0.0"
+      }
+    },
+    "partner-portal": {
+      "name": "Partner Portal (B2B)",
+      "type": "vite-react",
+      "runtime": "npm",
+      "directory": "partner-portal",
+      "command": "npm run dev",
+      "port": "${PARTNER_PORT:-3202}",
+      "healthCheck": "http://localhost:${PARTNER_PORT:-3202}",
+      "dependencies": {
+        "node": ">=20.0.0"
+      },
+      "envFile": "partner-portal/.env",
+      "requiredEnvVars": [
+        "VITE_B2B_API_BASE_URL"
+      ]
+    }
+  },
+  "scripts": {
+    "start": "npm run dev",
+    "stop": "scripts/olorin.sh stop",
+    "status": "scripts/olorin-status.sh bayit",
+    "health": "scripts/olorin-health.sh",
+    "test": "turbo run test",
+    "build": "turbo run build",
+    "deploy": "turbo run deploy"
+  },
+  "environment": {
+    "required": [
+      "NODE_ENV",
+      "OLORIN_PLATFORM"
+    ],
+    "optional": [
+      "BACKEND_PORT",
+      "WEB_PORT",
+      "MOBILE_PORT",
+      "TV_PORT",
+      "TVOS_PORT",
+      "PARTNER_PORT",
+      "CLAUDE_DIR"
+    ],
+    "defaults": {
+      "NODE_ENV": "development",
+      "OLORIN_PLATFORM": "bayit",
+      "BACKEND_PORT": "8090",
+      "WEB_PORT": "3200",
+      "MOBILE_PORT": "19006",
+      "TV_PORT": "3201",
+      "TVOS_PORT": "8081",
+      "PARTNER_PORT": "3202",
+      "CLAUDE_DIR": "~/.claude"
+    }
+  },
+  "deployment": {
+    "platforms": {
+      "web": {
+        "provider": "firebase-hosting",
+        "config": "web/firebase.json"
+      },
+      "backend": {
+        "provider": "google-cloud-run",
+        "config": "backend/cloudbuild.yaml"
+      },
+      "mobile-ios": {
+        "provider": "app-store",
+        "config": "mobile-app/ios"
+      },
+      "mobile-android": {
+        "provider": "play-store",
+        "config": "mobile-app/android"
+      },
+      "tvos": {
+        "provider": "app-store",
+        "config": "tvos-app/tvos"
+      }
+    }
+  },
+  "features": {
+    "liveSubtitles": true,
+    "liveDubbing": true,
+    "podcastTranslation": true,
+    "multiLanguageSupport": true,
+    "voiceCommands": true,
+    "b2bPortal": true
+  },
+  "metadata": {
+    "created": "2026-01-24",
+    "author": "Olorin Team",
+    "repository": "https://github.com/olorin/bayit-plus",
+    "documentation": "https://docs.bayit.tv"
+  }
+}
