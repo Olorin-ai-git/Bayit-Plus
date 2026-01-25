@@ -151,7 +151,7 @@ export function usePlayerControlRenderers({
           if (dubbing.isConnected) {
             dubbing.disconnect()
           } else {
-            dubbing.connect()
+            dubbing.connect(dubbing.targetLanguage)
           }
         }}
         onLanguageChange={dubbing.setTargetLanguage}
