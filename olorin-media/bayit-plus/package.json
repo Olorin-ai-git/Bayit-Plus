@@ -13,6 +13,10 @@
     "partner-portal"
   ],
   "scripts": {
+    "olorin": "./scripts/olorin.sh",
+    "olorin:status": "./scripts/olorin.sh status",
+    "olorin:health": "./scripts/olorin.sh health",
+    "olorin:help": "./scripts/olorin.sh --help",
     "build": "turbo run build",
     "build:all": "turbo run build",
     "build:web": "turbo run build --filter=@olorin/bayit-web",

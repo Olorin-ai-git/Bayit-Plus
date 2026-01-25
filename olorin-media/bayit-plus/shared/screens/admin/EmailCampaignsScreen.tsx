@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
   audienceOption: { flex: 1, paddingVertical: spacing.sm, backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md, alignItems: 'center', borderWidth: 1, borderColor: colors.glassBorder },
   audienceOptionActive: { backgroundColor: colors.primary + '30', borderColor: colors.primary },
   audienceOptionText: { fontSize: fontSize.sm, color: colors.textSecondary, textTransform: 'capitalize' },
-  audienceOptionTextActive: { color: colors.primary, fontWeight: '600' },
+  audienceOptionTextActive: { color: colors.primary.DEFAULT, fontWeight: '600' },
   modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.lg },
   cancelButton: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.backgroundLighter, borderRadius: borderRadius.md },
   cancelButtonText: { fontSize: fontSize.sm, color: colors.textSecondary },

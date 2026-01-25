@@ -31,7 +31,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   subtitle,
   icon,
   trend,
-  color = colors.primary,
+  color = colors.primary.DEFAULT,
   onPress,
 }) => {
   const { isRTL, textAlign, flexDirection } = useDirection();

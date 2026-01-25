@@ -15,8 +15,14 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
 # Set working directory
 WORKDIR /app
 
-# Copy entire project (including local packages)
-COPY . ./
+# Copy packages first (from parent context)
+COPY packages ./packages
+
+# Copy backend code
+COPY backend ./backend
+
+# Change to backend directory for Poetry install
+WORKDIR /app/backend
 
 # Install dependencies (only main dependencies)
 RUN poetry config virtualenvs.create false && \
@@ -41,8 +47,9 @@ WORKDIR /app
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Copy application code
-COPY --chown=bayit:bayit app ./app
+# Copy application code and packages
+COPY --chown=bayit:bayit --from=builder /app/backend/app ./app
+COPY --chown=bayit:bayit --from=builder /app/packages ./packages
 
 # Switch to non-root user
 USER bayit

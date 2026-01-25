@@ -383,33 +383,33 @@ const UploadsPage: React.FC = () => {
           <GlassButton
             title={triggeringUpload ? t('common.loading') : t('admin.uploads.triggerUpload')}
             variant="secondary"
-            icon={triggeringUpload ? null : <Upload size={18} color={colors.primary.DEFAULT} />}
+            icon={triggeringUpload ? null : <Upload size={18} color="#3B82F6" />}
             onPress={handleTriggerUpload}
             disabled={triggeringUpload}
-            style={[adminButtonStyles.secondaryButton, triggeringUpload && { opacity: 0.7 }]}
+            style={[adminButtonStyles.infoButton, triggeringUpload && { opacity: 0.7 }]}
             textStyle={adminButtonStyles.buttonText}
           >
             {triggeringUpload && (
-              <ActivityIndicator size="small" color={colors.primary.DEFAULT} style={{ marginRight: spacing.sm }} />
+              <ActivityIndicator size="small" color="#3B82F6" style={{ marginRight: spacing.sm }} />
             )}
           </GlassButton>
           <GlassButton
             title={clearingQueue ? t('common.loading') : t('admin.uploads.clearQueue')}
             variant="destructive"
-            icon={clearingQueue ? null : <XCircle size={18} color={colors.error.DEFAULT} />}
+            icon={clearingQueue ? null : <XCircle size={18} color="#EF4444" />}
             onPress={handleClearQueue}
             disabled={clearingQueue || (queueStats.queued === 0 && queueStats.processing === 0)}
-            style={[adminButtonStyles.secondaryButton, clearingQueue && { opacity: 0.7 }]}
+            style={[adminButtonStyles.dangerButton, clearingQueue && { opacity: 0.7 }]}
             textStyle={adminButtonStyles.buttonText}
           >
             {clearingQueue && (
-              <ActivityIndicator size="small" color={colors.error.DEFAULT} style={{ marginRight: spacing.sm }} />
+              <ActivityIndicator size="small" color="#EF4444" style={{ marginRight: spacing.sm }} />
             )}
           </GlassButton>
           <GlassButton
             title={t('admin.uploads.addFolder')}
             variant="secondary"
-            icon={<Plus size={18} color={colors.text} />}
+            icon={<Plus size={18} color="#22C55E" />}
             onPress={handleAddFolder}
             style={adminButtonStyles.primaryButton}
             textStyle={adminButtonStyles.buttonText}

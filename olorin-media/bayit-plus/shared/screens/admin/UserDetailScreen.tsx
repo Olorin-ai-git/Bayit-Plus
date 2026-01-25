@@ -877,7 +877,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   tabTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   content: {
@@ -986,7 +986,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   permissionTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   permissionInherited: {
     fontSize: fontSize.xs,

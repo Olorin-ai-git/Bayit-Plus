@@ -168,7 +168,7 @@ export const CampaignsListScreen: React.FC = () => {
       sortable: true,
       render: (campaign) => (
         <View style={[styles.typeBadge, { backgroundColor: colors.primary + '20' }]}>
-          <Text style={[styles.typeBadgeText, { color: colors.primary }]}>
+          <Text style={[styles.typeBadgeText, { color: colors.primary.DEFAULT }]}>
             {campaign.type}
           </Text>
         </View>
@@ -520,7 +520,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: fontSize.xxl,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   statLabel: {
     fontSize: fontSize.xs,
@@ -655,7 +655,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   filterOptionTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   modalActions: {
@@ -709,7 +709,7 @@ const styles = StyleSheet.create({
   statBoxValue: {
     fontSize: fontSize.xl,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     marginBottom: spacing.xs,
   },
   statBoxLabel: {

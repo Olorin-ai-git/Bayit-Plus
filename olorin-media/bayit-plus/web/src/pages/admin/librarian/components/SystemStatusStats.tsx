@@ -30,7 +30,7 @@ export const SystemStatusStats = ({ status, textAlign, getHealthColor }: SystemS
         </View>
         <View style={styles.statBox}>
           <RefreshCw size={20} color={colors.primary} />
-          <Text style={[styles.statValue, { color: colors.primary }]}>
+          <Text style={[styles.statValue, { color: colors.primary.DEFAULT }]}>
             {status?.total_audits_last_30_days || 0}
           </Text>
           <Text style={styles.statLabel}>{t('admin.librarian.stats.totalAudits')}</Text>

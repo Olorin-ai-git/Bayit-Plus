@@ -26,7 +26,7 @@ export const KidsContentDashboard = ({ status, triggering, reports, onTriggerAud
       <View style={styles.container}>
         <View style={styles.statsGrid}>
           <View style={styles.statCard}>
-            <Text style={[styles.statValue, { color: colors.primary }]}>
+            <Text style={[styles.statValue, { color: colors.primary.DEFAULT }]}>
               {status?.kids_content_stats?.total_kids_items || 0}
             </Text>
             <Text style={[styles.statLabel, { color: colors.textMuted }]}>
@@ -89,7 +89,7 @@ export const KidsContentDashboard = ({ status, triggering, reports, onTriggerAud
             {Object.entries(status?.kids_content_stats?.by_category || {}).map(([category, count]) => (
               <View key={category} style={styles.categoryChip}>
                 <Text style={[styles.categoryName, { color: colors.text }]}>{category}</Text>
-                <Text style={[styles.categoryCount, { color: colors.primary }]}>{count as number}</Text>
+                <Text style={[styles.categoryCount, { color: colors.primary.DEFAULT }]}>{count as number}</Text>
               </View>
             ))}
             {Object.keys(status?.kids_content_stats?.by_category || {}).length === 0 && (

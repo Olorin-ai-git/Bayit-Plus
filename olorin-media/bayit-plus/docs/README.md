@@ -55,6 +55,15 @@ Code reviews and assessments:
 - Security audits
 - Performance reviews
 - Data architecture assessments
+- **Notification Ecosystem Audit** (`NOTIFICATION_ECOSYSTEM_AUDIT_2026-01-24.md`) - Comprehensive audit of GlassToast notification system usage across all Olorin platforms
+
+### `/cli/` **NEW - 2026-01-24**
+Olorin CLI tooling documentation:
+- **Quick Start Guide** (`QUICK_START.md`) - Get started with the Olorin CLI in minutes
+- **Phase 1 Implementation** (`PHASE_1_IMPLEMENTATION.md`) - Complete implementation details for Bash Router
+- Command reference and usage examples
+- Health check and environment validation
+- Script discovery integration
 
 ## 🗂️ Additional Documentation Locations
 
@@ -77,9 +86,10 @@ Located in `/backend/docs/`:
 ## 📚 Quick Reference
 
 ### Getting Started
-1. Read `/QUICK_START_GUIDE.md` (project root)
-2. Backend setup: `/backend/QUICKSTART.md`
-3. Development: `/backend/README.md`
+1. **Olorin CLI** (Recommended): `/docs/cli/QUICK_START.md` **NEW**
+2. Read `/QUICK_START_GUIDE.md` (project root)
+3. Backend setup: `/backend/QUICKSTART.md`
+4. Development: `/backend/README.md`
 
 ### Key Features
 - **Live Translation**: `/features/LIVE_TRANSLATION_EXPANSION.md`
@@ -101,6 +111,7 @@ Located in `/backend/docs/`:
 
 ### By Topic
 - **Authentication**: Check `/security/` and `/backend/docs/security/`
+- **CLI Tooling**: Check `/cli/` for Olorin CLI documentation **NEW**
 - **Content Management**: Check `/features/` and `/backend/scripts/content/`
 - **Database Operations**: Check `/operations/` and `/backend/scripts/backend/content/`
 - **Deployment**: Check `/deployment/` and `/backend/docs/deployment/`
@@ -119,6 +130,7 @@ Located in `/backend/docs/`:
 When adding new documentation:
 
 1. **Choose the right location**
+   - CLI docs → `/cli/`
    - Feature docs → `/features/`
    - Security docs → `/security/`
    - Deployment docs → `/deployment/`
@@ -145,6 +157,8 @@ When adding new documentation:
 ## 🔄 Maintenance
 
 This documentation structure was organized on January 13, 2026 to improve project organization.
+
+**Latest Update:** January 24, 2026 - Added `/cli/` directory with Olorin CLI documentation (Phase 1 complete).
 
 ### Previous Structure
 Before organization, documentation was scattered across:

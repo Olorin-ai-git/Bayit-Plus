@@ -365,7 +365,7 @@ const styles = StyleSheet.create({
   },
   viewAllLink: {
     fontSize: fontSize.sm,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   statsGrid: {
     flexDirection: 'row',
