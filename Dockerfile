@@ -61,4 +61,6 @@ USER bayit
 EXPOSE 8080
 
 # Run application (use PORT env var, default to 8080 for Cloud Run)
-CMD sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080} --workers 4"
+# Use fewer workers for Cloud Run to reduce cold start time
+# Single worker reduces memory pressure and speeds up initialization
+CMD sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080} --workers 1"
