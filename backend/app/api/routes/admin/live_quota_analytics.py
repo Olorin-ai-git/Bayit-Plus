@@ -198,7 +198,7 @@ async def get_top_users(
         # Enrich with user details
         top_users = []
         for r in results:
-            user = await User.find_one(User.id == r["_id"])
+            user = await User.get(r["_id"])
             top_users.append({
                 "user_id": r["_id"],
                 "user_name": user.name if user else "Unknown User",
