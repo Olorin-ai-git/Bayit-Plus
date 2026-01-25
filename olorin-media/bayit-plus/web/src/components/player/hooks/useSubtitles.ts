@@ -134,10 +134,18 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
   // Subtitle handlers
   const handleSubtitleToggle = (enabled: boolean) => {
     setSubtitlesEnabled(enabled)
+    // When disabling, also clear the language selection
+    if (!enabled) {
+      setCurrentSubtitleLang(null)
+    }
   }
 
   const handleSubtitleLanguageChange = async (language: string | null) => {
     setCurrentSubtitleLang(language)
+    // Enable subtitles when selecting a language
+    if (language) {
+      setSubtitlesEnabled(true)
+    }
 
     // Save user preference for this content
     if (contentId && language) {

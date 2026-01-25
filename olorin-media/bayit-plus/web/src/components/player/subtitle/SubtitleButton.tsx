@@ -48,13 +48,13 @@ export default function SubtitleButton({
       ]}
     >
       <Subtitles
-        size={24}
-        color={enabled ? colors.primary : colors.textSecondary}
+        size={22}
+        color={enabled ? colors.primary.DEFAULT : colors.textSecondary}
       />
       {currentLangInfo && enabled && (
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>
-            {currentLangInfo.code.toUpperCase()}
+        <View style={styles.flagBadge}>
+          <Text style={styles.flagText}>
+            {currentLangInfo.flag}
           </Text>
         </View>
       )}
@@ -74,20 +74,21 @@ const styles = StyleSheet.create({
   buttonActive: {
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
   },
-  badge: {
+  flagBadge: {
     position: 'absolute',
-    top: spacing.xs,
-    right: spacing.xs,
-    backgroundColor: colors.primary.DEFAULT,
-    borderRadius: borderRadius.lg,
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-    minWidth: 20,
+    bottom: 2,
+    right: 2,
+    width: 18,
+    height: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.5)',
   },
-  badgeText: {
-    color: colors.text,
-    fontSize: 9,
-    fontWeight: 'bold',
-    textAlign: 'center',
+  flagText: {
+    fontSize: 11,
+    lineHeight: 13,
   },
 })

@@ -177,7 +177,8 @@ const apiContentService = {
   getByCategory: (categoryId, params) => api.get(`/content/category/${categoryId}`, { params }),
   getById: (contentId) => api.get(`/content/${contentId}`),
   getStreamUrl: (contentId) => api.get(`/content/${contentId}/stream`),
-  search: (query, params) => api.post('/search', { query, ...params }),
+  search: (params) => api.get('/search/unified', { params }),
+  searchLLM: (data) => api.post('/search/llm', data),
   syncContent: () => api.post('/podcasts/refresh'),
 
   // Series endpoints

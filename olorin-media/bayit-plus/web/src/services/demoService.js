@@ -100,6 +100,17 @@ export const demoContentService = {
     await delay();
     return demoSearchResults(query);
   },
+  searchLLM: async (data) => {
+    await delay();
+    // Simulate LLM semantic search with slightly different/better results
+    const results = demoSearchResults(data.query);
+    return {
+      ...results,
+      semantic: true,
+      interpreted_query: data.query,
+      confidence: 0.95,
+    };
+  },
 };
 
 // ===========================================

@@ -50,13 +50,21 @@ export default function SubtitleLanguageList({
 
   const handleLanguagePress = (language: string) => (e: any) => {
     e?.stopPropagation?.()
-    onLanguageSelect(language)
+    // Clear selection if clicking the same language (toggle off)
+    if (enabled && language === currentLanguage) {
+      onDisable()
+    } else {
+      onLanguageSelect(language)
+    }
   }
 
   const handleDisablePress = (e: any) => {
     e?.stopPropagation?.()
     onDisable()
   }
+
+  // Determine if "Off" is selected (no language selected OR subtitles disabled)
+  const isOffSelected = !enabled || !currentLanguage
 
   return (
     <>
@@ -67,14 +75,14 @@ export default function SubtitleLanguageList({
         onMouseDown={stopPropagation}
         style={({ pressed }) => [
           styles.option,
-          !enabled ? styles.optionActive : styles.optionInactive,
+          isOffSelected ? styles.optionActive : styles.optionInactive,
           { opacity: pressed ? 0.7 : 1 },
         ]}
       >
-        <Text style={[styles.optionText, !enabled ? styles.textActive : styles.textInactive]}>
+        <Text style={[styles.optionText, isOffSelected ? styles.textActive : styles.textInactive]}>
           {t('subtitles.off')}
         </Text>
-        {!enabled && <View style={styles.activeIndicator} />}
+        {isOffSelected && <View style={styles.activeIndicator} />}
       </Pressable>
 
       {/* Available languages */}
@@ -88,7 +96,8 @@ export default function SubtitleLanguageList({
       ) : availableLanguages.length > 0 ? (
         availableLanguages.map((track: SubtitleTrack) => {
           const langInfo = getLanguageInfo(track.language)
-          const isActive = track.language === currentLanguage
+          // Active only if subtitles are enabled AND this language is selected
+          const isActive = enabled && track.language === currentLanguage
 
           return (
             <Pressable
@@ -103,7 +112,10 @@ export default function SubtitleLanguageList({
                 { opacity: pressed ? 0.7 : 1 },
               ]}
             >
-              <Text style={styles.flagText}>{langInfo?.flag || '🌐'}</Text>
+              {/* Glassmorphic flag badge */}
+              <View style={[styles.flagBadge, isActive && styles.flagBadgeActive]}>
+                <Text style={styles.flagText}>{langInfo?.flag || '🌐'}</Text>
+              </View>
               <View style={styles.languageInfo}>
                 <Text style={[styles.languageName, isActive ? styles.textActive : styles.textInactive]}>
                   {track.language_name}
@@ -184,9 +196,23 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 14,
   },
-  flagText: {
-    fontSize: 20,
+  flagBadge: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: spacing.sm,
+  },
+  flagBadgeActive: {
+    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+    borderColor: colors.primary.DEFAULT,
+  },
+  flagText: {
+    fontSize: 24,
   },
   languageInfo: {
     flex: 1,
