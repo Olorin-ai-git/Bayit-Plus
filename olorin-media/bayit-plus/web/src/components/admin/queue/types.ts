@@ -44,8 +44,8 @@ export interface QueueStats {
 export interface GlassQueueProps {
   stats: QueueStats;
   activeJob?: QueueJob | null;
-  queue: QueueJob[];
-  recentCompleted: QueueJob[];
+  queue?: QueueJob[];
+  recentCompleted?: QueueJob[];
   queuePaused?: boolean;
   pauseReason?: string | null;
   loading?: boolean;

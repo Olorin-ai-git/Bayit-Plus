@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, Image } from 'react-native';
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, Music } from 'lucide-react'
@@ -7,7 +7,7 @@ import { GlassInput, GlassButton, GlassCheckbox, GlassPageHeader } from '@bayit/
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web'
 import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags'
-import { adminContentService } from '@/services/adminApi'
+import { adminPodcastsService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
 import { useNotifications } from '@olorin/glass-ui/hooks'
@@ -41,7 +41,7 @@ export default function PodcastsPage() {
     setIsLoading(true)
     setError(null)
     try {
-      const response: PaginatedResponse<Podcast> = await adminContentService.getPodcasts({
+      const response: PaginatedResponse<Podcast> = await adminPodcastsService.getPodcasts({
         page: pagination.page,
         page_size: pagination.pageSize,
       })
@@ -71,7 +71,7 @@ export default function PodcastsPage() {
       return
     }
     try {
-      await adminContentService.updatePodcast(editingId!, editData)
+      await adminPodcastsService.updatePodcast(editingId!, editData)
       setEditingId(null)
       setEditData({})
       await loadPodcasts()
@@ -93,7 +93,7 @@ export default function PodcastsPage() {
         onPress: async () => {
           try {
             setDeleting(id)
-            await adminContentService.deletePodcast(id)
+            await adminPodcastsService.deletePodcast(id)
             setItems(items.filter((item) => item.id !== id))
           } catch (err) {
             const msg = err instanceof Error ? err.message : 'Failed to delete podcast'
@@ -108,6 +108,26 @@ export default function PodcastsPage() {
   }
 
   const columns = useMemo(() => [
+    {
+      key: 'cover',
+      label: t('admin.content.columns.cover', { defaultValue: 'Cover' }),
+      width: 80,
+      render: (cover: string | undefined, item: Podcast) => (
+        <View style={styles.coverContainer}>
+          {cover ? (
+            <Image
+              source={{ uri: cover }}
+              style={styles.coverImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.coverPlaceholder}>
+              <Music size={20} color={colors.textMuted} />
+            </View>
+          )}
+        </View>
+      ),
+    },
     {
       key: 'title',
       label: t('admin.content.columns.title', { defaultValue: 'Title' }),
@@ -133,13 +153,13 @@ export default function PodcastsPage() {
           : i18n.language === 'es' && item.category_es ? item.category_es
           : item.category
 
-        return <Text className="text-sm text-white">{localizedCategory || '-'}</Text>
+        return <Text style={styles.categoryText}>{localizedCategory || '-'}</Text>
       },
     },
     {
       key: 'episode_count',
       label: t('admin.content.columns.episodes', { defaultValue: 'Episodes' }),
-      render: (count: number | undefined) => <Text className="text-sm text-white">{count || 0}</Text>,
+      render: (count: number | undefined) => <Text style={styles.episodeCount}>{count || 0}</Text>,
     },
     {
       key: 'available_languages',
@@ -156,7 +176,7 @@ export default function PodcastsPage() {
             />
           </View>
         ) : (
-          <Text className="text-sm text-gray-500">-</Text>
+          <Text style={styles.emptyText}>-</Text>
         )
       ),
     },
@@ -164,9 +184,9 @@ export default function PodcastsPage() {
       key: 'is_active',
       label: t('admin.content.columns.status', { defaultValue: 'Status' }),
       render: (isActive: boolean) => (
-        <View style={[styles.badge, { backgroundColor: isActive ? '#10b98120' : '#6b728020' }]}>
-          <Text style={[styles.badgeText, { color: isActive ? '#10b981' : '#6b7280' }]}>
-            {isActive ? 'Active' : 'Inactive'}
+        <View style={[styles.badge, isActive ? styles.badgeActive : styles.badgeInactive]}>
+          <Text style={[styles.badgeText, isActive ? styles.badgeTextActive : styles.badgeTextInactive]}>
+            {isActive ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}
           </Text>
         </View>
       ),
@@ -181,7 +201,7 @@ export default function PodcastsPage() {
             <GlassButton
               variant="ghost"
               size="sm"
-              icon={<Music size={16} color="#8b5cf6" />}
+              icon={<Music size={18} color="#a78bfa" />}
               style={styles.actionButton}
               accessibilityLabel={t('admin.podcasts.viewEpisodes', { defaultValue: 'View episodes' })}
             />
@@ -190,7 +210,7 @@ export default function PodcastsPage() {
             variant="ghost"
             size="sm"
             onPress={() => handleEdit(item)}
-            icon={<Edit size={16} color="#a855f7" />}
+            icon={<Edit size={18} color="#60a5fa" />}
             style={styles.actionButton}
             accessibilityLabel={t('admin.podcasts.editPodcast', { defaultValue: 'Edit podcast' })}
           />
@@ -199,7 +219,7 @@ export default function PodcastsPage() {
             size="sm"
             onPress={() => handleDelete(item.id)}
             disabled={deleting === item.id}
-            icon={<Trash2 size={16} color="#ef4444" />}
+            icon={<Trash2 size={18} color="#f87171" />}
             style={[styles.actionButton, deleting === item.id && styles.disabledButton]}
             accessibilityLabel={t('admin.podcasts.deletePodcast', { defaultValue: 'Delete podcast' })}
           />
@@ -212,7 +232,7 @@ export default function PodcastsPage() {
   const IconComponent = pageConfig.icon;
 
   return (
-    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
+    <ScrollView style={styles.container} contentContainerStyle={{ padding: spacing.lg }}>
       <GlassPageHeader
         title={t('admin.titles.podcasts', { defaultValue: 'Podcasts' })}
         subtitle={t('admin.podcasts.subtitle', { defaultValue: 'Manage podcasts and episodes' })}
@@ -239,7 +259,7 @@ export default function PodcastsPage() {
       {error && (
         <View style={[styles.errorContainer, { marginBottom: spacing.lg }]}>
           <AlertCircle size={18} color="#ef4444" />
-          <Text className="flex-1 text-red-500 text-sm">{error}</Text>
+          <Text style={styles.errorText}>{error}</Text>
           <GlassButton
             variant="ghost"
             size="sm"
@@ -338,6 +358,27 @@ export default function PodcastsPage() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  coverContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: borderRadius.md,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  coverImage: {
+    width: '100%',
+    height: '100%',
+  },
+  coverPlaceholder: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -351,7 +392,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 14,
-    color: colors.textMuted,
+    color: colors.textSecondary,
     marginTop: spacing.xs,
   },
   errorContainer: {
@@ -363,6 +404,11 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     borderWidth: 1,
     borderColor: 'rgba(239, 68, 68, 0.3)',
+  },
+  errorText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#ef4444',
   },
   editForm: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -394,21 +440,50 @@ const styles = StyleSheet.create({
   },
   itemSubtext: {
     fontSize: 12,
-    color: colors.textMuted,
+    color: colors.textSecondary,
     marginTop: 2,
   },
+  categoryText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    fontWeight: '500',
+  },
+  episodeCount: {
+    fontSize: 14,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  emptyText: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
   badge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: borderRadius.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: borderRadius.full,
+    alignSelf: 'flex-start',
+  },
+  badgeActive: {
+    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+  },
+  badgeInactive: {
+    backgroundColor: 'rgba(156, 163, 175, 0.15)',
   },
   badgeText: {
     fontSize: 12,
     fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  badgeTextActive: {
+    color: '#22c55e',
+  },
+  badgeTextInactive: {
+    color: '#9ca3af',
   },
   actionsCell: {
     flexDirection: 'row',
     gap: spacing.xs,
+    alignItems: 'center',
   },
   actionButton: {
     minWidth: 44,

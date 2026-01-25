@@ -6,6 +6,11 @@
  * Processes audio locally for privacy - nothing sent to server until wake word detected.
  */
 
+import { logger } from './logger';
+
+// Scoped logger for wake word detector
+const wakeWordLogger = logger.scope('WakeWord');
+
 export interface WakeWordConfig {
   wakeWord: string;           // The wake word to listen for (e.g., "hi bayit")
   sensitivity: number;        // 0-1 sensitivity level (0.7 default)
@@ -112,10 +117,14 @@ export class WakeWordDetector {
       try {
         const voskModule = (globalThis as any).Vosk;
         if (!voskModule) {
-          console.warn('[WakeWordDetector] Vosk not available globally, attempting to load from module');
+          wakeWordLogger.warn('Vosk not available globally, attempting module load', {
+            globalThisAvailable: typeof globalThis !== 'undefined',
+          });
         }
       } catch (e) {
-        console.warn('[WakeWordDetector] Could not check for global Vosk:', e);
+        wakeWordLogger.warn('Could not check for global Vosk', {
+          error: e instanceof Error ? e.message : String(e),
+        });
       }
 
       // Create a web worker for Vosk processing
@@ -139,7 +148,6 @@ export class WakeWordDetector {
                   Vosk = voskModule;
                 } catch (importError) {
                   const errorMsg = importError && importError.message ? importError.message : String(importError);
-                  console.error('Failed to import vosk-browser:', errorMsg);
                   self.postMessage({ type: 'error', error: 'Vosk module not available: ' + errorMsg });
                   return;
                 }
@@ -236,9 +244,18 @@ export class WakeWordDetector {
       });
 
       this.isInitialized = true;
-      console.log('[WakeWordDetector] Initialized successfully');
+      wakeWordLogger.info('Wake word detector initialized successfully', {
+        modelPath,
+        sampleRate: this.SAMPLE_RATE,
+        wakeWord: this.config.wakeWord,
+        sensitivity: this.config.sensitivity,
+      });
     } catch (error) {
-      console.error('[WakeWordDetector] Failed to initialize:', error instanceof Error ? error.message : error);
+      wakeWordLogger.error('Failed to initialize wake word detector', {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        modelPath,
+      });
       // Don't throw - allow fallback mode to work
       this.isInitialized = false;
     }
@@ -291,7 +308,10 @@ export class WakeWordDetector {
           resolve(result);
           this.worker?.removeEventListener('message', handleMessage);
         } else if (e.data.type === 'error') {
-          console.error('[WakeWordDetector] Worker error:', e.data.error);
+          wakeWordLogger.error('Wake word detector worker error', {
+            error: e.data.error,
+            isInitialized: this.isInitialized,
+          });
           resolve(defaultResult);
           this.worker?.removeEventListener('message', handleMessage);
         }

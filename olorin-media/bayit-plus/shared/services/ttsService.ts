@@ -10,6 +10,10 @@
 import { EventEmitter } from 'eventemitter3';
 import i18n from '../i18n';
 import type { VoiceLanguage } from './api/types';
+import { logger } from '../utils/logger';
+
+// Scoped logger for TTS service with voice-specific context
+const ttsLogger = logger.scope('TTS');
 
 export interface TTSQueueItem {
   id: string;
@@ -198,7 +202,15 @@ class TTSService extends EventEmitter {
       this.emit('completed', item);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
-      console.error('[TTS] Queue processing error:', err);
+      ttsLogger.error('Queue processing failed', {
+        error: err.message,
+        itemId: item.id,
+        textPreview: item.text.substring(0, 50),
+        priority: item.priority,
+        voiceId: item.voiceId || this.config.voiceId,
+        language: this.config.language,
+        stack: err.stack,
+      });
       item.onError?.(err);
       this.emit('error', { item, error: err });
     } finally {
@@ -209,7 +221,14 @@ class TTSService extends EventEmitter {
   }
 
   private async fetchAudioFromAPI(text: string, voiceId: string): Promise<Blob> {
-    console.log('[TTS] Fetching audio from API...');
+    const startTime = Date.now();
+    ttsLogger.info('Fetching audio from API', {
+      textLength: text.length,
+      textPreview: text.substring(0, 50),
+      voiceId,
+      language: this.config.language,
+      model: this.config.model,
+    });
 
     // Get auth token from localStorage (stored by Zustand persist middleware)
     let token: string | null = null;
@@ -226,21 +245,33 @@ class TTSService extends EventEmitter {
       if (!token) {
         token = localStorage.getItem('auth_token');
         if (token) {
-          console.log('[TTS] Using legacy auth_token');
+          ttsLogger.debug('Using legacy auth token', {
+            source: 'auth_token',
+          });
         }
       }
     } catch (error) {
-      console.error('[TTS] Error parsing auth token from localStorage:', error);
+      ttsLogger.error('Failed to parse auth token', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
 
     if (!token) {
-      console.error('[TTS] No auth token found in localStorage');
+      ttsLogger.error('No auth token found', {
+        textPreview: text.substring(0, 50),
+      });
       throw new Error('Authentication required for TTS. Please log in first.');
     }
 
     try {
       const apiUrl = this.getApiEndpoint();
-      console.log('[TTS] Calling API:', apiUrl);
+      ttsLogger.debug('Calling TTS API', {
+        endpoint: apiUrl,
+        textLength: text.length,
+        voiceId,
+        language: this.config.language,
+        model: this.config.model,
+      });
 
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -260,11 +291,21 @@ class TTSService extends EventEmitter {
         }),
       });
 
-      console.log('[TTS] API response status:', response.status);
+      const responseTime = Date.now() - startTime;
+      ttsLogger.info('TTS API response received', {
+        status: response.status,
+        responseTimeMs: responseTime,
+        textLength: text.length,
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('[TTS] API error response:', errorText);
+        ttsLogger.error('TTS API error response', {
+          status: response.status,
+          statusText: response.statusText,
+          errorText: errorText.substring(0, 200),
+          textPreview: text.substring(0, 50),
+        });
 
         if (response.status === 401 || response.status === 403) {
           throw new Error('Authentication failed. Please log in again.');
@@ -276,10 +317,20 @@ class TTSService extends EventEmitter {
       }
 
       const blob = await response.blob();
-      console.log('[TTS] Received audio blob, size:', blob.size);
+      const totalTime = Date.now() - startTime;
+      ttsLogger.info('Audio blob received', {
+        blobSize: blob.size,
+        totalTimeMs: totalTime,
+        textLength: text.length,
+        language: this.config.language,
+      });
 
       if (blob.size === 0) {
-        console.error('[TTS] Received empty audio blob from API');
+        ttsLogger.error('Received empty audio blob', {
+          textPreview: text.substring(0, 50),
+          voiceId,
+          language: this.config.language,
+        });
         throw new Error('API returned empty audio');
       }
 
@@ -287,13 +338,21 @@ class TTSService extends EventEmitter {
     } catch (error) {
       // Enhanced error logging
       if (error instanceof TypeError && error.message === 'Failed to fetch') {
-        console.error('[TTS] Network error - Cannot connect to backend server');
-        console.error('[TTS] Attempted endpoint:', this.getApiEndpoint());
-        console.error('[TTS] Is the backend running on port 8000?');
+        ttsLogger.error('Network error - cannot connect to backend', {
+          endpoint: this.getApiEndpoint(),
+          textPreview: text.substring(0, 50),
+          error: error.message,
+        });
         throw new Error('Cannot connect to backend server. Please ensure the backend is running on port 8000.');
       }
 
-      console.error('[TTS] fetchAudioFromAPI error:', error);
+      ttsLogger.error('Audio fetch failed', {
+        error: error instanceof Error ? error.message : String(error),
+        textPreview: text.substring(0, 50),
+        voiceId,
+        language: this.config.language,
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       throw error;
     }
   }
@@ -301,10 +360,12 @@ class TTSService extends EventEmitter {
   private async playAudio(blob: Blob): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-
         // Validate blob
         if (!blob || blob.size === 0) {
-          console.error('[TTS] Invalid blob: empty or null');
+          ttsLogger.error('Invalid audio blob', {
+            blobSize: blob?.size || 0,
+            isNull: !blob,
+          });
           reject(new Error('Invalid audio blob: empty or null'));
           return;
         }
@@ -330,7 +391,9 @@ class TTSService extends EventEmitter {
           try {
             URL.revokeObjectURL(objectUrl);
           } catch (e) {
-            console.warn('[TTS] Error revoking object URL:', e);
+            ttsLogger.warn('Error revoking object URL', {
+              error: e instanceof Error ? e.message : String(e),
+            });
           }
           this.applyAudioDucking(audio, false);
         };
@@ -355,26 +418,48 @@ class TTSService extends EventEmitter {
 
         // Timeout after 30 seconds to prevent hanging
         const timeoutId = setTimeout(() => {
-          console.warn('[TTS] Audio playback timeout after 30s');
+          ttsLogger.warn('Audio playback timeout', {
+            timeoutMs: 30000,
+            blobSize: blob.size,
+          });
           safeReject(new Error('Audio playback timeout'));
         }, 30000);
 
         audio.oncanplay = () => {
+          ttsLogger.debug('Audio can play', {
+            blobSize: blob.size,
+            duration: audio.duration,
+          });
         };
 
         audio.onloadedmetadata = () => {
+          ttsLogger.debug('Audio metadata loaded', {
+            duration: audio.duration,
+            blobSize: blob.size,
+          });
         };
 
         audio.onplaying = () => {
+          ttsLogger.debug('Audio playback started', {
+            duration: audio.duration,
+            volume: audio.volume,
+          });
         };
 
         audio.onended = () => {
+          ttsLogger.debug('Audio playback completed', {
+            duration: audio.duration,
+          });
           clearTimeout(timeoutId);
           safeResolve();
         };
 
         audio.onerror = (event) => {
-          console.error('[TTS] Audio error:', event, 'error code:', audio.error?.code, audio.error?.message);
+          ttsLogger.error('Audio playback error', {
+            errorCode: audio.error?.code,
+            errorMessage: audio.error?.message,
+            blobSize: blob.size,
+          });
           clearTimeout(timeoutId);
           safeReject(new Error(`Audio playback error: ${audio.error?.message || 'Unknown error'}`));
         };
@@ -385,13 +470,21 @@ class TTSService extends EventEmitter {
         const playPromise = audio.play();
         if (playPromise && typeof playPromise.catch === 'function') {
           playPromise.catch((playError) => {
-            console.error('[TTS] Play promise rejected:', playError);
+            ttsLogger.error('Play promise rejected', {
+              error: playError.message || String(playError),
+              blobSize: blob.size,
+              volume: audio.volume,
+            });
             clearTimeout(timeoutId);
             safeReject(new Error(`Play failed: ${playError.message || String(playError)}`));
           });
         }
       } catch (error) {
-        console.error('[TTS] Exception in playAudio:', error);
+        ttsLogger.error('Exception in playAudio', {
+          error: error instanceof Error ? error.message : String(error),
+          blobSize: blob.size,
+          stack: error instanceof Error ? error.stack : undefined,
+        });
         reject(error instanceof Error ? error : new Error(String(error)));
       }
     });
@@ -458,7 +551,11 @@ class TTSService extends EventEmitter {
           this.cacheAudio(cacheKey, phrase.text, blob);
         }
       } catch (error) {
-        console.warn('Failed to preload phrase:', phrase.text, error);
+        ttsLogger.warn('Failed to preload phrase', {
+          phrase: phrase.text,
+          error: error instanceof Error ? error.message : String(error),
+          voiceId: phrase.voiceId,
+        });
         // Continue with other phrases
       }
     }

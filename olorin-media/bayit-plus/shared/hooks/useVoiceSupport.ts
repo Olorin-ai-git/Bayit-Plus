@@ -9,6 +9,10 @@ import { voiceSupportService } from '../services/voiceSupportService';
 import { ttsService } from '../services/ttsService';
 import { supportConfig } from '../config/supportConfig';
 import i18n from '../i18n';
+import { logger } from '../utils/logger';
+
+// Scoped logger for voice support with voice-specific context
+const voiceSupportLogger = logger.scope('VoiceSupport');
 
 interface UseVoiceSupportReturn {
   // State
@@ -73,7 +77,9 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
           };
         } catch (error) {
           // Some browsers don't support permission query
-          console.log('[VoiceSupport] Cannot query permission status');
+          voiceSupportLogger.debug('Permission query not supported', {
+            error: error instanceof Error ? error.message : String(error),
+          });
         }
       }
     };
@@ -84,11 +90,17 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
   // Subscribe to voice service events
   useEffect(() => {
     const handleStateChange = (state: typeof voiceState) => {
-      console.log('[VoiceSupport] State changed:', state);
+      voiceSupportLogger.info('Voice state changed', {
+        state,
+        previousState: voiceState,
+      });
     };
 
     const handleError = (error: Error) => {
-      console.error('[VoiceSupport] Error:', error);
+      voiceSupportLogger.error('Voice service error', {
+        error: error.message,
+        stack: error.stack,
+      });
     };
 
     voiceSupportService.on('stateChange', handleStateChange);
@@ -103,14 +115,18 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
   // Start listening
   const startListening = useCallback(async () => {
     if (!isSupported) {
-      console.warn('[VoiceSupport] Voice not supported on this platform');
+      voiceSupportLogger.warn('Voice not supported on platform', {
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
+      });
       return;
     }
 
     if (!hasPermission) {
       const granted = await requestPermission();
       if (!granted) {
-        console.warn('[VoiceSupport] Microphone permission denied');
+        voiceSupportLogger.warn('Microphone permission denied', {
+          isSupported,
+        });
         return;
       }
     }
@@ -163,21 +179,35 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
 
     ttsService.speak(introText, 'high', supportVoiceId, {
       onStart: () => {
-        console.log('[VoiceSupport] Intro TTS started');
+        voiceSupportLogger.info('Intro TTS playback started', {
+          textLength: introText.length,
+          voiceId: supportVoiceId,
+          language: i18n.language,
+        });
       },
       onComplete: () => {
-        console.log('[VoiceSupport] Intro TTS completed');
+        voiceSupportLogger.info('Intro TTS playback completed', {
+          textLength: introText.length,
+          voiceId: supportVoiceId,
+        });
         setSessionIntroPlayed(true);
         setCurrentIntroText(null);
         setVoiceState('idle');
         resolve();
       },
       onError: (error) => {
-        console.error('[VoiceSupport] Intro TTS error:', error);
-
-        // Show error message briefly, then silently continue
         const errorMessage = error instanceof Error ? error.message : 'Voice synthesis unavailable';
-        console.warn('[VoiceSupport] Gracefully degrading from TTS failure:', errorMessage);
+        voiceSupportLogger.error('Intro TTS playback failed', {
+          error: errorMessage,
+          textLength: introText.length,
+          voiceId: supportVoiceId,
+          stack: error instanceof Error ? error.stack : undefined,
+        });
+
+        voiceSupportLogger.warn('Gracefully degrading from TTS failure', {
+          errorMessage,
+          willShowErrorBriefly: true,
+        });
 
         // Determine error type for better user messaging
         const errorType = errorMessage.includes('Authentication') || errorMessage.includes('auth')
@@ -216,7 +246,12 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
     const introMessages = supportConfig.voiceAssistant.wizardIntro;
     const introText = introMessages[currentLang] || introMessages.en;
 
-    console.log('[VoiceSupport] Playing intro:', { language: currentLang, text: introText.substring(0, 50) });
+    voiceSupportLogger.info('Playing wizard intro', {
+      language: currentLang,
+      textPreview: introText.substring(0, 50),
+      textLength: introText.length,
+      usePrerecorded: supportConfig.voiceAssistant.usePrerecordedIntro,
+    });
 
     // Set speaking state and intro text for modal display
     setVoiceState('speaking');
@@ -227,17 +262,24 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
     const audioPath = introAudioPaths[currentLang] || '';
 
     if (supportConfig.voiceAssistant.usePrerecordedIntro && audioPath) {
-      console.log('[VoiceSupport] Using pre-recorded intro audio:', audioPath);
+      voiceSupportLogger.info('Using pre-recorded intro audio', {
+        audioPath,
+        language: currentLang,
+      });
 
       return new Promise<void>((resolve, reject) => {
         const audio = new Audio(audioPath);
 
         audio.onplay = () => {
-          console.log('[VoiceSupport] Pre-recorded intro started');
+          voiceSupportLogger.debug('Pre-recorded intro playback started', {
+            audioPath,
+          });
         };
 
         audio.onended = () => {
-          console.log('[VoiceSupport] Pre-recorded intro completed');
+          voiceSupportLogger.info('Pre-recorded intro playback completed', {
+            audioPath,
+          });
           setSessionIntroPlayed(true);
           setCurrentIntroText(null);
           setVoiceState('idle');
@@ -245,15 +287,21 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
         };
 
         audio.onerror = (error) => {
-          console.error('[VoiceSupport] Pre-recorded intro error:', error);
-          // Fallback to TTS if pre-recorded audio fails
-          console.log('[VoiceSupport] Falling back to TTS');
+          voiceSupportLogger.error('Pre-recorded intro playback error', {
+            error,
+            audioPath,
+          });
+          voiceSupportLogger.info('Falling back to TTS', {
+            audioPath,
+          });
           playIntroWithTTS(introText, resolve, reject);
         };
 
         audio.play().catch((error) => {
-          console.error('[VoiceSupport] Failed to play pre-recorded audio:', error);
-          // Fallback to TTS
+          voiceSupportLogger.error('Failed to play pre-recorded audio', {
+            error: error instanceof Error ? error.message : String(error),
+            audioPath,
+          });
           playIntroWithTTS(introText, resolve, reject);
         });
       });
@@ -267,7 +315,12 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
 
   // Activate voice assistant with optional intro (called when FAB is pressed)
   const activateVoiceAssistant = useCallback(async (): Promise<void> => {
-    console.log('[VoiceSupport] Activating voice assistant', { hasPlayedSessionIntro });
+    voiceSupportLogger.info('Activating voice assistant', {
+      hasPlayedSessionIntro,
+      language: i18n.language,
+      isSupported,
+      hasPermission,
+    });
 
     // Open the voice modal first
     openVoiceModal();
@@ -277,14 +330,18 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
       // Play intro message
       await playIntro();
       // After intro, start listening for user input
-      console.log('[VoiceSupport] Intro complete, starting to listen');
+      voiceSupportLogger.info('Intro completed, starting listening', {
+        language: i18n.language,
+      });
       await startListening();
     } else {
       // Start listening immediately (no intro needed)
-      console.log('[VoiceSupport] No intro needed, starting to listen');
+      voiceSupportLogger.info('Skipping intro, starting listening', {
+        hasPlayedSessionIntro: true,
+      });
       await startListening();
     }
-  }, [hasPlayedSessionIntro, openVoiceModal, playIntro, startListening]);
+  }, [hasPlayedSessionIntro, openVoiceModal, playIntro, startListening, isSupported, hasPermission]);
 
   return {
     voiceState,

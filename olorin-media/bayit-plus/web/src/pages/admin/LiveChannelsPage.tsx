@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, Image } from 'react-native';
 import { useTranslation } from 'react-i18next'
-import { Plus, Edit, Trash2, X, AlertCircle, Globe, ChevronDown, ChevronUp } from 'lucide-react'
-import { adminContentService } from '@/services/adminApi'
+import { Plus, Edit, Trash2, X, AlertCircle, Globe, ChevronDown, ChevronUp, Radio } from 'lucide-react'
+import { adminLiveChannelsService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassButton, GlassInput, GlassView, GlassToggle, GlassSelect, GlassPageHeader } from '@bayit/shared/ui'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
@@ -53,7 +53,7 @@ export default function LiveChannelsPage() {
     setIsLoading(true)
     setError(null)
     try {
-      const response: PaginatedResponse<LiveChannel> = await adminContentService.getLiveChannels({
+      const response: PaginatedResponse<LiveChannel> = await adminLiveChannelsService.getAll({
         page: pagination.page,
         page_size: pagination.pageSize,
       })
@@ -88,12 +88,16 @@ export default function LiveChannelsPage() {
       return
     }
     try {
-      await adminContentService.updateLiveChannel(editingId!, editData)
+      if (editingId === 'new') {
+        await adminLiveChannelsService.create(editData)
+      } else {
+        await adminLiveChannelsService.update(editingId!, editData)
+      }
       setEditingId(null)
       setEditData({})
       await loadChannels()
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to update live channel'
+      const msg = err instanceof Error ? err.message : 'Failed to save live channel'
       logger.error(msg, 'LiveChannelsPage', err)
       setError(msg)
     }
@@ -110,7 +114,7 @@ export default function LiveChannelsPage() {
         onPress: async () => {
           try {
             setDeleting(id)
-            await adminContentService.deleteLiveChannel(id)
+            await adminLiveChannelsService.delete(id)
             setItems(items.filter((item) => item.id !== id))
           } catch (err) {
             const msg = err instanceof Error ? err.message : 'Failed to delete live channel'
@@ -126,9 +130,29 @@ export default function LiveChannelsPage() {
 
   const columns = [
     {
+      key: 'logo',
+      label: t('admin.content.columns.logo', { defaultValue: 'Logo' }),
+      width: 80,
+      render: (logo: string | undefined, item: LiveChannel) => (
+        <View style={styles.logoContainer}>
+          {logo ? (
+            <Image
+              source={{ uri: logo }}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
+          ) : (
+            <View style={styles.logoPlaceholder}>
+              <Radio size={20} color={colors.textMuted} />
+            </View>
+          )}
+        </View>
+      ),
+    },
+    {
       key: 'name',
       label: t('admin.content.columns.name', { defaultValue: 'Name' }),
-      render: (name: string) => <Text className="text-sm text-white">{name}</Text>,
+      render: (name: string) => <Text style={styles.nameText}>{name}</Text>,
     },
     {
       key: 'stream_url',
@@ -143,16 +167,16 @@ export default function LiveChannelsPage() {
       key: 'epg_source',
       label: t('admin.content.columns.epgSource', { defaultValue: 'EPG Source' }),
       render: (epg: string | undefined) => (
-        <Text className="text-sm text-white">{epg ? 'Yes' : 'No'}</Text>
+        <Text style={styles.epgText}>{epg ? t('common.yes', 'Yes') : t('common.no', 'No')}</Text>
       ),
     },
     {
       key: 'is_active',
       label: t('admin.content.columns.status', { defaultValue: 'Status' }),
       render: (isActive: boolean) => (
-        <View style={[styles.badge, { backgroundColor: isActive ? '#10b98120' : '#6b728020' }]}>
-          <Text style={[styles.badgeText, { color: isActive ? '#10b981' : '#6b7280' }]}>
-            {isActive ? 'Active' : 'Inactive'}
+        <View style={[styles.badge, isActive ? styles.badgeActive : styles.badgeInactive]}>
+          <Text style={[styles.badgeText, isActive ? styles.badgeTextActive : styles.badgeTextInactive]}>
+            {isActive ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}
           </Text>
         </View>
       ),
@@ -160,14 +184,14 @@ export default function LiveChannelsPage() {
     {
       key: 'order',
       label: t('admin.content.columns.order', { defaultValue: 'Order' }),
-      render: (order: number) => <Text className="text-sm text-white">{order}</Text>,
+      render: (order: number) => <Text style={styles.orderText}>{order}</Text>,
     },
     {
       key: 'supports_live_subtitles',
       label: t('admin.content.columns.subtitles', { defaultValue: 'Subtitles' }),
       render: (supported: boolean, item: LiveChannel) => (
-        <View style={[styles.badge, { backgroundColor: supported ? '#8b5cf620' : '#6b728020' }]}>
-          <Text style={[styles.badgeText, { color: supported ? '#8b5cf6' : '#6b7280' }]}>
+        <View style={[styles.badge, supported ? styles.badgeSubtitles : styles.badgeNoSubtitles]}>
+          <Text style={[styles.badgeText, supported ? styles.badgeTextSubtitles : styles.badgeTextInactive]}>
             {supported ? `✓ ${item.primary_language?.toUpperCase()}` : '—'}
           </Text>
         </View>
@@ -179,19 +203,23 @@ export default function LiveChannelsPage() {
       width: 100,
       render: (_: any, item: LiveChannel) => (
         <View style={[styles.actionsCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <Pressable
+          <GlassButton
+            variant="ghost"
+            size="sm"
             onPress={() => handleEdit(item)}
-            style={[styles.actionButton, { backgroundColor: '#a855f780' }]}
-          >
-            <Edit size={14} color="#a855f7" />
-          </Pressable>
-          <Pressable
+            icon={<Edit size={18} color="#60a5fa" />}
+            style={styles.actionButton}
+            accessibilityLabel={t('admin.liveChannels.editChannel', { defaultValue: 'Edit channel' })}
+          />
+          <GlassButton
+            variant="ghost"
+            size="sm"
             onPress={() => handleDelete(item.id)}
             disabled={deleting === item.id}
-            style={[styles.actionButton, { backgroundColor: '#ef444480', opacity: deleting === item.id ? 0.5 : 1 }]}
-          >
-            <Trash2 size={14} color="#ef4444" />
-          </Pressable>
+            icon={<Trash2 size={18} color="#f87171" />}
+            style={[styles.actionButton, deleting === item.id && styles.disabledButton]}
+            accessibilityLabel={t('admin.liveChannels.deleteChannel', { defaultValue: 'Delete channel' })}
+          />
         </View>
       ),
     },
@@ -201,7 +229,7 @@ export default function LiveChannelsPage() {
   const IconComponent = pageConfig.icon;
 
   return (
-    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
+    <ScrollView style={styles.container} contentContainerStyle={{ padding: spacing.lg }}>
       <GlassPageHeader
         title={t('admin.titles.liveChannels', { defaultValue: 'Live Channels' })}
         subtitle={t('admin.liveChannels.subtitle', { defaultValue: 'Manage live TV channels' })}
@@ -234,7 +262,7 @@ export default function LiveChannelsPage() {
       {error && (
         <View style={[styles.errorContainer, { marginBottom: spacing.lg }]}>
           <AlertCircle size={18} color="#ef4444" />
-          <Text className="flex-1 text-red-500 text-sm">{error}</Text>
+          <Text style={styles.errorText}>{error}</Text>
           <Pressable onPress={() => setError(null)}>
             <X size={18} color="#ef4444" />
           </Pressable>
@@ -395,6 +423,42 @@ export default function LiveChannelsPage() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  logoContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: borderRadius.md,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  logoImage: {
+    width: '100%',
+    height: '100%',
+  },
+  logoPlaceholder: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  },
+  nameText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  epgText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    fontWeight: '500',
+  },
+  orderText: {
+    fontSize: 14,
+    color: colors.text,
+    fontWeight: '600',
+  },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -419,6 +483,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(239, 68, 68, 0.3)',
   },
+  errorText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#ef4444',
+  },
   cellText: {
     fontSize: 13,
     color: colors.text,
@@ -428,25 +497,51 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   badge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
     borderRadius: borderRadius.full,
     alignSelf: 'flex-start',
+  },
+  badgeActive: {
+    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+  },
+  badgeInactive: {
+    backgroundColor: 'rgba(156, 163, 175, 0.15)',
+  },
+  badgeSubtitles: {
+    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+  },
+  badgeNoSubtitles: {
+    backgroundColor: 'rgba(156, 163, 175, 0.15)',
   },
   badgeText: {
     fontSize: 12,
     fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  badgeTextActive: {
+    color: '#22c55e',
+  },
+  badgeTextInactive: {
+    color: '#9ca3af',
+  },
+  badgeTextSubtitles: {
+    color: '#a78bfa',
   },
   actionsCell: {
-    gap: spacing.sm,
+    flexDirection: 'row',
+    gap: spacing.xs,
     alignItems: 'center',
   },
   actionButton: {
-    width: 32,
-    height: 32,
-    borderRadius: borderRadius.md,
+    minWidth: 44,
+    minHeight: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  disabledButton: {
+    opacity: 0.5,
   },
   editForm: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
-import { adminContentService } from '@/services/adminApi'
+import { adminContentService, adminPodcastsService, adminRadioStationsService } from '@/services/adminApi'
 import { useNotifications } from '@olorin/glass-ui/hooks'
 import { useTranslation } from 'react-i18next'
 import logger from '@/utils/logger'
@@ -71,12 +71,12 @@ export function useContentData() {
     try {
       if (filters.content_type === 'podcasts' || filters.content_type === 'radio') {
         const fetchFn = filters.content_type === 'podcasts'
-          ? adminContentService.getPodcasts
-          : adminContentService.getRadioStations
+          ? adminPodcastsService.getPodcasts
+          : adminRadioStationsService.getAll
 
         const response = await fetchFn({
           page: pagination.page,
-          pageSize: pagination.pageSize,
+          page_size: pagination.pageSize,
           search: filters.search,
         })
 

@@ -9,6 +9,10 @@ import { useSupportStore } from '../stores/supportStore';
 import { voiceSupportService } from '../services/voiceSupportService';
 import { supportConfig } from '../config/supportConfig';
 import { VoiceSystemType, getWakeWordConfig } from '../utils/porcupineWakeWordDetector';
+import { logger } from '../utils/logger';
+
+// Scoped logger for wake word support with voice-specific context
+const wakeWordSupportLogger = logger.scope('WakeWordSupport');
 
 interface UseWakeWordSupportOptions {
   enabled?: boolean;
@@ -57,14 +61,22 @@ export function useWakeWordSupport(
 
       const accessKey = getPicovoiceAccessKey();
       if (!accessKey) {
-        console.warn('[WakeWordSupport] No Picovoice access key configured');
+        wakeWordSupportLogger.warn('No Picovoice access key configured', {
+          isSupported,
+          enabled,
+        });
         return;
       }
 
       // Get Support system wake word config (Jarvis temporarily, Olorin intended)
       const supportConfig = getConfig('support');
-      console.log(`[WakeWordSupport] Initializing for Support system (Olorin)...`);
-      console.log(`[WakeWordSupport] Wake word: "${supportConfig.builtInKeyword}" (intended: "${supportConfig.customPhrase}")`);
+      wakeWordSupportLogger.info('Initializing wake word detection for Olorin', {
+        system: 'support',
+        wakeWord: supportConfig.builtInKeyword,
+        intendedWakeWord: supportConfig.customPhrase,
+        customModelPath: supportConfig.customModelPath,
+        sensitivity: 0.6,
+      });
 
       // Create detector for support system
       detectorRef.current = new PorcupineWakeWordDetector();
@@ -78,9 +90,18 @@ export function useWakeWordSupport(
       );
 
       isInitializedRef.current = true;
-      console.log(`[WakeWordSupport] Support system ready - say "${supportConfig.builtInKeyword}" to activate Olorin`);
+      wakeWordSupportLogger.info('Wake word detector ready', {
+        system: 'support',
+        wakeWord: supportConfig.builtInKeyword,
+        instructions: `Say "${supportConfig.builtInKeyword}" to activate Olorin`,
+      });
     } catch (error) {
-      console.error('[WakeWordSupport] Failed to initialize detector:', error);
+      wakeWordSupportLogger.error('Failed to initialize wake word detector', {
+        error: error instanceof Error ? error.message : String(error),
+        isSupported,
+        enabled,
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       onError?.(error instanceof Error ? error : new Error('Failed to initialize wake word detector'));
     }
   }, [enabled, isSupported, onError]);
@@ -89,16 +110,28 @@ export function useWakeWordSupport(
   const handleWakeWordDetected = useCallback((keywordIndex: number, system: VoiceSystemType) => {
     // Only respond to support system wake word
     if (system !== 'support') {
-      console.log('[WakeWordSupport] Ignoring wake word - not for support system:', system);
+      wakeWordSupportLogger.debug('Ignoring wake word from different system', {
+        system,
+        keywordIndex,
+        expectedSystem: 'support',
+      });
       return;
     }
 
     const supportWakeWord = getWakeWordConfig('support');
-    console.log(`[WakeWordSupport] Olorin wake word "${supportWakeWord.builtInKeyword}" detected!`);
+    wakeWordSupportLogger.info('Olorin wake word detected', {
+      wakeWord: supportWakeWord.builtInKeyword,
+      keywordIndex,
+      system: 'support',
+      timestamp: Date.now(),
+    });
 
     // Don't activate if already in voice interaction
     if (voiceState !== 'idle' || isVoiceModalOpen) {
-      console.log('[WakeWordSupport] Already in voice interaction, ignoring');
+      wakeWordSupportLogger.debug('Ignoring wake word - already in interaction', {
+        voiceState,
+        isVoiceModalOpen,
+      });
       return;
     }
 
@@ -119,11 +152,15 @@ export function useWakeWordSupport(
   // Handle detector errors
   const handleDetectorError = useCallback(
     (error: Error) => {
-      console.error('[WakeWordSupport] Detector error:', error);
+      wakeWordSupportLogger.error('Wake word detector error', {
+        error: error.message,
+        stack: error.stack,
+        isListeningForWakeWord,
+      });
       setIsListeningForWakeWord(false);
       onError?.(error);
     },
-    [onError]
+    [onError, isListeningForWakeWord]
   );
 
   // Start wake word detection for Support system
@@ -142,10 +179,19 @@ export function useWakeWordSupport(
         await detectorRef.current.start(handleWakeWordDetected);
         setIsListeningForWakeWord(true);
         const supportWakeWord = getWakeWordConfig('support');
-        console.log(`[WakeWordSupport] Listening for Olorin wake word "${supportWakeWord.builtInKeyword}"...`);
+        wakeWordSupportLogger.info('Started listening for wake word', {
+          system: 'support',
+          wakeWord: supportWakeWord.builtInKeyword,
+          sensitivity: 0.6,
+        });
       }
     } catch (error) {
-      console.error('[WakeWordSupport] Failed to start detection:', error);
+      wakeWordSupportLogger.error('Failed to start wake word detection', {
+        error: error instanceof Error ? error.message : String(error),
+        isSupported,
+        isInitialized: isInitializedRef.current,
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       onError?.(error instanceof Error ? error : new Error('Failed to start wake word detection'));
     }
   }, [isSupported, isListeningForWakeWord, initializeDetector, handleWakeWordDetected, onError]);
@@ -155,7 +201,9 @@ export function useWakeWordSupport(
     if (detectorRef.current) {
       detectorRef.current.stop();
       setIsListeningForWakeWord(false);
-      console.log('[WakeWordSupport] Stopped listening for wake word');
+      wakeWordSupportLogger.info('Stopped listening for wake word', {
+        system: 'support',
+      });
     }
   }, []);
 

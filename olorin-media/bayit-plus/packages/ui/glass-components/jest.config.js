@@ -1,5 +1,5 @@
 module.exports = {
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
@@ -11,16 +11,16 @@ module.exports = {
     }],
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(zustand|nanoid)/)',
+    'node_modules/(?!(zustand|nanoid|uuid)/)',
   ],
   moduleNameMapper: {
     '^@olorin/design-tokens(.*)$': '<rootDir>/../design-tokens/src$1',
+    '^react-native$': '<rootDir>/jest.setup.js',
+    '^@testing-library/react-native$': '<rootDir>/__mocks__/@testing-library/react-native.js',
   },
   testMatch: ['**/__tests__/**/*.test.[jt]s?(x)'],
   testPathIgnorePatterns: [
     '/node_modules/',
-    '/__tests__/NotificationProvider.test.tsx',
-    '/__tests__/notification-integration.test.tsx',
   ],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
@@ -29,10 +29,10 @@ module.exports = {
   ],
   coverageThreshold: {
     global: {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90,
     },
   },
 };

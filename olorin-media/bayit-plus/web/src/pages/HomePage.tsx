@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
+import { useAuthStore } from '@/stores/authStore';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import AnimatedCard from '@/components/common/AnimatedCard';
 import {

@@ -7,7 +7,6 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { X } from 'lucide-react';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
-import { GlassProgressBar } from '@bayit/shared/ui';
 import type { FileUploadProgress } from '../../types';
 import { FileIcon } from '../Shared/FileIcon';
 import { UploadStatusBadge } from '../Shared/UploadStatusBadge';
@@ -32,7 +31,11 @@ export const FileTableRow: React.FC<FileTableRowProps> = ({
   const hasFailed = !!error;
 
   return (
-    <View style={styles.row}>
+    <View
+      style={styles.row}
+      accessibilityRole="listitem"
+      accessibilityLabel={`File: ${file.name}, ${formatFileSize(file.size)}, ${formatPercentage(progress)} complete`}
+    >
       {/* File Name + Icon */}
       <View style={[styles.cell, styles.fileNameCell]}>
         <FileIcon filename={file.name} size={20} />
@@ -49,15 +52,26 @@ export const FileTableRow: React.FC<FileTableRowProps> = ({
       {/* Progress */}
       <View style={[styles.cell, styles.progressCell]}>
         {hasFailed ? (
-          <Text style={[styles.cellText, { color: colors.error }]}>{error}</Text>
+          <Text style={[styles.cellText, { color: colors.error }]}>
+            {typeof error === 'string' ? error : JSON.stringify(error)}
+          </Text>
         ) : (
           <View style={styles.progressWrapper}>
-            <GlassProgressBar
-              progress={progress}
-              height={8}
-              animated={progress > 0 && progress < 100}
-              aria-label={`Upload progress: ${formatPercentage(progress)}`}
-            />
+            <View
+              style={styles.progressBarContainer}
+              accessibilityRole="progressbar"
+              accessibilityLabel={`Upload progress: ${formatPercentage(progress)}`}
+            >
+              <View
+                style={[
+                  styles.progressBarFill,
+                  {
+                    width: `${progress}%`,
+                    opacity: progress > 0 && progress < 100 ? 1 : 0.8,
+                  },
+                ]}
+              />
+            </View>
             <Text style={styles.progressText}>{formatPercentage(progress)}</Text>
           </View>
         )}
@@ -141,6 +155,18 @@ const styles = StyleSheet.create({
   },
   progressWrapper: {
     gap: spacing.xs,
+  },
+  progressBarContainer: {
+    height: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: borderRadius.full,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.full,
+    transition: 'width 0.3s ease',
   },
   progressText: {
     fontSize: fontSize.xs,

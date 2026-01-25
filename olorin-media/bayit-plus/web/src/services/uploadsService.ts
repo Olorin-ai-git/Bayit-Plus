@@ -388,7 +388,18 @@ export const uploadBrowserFiles = async (
       successful.push(job);
       onFileComplete?.(i, job);
     } catch (error: any) {
-      const errorMessage = error?.detail || error?.message || 'Upload failed';
+      // Extract error message from various possible structures
+      let errorMessage = 'Upload failed';
+      if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error?.detail) {
+        errorMessage = typeof error.detail === 'string' ? error.detail : JSON.stringify(error.detail);
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (error && typeof error === 'object') {
+        // Handle error objects with nested structure
+        errorMessage = JSON.stringify(error);
+      }
       failed.push({ file, error: errorMessage });
     }
   }

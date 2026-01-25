@@ -14,19 +14,26 @@ steps:
       - 'deploy'
       - 'bayit-backend-production'
       - '--image=gcr.io/$PROJECT_ID/bayit-backend:$BUILD_ID'
-      - '--region=us-central1'
+      - '--region=${_REGION}'
       - '--platform=managed'
       - '--allow-unauthenticated'
-      - '--memory=2Gi'
-      - '--cpu=2'
+      - '--memory=${_MEMORY}'
+      - '--cpu=${_CPU}'
       - '--timeout=300'
-      - '--min-instances=1'
-      - '--max-instances=10'
+      - '--min-instances=${_MIN_INSTANCES}'
+      - '--max-instances=${_MAX_INSTANCES}'
       - '--set-env-vars=ENVIRONMENT=production'
       - '--update-secrets=CSRF_ENABLED=csrf-enabled:latest'
 
 images:
   - 'gcr.io/$PROJECT_ID/bayit-backend:$BUILD_ID'
   - 'gcr.io/$PROJECT_ID/bayit-backend:latest'
-  
+
+substitutions:
+  _REGION: 'us-central1'
+  _MEMORY: '2Gi'
+  _CPU: '2'
+  _MIN_INSTANCES: '1'
+  _MAX_INSTANCES: '10'
+
 timeout: '2400s'

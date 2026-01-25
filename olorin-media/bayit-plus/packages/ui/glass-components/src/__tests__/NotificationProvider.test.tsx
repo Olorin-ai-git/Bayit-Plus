@@ -9,9 +9,22 @@ import { NotificationProvider, useNotificationContext } from '../contexts/Notifi
 import { useNotificationStore } from '../stores/notificationStore';
 
 // Mock GlassToastContainer
-jest.mock('../native/components/GlassToastContainer', () => ({
-  GlassToastContainer: () => null,
-}));
+jest.mock('../native/components/GlassToastContainer', () => {
+  const React = require('react');
+  return {
+    GlassToastContainer: () => {
+      const { useNotificationStore } = require('../stores/notificationStore');
+      const { useEffect } = React;
+
+      useEffect(() => {
+        useNotificationStore.getState().setProviderMounted(true);
+        return () => useNotificationStore.getState().setProviderMounted(false);
+      }, []);
+
+      return null;
+    },
+  };
+});
 
 describe('NotificationProvider', () => {
   beforeEach(() => {
@@ -98,7 +111,7 @@ describe('NotificationProvider', () => {
 
       // Provider should mark itself as mounted
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       // Call show
@@ -126,7 +139,7 @@ describe('NotificationProvider', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       contextValue.showDebug('Debug message', 'Debug');
@@ -151,7 +164,7 @@ describe('NotificationProvider', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       contextValue.showInfo('Info message', 'Info');
@@ -176,7 +189,7 @@ describe('NotificationProvider', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       contextValue.showWarning('Warning message', 'Warning');
@@ -201,7 +214,7 @@ describe('NotificationProvider', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       contextValue.showSuccess('Success message', 'Success');
@@ -226,7 +239,7 @@ describe('NotificationProvider', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       contextValue.showError('Error message', 'Error');
@@ -251,7 +264,7 @@ describe('NotificationProvider', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       const id = contextValue.showInfo('Test message');
@@ -276,7 +289,7 @@ describe('NotificationProvider', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       contextValue.showInfo('Info 1');
@@ -304,7 +317,7 @@ describe('NotificationProvider', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       // Test that sanitization occurs (assuming sanitizeMessage handles XSS)
@@ -333,7 +346,7 @@ describe('NotificationProvider', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       // Test with invalid action (no label)
@@ -366,7 +379,7 @@ describe('NotificationProvider', () => {
       );
 
       await waitFor(() => {
-        expect(useNotificationStore.getState().providerMounted).toBe(true);
+        expect(useNotificationStore.getState().isProviderMounted).toBe(true);
       });
 
       const onPress = jest.fn();
@@ -375,7 +388,7 @@ describe('NotificationProvider', () => {
         message: 'Test',
         action: {
           label: 'Undo',
-          type: 'action' as const,
+          type: 'retry' as const,
           onPress,
         },
       });

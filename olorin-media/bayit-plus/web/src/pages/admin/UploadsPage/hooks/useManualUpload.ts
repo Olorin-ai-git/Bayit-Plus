@@ -1,11 +1,15 @@
 /**
  * useManualUpload Hook
  * Manages browser-based chunked file uploads with per-file progress tracking
+ *
+ * REFACTORED (2026-01-25): Extracted helper functions to useManualUpload.helpers.ts
+ * to comply with 200-line file size limit.
  */
 
 import { useState, useCallback } from 'react';
 import type { FileUploadProgress, ContentType } from '../types';
 import { createInitialStageState } from '../utils/stageHelpers';
+import { updateFileProgress as updateProgress, markFileComplete as markComplete, markFileFailed as markFailed } from './useManualUpload.helpers';
 import * as uploadsService from '@/services/uploadsService';
 import logger from '@/utils/logger';
 import { useNotifications } from '@olorin/glass-ui/hooks';
@@ -54,66 +58,21 @@ export const useManualUpload = () => {
    * Updates progress for a specific file
    */
   const updateFileProgress = useCallback((index: number, progress: number) => {
-    setFiles((prev) => {
-      const updated = [...prev];
-      if (updated[index]) {
-        updated[index] = {
-          ...updated[index],
-          progress,
-          stages: {
-            ...updated[index].stages,
-            browserUpload: progress < 100 ? 'in_progress' : 'completed',
-            hashCalculation: progress === 100 ? 'in_progress' : 'pending',
-          },
-        };
-      }
-      return updated;
-    });
+    setFiles((prev) => updateProgress(prev, index, progress));
   }, []);
 
   /**
    * Marks a file as completed
    */
   const markFileComplete = useCallback((index: number, uploadId: string) => {
-    setFiles((prev) => {
-      const updated = [...prev];
-      if (updated[index]) {
-        updated[index] = {
-          ...updated[index],
-          progress: 100,
-          uploadId,
-          stages: {
-            browserUpload: 'completed',
-            hashCalculation: 'completed',
-            duplicateCheck: 'completed',
-            metadataExtraction: 'completed',
-            gcsUpload: 'completed',
-            databaseInsert: 'completed',
-          },
-        };
-      }
-      return updated;
-    });
+    setFiles((prev) => markComplete(prev, index, uploadId));
   }, []);
 
   /**
    * Marks a file as failed
    */
   const markFileFailed = useCallback((index: number, error: string) => {
-    setFiles((prev) => {
-      const updated = [...prev];
-      if (updated[index]) {
-        updated[index] = {
-          ...updated[index],
-          error,
-          stages: {
-            ...updated[index].stages,
-            browserUpload: 'failed',
-          },
-        };
-      }
-      return updated;
-    });
+    setFiles((prev) => markFailed(prev, index, error));
   }, []);
 
   /**

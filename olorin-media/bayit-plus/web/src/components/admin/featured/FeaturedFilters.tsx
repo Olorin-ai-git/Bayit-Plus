@@ -48,9 +48,13 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     marginBottom: spacing.lg,
     alignItems: 'center',
+    zIndex: 1000,
   },
   selectWrapper: {
     flex: 1,
+    maxWidth: 300,
+    zIndex: 1000,
+    position: 'relative',
   },
   countBadge: {
     paddingHorizontal: spacing.md,

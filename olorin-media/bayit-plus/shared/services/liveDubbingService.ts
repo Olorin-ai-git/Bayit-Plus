@@ -7,6 +7,10 @@
 import { Platform } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { api } from './api'
+import { logger } from '../utils/logger'
+
+// Scoped logger for live dubbing with voice-specific context
+const dubbingLogger = logger.scope('LiveDubbing')
 
 // API configuration from environment - no fallback allowed per coding standards
 const getApiBaseUrl = (): string => {
@@ -14,14 +18,20 @@ const getApiBaseUrl = (): string => {
   if (Platform.OS === 'web') {
     const webUrl = (window as any).__BAYIT_API_URL__
     if (!webUrl) {
-      console.error('[LiveDubbing] __BAYIT_API_URL__ global variable is required')
+      dubbingLogger.error('__BAYIT_API_URL__ global variable is required', {
+        platform: 'web',
+        severity: 'critical',
+      })
     }
     return webUrl || ''
   }
   // For native platforms, use the configured API URL
   const nativeUrl = (global as any).__BAYIT_API_URL__
   if (!nativeUrl) {
-    console.error('[LiveDubbing] __BAYIT_API_URL__ global variable is required')
+    dubbingLogger.error('__BAYIT_API_URL__ global variable is required', {
+      platform: Platform.OS,
+      severity: 'critical',
+    })
   }
   return nativeUrl || ''
 }
@@ -142,14 +152,29 @@ class LiveDubbingService {
       this.ws = new WebSocket(wsUrl)
 
       this.ws.onopen = () => {
-        console.log('✅ [LiveDubbing] WebSocket connected')
+        dubbingLogger.info('WebSocket connected', {
+          channelId,
+          targetLang,
+          voiceId,
+          platform: platformParam,
+          wsProtocol,
+        })
         this.isConnected = true
       }
 
       this.ws.onmessage = (event) => {
         try {
           const msg = JSON.parse(event.data)
-          console.log('📨 [LiveDubbing] Message received:', msg.type)
+
+          // VOICE-SPECIFIC: Async logging in real-time message path
+          // Prevents blocking audio processing
+          queueMicrotask(() => {
+            dubbingLogger.debug('Message received', {
+              type: msg.type,
+              timestamp: Date.now(),
+              sequence: msg.sequence,
+            })
+          })
 
           if (msg.type === 'connected') {
             this.syncDelayMs = msg.sync_delay_ms || 600
@@ -162,18 +187,28 @@ class LiveDubbingService {
             this.onError?.(msg.error || msg.message, msg.recoverable ?? true)
           }
         } catch (error) {
-          console.error('❌ [LiveDubbing] WebSocket parse error:', error)
+          // Sync error logging (non-real-time path)
+          dubbingLogger.error('WebSocket parse error', error)
         }
       }
 
       this.ws.onerror = (error) => {
-        console.error('❌ [LiveDubbing] WebSocket error:', error)
+        dubbingLogger.error('WebSocket error', {
+          error,
+          channelId,
+          isConnected: this.isConnected,
+        })
         this.onError?.('Connection error', true)
         this.isConnected = false
       }
 
       this.ws.onclose = (event) => {
-        console.log(`🔌 [LiveDubbing] WebSocket closed: ${event.code}`)
+        dubbingLogger.info('WebSocket closed', {
+          code: event.code,
+          reason: event.reason,
+          wasClean: event.wasClean,
+          channelId,
+        })
         this.isConnected = false
       }
     } catch (error) {
@@ -183,18 +218,41 @@ class LiveDubbingService {
 
   /**
    * Handle incoming dubbed audio message.
+   * CRITICAL: Real-time audio path - latency must be <200ms
    */
   private async handleDubbedAudio(message: DubbedAudioMessage): Promise<void> {
-    // Play through platform-specific audio player
+    const startTime = Date.now()
+
+    // Play through platform-specific audio player (IMMEDIATE)
     if (this.audioPlayer && message.data) {
       try {
         await this.audioPlayer.playAudio(message.data)
+
+        // VOICE-SPECIFIC: Async logging for real-time audio path
+        // Prevents blocking audio playback
+        queueMicrotask(() => {
+          const processingTime = Date.now() - startTime
+          dubbingLogger.debug('Dubbed audio played', {
+            sequence: message.sequence,
+            latency_ms: message.latency_ms,
+            processing_time_ms: processingTime,
+            original_text: message.original_text.substring(0, 50),
+            translated_text: message.translated_text.substring(0, 50),
+            timestamp: message.timestamp_ms,
+            audioSize: message.data.length,
+          })
+        })
       } catch (error) {
-        console.error('❌ [LiveDubbing] Error playing audio:', error)
+        // Error logging can be sync (non-critical path)
+        dubbingLogger.error('Error playing audio', {
+          error,
+          sequence: message.sequence,
+          latency_ms: message.latency_ms,
+        })
       }
     }
 
-    // Notify callback
+    // Notify callback (IMMEDIATE)
     this.onDubbedAudio?.(message)
   }
 
@@ -244,7 +302,9 @@ class LiveDubbingService {
     this.onConnected = null
     this.onError = null
 
-    console.log('🔌 [LiveDubbing] Disconnected')
+    dubbingLogger.info('Disconnected', {
+      timestamp: Date.now(),
+    })
   }
 
   /**
@@ -264,7 +324,10 @@ class LiveDubbingService {
       )
       return response.data
     } catch (error) {
-      console.error('Error checking dubbing availability:', error)
+      dubbingLogger.error('Error checking dubbing availability', {
+        error,
+        channelId,
+      })
       return { available: false, error: 'Check failed' }
     }
   }
@@ -277,7 +340,7 @@ class LiveDubbingService {
       const response = await api.get<DubbingVoice[]>('/live/dubbing/voices')
       return response.data
     } catch (error) {
-      console.error('Error fetching dubbing voices:', error)
+      dubbingLogger.error('Error fetching dubbing voices', error)
       return []
     }
   }
