@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/authStore'
 import { ttsService } from '@bayit/shared/services/ttsService'
@@ -6,6 +6,7 @@ import VideoPlayerOverlays from './VideoPlayerOverlays'
 import VideoPlayerPanels from './VideoPlayerPanels'
 import VideoPlayerControlsOverlay from './VideoPlayerControlsOverlay'
 import VideoPlayerWatchParty from './VideoPlayerWatchParty'
+import { BufferedLiveDubbingPlayer } from '../BufferedLiveDubbingPlayer'
 import {
   useVideoPlayer,
   useSubtitles,
@@ -39,6 +40,8 @@ export default function VideoPlayer({
   const user = useAuthStore((s) => s.user)
 
   const { usageStats } = useLiveFeatureQuota()
+  const [hoveredButton, setHoveredButton] = useState<string | null>(null)
+
   const { videoRef, containerRef, state, controls } = useVideoPlayer({
     src,
     isLive,
@@ -72,6 +75,12 @@ export default function VideoPlayer({
   const dubbing = useLiveDubbing({
     channelId: contentId || '',
     videoElement: videoRef.current,
+    // Forward dubbed audio to buffered player if active
+    onRawDubbedAudio: (audio, text) => {
+      if (bufferedPlayerAddSegment) {
+        bufferedPlayerAddSegment(audio, text)
+      }
+    },
   })
 
   const trivia = useTrivia({
@@ -124,6 +133,16 @@ export default function VideoPlayer({
   const [isRecording, setIsRecording] = useState(false)
   const [recordingDuration, setRecordingDuration] = useState(0)
   const [isTTSPlaying, setIsTTSPlaying] = useState(false)
+  const [bufferedPlayerAddSegment, setBufferedPlayerAddSegment] = useState<
+    ((audio: ArrayBuffer, text: string) => void) | null
+  >(null)
+
+  // Clear buffered player callback when dubbing disconnects
+  useEffect(() => {
+    if (!dubbing.isConnected) {
+      setBufferedPlayerAddSegment(null)
+    }
+  }, [dubbing.isConnected])
 
   useEffect(() => {
     const handleTTSPlaying = () => setIsTTSPlaying(true)
@@ -182,7 +201,19 @@ export default function VideoPlayer({
     setIsRecording,
     setRecordingDuration,
     onShowUpgrade,
+    onHoveredButtonChange: setHoveredButton,
   })
+
+  // Stable callbacks for BufferedLiveDubbingPlayer to prevent re-render loops
+  const handleBufferedPlayerReady = useCallback((addSegment: (audio: ArrayBuffer, text: string) => void) => {
+    console.log('[VideoPlayer] Buffered player ready')
+    setBufferedPlayerAddSegment(() => addSegment)
+  }, [])
+
+  const handleBufferedPlayerError = useCallback((error: string) => {
+    console.error('[VideoPlayer] Buffered dubbing error:', error)
+    dubbing.disconnect()
+  }, [dubbing])
 
   return (
     <div
@@ -190,12 +221,24 @@ export default function VideoPlayer({
       style={webStyles.container}
       onClick={controls.togglePlay}
     >
-      <video
-        ref={videoRef}
-        poster={poster}
-        style={webStyles.video}
-        playsInline
-      />
+      {isLive && dubbing.isConnected ? (
+        // Buffered live dubbing player for synchronized video+audio
+        // Pass videoRef so liveDubbingService can capture audio from it
+        <BufferedLiveDubbingPlayer
+          streamUrl={src}
+          videoRef={videoRef}
+          onPlayerReady={handleBufferedPlayerReady}
+          onError={handleBufferedPlayerError}
+        />
+      ) : (
+        // Regular video element
+        <video
+          ref={videoRef}
+          poster={poster}
+          style={webStyles.video}
+          playsInline
+        />
+      )}
 
       <VideoPlayerOverlays
         isRecording={isRecording}
@@ -255,7 +298,13 @@ export default function VideoPlayer({
         showChaptersPanel={showChaptersPanel}
         showSceneSearchPanel={showSceneSearchPanel}
         showSettings={showSettings}
-        liveSubtitleLang={liveSubtitleLang}
+        liveSubtitleLang={dubbing.isConnected ? dubbing.targetLanguage : liveSubtitleLang}
+        availableLanguages={dubbing.availableLanguages}
+        onLanguageChange={(lang) => {
+          setLiveSubtitleLang(lang)
+          dubbing.setTargetLanguage(lang)
+        }}
+        isDubbingActive={dubbing.isConnected}
         toggleChaptersPanel={toggleChaptersPanel}
         toggleSceneSearchPanel={toggleSceneSearchPanel}
         toggleSettings={toggleSettings}

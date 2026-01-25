@@ -13,6 +13,9 @@ interface PlayerControlsProps {
   controls: PlayerControlsType
   isLive?: boolean
   liveSubtitleLang?: string
+  availableLanguages?: string[]
+  onLanguageChange?: (lang: string) => void
+  isDubbingActive?: boolean
   showChaptersPanel?: boolean
   showSceneSearchPanel?: boolean
   showSettings?: boolean
@@ -34,6 +37,9 @@ export default function PlayerControls({
   controls,
   isLive = false,
   liveSubtitleLang = 'en',
+  availableLanguages,
+  onLanguageChange,
+  isDubbingActive = false,
   showChaptersPanel = false,
   showSceneSearchPanel = false,
   showSettings = false,
@@ -63,6 +69,9 @@ export default function PlayerControls({
         toggleFullscreen={controls.toggleFullscreen}
         isLive={isLive}
         liveSubtitleLang={liveSubtitleLang}
+        availableLanguages={availableLanguages}
+        onLanguageChange={onLanguageChange}
+        isDubbingActive={isDubbingActive}
         showChaptersPanel={showChaptersPanel}
         showSceneSearchPanel={showSceneSearchPanel}
         showSettings={showSettings}

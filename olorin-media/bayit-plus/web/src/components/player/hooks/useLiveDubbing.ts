@@ -16,6 +16,8 @@ export interface UseLiveDubbingOptions {
   channelId: string
   videoElement: HTMLVideoElement | null
   autoConnect?: boolean
+  // Callback for raw audio data (for buffered playback mode)
+  onRawDubbedAudio?: (audio: ArrayBuffer, text: string) => void
 }
 
 export interface UseLiveDubbingState {
@@ -34,7 +36,7 @@ export interface UseLiveDubbingState {
   syncDelayMs: number
 }
 
-export function useLiveDubbing({ channelId, videoElement, autoConnect = false }: UseLiveDubbingOptions) {
+export function useLiveDubbing({ channelId, videoElement, autoConnect = false, onRawDubbedAudio }: UseLiveDubbingOptions) {
   const [state, setState] = useState<UseLiveDubbingState>({
     isConnected: false,
     isConnecting: false,
@@ -80,7 +82,21 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false }:
       lastTranslation: message.translated_text,
       latencyMs: message.latency_ms,
     }))
-  }, [])
+
+    // If onRawDubbedAudio callback provided, decode and pass raw audio
+    if (onRawDubbedAudio && message.data) {
+      try {
+        const binaryString = atob(message.data)
+        const bytes = new Uint8Array(binaryString.length)
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i)
+        }
+        onRawDubbedAudio(bytes.buffer, message.translated_text)
+      } catch (error) {
+        console.error('[useLiveDubbing] Failed to decode audio for buffered playback:', error)
+      }
+    }
+  }, [onRawDubbedAudio])
 
   // Latency report callback
   const handleLatency = useCallback((report: LatencyReport) => {
@@ -138,7 +154,9 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false }:
           handleLatency,
           handleConnected,
           handleError,
-          voiceId
+          voiceId,
+          'web',
+          !!onRawDubbedAudio // Enable buffered mode if onRawDubbedAudio callback provided
         )
       } catch (err) {
         setState((prev) => ({

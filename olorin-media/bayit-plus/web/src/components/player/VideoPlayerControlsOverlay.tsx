@@ -21,6 +21,9 @@ interface VideoPlayerControlsOverlayProps {
   showSceneSearchPanel: boolean
   showSettings: boolean
   liveSubtitleLang: string
+  availableLanguages?: string[]
+  onLanguageChange?: (lang: string) => void
+  isDubbingActive?: boolean
   toggleChaptersPanel: () => void
   toggleSceneSearchPanel: () => void
   toggleSettings: () => void
@@ -43,6 +46,9 @@ export default function VideoPlayerControlsOverlay({
   showSceneSearchPanel,
   showSettings,
   liveSubtitleLang,
+  availableLanguages,
+  onLanguageChange,
+  isDubbingActive = false,
   toggleChaptersPanel,
   toggleSceneSearchPanel,
   toggleSettings,
@@ -112,6 +118,9 @@ export default function VideoPlayerControlsOverlay({
           controls={controls}
           isLive={isLive}
           liveSubtitleLang={liveSubtitleLang}
+          availableLanguages={availableLanguages}
+          onLanguageChange={onLanguageChange}
+          isDubbingActive={isDubbingActive}
           showChaptersPanel={showChaptersPanel}
           showSceneSearchPanel={showSceneSearchPanel}
           showSettings={showSettings}

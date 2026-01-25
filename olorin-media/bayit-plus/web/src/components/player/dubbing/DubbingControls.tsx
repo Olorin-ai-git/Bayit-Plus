@@ -15,6 +15,7 @@ import { isTV } from '@bayit/shared/utils/platform'
 import { GlassLiveControlButton } from '../controls/GlassLiveControlButton'
 import { DubbingOnboarding } from './DubbingOnboarding'
 import { VoiceSelector } from './VoiceSelector'
+import { LiveDubbingService } from '@/services/liveDubbingService'
 import logger from '@/utils/logger'
 
 interface DubbingControlsProps {
@@ -33,6 +34,7 @@ interface DubbingControlsProps {
   onOriginalVolumeChange?: (volume: number) => void
   onDubbedVolumeChange?: (volume: number) => void
   onVoiceChange?: (voiceId: string) => void
+  onHoveredButtonChange?: (button: string | null) => void
 }
 
 export default function DubbingControls({
@@ -51,27 +53,41 @@ export default function DubbingControls({
   onOriginalVolumeChange,
   onDubbedVolumeChange,
   onVoiceChange,
+  onHoveredButtonChange,
 }: DubbingControlsProps) {
   const { t } = useTranslation()
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [showVoiceSelector, setShowVoiceSelector] = useState(false)
-  const [showVolumePanel, setShowVolumePanel] = useState(false)
   const [selectedVoiceId, setSelectedVoiceId] = useState<string>()
-  const [originalVolume, setOriginalVolume] = useState(0)
-  const [dubbedVolume, setDubbedVolume] = useState(1)
   const [availableVoices, setAvailableVoices] = useState<Array<{ id: string; name: string; description: string }>>([])
-  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false)
 
+  // Load available voices from ElevenLabs API
   useEffect(() => {
-    if (isEnabled && availableVoices.length === 0) {
-      // Load available voices from API
-      // This would be replaced with actual API call
-      setAvailableVoices([
-        { id: 'voice_1', name: 'Voice 1', description: 'Natural male voice' },
-        { id: 'voice_2', name: 'Voice 2', description: 'Natural female voice' },
-      ])
+    if (availableVoices.length === 0) {
+      LiveDubbingService.getVoices()
+        .then((voices) => {
+          logger.debug('Loaded ElevenLabs voices', 'DubbingControls', { count: voices.length })
+          setAvailableVoices(
+            voices.map((v) => ({
+              id: v.id,
+              name: v.name,
+              description: v.description || `${v.language} voice`,
+            }))
+          )
+          // Set default voice if none selected
+          if (!selectedVoiceId && voices.length > 0) {
+            setSelectedVoiceId(voices[0].id)
+          }
+        })
+        .catch((error) => {
+          logger.error('Failed to load voices', 'DubbingControls', error)
+          // Fallback to generic voices if API fails
+          setAvailableVoices([
+            { id: 'default', name: 'Default Voice', description: 'Standard voice' },
+          ])
+        })
     }
-  }, [isEnabled])
+  }, [])
 
   if (!isAvailable) return null
 
@@ -86,13 +102,10 @@ export default function DubbingControls({
       return
     }
 
-    // Show onboarding only on first use
-    if (!isEnabled && !hasSeenOnboarding && onDisableSubtitles) {
+    // Disable subtitles for mutual exclusivity before toggling
+    if (!isEnabled && onDisableSubtitles) {
       logger.debug('Disabling subtitles for mutual exclusivity', 'DubbingControls', {})
       onDisableSubtitles()
-      setShowOnboarding(true)
-      setHasSeenOnboarding(true)
-      return
     }
 
     onToggle()
@@ -102,50 +115,31 @@ export default function DubbingControls({
     <>
       <View style={styles.container}>
         {/* Main Toggle Button */}
-        <GlassLiveControlButton
-          icon={
-            <Radio
-              size={18}
-              color={isEnabled ? colors.primary : colors.textSecondary}
-            />
-          }
-          label={t('dubbing.title', 'Live Dubbing')}
-          isEnabled={isEnabled}
-          isConnecting={isConnecting}
-          isPremium={isPremium}
-          onPress={handlePress}
-        />
-
-        {/* Language Selector (only when enabled) */}
-        {isEnabled && availableLanguages.length > 0 && (
-          <View style={styles.languageSelector}>
-            <Languages size={14} color={colors.textSecondary} />
-            {availableLanguages.map((lang) => (
-              <GlassButton
-                key={lang}
-                title={t(`dubbing.languages.${lang}`, lang.toUpperCase())}
-                variant={targetLanguage === lang ? 'primary' : 'ghost'}
-                size="sm"
-                onPress={() => onLanguageChange(lang)}
-                accessibilityLabel={t(`dubbing.languages.${lang}`, lang.toUpperCase())}
-                accessibilityHint={t('dubbing.tapToSelect', 'Tap to select this language')}
-                style={styles.langButton}
+        <View
+          onMouseEnter={() => onHoveredButtonChange?.('liveDubbing')}
+          onMouseLeave={() => onHoveredButtonChange?.(null)}
+        >
+          <GlassLiveControlButton
+            icon={
+              <Radio
+                size={18}
+                color={isEnabled ? colors.primary : colors.textSecondary}
               />
-            ))}
-          </View>
-        )}
+            }
+            label={t('dubbing.title', 'Live Dubbing')}
+            isEnabled={isEnabled}
+            isConnecting={isConnecting}
+            isPremium={isPremium}
+            onPress={handlePress}
+          />
+        </View>
 
-        {/* Volume and Voice Controls (only when enabled) */}
+        {/* Voice Control (only when enabled) */}
         {isEnabled && (
-          <View style={styles.controlButtons}>
-            <GlassButton
-              title="🔊"
-              variant="ghost"
-              size="sm"
-              onPress={() => setShowVolumePanel(!showVolumePanel)}
-              accessibilityLabel={t('dubbing.adjustVolume', 'Adjust Volume')}
-              style={styles.iconButton}
-            />
+          <View
+            onMouseEnter={() => onHoveredButtonChange?.('voiceSelector')}
+            onMouseLeave={() => onHoveredButtonChange?.(null)}
+          >
             <GlassButton
               title="🎤"
               variant="ghost"
@@ -171,45 +165,6 @@ export default function DubbingControls({
           </View>
         )}
       </View>
-
-      {/* Volume Panel */}
-      {isEnabled && showVolumePanel && (
-        <View style={styles.volumePanel}>
-          <View style={styles.volumeControl}>
-            <Text style={styles.volumeLabel}>{t('dubbing.originalAudio', 'Original Audio')}</Text>
-            <GlassSlider
-              value={originalVolume}
-              min={0}
-              max={1}
-              step={0.1}
-              onValueChange={(value) => {
-                setOriginalVolume(value)
-                onOriginalVolumeChange?.(value)
-              }}
-              accessibilityLabel={t('dubbing.originalAudio', 'Original Audio')}
-              style={styles.slider}
-            />
-            <Text style={styles.volumeValue}>{Math.round(originalVolume * 100)}%</Text>
-          </View>
-
-          <View style={styles.volumeControl}>
-            <Text style={styles.volumeLabel}>{t('dubbing.dubbedAudio', 'Dubbed Audio')}</Text>
-            <GlassSlider
-              value={dubbedVolume}
-              min={0}
-              max={1}
-              step={0.1}
-              onValueChange={(value) => {
-                setDubbedVolume(value)
-                onDubbedVolumeChange?.(value)
-              }}
-              accessibilityLabel={t('dubbing.dubbedAudio', 'Dubbed Audio')}
-              style={styles.slider}
-            />
-            <Text style={styles.volumeValue}>{Math.round(dubbedVolume * 100)}%</Text>
-          </View>
-        </View>
-      )}
 
       {/* Onboarding Modal */}
       <DubbingOnboarding
@@ -245,24 +200,6 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     position: 'relative',
   },
-  languageSelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.2)',
-  },
-  langButton: {
-    minWidth: isTV ? 120 : 80,
-  },
-  controlButtons: {
-    flexDirection: 'row',
-    gap: spacing.xs,
-  },
   iconButton: {
     minWidth: 40,
   },
@@ -297,34 +234,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
     textAlign: 'center',
-  },
-  volumePanel: {
-    position: 'absolute',
-    bottom: 60,
-    right: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.lg,
-    minWidth: isTV ? 400 : 280,
-    borderWidth: 1,
-    borderColor: 'rgba(168, 85, 247, 0.2)',
-  },
-  volumeControl: {
-    marginBottom: spacing.md,
-  },
-  volumeLabel: {
-    color: colors.text,
-    fontSize: isTV ? 16 : 14,
-    marginBottom: spacing.xs,
-    fontWeight: '600',
-  },
-  slider: {
-    height: isTV ? 60 : 40,
-    marginVertical: spacing.sm,
-  },
-  volumeValue: {
-    color: colors.textSecondary,
-    fontSize: isTV ? 14 : 12,
-    textAlign: 'right',
   },
 })
