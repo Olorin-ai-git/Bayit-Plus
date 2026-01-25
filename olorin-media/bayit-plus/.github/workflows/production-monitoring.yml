@@ -1,0 +1,183 @@
+name: Production Health Monitoring
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+env:
+  ERROR_RATE_THRESHOLD: 5
+  LATENCY_THRESHOLD: 2000
+  NOTIFICATION_ERROR_THRESHOLD: 10
+
+jobs:
+  monitor-health:
+    name: Monitor production metrics
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Check API latency
+        id: latency
+        run: |
+          PRODUCTION_URL="${{ vars.PRODUCTION_URL || 'https://bayitplus.com' }}"
+
+          echo "Checking latency for $PRODUCTION_URL..."
+          LATENCY=$(curl -w "%{time_total}" -s -o /dev/null "$PRODUCTION_URL/health" || echo "999")
+          LATENCY_MS=$(echo "$LATENCY * 1000" | bc)
+
+          echo "latency_ms=$LATENCY_MS" >> $GITHUB_OUTPUT
+          echo "API latency: ${LATENCY_MS}ms"
+
+          if (( $(echo "$LATENCY_MS > $LATENCY_THRESHOLD" | bc -l) )); then
+            echo "trigger_rollback=true" >> $GITHUB_OUTPUT
+            echo "High latency detected: ${LATENCY_MS}ms > ${LATENCY_THRESHOLD}ms"
+          fi
+
+      - name: Check notification errors
+        id: notifications
+        run: |
+          echo "Checking notification errors in last 5 minutes..."
+
+          ERRORS=$(gcloud logging read \
+            "jsonPayload.message=~'notification' AND severity>=ERROR AND timestamp>\"$(date -u -d '5 minutes ago' +%Y-%m-%dT%H:%M:%SZ)\"" \
+            --limit=100 \
+            --format=json 2>/dev/null | jq length || echo "0")
+
+          echo "notification_errors=$ERRORS" >> $GITHUB_OUTPUT
+          echo "Notification errors in last 5min: $ERRORS"
+
+          if [ "$ERRORS" -gt "$NOTIFICATION_ERROR_THRESHOLD" ]; then
+            echo "trigger_rollback=true" >> $GITHUB_OUTPUT
+            echo "High notification error rate: $ERRORS > $NOTIFICATION_ERROR_THRESHOLD"
+          fi
+
+      - name: Check Cloud Run error rate
+        id: errors
+        run: |
+          echo "Checking Cloud Run error logs..."
+
+          ERROR_COUNT=$(gcloud logging read \
+            "resource.type=cloud_run_revision AND severity>=ERROR AND timestamp>\"$(date -u -d '5 minutes ago' +%Y-%m-%dT%H:%M:%SZ)\"" \
+            --limit=100 \
+            --format=json 2>/dev/null | jq length || echo "0")
+
+          echo "error_count=$ERROR_COUNT" >> $GITHUB_OUTPUT
+          echo "Errors in last 5min: $ERROR_COUNT"
+
+          BASELINE=5
+          if [ "$ERROR_COUNT" -gt $((BASELINE + ERROR_RATE_THRESHOLD)) ]; then
+            echo "trigger_rollback=true" >> $GITHUB_OUTPUT
+            echo "Error rate exceeded: $ERROR_COUNT > baseline($BASELINE) + threshold($ERROR_RATE_THRESHOLD)"
+          fi
+
+      - name: Check memory usage
+        id: memory
+        run: |
+          echo "Checking Cloud Run memory usage..."
+
+          MEMORY_PERCENT=$(gcloud monitoring timeseries list \
+            --filter='metric.type="run.googleapis.com/container/memory/utilizations"' \
+            --format=json 2>/dev/null | jq '.[0].points[0].value.doubleValue * 100' || echo "0")
+
+          echo "memory_percent=$MEMORY_PERCENT" >> $GITHUB_OUTPUT
+          echo "Memory usage: ${MEMORY_PERCENT}%"
+
+          if (( $(echo "$MEMORY_PERCENT > 90" | bc -l) )); then
+            echo "trigger_rollback=true" >> $GITHUB_OUTPUT
+            echo "High memory usage: ${MEMORY_PERCENT}% > 90%"
+          fi
+
+      - name: Create health report
+        run: |
+          mkdir -p reports
+          REPORT_FILE="reports/health-check-$(date +%Y%m%d-%H%M%S).md"
+
+          cat > "$REPORT_FILE" << 'EOF'
+          # Production Health Check Report
+          EOF
+
+          echo "" >> "$REPORT_FILE"
+          echo "**Timestamp**: $(date '+%Y-%m-%d %H:%M:%S UTC')" >> "$REPORT_FILE"
+          echo "**Workflow Run**: ${{ github.run_id }}" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "## Metrics" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "- **API Latency**: ${{ steps.latency.outputs.latency_ms }}ms (threshold: ${LATENCY_THRESHOLD}ms)" >> "$REPORT_FILE"
+          echo "- **Notification Errors**: ${{ steps.notifications.outputs.notification_errors }} (threshold: ${NOTIFICATION_ERROR_THRESHOLD})" >> "$REPORT_FILE"
+          echo "- **Error Count**: ${{ steps.errors.outputs.error_count }}" >> "$REPORT_FILE"
+          echo "- **Memory Usage**: ${{ steps.memory.outputs.memory_percent }}% (threshold: 90%)" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+
+          if [ "${{ steps.latency.outputs.trigger_rollback }}" == "true" ] || \
+             [ "${{ steps.notifications.outputs.trigger_rollback }}" == "true" ] || \
+             [ "${{ steps.errors.outputs.trigger_rollback }}" == "true" ] || \
+             [ "${{ steps.memory.outputs.trigger_rollback }}" == "true" ]; then
+            echo "## Status: CRITICAL" >> "$REPORT_FILE"
+            echo "" >> "$REPORT_FILE"
+            echo "One or more metrics exceeded thresholds. Rollback may be required." >> "$REPORT_FILE"
+          else
+            echo "## Status: HEALTHY" >> "$REPORT_FILE"
+            echo "" >> "$REPORT_FILE"
+            echo "All metrics within acceptable thresholds." >> "$REPORT_FILE"
+          fi
+
+          cat "$REPORT_FILE"
+
+      - name: Trigger automatic rollback
+        if: |
+          steps.latency.outputs.trigger_rollback == 'true' ||
+          steps.notifications.outputs.trigger_rollback == 'true' ||
+          steps.errors.outputs.trigger_rollback == 'true' ||
+          steps.memory.outputs.trigger_rollback == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 AUTO-ROLLBACK: Production health check failed',
+              body: `# Production Health Alert
+
+              **Triggered**: ${new Date().toISOString()}
+              **Workflow**: ${context.runId}
+
+              ## Metrics Exceeded Thresholds
+
+              - API Latency: ${{ steps.latency.outputs.latency_ms }}ms
+              - Notification Errors: ${{ steps.notifications.outputs.notification_errors }}
+              - Error Count: ${{ steps.errors.outputs.error_count }}
+              - Memory Usage: ${{ steps.memory.outputs.memory_percent }}%
+
+              ## Automatic Actions
+
+              - Incident issue created
+              - Rollback workflow triggered
+              - On-call team notified
+
+              ## Required Actions
+
+              1. Review production logs
+              2. Validate rollback completed
+              3. Investigate root cause
+              4. Document incident
+              `,
+              labels: ['production-incident', 'auto-rollback', 'urgent']
+            });
+
+      - name: Upload health report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-check-report
+          path: reports/health-check-*.md
+          retention-days: 30

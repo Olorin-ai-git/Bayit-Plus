@@ -23,8 +23,12 @@ import { Subscription, User } from '../../types/rbac';
 
 import { formatDate, formatCurrency } from '../../utils/formatters';
 import { getStatusColor, getPlanColor } from '../../utils/adminConstants';
+import { logger } from '../../utils/logger';
 
 type SubscriptionWithUser = Subscription & { user: User };
+
+// Scoped logger for subscriptions screen
+const subscriptionsLogger = logger.scope('Admin:Subscriptions');
 
 export const SubscriptionsScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -62,7 +66,11 @@ export const SubscriptionsScreen: React.FC = () => {
       setTotalSubscriptions(subsResponse.total);
       setChurnAnalytics(analytics);
     } catch (err) {
-      console.error('Error loading subscriptions:', err);
+      subscriptionsLogger.error('Error loading subscriptions', {
+        filters,
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       const errorMessage = err instanceof Error ? err.message : 'Failed to load subscriptions';
       setError(errorMessage);
       setSubscriptions([]);
