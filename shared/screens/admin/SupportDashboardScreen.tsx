@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   filterTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   ticketsList: {

@@ -44,7 +44,7 @@ export const QueueHeader: React.FC<QueueHeaderProps> = ({
             <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('admin.uploads.queued', 'Queued')}</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: colors.primary }]}>{stats.processing}</Text>
+            <Text style={[styles.statValue, { color: colors.primary.DEFAULT }]}>{stats.processing}</Text>
             <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('admin.uploads.processing', 'Active')}</Text>
           </View>
           <View style={styles.statItem}>

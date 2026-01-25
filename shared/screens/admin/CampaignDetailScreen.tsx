@@ -772,7 +772,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   typeTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   promoCodeRow: {
@@ -816,14 +816,14 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   discountTypeTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   discountTypeLabel: {
     fontSize: fontSize.xs,
     color: colors.textSecondary,
   },
   discountTypeLabelActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   valueInputRow: {
@@ -907,7 +907,7 @@ const styles = StyleSheet.create({
   },
   audienceChipText: {
     fontSize: fontSize.xs,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     textTransform: 'capitalize',
   },
   saveButton: {
@@ -1009,7 +1009,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   audienceOptionButtonTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   modalActions: {

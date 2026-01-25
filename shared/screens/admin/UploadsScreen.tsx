@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
   progressPercent: {
     fontSize: fontSize.lg,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   emptyState: {
     padding: spacing.xl,

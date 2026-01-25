@@ -645,7 +645,7 @@ const styles = StyleSheet.create({
   },
   filterChipText: {
     fontSize: fontSize.xs,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   userCell: {
     flexDirection: 'row',
@@ -770,7 +770,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   filterOptionTextActive: {
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   modalActions: {
