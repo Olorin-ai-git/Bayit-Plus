@@ -13,10 +13,10 @@ import logging
 from typing import Dict, Optional, Tuple
 
 from app.models.live_feature_quota import (FeatureType,
-                                             LiveFeatureUsageSession,
-                                             UsageSessionStatus)
+                                           LiveFeatureUsageSession,
+                                           UsageSessionStatus)
 from app.services.quota import (AdminOperations, QuotaChecker, QuotaManager,
-                                 SessionManager)
+                                SessionManager)
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +68,12 @@ class LiveFeatureQuotaService:
     ) -> LiveFeatureUsageSession:
         """Start tracking a new usage session"""
         return await self.session_manager.start_session(
-            user_id, channel_id, feature_type, source_language, target_language, platform
+            user_id,
+            channel_id,
+            feature_type,
+            source_language,
+            target_language,
+            platform,
         )
 
     async def update_session(
@@ -80,7 +85,11 @@ class LiveFeatureQuotaService:
     ):
         """Update session with usage increments"""
         return await self.session_manager.update_session(
-            self.quota_manager, session_id, audio_seconds_delta, segments_delta, chars_processed
+            self.quota_manager,
+            session_id,
+            audio_seconds_delta,
+            segments_delta,
+            chars_processed,
         )
 
     async def end_session(self, session_id: str, status: UsageSessionStatus):

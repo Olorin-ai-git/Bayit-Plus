@@ -13,10 +13,10 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
+from app.api.routes.search_models import ClickTrackingRequest
 from app.core.security import get_optional_user
 from app.models.search_analytics import SearchQuery
 from app.models.user import User
-from app.api.routes.search_models import ClickTrackingRequest
 
 router = APIRouter(prefix="/search/analytics", tags=["search", "analytics"])
 logger = logging.getLogger(__name__)

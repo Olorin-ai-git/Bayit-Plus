@@ -19,32 +19,20 @@ from typing import Any, Dict, List, Optional
 from app.core.config import settings
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection, SectionSubcategory
-from app.models.kids_content import (
-    AGE_GROUP_RANGES,
-    SUBCATEGORY_PARENT_MAP,
-    KidsAgeGroup,
-    KidsAgeGroupResponse,
-    KidsAgeGroupsResponse,
-    KidsContentAggregatedResponse,
-    KidsContentCategory,
-    KidsContentItemResponse,
-    KidsContentSource,
-    KidsFeaturedResponse,
-    KidsSubcategoriesResponse,
-    KidsSubcategory,
-    KidsSubcategoryResponse,
-)
+from app.models.kids_content import (AGE_GROUP_RANGES, SUBCATEGORY_PARENT_MAP,
+                                     KidsAgeGroup, KidsAgeGroupResponse,
+                                     KidsAgeGroupsResponse,
+                                     KidsContentAggregatedResponse,
+                                     KidsContentCategory,
+                                     KidsContentItemResponse,
+                                     KidsContentSource, KidsFeaturedResponse,
+                                     KidsSubcategoriesResponse,
+                                     KidsSubcategory, KidsSubcategoryResponse)
 from app.services.content_services.base_cache import ContentCache
 from app.services.content_services.kids_keywords import (
-    AGE_GROUP_LABELS,
-    KIDS_CATEGORY_LABELS,
-    KIDS_CONTENT_SEED,
-    KIDS_KEYWORDS_EN,
-    KIDS_KEYWORDS_HE,
-    SUBCATEGORY_KEYWORDS_EN,
-    SUBCATEGORY_KEYWORDS_HE,
-    SUBCATEGORY_LABELS,
-)
+    AGE_GROUP_LABELS, KIDS_CATEGORY_LABELS, KIDS_CONTENT_SEED,
+    KIDS_KEYWORDS_EN, KIDS_KEYWORDS_HE, SUBCATEGORY_KEYWORDS_EN,
+    SUBCATEGORY_KEYWORDS_HE, SUBCATEGORY_LABELS)
 
 logger = logging.getLogger(__name__)
 
@@ -53,9 +41,7 @@ class KidsContentService:
     """Service for aggregating kids-focused content from database."""
 
     def __init__(self):
-        self._cache = ContentCache(
-            ttl_minutes=settings.KIDS_CONTENT_CACHE_TTL_MINUTES
-        )
+        self._cache = ContentCache(ttl_minutes=settings.KIDS_CONTENT_CACHE_TTL_MINUTES)
 
     def _calculate_relevance_score(
         self, title: str, description: Optional[str] = None

@@ -12,10 +12,12 @@ import {
   GlassLiveChannelCard,
   GlassPageHeader,
   GridSkeleton,
+  GlassLoadingSpinner,
 } from '@bayit/shared/ui';
 import AnimatedCard from '@/components/common/AnimatedCard';
 import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
+import PageLoading from '@/components/common/PageLoading';
 
 // Live TV Icon Component (React Native Web compatible)
 // Broadcast/Radio waves icon
@@ -73,15 +75,13 @@ export default function LivePage() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <GlassPageHeader
-          title={t('live.title')}
-          pageType="live"
-          isRTL={isRTL}
-        />
-        <View style={styles.categoriesSkeleton} />
-        <GridSkeleton numColumns={numColumns} numRows={2} />
-      </View>
+      <PageLoading
+        title={t('live.title')}
+        pageType="live"
+        message={t('live.loadingChannels', 'Loading channels...')}
+        isRTL={isRTL}
+        icon={<LiveTVIcon size={24} color={colors.error.DEFAULT} />}
+      />
     );
   }
 

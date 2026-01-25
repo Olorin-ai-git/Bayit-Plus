@@ -62,22 +62,26 @@ async def check_authentication_message(websocket) -> Tuple[Optional[str], bool]:
         )
 
         if auth_message.get("type") != "authenticate" or not auth_message.get("token"):
-            await websocket.send_json({
-                "type": "error",
-                "message": "Authentication required. Send: {type: 'authenticate', token: '...'}",
-                "recoverable": False,
-            })
+            await websocket.send_json(
+                {
+                    "type": "error",
+                    "message": "Authentication required. Send: {type: 'authenticate', token: '...'}",
+                    "recoverable": False,
+                }
+            )
             await websocket.close(code=4001, reason="Authentication required")
             return None, True
 
         return auth_message["token"], False
 
     except asyncio.TimeoutError:
-        await websocket.send_json({
-            "type": "error",
-            "message": "Authentication timeout",
-            "recoverable": False,
-        })
+        await websocket.send_json(
+            {
+                "type": "error",
+                "message": "Authentication timeout",
+                "recoverable": False,
+            }
+        )
         await websocket.close(code=4001, reason="Authentication timeout")
         return None, True
     except Exception as e:
@@ -95,13 +99,17 @@ async def check_subscription_tier(
     Returns: True if allowed, False if denied (already sent error to websocket)
     """
     if user.subscription_tier not in required_tiers:
-        await websocket.send_json({
-            "type": "error",
-            "message": "Premium subscription required for live dubbing",
-            "recoverable": False,
-        })
+        await websocket.send_json(
+            {
+                "type": "error",
+                "message": "Premium subscription required for live dubbing",
+                "recoverable": False,
+            }
+        )
         await websocket.close(code=4003, reason="Premium subscription required")
-        logger.info(f"Premium subscription denied for user {user.id} ({user.subscription_tier})")
+        logger.info(
+            f"Premium subscription denied for user {user.id} ({user.subscription_tier})"
+        )
         return False
     return True
 
@@ -126,22 +134,33 @@ async def validate_channel_for_dubbing(
         return None, True
 
     if not channel.supports_live_dubbing:
-        await websocket.send_json({
-            "type": "error",
-            "message": "Channel does not support live dubbing",
-            "recoverable": False,
-        })
+        await websocket.send_json(
+            {
+                "type": "error",
+                "message": "Channel does not support live dubbing",
+                "recoverable": False,
+            }
+        )
         await websocket.close(code=4005, reason="Channel does not support live dubbing")
         return None, True
 
     # Validate target language
-    supported_langs = channel.available_dubbing_languages or ["en", "es", "ar", "ru", "fr", "de"]
+    supported_langs = channel.available_dubbing_languages or [
+        "en",
+        "es",
+        "ar",
+        "ru",
+        "fr",
+        "de",
+    ]
     if target_lang not in supported_langs:
-        await websocket.send_json({
-            "type": "error",
-            "message": f"Language {target_lang} not available. Supported: {supported_langs}",
-            "recoverable": False,
-        })
+        await websocket.send_json(
+            {
+                "type": "error",
+                "message": f"Language {target_lang} not available. Supported: {supported_langs}",
+                "recoverable": False,
+            }
+        )
         await websocket.close(code=4006, reason="Language not available")
         return None, True
 
@@ -169,12 +188,14 @@ async def check_and_start_quota_session(
     )
 
     if not allowed:
-        await websocket.send_json({
-            "type": "quota_exceeded",
-            "message": error_msg,
-            "usage_stats": usage_stats,
-            "recoverable": False,
-        })
+        await websocket.send_json(
+            {
+                "type": "quota_exceeded",
+                "message": error_msg,
+                "usage_stats": usage_stats,
+                "recoverable": False,
+            }
+        )
         await websocket.close(code=4029, reason="Quota exceeded")
         logger.warning(f"Quota exceeded for user {user.id}: {error_msg}")
         return False, None, usage_stats
@@ -304,11 +325,13 @@ async def update_quota_during_session(
         )
 
         if not allowed:
-            await websocket.send_json({
-                "type": "quota_exceeded",
-                "message": "Usage limit reached during session",
-                "recoverable": False,
-            })
+            await websocket.send_json(
+                {
+                    "type": "quota_exceeded",
+                    "message": "Usage limit reached during session",
+                    "recoverable": False,
+                }
+            )
             return False, current_time
 
         return True, current_time
@@ -318,9 +341,7 @@ async def update_quota_during_session(
         return True, current_time
 
 
-async def end_quota_session(
-    quota_session, status: UsageSessionStatus
-):
+async def end_quota_session(quota_session, status: UsageSessionStatus):
     """End quota session with given status."""
     if quota_session:
         try:

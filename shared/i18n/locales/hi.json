@@ -245,6 +245,27 @@
       "live": "चैनल",
       "radio": "रेडियो",
       "podcast": "पॉडकास्ट"
+    },
+    "controls": {
+      "placeholder": "Search for content...",
+      "hints": {
+        "searchInput": "Enter keywords to search"
+      }
+    },
+    "semantic": {
+      "keyword": "Keyword",
+      "semantic": "AI Search",
+      "infoTitle": "AI-Powered Search",
+      "info": "AI search understands context and finds exact moments in videos by analyzing scenes, dialogue, and visual content."
+    },
+    "suggestions": {
+      "trendingTitle": "Trending Searches",
+      "categoriesTitle": "Browse Categories",
+      "recentTitle": "Recent Searches",
+      "clearRecent": "Clear"
+    },
+    "empty": {
+      "clearSearch": "Clear search"
     }
   },
   "liveTV": {

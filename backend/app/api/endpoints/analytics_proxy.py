@@ -6,13 +6,15 @@ The mobile app calls this endpoint with an OAuth token, never directly accessing
 Backend credentials are managed securely and never exposed to the client.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
-from typing import Optional, Dict, Any
 import logging
 import os
 from datetime import datetime
-from app.core.security import verify_oauth_token, get_current_user
+from typing import Any, Dict, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
+
+from app.core.security import get_current_user, verify_oauth_token
 
 router = APIRouter(prefix="/api/v1/analytics", tags=["analytics"])
 logger = logging.getLogger(__name__)
@@ -20,14 +22,22 @@ logger = logging.getLogger(__name__)
 
 class AnalyticsEvent(BaseModel):
     """Analytics event model"""
+
     event_name: str = Field(..., min_length=1, max_length=255, description="Event name")
-    event_category: str = Field(..., min_length=1, max_length=50, description="Event category")
-    properties: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Event properties")
-    timestamp: Optional[datetime] = Field(default_factory=datetime.utcnow, description="Event timestamp")
+    event_category: str = Field(
+        ..., min_length=1, max_length=50, description="Event category"
+    )
+    properties: Optional[Dict[str, Any]] = Field(
+        default_factory=dict, description="Event properties"
+    )
+    timestamp: Optional[datetime] = Field(
+        default_factory=datetime.utcnow, description="Event timestamp"
+    )
 
 
 class AnalyticsResponse(BaseModel):
     """Response model for analytics tracking"""
+
     success: bool = Field(description="Whether event was tracked successfully")
     event_id: Optional[str] = Field(default=None, description="Tracked event ID")
     message: Optional[str] = Field(default=None, description="Response message")
@@ -56,23 +66,27 @@ async def track_analytics_event(
 
     try:
         # Sanitize event name and category (only alphanumeric and underscores)
-        if not event.event_name.replace('_', '').isalnum():
+        if not event.event_name.replace("_", "").isalnum():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Event name must contain only alphanumeric characters and underscores"
+                detail="Event name must contain only alphanumeric characters and underscores",
             )
 
-        if not event.event_category.replace('_', '').isalnum():
+        if not event.event_category.replace("_", "").isalnum():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Event category must contain only alphanumeric characters and underscores"
+                detail="Event category must contain only alphanumeric characters and underscores",
             )
 
         # Add user context (no PII, just ID)
         enriched_properties = {
             **event.properties,
-            "user_id": current_user.id if hasattr(current_user, 'id') else "unknown",
-            "timestamp": event.timestamp.isoformat() if event.timestamp else datetime.utcnow().isoformat(),
+            "user_id": current_user.id if hasattr(current_user, "id") else "unknown",
+            "timestamp": (
+                event.timestamp.isoformat()
+                if event.timestamp
+                else datetime.utcnow().isoformat()
+            ),
         }
 
         # Log the event for backend processing
@@ -83,8 +97,8 @@ async def track_analytics_event(
                 "event_name": event.event_name,
                 "event_category": event.event_category,
                 "properties": enriched_properties,
-                "user_id": current_user.id if hasattr(current_user, 'id') else None,
-            }
+                "user_id": current_user.id if hasattr(current_user, "id") else None,
+            },
         )
 
         # Events are tracked via Cloud Logging structured logs above
@@ -93,20 +107,20 @@ async def track_analytics_event(
         return AnalyticsResponse(
             success=True,
             event_id=f"{event.event_category}_{event.event_name}_{int(datetime.utcnow().timestamp() * 1000)}",
-            message="Event tracked successfully"
+            message="Event tracked successfully",
         )
 
     except ValueError as e:
         logger.warning(f"[Analytics] Invalid event data: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid event data: {str(e)}"
+            detail=f"Invalid event data: {str(e)}",
         )
     except Exception as e:
         logger.error(f"[Analytics] Failed to track event: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to track analytics event"
+            detail="Failed to track analytics event",
         )
 
 
@@ -134,13 +148,13 @@ async def track_batch_analytics_events(
     if not events:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="At least one event is required"
+            detail="At least one event is required",
         )
 
     if len(events) > 100:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Maximum 100 events per batch"
+            detail="Maximum 100 events per batch",
         )
 
     tracked_events = []
@@ -150,17 +164,22 @@ async def track_batch_analytics_events(
         for event in events:
             try:
                 # Same validation as single event
-                if not event.event_name.replace('_', '').isalnum():
-                    failed_events.append({
-                        "event": event.event_name,
-                        "reason": "Invalid event name"
-                    })
+                if not event.event_name.replace("_", "").isalnum():
+                    failed_events.append(
+                        {"event": event.event_name, "reason": "Invalid event name"}
+                    )
                     continue
 
                 enriched_properties = {
                     **event.properties,
-                    "user_id": current_user.id if hasattr(current_user, 'id') else "unknown",
-                    "timestamp": event.timestamp.isoformat() if event.timestamp else datetime.utcnow().isoformat(),
+                    "user_id": (
+                        current_user.id if hasattr(current_user, "id") else "unknown"
+                    ),
+                    "timestamp": (
+                        event.timestamp.isoformat()
+                        if event.timestamp
+                        else datetime.utcnow().isoformat()
+                    ),
                 }
 
                 logger.info(
@@ -169,21 +188,22 @@ async def track_batch_analytics_events(
                         "event_name": event.event_name,
                         "event_category": event.event_category,
                         "properties": enriched_properties,
-                        "user_id": current_user.id if hasattr(current_user, 'id') else None,
+                        "user_id": (
+                            current_user.id if hasattr(current_user, "id") else None
+                        ),
+                    },
+                )
+
+                tracked_events.append(
+                    {
+                        "event_id": f"{event.event_category}_{event.event_name}_{int(datetime.utcnow().timestamp() * 1000)}",
+                        "event_name": event.event_name,
+                        "status": "tracked",
                     }
                 )
 
-                tracked_events.append({
-                    "event_id": f"{event.event_category}_{event.event_name}_{int(datetime.utcnow().timestamp() * 1000)}",
-                    "event_name": event.event_name,
-                    "status": "tracked"
-                })
-
             except Exception as e:
-                failed_events.append({
-                    "event": event.event_name,
-                    "reason": str(e)
-                })
+                failed_events.append({"event": event.event_name, "reason": str(e)})
 
         return {
             "total": len(events),
@@ -197,7 +217,7 @@ async def track_batch_analytics_events(
         logger.error(f"[Analytics] Batch tracking failed: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Batch analytics tracking failed"
+            detail="Batch analytics tracking failed",
         )
 
 
@@ -208,5 +228,5 @@ async def health_check():
     return {
         "status": "healthy",
         "service": "analytics_proxy",
-        "message": "Analytics service is operational"
+        "message": "Analytics service is operational",
     }

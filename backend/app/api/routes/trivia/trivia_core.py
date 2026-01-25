@@ -98,7 +98,9 @@ async def get_enriched_trivia(
 
     existing = await ContentTrivia.get_for_content(validated_id)
     if existing and existing.is_enriched:
-        return format_trivia_response(existing, language, multilingual, include_metadata=True)
+        return format_trivia_response(
+            existing, language, multilingual, include_metadata=True
+        )
 
     content = await Content.get(validated_id)
     if not content:

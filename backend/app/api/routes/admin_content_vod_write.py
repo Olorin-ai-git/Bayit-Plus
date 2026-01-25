@@ -17,8 +17,8 @@ from app.services.image_storage import download_and_encode_image
 from app.services.subtitle_extraction_service import \
     analyze_and_extract_subtitles
 
-from .admin_content_schemas import (ContentCreateRequest,
-                                     ContentUpdateRequest, MergeContentRequest)
+from .admin_content_schemas import (ContentCreateRequest, ContentUpdateRequest,
+                                    MergeContentRequest)
 from .admin_content_utils import has_permission, log_audit
 
 router = APIRouter()
@@ -290,9 +290,7 @@ async def merge_content(
             )
 
         # Get merge contents
-        merge_contents = await Content.find(
-            {"_id": {"$in": merge_obj_ids}}
-        ).to_list()
+        merge_contents = await Content.find({"_id": {"$in": merge_obj_ids}}).to_list()
 
         if len(merge_contents) != len(data.merge_ids):
             raise HTTPException(
@@ -320,7 +318,7 @@ async def merge_content(
                             {
                                 "series_id": merge_series.id,
                                 "is_series": False,
-                                "season_number": {"$exists": True, "$ne": None}
+                                "season_number": {"$exists": True, "$ne": None},
                             }
                         ).to_list()
 
@@ -336,7 +334,7 @@ async def merge_content(
                             {
                                 "series_id": merge_series.id,
                                 "is_series": False,
-                                "episode_number": {"$exists": True, "$ne": None}
+                                "episode_number": {"$exists": True, "$ne": None},
                             }
                         ).to_list()
 
@@ -347,8 +345,12 @@ async def merge_content(
                             episodes_transferred += 1
 
                 except Exception as e:
-                    logger.error(f"Error transferring content from {merge_series.id}: {e}")
-                    errors.append(f"Failed to transfer from {merge_series.title}: {str(e)}")
+                    logger.error(
+                        f"Error transferring content from {merge_series.id}: {e}"
+                    )
+                    errors.append(
+                        f"Failed to transfer from {merge_series.title}: {str(e)}"
+                    )
 
             # Update base series metadata if not preserving
             if not data.dry_run:
@@ -356,8 +358,12 @@ async def merge_content(
                     # Use poster from first merge series that has one
                     for merge_series in merge_contents:
                         if merge_series.poster_url or merge_series.thumbnail:
-                            base_content.poster_url = merge_series.poster_url or merge_series.thumbnail
-                            base_content.thumbnail = merge_series.thumbnail or merge_series.poster_url
+                            base_content.poster_url = (
+                                merge_series.poster_url or merge_series.thumbnail
+                            )
+                            base_content.thumbnail = (
+                                merge_series.thumbnail or merge_series.poster_url
+                            )
                             break
 
                 if not data.preserve_metadata.useBaseDescription:
@@ -374,8 +380,12 @@ async def merge_content(
         if not data.dry_run:
             for merge_content in merge_contents:
                 merge_content.is_published = False
-                merge_content.needs_review = False  # No review needed, this is intentional
-                merge_content.review_reason = f"Merged into '{base_content.title}' (ID: {str(base_obj_id)})"
+                merge_content.needs_review = (
+                    False  # No review needed, this is intentional
+                )
+                merge_content.review_reason = (
+                    f"Merged into '{base_content.title}' (ID: {str(base_obj_id)})"
+                )
                 merge_content.review_issue_type = "merged"
                 merge_content.updated_at = datetime.now(timezone.utc)
                 await merge_content.save()

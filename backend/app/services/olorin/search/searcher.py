@@ -8,9 +8,9 @@ Includes resilience patterns for external service calls.
 import logging
 from typing import List, Optional
 
-from app.models.content_embedding import (DialogueSearchQuery, SceneSearchQuery,
-                                          SceneSearchResult, SearchQuery,
-                                          SemanticSearchResult)
+from app.models.content_embedding import (DialogueSearchQuery,
+                                          SceneSearchQuery, SceneSearchResult,
+                                          SearchQuery, SemanticSearchResult)
 from app.services.olorin.content_metadata_service import \
     content_metadata_service
 from app.services.olorin.search.client import client_manager

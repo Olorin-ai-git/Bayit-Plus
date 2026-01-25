@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Play, Star, Bookmark } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassCard, GlassBadge } from '@bayit/shared/ui';
+import { GlassPlaceholder } from '@olorin/glass-ui';
+import type { ContentType as GlassContentType } from '@olorin/design-tokens';
 import { SubtitleFlags, ContentBadges } from '@bayit/shared';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import { useDirection } from '@/hooks/useDirection';
@@ -144,7 +146,16 @@ export default function ContentCard({ content, showProgress = false, showActions
                 onError={handleThumbnailError}
               />
             ) : (
-              <View style={styles.thumbnailPlaceholder} />
+              <GlassPlaceholder
+                contentType={(content.type as GlassContentType) || 'vod'}
+                width={200}
+                height={300}
+                accessibilityRole="image"
+                accessibilityLabel={`${content.title} - Content placeholder`}
+                contentTitle={content.title}
+                contentReason="missing"
+                style={styles.thumbnailPlaceholder}
+              />
             )}
 
             {/* Action Buttons - Show on hover */}

@@ -1,9 +1,11 @@
 """Cloud Tasks client for enqueuing podcast translation jobs."""
-from google.cloud import tasks_v2
-from google.protobuf import duration_pb2, timestamp_pb2
+
 import json
 from datetime import datetime, timedelta
 from typing import Optional
+
+from google.cloud import tasks_v2
+from google.protobuf import duration_pb2, timestamp_pb2
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
@@ -25,7 +27,7 @@ class CloudTasksClient:
         self,
         episode_id: str,
         priority: str = "normal",
-        schedule_time: Optional[datetime] = None
+        schedule_time: Optional[datetime] = None,
     ) -> str:
         """
         Enqueue a podcast translation job.
@@ -47,7 +49,7 @@ class CloudTasksClient:
         payload = {
             "episode_id": episode_id,
             "enqueued_at": datetime.utcnow().isoformat(),
-            "priority": priority
+            "priority": priority,
         }
 
         # Cloud Run Jobs execution URL
@@ -67,7 +69,7 @@ class CloudTasksClient:
                 "body": json.dumps(payload).encode(),
                 "oidc_token": {
                     "service_account_email": settings.CLOUD_TASKS_SERVICE_ACCOUNT
-                }
+                },
             }
         }
 
@@ -87,8 +89,10 @@ class CloudTasksClient:
                     "episode_id": episode_id,
                     "task_name": response.name,
                     "priority": priority,
-                    "schedule_time": schedule_time.isoformat() if schedule_time else None
-                }
+                    "schedule_time": (
+                        schedule_time.isoformat() if schedule_time else None
+                    ),
+                },
             )
 
             return response.name
@@ -96,10 +100,7 @@ class CloudTasksClient:
         except Exception as e:
             logger.error(
                 "Failed to enqueue translation job",
-                extra={
-                    "episode_id": episode_id,
-                    "error": str(e)
-                }
+                extra={"episode_id": episode_id, "error": str(e)},
             )
             raise
 
@@ -116,18 +117,12 @@ class CloudTasksClient:
         try:
             self.client.delete_task(request={"name": task_name})
 
-            logger.info(
-                "Translation job cancelled",
-                extra={"task_name": task_name}
-            )
+            logger.info("Translation job cancelled", extra={"task_name": task_name})
 
         except Exception as e:
             logger.error(
                 "Failed to cancel translation job",
-                extra={
-                    "task_name": task_name,
-                    "error": str(e)
-                }
+                extra={"task_name": task_name, "error": str(e)},
             )
             raise
 
@@ -153,14 +148,11 @@ class CloudTasksClient:
                 "retry_config": {
                     "max_attempts": queue.retry_config.max_attempts,
                     "max_retry_duration": queue.retry_config.max_retry_duration.seconds,
-                }
+                },
             }
 
         except Exception as e:
-            logger.error(
-                "Failed to get queue stats",
-                extra={"error": str(e)}
-            )
+            logger.error("Failed to get queue stats", extra={"error": str(e)})
             raise
 
 

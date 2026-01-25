@@ -44,6 +44,8 @@ function App(): React.JSX.Element {
   const [isReady, setIsReady] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
 
+  logger.info('🚀 App component rendering', { isReady, showSplash }, 'App');
+
   useEffect(() => {
     // Initialize app
     const initializeApp = async () => {
@@ -69,7 +71,7 @@ function App(): React.JSX.Element {
   }, []);
 
   const handleSplashComplete = useCallback(() => {
-    logger.info("Splash complete, showing main app", "App");
+    logger.info("🎬 ✅ SPLASH COMPLETE - Hiding splash, showing main app", "App");
     setShowSplash(false);
   }, []);
 

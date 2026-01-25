@@ -7,10 +7,8 @@ Implements GDPR rights for users including:
 - Data portability (Article 20)
 """
 
-from app.services.gdpr.user_data_deletion import (
-    delete_user_dubbing_data,
-    delete_user_all_data,
-)
+from app.services.gdpr.user_data_deletion import (delete_user_all_data,
+                                                  delete_user_dubbing_data)
 
 __all__ = [
     "delete_user_dubbing_data",

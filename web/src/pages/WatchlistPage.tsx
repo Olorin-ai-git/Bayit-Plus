@@ -10,6 +10,7 @@ import { useDirection } from '@/hooks/useDirection';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
 import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
+import PageLoading from '@/components/common/PageLoading';
 
 interface WatchlistItem {
   id: string;
@@ -182,9 +183,10 @@ export default function WatchlistPage() {
 
   if (isLoading) {
     return (
-      <LoadingState
+      <PageLoading
+        title={t('watchlist.title', 'My Watchlist')}
         message={t('watchlist.loading', 'Loading watchlist...')}
-        spinnerColor={colors.primary}
+        isRTL={isRTL}
       />
     );
   }

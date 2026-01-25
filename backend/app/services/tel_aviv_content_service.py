@@ -19,35 +19,29 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
-from app.models.tel_aviv_content import (
-    TelAvivContentAggregatedResponse,
-    TelAvivContentCategory,
-    TelAvivContentItem,
-    TelAvivContentItemResponse,
-    TelAvivContentSource,
-    TelAvivContentSourceResponse,
-    TelAvivFeaturedResponse,
-)
+from app.models.tel_aviv_content import (TelAvivContentAggregatedResponse,
+                                         TelAvivContentCategory,
+                                         TelAvivContentItem,
+                                         TelAvivContentItemResponse,
+                                         TelAvivContentSource,
+                                         TelAvivContentSourceResponse,
+                                         TelAvivFeaturedResponse)
 from app.services.content_services.base_cache import ContentCache
 from app.services.content_services.tel_aviv_keywords import (
-    DEFAULT_TEL_AVIV_SOURCES,
-    SEED_TEL_AVIV_CONTENT,
-    TEL_AVIV_CATEGORY_LABELS,
-    TEL_AVIV_KEYWORDS_EN,
-    TEL_AVIV_KEYWORDS_HE,
-)
-from app.services.news_scraper import (
-    HeadlineItem,
-    scrape_mako,
-    scrape_tel_aviv_news,
-    scrape_walla,
-    scrape_ynet,
-)
+    DEFAULT_TEL_AVIV_SOURCES, SEED_TEL_AVIV_CONTENT, TEL_AVIV_CATEGORY_LABELS,
+    TEL_AVIV_KEYWORDS_EN, TEL_AVIV_KEYWORDS_HE)
+from app.services.news_scraper import (HeadlineItem, scrape_mako,
+                                       scrape_tel_aviv_news, scrape_walla,
+                                       scrape_ynet)
 
 logger = logging.getLogger(__name__)
 
 # Re-export for backward compatibility
-__all__ = ["TelAvivContentService", "tel_aviv_content_service", "TEL_AVIV_CATEGORY_LABELS"]
+__all__ = [
+    "TelAvivContentService",
+    "tel_aviv_content_service",
+    "TEL_AVIV_CATEGORY_LABELS",
+]
 
 
 class TelAvivContentService:

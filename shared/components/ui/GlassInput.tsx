@@ -26,6 +26,7 @@ interface GlassInputProps extends TextInputProps {
   inputStyle?: StyleProp<TextStyle>;
   hasTVPreferredFocus?: boolean;
   disableFocusBorder?: boolean;
+  noBorder?: boolean;
 }
 
 export const GlassInput: React.FC<GlassInputProps> = ({
@@ -38,13 +39,14 @@ export const GlassInput: React.FC<GlassInputProps> = ({
   inputStyle,
   hasTVPreferredFocus = false,
   disableFocusBorder = false,
+  noBorder = false,
   ...props
 }) => {
   const { i18n } = useTranslation();
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
 
   const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
-    styleType: 'input',
+    styleType: disableFocusBorder ? 'none' : 'input',
     onFocus: () => props.onFocus?.(null as any),
     onBlur: () => props.onBlur?.(null as any),
   });
@@ -65,6 +67,7 @@ export const GlassInput: React.FC<GlassInputProps> = ({
           ]}
           intensity="medium"
           borderColor={error ? colors.error : undefined}
+          noBorder={noBorder}
         >
           {icon && <View>{icon}</View>}
           <TextInput
@@ -116,6 +119,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     gap: spacing.sm,
     width: '100%',
+    borderWidth: 0,
+    outlineWidth: 0,
   },
   rowReverse: {
     flexDirection: 'row-reverse',
@@ -125,6 +130,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.text,
     paddingVertical: spacing.sm,
+    outlineWidth: 0,
+    borderWidth: 0,
   },
   textRight: {
     textAlign: 'right',

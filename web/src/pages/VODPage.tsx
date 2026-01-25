@@ -20,6 +20,7 @@ import {
 } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import logger from '@/utils/logger';
+import PageLoading from '@/components/common/PageLoading';
 
 interface Category {
   id: string;
@@ -184,16 +185,12 @@ export default function VODPage() {
   // Show full page loader on initial load
   if (loading && movies.length === 0 && series.length === 0) {
     return (
-      <View style={styles.container}>
-        <GlassPageHeader
-          title={t('vod.title')}
-          pageType="vod"
-          isRTL={isRTL}
-        />
-        <View style={styles.searchSkeleton} />
-        <View style={styles.categoriesSkeleton} />
-        <GridSkeleton numColumns={numColumns} numRows={2} />
-      </View>
+      <PageLoading
+        title={t('vod.title')}
+        pageType="vod"
+        message={t('vod.loadingContent', 'Loading movies and series...')}
+        isRTL={isRTL}
+      />
     );
   }
 

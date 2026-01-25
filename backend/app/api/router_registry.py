@@ -31,6 +31,9 @@ def register_all_routers(app: FastAPI) -> None:
     prefix = settings.API_V1_PREFIX
 
     # Import all routers
+    from app.api.endpoints import (analytics_router, tts_router, voice_router,
+                                   wake_word_router)
+    # Import search sub-routers
     from app.api.routes import (admin, admin_categories,
                                 admin_content_importer, admin_content_vod_read,
                                 admin_content_vod_toggles,
@@ -43,21 +46,21 @@ def register_all_routers(app: FastAPI) -> None:
                                 chess, children, content, content_taxonomy,
                                 cultures, device_pairing, direct_messages,
                                 downloads, epg, family_controls, favorites,
-                                friends, health, history, jerusalem,
-                                judaism, librarian, live, live_dubbing, live_quota, news,
-                                notifications, onboarding, party, password_reset, podcasts,
-                                profile_stats, profiles, radio, recordings,
-                                ritual, search, stats, subscriptions,
+                                friends, health, history, jerusalem, judaism,
+                                librarian, live, live_dubbing, live_quota,
+                                news, notifications, onboarding, party,
+                                password_reset, podcasts, profile_stats,
+                                profiles, radio, recordings, ritual, search,
+                                search_analytics, search_llm, search_scenes,
+                                search_suggestions, stats, subscriptions,
                                 subtitle_preferences, subtitles, support,
-                                tel_aviv, trending, trivia, user_system_widgets, users,
-                                verification, watchlist, webauthn, websocket,
+                                tel_aviv, trending, trivia,
+                                user_system_widgets, users, verification,
+                                watchlist, webauthn, websocket,
                                 websocket_chess, websocket_dm,
-                                websocket_live_dubbing, websocket_live_subtitles,
-                                widgets, youngsters, zman)
-    # Import search sub-routers
-    from app.api.routes import (search_analytics, search_suggestions,
-                                search_scenes, search_llm)
-    from app.api.endpoints import tts_router, wake_word_router, analytics_router, voice_router
+                                websocket_live_dubbing,
+                                websocket_live_subtitles, widgets, youngsters,
+                                zman)
     from app.api.routes.admin.recordings import \
         router as admin_recordings_router
     from app.api.routes.olorin import legacy_router as olorin_legacy_router
@@ -100,8 +103,12 @@ def register_all_routers(app: FastAPI) -> None:
     # Content Routes
     # ============================================
     app.include_router(search.router, prefix=prefix, tags=["search"])
-    app.include_router(search_analytics.router, prefix=prefix, tags=["search", "analytics"])
-    app.include_router(search_suggestions.router, prefix=prefix, tags=["search", "suggestions"])
+    app.include_router(
+        search_analytics.router, prefix=prefix, tags=["search", "analytics"]
+    )
+    app.include_router(
+        search_suggestions.router, prefix=prefix, tags=["search", "suggestions"]
+    )
     app.include_router(search_scenes.router, prefix=prefix, tags=["search", "scenes"])
     app.include_router(search_llm.router, prefix=prefix, tags=["search", "llm"])
     app.include_router(content.router, prefix=f"{prefix}/content", tags=["content"])
@@ -182,7 +189,9 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(news.router, prefix=f"{prefix}/news", tags=["news"])
     app.include_router(support.router, prefix=f"{prefix}/support", tags=["support"])
     app.include_router(trivia.router, prefix=f"{prefix}/trivia", tags=["trivia"])
-    app.include_router(notifications.router, prefix=f"{prefix}/notifications", tags=["notifications"])
+    app.include_router(
+        notifications.router, prefix=f"{prefix}/notifications", tags=["notifications"]
+    )
     logger.debug("Registered feature routes")
 
     # ============================================
@@ -287,9 +296,7 @@ def register_all_routers(app: FastAPI) -> None:
     # ============================================
     # Live Dubbing Routes (REST)
     # ============================================
-    app.include_router(
-        live_dubbing.router, prefix=prefix, tags=["live-dubbing"]
-    )
+    app.include_router(live_dubbing.router, prefix=prefix, tags=["live-dubbing"])
     logger.debug("Registered live dubbing routes")
 
     # ============================================

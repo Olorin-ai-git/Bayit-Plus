@@ -83,6 +83,7 @@ print_header "Creating/Updating Secrets"
 # Core Application Secrets
 print_info "Core Application..."
 create_or_update_secret "bayit-secret-key" "SECRET_KEY"
+create_or_update_secret "csrf-enabled" "CSRF_ENABLED"
 
 # Database
 print_info "Database..."
@@ -205,7 +206,7 @@ create_or_update_secret "turbo-team" "TURBO_TEAM"
 print_header "Granting Secret Access to Service Account"
 
 ALL_SECRETS=(
-    "bayit-secret-key" "mongodb-url" "mongodb-db-name"
+    "bayit-secret-key" "csrf-enabled" "mongodb-url" "mongodb-db-name"
     "stripe-api-key" "stripe-secret-key" "stripe-webhook-secret"
     "stripe-price-basic" "stripe-price-premium" "stripe-price-family"
     "anthropic-api-key" "openai-api-key" "elevenlabs-api-key"

@@ -192,11 +192,16 @@ from app.middleware.input_sanitization import InputSanitizationMiddleware
 app.add_middleware(InputSanitizationMiddleware, enable_logging=True)
 logger.info("Input sanitization middleware enabled")
 
-# CSRF protection middleware - protects state-changing endpoints
-from app.core.csrf import CSRFProtectionMiddleware
+# CSRF protection middleware - conditionally enabled via settings
+if settings.CSRF_ENABLED:
+    from app.core.csrf import CSRFProtectionMiddleware
 
-app.add_middleware(CSRFProtectionMiddleware)
-logger.info("CSRF protection middleware enabled")
+    app.add_middleware(CSRFProtectionMiddleware)
+    logger.info("CSRF protection middleware enabled")
+else:
+    logger.warning(
+        "CSRF protection middleware DISABLED - not recommended for production"
+    )
 
 # Request timing middleware - tracks request duration
 app.add_middleware(RequestTimingMiddleware)
@@ -207,7 +212,7 @@ app.add_middleware(CorrelationIdMiddleware)
 logger.info("Correlation ID middleware enabled")
 
 # Rate limiting middleware - protects against abuse
-from app.core.rate_limiter import limiter, RATE_LIMITING_ENABLED
+from app.core.rate_limiter import RATE_LIMITING_ENABLED, limiter
 
 if RATE_LIMITING_ENABLED:
     app.state.limiter = limiter

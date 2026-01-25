@@ -8,7 +8,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, Query, Request
 
-from app.core.rate_limiter import limiter, RATE_LIMITS
+from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.models.subtitles import (SUBTITLE_LANGUAGES, SubtitleCueModel,
                                   SubtitleCueResponse, SubtitleTrackDoc,
                                   SubtitleTrackResponse, TranslationCacheDoc,

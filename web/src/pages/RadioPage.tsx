@@ -18,6 +18,7 @@ import {
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
+import PageLoading from '@/components/common/PageLoading';
 
 interface Category {
   id: string;
@@ -142,15 +143,13 @@ export default function RadioPage() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <GlassPageHeader
-          title={t('radio.title')}
-          pageType="radio"
-          isRTL={isRTL}
-        />
-        <View style={styles.categoriesSkeleton} />
-        <GridSkeleton numColumns={numColumns} numRows={2} />
-      </View>
+      <PageLoading
+        title={t('radio.title')}
+        pageType="radio"
+        message={t('radio.loadingStations', 'Loading radio stations...')}
+        isRTL={isRTL}
+        icon={<Radio size={24} color={colors.primary.DEFAULT} />}
+      />
     );
   }
 

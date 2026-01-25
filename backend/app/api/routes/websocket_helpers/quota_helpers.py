@@ -9,8 +9,8 @@ from typing import Optional, Tuple
 from fastapi import WebSocket
 
 from app.models.live_feature_quota import (FeatureType,
-                                             LiveFeatureUsageSession,
-                                             UsageSessionStatus)
+                                           LiveFeatureUsageSession,
+                                           UsageSessionStatus)
 from app.models.user import User
 from app.services.live_feature_quota_service import live_feature_quota_service
 
@@ -40,12 +40,14 @@ async def check_and_start_quota_session(
     )
 
     if not allowed:
-        await websocket.send_json({
-            "type": "quota_exceeded",
-            "message": error_msg,
-            "usage_stats": usage_stats,
-            "recoverable": False,
-        })
+        await websocket.send_json(
+            {
+                "type": "quota_exceeded",
+                "message": error_msg,
+                "usage_stats": usage_stats,
+                "recoverable": False,
+            }
+        )
         await websocket.close(code=4029, reason="Quota exceeded")
         logger.warning(f"Quota exceeded for user {user.id}: {error_msg}")
         return False, None, usage_stats
@@ -102,11 +104,13 @@ async def update_quota_during_session(
         )
 
         if not allowed:
-            await websocket.send_json({
-                "type": "quota_exceeded",
-                "message": "Usage limit reached during session",
-                "recoverable": False,
-            })
+            await websocket.send_json(
+                {
+                    "type": "quota_exceeded",
+                    "message": "Usage limit reached during session",
+                    "recoverable": False,
+                }
+            )
             return False, current_time
 
         return True, current_time

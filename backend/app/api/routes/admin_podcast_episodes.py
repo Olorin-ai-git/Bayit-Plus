@@ -308,10 +308,12 @@ async def trigger_bulk_translation(
     # Find all episodes with status = pending or failed (with retry_count < max_retries)
     episodes = await PodcastEpisode.find(
         PodcastEpisode.podcast_id == podcast_id,
-        {"$or": [
-            {"translation_status": "pending"},
-            {"translation_status": "failed", "retry_count": {"$lt": 3}},
-        ]},
+        {
+            "$or": [
+                {"translation_status": "pending"},
+                {"translation_status": "failed", "retry_count": {"$lt": 3}},
+            ]
+        },
     ).to_list()
 
     queued_count = 0

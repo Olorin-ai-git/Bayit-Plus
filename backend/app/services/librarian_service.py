@@ -128,18 +128,21 @@ async def run_daily_audit(
 
         # Import services here to avoid circular imports
         from app.services.content_auditor import audit_content_items
-        from app.services.content_maintenance_tasks import run_content_maintenance_tasks
+        from app.services.content_maintenance_tasks import \
+            run_content_maintenance_tasks
         from app.services.database_maintenance import \
             perform_database_maintenance
         from app.services.stream_validator import validate_content_streams
 
         # Run audits and maintenance in parallel
-        content_results, stream_results, db_health, maintenance_results = await asyncio.gather(
-            audit_content_items(scope.content_ids, audit_report.audit_id, dry_run),
-            validate_content_streams(scope, audit_report.audit_id),
-            perform_database_maintenance(),
-            run_content_maintenance_tasks(dry_run),
-            return_exceptions=True,
+        content_results, stream_results, db_health, maintenance_results = (
+            await asyncio.gather(
+                audit_content_items(scope.content_ids, audit_report.audit_id, dry_run),
+                validate_content_streams(scope, audit_report.audit_id),
+                perform_database_maintenance(),
+                run_content_maintenance_tasks(dry_run),
+                return_exceptions=True,
+            )
         )
 
         # Handle any exceptions
@@ -157,7 +160,10 @@ async def run_daily_audit(
 
         if isinstance(maintenance_results, Exception):
             logger.error(f"❌ Content maintenance tasks failed: {maintenance_results}")
-            maintenance_results = {"status": "failed", "error": str(maintenance_results)}
+            maintenance_results = {
+                "status": "failed",
+                "error": str(maintenance_results),
+            }
 
         # Check for cancellation/pause
         if audit_id:

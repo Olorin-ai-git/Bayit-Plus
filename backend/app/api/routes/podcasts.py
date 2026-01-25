@@ -62,9 +62,7 @@ async def get_podcast_categories(
         # Sort by localized names
         categories = [
             {"id": cat_id, "name": name}
-            for cat_id, name in sorted(
-                categories_map.items(), key=lambda x: x[1]
-            )
+            for cat_id, name in sorted(categories_map.items(), key=lambda x: x[1])
         ]
 
         return {
@@ -163,11 +161,7 @@ async def get_podcasts(
             query["category"] = category
 
         # Fetch all matching podcasts first to deduplicate
-        all_shows = (
-            await Podcast.find(query)
-            .sort("-latest_episode_date")
-            .to_list()
-        )
+        all_shows = await Podcast.find(query).sort("-latest_episode_date").to_list()
 
         # Deduplicate by title - keep the one with more episodes or most recent
         seen_titles = {}
@@ -184,8 +178,7 @@ async def get_podcasts(
         unique_shows = list(seen_titles.values())
         # Re-sort after deduplication
         unique_shows.sort(
-            key=lambda x: x.latest_episode_date or x.created_at,
-            reverse=True
+            key=lambda x: x.latest_episode_date or x.created_at, reverse=True
         )
 
         total = len(unique_shows)

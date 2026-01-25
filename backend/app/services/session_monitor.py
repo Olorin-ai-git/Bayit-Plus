@@ -9,7 +9,8 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from app.core.config import settings
-from app.models.live_feature_quota import LiveFeatureUsageSession, UsageSessionStatus
+from app.models.live_feature_quota import (LiveFeatureUsageSession,
+                                           UsageSessionStatus)
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +61,9 @@ class SessionMonitor:
         for session in stale_sessions:
             session.status = UsageSessionStatus.INTERRUPTED
             session.ended_at = session.last_activity_at
-            session.duration_seconds = (session.ended_at - session.started_at).total_seconds()
+            session.duration_seconds = (
+                session.ended_at - session.started_at
+            ).total_seconds()
             await session.save()
             logger.warning(
                 f"Marked stale session as interrupted: {session.session_id}, "
@@ -83,7 +86,9 @@ class SessionMonitor:
         for session in long_sessions:
             session.status = UsageSessionStatus.ERROR
             session.ended_at = now
-            session.duration_seconds = (session.ended_at - session.started_at).total_seconds()
+            session.duration_seconds = (
+                session.ended_at - session.started_at
+            ).total_seconds()
             await session.save()
             logger.warning(
                 f"Timed out long-running session: {session.session_id}, "
@@ -93,7 +98,9 @@ class SessionMonitor:
         if long_sessions:
             logger.info(f"Timed out {len(long_sessions)} long-running sessions")
 
-    async def check_session_validity(self, session_id: str) -> tuple[bool, Optional[str]]:
+    async def check_session_validity(
+        self, session_id: str
+    ) -> tuple[bool, Optional[str]]:
         """
         Check if a session is still valid.
         Returns: (is_valid, error_message)
@@ -111,7 +118,9 @@ class SessionMonitor:
         now = datetime.utcnow()
 
         # Check for stale session
-        if now - session.last_activity_at > timedelta(minutes=self._stale_threshold_minutes):
+        if now - session.last_activity_at > timedelta(
+            minutes=self._stale_threshold_minutes
+        ):
             return False, "Session has become stale due to inactivity"
 
         # Check for timeout

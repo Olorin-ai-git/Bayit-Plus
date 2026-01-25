@@ -174,12 +174,37 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
       },
       onError: (error) => {
         console.error('[VoiceSupport] Intro TTS error:', error);
+
+        // Show error message briefly, then silently continue
+        const errorMessage = error instanceof Error ? error.message : 'Voice synthesis unavailable';
+        console.warn('[VoiceSupport] Gracefully degrading from TTS failure:', errorMessage);
+
+        // Determine error type for better user messaging
+        const errorType = errorMessage.includes('Authentication') || errorMessage.includes('auth')
+          ? 'authentication'
+          : errorMessage.includes('connect') || errorMessage.includes('fetch')
+          ? 'connection'
+          : 'tts';
+
+        // Set error in store for UI display
+        useSupportStore.getState().setVoiceError({
+          type: errorType as 'mic' | 'connection' | 'tts',
+          message: errorMessage.includes('backend')
+            ? 'Voice unavailable. Please ensure you are logged in.'
+            : errorMessage
+        });
+
+        // Mark intro as played anyway to avoid repeated failures
+        setSessionIntroPlayed(true);
         setCurrentIntroText(null);
+
+        // Show error state briefly
         setVoiceState('error');
         setTimeout(() => {
           setVoiceState('idle');
-        }, 3000);
-        reject(error);
+          // Resolve instead of reject to allow voice assistant to continue
+          resolve();
+        }, 2000);
       },
     });
   }, [setVoiceState, setCurrentIntroText, setSessionIntroPlayed]);

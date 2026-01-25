@@ -7,6 +7,7 @@ from urllib.parse import urlencode
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request, status
+from olorin_shared.auth import create_refresh_token, verify_refresh_token
 from pydantic import BaseModel
 
 from app.core.config import settings
@@ -16,7 +17,6 @@ from app.core.security import (create_access_token, get_current_active_user,
 from app.models.user import (TokenResponse, User, UserCreate, UserLogin,
                              UserResponse, UserUpdate)
 from app.services.audit_logger import audit_logger
-from olorin_shared.auth import create_refresh_token, verify_refresh_token
 
 
 class GoogleAuthCode(BaseModel):

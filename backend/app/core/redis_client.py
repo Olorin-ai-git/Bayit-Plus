@@ -8,7 +8,7 @@ import json
 import logging
 from typing import Optional
 
-from redis.asyncio import Redis, ConnectionPool
+from redis.asyncio import ConnectionPool, Redis
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +16,9 @@ logger = logging.getLogger(__name__)
 class AsyncRedisClient:
     """Async Redis client with connection pooling for session state."""
 
-    def __init__(self, redis_url: str = "redis://localhost:6379/0", max_connections: int = 50):
+    def __init__(
+        self, redis_url: str = "redis://localhost:6379/0", max_connections: int = 50
+    ):
         """
         Initialize Redis client (lazy connection).
 
@@ -138,7 +140,9 @@ class AsyncRedisClient:
             logger.error(f"Error checking existence of key {key}: {e}")
             return False
 
-    async def increment_counter(self, key: str, amount: int = 1, ttl_seconds: int = 3600) -> int:
+    async def increment_counter(
+        self, key: str, amount: int = 1, ttl_seconds: int = 3600
+    ) -> int:
         """
         Increment a counter key (for rate limiting, metering).
 

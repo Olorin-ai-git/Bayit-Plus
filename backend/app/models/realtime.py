@@ -1,9 +1,9 @@
+import re
 from datetime import datetime
 from typing import List, Optional
-import re
 
 from beanie import Document
-from pydantic import BaseModel, Field, field_validator, ValidationError
+from pydantic import BaseModel, Field, ValidationError, field_validator
 
 
 class ParticipantState(BaseModel):
@@ -32,15 +32,15 @@ class ParticipantState(BaseModel):
             raise ValueError("Username must be 50 characters or less")
 
         # Remove dangerous characters
-        if re.search(r'[<>\'\"&]', v):
+        if re.search(r"[<>\'\"&]", v):
             raise ValueError("Username contains invalid characters")
 
         # Check for XSS patterns
         xss_patterns = [
-            r'<script',
-            r'javascript:',
-            r'on\w+=',
-            r'data:text/html',
+            r"<script",
+            r"javascript:",
+            r"on\w+=",
+            r"data:text/html",
         ]
         for pattern in xss_patterns:
             if re.search(pattern, v, re.IGNORECASE):
@@ -132,14 +132,14 @@ class ChatMessage(Document):
         if len(v) > 50:
             raise ValueError("Username must be 50 characters or less")
 
-        if re.search(r'[<>\'\"&]', v):
+        if re.search(r"[<>\'\"&]", v):
             raise ValueError("Username contains invalid characters")
 
         xss_patterns = [
-            r'<script',
-            r'javascript:',
-            r'on\w+=',
-            r'data:text/html',
+            r"<script",
+            r"javascript:",
+            r"on\w+=",
+            r"data:text/html",
         ]
         for pattern in xss_patterns:
             if re.search(pattern, v, re.IGNORECASE):
@@ -163,17 +163,17 @@ class ChatMessage(Document):
             raise ValueError("Message must be 500 characters or less")
 
         # Remove null bytes
-        v = v.replace('\0', '')
+        v = v.replace("\0", "")
 
         # Remove control characters (except newlines and tabs)
-        v = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', '', v)
+        v = re.sub(r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]", "", v)
 
         # Check for XSS patterns
         xss_patterns = [
-            r'<script',
-            r'javascript:',
-            r'on\w+=',
-            r'data:text/html',
+            r"<script",
+            r"javascript:",
+            r"on\w+=",
+            r"data:text/html",
         ]
         for pattern in xss_patterns:
             if re.search(pattern, v, re.IGNORECASE):
@@ -248,17 +248,17 @@ class ChatMessageCreate(BaseModel):
             raise ValueError("Message must be 500 characters or less")
 
         # Remove null bytes
-        v = v.replace('\0', '')
+        v = v.replace("\0", "")
 
         # Remove control characters (except newlines and tabs)
-        v = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', '', v)
+        v = re.sub(r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]", "", v)
 
         # Check for XSS patterns
         xss_patterns = [
-            r'<script',
-            r'javascript:',
-            r'on\w+=',
-            r'data:text/html',
+            r"<script",
+            r"javascript:",
+            r"on\w+=",
+            r"data:text/html",
         ]
         for pattern in xss_patterns:
             if re.search(pattern, v, re.IGNORECASE):

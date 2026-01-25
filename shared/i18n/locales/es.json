@@ -355,12 +355,25 @@
       "podcasts": "Podcasts"
     },
     "suggestions": {
-      "movies": "Películas",
-      "series": "Series",
-      "liveTV": "TV en Vivo",
-      "news": "Noticias",
-      "sports": "Deportes",
-      "kids": "Niños"
+      "trendingTitle": "Búsquedas Populares",
+      "categoriesTitle": "Explorar Categorías",
+      "recentTitle": "Búsquedas Recientes",
+      "clearRecent": "Borrar"
+    },
+    "controls": {
+      "placeholder": "Buscar contenido...",
+      "hints": {
+        "searchInput": "Ingresa palabras clave para buscar"
+      }
+    },
+    "semantic": {
+      "keyword": "Palabra clave",
+      "semantic": "Búsqueda IA",
+      "infoTitle": "Búsqueda con IA",
+      "info": "La búsqueda de IA comprende el contexto y encuentra momentos exactos en videos analizando escenas, diálogos y contenido visual."
+    },
+    "empty": {
+      "clearSearch": "Borrar búsqueda"
     }
   },
   "liveTV": {

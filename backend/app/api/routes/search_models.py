@@ -36,7 +36,9 @@ class SceneSearchRequest(BaseModel):
     """Request model for scene search within content or series"""
 
     query: str = Field(..., min_length=2, max_length=500, description="Scene query")
-    content_id: Optional[str] = Field(None, description="Search within specific content")
+    content_id: Optional[str] = Field(
+        None, description="Search within specific content"
+    )
     series_id: Optional[str] = Field(None, description="Search across series episodes")
     language: str = Field("he", description="Content language")
     limit: int = Field(20, ge=1, le=100, description="Maximum results")

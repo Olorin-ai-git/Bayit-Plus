@@ -253,8 +253,8 @@ class FolderMonitorService:
             self._hash_cache = self._load_hash_cache(folder_id)
 
             # Get database connection for duplicate checks
-            from motor.motor_asyncio import AsyncIOMotorClient
             from beanie.operators import In
+            from motor.motor_asyncio import AsyncIOMotorClient
 
             client = AsyncIOMotorClient(settings.MONGODB_URL)
             db = client[settings.MONGODB_DB_NAME]

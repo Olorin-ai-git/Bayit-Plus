@@ -22,33 +22,24 @@ from typing import Any, Dict, List, Optional
 from app.core.config import settings
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection, SectionSubcategory
-from app.models.youngsters_content import (
-    AGE_GROUP_RANGES,
-    SUBCATEGORY_PARENT_MAP,
-    YoungstersAgeGroup,
-    YoungstersAgeGroupResponse,
-    YoungstersAgeGroupsResponse,
-    YoungstersContentAggregatedResponse,
-    YoungstersContentCategory,
-    YoungstersContentItemResponse,
-    YoungstersContentSource,
-    YoungstersFeaturedResponse,
-    YoungstersSubcategoriesResponse,
-    YoungstersSubcategory,
-    YoungstersSubcategoryResponse,
-)
+from app.models.youngsters_content import (AGE_GROUP_RANGES,
+                                           SUBCATEGORY_PARENT_MAP,
+                                           YoungstersAgeGroup,
+                                           YoungstersAgeGroupResponse,
+                                           YoungstersAgeGroupsResponse,
+                                           YoungstersContentAggregatedResponse,
+                                           YoungstersContentCategory,
+                                           YoungstersContentItemResponse,
+                                           YoungstersContentSource,
+                                           YoungstersFeaturedResponse,
+                                           YoungstersSubcategoriesResponse,
+                                           YoungstersSubcategory,
+                                           YoungstersSubcategoryResponse)
 from app.services.content_services.base_cache import ContentCache
 from app.services.content_services.youngsters_keywords import (
-    AGE_GROUP_LABELS,
-    SUBCATEGORY_KEYWORDS_EN,
-    SUBCATEGORY_KEYWORDS_HE,
-    SUBCATEGORY_LABELS,
-    YOUNGSTERS_ALLOWED_RATINGS,
-    YOUNGSTERS_CATEGORY_LABELS,
-    YOUNGSTERS_CONTENT_SEED,
-    YOUNGSTERS_KEYWORDS_EN,
-    YOUNGSTERS_KEYWORDS_HE,
-)
+    AGE_GROUP_LABELS, SUBCATEGORY_KEYWORDS_EN, SUBCATEGORY_KEYWORDS_HE,
+    SUBCATEGORY_LABELS, YOUNGSTERS_ALLOWED_RATINGS, YOUNGSTERS_CATEGORY_LABELS,
+    YOUNGSTERS_CONTENT_SEED, YOUNGSTERS_KEYWORDS_EN, YOUNGSTERS_KEYWORDS_HE)
 
 logger = logging.getLogger(__name__)
 

@@ -56,14 +56,17 @@ def decode_token(token: str) -> Optional[dict]:
         if settings.SECRET_KEY_OLD:
             try:
                 payload = shared_verify_access_token(
-                    token=token, secret_key=settings.SECRET_KEY_OLD, algorithm=settings.ALGORITHM
+                    token=token,
+                    secret_key=settings.SECRET_KEY_OLD,
+                    algorithm=settings.ALGORITHM,
                 )
                 # Log successful validation with old secret for monitoring
                 import logging
+
                 logger = logging.getLogger(__name__)
                 logger.warning(
                     "Token validated with OLD secret during rotation",
-                    extra={"user_id": payload.get("sub"), "rotation_active": True}
+                    extra={"user_id": payload.get("sub"), "rotation_active": True},
                 )
                 return payload
             except (jwt.InvalidTokenError, ValueError):

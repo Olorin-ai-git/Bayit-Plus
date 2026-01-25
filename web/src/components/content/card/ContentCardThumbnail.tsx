@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Play } from 'lucide-react';
 import { z } from 'zod';
 import { platformClass } from '@/utils/platformClass';
+import { GlassPlaceholder } from '@olorin/glass-ui';
+import type { ContentType as GlassContentType } from '@olorin/design-tokens';
 import { SubtitleFlags, ContentBadges } from '@bayit/shared';
 
 /**
@@ -12,6 +14,7 @@ import { SubtitleFlags, ContentBadges } from '@bayit/shared';
 const ContentCardThumbnailPropsSchema = z.object({
   content: z.object({
     id: z.string(),
+    title: z.string().optional(),
     thumbnail: z.string().optional(),
     type: z.enum(['live', 'radio', 'podcast', 'vod', 'movie', 'series']).optional(),
     is_series: z.boolean().optional(),
@@ -83,7 +86,15 @@ export function ContentCardThumbnail(props: ContentCardThumbnailProps) {
           onError={handleThumbnailError}
         />
       ) : (
-        <View className="w-full h-full bg-white/5" />
+        <GlassPlaceholder
+          contentType={(content.type as GlassContentType) || 'vod'}
+          width={160}
+          height={240}
+          accessibilityRole="image"
+          accessibilityLabel={`${content.title || content.id} - Video thumbnail placeholder`}
+          contentTitle={content.title}
+          contentReason="missing"
+        />
       )}
 
       {/* Play Overlay - Show on hover */}

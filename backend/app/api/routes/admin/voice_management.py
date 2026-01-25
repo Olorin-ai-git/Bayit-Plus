@@ -18,9 +18,7 @@ from app.models.user import User
 from app.services.live_feature_quota_service import LiveFeatureQuotaService
 from app.services.voice_management_service import VoiceManagementService
 
-router = APIRouter(
-    prefix="/admin/voice-management", tags=["Admin - Voice Management"]
-)
+router = APIRouter(prefix="/admin/voice-management", tags=["Admin - Voice Management"])
 logger = logging.getLogger(__name__)
 
 
@@ -174,16 +172,12 @@ async def get_available_voices(
 ):
     """Get available voices from ElevenLabs"""
     try:
-        voices = await VoiceManagementService.fetch_elevenlabs_voices(
-            force_refresh
-        )
+        voices = await VoiceManagementService.fetch_elevenlabs_voices(force_refresh)
 
         # Filter by language if specified
         if language:
             voices = [
-                v
-                for v in voices
-                if language in v.get("labels", {}).get("language", "")
+                v for v in voices if language in v.get("labels", {}).get("language", "")
             ]
 
         return {"success": True, "voices": voices, "count": len(voices)}
@@ -201,9 +195,7 @@ async def preview_voice(
 ):
     """Generate preview audio for a voice"""
     try:
-        audio_bytes = await VoiceManagementService.test_voice(
-            voice_id, text, language
-        )
+        audio_bytes = await VoiceManagementService.test_voice(voice_id, text, language)
         audio_b64 = base64.b64encode(audio_bytes).decode("utf-8")
 
         return {
@@ -263,9 +255,7 @@ async def get_realtime_sessions(
 ):
     """Get active/recent voice usage sessions"""
     try:
-        sessions = await VoiceManagementService.get_realtime_sessions(
-            limit, status
-        )
+        sessions = await VoiceManagementService.get_realtime_sessions(limit, status)
         return {"success": True, "sessions": sessions, "count": len(sessions)}
     except Exception as e:
         logger.error(f"Error fetching sessions: {e}")

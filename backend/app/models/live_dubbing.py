@@ -66,7 +66,9 @@ class LiveDubbingSession(Document):
     last_error_at: Optional[datetime] = None
 
     # Platform information
-    platform: str = Field(default="web", description="Client platform: web, ios, tvos, android")
+    platform: str = Field(
+        default="web", description="Client platform: web, ios, tvos, android"
+    )
     client_version: Optional[str] = None
 
     class Settings:
@@ -77,12 +79,18 @@ class LiveDubbingSession(Document):
             pymongo.IndexModel([("channel_id", pymongo.ASCENDING)]),
             pymongo.IndexModel([("status", pymongo.ASCENDING)]),
             pymongo.IndexModel([("started_at", pymongo.DESCENDING)]),
-            pymongo.IndexModel([("user_id", pymongo.ASCENDING), ("status", pymongo.ASCENDING)]),
-            pymongo.IndexModel([("channel_id", pymongo.ASCENDING), ("status", pymongo.ASCENDING)]),
-            pymongo.IndexModel([
-                ("status", pymongo.ASCENDING),
-                ("last_activity_at", pymongo.DESCENDING),
-            ]),
+            pymongo.IndexModel(
+                [("user_id", pymongo.ASCENDING), ("status", pymongo.ASCENDING)]
+            ),
+            pymongo.IndexModel(
+                [("channel_id", pymongo.ASCENDING), ("status", pymongo.ASCENDING)]
+            ),
+            pymongo.IndexModel(
+                [
+                    ("status", pymongo.ASCENDING),
+                    ("last_activity_at", pymongo.DESCENDING),
+                ]
+            ),
             # TTL index for automatic cleanup of old completed sessions (30 days = 2592000 seconds)
             # Note: MongoDB requires explicit $eq operator in partialFilterExpression
             pymongo.IndexModel(
@@ -99,7 +107,9 @@ class DubbingMessage(BaseModel):
     type: str = Field(..., description="Message type")
     data: Optional[Dict[str, Any]] = None
     error: Optional[str] = None
-    timestamp_ms: int = Field(default_factory=lambda: int(datetime.utcnow().timestamp() * 1000))
+    timestamp_ms: int = Field(
+        default_factory=lambda: int(datetime.utcnow().timestamp() * 1000)
+    )
 
 
 class DubbedAudioMessage(BaseModel):
@@ -110,7 +120,9 @@ class DubbedAudioMessage(BaseModel):
     original_text: str = Field(..., description="Original transcribed text")
     translated_text: str = Field(..., description="Translated text")
     sequence: int = Field(..., description="Sequence number for ordering")
-    timestamp_ms: int = Field(default_factory=lambda: int(datetime.utcnow().timestamp() * 1000))
+    timestamp_ms: int = Field(
+        default_factory=lambda: int(datetime.utcnow().timestamp() * 1000)
+    )
     latency_ms: int = Field(..., description="Total pipeline latency")
 
 

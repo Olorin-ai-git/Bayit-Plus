@@ -16,6 +16,7 @@ echo ""
 echo "# SECURITY"
 echo "SECRET_KEY=$(get_secret bayit-secret-key)"
 echo "DEBUG=false"
+echo "CSRF_ENABLED=$(get_secret csrf-enabled || echo 'false')"
 echo "LOG_LEVEL=$(get_secret bayit-log-level || echo 'INFO')"
 echo ""
 

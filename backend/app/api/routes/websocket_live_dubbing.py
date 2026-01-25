@@ -5,26 +5,23 @@ Real-time audio → transcription → translation → dubbed audio streaming
 
 import logging
 
+from beanie import PydanticObjectId
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
-from beanie import PydanticObjectId
-
+from app.api.routes.websocket_helpers import (check_and_start_quota_session,
+                                              check_authentication_message,
+                                              check_subscription_tier,
+                                              cleanup_dubbing_session,
+                                              end_quota_session,
+                                              get_active_session_count,
+                                              get_user_from_token,
+                                              initialize_dubbing_session,
+                                              update_quota_during_session,
+                                              validate_channel_for_dubbing)
 from app.core.config import settings
 from app.models.content import LiveChannel
 from app.models.live_feature_quota import FeatureType, UsageSessionStatus
 from app.services.rate_limiter_live import get_rate_limiter
-from app.api.routes.websocket_helpers import (
-    check_and_start_quota_session,
-    check_authentication_message,
-    check_subscription_tier,
-    cleanup_dubbing_session,
-    end_quota_session,
-    get_active_session_count,
-    get_user_from_token,
-    initialize_dubbing_session,
-    update_quota_during_session,
-    validate_channel_for_dubbing,
-)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -80,11 +77,13 @@ async def websocket_live_dubbing(
     # Step 4: Validate token
     user = await get_user_from_token(token)
     if not user:
-        await websocket.send_json({
-            "type": "error",
-            "message": "Invalid or expired token",
-            "recoverable": False,
-        })
+        await websocket.send_json(
+            {
+                "type": "error",
+                "message": "Invalid or expired token",
+                "recoverable": False,
+            }
+        )
         await websocket.close(code=4001, reason="Authentication failed")
         return
 
@@ -94,12 +93,14 @@ async def websocket_live_dubbing(
         str(user.id)
     )
     if not allowed:
-        await websocket.send_json({
-            "type": "error",
-            "message": error_msg,
-            "recoverable": True,
-            "retry_after_seconds": reset_in,
-        })
+        await websocket.send_json(
+            {
+                "type": "error",
+                "message": error_msg,
+                "recoverable": True,
+                "retry_after_seconds": reset_in,
+            }
+        )
         await websocket.close(code=4029, reason="Rate limit exceeded")
         return
 
@@ -149,6 +150,7 @@ async def websocket_live_dubbing(
         )
 
         import asyncio
+
         last_usage_update = asyncio.get_event_loop().time()
 
         # Process incoming audio chunks
@@ -180,7 +182,9 @@ async def websocket_live_dubbing(
         logger.error(f"Error in live dubbing stream: {str(e)}")
         await end_quota_session(quota_session, UsageSessionStatus.ERROR)
         try:
-            await websocket.send_json({"type": "error", "message": str(e), "recoverable": False})
+            await websocket.send_json(
+                {"type": "error", "message": str(e), "recoverable": False}
+            )
         except Exception:
             pass
     finally:

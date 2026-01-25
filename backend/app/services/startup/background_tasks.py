@@ -16,10 +16,8 @@ from pathlib import Path
 from typing import Any
 
 from app.core.config import settings
-from app.services.podcast_translation_worker import (
-    PodcastTranslationWorker,
-    set_translation_worker,
-)
+from app.services.podcast_translation_worker import (PodcastTranslationWorker,
+                                                     set_translation_worker)
 
 
 def _is_running_locally() -> bool:

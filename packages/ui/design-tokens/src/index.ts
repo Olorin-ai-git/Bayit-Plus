@@ -21,6 +21,7 @@ export * from './shadows';
 export * from './animations';
 export * from './adminButtonStyles';
 export * from './touchTarget';
+export * from './contentTypes';
 
 // Import for composite objects
 import {

@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing } from '@olorin/design-tokens';
+import { GlassPlaceholder } from '@olorin/glass-ui';
+import type { ContentType as GlassContentType } from '@olorin/design-tokens';
 import { useDirection } from '../hooks/useDirection';
 import { useTVFocus } from './hooks/useTVFocus';
 
@@ -136,9 +138,15 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
             resizeMode="cover"
           />
         ) : (
-          <View className={`flex-1 bg-white/10 justify-center items-center ${isMobilePhone ? 'rounded-lg' : 'rounded-xl'}`}>
-            <Text className={`${isMobilePhone ? 'text-2xl' : 'text-5xl'} font-bold text-purple-500`}>{title?.[0] || '?'}</Text>
-          </View>
+          <GlassPlaceholder
+            contentType={(contentType as GlassContentType) || 'vod'}
+            width={width}
+            height={height}
+            accessibilityRole="image"
+            accessibilityLabel={`${title} - Content placeholder`}
+            contentTitle={title}
+            contentReason="missing"
+          />
         )}
 
         {/* Action Buttons - Show on focus/hover */}

@@ -9,6 +9,7 @@ import {
   Animated,
   Pressable,
   Text,
+  StyleSheet,
 } from 'react-native';
 import Video, { OnLoadData } from 'react-native-video';
 import { useTranslation } from 'react-i18next';
@@ -51,12 +52,23 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   const currentLang = (i18n.language || 'he') as string;
   const videoSource = VIDEO_SOURCES[currentLang] || VIDEO_SOURCES.he;
 
-  moduleLogger.debug('Splash screen initialized', { language: currentLang });
+  moduleLogger.info('🎬 Splash screen MOUNTED', {
+    language: currentLang,
+    hasVideoSource: !!videoSource,
+    videoSourceKeys: Object.keys(VIDEO_SOURCES)
+  });
 
   // Handle completion with minimum duration
   const handleComplete = useCallback(() => {
     const elapsed = Date.now() - startTimeRef.current;
     const remainingTime = Math.max(0, minimumDuration - elapsed);
+
+    moduleLogger.info('🎬 Splash completing', {
+      elapsed,
+      minimumDuration,
+      remainingTime,
+      willWait: remainingTime > 0
+    });
 
     setTimeout(() => {
       // Fade out then call onComplete
@@ -65,6 +77,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
         duration: 400,
         useNativeDriver: true,
       }).start(() => {
+        moduleLogger.info('🎬 Splash fade complete, calling onComplete');
         onComplete();
       });
     }, remainingTime);
@@ -90,17 +103,17 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   }, [handleComplete, videoEnded]);
 
   const onVideoLoad = (data: OnLoadData) => {
-    moduleLogger.debug('Video loaded', { duration: data.duration });
+    moduleLogger.info('🎬 Video LOADED successfully', { duration: data.duration });
     setVideoLoaded(true);
   };
 
   const onVideoEnd = () => {
-    moduleLogger.debug('Video ended');
+    moduleLogger.info('🎬 Video ENDED');
     setVideoEnded(true);
   };
 
   const onVideoError = (error: any) => {
-    moduleLogger.warn('Video error', error);
+    moduleLogger.error('🎬 Video ERROR - completing immediately', error);
     // Complete immediately on error
     handleComplete();
   };
@@ -115,7 +128,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     <Animated.View className="absolute inset-0 bg-[#0d0d1a] z-[9999] justify-center items-center" style={{ opacity: fadeAnim }}>
       <Video
         source={videoSource}
-        className="absolute inset-0"
+        style={styles.video}
         resizeMode="contain"
         onLoad={onVideoLoad}
         onEnd={onVideoEnd}
@@ -141,5 +154,15 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     </Animated.View>
   );
 };
+
+const styles = StyleSheet.create({
+  video: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
+});
 
 export default SplashScreen;

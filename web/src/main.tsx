@@ -54,15 +54,17 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 )
 
 // Signal that React is ready
-// NOTE: Don't call hideSplashWhenReady here - let the video control when to hide
-// The splash screen will hide when the intro video ends
 setTimeout(() => {
   const splashShown = sessionStorage.getItem('splashShown') === 'true';
   const isHomePage = window.location.pathname === '/' || window.location.pathname === '';
 
-  // Only mark as removed if splash wasn't shown (not on home page or already shown)
-  if (splashShown || !isHomePage) {
+  // Only call hideSplashWhenReady on home page first visit
+  if (!splashShown && isHomePage) {
+    if (typeof window.hideSplashWhenReady === 'function') {
+      window.hideSplashWhenReady();
+    }
+  } else {
+    // Not showing splash, mark as removed
     window.splashScreenRemoved = true;
   }
-  // If splash is showing, let the video's 'ended' event trigger the hide
 }, 100)

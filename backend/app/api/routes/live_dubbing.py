@@ -15,9 +15,9 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
-from app.core.security import get_current_admin_user, get_current_user
 from app.core.config import settings
-from app.core.rate_limiter import limiter, RATE_LIMITS
+from app.core.rate_limiter import RATE_LIMITS, limiter
+from app.core.security import get_current_admin_user, get_current_user
 from app.models.content import LiveChannel
 from app.models.live_dubbing import LiveDubbingSession
 from app.models.user import User
@@ -128,7 +128,8 @@ async def get_dubbing_availability(
         return DubbingAvailabilityResponse(
             available=True,
             source_language=channel.dubbing_source_language or "he",
-            supported_target_languages=channel.available_dubbing_languages or ["en", "es", "ar", "ru", "fr", "de"],
+            supported_target_languages=channel.available_dubbing_languages
+            or ["en", "es", "ar", "ru", "fr", "de"],
             default_voice_id=channel.default_dubbing_voice_id,
             default_sync_delay_ms=channel.dubbing_sync_delay_ms or 600,
             available_voices=get_available_voices(),
@@ -281,9 +282,7 @@ async def get_dubbing_stats(
             {
                 "$group": {
                     "_id": None,
-                    "total_audio_seconds": {
-                        "$sum": "$metrics.audio_seconds_processed"
-                    },
+                    "total_audio_seconds": {"$sum": "$metrics.audio_seconds_processed"},
                     "avg_latency_ms": {"$avg": "$metrics.avg_total_latency_ms"},
                 }
             },

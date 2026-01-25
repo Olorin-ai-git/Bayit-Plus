@@ -383,7 +383,9 @@ class DocsSearchService:
         ]
 
         try:
-            results = await DocumentationSearchLog.aggregate(pipeline).to_list(length=None)
+            results = await DocumentationSearchLog.aggregate(pipeline).to_list(
+                length=None
+            )
             return [
                 {
                     "query": r["_id"],
@@ -426,7 +428,9 @@ class DocsSearchService:
         ]
 
         try:
-            results = await DocumentationSearchLog.aggregate(pipeline).to_list(length=None)
+            results = await DocumentationSearchLog.aggregate(pipeline).to_list(
+                length=None
+            )
             return [
                 {
                     "query": r["_id"],

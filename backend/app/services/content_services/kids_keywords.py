@@ -9,11 +9,8 @@ Contains bilingual (Hebrew/English) keyword sets for:
 - Seed content (fallback content when database is empty)
 """
 
-from app.models.kids_content import (
-    KidsAgeGroup,
-    KidsContentCategory,
-    KidsSubcategory,
-)
+from app.models.kids_content import (KidsAgeGroup, KidsContentCategory,
+                                     KidsSubcategory)
 
 # Dual-language keyword filters for relevance scoring and categorization
 KIDS_KEYWORDS_HE = {
@@ -555,4 +552,3 @@ KIDS_CONTENT_SEED = [
         "source_type": "seed",
     },
 ]
-
