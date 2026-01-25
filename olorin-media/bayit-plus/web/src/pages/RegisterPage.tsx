@@ -241,11 +241,11 @@ export default function RegisterPage() {
               <Text style={styles.termsText}>
                 {t('register.acceptTerms')}{' '}
                 <Link to="/terms" style={{ textDecoration: 'none' }}>
-                  <Text style={[styles.termsLink, { color: colors.primary }]}>{t('register.termsOfService')}</Text>
+                  <Text style={styles.termsLink}>{t('register.termsOfService')}</Text>
                 </Link>
                 {' '}{t('register.and')}{' '}
                 <Link to="/privacy" style={{ textDecoration: 'none' }}>
-                  <Text style={[styles.termsLink, { color: colors.primary }]}>{t('register.privacyPolicy')}</Text>
+                  <Text style={styles.termsLink}>{t('register.privacyPolicy')}</Text>
                 </Link>
               </Text>
             </Pressable>
@@ -314,7 +314,7 @@ export default function RegisterPage() {
                 {t('register.haveAccount')}
               </Text>
               <Link to="/login" style={{ textDecoration: 'none' }}>
-                <Text style={[styles.loginLink, { color: colors.primary }]}>{t('register.signIn')}</Text>
+                <Text style={styles.loginLink}>{t('register.signIn')}</Text>
               </Link>
             </View>
           </View>
@@ -536,6 +536,7 @@ const styles = StyleSheet.create({
   },
   termsLink: {
     fontWeight: '500',
+    color: colors.primary.DEFAULT,
   },
   // Register Button
   registerButton: {
@@ -612,5 +613,6 @@ const styles = StyleSheet.create({
   loginLink: {
     fontSize: 14,
     fontWeight: '600',
+    color: colors.primary.DEFAULT,
   },
 });
