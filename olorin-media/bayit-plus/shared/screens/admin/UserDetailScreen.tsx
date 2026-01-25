@@ -12,11 +12,11 @@ import {
   TouchableOpacity,
   TextInput,
   Modal,
-  Alert,
   ActivityIndicator,
   Switch,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { usersService } from '../../services/adminApi';
@@ -32,6 +32,7 @@ type TabType = 'profile' | 'permissions' | 'activity' | 'billing' | 'subscriptio
 
 export const UserDetailScreen: React.FC = () => {
   const { t } = useTranslation();
+  const notifications = useNotifications();
   const navigation = useNavigation<any>();
   const route = useRoute<UserDetailRouteProp>();
   const { userId } = route.params;
@@ -98,17 +99,17 @@ export const UserDetailScreen: React.FC = () => {
   // Save user
   const handleSave = async () => {
     if (!formData.name.trim() || !formData.email.trim()) {
-      Alert.alert(
-        t('admin.users.validationError', 'Validation Error'),
-        t('admin.users.nameEmailRequired', 'Name and email are required.')
+      notifications.showError(
+        t('admin.users.nameEmailRequired', 'Name and email are required.'),
+        t('admin.users.validationError', 'Validation Error')
       );
       return;
     }
 
     if (isNewUser && !formData.password) {
-      Alert.alert(
-        t('admin.users.validationError', 'Validation Error'),
-        t('admin.users.passwordRequired', 'Password is required for new users.')
+      notifications.showError(
+        t('admin.users.passwordRequired', 'Password is required for new users.'),
+        t('admin.users.validationError', 'Validation Error')
       );
       return;
     }
@@ -123,9 +124,9 @@ export const UserDetailScreen: React.FC = () => {
           role: formData.role,
           is_active: formData.is_active,
         });
-        Alert.alert(
-          t('admin.users.created', 'User Created'),
-          t('admin.users.createdSuccess', 'User has been created successfully.')
+        notifications.showSuccess(
+          t('admin.users.createdSuccess', 'User has been created successfully.'),
+          t('admin.users.created', 'User Created')
         );
         navigation.goBack();
       } else {
@@ -134,17 +135,17 @@ export const UserDetailScreen: React.FC = () => {
           email: formData.email,
           is_active: formData.is_active,
         });
-        Alert.alert(
-          t('admin.users.updated', 'User Updated'),
-          t('admin.users.updatedSuccess', 'User has been updated successfully.')
+        notifications.showSuccess(
+          t('admin.users.updatedSuccess', 'User has been updated successfully.'),
+          t('admin.users.updated', 'User Updated')
         );
         loadUserData();
       }
     } catch (error) {
       console.error('Error saving user:', error);
-      Alert.alert(
-        t('admin.users.saveError', 'Error'),
-        t('admin.users.saveErrorMessage', 'Failed to save user. Please try again.')
+      notifications.showError(
+        t('admin.users.saveErrorMessage', 'Failed to save user. Please try again.'),
+        t('admin.users.saveError', 'Error')
       );
     } finally {
       setSaving(false);
@@ -181,9 +182,9 @@ export const UserDetailScreen: React.FC = () => {
     try {
       await usersService.resetPassword(userId!);
       setShowPasswordModal(false);
-      Alert.alert(
-        t('admin.users.passwordReset', 'Password Reset'),
-        t('admin.users.passwordResetSuccess', 'Password reset email has been sent.')
+      notifications.showSuccess(
+        t('admin.users.passwordResetSuccess', 'Password reset email has been sent.'),
+        t('admin.users.passwordReset', 'Password Reset')
       );
     } catch (error) {
       console.error('Error resetting password:', error);
@@ -192,48 +193,46 @@ export const UserDetailScreen: React.FC = () => {
 
   // Ban user
   const handleBanUser = async () => {
-    Alert.alert(
-      t('admin.users.banConfirm', 'Ban User'),
-      t('admin.users.banMessage', 'Are you sure you want to ban this user?'),
-      [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-        {
-          text: t('admin.users.ban', 'Ban'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await usersService.banUser(userId!, 'Banned by admin');
-              loadUserData();
-            } catch (error) {
-              console.error('Error banning user:', error);
-            }
-          },
+    notifications.show({
+      level: 'warning',
+      title: t('admin.users.banConfirm', 'Ban User'),
+      message: t('admin.users.banMessage', 'Are you sure you want to ban this user?'),
+      dismissable: true,
+      action: {
+        label: t('admin.users.ban', 'Ban'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await usersService.banUser(userId!, 'Banned by admin');
+            loadUserData();
+          } catch (error) {
+            console.error('Error banning user:', error);
+          }
         },
-      ]
-    );
+      },
+    });
   };
 
   // Delete user
   const handleDeleteUser = async () => {
-    Alert.alert(
-      t('admin.users.deleteConfirm', 'Delete User'),
-      t('admin.users.deleteMessage', 'Are you sure you want to permanently delete this user?'),
-      [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-        {
-          text: t('common.delete', 'Delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await usersService.deleteUser(userId!);
-              navigation.goBack();
-            } catch (error) {
-              console.error('Error deleting user:', error);
-            }
-          },
+    notifications.show({
+      level: 'warning',
+      title: t('admin.users.deleteConfirm', 'Delete User'),
+      message: t('admin.users.deleteMessage', 'Are you sure you want to permanently delete this user?'),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await usersService.deleteUser(userId!);
+            navigation.goBack();
+          } catch (error) {
+            console.error('Error deleting user:', error);
+          }
         },
-      ]
-    );
+      },
+    });
   };
 
   // Tabs
