@@ -5,18 +5,37 @@ set -euo pipefail
 # Deploys FastAPI backend to Google Cloud Run with complete configuration
 # All configuration from environment variables and .env file
 
-# Get repository root and backend path (centralized deployment script)
+# Get repository root and backend path
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-OLORIN_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
-REPO_ROOT="$OLORIN_ROOT/olorin-media/bayit-plus"
+
+# Find repository root by looking for backend directory
+# Support both centralized scripts location and in-repo execution
+if [[ -d "backend" ]]; then
+    REPO_ROOT="$(pwd)"
+elif [[ -d "../../backend" ]]; then
+    REPO_ROOT="$(cd ../.. && pwd)"
+elif [[ -d "../../../olorin-media/bayit-plus/backend" ]]; then
+    REPO_ROOT="$(cd ../../../olorin-media/bayit-plus && pwd)"
+else
+    echo "Error: Cannot find backend directory. Please run from repository root or adjust REPO_ROOT"
+    exit 1
+fi
+
 BACKEND_DIR="$REPO_ROOT/backend"
 
-# Source shared utilities
-source "$OLORIN_ROOT/scripts/common/colors.sh"
-source "$OLORIN_ROOT/scripts/common/logging.sh"
-source "$OLORIN_ROOT/scripts/common/prerequisites.sh"
-source "$OLORIN_ROOT/scripts/common/health-check.sh"
-source "$OLORIN_ROOT/scripts/common/docker-utils.sh"
+# Source shared utilities from repo's scripts/shared/common directory
+SHARED_UTILS_DIR="$REPO_ROOT/scripts/shared/common"
+
+if [[ ! -d "$SHARED_UTILS_DIR" ]]; then
+    echo "Error: Shared utilities not found at $SHARED_UTILS_DIR"
+    exit 1
+fi
+
+source "$SHARED_UTILS_DIR/colors.sh"
+source "$SHARED_UTILS_DIR/logging.sh"
+source "$SHARED_UTILS_DIR/prerequisites.sh"
+source "$SHARED_UTILS_DIR/health-check.sh"
+source "$SHARED_UTILS_DIR/docker-utils.sh"
 
 # Main deployment script
 main() {
@@ -194,11 +213,15 @@ main() {
         # Enable uniform access
         gsutil uniformbucketlevelaccess set on "gs://$BUCKET_NAME"
 
-        # Configure CORS
-        cat > /tmp/bayit-cors.json << 'EOF'
+        # Configure CORS from environment or defaults
+        CORS_ORIGIN_1="${CORS_ORIGIN_1:-https://bayit.tv}"
+        CORS_ORIGIN_2="${CORS_ORIGIN_2:-https://www.bayit.tv}"
+        CORS_ORIGIN_3="${CORS_ORIGIN_3:-http://localhost:3000}"
+
+        cat > /tmp/bayit-cors.json << EOF
 [
   {
-    "origin": ["https://bayit.tv", "https://www.bayit.tv", "http://localhost:3000"],
+    "origin": ["$CORS_ORIGIN_1", "$CORS_ORIGIN_2", "$CORS_ORIGIN_3"],
     "method": ["GET", "HEAD", "PUT", "POST"],
     "responseHeader": ["Content-Type", "Content-Length"],
     "maxAgeSeconds": 3600
@@ -270,7 +293,7 @@ EOF
 
         # Try from environment variable
         if [[ -z "$value" ]]; then
-            value="${!env_key}"
+            value="${!env_key:-}"
         fi
 
         if [[ -n "$value" ]]; then
@@ -288,7 +311,7 @@ EOF
 
     # SECURITY FIX: MongoDB credentials must come from environment/.env ONLY
     # No hardcoded fallback values
-    if [[ -z "$MONGODB_URL" ]]; then
+    if [[ -z "${MONGODB_URL:-}" ]]; then
         print_error "MONGODB_URL environment variable is required"
         log_info "Set MONGODB_URL in backend/.env or as environment variable"
         exit 1
@@ -325,8 +348,14 @@ EOF
     create_or_update_secret "picovoice-access-key" "PICOVOICE_ACCESS_KEY"
     create_or_update_secret "bayit-sentry-dsn" "SENTRY_DSN"
 
-    # Google redirect URI
-    GOOGLE_REDIRECT_URI="${GOOGLE_REDIRECT_URI:-https://bayit.tv/auth/google/callback}"
+    # Google redirect URI - must come from environment variable
+    if [[ -z "${GOOGLE_REDIRECT_URI:-}" ]]; then
+        print_error "GOOGLE_REDIRECT_URI environment variable is required"
+        log_info "Set GOOGLE_REDIRECT_URI in backend/.env or as environment variable"
+        log_info "Example: GOOGLE_REDIRECT_URI=https://bayit.tv/auth/google/callback"
+        exit 1
+    fi
+
     echo -n "$GOOGLE_REDIRECT_URI" | gcloud secrets create bayit-google-redirect-uri --data-file=- 2>/dev/null || \
         echo -n "$GOOGLE_REDIRECT_URI" | gcloud secrets versions add bayit-google-redirect-uri --data-file=-
     print_success "Created: bayit-google-redirect-uri"
@@ -335,8 +364,14 @@ EOF
     echo -n "$BUCKET_NAME" | gcloud secrets create bayit-gcs-bucket-name --data-file=- 2>/dev/null || \
         echo -n "$BUCKET_NAME" | gcloud secrets versions add bayit-gcs-bucket-name --data-file=-
 
-    # CORS origins secret
-    CORS_ORIGINS='["https://bayit.tv","https://www.bayit.tv","http://localhost:3000"]'
+    # CORS origins - must come from environment variable
+    if [[ -z "${CORS_ORIGINS:-}" ]]; then
+        print_error "CORS_ORIGINS environment variable is required"
+        log_info "Set CORS_ORIGINS in backend/.env or as environment variable"
+        log_info "Example: CORS_ORIGINS='[\"https://bayit.tv\",\"https://www.bayit.tv\",\"http://localhost:3000\"]'"
+        exit 1
+    fi
+
     echo -n "$CORS_ORIGINS" | gcloud secrets create bayit-cors-origins --data-file=- 2>/dev/null || \
         echo -n "$CORS_ORIGINS" | gcloud secrets versions add bayit-cors-origins --data-file=-
 
@@ -463,7 +498,7 @@ EOF
     print_success "Permissions granted"
 
     # Step 6: S3 to GCS Migration (optional)
-    if [[ "$ENABLE_S3_MIGRATION" == "true" && -n "$AWS_S3_BUCKET" ]]; then
+    if [[ "$ENABLE_S3_MIGRATION" == "true" && -n "${AWS_S3_BUCKET:-}" ]]; then
         log_step "S3 to GCS Migration"
 
         if command_exists aws; then
@@ -517,7 +552,7 @@ EOF
     fi
 
     # Step 8: Custom Domain (optional)
-    if [[ "$ENABLE_CUSTOM_DOMAIN" == "true" && -n "$CUSTOM_DOMAIN" ]]; then
+    if [[ "$ENABLE_CUSTOM_DOMAIN" == "true" && -n "${CUSTOM_DOMAIN:-}" ]]; then
         log_step "Custom Domain"
 
         log_substep "Creating domain mapping for $CUSTOM_DOMAIN..."

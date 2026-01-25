@@ -17,13 +17,44 @@ logger = logging.getLogger(__name__)
 
 # Language code mapping for OpenAI Whisper
 # Whisper uses ISO 639-1 codes (2-letter)
+# Maps both ISO codes and full language names to ISO-639-1 format
 WHISPER_LANGUAGE_CODES = {
+    # ISO-639-1 codes (pass-through)
     "he": "he",  # Hebrew
     "en": "en",  # English
     "ar": "ar",  # Arabic
     "es": "es",  # Spanish
     "ru": "ru",  # Russian
     "fr": "fr",  # French
+    "zh": "zh",  # Chinese
+    "it": "it",  # Italian
+    "hi": "hi",  # Hindi
+    "ta": "ta",  # Tamil
+    "bn": "bn",  # Bengali
+    "ja": "ja",  # Japanese
+    # Full language names (for database values stored as names)
+    "hebrew": "he",
+    "english": "en",
+    "arabic": "ar",
+    "spanish": "es",
+    "russian": "ru",
+    "french": "fr",
+    "chinese": "zh",
+    "italian": "it",
+    "hindi": "hi",
+    "tamil": "ta",
+    "bengali": "bn",
+    "japanese": "ja",
+    # Locale codes with region (strip region, use base language)
+    "en-US": "en",
+    "en-GB": "en",
+    "he-IL": "he",
+    "ar-SA": "ar",
+    "es-ES": "es",
+    "es-MX": "es",
+    "fr-FR": "fr",
+    "zh-CN": "zh",
+    "zh-TW": "zh",
 }
 
 

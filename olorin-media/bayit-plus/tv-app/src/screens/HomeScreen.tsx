@@ -19,6 +19,7 @@ import {
 import { contentService, liveService, historyService, ritualService } from '../services/api';
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
 import logger from '../utils/logger';
+import { useAuthStore } from '../stores/authStore';
 
 const homeLogger = logger.scope('HomeScreen');
 
@@ -93,6 +94,13 @@ export const HomeScreen: React.FC = () => {
   }, [i18n.language]);
 
   const checkMorningRitual = async () => {
+    // Skip ritual check if not authenticated
+    const { isAuthenticated } = useAuthStore.getState();
+    if (!isAuthenticated) {
+      homeLogger.debug('Skipping morning ritual check - not authenticated');
+      return;
+    }
+
     try {
       const result = await ritualService.shouldShow() as { show_ritual: boolean };
       if (result.show_ritual) {
@@ -108,11 +116,15 @@ export const HomeScreen: React.FC = () => {
     try {
       setIsLoading(true);
 
+      // Check authentication for user-specific content
+      const { isAuthenticated } = useAuthStore.getState();
+
       // Load all content in parallel - demo service handles mock data
+      // Only fetch continue watching if authenticated
       const [featuredRes, liveRes, historyRes, categoriesRes] = await Promise.all([
         contentService.getFeatured(),
         liveService.getChannels(),
-        historyService.getContinueWatching(),
+        isAuthenticated ? historyService.getContinueWatching() : Promise.resolve({ items: [] }),
         contentService.getCategories(),
       ]) as [any, any, any, any];
 

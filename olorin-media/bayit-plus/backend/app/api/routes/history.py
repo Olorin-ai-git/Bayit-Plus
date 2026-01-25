@@ -4,7 +4,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, get_optional_user
 from app.models.content import Content
 from app.models.user import User
 from app.models.watchlist import WatchHistory
@@ -68,9 +68,16 @@ async def get_history(
 
 @router.get("/continue")
 async def get_continue_watching(
-    current_user: User = Depends(get_current_active_user),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
-    """Get content to continue watching (in progress, not completed)."""
+    """
+    Get content to continue watching (in progress, not completed).
+    Returns empty list if user not authenticated.
+    """
+    # Return empty list if not authenticated
+    if not current_user:
+        return {"items": []}
+
     items = (
         await WatchHistory.find(
             WatchHistory.user_id == str(current_user.id),

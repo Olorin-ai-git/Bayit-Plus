@@ -114,13 +114,13 @@ async def get_system_stats(
             },
         ]
         today_cursor = LiveFeatureUsageSession.aggregate(today_pipeline)
-        today_results = await today_cursor.to_list()
+        today_results = await today_cursor.to_list(length=None)
         month_pipeline = [
             {"$match": {"started_at": {"$gte": month_start}}},
             {"$group": {"_id": None, "total_cost": {"$sum": "$estimated_total_cost"}}},
         ]
         month_cursor = LiveFeatureUsageSession.aggregate(month_pipeline)
-        month_results = await month_cursor.to_list()
+        month_results = await month_cursor.to_list(length=None)
         subtitle_minutes_today = 0.0
         dubbing_minutes_today = 0.0
         cost_today = 0.0
@@ -190,7 +190,7 @@ async def get_top_users(
             {"$limit": limit},
         ]
         cursor = LiveFeatureUsageSession.aggregate(pipeline)
-        results = await cursor.to_list()
+        results = await cursor.to_list(length=None)
         top_users = [
             {
                 "user_id": r["_id"],

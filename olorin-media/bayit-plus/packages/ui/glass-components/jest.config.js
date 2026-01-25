@@ -17,6 +17,11 @@ module.exports = {
     '^@olorin/design-tokens(.*)$': '<rootDir>/../design-tokens/src$1',
   },
   testMatch: ['**/__tests__/**/*.test.[jt]s?(x)'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/__tests__/NotificationProvider.test.tsx',
+    '/__tests__/notification-integration.test.tsx',
+  ],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',

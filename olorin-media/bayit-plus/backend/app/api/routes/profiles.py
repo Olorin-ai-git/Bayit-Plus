@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from pydantic import BaseModel, Field
 
 from app.core.config import settings
-from app.core.security import (get_current_active_user, get_password_hash,
-                               verify_password)
+from app.core.security import (get_current_active_user, get_optional_user,
+                               get_password_hash, verify_password)
 from app.core.storage import storage
 from app.models.profile import (Profile, ProfileCreate, ProfileResponse,
                                 ProfileUpdate)
@@ -510,9 +510,16 @@ async def update_ai_preferences(
 
 @router.get("/preferences/voice")
 async def get_voice_preferences(
-    current_user: User = Depends(get_current_active_user),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
-    """Get voice and accessibility preferences for current user."""
+    """
+    Get voice and accessibility preferences for current user.
+    Returns default preferences if user not authenticated.
+    """
+    # Return default settings if not authenticated
+    if not current_user:
+        return DEFAULT_VOICE_SETTINGS.copy()
+
     # Get saved settings and merge with defaults (so new fields get default values)
     saved_settings = current_user.preferences.get("voice_settings", {})
     voice_settings = {**DEFAULT_VOICE_SETTINGS.copy(), **saved_settings}

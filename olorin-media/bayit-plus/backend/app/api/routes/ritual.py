@@ -9,7 +9,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, get_optional_user
 from app.models.user import User
 from app.services.morning_ritual import (generate_ai_brief,
                                          get_default_ritual_preferences,
@@ -206,12 +206,17 @@ async def skip_ritual_today(
 
 @router.get("/should-show")
 async def should_show_ritual(
-    current_user: User = Depends(get_current_active_user),
+    current_user: Optional[User] = Depends(get_optional_user),
 ) -> dict:
     """
     Quick check if morning ritual should be shown.
     Used for fast app launch decisions.
+    Returns disabled state if user not authenticated.
     """
+    # Return disabled if not authenticated
+    if not current_user:
+        return {"show_ritual": False, "reason": "not_authenticated"}
+
     if not current_user.preferences.get("morning_ritual_enabled", False):
         return {"show_ritual": False, "reason": "disabled"}
 

@@ -5,16 +5,35 @@ set -euo pipefail
 # Deploys all platforms: Web (Firebase), Backend (Cloud Run), iOS, and tvOS
 # Usage: ./deploy_all.sh [options]
 
-# Get script directory and repository root (centralized deployment script)
+# Get script directory and repository root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-OLORIN_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-REPO_ROOT="$OLORIN_ROOT/olorin-media/bayit-plus"
 
-# Source shared utilities
-source "$OLORIN_ROOT/scripts/common/colors.sh"
-source "$OLORIN_ROOT/scripts/common/logging.sh"
-source "$OLORIN_ROOT/scripts/common/prerequisites.sh"
-source "$OLORIN_ROOT/scripts/common/firebase-deploy.sh"
+# Find repository root by looking for package.json or backend directory
+# Support both centralized scripts location and in-repo execution
+if [[ -f "package.json" ]] && [[ -d "backend" ]]; then
+    REPO_ROOT="$(pwd)"
+elif [[ -f "../../package.json" ]] && [[ -d "../../backend" ]]; then
+    REPO_ROOT="$(cd ../.. && pwd)"
+elif [[ -d "../../../olorin-media/bayit-plus" ]]; then
+    REPO_ROOT="$(cd ../../../olorin-media/bayit-plus && pwd)"
+else
+    echo "Error: Cannot find repository root. Please run from repository root or adjust REPO_ROOT"
+    exit 1
+fi
+
+SCRIPTS_DIR="$REPO_ROOT/scripts"
+
+# Verify scripts directory exists
+if [[ ! -d "$SCRIPTS_DIR/shared/common" ]]; then
+    echo "Error: Shared utilities not found at $SCRIPTS_DIR/shared/common"
+    exit 1
+fi
+
+# Source shared utilities from scripts/shared/common/
+source "$SCRIPTS_DIR/shared/common/colors.sh"
+source "$SCRIPTS_DIR/shared/common/logging.sh"
+source "$SCRIPTS_DIR/shared/common/prerequisites.sh"
+source "$SCRIPTS_DIR/shared/common/firebase-deploy.sh"
 
 # Parse arguments
 SKIP_BACKEND=false
