@@ -54,7 +54,9 @@
     "expand": "Expand",
     "collapse": "Collapse",
     "upgrade": "Upgrade to Premium",
-    "skip": "Skip"
+    "skip": "Skip",
+    "thisContent": "this content",
+    "backToHome": "Back to Home"
   },
   "demo": {
     "banner": "DEMO MODE",
@@ -3660,5 +3662,11 @@
       "selectLanguage": "Select this language",
       "deselectLanguage": "Deselect this language"
     }
+  },
+  "auth": {
+    "loginRequired": "Login Required",
+    "loginToWatch": "Please sign in to watch {{title}}",
+    "login": "Login",
+    "signUp": "Sign Up"
   }
 }

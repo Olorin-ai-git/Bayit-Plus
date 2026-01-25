@@ -54,7 +54,6 @@ export default function WidgetContainer({
   const [loading, setLoading] = useState(!streamUrl && widget.content.content_type !== 'iframe' && widget.content.content_type !== 'custom');
   const [error, setError] = useState<string | null>(null);
   const [isFocused, setIsFocused] = useState(IS_TV_BUILD); // Start focused on TV
-  const [savedPosition, setSavedPosition] = useState<{ x: number; y: number } | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [isResizing, setIsResizing] = useState(false);
   const [resizeDirection, setResizeDirection] = useState<string | null>(null);
@@ -116,23 +115,10 @@ export default function WidgetContainer({
     setIsDragging(false);
   }, []);
 
-  // Minimize widget to bottom of screen
-  const handleMinimize = useCallback(() => {
-    // Save current position before minimizing
-    setSavedPosition({ x: position.x, y: position.y });
+  // Toggle minimize state (positioning handled by store)
+  const handleToggleMinimize = useCallback(() => {
     onToggleMinimize();
-  }, [position.x, position.y, onToggleMinimize]);
-
-  // Restore widget to original position
-  const handleRestore = useCallback(() => {
-    onToggleMinimize();
-    // Restore saved position if available
-    if (savedPosition) {
-      onPositionChange({ x: savedPosition.x, y: savedPosition.y });
-      // Clear saved position after animation completes
-      setTimeout(() => setSavedPosition(null), 350);
-    }
-  }, [savedPosition, onPositionChange, onToggleMinimize]);
+  }, [onToggleMinimize]);
 
   // Resize handlers
   const MIN_WIDTH = 200;
@@ -158,32 +144,73 @@ export default function WidgetContainer({
     const deltaY = e.clientY - resizeStartRef.current.y;
     const updates: Partial<WidgetPosition> = {};
 
+    // Calculate current position (use updates if set, otherwise use current position)
+    let currentX = position.x;
+    let currentY = position.y;
+
     // Handle horizontal resize
     if (resizeDirection.includes('e')) {
-      updates.width = Math.max(MIN_WIDTH, resizeStartRef.current.width + deltaX);
+      // Resizing from right edge - constrain width to stay within screen
+      const maxWidth = window.innerWidth - position.x;
+      updates.width = Math.max(MIN_WIDTH, Math.min(maxWidth, resizeStartRef.current.width + deltaX));
     } else if (resizeDirection.includes('w')) {
+      // Resizing from left edge - adjust position and width
       const newWidth = Math.max(MIN_WIDTH, resizeStartRef.current.width - deltaX);
-      if (newWidth !== resizeStartRef.current.width) {
+      const widthChange = resizeStartRef.current.width - newWidth;
+      const newX = position.x + widthChange;
+
+      // Ensure widget doesn't go off left edge
+      if (newX >= 0) {
         updates.width = newWidth;
-        updates.x = position.x + (resizeStartRef.current.width - newWidth);
+        updates.x = newX;
+        currentX = newX;
       }
     }
 
     // Handle vertical resize
     if (resizeDirection.includes('s')) {
-      updates.height = Math.max(MIN_HEIGHT, resizeStartRef.current.height + deltaY);
+      // Resizing from bottom edge - constrain height to stay within screen
+      const maxHeight = window.innerHeight - position.y;
+      updates.height = Math.max(MIN_HEIGHT, Math.min(maxHeight, resizeStartRef.current.height + deltaY));
     } else if (resizeDirection.includes('n')) {
+      // Resizing from top edge - adjust position and height
       const newHeight = Math.max(MIN_HEIGHT, resizeStartRef.current.height - deltaY);
-      if (newHeight !== resizeStartRef.current.height) {
+      const heightChange = resizeStartRef.current.height - newHeight;
+      const newY = position.y + heightChange;
+
+      // Ensure widget doesn't go off top edge
+      if (newY >= 0) {
         updates.height = newHeight;
-        updates.y = position.y + (resizeStartRef.current.height - newHeight);
+        updates.y = newY;
+        currentY = newY;
+      }
+    }
+
+    // Final validation: ensure widget stays fully on screen
+    if (updates.width !== undefined || updates.x !== undefined) {
+      const finalX = updates.x ?? currentX;
+      const finalWidth = updates.width ?? position.width;
+
+      // Clamp width to prevent right edge going off screen
+      if (finalX + finalWidth > window.innerWidth) {
+        updates.width = window.innerWidth - finalX;
+      }
+    }
+
+    if (updates.height !== undefined || updates.y !== undefined) {
+      const finalY = updates.y ?? currentY;
+      const finalHeight = updates.height ?? position.height;
+
+      // Clamp height to prevent bottom edge going off screen
+      if (finalY + finalHeight > window.innerHeight) {
+        updates.height = window.innerHeight - finalY;
       }
     }
 
     if (Object.keys(updates).length > 0) {
       onPositionChange(updates);
     }
-  }, [isResizing, resizeDirection, position.x, position.y, onPositionChange]);
+  }, [isResizing, resizeDirection, position.x, position.y, position.width, position.height, onPositionChange]);
 
   const handleResizeEnd = useCallback(() => {
     setIsResizing(false);
@@ -411,7 +438,7 @@ export default function WidgetContainer({
         // TV: Always show focus indicator
         outline: IS_TV_BUILD && isFocused ? '2px solid #00aaff' : 'none',
         outlineOffset: '2px',
-        transition: (isMinimized || savedPosition) && !isResizing && !isDragging ? 'all 0.3s ease' : 'none',
+        transition: !isResizing && !isDragging ? 'all 0.3s ease' : 'none',
       }}
       onFocus={() => IS_TV_BUILD && setIsFocused(true)}
       onBlur={() => IS_TV_BUILD && setIsFocused(false)}
@@ -434,7 +461,7 @@ export default function WidgetContainer({
             {/* Minimize/Restore Button */}
             <Pressable
               style={styles.controlButton}
-              onPress={isMinimized ? handleRestore : handleMinimize}
+              onPress={handleToggleMinimize}
             >
               {isMinimized ? (
                 <Maximize2 size={14} color={colors.text} />

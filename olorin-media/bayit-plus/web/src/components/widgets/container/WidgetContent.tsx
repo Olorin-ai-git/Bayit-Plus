@@ -70,6 +70,7 @@ export function WidgetContent({
               title={widget.title}
               isLive={true}
               autoPlay={!isMuted}
+              isWidget={true}
             />
           </div>
         );
@@ -89,6 +90,7 @@ export function WidgetContent({
               title={widget.title}
               isLive={false}
               autoPlay={!isMuted}
+              isWidget={true}
             />
           </div>
         );

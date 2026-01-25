@@ -127,15 +127,23 @@ export default function AudioPlayer({
   }, [])
 
   const handleSeek = useCallback((newTime: number) => {
-    setCurrentTime(newTime)
-    if (audioRef.current) {
-      audioRef.current.currentTime = newTime
+    // Validate that newTime is finite and within valid range
+    if (!isFinite(newTime) || newTime < 0) {
+      return
+    }
+
+    if (audioRef.current && audioRef.current.duration && isFinite(audioRef.current.duration)) {
+      const clampedTime = Math.min(Math.max(0, newTime), audioRef.current.duration)
+      audioRef.current.currentTime = clampedTime
+      setCurrentTime(clampedTime)
     }
   }, [])
 
   const skip = useCallback((seconds: number) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime += seconds
+    if (audioRef.current && audioRef.current.duration && isFinite(audioRef.current.duration)) {
+      const newTime = audioRef.current.currentTime + seconds
+      const clampedTime = Math.min(Math.max(0, newTime), audioRef.current.duration)
+      audioRef.current.currentTime = clampedTime
     }
   }, [])
 

@@ -112,6 +112,7 @@ export interface WidgetClientState {
   isVisible: boolean;
   isMinimized: boolean;
   position: WidgetPosition;
+  savedPosition?: { x: number; y: number; width: number; height: number };
 }
 
 export interface WidgetWithState extends Widget {
@@ -178,8 +179,8 @@ export function formDataToCreateRequest(data: WidgetFormData): WidgetCreateReque
 export const DEFAULT_WIDGET_POSITION: WidgetPosition = {
   x: 20,
   y: 100,
-  width: 640,
-  height: 360,
+  width: 630,
+  height: 230,
   z_index: 100,
 };
 

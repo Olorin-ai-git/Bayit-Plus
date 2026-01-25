@@ -35,6 +35,7 @@ export default function VideoPlayer({
   chaptersLoading = false,
   initialSeekTime,
   onShowUpgrade,
+  isWidget = false,
 }: VideoPlayerProps) {
   const { t, i18n } = useTranslation()
   const user = useAuthStore((s) => s.user)
@@ -180,6 +181,7 @@ export default function VideoPlayer({
     isLive,
     containerRef,
     videoRef,
+    isWidget,
     party,
     showPartyPanel,
     setShowCreateModal,
@@ -261,6 +263,7 @@ export default function VideoPlayer({
         isTTSPlaying={isTTSPlaying}
         usageStats={usageStats}
         loading={state.loading}
+        isWidget={isWidget}
       />
 
       <VideoPlayerPanels

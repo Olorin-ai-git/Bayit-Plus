@@ -172,6 +172,13 @@ export default function LiveSubtitleControls({
         isConnecting={status === 'connecting'}
         isPremium={isPremium}
         onPress={handleToggle}
+        tooltip={
+          enabled
+            ? t('subtitles.translateActive', 'Live Translation Active')
+            : isPremium
+            ? t('subtitles.clickToEnable', 'Click to enable live translation')
+            : t('subtitles.premiumRequired', 'Premium subscription required')
+        }
       />
 
       {error && (

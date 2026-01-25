@@ -31,6 +31,7 @@ export interface VideoPlayerProps {
   chaptersLoading?: boolean
   initialSeekTime?: number
   onShowUpgrade?: () => void
+  isWidget?: boolean
 }
 
 export interface PlayerState {

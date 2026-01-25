@@ -139,10 +139,34 @@ export default function WidgetManager() {
 
   // Debounced position save
   const savePosition = useCallback(async (widgetId: string, position: Partial<WidgetPosition>) => {
+    // Validate position values before sending to API
+    if (
+      position.x === undefined ||
+      position.y === undefined ||
+      !isFinite(position.x) ||
+      !isFinite(position.y) ||
+      position.x < 0 ||
+      position.y < 0
+    ) {
+      logger.warn('Invalid widget position values, skipping save', { widgetId, position, component: 'WidgetManager' });
+      return;
+    }
+
+    // Validate width/height if provided
+    if (position.width !== undefined && (!isFinite(position.width) || position.width <= 0)) {
+      logger.warn('Invalid widget width, skipping save', { widgetId, position, component: 'WidgetManager' });
+      return;
+    }
+
+    if (position.height !== undefined && (!isFinite(position.height) || position.height <= 0)) {
+      logger.warn('Invalid widget height, skipping save', { widgetId, position, component: 'WidgetManager' });
+      return;
+    }
+
     try {
       await adminWidgetsService.updateWidgetPosition(widgetId, {
-        x: position.x!,
-        y: position.y!,
+        x: position.x,
+        y: position.y,
         width: position.width,
         height: position.height,
       });

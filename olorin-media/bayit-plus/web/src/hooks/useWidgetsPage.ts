@@ -13,7 +13,7 @@ export function useWidgetsPage() {
   const [showWidgetForm, setShowWidgetForm] = useState(false);
 
   // Get local state to check which widgets are hidden
-  const { localState, showWidget, closeWidget, updatePosition } = useWidgetStore();
+  const { localState, showWidget, closeWidget, updatePosition, toggleMinimize } = useWidgetStore();
 
   // Intro video state
   const [showIntroVideo, setShowIntroVideo] = useState(false);
@@ -53,15 +53,30 @@ export function useWidgetsPage() {
 
   // Reset widget position to defaults
   const handleResetPosition = useCallback((widgetId: string) => {
+    logger.debug('Reset position clicked', 'useWidgetsPage', { widgetId });
+
+    // If widget is minimized, un-minimize it first
+    const state = localState[widgetId];
+    if (state?.isMinimized) {
+      logger.debug('Widget is minimized, un-minimizing first', 'useWidgetsPage', { widgetId });
+      toggleMinimize(widgetId);
+    }
+
     const widget = widgets.find(w => w.id === widgetId);
     const defaultPosition = widget?.position || DEFAULT_WIDGET_POSITION;
+
+    logger.debug('Resetting position to defaults', 'useWidgetsPage', {
+      widgetId,
+      defaultPosition
+    });
+
     updatePosition(widgetId, {
       x: defaultPosition.x,
       y: defaultPosition.y,
       width: defaultPosition.width,
       height: defaultPosition.height,
     });
-  }, [widgets, updatePosition]);
+  }, [widgets, localState, updatePosition, toggleMinimize]);
 
   const handleCreateWidget = () => {
     logger.debug('Create button clicked', 'useWidgetsPage');

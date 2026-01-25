@@ -3,6 +3,7 @@
  * Barrel exports for all watch page components
  */
 
+export * from './AuthRequiredOverlay';
 export * from './BackButton';
 export * from './ContentActions';
 export * from './ContentMetadata';

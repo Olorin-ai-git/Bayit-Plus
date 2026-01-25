@@ -53,7 +53,9 @@
     "expand": "הרחב",
     "collapse": "כווץ",
     "upgrade": "שדרג לפרימיום",
-    "skip": "דלג"
+    "skip": "דלג",
+    "thisContent": "תוכן זה",
+    "backToHome": "חזרה לדף הבית"
   },
   "demo": {
     "banner": "מצב הדמו",
@@ -3659,5 +3661,11 @@
       "selectLanguage": "בחר שפה זו",
       "deselectLanguage": "בטל בחירת שפה זו"
     }
+  },
+  "auth": {
+    "loginRequired": "נדרשת התחברות",
+    "loginToWatch": "אנא התחבר כדי לצפות ב{{title}}",
+    "login": "התחבר",
+    "signUp": "הרשם"
   }
 }

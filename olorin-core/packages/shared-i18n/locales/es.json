@@ -52,7 +52,9 @@
     "clearSelection": "Limpiar",
     "expand": "Expandir",
     "collapse": "Contraer",
-    "skip": "Omitir"
+    "skip": "Omitir",
+    "thisContent": "este contenido",
+    "backToHome": "Volver al inicio"
   },
   "demo": {
     "banner": "MODO DEMOSTRACIÓN",
@@ -3554,5 +3556,11 @@
       "selectLanguage": "Seleccionar este idioma",
       "deselectLanguage": "Deseleccionar este idioma"
     }
+  },
+  "auth": {
+    "loginRequired": "Inicio de sesión requerido",
+    "loginToWatch": "Por favor inicia sesión para ver {{title}}",
+    "login": "Iniciar sesión",
+    "signUp": "Registrarse"
   }
 }
