@@ -17,13 +17,13 @@ import { useNavigation } from '@react-navigation/native';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { StatCard } from '../../components/admin/StatCard';
 import { marketingService, MarketingMetrics, RecentCampaign, AudienceSegment } from '../../services/adminApi';
-import { useModal } from '../../contexts/ModalContext';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { colors } from '../../theme';
 
 export const MarketingDashboardScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
-  const { showError } = useModal();
+  const notifications = useNotifications();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,12 +45,12 @@ export const MarketingDashboardScreen: React.FC = () => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : t('admin.marketing.loadError', 'Failed to load marketing data');
       setError(errorMessage);
-      showError(errorMessage);
+      notifications.showError(errorMessage);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [t, showError]);
+  }, [t, notifications]);
 
   useEffect(() => {
     loadData();
