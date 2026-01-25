@@ -7,10 +7,11 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
-import { GlassCard, GlassButton, GlassInput, GlassModal, GlassSelect, GlassToggle } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassInput, GlassModal, GlassSelect, GlassToggle, GlassPageHeader } from '@bayit/shared/ui';
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import { Plus, Edit2, Trash2, FolderOpen, AlertCircle, X, Upload, XCircle } from 'lucide-react';
 import { useDirection } from '@/hooks/useDirection';
-import { useModal } from '@/contexts/ModalContext';
+import { useNotifications } from '@olorin/glass-ui/hooks';;
 import { adminButtonStyles } from '@olorin/design-tokens';
 import * as uploadsService from '@/services/uploadsService';
 import GlassQueue from '@/components/admin/GlassQueue';
@@ -27,7 +28,7 @@ type MonitoredFolder = uploadsService.MonitoredFolder;
 const UploadsPage: React.FC = () => {
   const { t } = useTranslation();
   const { isRTL, flexDirection, textAlign } = useDirection();
-  const { showConfirm } = useModal();
+  const notifications = useNotifications();
 
   const [loading, setLoading] = useState(true);
   const [triggeringUpload, setTriggeringUpload] = useState(false);
@@ -195,35 +196,36 @@ const UploadsPage: React.FC = () => {
       return;
     }
 
-    showConfirm(
-      t('admin.uploads.clearQueueConfirmMessage', {
+    notifications.show({
+      level: 'warning',
+      title: t('admin.uploads.clearQueueConfirmTitle'),
+      message: t('admin.uploads.clearQueueConfirmMessage', {
         count: queueStats.queued + queueStats.processing
       }),
-      async () => {
-        try {
-          setClearingQueue(true);
-          setError(null);
+      dismissable: true,
+      action: {
+        label: t('admin.uploads.clearQueue'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            setClearingQueue(true);
+            setError(null);
 
-          const result = await uploadsService.clearUploadQueue();
-          logger.info('✅ Upload queue cleared', 'UploadsPage', result);
+            const result = await uploadsService.clearUploadQueue();
+            logger.info('✅ Upload queue cleared', 'UploadsPage', result);
 
-          // Refresh data
-          await fetchData();
-        } catch (err: any) {
-          logger.error('Failed to clear queue', 'UploadsPage', err);
-          const errorMessage = err?.detail || err?.message || t('admin.uploads.clearQueueFailed');
-          setError(errorMessage);
-        } finally {
-          setClearingQueue(false);
-        }
+            // Refresh data
+            await fetchData();
+          } catch (err: any) {
+            logger.error('Failed to clear queue', 'UploadsPage', err);
+            const errorMessage = err?.detail || err?.message || t('admin.uploads.clearQueueFailed');
+            setError(errorMessage);
+          } finally {
+            setClearingQueue(false);
+          }
+        },
       },
-      {
-        title: t('admin.uploads.clearQueueConfirmTitle'),
-        confirmText: t('admin.uploads.clearQueue'),
-        cancelText: t('common.cancel'),
-        destructive: true,
-      }
-    );
+    });
   };
 
   useEffect(() => {
@@ -310,25 +312,30 @@ const UploadsPage: React.FC = () => {
   };
 
   const handleDeleteFolder = (folder: MonitoredFolder) => {
-    showConfirm(
-      t('admin.uploads.confirmDelete', `Delete folder "${folder.name || folder.path}"?`),
-      async () => {
-        try {
-          // Delete via API
-          await uploadsService.deleteMonitoredFolder(folder.id);
-          logger.info('Deleted monitored folder', 'UploadsPage', { id: folder.id });
+    notifications.show({
+      level: 'warning',
+      message: t('admin.uploads.confirmDelete', `Delete folder "${folder.name || folder.path}"?`),
+      dismissable: true,
+      action: {
+        label: t('common.delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            // Delete via API
+            await uploadsService.deleteMonitoredFolder(folder.id);
+            logger.info('Deleted monitored folder', 'UploadsPage', { id: folder.id });
 
-          // Clear error and refresh data
-          setError(null);
-          await fetchData();
+            // Clear error and refresh data
+            setError(null);
+            await fetchData();
 
-        } catch (err) {
-          logger.error('Error deleting folder', 'UploadsPage', err);
-          setError(err instanceof Error ? err.message : 'Failed to delete folder');
-        }
+          } catch (err) {
+            logger.error('Error deleting folder', 'UploadsPage', err);
+            setError(err instanceof Error ? err.message : 'Failed to delete folder');
+          }
+        },
       },
-      { destructive: true, confirmText: t('common.delete') }
-    );
+    });
   };
 
   const handleTriggerUpload = async () => {
@@ -369,53 +376,58 @@ const UploadsPage: React.FC = () => {
     );
   }
 
+  const pageConfig = ADMIN_PAGE_CONFIG.uploads;
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.nav.uploads')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
-            {t('admin.uploads.systemInfoText')}
-          </Text>
-        </View>
-        <View style={[styles.actionButtons, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <GlassButton
-            title={triggeringUpload ? t('common.loading') : t('admin.uploads.triggerUpload')}
-            variant="secondary"
-            icon={triggeringUpload ? null : <Upload size={18} color="#3B82F6" />}
-            onPress={handleTriggerUpload}
-            disabled={triggeringUpload}
-            style={[adminButtonStyles.infoButton, triggeringUpload && { opacity: 0.7 }]}
-            textStyle={adminButtonStyles.buttonText}
-          >
-            {triggeringUpload && (
-              <ActivityIndicator size="small" color="#3B82F6" style={{ marginRight: spacing.sm }} />
-            )}
-          </GlassButton>
-          <GlassButton
-            title={clearingQueue ? t('common.loading') : t('admin.uploads.clearQueue')}
-            variant="destructive"
-            icon={clearingQueue ? null : <XCircle size={18} color="#EF4444" />}
-            onPress={handleClearQueue}
-            disabled={clearingQueue || (queueStats.queued === 0 && queueStats.processing === 0)}
-            style={[adminButtonStyles.dangerButton, clearingQueue && { opacity: 0.7 }]}
-            textStyle={adminButtonStyles.buttonText}
-          >
-            {clearingQueue && (
-              <ActivityIndicator size="small" color="#EF4444" style={{ marginRight: spacing.sm }} />
-            )}
-          </GlassButton>
-          <GlassButton
-            title={t('admin.uploads.addFolder')}
-            variant="secondary"
-            icon={<Plus size={18} color="#22C55E" />}
-            onPress={handleAddFolder}
-            style={adminButtonStyles.primaryButton}
-            textStyle={adminButtonStyles.buttonText}
-          />
-        </View>
-      </View>
+      <GlassPageHeader
+        title={t('admin.nav.uploads')}
+        subtitle={t('admin.uploads.systemInfoText')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        isRTL={isRTL}
+        action={
+          <View style={[styles.actionButtons, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <GlassButton
+              title={triggeringUpload ? t('common.loading') : t('admin.uploads.triggerUpload')}
+              variant="secondary"
+              icon={triggeringUpload ? null : <Upload size={18} color="#3B82F6" />}
+              onPress={handleTriggerUpload}
+              disabled={triggeringUpload}
+              style={[adminButtonStyles.infoButton, triggeringUpload && { opacity: 0.7 }]}
+              textStyle={adminButtonStyles.buttonText}
+            >
+              {triggeringUpload && (
+                <ActivityIndicator size="small" color="#3B82F6" style={{ marginRight: spacing.sm }} />
+              )}
+            </GlassButton>
+            <GlassButton
+              title={clearingQueue ? t('common.loading') : t('admin.uploads.clearQueue')}
+              variant="destructive"
+              icon={clearingQueue ? null : <XCircle size={18} color="#EF4444" />}
+              onPress={handleClearQueue}
+              disabled={clearingQueue || (queueStats.queued === 0 && queueStats.processing === 0)}
+              style={[adminButtonStyles.dangerButton, clearingQueue && { opacity: 0.7 }]}
+              textStyle={adminButtonStyles.buttonText}
+            >
+              {clearingQueue && (
+                <ActivityIndicator size="small" color="#EF4444" style={{ marginRight: spacing.sm }} />
+              )}
+            </GlassButton>
+            <GlassButton
+              title={t('admin.uploads.addFolder')}
+              variant="secondary"
+              icon={<Plus size={18} color="#22C55E" />}
+              onPress={handleAddFolder}
+              style={adminButtonStyles.primaryButton}
+              textStyle={adminButtonStyles.buttonText}
+            />
+          </View>
+        }
+      />
 
       {/* Error Message */}
       {error && (
