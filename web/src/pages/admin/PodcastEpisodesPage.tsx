@@ -3,12 +3,13 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, ChevronLeft, Languages, RefreshCw } from 'lucide-react'
-import { GlassInput, GlassSelect, GlassButton } from '@bayit/shared/ui'
+import { GlassInput, GlassSelect, GlassButton, GlassPageHeader } from '@bayit/shared/ui'
 import { GlassTable } from '@bayit/shared/ui/web'
 import { adminPodcastsService, adminPodcastEpisodesService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
 import { useNotifications } from '@olorin/glass-ui/hooks'
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import logger from '@/utils/logger'
 import type { PodcastEpisode, PaginatedResponse, TranslationStatus } from '@/types/content'
 
@@ -265,6 +266,9 @@ export default function PodcastEpisodesPage() {
     },
   ]
 
+  const pageConfig = ADMIN_PAGE_CONFIG['podcast-episodes'];
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <GlassButton
@@ -277,36 +281,39 @@ export default function PodcastEpisodesPage() {
         <Text style={styles.breadcrumbText}>{t('admin.common.back')} {t('admin.titles.podcasts')}</Text>
       </GlassButton>
 
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{podcastTitle}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
-            {t('admin.podcasts.episodesSubtitle', { defaultValue: 'Manage episodes' })}
-          </Text>
-        </View>
-        <View style={[styles.headerActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <GlassButton
-            variant="secondary"
-            onPress={handleTranslateAll}
-            disabled={bulkTranslating}
-            icon={<Languages size={18} color={colors.text} />}
-            accessibilityLabel={t('admin.podcasts.translateAllEpisodes', { defaultValue: 'Translate all episodes' })}
-          >
-            {bulkTranslating ? t('common.loading') : t('admin.podcasts.translateAll', 'Translate All')}
-          </GlassButton>
-          <GlassButton
-            variant="primary"
-            onPress={() => {
-              setEditingId('new')
-              setEditData({ episode_number: items.length + 1 })
-            }}
-            icon={<Plus size={18} color={colors.text} />}
-            accessibilityLabel={t('admin.actions.newEpisode', { defaultValue: 'Create new episode' })}
-          >
-            {t('admin.actions.new', { defaultValue: 'New' })}
-          </GlassButton>
-        </View>
-      </View>
+      <GlassPageHeader
+        title={podcastTitle}
+        subtitle={t('admin.podcastEpisodes.subtitle')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        badge={pagination.total}
+        isRTL={isRTL}
+        action={
+          <View style={[styles.headerActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <GlassButton
+              variant="secondary"
+              onPress={handleTranslateAll}
+              disabled={bulkTranslating}
+              icon={<Languages size={18} color="white" />}
+              accessibilityLabel={t('admin.podcasts.translateAllEpisodes', { defaultValue: 'Translate all episodes' })}
+            >
+              {bulkTranslating ? t('common.loading') : t('admin.podcasts.translateAll', 'Translate All')}
+            </GlassButton>
+            <GlassButton
+              variant="primary"
+              onPress={() => {
+                setEditingId('new')
+                setEditData({ episode_number: items.length + 1 })
+              }}
+              icon={<Plus size={18} color="white" />}
+              accessibilityLabel={t('admin.actions.newEpisode', { defaultValue: 'Create new episode' })}
+            >
+              {t('admin.actions.new', { defaultValue: 'New' })}
+            </GlassButton>
+          </View>
+        }
+      />
 
       {error && (
         <View style={styles.errorContainer}>

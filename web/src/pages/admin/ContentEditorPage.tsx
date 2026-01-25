@@ -3,10 +3,11 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, AlertCircle, Save, CheckCircle } from 'lucide-react'
-import { GlassView, GlassInput, GlassButton, GlassCheckbox, GlassTextarea } from '@bayit/shared/ui'
+import { GlassView, GlassInput, GlassButton, GlassCheckbox, GlassTextarea, GlassPageHeader } from '@bayit/shared/ui'
 import { adminContentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import logger from '@/utils/logger'
 import { ImageUploader } from '@/components/admin/ImageUploader'
 import type { Content } from '@/types/content'
@@ -15,7 +16,7 @@ export default function ContentEditorPage() {
   const navigate = useNavigate()
   const { contentId } = useParams<{ contentId?: string }>()
   const { t } = useTranslation()
-  const { textAlign, flexDirection } = useDirection()
+  const { textAlign, flexDirection, isRTL } = useDirection()
 
   const [isLoading, setIsLoading] = useState(!!contentId)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -122,30 +123,30 @@ export default function ContentEditorPage() {
     )
   }
 
+  const pageConfig = ADMIN_PAGE_CONFIG['content-editor']
+  const IconComponent = pageConfig.icon
+
   return (
     <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
-      {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
-        <GlassButton
-          title=""
-          onPress={() => navigate('/admin/content')}
-          variant="ghost"
-          icon={<ArrowLeft size={20} color={colors.primary} />}
-          style={styles.backButton}
-        />
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.pageTitle, { textAlign }]}>
-            {isEditing
-              ? t('admin.content.editor.pageTitle', { defaultValue: 'Edit Content' })
-              : t('admin.content.editor.pageTitleNew', { defaultValue: 'Add New Content' })}
-          </Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
-            {isEditing
-              ? t('admin.content.editSubtitle', { defaultValue: 'Update the content details and media' })
-              : t('admin.content.newSubtitle', { defaultValue: 'Create a new movie, series, or other video content' })}
-          </Text>
-        </View>
-      </View>
+      {/* Page Header */}
+      <GlassPageHeader
+        title={isEditing
+          ? t('admin.content.editor.pageTitle', { defaultValue: 'Edit Content' })
+          : t('admin.content.editor.pageTitleNew', { defaultValue: 'Add New Content' })}
+        subtitle={t('admin.contentEditor.subtitle')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        isRTL={isRTL}
+        action={
+          <GlassButton
+            title=""
+            onPress={() => navigate('/admin/content')}
+            variant="ghost"
+            icon={<ArrowLeft size={20} color="white" />}
+          />
+        }
+      />
 
       {/* Error Message */}
       {error && !isLoading && (

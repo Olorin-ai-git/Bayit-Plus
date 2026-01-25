@@ -94,7 +94,7 @@ const FlowCard: React.FC<FlowCardProps> = ({
   const { isRTL, textAlign } = useDirection();
   const iconConfig = FLOW_ICONS[flow.name] || {
     icon: "▶️",
-    colors: [colors.primary, colors.primaryDark],
+    colors: [colors.primary.DEFAULT, colors.primaryDark],
   };
   const isSystem = flow.flow_type === "system";
 
@@ -301,7 +301,7 @@ export const FlowsScreenMobile: React.FC = () => {
   if (loading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
         <Text style={styles.loadingText}>{t("common.loading")}</Text>
       </SafeAreaView>
     );
@@ -317,7 +317,7 @@ export const FlowsScreenMobile: React.FC = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={colors.primary}
+            tintColor={colors.primary.DEFAULT}
             colors={[colors.primary]}
           />
         }
@@ -621,7 +621,7 @@ const styles = StyleSheet.create({
   },
   activeFlowLabel: {
     fontSize: 12,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -638,7 +638,7 @@ const styles = StyleSheet.create({
   },
   startButton: {
     flex: 1,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.md,
     alignItems: "center",
@@ -710,7 +710,7 @@ const styles = StyleSheet.create({
   },
   systemBadgeText: {
     fontSize: 10,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: "600",
     textTransform: "uppercase",
   },
@@ -731,7 +731,7 @@ const styles = StyleSheet.create({
   },
   featureText: {
     fontSize: 11,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   chevron: {
     fontSize: 24,
@@ -751,11 +751,11 @@ const styles = StyleSheet.create({
   },
   createButtonIcon: {
     fontSize: 20,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   createButtonText: {
     fontSize: 14,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     fontWeight: "500",
   },
   modalOverlay: {
@@ -813,7 +813,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   modalStartButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.md,
     alignItems: "center",

@@ -10,9 +10,10 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  Alert,
+  StyleSheet,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { DataTable, Column } from '../../components/admin/DataTable';
 import { auditLogsService, AuditLogsFilter } from '../../services/adminApi';
@@ -23,6 +24,7 @@ import { getActivityIcon } from '../../utils/adminConstants';
 
 export const AuditLogsScreen: React.FC = () => {
   const { t } = useTranslation();
+  const notifications = useNotifications();
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,7 +69,7 @@ export const AuditLogsScreen: React.FC = () => {
   const handleExport = async () => {
     try {
       await auditLogsService.exportLogs(filters);
-      Alert.alert(t('admin.logs.exported', 'Exported'), t('admin.logs.exportedMessage', 'Audit logs have been exported'));
+      notifications.showSuccess(t('admin.logs.exportedMessage', 'Audit logs have been exported'), t('admin.logs.exported', 'Exported'));
     } catch (error) {
       console.error('Error exporting logs:', error);
     }
@@ -314,5 +316,166 @@ export const AuditLogsScreen: React.FC = () => {
   );
 };
 
+const styles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '90%',
+    maxWidth: 500,
+    backgroundColor: colors.backgroundLight,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  modalTitle: {
+    fontSize: fontSize.xl,
+    color: colors.text,
+    fontWeight: 'bold',
+    marginBottom: spacing.lg,
+  },
+  filterSection: {
+    marginBottom: spacing.lg,
+  },
+  filterLabel: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
+  },
+  filterOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
+  },
+  filterOption: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.backgroundLighter,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  filterOptionActive: {
+    backgroundColor: colors.primary + '30',
+    borderColor: colors.primary,
+  },
+  filterOptionText: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    textTransform: 'capitalize',
+  },
+  filterOptionTextActive: {
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  filterInput: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.backgroundLighter,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  dateInputs: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  dateInput: {
+    flex: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.backgroundLighter,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.sm,
+    marginTop: spacing.lg,
+  },
+  clearButton: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.backgroundLighter,
+    borderRadius: borderRadius.md,
+  },
+  clearButtonText: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+  },
+  applyButton: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.md,
+  },
+  applyButtonText: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+    fontWeight: '600',
+  },
+  detailsModal: {
+    width: '90%',
+    maxWidth: 600,
+    backgroundColor: colors.backgroundLight,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  detailsList: {
+    marginBottom: spacing.lg,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+  },
+  detailLabel: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+  },
+  detailValue: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+    fontFamily: 'monospace',
+  },
+  detailsSection: {
+    marginTop: spacing.md,
+  },
+  jsonBox: {
+    backgroundColor: colors.backgroundLighter,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    marginTop: spacing.sm,
+  },
+  jsonText: {
+    fontSize: fontSize.xs,
+    color: colors.textSecondary,
+    fontFamily: 'monospace',
+  },
+  closeButton: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.backgroundLighter,
+    borderRadius: borderRadius.md,
+  },
+  closeButtonText: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+});
 
 export default AuditLogsScreen;

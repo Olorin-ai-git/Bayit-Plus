@@ -1,540 +1,676 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Plus, Edit, Trash2, Users } from 'lucide-react';
-import { GlassButton, GlassModal, GlassCheckbox, GlassInput } from '@bayit/shared/ui';
-import { GlassTable } from '@bayit/shared/ui/web';
-import StatCard from '@/components/admin/StatCard';
+import { RefreshCw, Filter, X } from 'lucide-react';
 import { subscriptionsService } from '@/services/adminApi';
-import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
+import { GlassCard, GlassButton, GlassInput, GlassModal, GlassPageHeader } from '@bayit/shared/ui';
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import { useDirection } from '@/hooks/useDirection';
+import { useNotifications } from '@olorin/glass-ui/hooks';
+import StatCard from '@/components/admin/StatCard';
 import logger from '@/utils/logger';
 
 interface User {
-  name: string;
-  email: string;
   id: string;
+  name?: string;
+  email?: string;
 }
 
 interface Subscription {
   id: string;
   user_id: string;
-  user: User;
   plan: string;
   amount: number;
-  next_billing: string;
   status: 'active' | 'paused' | 'cancelled' | 'expired';
+  next_billing?: string;
+  created_at?: string;
 }
 
-interface Plan {
-  id: string;
-  name: string;
-  name_he?: string;
-  slug: string;
-  price: number;
-  subscribers: number;
+interface SubscriptionWithUser extends Subscription {
+  user: User;
 }
 
-interface Pagination {
-  page: number;
-  pageSize: number;
+interface SubscriptionsStats {
   total: number;
+  active: number;
+  paused: number;
+  cancelled: number;
+  expired: number;
+  revenue_this_month: number;
 }
 
-const statusColors: Record<string, { bg: string; text: string; labelKey: string }> = {
-  active: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', labelKey: 'admin.subscriptions.status.active' },
-  paused: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B', labelKey: 'admin.subscriptions.status.paused' },
-  cancelled: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', labelKey: 'admin.subscriptions.status.cancelled' },
-  expired: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', labelKey: 'admin.subscriptions.status.expired' },
-};
-
-const planColors: Record<string, { bg: string; text: string }> = {
-  Basic: { bg: 'rgba(107, 33, 168, 0.3)', text: '#3B82F6' },
-  basic: { bg: 'rgba(107, 33, 168, 0.3)', text: '#3B82F6' },
-  Premium: { bg: 'rgba(139, 92, 246, 0.2)', text: '#8B5CF6' },
-  premium: { bg: 'rgba(139, 92, 246, 0.2)', text: '#8B5CF6' },
-  Family: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B' },
-  family: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B' },
+const statusColors = {
+  active: { bg: 'rgba(34, 197, 94, 0.1)', text: colors.success.DEFAULT },
+  paused: { bg: 'rgba(251, 191, 36, 0.1)', text: colors.warning },
+  cancelled: { bg: 'rgba(239, 68, 68, 0.1)', text: colors.error.DEFAULT },
+  expired: { bg: 'rgba(107, 114, 128, 0.1)', text: colors.textMuted },
 };
 
 export default function SubscriptionsListPage() {
-  const { t, i18n } = useTranslation();
-  const { isRTL } = useDirection();
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
-  const [plans, setPlans] = useState<Plan[]>([]);
+  const { t } = useTranslation();
+  const { isRTL, textAlign, flexDirection } = useDirection();
+  const notifications = useNotifications();
+
+  const [subscriptions, setSubscriptions] = useState<SubscriptionWithUser[]>([]);
+  const [stats, setStats] = useState<SubscriptionsStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 });
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [addModalOpen, setAddModalOpen] = useState(false);
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [errorModalOpen, setErrorModalOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState('');
-  const [newUserEmail, setNewUserEmail] = useState('');
-  const [durationDays, setDurationDays] = useState(30);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedSubscription, setSelectedSubscription] = useState<SubscriptionWithUser | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const pageSize = 20;
 
-  const loadData = useCallback(async () => {
-    setLoading(true);
+  const loadSubscriptions = useCallback(async () => {
     try {
-      const [subsData, plansData] = await Promise.all([
-        subscriptionsService.getSubscriptions({
-          page: pagination.page,
-          page_size: pagination.pageSize,
-        }),
-        subscriptionsService.getPlans(),
-      ]);
+      setError(null);
+      const filters: any = {
+        page,
+        page_size: pageSize,
+      };
 
-      // Transform data to match expected structure
-      const transformedSubs = (subsData.items || []).map(item => ({
-        ...item,
-        amount: item.amount || 0,
-        next_billing: item.end_date || item.next_billing || new Date().toISOString(),
-      }));
+      if (searchQuery) filters.search = searchQuery;
+      if (statusFilter !== 'all') filters.status = statusFilter;
 
-      setSubscriptions(transformedSubs);
-      setPlans(plansData || []);
-      setPagination((prev) => ({ ...prev, total: subsData.total || 0 }));
-    } catch (error) {
-      logger.error('Failed to load subscriptions', 'SubscriptionsListPage', error);
+      const response = await subscriptionsService.getSubscriptions(filters);
+      const items = Array.isArray(response) ? response : response?.items || [];
+      const totalCount = Array.isArray(response) ? response.length : response?.total || 0;
+
+      // Filter out any null/undefined items
+      setSubscriptions(items.filter((item: any) => item != null));
+      setTotal(totalCount);
+
+      // Calculate stats from data
+      const statsData: SubscriptionsStats = {
+        total: totalCount,
+        active: items.filter((s: SubscriptionWithUser) => s?.status === 'active').length,
+        paused: items.filter((s: SubscriptionWithUser) => s?.status === 'paused').length,
+        cancelled: items.filter((s: SubscriptionWithUser) => s?.status === 'cancelled').length,
+        expired: items.filter((s: SubscriptionWithUser) => s?.status === 'expired').length,
+        revenue_this_month: items
+          .filter((s: SubscriptionWithUser) => s?.status === 'active')
+          .reduce((sum: number, s: SubscriptionWithUser) => sum + (s?.amount || 0), 0),
+      };
+      setStats(statsData);
+    } catch (err: any) {
+      const message = err?.message || 'Failed to load subscriptions';
+      setError(message);
+      logger.error('Failed to load subscriptions', 'SubscriptionsListPage', err);
+      notifications.showError(message);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  }, [pagination.page, pagination.pageSize]);
+  }, [page, pageSize, searchQuery, statusFilter]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    loadSubscriptions();
+  }, [loadSubscriptions]);
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedIds(new Set(subscriptions.map(s => s.id)));
-    } else {
-      setSelectedIds(new Set());
-    }
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadSubscriptions();
   };
 
-  const handleSelectOne = (id: string, checked: boolean) => {
-    const newSelected = new Set(selectedIds);
-    if (checked) {
-      newSelected.add(id);
-    } else {
-      newSelected.delete(id);
-    }
-    setSelectedIds(newSelected);
+  const handleSearch = (text: string) => {
+    setSearchQuery(text);
+    setPage(1);
   };
 
-  const handleEdit = () => {
-    if (selectedIds.size !== 1) {
-      setErrorMessage(t('admin.subscriptions.selectOneToEdit'));
-      setErrorModalOpen(true);
-      return;
-    }
-    const sub = subscriptions.find(s => selectedIds.has(s.id));
-    if (sub) {
-      setSelectedSubscription(sub);
-      setSelectedPlan(sub.plan);
-      setEditModalOpen(true);
-    }
+  const handleStatusFilter = (status: string) => {
+    setStatusFilter(status);
+    setPage(1);
+    setShowFilters(false);
   };
 
-  const handleAdd = () => {
-    setNewUserEmail('');
-    setSelectedPlan('');
-    setDurationDays(30);
-    setAddModalOpen(true);
+  const handleViewDetails = (subscription: SubscriptionWithUser) => {
+    setSelectedSubscription(subscription);
+    setShowDetailsModal(true);
   };
 
-  const handleSaveAdd = async () => {
-    if (!newUserEmail || !selectedPlan) {
-      setErrorMessage(t('admin.subscriptions.fillAllFields'));
-      setErrorModalOpen(true);
-      return;
-    }
-
+  const handlePauseSubscription = async (id: string) => {
     try {
-      const user = subscriptions.find(s => s.user.email === newUserEmail);
-      if (!user) {
-        setErrorMessage(t('admin.subscriptions.userNotFound'));
-        setErrorModalOpen(true);
-        return;
-      }
-
-      await subscriptionsService.createSubscription(user.user_id, selectedPlan, durationDays);
-      setAddModalOpen(false);
-      setNewUserEmail('');
-      setSelectedPlan('');
-      setDurationDays(30);
-      loadData();
-    } catch (error) {
-      logger.error('Failed to create subscription', 'SubscriptionsListPage', error);
-      setErrorMessage(t('common.error'));
-      setErrorModalOpen(true);
+      await subscriptionsService.pauseSubscription(id);
+      notifications.showSuccess(t('admin.subscriptions.pauseSuccess', 'Subscription paused'));
+      loadSubscriptions();
+    } catch (err: any) {
+      logger.error('Failed to pause subscription', 'SubscriptionsListPage', err);
+      notifications.showError(t('admin.subscriptions.pauseFailed', 'Failed to pause subscription'));
     }
   };
 
-  const handleSaveEdit = async () => {
-    if (!selectedSubscription || !selectedPlan) return;
-
+  const handleResumeSubscription = async (id: string) => {
     try {
-      await subscriptionsService.updateSubscriptionPlan(selectedSubscription.user_id, selectedPlan);
-      setEditModalOpen(false);
-      setSelectedIds(new Set());
-      loadData();
-    } catch (error) {
-      logger.error('Failed to update subscription', 'SubscriptionsListPage', error);
+      await subscriptionsService.resumeSubscription(id);
+      notifications.showSuccess(t('admin.subscriptions.resumeSuccess', 'Subscription resumed'));
+      loadSubscriptions();
+    } catch (err: any) {
+      logger.error('Failed to resume subscription', 'SubscriptionsListPage', err);
+      notifications.showError(t('admin.subscriptions.resumeFailed', 'Failed to resume subscription'));
     }
   };
 
-  const handleDelete = () => {
-    if (selectedIds.size === 0) {
-      setErrorMessage(t('admin.subscriptions.selectToDelete'));
-      setErrorModalOpen(true);
-      return;
-    }
-    setDeleteConfirmOpen(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    try {
-      const deletePromises = Array.from(selectedIds).map(id => {
-        const sub = subscriptions.find(s => s.id === id);
-        return sub ? subscriptionsService.deleteSubscription(sub.user_id) : null;
-      });
-
-      await Promise.all(deletePromises.filter(p => p !== null));
-      setDeleteConfirmOpen(false);
-      setSelectedIds(new Set());
-      loadData();
-    } catch (error) {
-      logger.error('Failed to delete subscriptions', 'SubscriptionsListPage', error);
-      setDeleteConfirmOpen(false);
-      setErrorMessage(t('common.error'));
-      setErrorModalOpen(true);
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    const style = statusColors[status] || statusColors.active;
-    return (
-      <View className="px-2 py-1 rounded-full" style={{ backgroundColor: style.bg }}>
-        <Text className="text-xs font-medium" style={{ color: style.text }}>{t(style.labelKey)}</Text>
-      </View>
-    );
-  };
-
-  const getPlanBadge = (plan: string) => {
-    const style = planColors[plan] || { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280' };
-    return (
-      <View className="px-2 py-1 rounded-full" style={{ backgroundColor: style.bg }}>
-        <Text className="text-xs font-medium" style={{ color: style.text }}>{plan}</Text>
-      </View>
-    );
-  };
-
-  const allSelected = subscriptions.length > 0 && selectedIds.size === subscriptions.length;
-  const someSelected = selectedIds.size > 0;
-
-  const columns = [
-    {
-      key: 'select',
-      label: (
-        <GlassCheckbox
-          checked={allSelected}
-          onChange={handleSelectAll}
-        />
-      ),
-      width: 50,
-      render: (_: any, sub: Subscription) => (
-        <GlassCheckbox
-          checked={selectedIds.has(sub.id)}
-          onChange={(checked) => handleSelectOne(sub.id, checked)}
-        />
-      ),
-    },
-    {
-      key: 'user',
-      label: t('admin.subscriptions.columns.user'),
-      render: (user: User) => (
-        <View>
-          <Text className="text-sm font-medium text-white">{user?.name}</Text>
-          <Text className="text-xs text-gray-400">{user?.email}</Text>
-        </View>
-      ),
-    },
-    {
-      key: 'plan',
-      label: t('admin.subscriptions.columns.plan'),
-      render: (plan: string) => getPlanBadge(plan),
-    },
-    {
-      key: 'amount',
-      label: t('admin.subscriptions.columns.price'),
-      render: (amount: number) => (
-        <Text className="text-sm font-medium text-white">${amount}{t('admin.subscriptions.perMonth')}</Text>
-      ),
-    },
-    {
-      key: 'next_billing',
-      label: t('admin.subscriptions.columns.nextBilling'),
-      render: (date: string) => {
-        try {
-          const locale = i18n.language || 'en';
-          const localeMap: Record<string, string> = {
-            'en': 'en-US',
-            'he': 'he-IL',
-            'es': 'es-ES'
-          };
-          return (
-            <Text className="text-sm text-gray-400">
-              {new Date(date).toLocaleDateString(localeMap[locale] || 'en-US')}
-            </Text>
-          );
-        } catch {
-          return <Text className="text-sm text-gray-400">{t('common.invalidDate')}</Text>;
-        }
+  const handleCancelSubscription = async (id: string) => {
+    notifications.show({
+      level: 'warning',
+      message: t('admin.subscriptions.confirmCancel', 'Are you sure you want to cancel this subscription?'),
+      dismissable: true,
+      action: {
+        label: t('common.cancel', 'Cancel'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await subscriptionsService.cancelSubscription(id);
+            notifications.showSuccess(t('admin.subscriptions.cancelSuccess', 'Subscription cancelled'));
+            loadSubscriptions();
+          } catch (err: any) {
+            logger.error('Failed to cancel subscription', 'SubscriptionsListPage', err);
+            notifications.showError(t('admin.subscriptions.cancelFailed', 'Failed to cancel subscription'));
+          }
+        },
       },
-    },
-    {
-      key: 'status',
-      label: t('admin.subscriptions.columns.status'),
-      render: (status: string) => getStatusBadge(status),
-    },
-  ];
+    });
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0);
+  };
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+        <Text style={styles.loadingText}>{t('common.loading', 'Loading...')}</Text>
+      </View>
+    );
+  }
+
+  const pageConfig = ADMIN_PAGE_CONFIG.subscriptions;
+  const IconComponent = pageConfig.icon;
 
   return (
-    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
-      {/* Header */}
-      <View className="mb-6 flex flex-row justify-between items-start">
-        <View>
-          <Text className="text-2xl font-bold text-white">{t('admin.titles.subscriptions')}</Text>
-          <Text className="text-sm text-gray-400 mt-1">{t('admin.subscriptions.subtitle')}</Text>
-        </View>
-        <View className="flex flex-row gap-2">
-          <GlassButton
-            title={t('common.add')}
-            onPress={handleAdd}
-            variant="primary"
-            icon={<Plus size={18} color="white" />}
-          />
-          <GlassButton
-            title={t('common.edit')}
-            onPress={handleEdit}
-            variant="ghost"
-            icon={<Edit size={18} color="white" />}
-            disabled={selectedIds.size !== 1}
-          />
-          <GlassButton
-            title={t('common.delete')}
-            onPress={handleDelete}
-            variant="danger"
-            icon={<Trash2 size={18} color="white" />}
-            disabled={selectedIds.size === 0}
-          />
-        </View>
-      </View>
-
-      <View style={[
-        styles.selectionBanner,
-        !someSelected && styles.selectionBannerHidden
-      ]}>
-        {someSelected ? (
-          <>
-            <Users size={16} color={colors.primary} />
-            <Text className="text-purple-500 text-sm font-medium">
-              {selectedIds.size} {t('admin.subscriptions.selected')}
-            </Text>
-          </>
-        ) : (
-          <Text className="text-sm opacity-0"> </Text>
-        )}
-      </View>
-
-      {/* Plan Stats */}
-      <View className="flex flex-row gap-4 mb-6">
-        {plans.map((plan) => (
-          <StatCard
-            key={plan.id}
-            title={plan.name_he || plan.name}
-            value={plan.subscribers || 0}
-            subtitle={`$${plan.price}${t('admin.subscriptions.perMonth')}`}
-            icon="📦"
-            color={plan.name === 'Premium' || plan.name === 'premium' ? 'secondary' : plan.name === 'Family' || plan.name === 'family' ? 'warning' : 'primary'}
-          />
-        ))}
-      </View>
-
-      {/* Table */}
-      <GlassTable
-        columns={columns}
-        data={subscriptions}
-        loading={loading}
-        searchPlaceholder={t('admin.subscriptions.searchPlaceholder')}
-        pagination={pagination}
-        onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
-        emptyMessage={t('admin.subscriptions.emptyMessage')}
+    <ScrollView style={styles.container} contentContainerStyle={{ padding: spacing.lg }}>
+      <GlassPageHeader
+        title={t('admin.subscriptions.title', 'Subscriptions')}
+        subtitle={t('admin.subscriptions.subtitle', 'View and manage system subscribers')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        badge={stats?.total}
         isRTL={isRTL}
+        action={
+          <GlassButton
+            title={t('admin.dashboard.refresh', 'Refresh')}
+            variant="ghost"
+            icon={<RefreshCw size={16} color="white" />}
+            onPress={handleRefresh}
+            disabled={refreshing}
+          />
+        }
       />
 
-      {/* Edit Plan Modal */}
-      <GlassModal
-        visible={editModalOpen}
-        title={t('admin.subscriptions.editPlan.title')}
-        onClose={() => setEditModalOpen(false)}
-        dismissable={true}
-      >
-        <Text className="text-sm text-white mt-4 mb-1">
-          {t('admin.subscriptions.editPlan.user')}: {selectedSubscription?.user.name}
-        </Text>
-        <Text className="text-sm text-white mt-4 mb-1">
-          {t('admin.subscriptions.editPlan.currentPlan')}: {selectedSubscription?.plan}
-        </Text>
+      {/* Stats */}
+      {stats && (
+        <View style={styles.statsGrid}>
+          <StatCard
+            title={t('admin.subscriptions.stats.total', 'Total')}
+            value={stats.total.toString()}
+            icon="📊"
+            color="primary"
+          />
+          <StatCard
+            title={t('admin.subscriptions.stats.active', 'Active')}
+            value={stats.active.toString()}
+            icon="✅"
+            color="success"
+          />
+          <StatCard
+            title={t('admin.subscriptions.stats.paused', 'Paused')}
+            value={stats.paused.toString()}
+            icon="⏸"
+            color="warning"
+          />
+          <StatCard
+            title={t('admin.subscriptions.stats.revenue', 'Monthly Revenue')}
+            value={formatCurrency(stats.revenue_this_month)}
+            icon="💰"
+            color="secondary"
+          />
+        </View>
+      )}
 
-        <Text className="text-sm text-white mt-4 mb-1">{t('admin.subscriptions.editPlan.newPlan')}:</Text>
-        <View className="gap-2 mt-2">
-          {plans.map((plan) => (
-            <GlassButton
-              key={plan.id}
-              title={`${plan.name_he || plan.name} - $${plan.price}/mo`}
-              onPress={() => setSelectedPlan(plan.slug)}
-              variant={selectedPlan === plan.slug ? 'primary' : 'ghost'}
-              className="w-full"
-            />
+      {/* Search and Filters */}
+      <View style={[styles.filtersRow, { flexDirection }]}>
+        <GlassInput
+          placeholder={t('admin.subscriptions.search', 'Search subscriptions...')}
+          value={searchQuery}
+          onChangeText={handleSearch}
+          containerStyle={styles.searchInput}
+        />
+        <GlassButton
+          title={t('common.filter', 'Filter')}
+          variant="ghost"
+          icon={<Filter size={16} color="white" />}
+          onPress={() => setShowFilters(!showFilters)}
+        />
+      </View>
+
+      {/* Status Filter Pills */}
+      {showFilters && (
+        <View style={[styles.filterPills, { flexDirection }]}>
+          {['all', 'active', 'paused', 'cancelled', 'expired'].map((status) => (
+            <Pressable
+              key={status}
+              style={[
+                styles.filterPill,
+                statusFilter === status && styles.filterPillActive,
+              ]}
+              onPress={() => handleStatusFilter(status)}
+            >
+              <Text
+                style={[
+                  styles.filterPillText,
+                  statusFilter === status && styles.filterPillTextActive,
+                ]}
+              >
+                {t(`admin.subscriptions.filters.${status}`, status)}
+              </Text>
+            </Pressable>
           ))}
         </View>
+      )}
 
-        <View className="flex flex-row gap-4 mt-6">
+      {/* Subscriptions Table */}
+      <GlassCard style={styles.tableCard}>
+        {/* Table Header */}
+        <View style={[styles.tableHeader, { flexDirection }]}>
+          <Text style={[styles.tableHeaderText, styles.colUser]}>
+            {t('admin.subscriptions.columns.user', 'User')}
+          </Text>
+          <Text style={[styles.tableHeaderText, styles.colPlan]}>
+            {t('admin.subscriptions.columns.plan', 'Plan')}
+          </Text>
+          <Text style={[styles.tableHeaderText, styles.colAmount]}>
+            {t('admin.subscriptions.columns.amount', 'Amount')}
+          </Text>
+          <Text style={[styles.tableHeaderText, styles.colStatus]}>
+            {t('admin.subscriptions.columns.status', 'Status')}
+          </Text>
+          <Text style={[styles.tableHeaderText, styles.colNextBilling]}>
+            {t('admin.subscriptions.columns.nextBilling', 'Next Billing')}
+          </Text>
+          <Text style={[styles.tableHeaderText, styles.colActions]}>
+            {t('common.actions', 'Actions')}
+          </Text>
+        </View>
+
+        {/* Table Body */}
+        {subscriptions.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateText}>
+              {t('admin.subscriptions.noData', 'No subscriptions found')}
+            </Text>
+          </View>
+        ) : (
+          subscriptions.map((subscription) => (
+            <View key={subscription.id} style={[styles.tableRow, { flexDirection }]}>
+              <View style={styles.colUser}>
+                <Text style={styles.userName}>{subscription.user?.name || '-'}</Text>
+                <Text style={styles.userEmail}>{subscription.user?.email || '-'}</Text>
+              </View>
+              <Text style={[styles.planText, styles.colPlan]}>{subscription.plan || '-'}</Text>
+              <Text style={[styles.amountText, styles.colAmount]}>
+                {formatCurrency(subscription.amount)}
+              </Text>
+              <View style={styles.colStatus}>
+                {subscription.status && (
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      { backgroundColor: statusColors[subscription.status]?.bg },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.statusText,
+                        { color: statusColors[subscription.status]?.text },
+                      ]}
+                    >
+                      {t(`admin.subscriptions.status.${subscription.status}`, subscription.status)}
+                    </Text>
+                  </View>
+                )}
+              </View>
+              <Text style={[styles.dateText, styles.colNextBilling]}>
+                {formatDate(subscription.next_billing || '')}
+              </Text>
+              <View style={[styles.actionsRow, styles.colActions]}>
+                <Pressable
+                  style={styles.actionButton}
+                  onPress={() => handleViewDetails(subscription)}
+                >
+                  <Text style={styles.actionText}>View</Text>
+                </Pressable>
+                {subscription.status === 'active' && (
+                  <Pressable
+                    style={[styles.actionButton, styles.warningButton]}
+                    onPress={() => handlePauseSubscription(subscription.id)}
+                  >
+                    <Text style={styles.actionText}>Pause</Text>
+                  </Pressable>
+                )}
+                {subscription.status === 'paused' && (
+                  <Pressable
+                    style={[styles.actionButton, styles.successButton]}
+                    onPress={() => handleResumeSubscription(subscription.id)}
+                  >
+                    <Text style={styles.actionText}>Resume</Text>
+                  </Pressable>
+                )}
+                {subscription.status !== 'cancelled' && subscription.status !== 'expired' && (
+                  <Pressable
+                    style={[styles.actionButton, styles.dangerButton]}
+                    onPress={() => handleCancelSubscription(subscription.id)}
+                  >
+                    <Text style={styles.actionText}>Cancel</Text>
+                  </Pressable>
+                )}
+              </View>
+            </View>
+          ))
+        )}
+      </GlassCard>
+
+      {/* Pagination */}
+      {total > pageSize && (
+        <View style={[styles.pagination, { flexDirection }]}>
           <GlassButton
-            title={t('common.cancel')}
-            onPress={() => setEditModalOpen(false)}
-            variant="cancel"
-            className="flex-1"
+            title={t('common.previous', 'Previous')}
+            variant="ghost"
+            onPress={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
           />
+          <Text style={styles.pageInfo}>
+            {t('common.pageOf', `Page ${page} of ${Math.ceil(total / pageSize)}`)}
+          </Text>
           <GlassButton
-            title={t('common.save')}
-            onPress={handleSaveEdit}
-            variant="success"
-            className="flex-1"
+            title={t('common.next', 'Next')}
+            variant="ghost"
+            onPress={() => setPage((p) => Math.min(Math.ceil(total / pageSize), p + 1))}
+            disabled={page >= Math.ceil(total / pageSize)}
           />
         </View>
-      </GlassModal>
+      )}
 
-      {/* Add Subscription Modal */}
+      {/* Details Modal */}
       <GlassModal
-        visible={addModalOpen}
-        title={t('admin.subscriptions.addSubscription.title')}
-        onClose={() => setAddModalOpen(false)}
-        dismissable={true}
+        visible={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        title={t('admin.subscriptions.details', 'Subscription Details')}
       >
-        <GlassInput
-          label={t('admin.subscriptions.addSubscription.userEmail')}
-          value={newUserEmail}
-          onChangeText={setNewUserEmail}
-          placeholder={t('admin.subscriptions.addSubscription.emailPlaceholder')}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          containerStyle="mb-4"
-        />
-
-        <GlassInput
-          label={t('admin.subscriptions.addSubscription.duration')}
-          value={String(durationDays)}
-          onChangeText={(text) => setDurationDays(Number(text) || 30)}
-          placeholder="30"
-          keyboardType="numeric"
-          containerStyle="mb-4"
-        />
-
-        <Text className="text-sm text-white mt-4 mb-1">{t('admin.subscriptions.addSubscription.selectPlan')}:</Text>
-        <View className="gap-2 mt-2">
-          {plans.map((plan) => (
-            <GlassButton
-              key={plan.id}
-              title={`${plan.name_he || plan.name} - $${plan.price}/mo`}
-              onPress={() => setSelectedPlan(plan.slug)}
-              variant={selectedPlan === plan.slug ? 'primary' : 'ghost'}
-              className="w-full"
-            />
-          ))}
-        </View>
-
-        <View className="flex flex-row gap-4 mt-6">
-          <GlassButton
-            title={t('common.cancel')}
-            onPress={() => setAddModalOpen(false)}
-            variant="cancel"
-            className="flex-1"
-          />
-          <GlassButton
-            title={t('common.save')}
-            onPress={handleSaveAdd}
-            variant="success"
-            className="flex-1"
-          />
-        </View>
-      </GlassModal>
-
-      {/* Error Modal */}
-      <GlassModal
-        visible={errorModalOpen}
-        title={t('common.error')}
-        onClose={() => setErrorModalOpen(false)}
-        dismissable={true}
-      >
-        <Text className="text-sm text-white mt-4 mb-1">{errorMessage}</Text>
-        <View className="flex flex-row gap-4 mt-6">
-          <GlassButton
-            title={t('common.ok')}
-            onPress={() => setErrorModalOpen(false)}
-            variant="success"
-            className="flex-1"
-          />
-        </View>
-      </GlassModal>
-
-      {/* Delete Confirmation Modal */}
-      <GlassModal
-        visible={deleteConfirmOpen}
-        title={t('common.confirm')}
-        onClose={() => setDeleteConfirmOpen(false)}
-        dismissable={true}
-      >
-        <Text className="text-sm text-white mt-4 mb-1">
-          {t('admin.subscriptions.confirmDeleteMultiple', { count: selectedIds.size })}
-        </Text>
-        <View className="flex flex-row gap-4 mt-6">
-          <GlassButton
-            title={t('common.cancel')}
-            onPress={() => setDeleteConfirmOpen(false)}
-            variant="cancel"
-            className="flex-1"
-          />
-          <GlassButton
-            title={t('common.delete')}
-            onPress={handleDeleteConfirm}
-            variant="danger"
-            className="flex-1"
-          />
-        </View>
+        {selectedSubscription && (
+          <View style={styles.modalContent}>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>{t('admin.subscriptions.columns.user', 'User')}:</Text>
+              <Text style={styles.detailValue}>{selectedSubscription.user?.name || '-'}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>{t('common.email', 'Email')}:</Text>
+              <Text style={styles.detailValue}>{selectedSubscription.user?.email || '-'}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>{t('admin.subscriptions.columns.plan', 'Plan')}:</Text>
+              <Text style={styles.detailValue}>{selectedSubscription.plan}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>{t('admin.subscriptions.columns.amount', 'Amount')}:</Text>
+              <Text style={styles.detailValue}>{formatCurrency(selectedSubscription.amount)}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>{t('admin.subscriptions.columns.status', 'Status')}:</Text>
+              <Text style={styles.detailValue}>{selectedSubscription.status}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>
+                {t('admin.subscriptions.columns.nextBilling', 'Next Billing')}:
+              </Text>
+              <Text style={styles.detailValue}>{formatDate(selectedSubscription.next_billing || '')}</Text>
+            </View>
+            <View style={styles.modalActions}>
+              <GlassButton
+                title={t('common.close', 'Close')}
+                variant="ghost"
+                onPress={() => setShowDetailsModal(false)}
+              />
+            </View>
+          </View>
+        )}
       </GlassModal>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  selectionBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    padding: 16,
-    backgroundColor: 'rgba(126, 34, 206, 0.2)',
-    borderRadius: 8,
-    marginBottom: 16,
-    minHeight: 48,
+  container: {
+    flex: 1,
   },
-  selectionBannerHidden: {
-    backgroundColor: 'transparent',
-    opacity: 0,
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  loadingText: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+  },
+  header: {
+    marginBottom: spacing.xl,
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  pageTitle: {
+    fontSize: fontSize.xxl,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  subtitle: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+  },
+  headerActions: {
+    gap: spacing.sm,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  filtersRow: {
+    gap: spacing.md,
+    marginBottom: spacing.md,
+    alignItems: 'center',
+  },
+  searchInput: {
+    flex: 1,
+  },
+  filterPills: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  filterPill: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.full,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  filterPillActive: {
+    backgroundColor: colors.glassPurple,
+    borderColor: colors.primary.DEFAULT,
+  },
+  filterPillText: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    fontWeight: '500',
+  },
+  filterPillTextActive: {
+    color: colors.primary.DEFAULT,
+  },
+  tableCard: {
+    padding: 0,
+    overflow: 'hidden',
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    padding: spacing.md,
+    backgroundColor: colors.glass,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+  },
+  tableHeaderText: {
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+    alignItems: 'center',
+  },
+  colUser: {
+    flex: 2,
+  },
+  colPlan: {
+    flex: 1,
+  },
+  colAmount: {
+    flex: 1,
+  },
+  colStatus: {
+    flex: 1,
+  },
+  colNextBilling: {
+    flex: 1,
+  },
+  colActions: {
+    flex: 2,
+  },
+  userName: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  userEmail: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+    marginTop: 2,
+  },
+  planText: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  amountText: {
+    fontSize: fontSize.sm,
+    color: colors.primary.DEFAULT,
+    fontWeight: '600',
+  },
+  statusBadge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.sm,
+    alignSelf: 'flex-start',
+  },
+  statusText: {
+    fontSize: fontSize.xs,
+    fontWeight: '500',
+  },
+  dateText: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+  },
+  actionButton: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  warningButton: {
+    borderColor: colors.warning,
+  },
+  successButton: {
+    borderColor: colors.success.DEFAULT,
+  },
+  dangerButton: {
+    borderColor: colors.error.DEFAULT,
+  },
+  actionText: {
+    fontSize: fontSize.xs,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  emptyState: {
+    padding: spacing.xl,
+    alignItems: 'center',
+  },
+  emptyStateText: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+  },
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: spacing.lg,
+    gap: spacing.md,
+  },
+  pageInfo: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  modalContent: {
+    gap: spacing.md,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+  },
+  detailLabel: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+    fontWeight: '500',
+  },
+  detailValue: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  modalActions: {
+    marginTop: spacing.md,
   },
 });

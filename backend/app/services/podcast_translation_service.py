@@ -10,12 +10,14 @@ Note: Translated vocals mixed back with original background audio
 """
 
 import asyncio
+import hashlib
+import hmac
 import logging
 import shutil
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
 import httpx
@@ -23,7 +25,8 @@ from anthropic import AsyncAnthropic
 
 from app.core.config import settings
 from app.core.storage import StorageService
-from app.models.content import PodcastEpisode
+from app.models.content import PodcastEpisode, TranslationStageMetrics
+from app.models.integration_partner import IntegrationPartner, WebhookDelivery
 from app.services.audio_processing_service import AudioProcessingService
 from app.services.elevenlabs_tts_streaming_service import \
     ElevenLabsTTSStreamingService
@@ -38,6 +41,19 @@ logger = logging.getLogger(__name__)
 
 class PodcastTranslationService:
     """Orchestrates podcast episode translation pipeline with stage resumption support."""
+
+    # Weighted stage progress (total = 100%)
+    # These weights reflect the relative duration of each stage based on typical podcast processing
+    STAGE_WEIGHTS = {
+        "downloaded": 2.0,  # Quick download (2%)
+        "vocals_separated": 15.0,  # Vocal separation takes moderate time (15%)
+        "transcribed": 20.0,  # Whisper transcription is computationally heavy (20%)
+        "commercials_removed": 3.0,  # Commercial detection is fast (3%)
+        "translated": 10.0,  # Claude API translation is moderate (10%)
+        "tts_generated": 40.0,  # TTS generation is the slowest stage (40%)
+        "mixed": 8.0,  # Audio mixing is moderately fast (8%)
+        "uploaded": 2.0,  # Upload to GCS is quick (2%)
+    }
 
     def __init__(
         self,
@@ -95,6 +111,7 @@ class PodcastTranslationService:
         """
         try:
             # Atomic status update to prevent duplicate processing
+            now = datetime.utcnow()
             result = await PodcastEpisode.find_one(
                 {
                     "_id": episode.id,
@@ -104,7 +121,11 @@ class PodcastTranslationService:
                 {
                     "$set": {
                         "translation_status": "processing",
-                        "updated_at": datetime.utcnow(),
+                        "translation_started_at": now,
+                        "translation_progress": 0.0,
+                        "translation_eta_seconds": None,
+                        "webhook_notifications_sent": [],
+                        "updated_at": now,
                     }
                 }
             )
@@ -122,8 +143,26 @@ class PodcastTranslationService:
             if force:
                 stages = {}
                 await PodcastEpisode.find_one({"_id": episode.id}).update(
-                    {"$set": {"translation_stages": {}}}
+                    {
+                        "$set": {
+                            "translation_stages": {},
+                            "translation_stage_timings": {},
+                            "translation_progress": 0.0,
+                        }
+                    }
                 )
+
+            # Send translation.started webhook
+            await self._send_webhook(
+                episode.id,
+                "translation.started",
+                {
+                    "episode_id": str(episode.id),
+                    "podcast_id": episode.podcast_id,
+                    "title": episode.title,
+                    "started_at": now.isoformat(),
+                },
+            )
 
             # Stage 1: Download original audio (or reuse)
             if (
@@ -133,6 +172,7 @@ class PodcastTranslationService:
                 logger.info(f"✅ Reusing downloaded audio from previous attempt")
                 original_path = stages["downloaded"]["audio_path"]
             else:
+                await self._start_stage(episode.id, "downloaded")
                 logger.info(f"Step 1/8: Downloading audio for episode {episode.id}")
                 original_path = await self._download_audio(episode.audio_url)
 
@@ -153,7 +193,7 @@ class PodcastTranslationService:
                         f"✅ Audio trimmed to {max_duration_seconds} seconds: {original_path}"
                     )
 
-                await self._save_stage(
+                await self._complete_stage(
                     episode.id, "downloaded", {"audio_path": original_path}
                 )
 
@@ -167,6 +207,7 @@ class PodcastTranslationService:
                 vocals_path = stages["vocals_separated"]["vocals_path"]
                 background_path = stages["vocals_separated"]["background_path"]
             else:
+                await self._start_stage(episode.id, "vocals_separated")
                 logger.info(
                     f"Step 1.5/8: Separating vocals from background for episode {episode.id}"
                 )
@@ -177,7 +218,7 @@ class PodcastTranslationService:
                 logger.info(
                     f"✅ Vocals separated: vocals={vocals_path}, background={background_path}"
                 )
-                await self._save_stage(
+                await self._complete_stage(
                     episode.id,
                     "vocals_separated",
                     {"vocals_path": vocals_path, "background_path": background_path},
@@ -190,11 +231,12 @@ class PodcastTranslationService:
                 transcript = stages["transcribed"]["transcript"]
                 detected_lang = stages["transcribed"]["detected_lang"]
             else:
+                await self._start_stage(episode.id, "transcribed")
                 logger.info(
                     f"Step 2/8: Transcribing vocals with Whisper for episode {episode.id}"
                 )
                 transcript, detected_lang = await self._transcribe_audio(vocals_path)
-                await self._save_stage(
+                await self._complete_stage(
                     episode.id,
                     "transcribed",
                     {"transcript": transcript, "detected_lang": detected_lang},
@@ -232,6 +274,7 @@ class PodcastTranslationService:
                     clean_transcript = transcript
                     removed_commercials = []
                 else:
+                    await self._start_stage(episode.id, "commercials_removed")
                     clean_transcript, removed_commercials = await self._remove_commercials(
                         transcript
                     )
@@ -240,7 +283,7 @@ class PodcastTranslationService:
                         f"kept {len(clean_transcript)} of {len(transcript)} characters"
                     )
 
-                await self._save_stage(
+                await self._complete_stage(
                     episode.id,
                     "commercials_removed",
                     {
@@ -300,6 +343,7 @@ class PodcastTranslationService:
                 logger.info(f"✅ Reusing translation from previous attempt")
                 translated_text = stages["translated"]["translated_text"]
             else:
+                await self._start_stage(episode.id, "translated")
                 logger.info(
                     f"Step 3/8: Translating from {source_lang_code} to {target_lang_code} for episode {episode.id}"
                 )
@@ -372,7 +416,7 @@ class PodcastTranslationService:
                     translated_text = await translation_provider.translate(
                         text=transcript, source_lang=source_lang_code
                     )
-                await self._save_stage(
+                await self._complete_stage(
                     episode.id,
                     "translated",
                     {
@@ -392,6 +436,7 @@ class PodcastTranslationService:
                 logger.info(f"✅ Reusing TTS audio from previous attempt")
                 translated_vocals_path = stages["tts_generated"]["tts_path"]
             else:
+                await self._start_stage(episode.id, "tts_generated")
                 logger.info(f"Step 4/8: Generating TTS for episode {episode.id}")
                 translated_vocals_path = await self._generate_tts(
                     text=translated_text,
@@ -399,7 +444,7 @@ class PodcastTranslationService:
                     output_path=translated_vocals_path,
                     gender=gender,
                 )
-                await self._save_stage(
+                await self._complete_stage(
                     episode.id, "tts_generated", {"tts_path": translated_vocals_path}
                 )
 
@@ -414,6 +459,7 @@ class PodcastTranslationService:
                 logger.info(f"✅ Reusing mixed audio from previous attempt")
                 translated_audio_path = stages["audio_mixed"]["mixed_path"]
             else:
+                await self._start_stage(episode.id, "mixed")
                 logger.info(
                     f"Step 4.5/8: Mixing translated vocals with original background for episode {episode.id}"
                 )
@@ -425,11 +471,12 @@ class PodcastTranslationService:
                 logger.info(
                     f"✅ Audio mixed: translated vocals + original background = {translated_audio_path}"
                 )
-                await self._save_stage(
-                    episode.id, "audio_mixed", {"mixed_path": translated_audio_path}
+                await self._complete_stage(
+                    episode.id, "mixed", {"mixed_path": translated_audio_path}
                 )
 
             # Stage 6: Upload to GCS
+            await self._start_stage(episode.id, "uploaded")
             logger.info(
                 f"Step 5/8: Uploading translated audio for episode {episode.id}"
             )
@@ -437,6 +484,9 @@ class PodcastTranslationService:
                 audio_path=translated_audio_path,
                 episode_id=str(episode.id),
                 language=target_lang_code,
+            )
+            await self._complete_stage(
+                episode.id, "uploaded", {"url": translated_url}
             )
 
             # Stage 7: Atomic update of episode document
@@ -464,6 +514,8 @@ class PodcastTranslationService:
                         "available_languages": [detected_lang_short, target_lang_code],
                         "original_language": detected_lang_short,
                         "translation_status": "completed",
+                        "translation_progress": 100.0,
+                        "translation_eta_seconds": 0,
                         "updated_at": datetime.utcnow(),
                         "retry_count": 0,
                         "translation_stages": {},  # Clear stages on success
@@ -477,6 +529,26 @@ class PodcastTranslationService:
             )
             await self.audio_processor.cleanup_temp_files(str(episode.id))
 
+            # Send translation.completed webhook
+            duration = (
+                (datetime.utcnow() - episode.translation_started_at).total_seconds()
+                if episode.translation_started_at
+                else None
+            )
+            await self._send_webhook(
+                episode.id,
+                "translation.completed",
+                {
+                    "episode_id": str(episode.id),
+                    "podcast_id": episode.podcast_id,
+                    "title": episode.title,
+                    "target_language": target_lang_code,
+                    "audio_url": translated_url,
+                    "duration_seconds": duration,
+                    "completed_at": datetime.utcnow().isoformat(),
+                },
+            )
+
             logger.info(f"✅ Translation complete for episode {episode.id}")
             return {target_lang_code: translated_url}
 
@@ -484,7 +556,7 @@ class PodcastTranslationService:
             logger.error(f"Translation failed for episode {episode.id}: {e}")
 
             # Increment retry count and update status (keep translation_stages for resumption)
-            await PodcastEpisode.find_one({"_id": episode.id}).update(
+            updated_episode = await PodcastEpisode.find_one({"_id": episode.id}).update(
                 {
                     "$set": {
                         "translation_status": "failed",
@@ -492,6 +564,25 @@ class PodcastTranslationService:
                     },
                     "$inc": {"retry_count": 1},
                 }
+            )
+
+            # Refresh to get updated retry count
+            episode = await PodcastEpisode.get(episode.id)
+            will_retry = episode.retry_count < episode.max_retries if episode else False
+
+            # Send translation.failed webhook
+            await self._send_webhook(
+                episode.id,
+                "translation.failed",
+                {
+                    "episode_id": str(episode.id),
+                    "podcast_id": episode.podcast_id if episode else "unknown",
+                    "title": episode.title if episode else "unknown",
+                    "error": str(e),
+                    "retry_count": episode.retry_count if episode else 0,
+                    "will_retry": will_retry,
+                    "failed_at": datetime.utcnow().isoformat(),
+                },
             )
             raise
 
@@ -502,6 +593,274 @@ class PodcastTranslationService:
             {"$set": {f"translation_stages.{stage_name}": stage_data}}
         )
         logger.info(f"✅ Stage '{stage_name}' completed and saved")
+
+    async def _start_stage(self, episode_id: str, stage_name: str):
+        """Mark the start of a translation stage for timing."""
+        now = datetime.utcnow()
+        await PodcastEpisode.find_one({"_id": episode_id}).update(
+            {
+                "$set": {
+                    f"translation_stage_timings.{stage_name}.started_at": now.isoformat()
+                }
+            }
+        )
+        logger.info(f"⏱️ Stage '{stage_name}' started")
+
+    async def _complete_stage(
+        self, episode_id: str, stage_name: str, stage_data: Optional[dict] = None
+    ):
+        """
+        Mark stage completion, calculate duration, update progress and ETA.
+
+        Args:
+            episode_id: Episode ID
+            stage_name: Stage name
+            stage_data: Optional stage data to save for resumption
+        """
+        now = datetime.utcnow()
+        episode = await PodcastEpisode.get(episode_id)
+
+        if not episode:
+            logger.error(f"Episode {episode_id} not found during stage completion")
+            return
+
+        # Calculate stage duration
+        stage_timings = episode.translation_stage_timings or {}
+        started_at_str = stage_timings.get(stage_name, {}).get("started_at")
+        duration_seconds = 0
+
+        if started_at_str:
+            started_at = datetime.fromisoformat(started_at_str)
+            duration = now - started_at
+            duration_seconds = duration.total_seconds()
+
+        # Update stage timing record
+        timing_update = {
+            f"translation_stage_timings.{stage_name}.completed_at": now.isoformat(),
+            f"translation_stage_timings.{stage_name}.duration_seconds": duration_seconds,
+        }
+
+        # Save stage data for resumption if provided
+        if stage_data:
+            stage_data["timestamp"] = now.isoformat()
+            timing_update[f"translation_stages.{stage_name}"] = stage_data
+
+        # Calculate new progress
+        completed_stages = list((episode.translation_stages or {}).keys())
+        if stage_name not in completed_stages:
+            completed_stages.append(stage_name)
+
+        progress = self._calculate_progress(completed_stages)
+
+        # Calculate ETA
+        eta_seconds = await self._calculate_eta(episode_id, completed_stages)
+
+        # Update database
+        await PodcastEpisode.find_one({"_id": episode_id}).update(
+            {
+                "$set": {
+                    **timing_update,
+                    "translation_progress": progress,
+                    "translation_eta_seconds": eta_seconds,
+                    "updated_at": now,
+                }
+            }
+        )
+
+        # Update historical stage metrics for future ETA calculations
+        if duration_seconds > 0:
+            await TranslationStageMetrics.update_stage_average(
+                stage_name, duration_seconds
+            )
+
+        # Send progress webhook at threshold milestones (25%, 50%, 75%)
+        # Check if we just crossed a threshold
+        thresholds = [25, 50, 75]
+        for threshold in thresholds:
+            if progress >= threshold and progress < threshold + 20:  # Within range
+                # Check if this threshold was already notified
+                current_stage_index = list(self.STAGE_WEIGHTS.keys()).index(stage_name)
+                await self._send_webhook(
+                    episode_id,
+                    "translation.progress",
+                    {
+                        "episode_id": str(episode_id),
+                        "podcast_id": episode.podcast_id,
+                        "title": episode.title,
+                        "progress": round(progress, 1),
+                        "current_stage": stage_name,
+                        "stage_number": current_stage_index + 1,
+                        "total_stages": len(self.STAGE_WEIGHTS),
+                        "eta_seconds": eta_seconds,
+                        "updated_at": now.isoformat(),
+                    },
+                )
+                break  # Only send one threshold webhook per stage
+
+        logger.info(
+            f"✅ Stage '{stage_name}' completed in {duration_seconds:.1f}s | Progress: {progress:.1f}% | ETA: {eta_seconds}s"
+        )
+
+    def _calculate_progress(self, completed_stages: List[str]) -> float:
+        """
+        Calculate weighted progress percentage based on completed stages.
+
+        Args:
+            completed_stages: List of completed stage names
+
+        Returns:
+            Progress percentage (0-100)
+        """
+        total_weight = 0.0
+        for stage_name in completed_stages:
+            total_weight += self.STAGE_WEIGHTS.get(stage_name, 0.0)
+
+        return min(total_weight, 100.0)
+
+    async def _calculate_eta(
+        self, episode_id: str, completed_stages: List[str]
+    ) -> Optional[int]:
+        """
+        Calculate estimated time remaining based on historical averages.
+
+        Args:
+            episode_id: Episode ID
+            completed_stages: List of completed stage names
+
+        Returns:
+            Estimated seconds remaining, or None if cannot calculate
+        """
+        # Get remaining stages
+        all_stages = list(self.STAGE_WEIGHTS.keys())
+        remaining_stages = [s for s in all_stages if s not in completed_stages]
+
+        if not remaining_stages:
+            return 0
+
+        # Fetch historical averages for remaining stages
+        total_eta_seconds = 0.0
+        stages_with_data = 0
+
+        for stage_name in remaining_stages:
+            metric = await TranslationStageMetrics.find_one(
+                TranslationStageMetrics.stage_name == stage_name
+            )
+            if metric and metric.avg_duration_seconds > 0:
+                total_eta_seconds += metric.avg_duration_seconds
+                stages_with_data += 1
+
+        # If we have historical data for at least some stages, return ETA
+        # Otherwise return None (cannot estimate yet)
+        if stages_with_data > 0:
+            return int(total_eta_seconds)
+
+        return None
+
+    async def _send_webhook(
+        self,
+        episode_id: str,
+        event_type: str,
+        payload: Dict,
+        partner: Optional[IntegrationPartner] = None,
+    ):
+        """
+        Send webhook notification for translation event.
+        Non-blocking: failures are logged but don't stop translation.
+
+        Args:
+            episode_id: Episode ID
+            event_type: Webhook event type (translation.started, translation.progress, etc.)
+            payload: Event payload data
+            partner: Optional pre-fetched partner (for efficiency)
+        """
+        try:
+            # Check if already sent this event to prevent duplicates
+            episode = await PodcastEpisode.get(episode_id)
+            if not episode:
+                return
+
+            notification_key = f"{event_type}:{payload.get('progress', 0)}"
+            if notification_key in (episode.webhook_notifications_sent or []):
+                logger.info(
+                    f"Skipping duplicate webhook notification: {notification_key}"
+                )
+                return
+
+            # Find partner if not provided (usually configured at system level)
+            if not partner:
+                # For MVP, use first active partner with translation webhooks enabled
+                # In production, this should be configured per podcast or globally
+                partner = await IntegrationPartner.find_one(
+                    {
+                        "is_active": True,
+                        "webhook_url": {"$ne": None},
+                        "webhook_events": event_type,
+                    }
+                )
+
+            if not partner or not partner.webhook_url:
+                return  # No webhook configured, skip silently
+
+            # Generate HMAC signature
+            payload_str = str(payload)
+            signature = hmac.new(
+                (partner.webhook_secret or "").encode(),
+                payload_str.encode(),
+                hashlib.sha256,
+            ).hexdigest()
+
+            # Send webhook with retry logic
+            headers = {
+                "Content-Type": "application/json",
+                "X-Webhook-Signature": signature,
+                "X-Webhook-Event": event_type,
+            }
+
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                try:
+                    response = await client.post(
+                        partner.webhook_url, json=payload, headers=headers
+                    )
+                    delivered = response.status_code < 400
+
+                    # Track delivery attempt
+                    await WebhookDelivery(
+                        partner_id=partner.partner_id,
+                        event_type=event_type,
+                        payload=payload,
+                        delivered=delivered,
+                        attempts=1,
+                        response_status_code=response.status_code,
+                        response_body=response.text[:500],
+                    ).insert()
+
+                    if delivered:
+                        # Mark as sent to prevent duplicates
+                        await PodcastEpisode.find_one({"_id": episode_id}).update(
+                            {"$addToSet": {"webhook_notifications_sent": notification_key}}
+                        )
+                        logger.info(f"Webhook sent successfully: {event_type}")
+                    else:
+                        logger.warning(
+                            f"Webhook delivery failed: {event_type} (status: {response.status_code})"
+                        )
+
+                except Exception as delivery_error:
+                    logger.error(
+                        f"Webhook delivery exception: {event_type} - {delivery_error}"
+                    )
+                    await WebhookDelivery(
+                        partner_id=partner.partner_id if partner else "unknown",
+                        event_type=event_type,
+                        payload=payload,
+                        delivered=False,
+                        attempts=1,
+                        error_message=str(delivery_error),
+                    ).insert()
+
+        except Exception as e:
+            # Non-blocking: log error but don't fail translation
+            logger.error(f"Webhook system error (non-blocking): {e}")
 
     async def _download_audio(self, url: str) -> str:
         """

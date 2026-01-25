@@ -12,10 +12,10 @@ import {
   Modal,
   TextInput,
   ScrollView,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { DataTable, Column } from '../../components/admin/DataTable';
 import { marketingService, MarketingFilter } from '../../services/adminApi';
@@ -26,6 +26,7 @@ import { getStatusColor } from '../../utils/adminConstants';
 
 export const EmailCampaignsScreen: React.FC = () => {
   const { t } = useTranslation();
+  const notifications = useNotifications();
   const [campaigns, setCampaigns] = useState<EmailCampaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -88,7 +89,7 @@ export const EmailCampaignsScreen: React.FC = () => {
 
   const handleSaveCampaign = async () => {
     if (!formData.name.trim() || !formData.subject.trim()) {
-      Alert.alert(t('common.error', 'Error'), t('admin.email.requiredFields', 'Name and subject are required'));
+      notifications.showError(t('admin.email.requiredFields', 'Name and subject are required'), t('common.error', 'Error'));
       return;
     }
     setSaving(true);
@@ -115,25 +116,25 @@ export const EmailCampaignsScreen: React.FC = () => {
   };
 
   const handleSendCampaign = async (campaign: EmailCampaign) => {
-    Alert.alert(
-      t('admin.email.sendConfirm', 'Send Campaign'),
-      t('admin.email.sendMessage', 'Are you sure you want to send this campaign now?'),
-      [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-        {
-          text: t('admin.email.send', 'Send'),
-          onPress: async () => {
-            try {
-              await marketingService.sendEmailCampaign(campaign.id);
-              loadCampaigns();
-              Alert.alert(t('admin.email.sent', 'Sent'), t('admin.email.sentMessage', 'Campaign is being sent'));
-            } catch (error) {
-              console.error('Error sending campaign:', error);
-            }
-          },
+    notifications.show({
+      level: 'warning',
+      title: t('admin.email.sendConfirm', 'Send Campaign'),
+      message: t('admin.email.sendMessage', 'Are you sure you want to send this campaign now?'),
+      dismissable: true,
+      action: {
+        label: t('admin.email.send', 'Send'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await marketingService.sendEmailCampaign(campaign.id);
+            loadCampaigns();
+            notifications.showSuccess(t('admin.email.sentMessage', 'Campaign is being sent'), t('admin.email.sent', 'Sent'));
+          } catch (error) {
+            console.error('Error sending campaign:', error);
+          }
         },
-      ]
-    );
+      },
+    });
   };
 
   const handleTestEmail = async () => {
@@ -141,32 +142,31 @@ export const EmailCampaignsScreen: React.FC = () => {
     try {
       await marketingService.sendTestEmail(selectedCampaign.id, testEmail);
       setShowTestModal(false);
-      Alert.alert(t('admin.email.testSent', 'Test Sent'), t('admin.email.testSentMessage', `Test email sent to ${testEmail}`));
+      notifications.showSuccess(t('admin.email.testSentMessage', `Test email sent to ${testEmail}`), t('admin.email.testSent', 'Test Sent'));
     } catch (error) {
       console.error('Error sending test:', error);
     }
   };
 
   const handleDeleteCampaign = async (campaign: EmailCampaign) => {
-    Alert.alert(
-      t('admin.email.deleteConfirm', 'Delete Campaign'),
-      t('admin.email.deleteMessage', `Delete "${campaign.name}"?`),
-      [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-        {
-          text: t('common.delete', 'Delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await marketingService.deleteEmailCampaign(campaign.id);
-              loadCampaigns();
-            } catch (error) {
-              console.error('Error deleting:', error);
-            }
-          },
+    notifications.show({
+      level: 'warning',
+      title: t('admin.email.deleteConfirm', 'Delete Campaign'),
+      message: t('admin.email.deleteMessage', `Delete "${campaign.name}"?`),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await marketingService.deleteEmailCampaign(campaign.id);
+            loadCampaigns();
+          } catch (error) {
+            console.error('Error deleting:', error);
+          }
         },
-      ]
-    );
+      },
+    });
   };
 
   const columns: Column<EmailCampaign>[] = [

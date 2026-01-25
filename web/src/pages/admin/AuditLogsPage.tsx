@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';;
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';;
 import { useTranslation } from 'react-i18next';
 import { Download, Filter } from 'lucide-react';
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web';
 import { auditLogsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassButton, GlassModal, GlassSelect } from '@bayit/shared/ui';
+import { GlassButton, GlassModal, GlassSelect, GlassPageHeader } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import logger from '@/utils/logger';
 
 interface AuditLog {
@@ -141,18 +142,36 @@ export default function AuditLogsPage() {
 
   const actionFilters = ['', 'user', 'subscription', 'payment', 'settings', 'campaign', 'content'];
 
+  const pageConfig = ADMIN_PAGE_CONFIG['audit-logs'];
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.auditLogs')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.auditLogs.subtitle')}</Text>
-        </View>
-        <View style={styles.headerActions}>
-          <GlassButton title={t('admin.auditLogs.filter')} variant="secondary" icon={<Filter size={16} color={colors.text} />} onPress={() => setShowFilterModal(true)} />
-          <GlassButton title={t('admin.auditLogs.export')} variant="secondary" icon={<Download size={16} color={colors.text} />} onPress={handleExport} />
-        </View>
-      </View>
+      <GlassPageHeader
+        title={t('admin.titles.auditLogs')}
+        subtitle={t('admin.auditLogs.subtitle')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        badge={pagination.total}
+        isRTL={isRTL}
+        action={
+          <View style={styles.headerActions}>
+            <GlassButton
+              title={t('admin.auditLogs.filter')}
+              variant="secondary"
+              icon={<Filter size={16} color="white" />}
+              onPress={() => setShowFilterModal(true)}
+            />
+            <GlassButton
+              title={t('admin.auditLogs.export')}
+              variant="secondary"
+              icon={<Download size={16} color="white" />}
+              onPress={handleExport}
+            />
+          </View>
+        }
+      />
 
       <View style={styles.filtersRow}>
         {actionFilters.map((action) => (
@@ -189,4 +208,114 @@ export default function AuditLogsPage() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  headerActions: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.full,
+  },
+  badgeIcon: {
+    fontSize: 14,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  userId: {
+    fontSize: 12,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+  },
+  resourceText: {
+    fontSize: 13,
+    color: colors.text,
+    textTransform: 'capitalize',
+  },
+  ipText: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    fontFamily: 'monospace',
+  },
+  detailsText: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  dateText: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  filtersRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+    flexWrap: 'wrap',
+  },
+  filterButton: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  filterButtonActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  filterText: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    fontWeight: '500',
+  },
+  filterTextActive: {
+    color: colors.text,
+    fontWeight: '600',
+  },
+  modalContent: {
+    gap: spacing.lg,
+  },
+  formGroup: {
+    gap: spacing.sm,
+  },
+  formLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  filterOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  filterOption: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  filterOptionActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  filterOptionText: {
+    fontSize: 13,
+    color: colors.textSecondary,
+  },
+  filterOptionTextActive: {
+    color: colors.text,
+    fontWeight: '600',
+  },
+});
 

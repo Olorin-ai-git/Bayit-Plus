@@ -3,7 +3,8 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Mic2, Library, BarChart3, Settings, DollarSign, Shield } from 'lucide-react';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
-import { GlassView, GlassButton } from '@bayit/shared/ui';
+import { GlassView, GlassButton, GlassPageHeader } from '@bayit/shared/ui';
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import { useDirection } from '@/hooks/useDirection';
 
 import VoiceConfigurationPanel from './components/VoiceConfigurationPanel';
@@ -27,16 +28,19 @@ export default function VoiceManagementPage() {
     { id: 'settings', label: t('admin.voiceManagement.tabs.settings'), icon: Settings },
   ];
 
+  const pageConfig = ADMIN_PAGE_CONFIG.voice;
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={[styles.title, { textAlign }]}>
-          {t('admin.voiceManagement.title')}
-        </Text>
-        <Text style={[styles.subtitle, { textAlign }]}>
-          {t('admin.voiceManagement.subtitle')}
-        </Text>
-      </View>
+      <GlassPageHeader
+        title={t('admin.voiceManagement.title')}
+        subtitle={t('admin.voiceManagement.subtitle')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        isRTL={isRTL}
+      />
 
       <View style={styles.tabsContainer}>
         {tabs.map((tab) => {

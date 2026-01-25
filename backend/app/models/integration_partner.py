@@ -22,6 +22,10 @@ WebhookEventType = Literal[
     "usage.threshold_reached",
     "error.occurred",
     "partner.updated",
+    "translation.started",
+    "translation.progress",
+    "translation.completed",
+    "translation.failed",
 ]
 
 
@@ -94,6 +98,10 @@ class IntegrationPartner(Document):
         description="List of event types to send to webhook",
     )
     webhook_retry_count: int = Field(default=3, ge=0, le=10)
+    progress_thresholds: List[int] = Field(
+        default_factory=lambda: [25, 50, 75],
+        description="Progress percentages at which to send translation.progress webhooks",
+    )
 
     # Metadata
     description: Optional[str] = Field(default=None)

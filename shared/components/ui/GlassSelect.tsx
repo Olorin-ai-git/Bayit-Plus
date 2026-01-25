@@ -163,7 +163,7 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
                       item.value === value && styles.selectedOptionText,
                       {
                         textAlign,
-                        color: item.value === value ? colors.primary : item.disabled ? colors.textMuted : colors.text
+                        color: item.value === value ? colors.primary.DEFAULT : item.disabled ? colors.textMuted : colors.text
                       }
                     ]}
                   >
@@ -172,7 +172,7 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
                   {item.value === value && (
                     <Text style={[
                       styles.checkmark,
-                      { color: colors.primary },
+                      { color: colors.primary.DEFAULT },
                       isRTL ? { marginRight: spacing.sm, marginLeft: 0 } : { marginLeft: spacing.sm }
                     ]}>
                       ✓

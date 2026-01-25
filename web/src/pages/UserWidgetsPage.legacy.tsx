@@ -213,7 +213,7 @@ export default function UserWidgetsPage() {
     try {
       // formData from WidgetFormModal already has the correct structure
       // Just pass it directly without restructuring
-      await adminWidgetsService.createPersonalWidget(formData);
+      await adminWidgetsService.createWidget(formData);
       setShowWidgetForm(false);
       setError(null);
       await loadWidgets();
@@ -249,7 +249,7 @@ export default function UserWidgetsPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      await adminWidgetsService.deletePersonalWidget(id);
+      await adminWidgetsService.deleteWidget(id);
       setWidgets((prev) => prev.filter((w) => w.id !== id));
     } catch (err) {
       logger.error('Failed to delete widget', 'UserWidgetsPage', err);

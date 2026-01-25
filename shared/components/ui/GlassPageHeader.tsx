@@ -36,11 +36,13 @@ export type PageType =
 
 interface PageHeaderProps {
   title: string;
+  subtitle?: string;
   pageType?: PageType;
   icon?: ReactNode | string;
   badge?: string | number;
   iconColor?: string;
   iconBackgroundColor?: string;
+  action?: ReactNode;
   style?: ViewStyle;
   titleStyle?: TextStyle;
   isRTL?: boolean;
@@ -97,11 +99,13 @@ const DEFAULT_ICON_COLORS: Record<PageType, string> = {
  */
 export function GlassPageHeader({
   title,
+  subtitle,
   pageType,
   icon,
   badge,
   iconColor,
   iconBackgroundColor,
+  action,
   style,
   titleStyle,
   isRTL = false,
@@ -156,19 +160,37 @@ export function GlassPageHeader({
       ]}
     >
       {renderIcon()}
-      <Text
-        style={[
-          styles.title,
-          isRTL && styles.titleRTL,
-          titleStyle,
-        ]}
-        numberOfLines={1}
-      >
-        {title}
-      </Text>
+      <View style={[styles.titleContainer, isRTL && styles.titleContainerRTL]}>
+        <Text
+          style={[
+            styles.title,
+            isRTL && styles.titleRTL,
+            titleStyle,
+          ]}
+          numberOfLines={1}
+        >
+          {title}
+        </Text>
+        {subtitle && (
+          <Text
+            style={[
+              styles.subtitle,
+              isRTL && styles.subtitleRTL,
+            ]}
+            numberOfLines={1}
+          >
+            {subtitle}
+          </Text>
+        )}
+      </View>
       {badge !== undefined && (
         <View style={styles.badgeContainer}>
           <Text style={styles.badgeText}>{badge}</Text>
+        </View>
+      )}
+      {action && (
+        <View style={styles.actionContainer}>
+          {action}
         </View>
       )}
     </View>
@@ -197,13 +219,27 @@ const styles = StyleSheet.create({
   emojiIcon: {
     fontSize: 24,
   },
+  titleContainer: {
+    flex: 1,
+    gap: spacing.xs,
+  },
+  titleContainerRTL: {
+    alignItems: 'flex-end',
+  },
   title: {
     fontSize: fontSize['3xl'],
     fontWeight: 'bold',
     color: colors.text,
-    flex: 1,
   },
   titleRTL: {
+    textAlign: 'right',
+  },
+  subtitle: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+  },
+  subtitleRTL: {
     textAlign: 'right',
   },
   badgeContainer: {
@@ -218,5 +254,8 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     fontWeight: '600',
     color: 'rgba(255, 255, 255, 0.7)',
+  },
+  actionContainer: {
+    marginLeft: spacing.sm,
   },
 });

@@ -100,7 +100,7 @@ export const AdminDashboardScreen: React.FC = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor={colors.primary}
+            tintColor={colors.primary.DEFAULT}
           />
         }
       >
@@ -114,7 +114,7 @@ export const AdminDashboardScreen: React.FC = () => {
               title={t('admin.stats.totalUsers', 'Total Users')}
               value={formatNumber(stats.total_users)}
               icon="👥"
-              color={colors.primary}
+              color={colors.primary.DEFAULT}
               onPress={() => navigation.navigate('UsersList')}
             />
             <StatCard
@@ -157,7 +157,7 @@ export const AdminDashboardScreen: React.FC = () => {
               title={t('admin.stats.revenueToday', 'Today')}
               value={formatCurrency(stats.revenue_today)}
               icon="📊"
-              color={colors.primary}
+              color={colors.primary.DEFAULT}
               trend={{ value: 15.3, isPositive: true }}
             />
             <StatCard
@@ -185,7 +185,7 @@ export const AdminDashboardScreen: React.FC = () => {
               title={t('admin.stats.activeSubscriptions', 'Active Subscriptions')}
               value={formatNumber(stats.active_subscriptions)}
               icon="📦"
-              color={colors.primary}
+              color={colors.primary.DEFAULT}
               onPress={() => navigation.navigate('Subscriptions')}
             />
             <StatCard
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
   retryButton: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: borderRadius.md,
   },
   retryText: {

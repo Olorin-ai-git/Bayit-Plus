@@ -57,10 +57,10 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
       <View style={[styles.nativeContainer, { top: spacing.xl * 2 }, handlePosition, style]}>
         <Pressable
           onPress={onToggle}
-          style={[styles.nativeButton, { borderColor: colors.primary }]}
+          style={[styles.nativeButton, { borderColor: colors.primary.DEFAULT }]}
         >
           <View style={styles.nativeIconContainer}>
-            <View style={[styles.nativeIcon, { color: colors.primary }]}>
+            <View style={[styles.nativeIcon, { color: colors.primary.DEFAULT }]}>
               {/* Use a simple arrow character */}
             </View>
           </View>
@@ -90,7 +90,7 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
           height: 44,
           borderRadius: borderRadius.md,
           backgroundColor: 'transparent',
-          border: `2px solid ${colors.primary}`,
+          border: `2px solid ${colors.primary.DEFAULT}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -102,7 +102,7 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
         }}
         onMouseEnter={(e) => {
           (e.currentTarget as HTMLDivElement).style.opacity = '1';
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = colors.primary + '30';
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = colors.primary.DEFAULT + '30';
           (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.05)';
         }}
         onMouseLeave={(e) => {
@@ -133,14 +133,14 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
             width: 6,
             height: 48,
             borderRadius: 3,
-            backgroundColor: isDragging ? colors.primary : colors.glassBorder,
+            backgroundColor: isDragging ? colors.primary.DEFAULT : colors.glassBorder,
             cursor: isDragging ? 'grabbing' : 'col-resize',
             opacity: isDragging ? 1 : 0.4,
             transition: isDragging ? 'none' : 'all 0.2s ease',
           }}
           onMouseEnter={(e) => {
             if (!isDragging) {
-              (e.currentTarget as HTMLDivElement).style.backgroundColor = colors.primary + '80';
+              (e.currentTarget as HTMLDivElement).style.backgroundColor = colors.primary.DEFAULT + '80';
               (e.currentTarget as HTMLDivElement).style.opacity = '0.8';
             }
           }}

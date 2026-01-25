@@ -21,7 +21,7 @@ COPY packages /build/packages
 # Copy backend directory
 COPY backend /build/backend
 
-# Install dependencies from backend directory
+# Install dependencies from backend directory (includes local packages as editable)
 WORKDIR /build/backend
 RUN poetry config virtualenvs.create false && \
     poetry install --only main --no-interaction --no-ansi
@@ -45,8 +45,8 @@ WORKDIR /app
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Copy local packages (needed for editable installs)
-COPY --from=builder /build/packages /packages
+# Copy local package source directories (needed for editable installs)
+COPY --from=builder /build/packages /app/packages
 
 # Copy application code
 COPY --chown=bayit:bayit backend/app ./app

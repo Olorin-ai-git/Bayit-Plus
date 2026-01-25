@@ -64,6 +64,26 @@ export {
 } from './GlassContentPlaceholder';
 export type { ContentPlaceholderType } from './GlassContentPlaceholder';
 
+// Hierarchical Table Components
+export { GlassHierarchicalTable } from './GlassHierarchicalTable';
+export type {
+  HierarchicalTableColumn,
+  HierarchicalTableRow,
+  HierarchicalTablePagination,
+  HierarchicalTableProps,
+} from './GlassHierarchicalTable';
+export {
+  ThumbnailCell,
+  TitleCell,
+  BadgeCell,
+  ActionsCell,
+  TextCell,
+  createViewAction,
+  createEditAction,
+  createDeleteAction,
+  createStarAction,
+} from './GlassHierarchicalTable.helpers';
+
 // Types
 export type { GlassModalProps, ModalType, ModalButton } from './GlassModal';
 export type { AlertButton, AlertOptions } from './GlassAlert';

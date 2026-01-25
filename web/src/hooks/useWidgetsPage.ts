@@ -70,7 +70,7 @@ export function useWidgetsPage() {
 
   const handleSaveWidget = async (formData: any) => {
     try {
-      await adminWidgetsService.createPersonalWidget(formData);
+      await adminWidgetsService.createWidget(formData);
       setShowWidgetForm(false);
       setError(null);
       await loadWidgets();
@@ -102,7 +102,7 @@ export function useWidgetsPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      await adminWidgetsService.deletePersonalWidget(id);
+      await adminWidgetsService.deleteWidget(id);
       setWidgets((prev) => prev.filter((w) => w.id !== id));
     } catch (err) {
       logger.error('Failed to delete widget', 'UserWidgetsPage', err);

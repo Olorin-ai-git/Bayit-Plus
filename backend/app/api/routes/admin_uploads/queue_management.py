@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.api.routes.admin_uploads.dependencies import (has_permission,
                                                        job_to_response)
+from app.core.exceptions import DuplicateUploadQueueError
 from app.models.admin import Permission
 from app.models.upload import (ContentType, UploadJob, UploadJobResponse,
                                UploadQueueResponse, UploadStatus)
@@ -46,6 +47,17 @@ async def enqueue_upload(
 
     except FileNotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except DuplicateUploadQueueError as e:
+        logger.warning(f"Duplicate upload attempt: {e.existing_job_id}")
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={
+                "message": "This file is already in the upload queue",
+                "filename": e.filename,
+                "existing_job_id": e.existing_job_id,
+                "action": "Please wait for the existing upload to complete or cancel it first",
+            },
+        )
     except Exception as e:
         logger.error(f"Failed to enqueue upload: {e}", exc_info=True)
         raise HTTPException(

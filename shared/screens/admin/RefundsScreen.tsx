@@ -10,9 +10,9 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { DataTable, Column } from '../../components/admin/DataTable';
 import { billingService, BillingFilter } from '../../services/adminApi';
@@ -23,6 +23,7 @@ import { getStatusColor } from '../../utils/adminConstants';
 
 export const RefundsScreen: React.FC = () => {
   const { t } = useTranslation();
+  const notifications = useNotifications();
   const [refunds, setRefunds] = useState<Refund[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,25 +65,25 @@ export const RefundsScreen: React.FC = () => {
   };
 
   const handleApprove = async (refund: Refund) => {
-    Alert.alert(
-      t('admin.refunds.approveConfirm', 'Approve Refund'),
-      t('admin.refunds.approveMessage', `Approve refund of $${refund.amount.toFixed(2)}?`),
-      [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-        {
-          text: t('admin.refunds.approve', 'Approve'),
-          onPress: async () => {
-            try {
-              await billingService.approveRefund(refund.id);
-              loadRefunds();
-              Alert.alert(t('admin.refunds.approved', 'Approved'), t('admin.refunds.approvedMessage', 'Refund has been approved.'));
-            } catch (error) {
-              console.error('Error approving refund:', error);
-            }
-          },
+    notifications.show({
+      level: 'warning',
+      title: t('admin.refunds.approveConfirm', 'Approve Refund'),
+      message: t('admin.refunds.approveMessage', `Approve refund of $${refund.amount.toFixed(2)}?`),
+      dismissable: true,
+      action: {
+        label: t('admin.refunds.approve', 'Approve'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await billingService.approveRefund(refund.id);
+            loadRefunds();
+            notifications.showSuccess(t('admin.refunds.approvedMessage', 'Refund has been approved.'), t('admin.refunds.approved', 'Approved'));
+          } catch (error) {
+            console.error('Error approving refund:', error);
+          }
         },
-      ]
-    );
+      },
+    });
   };
 
   const handleReject = (refund: Refund) => {
@@ -93,7 +94,7 @@ export const RefundsScreen: React.FC = () => {
 
   const handleConfirmReject = async () => {
     if (!selectedRefund || !rejectReason.trim()) {
-      Alert.alert(t('common.error', 'Error'), t('admin.refunds.reasonRequired', 'Rejection reason is required'));
+      notifications.showError(t('admin.refunds.reasonRequired', 'Rejection reason is required'), t('common.error', 'Error'));
       return;
     }
 
@@ -101,7 +102,7 @@ export const RefundsScreen: React.FC = () => {
       await billingService.rejectRefund(selectedRefund.id, rejectReason);
       setShowRejectModal(false);
       loadRefunds();
-      Alert.alert(t('admin.refunds.rejected', 'Rejected'), t('admin.refunds.rejectedMessage', 'Refund has been rejected.'));
+      notifications.showSuccess(t('admin.refunds.rejectedMessage', 'Refund has been rejected.'), t('admin.refunds.rejected', 'Rejected'));
     } catch (error) {
       console.error('Error rejecting refund:', error);
     }

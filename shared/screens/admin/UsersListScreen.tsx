@@ -11,11 +11,11 @@ import {
   TouchableOpacity,
   TextInput,
   Modal,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { DataTable, Column } from '../../components/admin/DataTable';
 import { usersService, UsersFilter } from '../../services/adminApi';
@@ -28,6 +28,7 @@ type UserStatus = 'active' | 'inactive' | 'all';
 
 export const UsersListScreen: React.FC = () => {
   const { t } = useTranslation();
+  const notifications = useNotifications();
   const navigation = useNavigation<any>();
 
   // State
@@ -106,25 +107,24 @@ export const UsersListScreen: React.FC = () => {
   };
 
   const handleDeleteUser = async (user: User) => {
-    Alert.alert(
-      t('admin.users.deleteConfirm', 'Delete User'),
-      t('admin.users.deleteMessage', `Are you sure you want to delete ${user.name}?`),
-      [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-        {
-          text: t('common.delete', 'Delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await usersService.deleteUser(user.id);
-              loadUsers();
-            } catch (error) {
-              console.error('Error deleting user:', error);
-            }
-          },
+    notifications.show({
+      level: 'warning',
+      title: t('admin.users.deleteConfirm', 'Delete User'),
+      message: t('admin.users.deleteMessage', `Are you sure you want to delete ${user.name}?`),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await usersService.deleteUser(user.id);
+            loadUsers();
+          } catch (error) {
+            console.error('Error deleting user:', error);
+          }
         },
-      ]
-    );
+      },
+    });
   };
 
   const handleBanUser = async (user: User) => {
@@ -139,10 +139,7 @@ export const UsersListScreen: React.FC = () => {
   const handleResetPassword = async (user: User) => {
     try {
       await usersService.resetPassword(user.id);
-      Alert.alert(
-        t('admin.users.passwordReset', 'Password Reset'),
-        t('admin.users.passwordResetSuccess', 'Password reset email sent successfully.')
-      );
+      notifications.showSuccess(t('admin.users.passwordResetSuccess', 'Password reset email sent successfully.'), t('admin.users.passwordReset', 'Password Reset'));
     } catch (error) {
       console.error('Error resetting password:', error);
     }
@@ -150,26 +147,25 @@ export const UsersListScreen: React.FC = () => {
 
   // Bulk actions
   const handleBulkDelete = async () => {
-    Alert.alert(
-      t('admin.users.bulkDeleteConfirm', 'Delete Selected Users'),
-      t('admin.users.bulkDeleteMessage', `Are you sure you want to delete ${selectedUsers.length} users?`),
-      [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-        {
-          text: t('common.delete', 'Delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await Promise.all(selectedUsers.map(id => usersService.deleteUser(id)));
-              setSelectedUsers([]);
-              loadUsers();
-            } catch (error) {
-              console.error('Error bulk deleting users:', error);
-            }
-          },
+    notifications.show({
+      level: 'warning',
+      title: t('admin.users.bulkDeleteConfirm', 'Delete Selected Users'),
+      message: t('admin.users.bulkDeleteMessage', `Are you sure you want to delete ${selectedUsers.length} users?`),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await Promise.all(selectedUsers.map(id => usersService.deleteUser(id)));
+            setSelectedUsers([]);
+            loadUsers();
+          } catch (error) {
+            console.error('Error bulk deleting users:', error);
+          }
         },
-      ]
-    );
+      },
+    });
   };
 
   const handleBulkBan = async () => {

@@ -544,6 +544,17 @@ class PodcastEpisode(Document):
     #   "tts_generated": {"tts_path": "/tmp/...", "timestamp": "..."}
     # }
 
+    # Progress tracking (real-time translation progress)
+    translation_progress: float = 0.0  # 0-100% weighted progress
+    translation_eta_seconds: Optional[int] = None  # Estimated seconds remaining
+    translation_started_at: Optional[datetime] = None  # When processing began
+    translation_stage_timings: Dict[str, Any] = Field(
+        default_factory=dict
+    )  # Stage-level metrics: {stage_name: {started_at, completed_at, duration_seconds}}
+    webhook_notifications_sent: List[str] = Field(
+        default_factory=list
+    )  # Track sent webhook events to prevent duplicates
+
     # Retry tracking
     retry_count: int = 0
     max_retries: int = 3
@@ -566,6 +577,51 @@ class PodcastEpisode(Document):
             ],
             "available_languages",  # For filtering by language support
         ]
+
+
+class TranslationStageMetrics(Document):
+    """
+    Store historical average durations for translation pipeline stages.
+    Used to calculate accurate ETAs for in-progress translations.
+    """
+
+    stage_name: str  # Stage identifier (e.g., "downloaded", "tts_generated")
+    avg_duration_seconds: float = 0.0  # Rolling average duration
+    sample_count: int = 0  # Number of samples used for average
+    total_duration_seconds: float = 0.0  # Total accumulated duration for average calculation
+    last_updated: datetime = Field(default_factory=datetime.utcnow)
+
+    class Settings:
+        name = "translation_stage_metrics"
+        indexes = [
+            IndexModel([("stage_name", pymongo.ASCENDING)], unique=True, name="stage_name_unique"),
+            "last_updated",
+        ]
+
+    @classmethod
+    async def update_stage_average(cls, stage_name: str, duration_seconds: float):
+        """
+        Update the rolling average for a stage.
+
+        Args:
+            stage_name: Stage identifier
+            duration_seconds: Duration of this stage execution
+        """
+        metric = await cls.find_one(cls.stage_name == stage_name)
+
+        if metric:
+            metric.sample_count += 1
+            metric.total_duration_seconds += duration_seconds
+            metric.avg_duration_seconds = metric.total_duration_seconds / metric.sample_count
+            metric.last_updated = datetime.utcnow()
+            await metric.save()
+        else:
+            await cls(
+                stage_name=stage_name,
+                avg_duration_seconds=duration_seconds,
+                sample_count=1,
+                total_duration_seconds=duration_seconds,
+            ).insert()
 
 
 def determine_quality_tier(height: int) -> str:

@@ -85,7 +85,7 @@ export const ChannelCardMobile: React.FC<ChannelCardMobileProps> = ({
 
         {/* Channel info */}
         <View className="p-2">
-          <Text className="text-xs font-bold mb-0.5" style={{ color: colors.primary }}>{channel.number}</Text>
+          <Text className="text-xs font-bold mb-0.5" style={{ color: colors.primary.DEFAULT }}>{channel.number}</Text>
           <Text className="text-sm font-semibold text-white mb-0.5" numberOfLines={1}>
             {channel.name}
           </Text>

@@ -2001,6 +2001,7 @@
       "queued": "En Cola",
       "andMore": "Y {{count}} más",
       "monitoredFolders": "Carpetas Monitoreadas",
+      "monitoredFoldersSubtitle": "Configure folders for automatic content monitoring and upload",
       "noMonitoredFolders": "No hay carpetas monitoreadas configuradas",
       "configureFoldersHelp": "Haga clic en 'Agregar Carpeta' para configurar carpetas monitoreadas para cargas automáticas",
       "addFolder": "Agregar Carpeta",
@@ -2010,6 +2011,8 @@
       "triggerUpload": "Activar Carga",
       "triggerUploadSuccess": "Escaneo de carga activado exitosamente",
       "triggerUploadFailed": "Error al activar escaneo de carga",
+      "noFilesFound": "No new files found in monitored folders",
+      "scanComplete": "Scan Complete",
       "clearQueue": "Limpiar Cola",
       "clearQueueConfirmTitle": "¿Limpiar Cola de Carga?",
       "clearQueueConfirmMessage": "Esto cancelará {{count}} trabajo(s) activo(s). Esta acción no se puede deshacer.",
@@ -2041,6 +2044,7 @@
         "namePlaceholder": "Mi Carpeta de Películas",
         "path": "Ruta de Carpeta",
         "pathHelp": "Ingrese la ruta del servidor a la carpeta (ej., /Volumes/USB Drive/Movies)",
+        "pathReadOnly": "Path cannot be changed after folder is created",
         "contentType": "Tipo de Contenido",
         "enabled": "Habilitado",
         "autoUpload": "Carga Automática"
@@ -2051,7 +2055,13 @@
         "audiobook": "Audiolibros"
       },
       "errors": {
-        "pathRequired": "La ruta de la carpeta es obligatoria"
+        "pathRequired": "La ruta de la carpeta es obligatoria",
+        "loadFailed": "Failed to load upload data",
+        "resumeFailed": "Failed to resume upload queue",
+        "clearFailed": "Failed to clear upload queue",
+        "triggerFailed": "Failed to trigger upload scan",
+        "saveFailed": "Failed to save folder configuration",
+        "deleteFailed": "Failed to delete folder"
       },
       "manualUpload": {
         "title": "Carga Manual",
@@ -2073,7 +2083,14 @@
         "invalidFileType": "Tipo de archivo no válido. Solo se admiten archivos de video.",
         "filesCount": "{{count}} archivo(s) seleccionado(s)",
         "pendingRestore": "{{count}} archivo(s) pendiente(s) de sesión anterior",
-        "pendingRestoreHint": "Arrastra o selecciona los mismos archivos para restaurar la cola de carga"
+        "pendingRestoreHint": "Arrastra o selecciona los mismos archivos para restaurar la cola de carga",
+        "invalidFiles": "{{count}} file(s) rejected - invalid type or too large",
+        "validationFailed": "Validation Failed",
+        "uploadFailedDetails": "Failed: {{files}}",
+        "uploadFiles": "Upload {{count}} file(s)",
+        "uploadComplete": "Upload Complete",
+        "successful": "{{count}} successful",
+        "failed": "{{count}} failed"
       }
     },
     "librarian": {

@@ -2,10 +2,11 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Activity, DollarSign, Clock, Play, Bot, FileText, Eye, Minus, Plus, MessageSquare, Settings } from 'lucide-react';
-import { GlassButton, GlassToggle, GlassStatCard, GlassBadge, GlassModal, GlassTextarea } from '@bayit/shared/ui';
+import { GlassButton, GlassToggle, GlassStatCard, GlassBadge, GlassModal, GlassTextarea, GlassPageHeader } from '@bayit/shared/ui';
 import { GlassLog, GlassTable, GlassDraggableExpander } from '@bayit/shared/ui/web';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
+import { ADMIN_PAGE_CONFIG } from '../../../../../shared/utils/adminConstants';
 import {
   getAuditReportDetails,
   clearAuditReports,
@@ -371,22 +372,28 @@ const LibrarianAgentPage = () => {
 
   const isAuditRunning = reports.some(r => r.status === 'in_progress');
 
+  const pageConfig = ADMIN_PAGE_CONFIG.librarian;
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
-        <View style={styles.headerTitleContainer}>
-          <Text style={[styles.headerTitle, { textAlign, color: colors.text }]}>
-            {t('admin.librarian.title')}
-          </Text>
-        </View>
-        <GlassButton
-          variant="ghost"
-          icon={<RefreshCw size={18} color={colors.text} />}
-          onPress={handleRefresh}
-          loading={refreshing}
-        />
-      </View>
+      {/* Page Header */}
+      <GlassPageHeader
+        title={t('admin.titles.librarian')}
+        subtitle={t('admin.librarian.subtitle')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        isRTL={isRTL}
+        action={
+          <GlassButton
+            variant="ghost"
+            icon={<RefreshCw size={18} color="white" />}
+            onPress={handleRefresh}
+            disabled={refreshing}
+          />
+        }
+      />
 
       {/* Status Bar - 3 stat cards inline */}
       <View style={[styles.statusBar, { flexDirection }]}>

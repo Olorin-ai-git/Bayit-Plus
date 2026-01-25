@@ -3,7 +3,7 @@
  * Centralized constants for admin dashboard icons, colors, and mappings
  */
 
-import { colors } from '../theme';
+import { colors } from '@olorin/design-tokens';
 
 // ============================================
 // Activity Icons
@@ -53,29 +53,29 @@ export const getCampaignTypeIcon = (type: string): string => {
 
 export const STATUS_COLORS: Record<string, string> = {
   // General statuses
-  active: colors.success,
+  active: colors.success.DEFAULT,
   inactive: colors.textMuted,
   pending: colors.warning,
 
   // Campaign statuses
   draft: colors.textMuted,
   scheduled: colors.warning,
-  ended: colors.error,
+  ended: colors.error.DEFAULT,
   paused: colors.secondary,
 
   // Transaction statuses
-  completed: colors.success,
-  failed: colors.error,
+  completed: colors.success.DEFAULT,
+  failed: colors.error.DEFAULT,
   refunded: colors.warning,
 
   // Refund statuses
-  approved: colors.success,
-  processed: colors.success,
-  rejected: colors.error,
+  approved: colors.success.DEFAULT,
+  processed: colors.success.DEFAULT,
+  rejected: colors.error.DEFAULT,
 
   // Marketing statuses
   sending: colors.warning,
-  sent: colors.success,
+  sent: colors.success.DEFAULT,
 };
 
 export const getStatusColor = (status: string): string => {
@@ -96,10 +96,10 @@ export const ROLE_LABELS: Record<string, string> = {
 };
 
 export const ROLE_COLORS: Record<string, string> = {
-  super_admin: colors.error,
+  super_admin: colors.error.DEFAULT,
   admin: colors.warning,
-  content_manager: colors.primary,
-  billing_admin: colors.success,
+  content_manager: colors.primary.DEFAULT,
+  billing_admin: colors.success.DEFAULT,
   support: colors.secondary,
   user: colors.textMuted,
 };
@@ -119,12 +119,12 @@ export const getRoleColor = (role: string): string => {
 export const PLAN_COLORS: Record<string, string> = {
   free: colors.textMuted,
   basic: colors.secondary,
-  premium: colors.primary,
-  family: colors.success,
+  premium: colors.primary.DEFAULT,
+  family: colors.success.DEFAULT,
 };
 
 export const getPlanColor = (plan: string): string => {
-  return PLAN_COLORS[plan.toLowerCase()] || colors.primary;
+  return PLAN_COLORS[plan.toLowerCase()] || colors.primary.DEFAULT;
 };
 
 // ============================================
@@ -141,4 +141,250 @@ export const PAYMENT_METHOD_ICONS: Record<string, string> = {
 
 export const getPaymentMethodIcon = (method: string): string => {
   return PAYMENT_METHOD_ICONS[method] || '💳';
+};
+
+// ============================================
+// Admin Page Icon Configuration
+// ============================================
+
+import type { LucideIcon } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Users,
+  UserCircle,
+  CreditCard,
+  Receipt,
+  RefreshCcw,
+  FileText,
+  Bell,
+  Mail,
+  Megaphone,
+  Edit3,
+  FolderTree,
+  FileEdit,
+  Library,
+  Star,
+  Radio,
+  Mic,
+  Headphones,
+  Video,
+  Upload,
+  Languages,
+  Bot,
+  Grid3x3,
+  Settings,
+  Layers,
+  DollarSign,
+  TrendingUp,
+  Mic2,
+} from 'lucide-react';
+
+export interface AdminPageConfig {
+  icon: LucideIcon;
+  iconColor: string;
+  iconBackgroundColor: string;
+  category: 'dashboard' | 'content' | 'users' | 'financial' | 'marketing' | 'technical' | 'settings';
+}
+
+/**
+ * Centralized admin page configuration
+ * Maps page keys to icons, colors, and metadata
+ * NO HARDCODED VALUES - all colors from design tokens
+ */
+export const ADMIN_PAGE_CONFIG: Record<string, AdminPageConfig> = {
+  // Dashboard & Overview (3 pages)
+  dashboard: {
+    icon: LayoutDashboard,
+    iconColor: colors.primary.DEFAULT,
+    iconBackgroundColor: `${colors.primary.DEFAULT}26`, // 15% opacity
+    category: 'dashboard',
+  },
+  billing: {
+    icon: DollarSign,
+    iconColor: colors.error.DEFAULT,
+    iconBackgroundColor: `${colors.error.DEFAULT}26`,
+    category: 'financial',
+  },
+  'marketing-dashboard': {
+    icon: TrendingUp,
+    iconColor: colors.secondary,
+    iconBackgroundColor: `${colors.secondary}26`,
+    category: 'marketing',
+  },
+
+  // Content Management (8 pages)
+  categories: {
+    icon: FolderTree,
+    iconColor: colors.info.DEFAULT,
+    iconBackgroundColor: `${colors.info.DEFAULT}26`,
+    category: 'content',
+  },
+  'content-editor': {
+    icon: FileEdit,
+    iconColor: colors.info.DEFAULT,
+    iconBackgroundColor: `${colors.info.DEFAULT}26`,
+    category: 'content',
+  },
+  'content-library': {
+    icon: Library,
+    iconColor: colors.info.DEFAULT,
+    iconBackgroundColor: `${colors.info.DEFAULT}26`,
+    category: 'content',
+  },
+  featured: {
+    icon: Star,
+    iconColor: colors.warning,
+    iconBackgroundColor: `${colors.warning}26`,
+    category: 'content',
+  },
+  'live-channels': {
+    icon: Radio,
+    iconColor: colors.error.DEFAULT,
+    iconBackgroundColor: `${colors.error.DEFAULT}26`,
+    category: 'content',
+  },
+  podcasts: {
+    icon: Mic,
+    iconColor: colors.primary.DEFAULT,
+    iconBackgroundColor: `${colors.primary.DEFAULT}26`,
+    category: 'content',
+  },
+  'podcast-episodes': {
+    icon: Headphones,
+    iconColor: colors.primary.DEFAULT,
+    iconBackgroundColor: `${colors.primary.DEFAULT}26`,
+    category: 'content',
+  },
+  'radio-stations': {
+    icon: Radio,
+    iconColor: colors.info.DEFAULT,
+    iconBackgroundColor: `${colors.info.DEFAULT}26`,
+    category: 'content',
+  },
+
+  // User & Subscription Management (5 pages)
+  users: {
+    icon: Users,
+    iconColor: colors.success.DEFAULT,
+    iconBackgroundColor: `${colors.success.DEFAULT}26`,
+    category: 'users',
+  },
+  'user-detail': {
+    icon: UserCircle,
+    iconColor: colors.success.DEFAULT,
+    iconBackgroundColor: `${colors.success.DEFAULT}26`,
+    category: 'users',
+  },
+  subscriptions: {
+    icon: CreditCard,
+    iconColor: colors.error.DEFAULT,
+    iconBackgroundColor: `${colors.error.DEFAULT}26`,
+    category: 'users',
+  },
+  plans: {
+    icon: Layers,
+    iconColor: colors.warning,
+    iconBackgroundColor: `${colors.warning}26`,
+    category: 'users',
+  },
+  recordings: {
+    icon: Video,
+    iconColor: colors.secondary,
+    iconBackgroundColor: `${colors.secondary}26`,
+    category: 'users',
+  },
+
+  // Financial & Billing (3 pages)
+  transactions: {
+    icon: Receipt,
+    iconColor: colors.error.DEFAULT,
+    iconBackgroundColor: `${colors.error.DEFAULT}26`,
+    category: 'financial',
+  },
+  refunds: {
+    icon: RefreshCcw,
+    iconColor: colors.warning,
+    iconBackgroundColor: `${colors.warning}26`,
+    category: 'financial',
+  },
+  'audit-logs': {
+    icon: FileText,
+    iconColor: colors.textMuted,
+    iconBackgroundColor: `${colors.textMuted}26`,
+    category: 'financial',
+  },
+
+  // Marketing & Communications (4 pages)
+  notifications: {
+    icon: Bell,
+    iconColor: colors.secondary,
+    iconBackgroundColor: `${colors.secondary}26`,
+    category: 'marketing',
+  },
+  'email-campaigns': {
+    icon: Mail,
+    iconColor: colors.secondary,
+    iconBackgroundColor: `${colors.secondary}26`,
+    category: 'marketing',
+  },
+  campaigns: {
+    icon: Megaphone,
+    iconColor: colors.secondary,
+    iconBackgroundColor: `${colors.secondary}26`,
+    category: 'marketing',
+  },
+  'campaign-edit': {
+    icon: Edit3,
+    iconColor: colors.secondary,
+    iconBackgroundColor: `${colors.secondary}26`,
+    category: 'marketing',
+  },
+
+  // Technical & System Tools (5 pages)
+  uploads: {
+    icon: Upload,
+    iconColor: colors.primary.DEFAULT,
+    iconBackgroundColor: `${colors.primary.DEFAULT}26`,
+    category: 'technical',
+  },
+  voice: {
+    icon: Mic2,
+    iconColor: colors.primary.DEFAULT,
+    iconBackgroundColor: `${colors.primary.DEFAULT}26`,
+    category: 'technical',
+  },
+  translation: {
+    icon: Languages,
+    iconColor: colors.primary.DEFAULT,
+    iconBackgroundColor: `${colors.primary.DEFAULT}26`,
+    category: 'technical',
+  },
+  librarian: {
+    icon: Bot,
+    iconColor: colors.primary.DEFAULT,
+    iconBackgroundColor: `${colors.primary.DEFAULT}26`,
+    category: 'technical',
+  },
+  widgets: {
+    icon: Grid3x3,
+    iconColor: colors.primary.DEFAULT,
+    iconBackgroundColor: `${colors.primary.DEFAULT}26`,
+    category: 'technical',
+  },
+
+  // Settings & Configuration (1 page)
+  settings: {
+    icon: Settings,
+    iconColor: colors.textMuted,
+    iconBackgroundColor: `${colors.textMuted}26`,
+    category: 'settings',
+  },
+};
+
+/**
+ * Get admin page configuration by page key
+ * Returns null if page key not found
+ */
+export const getAdminPageConfig = (pageKey: string): AdminPageConfig | null => {
+  return ADMIN_PAGE_CONFIG[pageKey] || null;
 };

@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { Plus, Edit2, Trash2, Check } from 'lucide-react';
 import { subscriptionsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
-import { GlassCard, GlassButton, GlassModal, GlassToggle, GlassInput } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal, GlassToggle, GlassInput, GlassPageHeader } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import logger from '@/utils/logger';
 
 interface Plan {
@@ -131,15 +132,28 @@ export default function PlanManagementPage() {
     setShowDeleteConfirm(true);
   };
 
+  const pageConfig = ADMIN_PAGE_CONFIG.plans;
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ padding: spacing.lg }}>
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.plans.title')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.plans.subtitle')}</Text>
-        </View>
-        <GlassButton title={t('admin.plans.createButton')} variant="primary" icon={<Plus size={16} color="white" />} onPress={openCreateModal} />
-      </View>
+      <GlassPageHeader
+        title={t('admin.plans.title')}
+        subtitle={t('admin.plans.subtitle')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        badge={plans.length}
+        isRTL={isRTL}
+        action={
+          <GlassButton
+            title={t('admin.plans.createButton')}
+            variant="primary"
+            icon={<Plus size={16} color="white" />}
+            onPress={openCreateModal}
+          />
+        }
+      />
 
       <View style={styles.plansGrid}>
         {plans.map((plan) => (
@@ -181,10 +195,12 @@ export default function PlanManagementPage() {
 
             <View style={styles.planActions}>
               <Pressable style={styles.actionButton} onPress={() => openEditModal(plan)}>
-                <Edit2 size={16} color={colors.primary} />
+                <Edit2 size={16} color={colors.primary.DEFAULT} />
+                <Text style={styles.actionButtonText}>{t('common.edit', 'Edit')}</Text>
               </Pressable>
               <Pressable style={styles.actionButton} onPress={() => handleDelete(plan)}>
-                <Trash2 size={16} color={colors.error} />
+                <Trash2 size={16} color={colors.error.DEFAULT} />
+                <Text style={styles.actionButtonText}>{t('common.delete', 'Delete')}</Text>
               </Pressable>
             </View>
           </GlassCard>
@@ -396,11 +412,19 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
     padding: spacing.sm,
     backgroundColor: colors.glass,
     borderRadius: borderRadius.md,
     borderWidth: 1,
     borderColor: colors.glassBorder,
+  },
+  actionButtonText: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+    fontWeight: '500',
   },
   modalContent: {
     gap: spacing.md,

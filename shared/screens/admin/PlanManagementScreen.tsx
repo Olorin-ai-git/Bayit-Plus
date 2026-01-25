@@ -12,10 +12,10 @@ import {
   Modal,
   TextInput,
   Switch,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { subscriptionsService, SubscriptionPlan } from '../../services/adminApi';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
@@ -24,6 +24,7 @@ import { getPlanColor } from '../../utils/adminConstants';
 
 export const PlanManagementScreen: React.FC = () => {
   const { t } = useTranslation();
+  const notifications = useNotifications();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -87,7 +88,7 @@ export const PlanManagementScreen: React.FC = () => {
 
   const handleSavePlan = async () => {
     if (!formData.name.trim() || !formData.price) {
-      Alert.alert(t('common.error', 'Error'), t('admin.plans.requiredFields', 'Name and price are required'));
+      notifications.showError(t('admin.plans.requiredFields', 'Name and price are required'), t('common.error', 'Error'));
       return;
     }
 
@@ -111,40 +112,39 @@ export const PlanManagementScreen: React.FC = () => {
 
       setShowPlanModal(false);
       loadPlans();
-      Alert.alert(
-        t('common.success', 'Success'),
+      notifications.showSuccess(
         editingPlan
           ? t('admin.plans.updated', 'Plan updated successfully')
-          : t('admin.plans.created', 'Plan created successfully')
+          : t('admin.plans.created', 'Plan created successfully'),
+        t('common.success', 'Success')
       );
     } catch (error) {
       console.error('Error saving plan:', error);
-      Alert.alert(t('common.error', 'Error'), t('admin.plans.saveError', 'Failed to save plan'));
+      notifications.showError(t('admin.plans.saveError', 'Failed to save plan'), t('common.error', 'Error'));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeletePlan = async (plan: SubscriptionPlan) => {
-    Alert.alert(
-      t('admin.plans.deleteConfirm', 'Delete Plan'),
-      t('admin.plans.deleteMessage', `Are you sure you want to delete "${plan.name}"?`),
-      [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-        {
-          text: t('common.delete', 'Delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await subscriptionsService.deletePlan(plan.id);
-              loadPlans();
-            } catch (error) {
-              console.error('Error deleting plan:', error);
-            }
-          },
+    notifications.show({
+      level: 'warning',
+      title: t('admin.plans.deleteConfirm', 'Delete Plan'),
+      message: t('admin.plans.deleteMessage', `Are you sure you want to delete "${plan.name}"?`),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await subscriptionsService.deletePlan(plan.id);
+            loadPlans();
+          } catch (error) {
+            console.error('Error deleting plan:', error);
+          }
         },
-      ]
-    );
+      },
+    });
   };
 
   const handleAddFeature = () => {

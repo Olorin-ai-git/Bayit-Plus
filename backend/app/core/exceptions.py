@@ -94,3 +94,14 @@ class TransactionRollbackError(UploadIntegrityError):
             f"Transaction rollback failed for job {job_id}: "
             f"{len(failed_compensations)} compensation(s) failed"
         )
+
+
+class DuplicateUploadQueueError(UploadIntegrityError):
+    """Raised when a file with the same name is already in the upload queue"""
+
+    def __init__(self, filename: str, existing_job_id: str):
+        self.filename = filename
+        self.existing_job_id = existing_job_id
+        super().__init__(
+            f"File already in upload queue: {filename} (job: {existing_job_id})"
+        )

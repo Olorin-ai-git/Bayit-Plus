@@ -3,11 +3,12 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { RefreshCw, Languages, AlertCircle, Clock, CheckCircle, XCircle } from 'lucide-react'
-import { GlassButton } from '@bayit/shared/ui'
+import { GlassButton, GlassPageHeader } from '@bayit/shared/ui'
 import { GlassTable } from '@bayit/shared/ui/web'
 import { adminPodcastEpisodesService, FailedTranslationItem, TranslationStatusResponse } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import logger from '@/utils/logger'
 import type { PaginatedResponse } from '@/types/content'
 
@@ -152,27 +153,32 @@ export default function TranslationDashboardPage() {
     },
   ]
 
+  const pageConfig = ADMIN_PAGE_CONFIG.translation;
+  const IconComponent = pageConfig.icon;
+  const totalTranslations = (stats?.pending || 0) + (stats?.processing || 0) + (stats?.completed || 0) + (stats?.failed || 0);
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>
-            {t('admin.translation.title', 'Translation Dashboard')}
-          </Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
-            {t('admin.translation.subtitle', 'Monitor podcast episode translations')}
-          </Text>
-        </View>
-        <GlassButton
-          variant="secondary"
-          onPress={handleRefresh}
-          disabled={isRefreshing}
-          icon={<RefreshCw size={18} color={colors.text} style={isRefreshing ? styles.rotating : undefined} />}
-          accessibilityLabel={t('common.refreshData', { defaultValue: 'Refresh data' })}
-        >
-          {isRefreshing ? t('common.refreshing') : t('common.refresh', 'Refresh')}
-        </GlassButton>
-      </View>
+      <GlassPageHeader
+        title={t('admin.translation.title', 'Translation Dashboard')}
+        subtitle={t('admin.translation.subtitle', 'Monitor podcast episode translations')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        badge={totalTranslations}
+        isRTL={isRTL}
+        action={
+          <GlassButton
+            variant="secondary"
+            onPress={handleRefresh}
+            disabled={isRefreshing}
+            icon={<RefreshCw size={18} color="white" style={isRefreshing ? styles.rotating : undefined} />}
+            accessibilityLabel={t('common.refreshData', { defaultValue: 'Refresh data' })}
+          >
+            {isRefreshing ? t('common.refreshing') : t('common.refresh', 'Refresh')}
+          </GlassButton>
+        }
+      />
 
       {error && (
         <View style={styles.errorContainer}>

@@ -10,9 +10,10 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  Alert,
+  StyleSheet,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { DataTable, Column } from '../../components/admin/DataTable';
 import { billingService, BillingFilter } from '../../services/adminApi';
@@ -23,6 +24,7 @@ import { getStatusColor, getPaymentMethodIcon } from '../../utils/adminConstants
 
 export const TransactionsScreen: React.FC = () => {
   const { t } = useTranslation();
+  const notifications = useNotifications();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalTransactions, setTotalTransactions] = useState(0);
@@ -91,12 +93,12 @@ export const TransactionsScreen: React.FC = () => {
 
     const amount = parseFloat(refundAmount);
     if (isNaN(amount) || amount <= 0 || amount > selectedTransaction.amount) {
-      Alert.alert(t('common.error', 'Error'), t('admin.transactions.invalidAmount', 'Invalid refund amount'));
+      notifications.showError(t('admin.transactions.invalidAmount', 'Invalid refund amount'), t('common.error', 'Error'));
       return;
     }
 
     if (!refundReason.trim()) {
-      Alert.alert(t('common.error', 'Error'), t('admin.transactions.reasonRequired', 'Refund reason is required'));
+      notifications.showError(t('admin.transactions.reasonRequired', 'Refund reason is required'), t('common.error', 'Error'));
       return;
     }
 
@@ -106,14 +108,11 @@ export const TransactionsScreen: React.FC = () => {
         reason: refundReason,
       });
       setShowRefundModal(false);
-      Alert.alert(
-        t('admin.transactions.refundProcessed', 'Refund Processed'),
-        t('admin.transactions.refundSuccess', 'The refund has been processed successfully.')
-      );
+      notifications.showSuccess(t('admin.transactions.refundSuccess', 'The refund has been processed successfully.'), t('admin.transactions.refundProcessed', 'Refund Processed'));
       loadTransactions();
     } catch (error) {
       console.error('Error processing refund:', error);
-      Alert.alert(t('common.error', 'Error'), t('admin.transactions.refundError', 'Failed to process refund'));
+      notifications.showError(t('admin.transactions.refundError', 'Failed to process refund'), t('common.error', 'Error'));
     }
   };
 
@@ -121,10 +120,7 @@ export const TransactionsScreen: React.FC = () => {
     try {
       const blob = await billingService.exportTransactions(filters);
       // In a real app, this would trigger a download
-      Alert.alert(
-        t('admin.transactions.exportSuccess', 'Export Ready'),
-        t('admin.transactions.exportMessage', 'Transaction data has been exported.')
-      );
+      notifications.showSuccess(t('admin.transactions.exportMessage', 'Transaction data has been exported.'), t('admin.transactions.exportSuccess', 'Export Ready'));
     } catch (error) {
       console.error('Error exporting transactions:', error);
     }
@@ -133,10 +129,7 @@ export const TransactionsScreen: React.FC = () => {
   const handleGenerateInvoice = async (transaction: Transaction) => {
     try {
       await billingService.generateInvoice(transaction.id);
-      Alert.alert(
-        t('admin.transactions.invoiceGenerated', 'Invoice Generated'),
-        t('admin.transactions.invoiceMessage', 'Invoice has been generated and is ready for download.')
-      );
+      notifications.showSuccess(t('admin.transactions.invoiceMessage', 'Invoice has been generated and is ready for download.'), t('admin.transactions.invoiceGenerated', 'Invoice Generated'));
     } catch (error) {
       console.error('Error generating invoice:', error);
     }
@@ -491,5 +484,349 @@ export const TransactionsScreen: React.FC = () => {
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  summaryCards: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  summaryCard: {
+    flex: 1,
+    backgroundColor: colors.backgroundLighter,
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  summaryValue: {
+    fontSize: fontSize.xl,
+    color: colors.text,
+    fontWeight: 'bold',
+    marginBottom: spacing.xs,
+  },
+  summaryLabel: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+  },
+  userText: {
+    fontSize: fontSize.xs,
+    color: colors.textSecondary,
+    fontFamily: 'monospace',
+  },
+  descriptionText: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  amountText: {
+    fontSize: fontSize.md,
+    fontWeight: '600',
+  },
+  methodText: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    textTransform: 'capitalize',
+  },
+  statusBadge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.sm,
+  },
+  statusText: {
+    fontSize: fontSize.xs,
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  dateText: {
+    fontSize: fontSize.xs,
+    color: colors.textSecondary,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+  },
+  actionButton: {
+    width: 30,
+    height: 30,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.backgroundLighter,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  actionIcon: {
+    fontSize: 14,
+  },
+  refundButton: {
+    backgroundColor: colors.error + '20',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  filterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.backgroundLighter,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  filterButtonIcon: {
+    fontSize: 16,
+    marginRight: spacing.xs,
+  },
+  filterButtonText: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  exportButton: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.md,
+  },
+  exportButtonText: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+    fontWeight: '600',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '90%',
+    maxWidth: 500,
+    backgroundColor: colors.backgroundLight,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  modalTitle: {
+    fontSize: fontSize.xl,
+    color: colors.text,
+    fontWeight: 'bold',
+    marginBottom: spacing.lg,
+  },
+  filterSection: {
+    marginBottom: spacing.lg,
+  },
+  filterLabel: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
+  },
+  filterOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
+  },
+  filterOption: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.backgroundLighter,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  filterOptionActive: {
+    backgroundColor: colors.primary + '30',
+    borderColor: colors.primary,
+  },
+  filterOptionText: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    textTransform: 'capitalize',
+  },
+  filterOptionTextActive: {
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  dateInputs: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  dateInput: {
+    flex: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.backgroundLighter,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  amountInputs: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  amountInput: {
+    flex: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.backgroundLighter,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  amountSeparator: {
+    fontSize: fontSize.md,
+    color: colors.textSecondary,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.sm,
+    marginTop: spacing.lg,
+  },
+  modalClearButton: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.backgroundLighter,
+    borderRadius: borderRadius.md,
+  },
+  modalClearText: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+  },
+  modalApplyButton: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.md,
+  },
+  modalApplyText: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+    fontWeight: '600',
+  },
+  detailsModal: {
+    width: '90%',
+    maxWidth: 600,
+    backgroundColor: colors.backgroundLight,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  detailsList: {
+    marginBottom: spacing.lg,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+  },
+  detailLabel: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+  },
+  detailValue: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+    fontFamily: 'monospace',
+  },
+  detailsActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.sm,
+  },
+  refundDetailButton: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.error + '20',
+    borderRadius: borderRadius.md,
+  },
+  refundDetailButtonText: {
+    fontSize: fontSize.sm,
+    color: colors.error,
+    fontWeight: '600',
+  },
+  closeButton: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.backgroundLighter,
+    borderRadius: borderRadius.md,
+  },
+  closeButtonText: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  refundModal: {
+    width: '90%',
+    maxWidth: 500,
+    backgroundColor: colors.backgroundLight,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  refundInfo: {
+    fontSize: fontSize.md,
+    color: colors.textSecondary,
+    marginBottom: spacing.lg,
+  },
+  formGroup: {
+    marginBottom: spacing.lg,
+  },
+  formLabel: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
+  },
+  formInput: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.backgroundLighter,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  textArea: {
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+  refundActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.sm,
+  },
+  cancelRefundButton: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.backgroundLighter,
+    borderRadius: borderRadius.md,
+  },
+  cancelRefundText: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+  },
+  confirmRefundButton: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.error,
+    borderRadius: borderRadius.md,
+  },
+  confirmRefundText: {
+    fontSize: fontSize.sm,
+    color: '#ffffff',
+    fontWeight: '600',
+  },
+});
 
 export default TransactionsScreen;

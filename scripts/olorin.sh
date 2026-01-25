@@ -34,6 +34,9 @@ readonly PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # Default platform
 readonly DEFAULT_PLATFORM="${OLORIN_PLATFORM:-bayit}"
 
+# Save original arguments for TypeScript CLI delegation
+ORIGINAL_ARGS=("$@")
+
 # Command
 COMMAND="${1:-help}"
 shift || true
@@ -155,12 +158,20 @@ case "$COMMAND" in
         ;;
 
     stop)
-        log_warning "Stopping all services..."
-        pkill -f "turbo run dev" || true
-        pkill -f "uvicorn app.main:app" || true
-        pkill -f "vite" || true
-        pkill -f "webpack" || true
-        log_success "All services stopped"
+        # Delegate to TypeScript CLI for service orchestration
+        CLI_BIN="$PROJECT_ROOT/cli/bin/olorin.js"
+
+        if [ -f "$CLI_BIN" ] && [ -d "$PROJECT_ROOT/cli/dist" ]; then
+            exec node "$CLI_BIN" "${ORIGINAL_ARGS[@]}"
+        else
+            # Fallback to simple stop if CLI not built
+            log_warning "Stopping all services..."
+            pkill -f "turbo run dev" || true
+            pkill -f "uvicorn app.main:app" || true
+            pkill -f "vite" || true
+            pkill -f "webpack" || true
+            log_success "All services stopped"
+        fi
         ;;
 
     build)
@@ -202,9 +213,16 @@ case "$COMMAND" in
         exec "$SCRIPT_DIR/find-all-scripts.sh" "$@"
         ;;
 
-    # Status check: Fast native implementation
+    # Status check: Delegate to TypeScript CLI or fallback to bash
     status)
-        exec "$SCRIPT_DIR/olorin-status.sh" "$PLATFORM" "$@"
+        CLI_BIN="$PROJECT_ROOT/cli/bin/olorin.js"
+
+        if [ -f "$CLI_BIN" ] && [ -d "$PROJECT_ROOT/cli/dist" ]; then
+            exec node "$CLI_BIN" "${ORIGINAL_ARGS[@]}"
+        else
+            # Fallback to bash status script if CLI not built
+            exec "$SCRIPT_DIR/olorin-status.sh" "$PLATFORM" "$@"
+        fi
         ;;
 
     # Health check: Environment validation
@@ -212,12 +230,25 @@ case "$COMMAND" in
         exec "$SCRIPT_DIR/olorin-health.sh" "$@"
         ;;
 
-    # Complex workflows: Delegate to TypeScript CLI (Phase 2+)
+    # Complex workflows: Delegate to TypeScript CLI
     agent|skill|deploy|config)
-        log_error "Command '$COMMAND' not yet implemented"
-        log_info "This will be added in Phase 2 (TypeScript CLI)"
-        log_info "Expected: Week 2 of implementation"
-        exit 1
+        CLI_BIN="$PROJECT_ROOT/cli/bin/olorin.js"
+
+        if [ ! -f "$CLI_BIN" ]; then
+            log_error "TypeScript CLI not found at: $CLI_BIN"
+            log_info "Build the CLI first: cd cli && npm install && npm run build"
+            exit 1
+        fi
+
+        if [ ! -d "$PROJECT_ROOT/cli/dist" ]; then
+            log_error "TypeScript CLI not built"
+            log_info "Build the CLI: cd cli && npm run build"
+            exit 1
+        fi
+
+        # Delegate to TypeScript CLI with original arguments
+        # Pass all args as received (command + subcommand + options)
+        exec node "$CLI_BIN" "${ORIGINAL_ARGS[@]}"
         ;;
 
     # Help and discovery

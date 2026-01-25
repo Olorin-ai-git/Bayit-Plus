@@ -1,318 +1,653 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';;
+import { View, Text, Pressable, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Check, X } from 'lucide-react';
-import { GlassInput } from '@bayit/shared/ui';
-import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web';
-import StatCard from '@/components/admin/StatCard';
+import { RefreshCw, Check, X } from 'lucide-react';
 import { billingService } from '@/services/adminApi';
-import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassModal, GlassButton } from '@bayit/shared/ui';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
+import { GlassCard, GlassButton, GlassInput, GlassModal, GlassPageHeader } from '@bayit/shared/ui';
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import { useDirection } from '@/hooks/useDirection';
+import { useNotifications } from '@olorin/glass-ui/hooks';
+import StatCard from '@/components/admin/StatCard';
 import logger from '@/utils/logger';
 
 interface Refund {
   id: string;
   transaction_id: string;
-  user?: { name: string; email: string };
+  user_id: string;
+  user_email?: string;
+  user_name?: string;
   amount: number;
-  reason: string;
-  status: 'pending' | 'approved' | 'rejected';
-  rejection_reason?: string;
-  created_at: string;
+  reason?: string;
+  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  requested_at: string;
   processed_at?: string;
 }
 
-interface Pagination {
-  page: number;
-  pageSize: number;
+interface RefundStats {
   total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+  total_amount: number;
 }
 
-const statusColors: Record<string, { bg: string; text: string }> = {
-  pending: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B' },
-  approved: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E' },
-  rejected: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444' },
-};
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+const statusColors = {
+  pending: { bg: 'rgba(251, 191, 36, 0.1)', text: colors.warning },
+  approved: { bg: 'rgba(34, 197, 94, 0.1)', text: colors.success.DEFAULT },
+  rejected: { bg: 'rgba(239, 68, 68, 0.1)', text: colors.error.DEFAULT },
+  completed: { bg: 'rgba(107, 114, 128, 0.1)', text: colors.textMuted },
 };
 
 export default function RefundsPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
+  const notifications = useNotifications();
+
   const [refunds, setRefunds] = useState<Refund[]>([]);
+  const [stats, setStats] = useState<RefundStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 });
-  const [statusFilter, setStatusFilter] = useState('');
-  const [showRejectModal, setShowRejectModal] = useState(false);
-  const [showApproveConfirm, setShowApproveConfirm] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('pending');
+  const [showFilters, setShowFilters] = useState(false);
   const [selectedRefund, setSelectedRefund] = useState<Refund | null>(null);
-  const [rejectReason, setRejectReason] = useState('');
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const pageSize = 20;
 
   const loadRefunds = useCallback(async () => {
-    setLoading(true);
     try {
-      const data = await billingService.getRefunds({
-        status: statusFilter,
-        page: pagination.page,
-        page_size: pagination.pageSize,
-      });
-      setRefunds(data.items || []);
-      setPagination((prev) => ({ ...prev, total: data.total || 0 }));
-    } catch (error) {
-      logger.error('Failed to load refunds', 'RefundsPage', error);
+      const filters: any = {
+        page,
+        page_size: pageSize,
+      };
+
+      if (searchQuery) filters.search = searchQuery;
+      if (statusFilter !== 'all') filters.status = statusFilter;
+
+      const response = await billingService.getRefunds(filters);
+      const items = Array.isArray(response) ? response : response?.items || [];
+      const totalCount = Array.isArray(response) ? response.length : response?.total || 0;
+
+      setRefunds(items.filter((item: any) => item != null));
+      setTotal(totalCount);
+
+      // Calculate stats
+      const statsData: RefundStats = {
+        total: totalCount,
+        pending: items.filter((r: Refund) => r?.status === 'pending').length,
+        approved: items.filter((r: Refund) => r?.status === 'approved').length,
+        rejected: items.filter((r: Refund) => r?.status === 'rejected').length,
+        total_amount: items
+          .filter((r: Refund) => r?.status === 'completed' || r?.status === 'approved')
+          .reduce((sum: number, r: Refund) => sum + (r?.amount || 0), 0),
+      };
+      setStats(statsData);
+    } catch (err: any) {
+      const message = err?.message || 'Failed to load refunds';
+      logger.error('Failed to load refunds', 'RefundsPage', err);
+      notifications.showError(message);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  }, [statusFilter, pagination.page, pagination.pageSize]);
+  }, [page, pageSize, searchQuery, statusFilter]);
 
   useEffect(() => {
     loadRefunds();
   }, [loadRefunds]);
 
-  const handlePageChange = (page: number) => {
-    setPagination((prev) => ({ ...prev, page }));
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadRefunds();
   };
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString(i18n.language === 'he' ? 'he-IL' : i18n.language === 'es' ? 'es-ES' : 'en-US', {
-      year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+  const handleApproveRefund = async (id: string) => {
+    try {
+      await billingService.approveRefund(id);
+      notifications.showSuccess(t('admin.refunds.approveSuccess', 'Refund approved'));
+      loadRefunds();
+    } catch (err: any) {
+      logger.error('Failed to approve refund', 'RefundsPage', err);
+      notifications.showError(t('admin.refunds.approveFailed', 'Failed to approve refund'));
+    }
+  };
+
+  const handleRejectRefund = async (id: string) => {
+    notifications.show({
+      level: 'warning',
+      message: t('admin.refunds.confirmReject', 'Are you sure you want to reject this refund?'),
+      dismissable: true,
+      action: {
+        label: t('common.confirm', 'Confirm'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await billingService.rejectRefund(id);
+            notifications.showSuccess(t('admin.refunds.rejectSuccess', 'Refund rejected'));
+            loadRefunds();
+          } catch (err: any) {
+            logger.error('Failed to reject refund', 'RefundsPage', err);
+            notifications.showError(t('admin.refunds.rejectFailed', 'Failed to reject refund'));
+          }
+        },
+      },
     });
   };
 
-  const handleApprove = (refund: Refund) => {
+  const handleViewDetails = (refund: Refund) => {
     setSelectedRefund(refund);
-    setShowApproveConfirm(true);
+    setShowDetailsModal(true);
   };
 
-  const handleConfirmApprove = async () => {
-    if (!selectedRefund) return;
-    try {
-      await billingService.approveRefund(selectedRefund.id);
-      setShowApproveConfirm(false);
-      loadRefunds();
-    } catch (error) {
-      logger.error('Failed to approve refund', 'RefundsPage', error);
-      setErrorMessage(t('common.errors.unexpected'));
-      setShowErrorModal(true);
-    }
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0);
   };
 
-  const handleReject = (refund: Refund) => {
-    setSelectedRefund(refund);
-    setRejectReason('');
-    setShowRejectModal(true);
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
-  const handleConfirmReject = async () => {
-    if (!selectedRefund || !rejectReason.trim()) {
-      setErrorMessage(t('admin.refunds.errors.rejectReasonRequired'));
-      setShowErrorModal(true);
-      return;
-    }
-    try {
-      await billingService.rejectRefund(selectedRefund.id, rejectReason);
-      setShowRejectModal(false);
-      loadRefunds();
-    } catch (error) {
-      logger.error('Failed to reject refund', 'RefundsPage', error);
-      setErrorMessage(t('common.errors.unexpected'));
-      setShowErrorModal(true);
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    const style = statusColors[status] || statusColors.pending;
+  if (loading) {
     return (
-      <View style={[styles.badge, { backgroundColor: style.bg }]}>
-        <Text style={[styles.badgeText, { color: style.text }]}>{t(`admin.refunds.status.${status}`)}</Text>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+        <Text style={styles.loadingText}>{t('common.loading', 'Loading...')}</Text>
       </View>
     );
-  };
+  }
 
-  const columns = [
-    {
-      key: 'id',
-      label: t('admin.refunds.columns.id'),
-      width: 100,
-      render: (id: string) => <Text style={styles.idText}>{id.slice(0, 8)}...</Text>,
-    },
-    {
-      key: 'user',
-      label: t('admin.refunds.columns.user'),
-      render: (_: any, refund: Refund) => (
-        <View>
-          <Text className="text-sm font-medium text-white">{refund.user?.name || 'N/A'}</Text>
-          <Text className="text-xs text-gray-400">{refund.user?.email || ''}</Text>
-        </View>
-      ),
-    },
-    {
-      key: 'amount',
-      label: t('admin.refunds.columns.amount'),
-      width: 100,
-      render: (_: any, refund: Refund) => (
-        <Text style={styles.amountText}>{formatCurrency(refund.amount)}</Text>
-      ),
-    },
-    {
-      key: 'reason',
-      label: t('admin.refunds.columns.reason'),
-      width: 200,
-      render: (reason: string) => (
-        <Text style={styles.reasonText} numberOfLines={2}>{reason}</Text>
-      ),
-    },
-    {
-      key: 'status',
-      label: t('admin.refunds.columns.status'),
-      width: 100,
-      render: (status: string) => getStatusBadge(status),
-    },
-    {
-      key: 'created_at',
-      label: t('admin.refunds.columns.requestDate'),
-      width: 150,
-      render: (date: string) => <Text style={styles.dateText}>{formatDate(date)}</Text>,
-    },
-    {
-      key: 'actions',
-      label: '',
-      width: 100,
-      render: (_: any, refund: Refund) => (
-        refund.status === 'pending' ? (
-          <View style={styles.actionsRow}>
-            <Pressable style={[styles.actionButton, styles.approveButton]} onPress={() => handleApprove(refund)}>
-              <Check size={16} color="#22C55E" />
-            </Pressable>
-            <Pressable style={[styles.actionButton, styles.rejectButton]} onPress={() => handleReject(refund)}>
-              <X size={16} color="#EF4444" />
-            </Pressable>
-          </View>
-        ) : null
-      ),
-    },
-  ];
-
-  const pendingCount = refunds.filter(r => r.status === 'pending').length;
-  const approvedCount = refunds.filter(r => r.status === 'approved').length;
-  const rejectedCount = refunds.filter(r => r.status === 'rejected').length;
-  const totalApproved = refunds.filter(r => r.status === 'approved').reduce((sum, r) => sum + r.amount, 0);
+  const pageConfig = ADMIN_PAGE_CONFIG.refunds;
+  const IconComponent = pageConfig.icon;
 
   return (
-    <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
-      <View className="flex flex-row justify-between items-start mb-6">
-        <View>
-          <Text className="text-2xl font-bold text-white">{t('admin.refunds.title')}</Text>
-          <Text className="text-sm text-gray-400 mt-1">{t('admin.refunds.subtitle')}</Text>
-        </View>
-      </View>
-
-      <View style={styles.summaryCards}>
-        <StatCard title={t('admin.refunds.stats.pendingTitle')} value={pendingCount.toString()} icon="⏳" color="warning" />
-        <StatCard title={t('admin.refunds.stats.approvedTitle')} value={approvedCount.toString()} icon="✅" color="success" />
-        <StatCard title={t('admin.refunds.stats.rejectedTitle')} value={rejectedCount.toString()} icon="❌" color="error" />
-        <StatCard title={t('admin.refunds.stats.totalRefunded')} value={formatCurrency(totalApproved)} icon="💰" color="primary" />
-      </View>
-
-      <View style={styles.filtersRow}>
-        {['', 'pending', 'approved', 'rejected'].map((status) => {
-          const getStatusLabel = (s: string) => {
-            if (s === '') return t('admin.common.all');
-            if (s === 'pending') return t('admin.refunds.status.pending');
-            if (s === 'approved') return t('admin.refunds.status.approved');
-            if (s === 'rejected') return t('admin.refunds.status.rejected');
-            return s;
-          };
-          return (
-            <Pressable
-              key={status}
-              onPress={() => setStatusFilter(status)}
-              style={[styles.filterButton, statusFilter === status && styles.filterButtonActive]}
-            >
-              <Text style={[styles.filterText, statusFilter === status && styles.filterTextActive]}>
-                {getStatusLabel(status)}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
-
-      <GlassTable
-        columns={columns}
-        data={refunds}
-        loading={loading}
-        pagination={pagination}
-        onPageChange={handlePageChange}
-        emptyMessage={t('admin.refunds.emptyMessage')}
-        searchable={false}
+    <ScrollView style={styles.container} contentContainerStyle={{ padding: spacing.lg }}>
+      <GlassPageHeader
+        title={t('admin.refunds.title', 'Refund Requests')}
+        subtitle={t('admin.refunds.subtitle', 'Review and process refund requests')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        badge={stats?.pending}
         isRTL={isRTL}
+        action={
+          <GlassButton
+            title={t('admin.dashboard.refresh', 'Refresh')}
+            variant="ghost"
+            icon={<RefreshCw size={16} color="white" />}
+            onPress={handleRefresh}
+            disabled={refreshing}
+          />
+        }
       />
 
-      <GlassModal
-        visible={showApproveConfirm}
-        onClose={() => setShowApproveConfirm(false)}
-        title={t('admin.refunds.approveModal.title')}
-      >
-        <View style={styles.modalContent}>
-          {selectedRefund && (
-            <Text style={styles.refundInfo}>
-              {t('admin.refunds.approveModal.message')} {formatCurrency(selectedRefund.amount)}?
-            </Text>
-          )}
-          <View className="flex flex-row gap-4 mt-6">
-            <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowApproveConfirm(false)} />
-            <GlassButton title={t('common.confirm')} variant="success" onPress={handleConfirmApprove} />
-          </View>
+      {/* Stats */}
+      {stats && (
+        <View style={styles.statsGrid}>
+          <StatCard
+            title={t('admin.refunds.stats.total', 'Total')}
+            value={stats.total.toString()}
+            icon="📊"
+            color="primary"
+          />
+          <StatCard
+            title={t('admin.refunds.stats.pending', 'Pending')}
+            value={stats.pending.toString()}
+            icon="⏳"
+            color="warning"
+          />
+          <StatCard
+            title={t('admin.refunds.stats.approved', 'Approved')}
+            value={stats.approved.toString()}
+            icon="✅"
+            color="success"
+          />
+          <StatCard
+            title={t('admin.refunds.stats.totalAmount', 'Total Amount')}
+            value={formatCurrency(stats.total_amount)}
+            icon="💰"
+            color="secondary"
+          />
         </View>
-      </GlassModal>
+      )}
 
-      <GlassModal
-        visible={showErrorModal}
-        onClose={() => setShowErrorModal(false)}
-        title={t('common.error')}
-      >
-        <View style={styles.modalContent}>
-          <Text className="flex-1 text-red-500 text-sm">{errorMessage}</Text>
-          <View className="flex flex-row gap-4 mt-6">
-            <GlassButton title={t('common.ok')} variant="success" onPress={() => setShowErrorModal(false)} />
-          </View>
-        </View>
-      </GlassModal>
+      {/* Search and Filters */}
+      <View style={[styles.filtersRow, { flexDirection }]}>
+        <GlassInput
+          placeholder={t('admin.refunds.search', 'Search refunds...')}
+          value={searchQuery}
+          onChangeText={(text) => { setSearchQuery(text); setPage(1); }}
+          containerStyle={styles.searchInput}
+        />
+      </View>
 
-      <GlassModal
-        visible={showRejectModal}
-        onClose={() => setShowRejectModal(false)}
-        title={t('admin.refunds.rejectModal.title')}
-      >
-        <View style={styles.modalContent}>
-          {selectedRefund && (
-            <Text style={styles.refundInfo}>
-              {t('admin.refunds.rejectModal.message')} {formatCurrency(selectedRefund.amount)}
+      {/* Status Filter Pills */}
+      <View style={[styles.filterPills, { flexDirection }]}>
+        {['all', 'pending', 'approved', 'rejected', 'completed'].map((status) => (
+          <Pressable
+            key={status}
+            style={[
+              styles.filterPill,
+              statusFilter === status && styles.filterPillActive,
+            ]}
+            onPress={() => { setStatusFilter(status); setPage(1); }}
+          >
+            <Text
+              style={[
+                styles.filterPillText,
+                statusFilter === status && styles.filterPillTextActive,
+              ]}
+            >
+              {t(`admin.refunds.status.${status}`, status)}
             </Text>
-          )}
-          <View style={styles.formGroup}>
-            <GlassInput
-              label={t('admin.refunds.rejectModal.reasonLabel')}
-              containerStyle={styles.textArea}
-              value={rejectReason}
-              onChangeText={setRejectReason}
-              placeholder={t('admin.refunds.rejectModal.reasonPlaceholder')}
-              multiline
-              numberOfLines={3}
-            />
-          </View>
-          <View className="flex flex-row gap-4 mt-6">
-            <GlassButton title={t('common.cancel')} variant="cancel" onPress={() => setShowRejectModal(false)} />
-            <GlassButton title={t('admin.refunds.rejectModal.submitButton')} variant="danger" onPress={handleConfirmReject} />
-          </View>
+          </Pressable>
+        ))}
+      </View>
+
+      {/* Refunds Table */}
+      <GlassCard style={styles.tableCard}>
+        {/* Table Header */}
+        <View style={[styles.tableHeader, { flexDirection }]}>
+          <Text style={[styles.tableHeaderText, styles.colId]}>ID</Text>
+          <Text style={[styles.tableHeaderText, styles.colUser]}>
+            {t('admin.refunds.columns.user', 'User')}
+          </Text>
+          <Text style={[styles.tableHeaderText, styles.colAmount]}>
+            {t('admin.refunds.columns.amount', 'Amount')}
+          </Text>
+          <Text style={[styles.tableHeaderText, styles.colReason]}>
+            {t('admin.refunds.columns.reason', 'Reason')}
+          </Text>
+          <Text style={[styles.tableHeaderText, styles.colStatus]}>
+            {t('admin.refunds.columns.status', 'Status')}
+          </Text>
+          <Text style={[styles.tableHeaderText, styles.colDate]}>
+            {t('admin.refunds.columns.date', 'Requested')}
+          </Text>
+          <Text style={[styles.tableHeaderText, styles.colActions]}>
+            {t('common.actions', 'Actions')}
+          </Text>
         </View>
+
+        {/* Table Body */}
+        {refunds.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateText}>
+              {t('admin.refunds.noData', 'No refund requests found')}
+            </Text>
+          </View>
+        ) : (
+          refunds.map((refund) => (
+            <View key={refund.id} style={[styles.tableRow, { flexDirection }]}>
+              <Text style={[styles.idText, styles.colId]}>{refund.id.slice(0, 8)}...</Text>
+              <View style={styles.colUser}>
+                <Text style={styles.userName}>{refund.user_name || '-'}</Text>
+                <Text style={styles.userEmail}>{refund.user_email || '-'}</Text>
+              </View>
+              <Text style={[styles.amountText, styles.colAmount]}>
+                {formatCurrency(refund.amount)}
+              </Text>
+              <Text style={[styles.reasonText, styles.colReason]} numberOfLines={1}>
+                {refund.reason || '-'}
+              </Text>
+              <View style={styles.colStatus}>
+                {refund.status && (
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      { backgroundColor: statusColors[refund.status]?.bg },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.statusText,
+                        { color: statusColors[refund.status]?.text },
+                      ]}
+                    >
+                      {t(`admin.refunds.status.${refund.status}`, refund.status)}
+                    </Text>
+                  </View>
+                )}
+              </View>
+              <Text style={[styles.dateText, styles.colDate]}>
+                {formatDate(refund.requested_at)}
+              </Text>
+              <View style={[styles.actionsRow, styles.colActions]}>
+                <Pressable
+                  style={styles.actionButton}
+                  onPress={() => handleViewDetails(refund)}
+                >
+                  <Text style={styles.actionText}>View</Text>
+                </Pressable>
+                {refund.status === 'pending' && (
+                  <>
+                    <Pressable
+                      style={[styles.actionButton, styles.successButton]}
+                      onPress={() => handleApproveRefund(refund.id)}
+                    >
+                      <Check size={14} color={colors.success.DEFAULT} />
+                      <Text style={styles.actionText}>Approve</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[styles.actionButton, styles.dangerButton]}
+                      onPress={() => handleRejectRefund(refund.id)}
+                    >
+                      <X size={14} color={colors.error.DEFAULT} />
+                      <Text style={styles.actionText}>Reject</Text>
+                    </Pressable>
+                  </>
+                )}
+              </View>
+            </View>
+          ))
+        )}
+      </GlassCard>
+
+      {/* Pagination */}
+      {total > pageSize && (
+        <View style={[styles.pagination, { flexDirection }]}>
+          <GlassButton
+            title={t('common.previous', 'Previous')}
+            variant="ghost"
+            onPress={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          />
+          <Text style={styles.pageInfo}>
+            {t('common.pageOf', `Page ${page} of ${Math.ceil(total / pageSize)}`)}
+          </Text>
+          <GlassButton
+            title={t('common.next', 'Next')}
+            variant="ghost"
+            onPress={() => setPage((p) => Math.min(Math.ceil(total / pageSize), p + 1))}
+            disabled={page >= Math.ceil(total / pageSize)}
+          />
+        </View>
+      )}
+
+      {/* Details Modal */}
+      <GlassModal
+        visible={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        title={t('admin.refunds.details', 'Refund Details')}
+      >
+        {selectedRefund && (
+          <View style={styles.modalContent}>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>ID:</Text>
+              <Text style={styles.detailValue}>{selectedRefund.id}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>{t('admin.refunds.columns.user', 'User')}:</Text>
+              <Text style={styles.detailValue}>{selectedRefund.user_name || '-'}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>{t('common.email', 'Email')}:</Text>
+              <Text style={styles.detailValue}>{selectedRefund.user_email || '-'}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>{t('admin.refunds.columns.amount', 'Amount')}:</Text>
+              <Text style={styles.detailValue}>{formatCurrency(selectedRefund.amount)}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>{t('admin.refunds.columns.status', 'Status')}:</Text>
+              <Text style={styles.detailValue}>{selectedRefund.status}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>{t('admin.refunds.columns.reason', 'Reason')}:</Text>
+              <Text style={styles.detailValue}>{selectedRefund.reason || '-'}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>{t('admin.refunds.columns.date', 'Requested')}:</Text>
+              <Text style={styles.detailValue}>{formatDate(selectedRefund.requested_at)}</Text>
+            </View>
+            {selectedRefund.processed_at && (
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>{t('admin.refunds.processedAt', 'Processed')}:</Text>
+                <Text style={styles.detailValue}>{formatDate(selectedRefund.processed_at)}</Text>
+              </View>
+            )}
+            <View style={styles.modalActions}>
+              <GlassButton
+                title={t('common.close', 'Close')}
+                variant="ghost"
+                onPress={() => setShowDetailsModal(false)}
+              />
+            </View>
+          </View>
+        )}
       </GlassModal>
     </ScrollView>
   );
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  loadingText: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+  },
+  header: {
+    marginBottom: spacing.xl,
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  pageTitle: {
+    fontSize: fontSize.xxl,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  subtitle: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+  },
+  headerActions: {
+    gap: spacing.sm,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  filtersRow: {
+    gap: spacing.md,
+    marginBottom: spacing.md,
+    alignItems: 'center',
+  },
+  searchInput: {
+    flex: 1,
+  },
+  filterPills: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  filterPill: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.full,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  filterPillActive: {
+    backgroundColor: colors.glassPurple,
+    borderColor: colors.primary.DEFAULT,
+  },
+  filterPillText: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    fontWeight: '500',
+  },
+  filterPillTextActive: {
+    color: colors.primary.DEFAULT,
+  },
+  tableCard: {
+    padding: 0,
+    overflow: 'hidden',
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    padding: spacing.md,
+    backgroundColor: colors.glass,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+  },
+  tableHeaderText: {
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+    alignItems: 'center',
+  },
+  colId: {
+    flex: 1,
+  },
+  colUser: {
+    flex: 2,
+  },
+  colAmount: {
+    flex: 1,
+  },
+  colReason: {
+    flex: 2,
+  },
+  colStatus: {
+    flex: 1,
+  },
+  colDate: {
+    flex: 1.5,
+  },
+  colActions: {
+    flex: 2,
+  },
+  idText: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+    fontFamily: 'monospace',
+  },
+  userName: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  userEmail: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+    marginTop: 2,
+  },
+  amountText: {
+    fontSize: fontSize.sm,
+    color: colors.primary.DEFAULT,
+    fontWeight: '600',
+  },
+  reasonText: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  statusBadge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.sm,
+    alignSelf: 'flex-start',
+  },
+  statusText: {
+    fontSize: fontSize.xs,
+    fontWeight: '500',
+  },
+  dateText: {
+    fontSize: fontSize.xs,
+    color: colors.textSecondary,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    backgroundColor: colors.glass,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  successButton: {
+    borderColor: colors.success.DEFAULT,
+  },
+  dangerButton: {
+    borderColor: colors.error.DEFAULT,
+  },
+  actionText: {
+    fontSize: fontSize.xs,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  emptyState: {
+    padding: spacing.xl,
+    alignItems: 'center',
+  },
+  emptyStateText: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+  },
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: spacing.lg,
+    gap: spacing.md,
+  },
+  pageInfo: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  modalContent: {
+    gap: spacing.md,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+  },
+  detailLabel: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+    fontWeight: '500',
+  },
+  detailValue: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+  },
+  modalActions: {
+    marginTop: spacing.md,
+  },
+});
