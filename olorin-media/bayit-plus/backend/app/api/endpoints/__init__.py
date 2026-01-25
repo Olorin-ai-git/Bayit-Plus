@@ -12,9 +12,9 @@ Includes:
 - Voice Command Processing (user commands)
 """
 
-from app.api.endpoints.tts_proxy import router as tts_router
-from app.api.endpoints.wake_word_proxy import router as wake_word_router
 from app.api.endpoints.analytics_proxy import router as analytics_router
+from app.api.endpoints.tts_proxy import router as tts_router
 from app.api.endpoints.voice_proxy import router as voice_router
+from app.api.endpoints.wake_word_proxy import router as wake_word_router
 
 __all__ = ["tts_router", "wake_word_router", "analytics_router", "voice_router"]

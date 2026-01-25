@@ -19,9 +19,13 @@ class TriviaFactModel(BaseModel):
     text: str = Field(..., min_length=1, description="Hebrew text (required)")
     text_en: str = Field(..., min_length=1, description="English text (required)")
     text_es: str = Field(..., min_length=1, description="Spanish text (required)")
-    trigger_time: Optional[float] = Field(None, ge=0, description="Seconds into content")
+    trigger_time: Optional[float] = Field(
+        None, ge=0, description="Seconds into content"
+    )
     trigger_type: str = Field("random", pattern="^(time|scene|actor|random)$")
-    category: str = Field(..., pattern="^(cast|production|location|cultural|historical)$")
+    category: str = Field(
+        ..., pattern="^(cast|production|location|cultural|historical)$"
+    )
     source: str = Field("manual", pattern="^(tmdb|ai|manual|cultural_reference)$")
     display_duration: int = Field(default=10, ge=5, le=30)
     priority: int = Field(default=5, ge=1, le=10)

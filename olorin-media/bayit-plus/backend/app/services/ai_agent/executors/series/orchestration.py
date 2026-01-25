@@ -22,7 +22,7 @@ async def execute_organize_all_series(
     include_hebrew: bool = True,
     *,
     audit_id: str,
-    dry_run: bool = False
+    dry_run: bool = False,
 ) -> Dict[str, Any]:
     """
     Organize all series: link episodes, sync posters, fix duplicates.

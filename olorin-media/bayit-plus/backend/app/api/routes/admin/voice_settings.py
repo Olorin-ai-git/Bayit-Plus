@@ -31,6 +31,7 @@ async def get_api_keys_status(
     Never exposes actual API keys
     """
     try:
+
         def mask_key(key: str) -> str:
             if not key:
                 return "NOT_CONFIGURED"
@@ -77,9 +78,7 @@ async def run_health_check(
         results = {}
         for prov in providers_to_check:
             try:
-                health = await VoiceManagementService.check_provider_health(
-                    prov
-                )
+                health = await VoiceManagementService.check_provider_health(prov)
                 results[prov] = health
             except Exception as e:
                 logger.error(f"Health check failed for {prov}: {e}")
@@ -122,14 +121,10 @@ async def get_provider_health_history(
                     "is_healthy": h.is_healthy,
                     "last_check_at": h.last_check_at.isoformat(),
                     "last_success_at": (
-                        h.last_success_at.isoformat()
-                        if h.last_success_at
-                        else None
+                        h.last_success_at.isoformat() if h.last_success_at else None
                     ),
                     "last_failure_at": (
-                        h.last_failure_at.isoformat()
-                        if h.last_failure_at
-                        else None
+                        h.last_failure_at.isoformat() if h.last_failure_at else None
                     ),
                     "consecutive_failures": h.consecutive_failures,
                     "avg_latency_ms": h.avg_latency_ms,
@@ -153,9 +148,11 @@ async def get_webhook_configuration(
         webhook_config = {
             "elevenlabs": {
                 "configured": bool(settings.ELEVENLABS_WEBHOOK_SECRET),
-                "endpoint_url": f"{settings.API_BASE_URL}/webhooks/elevenlabs"
-                if hasattr(settings, "API_BASE_URL")
-                else "NOT_CONFIGURED",
+                "endpoint_url": (
+                    f"{settings.API_BASE_URL}/webhooks/elevenlabs"
+                    if hasattr(settings, "API_BASE_URL")
+                    else "NOT_CONFIGURED"
+                ),
             },
         }
 

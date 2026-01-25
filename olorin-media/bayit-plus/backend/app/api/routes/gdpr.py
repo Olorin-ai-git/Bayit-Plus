@@ -41,8 +41,7 @@ async def delete_my_data(current_user: User = Depends(get_current_user)):
 
         # Log for audit trail
         logger.warning(
-            f"GDPR deletion confirmed - User: {current_user.id}, "
-            f"Result: {result}"
+            f"GDPR deletion confirmed - User: {current_user.id}, " f"Result: {result}"
         )
 
         return {
@@ -55,8 +54,7 @@ async def delete_my_data(current_user: User = Depends(get_current_user)):
     except Exception as e:
         logger.error(f"Error processing GDPR deletion: {str(e)}")
         raise HTTPException(
-            status_code=500,
-            detail="Failed to process data deletion request"
+            status_code=500, detail="Failed to process data deletion request"
         )
 
 
@@ -87,7 +85,7 @@ async def get_data_summary(current_user: User = Depends(get_current_user)):
                     "Dubbing sessions and transcripts",
                     "Session state and preferences",
                     "Usage metrics and analytics",
-                ]
+                ],
             },
             "last_activity": current_user.last_login,
             "deletion_request_available": True,
@@ -95,7 +93,4 @@ async def get_data_summary(current_user: User = Depends(get_current_user)):
 
     except Exception as e:
         logger.error(f"Error retrieving data summary: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail="Failed to retrieve data summary"
-        )
+        raise HTTPException(status_code=500, detail="Failed to retrieve data summary")

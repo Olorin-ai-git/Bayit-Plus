@@ -9,6 +9,7 @@ import {
   Animated,
   Pressable,
   Text,
+  StyleSheet,
 } from 'react-native';
 import Video, { OnLoadData, OnProgressData } from 'react-native-video';
 import { useTranslation } from 'react-i18next';
@@ -101,7 +102,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     <Animated.View className="absolute inset-0 bg-black z-[9999]" style={{ opacity: fadeAnim }}>
       <Video
         source={videoSource}
-        className="absolute inset-0"
+        style={styles.video}
         resizeMode="cover"
         onLoad={onVideoLoad}
         onEnd={onVideoEnd}
@@ -126,5 +127,15 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     </Animated.View>
   );
 };
+
+const styles = StyleSheet.create({
+  video: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
+});
 
 export default SplashScreen;

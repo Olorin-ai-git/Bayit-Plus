@@ -27,16 +27,23 @@ async def get_my_usage(current_user: User = Depends(get_current_active_user)):
     """
     # Rate limiting for API requests
     rate_limiter = await get_rate_limiter()
-    allowed, error_msg, reset_in = await rate_limiter.check_api_request(str(current_user.id), "my-usage")
+    allowed, error_msg, reset_in = await rate_limiter.check_api_request(
+        str(current_user.id), "my-usage"
+    )
     if not allowed:
-        raise HTTPException(status_code=429, detail=error_msg, headers={"Retry-After": str(reset_in)})
+        raise HTTPException(
+            status_code=429, detail=error_msg, headers={"Retry-After": str(reset_in)}
+        )
 
     try:
         stats = await live_feature_quota_service.get_usage_stats(str(current_user.id))
         return UsageStats(**stats)
     except Exception as e:
         import traceback
-        logger.error(f"Error fetching usage stats for user {current_user.id}: {type(e).__name__}: {e}")
+
+        logger.error(
+            f"Error fetching usage stats for user {current_user.id}: {type(e).__name__}: {e}"
+        )
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail="Failed to fetch usage stats")
 
@@ -61,9 +68,15 @@ async def check_availability(
     """
     # Rate limiting for quota checks
     rate_limiter = await get_rate_limiter()
-    allowed_rate, error_msg_rate, reset_in = await rate_limiter.check_quota_check_limit(str(current_user.id))
+    allowed_rate, error_msg_rate, reset_in = await rate_limiter.check_quota_check_limit(
+        str(current_user.id)
+    )
     if not allowed_rate:
-        raise HTTPException(status_code=429, detail=error_msg_rate, headers={"Retry-After": str(reset_in)})
+        raise HTTPException(
+            status_code=429,
+            detail=error_msg_rate,
+            headers={"Retry-After": str(reset_in)},
+        )
 
     try:
         allowed, error_msg, usage_stats = await live_feature_quota_service.check_quota(
@@ -105,9 +118,13 @@ async def get_session_history(
     """
     # Rate limiting for API requests
     rate_limiter = await get_rate_limiter()
-    allowed, error_msg, reset_in = await rate_limiter.check_api_request(str(current_user.id), "session-history")
+    allowed, error_msg, reset_in = await rate_limiter.check_api_request(
+        str(current_user.id), "session-history"
+    )
     if not allowed:
-        raise HTTPException(status_code=429, detail=error_msg, headers={"Retry-After": str(reset_in)})
+        raise HTTPException(
+            status_code=429, detail=error_msg, headers={"Retry-After": str(reset_in)}
+        )
 
     try:
         from app.models.live_feature_quota import LiveFeatureUsageSession

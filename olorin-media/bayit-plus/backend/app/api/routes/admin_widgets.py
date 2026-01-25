@@ -115,7 +115,9 @@ async def get_widget(
 @router.get("/widgets/check-name/{widget_title}")
 async def check_widget_name(
     widget_title: str,
-    exclude_id: Optional[str] = Query(None, description="Widget ID to exclude from check (for updates)"),
+    exclude_id: Optional[str] = Query(
+        None, description="Widget ID to exclude from check (for updates)"
+    ),
     current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
 ):
     """Check if a widget name already exists."""
@@ -127,10 +129,7 @@ async def check_widget_name(
 
     existing = await query.first_or_none()
 
-    return {
-        "exists": existing is not None,
-        "available": existing is None
-    }
+    return {"exists": existing is not None, "available": existing is None}
 
 
 @router.post("/widgets")

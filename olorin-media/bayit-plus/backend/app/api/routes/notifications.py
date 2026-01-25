@@ -11,15 +11,18 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from app.core.security import get_current_active_user, get_optional_user, get_current_admin_user
+from app.core.security import (get_current_active_user, get_current_admin_user,
+                               get_optional_user)
+from app.models.notification_event import (NotificationEvent,
+                                           NotificationMetrics)
 from app.models.user import User
-from app.models.notification_event import NotificationEvent, NotificationMetrics
 
 router = APIRouter()
 
 
 class NotificationEventCreate(BaseModel):
     """Request model for creating notification event."""
+
     notification_id: str
     level: str
     message: str
@@ -32,6 +35,7 @@ class NotificationEventCreate(BaseModel):
 
 class NotificationEventResponse(BaseModel):
     """Response model for notification event."""
+
     id: str
     notification_id: str
     user_id: Optional[str]
@@ -48,8 +52,7 @@ class NotificationEventResponse(BaseModel):
 
 @router.post("/events", response_model=dict)
 async def log_notification_event(
-    event: NotificationEventCreate,
-    user: User = Depends(get_optional_user)
+    event: NotificationEventCreate, user: User = Depends(get_optional_user)
 ):
     """
     Log a notification lifecycle event.
@@ -59,7 +62,9 @@ async def log_notification_event(
     # Calculate time to dismiss if applicable
     time_to_dismiss_ms = None
     if event.shown_at and event.dismissed_at:
-        time_to_dismiss_ms = int((event.dismissed_at - event.shown_at).total_seconds() * 1000)
+        time_to_dismiss_ms = int(
+            (event.dismissed_at - event.shown_at).total_seconds() * 1000
+        )
 
     # Create event document
     event_doc = NotificationEvent(
@@ -84,16 +89,20 @@ async def log_notification_event(
 async def get_notification_history(
     limit: int = Query(default=50, le=100),
     skip: int = Query(default=0, ge=0),
-    user: User = Depends(get_current_active_user)
+    user: User = Depends(get_current_active_user),
 ):
     """
     Get user's notification history.
 
     Returns paginated list of notifications the user has seen.
     """
-    events = await NotificationEvent.find(
-        NotificationEvent.user_id == str(user.id)
-    ).sort(-NotificationEvent.created_at).skip(skip).limit(limit).to_list()
+    events = (
+        await NotificationEvent.find(NotificationEvent.user_id == str(user.id))
+        .sort(-NotificationEvent.created_at)
+        .skip(skip)
+        .limit(limit)
+        .to_list()
+    )
 
     total = await NotificationEvent.find(
         NotificationEvent.user_id == str(user.id)
@@ -123,16 +132,14 @@ async def get_notification_analytics(
     start_date: str = Query(..., description="YYYY-MM-DD"),
     end_date: str = Query(..., description="YYYY-MM-DD"),
     platform: Optional[str] = Query(None, description="web, mobile, tv"),
-    admin_user: User = Depends(get_current_admin_user)
+    admin_user: User = Depends(get_current_admin_user),
 ):
     """
     Get notification analytics for admin dashboard.
 
     Returns aggregated metrics for the specified date range.
     """
-    query_filter = {
-        "date": {"$gte": start_date, "$lte": end_date}
-    }
+    query_filter = {"date": {"$gte": start_date, "$lte": end_date}}
 
     if platform:
         query_filter["platform"] = platform
@@ -161,7 +168,7 @@ async def get_notification_analytics(
 @router.delete("/admin/cleanup")
 async def cleanup_old_notifications(
     days: int = Query(default=90, description="Delete events older than N days"),
-    admin_user: User = Depends(get_current_admin_user)
+    admin_user: User = Depends(get_current_admin_user),
 ):
     """
     Cleanup old notification events.

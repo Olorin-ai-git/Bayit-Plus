@@ -42,16 +42,21 @@ class LiveFeatureRateLimiter:
                 now = datetime.utcnow()
                 for cache in [self._connection_attempts, self._api_requests]:
                     expired_keys = [
-                        k for k, v in cache.items()
+                        k
+                        for k, v in cache.items()
                         if not v or (now - v[-1]).total_seconds() > 3600
                     ]
                     for key in expired_keys:
                         del cache[key]
-                logger.debug(f"Cleaned up {len(expired_keys)} expired rate limit entries")
+                logger.debug(
+                    f"Cleaned up {len(expired_keys)} expired rate limit entries"
+                )
             except Exception as e:
                 logger.error(f"Error in rate limiter cleanup: {e}")
 
-    def _check_limit(self, cache: dict, key: str, limit: int, window_seconds: int) -> tuple[bool, int]:
+    def _check_limit(
+        self, cache: dict, key: str, limit: int, window_seconds: int
+    ) -> tuple[bool, int]:
         """Check if key is within rate limit"""
         now = datetime.utcnow()
         cutoff = now - timedelta(seconds=window_seconds)
@@ -70,7 +75,9 @@ class LiveFeatureRateLimiter:
         cache[key].append(now)
         return True, 0
 
-    async def check_websocket_connection(self, user_id: str) -> tuple[bool, Optional[str], int]:
+    async def check_websocket_connection(
+        self, user_id: str
+    ) -> tuple[bool, Optional[str], int]:
         """
         Check WebSocket connection rate limit (5 connections per minute)
         Returns: (allowed, error_message, reset_in_seconds)
@@ -79,7 +86,7 @@ class LiveFeatureRateLimiter:
             self._connection_attempts,
             f"ws:{user_id}",
             limit=settings.LIVE_QUOTA_WEBSOCKET_RATE_LIMIT,
-            window_seconds=60
+            window_seconds=60,
         )
         if not allowed:
             error_msg = f"WebSocket connection rate limit exceeded. Try again in {reset_in} seconds."
@@ -87,7 +94,9 @@ class LiveFeatureRateLimiter:
             return False, error_msg, reset_in
         return True, None, 0
 
-    async def check_api_request(self, user_id: str, endpoint: str) -> tuple[bool, Optional[str], int]:
+    async def check_api_request(
+        self, user_id: str, endpoint: str
+    ) -> tuple[bool, Optional[str], int]:
         """
         Check REST API rate limit (100 requests per minute)
         Returns: (allowed, error_message, reset_in_seconds)
@@ -96,7 +105,7 @@ class LiveFeatureRateLimiter:
             self._api_requests,
             f"api:{user_id}:{endpoint}",
             limit=settings.LIVE_QUOTA_API_RATE_LIMIT,
-            window_seconds=60
+            window_seconds=60,
         )
         if not allowed:
             error_msg = f"API rate limit exceeded. Try again in {reset_in} seconds."
@@ -104,7 +113,9 @@ class LiveFeatureRateLimiter:
             return False, error_msg, reset_in
         return True, None, 0
 
-    async def check_quota_check_limit(self, user_id: str) -> tuple[bool, Optional[str], int]:
+    async def check_quota_check_limit(
+        self, user_id: str
+    ) -> tuple[bool, Optional[str], int]:
         """
         Check quota check rate limit (20 checks per minute to prevent spam)
         Returns: (allowed, error_message, reset_in_seconds)
@@ -113,10 +124,12 @@ class LiveFeatureRateLimiter:
             self._api_requests,
             f"quota_check:{user_id}",
             limit=settings.LIVE_QUOTA_CHECK_RATE_LIMIT,
-            window_seconds=60
+            window_seconds=60,
         )
         if not allowed:
-            error_msg = f"Quota check rate limit exceeded. Try again in {reset_in} seconds."
+            error_msg = (
+                f"Quota check rate limit exceeded. Try again in {reset_in} seconds."
+            )
             logger.warning(f"Quota check rate limit exceeded for user {user_id}")
             return False, error_msg, reset_in
         return True, None, 0

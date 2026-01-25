@@ -60,6 +60,7 @@ module.exports = (env, argv) => {
         // React Native Web
         'react-native$': 'react-native-web',
         'react-native-linear-gradient': 'react-native-web-linear-gradient',
+        'react-native-reanimated': path.resolve(__dirname, 'src/utils/reanimatedShim.js'),
         // Voice detection
         'vosk-browser': path.resolve(__dirname, '../node_modules/vosk-browser/dist/vosk.js'),
         // Native module shims

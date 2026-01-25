@@ -14,6 +14,7 @@ import React from 'react';
 import { View, Image, Text, Pressable, Dimensions } from 'react-native';
 import { GlassView } from '@bayit/shared';
 import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
+import { GlassPlaceholder } from '@olorin/glass-ui';
 import { responsive } from '../utils/responsive';
 import { optimizeTMDBImageUrl } from '../utils/imageUtils';
 import { typography, spacing, borderRadius, colors } from '@olorin/design-tokens';
@@ -71,9 +72,15 @@ export const ContentCardMobile: React.FC<ContentCardMobileProps> = ({
               resizeMode="cover"
             />
           ) : (
-            <View className="w-full justify-center items-center" style={{ height: cardHeight, backgroundColor: colors.backgroundElevated }}>
-              <Text className="text-5xl opacity-30">🎬</Text>
-            </View>
+            <GlassPlaceholder
+              contentType="movie"
+              width={cardWidth}
+              height={cardHeight}
+              accessibilityRole="image"
+              accessibilityLabel={`${content.title} - Movie placeholder`}
+              contentTitle={content.title}
+              contentReason="unavailable"
+            />
           )}
 
           {/* Subtitle Flags */}

@@ -41,9 +41,7 @@ async def get_usage_charts(
                 detail="Period must be one of: day, week, month",
             )
 
-        data = await VoiceManagementService.get_usage_chart_data(
-            period, feature_type
-        )
+        data = await VoiceManagementService.get_usage_chart_data(period, feature_type)
         return {"success": True, "data": data}
     except HTTPException:
         raise
@@ -77,14 +75,10 @@ async def get_cost_breakdown(
         else:
             start = end - timedelta(days=30)
 
-        breakdown = await VoiceManagementService.get_cost_breakdown(
-            start, end
-        )
+        breakdown = await VoiceManagementService.get_cost_breakdown(start, end)
         return {"success": True, "breakdown": breakdown}
     except ValueError as e:
-        raise HTTPException(
-            status_code=400, detail=f"Invalid date format: {e}"
-        )
+        raise HTTPException(status_code=400, detail=f"Invalid date format: {e}")
     except Exception as e:
         logger.error(f"Error fetching cost breakdown: {e}")
         raise HTTPException(status_code=500, detail=str(e))

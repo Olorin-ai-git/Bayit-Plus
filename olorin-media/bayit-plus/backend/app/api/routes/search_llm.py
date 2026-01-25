@@ -12,11 +12,11 @@ import logging
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.api.routes.search_models import LLMSearchRequest
 from app.core.security import get_current_premium_user
 from app.models.search_analytics import SearchQuery
 from app.models.user import User
 from app.services.vod_llm_search_service import VODLLMSearchService
-from app.api.routes.search_models import LLMSearchRequest
 
 router = APIRouter(prefix="/search", tags=["search", "llm"])
 logger = logging.getLogger(__name__)

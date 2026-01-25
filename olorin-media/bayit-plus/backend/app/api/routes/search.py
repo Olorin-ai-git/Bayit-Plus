@@ -21,11 +21,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.core.security import get_optional_user
 from app.models.search_analytics import SearchQuery
 from app.models.user import User
-from app.services.unified_search_service import (
-    SearchFilters,
-    SearchResults,
-    UnifiedSearchService,
-)
+from app.services.unified_search_service import (SearchFilters, SearchResults,
+                                                 UnifiedSearchService)
 
 router = APIRouter(prefix="/search", tags=["search"])
 logger = logging.getLogger(__name__)

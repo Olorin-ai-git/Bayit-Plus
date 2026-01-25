@@ -86,7 +86,4 @@ export const API_BASE_URL = typeof import.meta !== 'undefined' && import.meta.en
   ? import.meta.env.VITE_API_URL
   : '/api/v1';
 
-// Log mode on startup
-console.log(`🎬 Bayit+ TV running in ${APP_MODE.toUpperCase()} mode`);
-
 export default config;

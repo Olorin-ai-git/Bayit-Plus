@@ -88,9 +88,7 @@ async def get_quota_defaults(
 @router.patch("/defaults")
 async def update_quota_defaults(
     update: QuotaDefaultsUpdate,
-    current_user: User = Depends(
-        has_permission(Permission.VOICE_QUOTA_MANAGE)
-    ),
+    current_user: User = Depends(has_permission(Permission.VOICE_QUOTA_MANAGE)),
 ):
     """
     Update tier-based quota defaults
@@ -133,9 +131,7 @@ async def get_user_quota(
                 "id": str(user.id) if user else user_id,
                 "email": user.email if user else None,
                 "name": user.name if user else None,
-                "subscription_tier": (
-                    user.subscription_tier if user else "basic"
-                ),
+                "subscription_tier": (user.subscription_tier if user else "basic"),
             },
             "quota": {
                 "subtitle_minutes_per_hour": quota.subtitle_minutes_per_hour,
@@ -157,9 +153,7 @@ async def get_user_quota(
 async def update_user_quota(
     user_id: str,
     update: UserQuotaUpdate,
-    current_user: User = Depends(
-        has_permission(Permission.VOICE_QUOTA_MANAGE)
-    ),
+    current_user: User = Depends(has_permission(Permission.VOICE_QUOTA_MANAGE)),
 ):
     """Override quota limits for a specific user"""
     try:
@@ -170,9 +164,7 @@ async def update_user_quota(
         }
 
         if not new_limits and not update.notes:
-            raise HTTPException(
-                status_code=400, detail="No limits provided to update"
-            )
+            raise HTTPException(status_code=400, detail="No limits provided to update")
 
         await live_feature_quota_service.extend_user_limits(
             user_id=user_id,
@@ -202,9 +194,7 @@ async def update_user_quota(
 @router.post("/user/{user_id}/reset")
 async def reset_user_quota(
     user_id: str,
-    current_user: User = Depends(
-        has_permission(Permission.VOICE_QUOTA_MANAGE)
-    ),
+    current_user: User = Depends(has_permission(Permission.VOICE_QUOTA_MANAGE)),
 ):
     """Reset usage counters for a user"""
     try:

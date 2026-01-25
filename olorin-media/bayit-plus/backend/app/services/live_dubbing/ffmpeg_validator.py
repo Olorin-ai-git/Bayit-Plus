@@ -52,25 +52,19 @@ class FFmpegInputValidator:
             True if valid MP4 magic bytes, False otherwise
         """
         if len(data) < 12:
-            logger.warning(
-                f"File too small for MP4 validation: {len(data)} bytes"
-            )
+            logger.warning(f"File too small for MP4 validation: {len(data)} bytes")
             return False
 
         # Check for ftyp signature at offset 4
         ftyp_signature = data[4:8]
         if ftyp_signature != b"ftyp":
-            logger.warning(
-                f"Invalid ftyp signature: {ftyp_signature.hex()}"
-            )
+            logger.warning(f"Invalid ftyp signature: {ftyp_signature.hex()}")
             return False
 
         # Validate box size (bytes 0-4)
         box_size_bytes = data[0:4]
         if box_size_bytes not in [MP4_MAGIC_BYTES[0:4], MP4_MAGIC_BYTES_ALT[0:4]]:
-            logger.debug(
-                f"Unusual box size: {box_size_bytes.hex()}, but ftyp valid"
-            )
+            logger.debug(f"Unusual box size: {box_size_bytes.hex()}, but ftyp valid")
             # Still valid, box size can vary
 
         logger.debug("Valid MP4 magic bytes detected")
@@ -159,12 +153,16 @@ class FFmpegInputValidator:
 
             command = [
                 "ffmpeg",
-                "-i", input_file,
+                "-i",
+                input_file,
                 "-vn",  # No video
-                "-acodec", output_format,
-                "-ar", str(sample_rate),
+                "-acodec",
+                output_format,
+                "-ar",
+                str(sample_rate),
                 "-y",  # Overwrite output file
-                "-loglevel", "error",  # Suppress verbose output
+                "-loglevel",
+                "error",  # Suppress verbose output
                 output_file,
             ]
 
@@ -176,8 +174,7 @@ class FFmpegInputValidator:
 
             try:
                 stdout, stderr = await asyncio.wait_for(
-                    process.communicate(),
-                    timeout=30.0  # 30 second timeout
+                    process.communicate(), timeout=30.0  # 30 second timeout
                 )
             except asyncio.TimeoutError:
                 process.kill()

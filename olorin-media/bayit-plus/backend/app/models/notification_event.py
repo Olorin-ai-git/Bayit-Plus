@@ -5,7 +5,7 @@ Tracks notification lifecycle events for analytics and user history.
 """
 
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 from beanie import Document
 from pydantic import Field
@@ -24,18 +24,28 @@ class NotificationEvent(Document):
     user_id: Optional[str] = Field(None, description="User who saw the notification")
 
     # Notification details
-    level: str = Field(..., description="Notification level: debug, info, warning, success, error")
+    level: str = Field(
+        ..., description="Notification level: debug, info, warning, success, error"
+    )
     message: str = Field(..., description="Notification message content")
     title: Optional[str] = Field(None, description="Notification title")
 
     # Event tracking
-    event_type: str = Field(..., description="Event type: shown, dismissed, action_clicked")
+    event_type: str = Field(
+        ..., description="Event type: shown, dismissed, action_clicked"
+    )
     platform: str = Field(..., description="Platform: web, mobile, tv")
 
     # Timing
-    shown_at: Optional[datetime] = Field(None, description="When notification was shown")
-    dismissed_at: Optional[datetime] = Field(None, description="When notification was dismissed")
-    time_to_dismiss_ms: Optional[int] = Field(None, description="Time to dismiss in milliseconds")
+    shown_at: Optional[datetime] = Field(
+        None, description="When notification was shown"
+    )
+    dismissed_at: Optional[datetime] = Field(
+        None, description="When notification was dismissed"
+    )
+    time_to_dismiss_ms: Optional[int] = Field(
+        None, description="Time to dismiss in milliseconds"
+    )
 
     # Metadata
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -68,8 +78,12 @@ class NotificationMetrics(Document):
 
     # Rates
     dismiss_rate: float = Field(default=0.0, description="Percentage dismissed")
-    action_click_rate: float = Field(default=0.0, description="Percentage with action clicks")
-    avg_time_to_dismiss_ms: float = Field(default=0.0, description="Average time to dismiss")
+    action_click_rate: float = Field(
+        default=0.0, description="Percentage with action clicks"
+    )
+    avg_time_to_dismiss_ms: float = Field(
+        default=0.0, description="Average time to dismiss"
+    )
 
     # Metadata
     created_at: datetime = Field(default_factory=datetime.utcnow)

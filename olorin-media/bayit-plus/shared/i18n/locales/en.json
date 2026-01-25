@@ -356,12 +356,25 @@
       "podcasts": "Podcasts"
     },
     "suggestions": {
-      "movies": "Movies",
-      "series": "Series",
-      "liveTV": "Live TV",
-      "news": "News",
-      "sports": "Sports",
-      "kids": "Kids"
+      "trendingTitle": "Trending Searches",
+      "categoriesTitle": "Browse Categories",
+      "recentTitle": "Recent Searches",
+      "clearRecent": "Clear"
+    },
+    "controls": {
+      "placeholder": "Search for content...",
+      "hints": {
+        "searchInput": "Enter keywords to search"
+      }
+    },
+    "semantic": {
+      "keyword": "Keyword",
+      "semantic": "AI Search",
+      "infoTitle": "AI-Powered Search",
+      "info": "AI search understands context and finds exact moments in videos by analyzing scenes, dialogue, and visual content."
+    },
+    "empty": {
+      "clearSearch": "Clear search"
     }
   },
   "liveTV": {

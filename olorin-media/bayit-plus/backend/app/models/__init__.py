@@ -26,6 +26,9 @@ from app.models.jewish_community import (CommunityEvent,
 from app.models.jewish_news import (JewishNewsAggregatedResponse,
                                     JewishNewsItem, JewishNewsItemResponse,
                                     JewishNewsSource, JewishNewsSourceResponse)
+from app.models.live_feature_quota import (FeatureType, LiveFeatureQuota,
+                                           LiveFeatureUsageSession,
+                                           UsageSessionStatus, UsageStats)
 from app.models.passkey_credential import (PasskeyChallenge, PasskeyCredential,
                                            PasskeySession)
 from app.models.recording import (Recording, RecordingQuota, RecordingSchedule,
@@ -39,9 +42,6 @@ from app.models.user_system_widget import (UserSystemWidget,
                                            UserSystemWidgetPreferencesUpdate,
                                            UserSystemWidgetResponse)
 from app.models.watchlist import Conversation, WatchHistory, WatchlistItem
-from app.models.live_feature_quota import (FeatureType, LiveFeatureQuota,
-                                             LiveFeatureUsageSession,
-                                             UsageSessionStatus, UsageStats)
 
 __all__ = [
     # User

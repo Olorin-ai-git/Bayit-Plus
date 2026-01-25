@@ -4,12 +4,12 @@ Content Embedding Models for Olorin.ai Semantic Search
 Vector embeddings for semantic search with timestamp deep-linking.
 """
 
+import re
 from datetime import datetime, timezone
 from typing import ClassVar, List, Literal, Optional
-import re
 
 from beanie import Document, PydanticObjectId
-from pydantic import BaseModel, Field, field_validator, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 EmbeddingType = Literal[
     "title", "description", "subtitle_segment", "dialogue", "summary"

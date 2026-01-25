@@ -53,6 +53,7 @@ async def lifespan(app: FastAPI):
     if settings.OLORIN_SEMANTIC_SEARCH_ENABLED:
         try:
             from app.services.olorin.search.client import client_manager
+
             await client_manager.initialize()
             logger.info("Semantic search service initialized")
         except Exception as e:

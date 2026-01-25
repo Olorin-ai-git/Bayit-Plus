@@ -17,7 +17,6 @@ try:
         "oauth_callback": "10/minute",  # 10 OAuth attempts per minute
         "password_reset": "3/hour",  # 3 password reset requests per hour
         "partner_register": "3/hour",  # 3 partner registrations per hour per IP
-
         # Subtitles - Protection for expensive AI operations and external APIs
         "subtitle_cues": "50/minute",  # High-frequency mobile requests during video playback
         "subtitle_tracks": "100/minute",  # Lightweight listing endpoint
@@ -28,17 +27,14 @@ try:
         "subtitle_import": "10/hour",  # Database writes for subtitle import
         "subtitle_delete": "20/hour",  # Destructive operations
         "subtitle_general": "30/minute",  # Other endpoints (languages, cache stats)
-
         # Trivia - Protection for AI-generated content and playback endpoints
         "trivia_get": "60/minute",  # Standard trivia fetch during playback
         "trivia_enriched": "3/hour",  # AI-enriched bundle (expensive operation)
         "trivia_preferences": "10/minute",  # Preference updates
         "trivia_generate": "5/hour",  # Admin force regenerate
-
         # Live Dubbing - Protection for admin configuration endpoints
         "dubbing_config_update": "10/hour",  # Channel dubbing configuration updates
         "dubbing_stats": "30/minute",  # Dubbing statistics queries
-
         # Podcast Translation - Protection for expensive translation operations
         "translation_single": "10/minute",  # Single episode translation trigger
         "translation_bulk": "5/hour",  # Bulk translation (expensive, queues many jobs)

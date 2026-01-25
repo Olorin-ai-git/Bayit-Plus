@@ -391,7 +391,9 @@ class UnifiedSearchService:
 
             try:
                 collection = Content.get_pymongo_collection()
-                genres_result = await collection.aggregate(genres_pipeline).to_list(None)
+                genres_result = await collection.aggregate(genres_pipeline).to_list(
+                    None
+                )
                 genres = [item["_id"] for item in genres_result if item["_id"]]
             except Exception as e:
                 logger.warning(f"Failed to aggregate genres: {e}")
@@ -399,7 +401,12 @@ class UnifiedSearchService:
 
             # Get year range
             year_pipeline = [
-                {"$match": {"is_published": True, "year": {"$exists": True, "$ne": None}}},
+                {
+                    "$match": {
+                        "is_published": True,
+                        "year": {"$exists": True, "$ne": None},
+                    }
+                },
                 {
                     "$group": {
                         "_id": None,
@@ -413,7 +420,9 @@ class UnifiedSearchService:
                 collection = Content.get_pymongo_collection()
                 year_result = await collection.aggregate(year_pipeline).to_list(None)
                 year_min = year_result[0]["min_year"] if year_result else 1900
-                year_max = year_result[0]["max_year"] if year_result else datetime.now().year
+                year_max = (
+                    year_result[0]["max_year"] if year_result else datetime.now().year
+                )
             except Exception as e:
                 logger.warning(f"Failed to aggregate years: {e}")
                 year_min = 1900
@@ -435,7 +444,9 @@ class UnifiedSearchService:
             try:
                 collection = Content.get_pymongo_collection()
                 langs_result = await collection.aggregate(langs_pipeline).to_list(None)
-                subtitle_languages = [item["_id"] for item in langs_result if item["_id"]]
+                subtitle_languages = [
+                    item["_id"] for item in langs_result if item["_id"]
+                ]
             except Exception as e:
                 logger.warning(f"Failed to aggregate subtitle languages: {e}")
                 subtitle_languages = []

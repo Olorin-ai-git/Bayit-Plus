@@ -351,12 +351,25 @@
       "podcasts": "פודקאסטים"
     },
     "suggestions": {
-      "movies": "סרטים",
-      "series": "סדרות",
-      "liveTV": "טלוויזיה חיה",
-      "news": "חדשות",
-      "sports": "ספורט",
-      "kids": "ילדים"
+      "trendingTitle": "חיפושים פופולריים",
+      "categoriesTitle": "עיון בקטגוריות",
+      "recentTitle": "חיפושים אחרונים",
+      "clearRecent": "נקה"
+    },
+    "controls": {
+      "placeholder": "חפש תוכן...",
+      "hints": {
+        "searchInput": "הזן מילות חיפוש"
+      }
+    },
+    "semantic": {
+      "keyword": "חיפוש",
+      "semantic": "בינה מלאכותית",
+      "infoTitle": "חיפוש מבוסס בינה מלאכותית",
+      "info": "חיפוש AI מבין הקשר ומוצא רגעים מדויקים בסרטונים על ידי ניתוח סצנות, דיאלוגים ותוכן חזותי."
+    },
+    "empty": {
+      "clearSearch": "נקה חיפוש"
     }
   },
   "liveTV": {

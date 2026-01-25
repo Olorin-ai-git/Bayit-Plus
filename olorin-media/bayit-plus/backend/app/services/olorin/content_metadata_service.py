@@ -61,7 +61,9 @@ class ContentMetadataService:
                     Content.find_one(),
                     timeout=QUERY_TIMEOUT_SECONDS,
                 )
-                logger.info("ContentMetadataService initialized - Content model accessible")
+                logger.info(
+                    "ContentMetadataService initialized - Content model accessible"
+                )
                 self._initialized = True
             except asyncio.TimeoutError:
                 logger.error("ContentMetadataService initialization timed out")
@@ -216,9 +218,7 @@ class ContentMetadataService:
         contents = await self.get_contents_by_ids(content_ids)
         return {str(c.id): c for c in contents}
 
-    async def get_series_episodes(
-        self, series_id: str
-    ) -> List[Content]:
+    async def get_series_episodes(self, series_id: str) -> List[Content]:
         """
         Get all episodes for a series with caching and timeout protection.
 
@@ -235,7 +235,9 @@ class ContentMetadataService:
         cached = self._series_cache.get(series_id)
         if cached:
             episodes, cached_at = cached
-            if datetime.utcnow() - cached_at < timedelta(seconds=SERIES_CACHE_TTL_SECONDS):
+            if datetime.utcnow() - cached_at < timedelta(
+                seconds=SERIES_CACHE_TTL_SECONDS
+            ):
                 logger.debug(f"Cache hit for series episodes: {series_id}")
                 return episodes
 
@@ -245,7 +247,9 @@ class ContentMetadataService:
                 Content.find(
                     {"series_id": series_id, "content_type": "episode"},
                     projection_model=None,  # Full document for now
-                ).sort([("season", 1), ("episode", 1)]).to_list(),
+                )
+                .sort([("season", 1), ("episode", 1)])
+                .to_list(),
                 timeout=QUERY_TIMEOUT_SECONDS,
             )
 

@@ -79,10 +79,16 @@ async def run_content_maintenance_tasks(dry_run: bool = False) -> Dict[str, Any]
 
         logger.info(f"\n✅ Content maintenance tasks completed in {duration:.2f}s")
         logger.info(f"   Total updates: {results['total_updates']}")
-        logger.info(f"   Podcast sync: {podcast_sync_results.get('episodes_added', 0)} episodes")
-        logger.info(f"   Posters: {poster_results.get('items_enriched', 0)} items enriched")
+        logger.info(
+            f"   Podcast sync: {podcast_sync_results.get('episodes_added', 0)} episodes"
+        )
+        logger.info(
+            f"   Posters: {poster_results.get('items_enriched', 0)} items enriched"
+        )
         logger.info(f"   Subtitles: {subtitle_results.get('subtitles_added', 0)} added")
-        logger.info(f"   Translations: {translation_results.get('episodes_queued', 0)} queued")
+        logger.info(
+            f"   Translations: {translation_results.get('episodes_queued', 0)} queued"
+        )
 
         return results
 
@@ -232,7 +238,9 @@ async def add_missing_subtitles(
 
         if dry_run:
             total_tracks = sum(
-                item.embedded_subtitle_count for item in items if item.embedded_subtitle_count
+                item.embedded_subtitle_count
+                for item in items
+                if item.embedded_subtitle_count
             )
             return {
                 "status": "dry_run",
@@ -248,9 +256,8 @@ async def add_missing_subtitles(
         for item in items:
             try:
                 # Import here to avoid circular dependency
-                from app.services.subtitle_extraction_service import (
-                    analyze_and_extract_subtitles,
-                )
+                from app.services.subtitle_extraction_service import \
+                    analyze_and_extract_subtitles
 
                 result = await analyze_and_extract_subtitles(
                     str(item.id), item.stream_url
@@ -264,7 +271,9 @@ async def add_missing_subtitles(
                     )
 
             except Exception as e:
-                logger.warning(f"   ⚠️  Failed to extract subtitles from {item.title}: {e}")
+                logger.warning(
+                    f"   ⚠️  Failed to extract subtitles from {item.title}: {e}"
+                )
                 continue
 
         return {

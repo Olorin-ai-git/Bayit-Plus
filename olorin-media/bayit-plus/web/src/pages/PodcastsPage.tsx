@@ -18,6 +18,7 @@ import {
 import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
 import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
+import PageLoading from '@/components/common/PageLoading';
 
 interface Category {
   id: string;
@@ -210,17 +211,13 @@ export default function PodcastsPage() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <GlassPageHeader
-          title={t('podcasts.title')}
-          pageType="podcasts"
-          isRTL={isRTL}
-        />
-        <View style={styles.searchContainer}>
-          <View style={styles.skeletonInput} />
-        </View>
-        <RowSkeleton numCards={5} />
-      </View>
+      <PageLoading
+        title={t('podcasts.title')}
+        pageType="podcasts"
+        message={t('podcasts.loadingShows', 'Loading podcast shows...')}
+        isRTL={isRTL}
+        icon={<Podcast size={24} color={colors.primary.DEFAULT} />}
+      />
     );
   }
 

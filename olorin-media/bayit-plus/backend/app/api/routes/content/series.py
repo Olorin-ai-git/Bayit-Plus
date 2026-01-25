@@ -24,6 +24,8 @@ async def list_all_series(
     """Get all series (parent series, not episodes)."""
     skip = (page - 1) * limit
 
+    # Defensive filtering: Exclude episodes even if data is malformed
+    # Parent series should NEVER have season/episode numbers
     filters = {
         "is_published": True,
         "is_series": True,
@@ -31,6 +33,21 @@ async def list_all_series(
             {"series_id": None},
             {"series_id": {"$exists": False}},
             {"series_id": ""},
+        ],
+        # Defensive: Ensure no season/episode numbers (episodes have these)
+        "$and": [
+            {
+                "$or": [
+                    {"season": None},
+                    {"season": {"$exists": False}},
+                ]
+            },
+            {
+                "$or": [
+                    {"episode": None},
+                    {"episode": {"$exists": False}},
+                ]
+            },
         ],
     }
     if category_id:
@@ -45,7 +62,7 @@ async def list_all_series(
                 "id": str(item.id),
                 "title": item.title,
                 "description": item.description,
-                "thumbnail": item.thumbnail,
+                "thumbnail": item.thumbnail or item.poster_url,
                 "backdrop": item.backdrop,
                 "category": item.category_name,
                 "year": item.year,
@@ -115,7 +132,7 @@ async def get_series_details(
         "id": str(series.id),
         "title": series.title,
         "description": series.description,
-        "thumbnail": series.thumbnail,
+        "thumbnail": series.thumbnail or series.poster_url,
         "backdrop": series.backdrop,
         "category": series.category_name,
         "year": series.year,
@@ -139,7 +156,7 @@ async def get_series_details(
             {
                 "id": str(item.id),
                 "title": item.title,
-                "thumbnail": item.thumbnail,
+                "thumbnail": item.thumbnail or item.poster_url,
                 "year": item.year,
                 "type": "series",
             }

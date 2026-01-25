@@ -304,5 +304,3 @@ SEED_TEL_AVIV_CONTENT = [
         "relevance_score": 8.0,
     },
 ]
-
-

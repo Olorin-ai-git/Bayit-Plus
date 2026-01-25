@@ -475,7 +475,11 @@ class LiveTranslationService:
             raise
 
     async def translate_text(
-        self, text: str, source_lang: str, target_lang: str, timeout_seconds: float = 0.250
+        self,
+        text: str,
+        source_lang: str,
+        target_lang: str,
+        timeout_seconds: float = 0.250,
     ) -> str:
         """
         Translate text using configured translation provider.

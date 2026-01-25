@@ -209,6 +209,7 @@ class TTSService extends EventEmitter {
   }
 
   private async fetchAudioFromAPI(text: string, voiceId: string): Promise<Blob> {
+    console.log('[TTS] Fetching audio from API...');
 
     // Get auth token from localStorage (stored by Zustand persist middleware)
     let token: string | null = null;
@@ -225,6 +226,7 @@ class TTSService extends EventEmitter {
       if (!token) {
         token = localStorage.getItem('auth_token');
         if (token) {
+          console.log('[TTS] Using legacy auth_token');
         }
       }
     } catch (error) {
@@ -233,11 +235,13 @@ class TTSService extends EventEmitter {
 
     if (!token) {
       console.error('[TTS] No auth token found in localStorage');
-      throw new Error('Authentication required for TTS');
+      throw new Error('Authentication required for TTS. Please log in first.');
     }
 
     try {
       const apiUrl = this.getApiEndpoint();
+      console.log('[TTS] Calling API:', apiUrl);
+
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -256,22 +260,39 @@ class TTSService extends EventEmitter {
         }),
       });
 
+      console.log('[TTS] API response status:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
         console.error('[TTS] API error response:', errorText);
-        throw new Error(`TTS API failed: ${response.statusText} - ${errorText}`);
+
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Authentication failed. Please log in again.');
+        } else if (response.status === 503 || response.status === 502) {
+          throw new Error('Backend server is unavailable. Please try again later.');
+        }
+
+        throw new Error(`TTS API failed: ${response.statusText}`);
       }
 
       const blob = await response.blob();
+      console.log('[TTS] Received audio blob, size:', blob.size);
 
       if (blob.size === 0) {
         console.error('[TTS] Received empty audio blob from API');
-        throw new Error('API returned empty audio blob');
+        throw new Error('API returned empty audio');
       }
 
       return blob;
     } catch (error) {
+      // Enhanced error logging
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        console.error('[TTS] Network error - Cannot connect to backend server');
+        console.error('[TTS] Attempted endpoint:', this.getApiEndpoint());
+        console.error('[TTS] Is the backend running on port 8000?');
+        throw new Error('Cannot connect to backend server. Please ensure the backend is running on port 8000.');
+      }
+
       console.error('[TTS] fetchAudioFromAPI error:', error);
       throw error;
     }

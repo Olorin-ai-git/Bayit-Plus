@@ -49,10 +49,12 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
           >
             <Pressable
               onPress={() => !isLast && onNavigate(item.path)}
-              style={[
+              style={({ pressed, hovered }: any) => [
                 styles.itemButton,
                 isRTL && styles.itemButtonRTL,
                 isLast && styles.itemButtonActive,
+                !isLast && hovered && styles.itemButtonHovered,
+                !isLast && pressed && styles.itemButtonPressed,
               ]}
               disabled={isLast}
             >
@@ -95,7 +97,7 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
   // Native: Use gradient fallback
   return (
     <LinearGradient
-      colors={[colors.glass.bg, colors.glass.bgStrong]}
+      colors={['rgba(0, 0, 0, 0.2)', 'rgba(0, 0, 0, 0.3)']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
       style={styles.containerNative}
@@ -110,19 +112,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: 'rgba(139, 92, 246, 0.2)',
   },
   glassLight: {
     // @ts-ignore - Web CSS for glassmorphism
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backdropFilter: 'blur(24px)',
+    WebkitBackdropFilter: 'blur(24px)',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
   containerNative: {
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: 'rgba(139, 92, 246, 0.2)',
   },
   scrollContent: {
     flexDirection: 'row',
@@ -152,12 +154,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
   },
   itemButtonActive: {
-    backgroundColor: colors.glass.purpleLight,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderWidth: 1,
-    borderColor: colors.glass.border,
+    borderColor: 'rgba(139, 92, 246, 0.4)',
     // @ts-ignore - Web CSS for glassmorphism
-    backdropFilter: 'blur(10px)',
-    WebkitBackdropFilter: 'blur(10px)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+  },
+  itemButtonHovered: {
+    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+    // @ts-ignore - Web CSS
+    backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
+  },
+  itemButtonPressed: {
+    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+    transform: [{ scale: 0.98 }],
   },
   homeIcon: {
     fontSize: 12,

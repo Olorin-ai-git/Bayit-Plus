@@ -10,6 +10,7 @@ import tempfile
 from typing import Optional, Tuple
 
 from google.cloud import speech_v1 as speech
+
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -55,19 +56,23 @@ class GoogleSpeechService:
                 # Convert to FLAC (16kHz mono for optimal performance)
                 ffmpeg_cmd = [
                     "ffmpeg",
-                    "-i", audio_path,
-                    "-acodec", "flac",
-                    "-ar", "16000",  # 16kHz sample rate
-                    "-ac", "1",      # Mono
+                    "-i",
+                    audio_path,
+                    "-acodec",
+                    "flac",
+                    "-ar",
+                    "16000",  # 16kHz sample rate
+                    "-ac",
+                    "1",  # Mono
                     "-y",
-                    flac_path
+                    flac_path,
                 ]
 
                 subprocess.run(
                     ffmpeg_cmd,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
-                    check=True
+                    check=True,
                 )
 
                 flac_size_mb = os.path.getsize(flac_path) / (1024 * 1024)
@@ -77,22 +82,29 @@ class GoogleSpeechService:
                 try:
                     duration_cmd = [
                         "ffprobe",
-                        "-v", "error",
-                        "-show_entries", "format=duration",
-                        "-of", "default=noprint_wrappers=1:nokey=1",
-                        flac_path
+                        "-v",
+                        "error",
+                        "-show_entries",
+                        "format=duration",
+                        "-of",
+                        "default=noprint_wrappers=1:nokey=1",
+                        flac_path,
                     ]
                     duration_output = subprocess.check_output(duration_cmd, text=True)
                     duration_seconds = float(duration_output.strip())
                     logger.info(f"   Audio duration: {duration_seconds:.1f} seconds")
                 except Exception as e:
-                    logger.warning(f"   Could not determine duration: {e}, assuming long audio")
+                    logger.warning(
+                        f"   Could not determine duration: {e}, assuming long audio"
+                    )
                     duration_seconds = 120  # Assume >1min if can't determine
 
                 # For files >1 minute or >10MB, use long-running recognition
                 # Google's sync API has a 1-minute limit regardless of file size
                 if flac_size_mb > 10 or duration_seconds > 60:
-                    logger.info("   File duration >1 min or size >10MB, using long audio transcription...")
+                    logger.info(
+                        "   File duration >1 min or size >10MB, using long audio transcription..."
+                    )
                     return await self._transcribe_long_audio(flac_path, language)
 
                 # For small files, use synchronous recognition
@@ -121,7 +133,9 @@ class GoogleSpeechService:
                 )
 
                 # Perform transcription
-                logger.info(f"   Sending to Google Speech API (language: {lang_code})...")
+                logger.info(
+                    f"   Sending to Google Speech API (language: {lang_code})..."
+                )
                 response = self.client.recognize(config=config, audio=audio)
 
                 # Combine all results
@@ -160,8 +174,9 @@ class GoogleSpeechService:
         Returns:
             Tuple of (transcript text, detected language code)
         """
-        from google.cloud import storage
         import time
+
+        from google.cloud import storage
 
         try:
             # Upload to GCS
@@ -203,7 +218,9 @@ class GoogleSpeechService:
 
             # Wait for completion
             logger.info("   Waiting for transcription to complete...")
-            response = operation.result(timeout=1800)  # 30 minute timeout (for long podcast episodes)
+            response = operation.result(
+                timeout=1800
+            )  # 30 minute timeout (for long podcast episodes)
 
             # Combine all results
             transcript_parts = []
@@ -213,7 +230,9 @@ class GoogleSpeechService:
 
             transcript = " ".join(transcript_parts)
 
-            logger.info(f"✅ Long audio transcription complete: {len(transcript)} characters")
+            logger.info(
+                f"✅ Long audio transcription complete: {len(transcript)} characters"
+            )
 
             # Clean up GCS file
             try:

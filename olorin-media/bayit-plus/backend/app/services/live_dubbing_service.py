@@ -17,17 +17,16 @@ from typing import Any, AsyncIterator, Dict, Optional, Protocol
 
 from app.core.config import settings
 from app.models.content import LiveChannel
-from app.models.live_dubbing import (
-    DubbedAudioMessage,
-    DubbingMessage,
-    DubbingMetrics,
-    LatencyReport,
-    LiveDubbingSession,
-)
+from app.models.live_dubbing import (DubbedAudioMessage, DubbingMessage,
+                                     DubbingMetrics, LatencyReport,
+                                     LiveDubbingSession)
 from app.models.user import User
-from app.services.live_dubbing.channel_stt_manager import get_channel_stt_manager
+from app.services.live_dubbing.channel_stt_manager import \
+    get_channel_stt_manager
 from app.services.live_dubbing.session_store import get_session_store
-from app.services.olorin.resilience import circuit_breaker, CircuitBreakerError, ELEVENLABS_BREAKER
+from app.services.olorin.resilience import (ELEVENLABS_BREAKER,
+                                            CircuitBreakerError,
+                                            circuit_breaker)
 
 logger = logging.getLogger(__name__)
 
@@ -141,7 +140,10 @@ class LiveDubbingService:
         self.source_language = channel.dubbing_source_language or "he"
 
         # Calculate sync delay
-        self.sync_delay_ms = channel.dubbing_sync_delay_ms or settings.olorin.dubbing.live_dubbing_default_sync_delay_ms
+        self.sync_delay_ms = (
+            channel.dubbing_sync_delay_ms
+            or settings.olorin.dubbing.live_dubbing_default_sync_delay_ms
+        )
 
         # Initialize providers (dependency injection)
         # Note: STT provider is replaced by ChannelSTTManager for cost optimization
@@ -375,7 +377,9 @@ class LiveDubbingService:
         logger.info(f"Starting dubbing pipeline for session {self.session_id}")
 
         if not self._transcript_queue:
-            logger.error(f"Transcript queue not initialized for session {self.session_id}")
+            logger.error(
+                f"Transcript queue not initialized for session {self.session_id}"
+            )
             return
 
         try:
@@ -383,8 +387,7 @@ class LiveDubbingService:
                 try:
                     # Wait for transcript from channel manager's broadcast queue
                     transcript_msg = await asyncio.wait_for(
-                        self._transcript_queue.get(),
-                        timeout=1.0
+                        self._transcript_queue.get(), timeout=1.0
                     )
 
                     # Extract from TranscriptMessage
@@ -401,7 +404,11 @@ class LiveDubbingService:
 
                     # Step 2: Translation
                     translation_start = time.time()
-                    actual_source = detected_lang if detected_lang != "auto" else self.source_language
+                    actual_source = (
+                        detected_lang
+                        if detected_lang != "auto"
+                        else self.source_language
+                    )
 
                     if actual_source == self.target_language:
                         translated = transcript
@@ -432,7 +439,7 @@ class LiveDubbingService:
                         await self._output_queue.put(
                             DubbingMessage(
                                 type="error",
-                                error=f"Text-to-speech service temporarily unavailable. Please try again."
+                                error=f"Text-to-speech service temporarily unavailable. Please try again.",
                             )
                         )
                         continue
@@ -457,13 +464,17 @@ class LiveDubbingService:
                         )
 
                         await self._output_queue.put(
-                            DubbingMessage(type="dubbed_audio", data=message.model_dump())
+                            DubbingMessage(
+                                type="dubbed_audio", data=message.model_dump()
+                            )
                         )
 
                         self._metrics.segments_synthesized += 1
 
                         # Update latency metrics
-                        self._update_latency_metrics(stt_latency, translation_latency, tts_latency)
+                        self._update_latency_metrics(
+                            stt_latency, translation_latency, tts_latency
+                        )
 
                         logger.debug(
                             f"Dubbed segment {self._sequence}: latency={total_latency:.0f}ms "
@@ -490,9 +501,7 @@ class LiveDubbingService:
                 self._session.last_error_at = datetime.utcnow()
 
             # Send error message to client
-            await self._output_queue.put(
-                DubbingMessage(type="error", error=str(e))
-            )
+            await self._output_queue.put(DubbingMessage(type="error", error=str(e)))
 
     @circuit_breaker(ELEVENLABS_BREAKER)
     async def _synthesize_audio(self, text: str, audio_chunks: list[bytes]) -> None:
@@ -518,12 +527,14 @@ class LiveDubbingService:
         """Update running average latency metrics."""
         total_ms = stt_ms + translation_ms + tts_ms
 
-        self._latency_samples.append({
-            "stt": stt_ms,
-            "translation": translation_ms,
-            "tts": tts_ms,
-            "total": total_ms,
-        })
+        self._latency_samples.append(
+            {
+                "stt": stt_ms,
+                "translation": translation_ms,
+                "tts": tts_ms,
+                "total": total_ms,
+            }
+        )
 
         # Keep last 100 samples
         if len(self._latency_samples) > 100:
@@ -531,10 +542,18 @@ class LiveDubbingService:
 
         # Calculate averages
         n = len(self._latency_samples)
-        self._metrics.avg_stt_latency_ms = sum(s["stt"] for s in self._latency_samples) / n
-        self._metrics.avg_translation_latency_ms = sum(s["translation"] for s in self._latency_samples) / n
-        self._metrics.avg_tts_latency_ms = sum(s["tts"] for s in self._latency_samples) / n
-        self._metrics.avg_total_latency_ms = sum(s["total"] for s in self._latency_samples) / n
+        self._metrics.avg_stt_latency_ms = (
+            sum(s["stt"] for s in self._latency_samples) / n
+        )
+        self._metrics.avg_translation_latency_ms = (
+            sum(s["translation"] for s in self._latency_samples) / n
+        )
+        self._metrics.avg_tts_latency_ms = (
+            sum(s["tts"] for s in self._latency_samples) / n
+        )
+        self._metrics.avg_total_latency_ms = (
+            sum(s["total"] for s in self._latency_samples) / n
+        )
 
     async def receive_messages(self) -> AsyncIterator[DubbingMessage]:
         """

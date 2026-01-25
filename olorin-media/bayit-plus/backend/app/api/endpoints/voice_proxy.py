@@ -12,12 +12,14 @@ Supported command patterns:
 - Navigation: "show recommendations", "go to search", etc.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from pydantic import BaseModel, Field
 import logging
 import re
-from typing import Optional, List, Dict, Any
-from app.core.security import verify_oauth_token, get_current_user
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, Field
+
+from app.core.security import get_current_user, verify_oauth_token
 
 router = APIRouter(prefix="/api/v1/voice", tags=["voice"])
 logger = logging.getLogger(__name__)
@@ -25,30 +27,56 @@ logger = logging.getLogger(__name__)
 
 class VoiceCommandRequest(BaseModel):
     """Request model for user voice command processing"""
-    transcription: str = Field(..., min_length=1, max_length=500, description="User's spoken command (transcribed)")
-    confidence: float = Field(default=0.9, ge=0.0, le=1.0, description="Speech recognition confidence (0.0-1.0)")
+
+    transcription: str = Field(
+        ...,
+        min_length=1,
+        max_length=500,
+        description="User's spoken command (transcribed)",
+    )
+    confidence: float = Field(
+        default=0.9,
+        ge=0.0,
+        le=1.0,
+        description="Speech recognition confidence (0.0-1.0)",
+    )
     language: str = Field(default="en", description="Language code (en, he, es)")
 
 
 class VoiceCommandResponse(BaseModel):
     """Response model for voice command processing"""
+
     success: bool = Field(description="Whether command was understood")
-    commandType: str = Field(description="Type of command: search, play, control, navigate, etc.")
-    action: Optional[str] = Field(default=None, description="Action to execute (e.g., search query, play content)")
-    actionData: Optional[Dict[str, Any]] = Field(default=None, description="Additional action data")
-    responseText: str = Field(description="Natural language response to speak back to user")
-    confidence: float = Field(description="Confidence in command interpretation (0.0-1.0)")
+    commandType: str = Field(
+        description="Type of command: search, play, control, navigate, etc."
+    )
+    action: Optional[str] = Field(
+        default=None, description="Action to execute (e.g., search query, play content)"
+    )
+    actionData: Optional[Dict[str, Any]] = Field(
+        default=None, description="Additional action data"
+    )
+    responseText: str = Field(
+        description="Natural language response to speak back to user"
+    )
+    confidence: float = Field(
+        description="Confidence in command interpretation (0.0-1.0)"
+    )
 
 
 class VoiceCommandSuggestion(BaseModel):
     """Suggestion for partial transcription"""
+
     suggestion: str = Field(description="Suggested command")
     confidence: float = Field(description="Confidence in suggestion")
 
 
 class VoiceCommandSuggestionsResponse(BaseModel):
     """Response with command suggestions"""
-    suggestions: List[VoiceCommandSuggestion] = Field(description="List of suggested commands")
+
+    suggestions: List[VoiceCommandSuggestion] = Field(
+        description="List of suggested commands"
+    )
 
 
 # Command patterns for intent recognition
@@ -59,7 +87,7 @@ COMMAND_PATTERNS = {
             r"(?:play|put on)\s+(?:the\s+)?(.+?)$",
         ],
         "type": "play",
-        "description": "Play content by name"
+        "description": "Play content by name",
     },
     "search": {
         "patterns": [
@@ -67,35 +95,35 @@ COMMAND_PATTERNS = {
             r"(?:what is|tell me about)\s+(.+?)$",
         ],
         "type": "search",
-        "description": "Search for content"
+        "description": "Search for content",
     },
     "pause": {
         "patterns": [
             r"^(?:pause|stop|hold on)(?:\s+.*)?$",
         ],
         "type": "control",
-        "description": "Pause playback"
+        "description": "Pause playback",
     },
     "resume": {
         "patterns": [
             r"^(?:resume|continue|play|unpause|go on)(?:\s+.*)?$",
         ],
         "type": "control",
-        "description": "Resume playback"
+        "description": "Resume playback",
     },
     "next": {
         "patterns": [
             r"^(?:next|skip|next episode|next chapter)(?:\s+.*)?$",
         ],
         "type": "control",
-        "description": "Skip to next"
+        "description": "Skip to next",
     },
     "previous": {
         "patterns": [
             r"^(?:previous|back|prior|go back|previous episode)(?:\s+.*)?$",
         ],
         "type": "control",
-        "description": "Go to previous"
+        "description": "Go to previous",
     },
     "volume": {
         "patterns": [
@@ -105,7 +133,7 @@ COMMAND_PATTERNS = {
             r"(?:mute|unmute)(?:\s+.*)?$",
         ],
         "type": "control",
-        "description": "Control volume"
+        "description": "Control volume",
     },
     "favorites": {
         "patterns": [
@@ -113,7 +141,7 @@ COMMAND_PATTERNS = {
             r"(?:add to|save to)\s+(?:favorite|watchlist)(?:\s+.*)?$",
         ],
         "type": "navigate",
-        "description": "Access favorites/watchlist"
+        "description": "Access favorites/watchlist",
     },
     "recommend": {
         "patterns": [
@@ -121,15 +149,15 @@ COMMAND_PATTERNS = {
             r"(?:what should i watch)(?:\s+.*)?$",
         ],
         "type": "navigate",
-        "description": "Get recommendations"
+        "description": "Get recommendations",
     },
     "language": {
         "patterns": [
             r"(?:change|switch|set)\s+(?:language|language setting)\s+(?:to\s+)?(\w+)(?:\s+.*)?$",
         ],
         "type": "settings",
-        "description": "Change language"
-    }
+        "description": "Change language",
+    },
 }
 
 
@@ -153,7 +181,7 @@ def parse_voice_command(transcription: str, language: str = "en") -> Dict[str, A
             "action": None,
             "actionData": None,
             "confidence": 0.0,
-            "responseText": "I didn't catch that. Please try again."
+            "responseText": "I didn't catch that. Please try again.",
         }
 
     best_match = None
@@ -167,7 +195,7 @@ def parse_voice_command(transcription: str, language: str = "en") -> Dict[str, A
             if match:
                 # Confidence based on how specific the pattern is
                 # Full word boundaries and exact matches get higher confidence
-                confidence = 0.85 + (len(pattern.split('|')[0]) / 100)
+                confidence = 0.85 + (len(pattern.split("|")[0]) / 100)
                 confidence = min(confidence, 0.99)
 
                 if confidence > best_confidence:
@@ -182,10 +210,12 @@ def parse_voice_command(transcription: str, language: str = "en") -> Dict[str, A
             "action": best_match["description"],
             "actionData": {
                 "command": best_match["description"],
-                "query": best_captured_group
+                "query": best_captured_group,
             },
             "confidence": best_confidence,
-            "responseText": _generate_response_text(best_match, best_captured_group, language)
+            "responseText": _generate_response_text(
+                best_match, best_captured_group, language
+            ),
         }
     else:
         # Treat as search query if nothing matches
@@ -193,16 +223,15 @@ def parse_voice_command(transcription: str, language: str = "en") -> Dict[str, A
             "success": True,
             "commandType": "search",
             "action": "Search for content",
-            "actionData": {
-                "command": "Search for content",
-                "query": text
-            },
+            "actionData": {"command": "Search for content", "query": text},
             "confidence": 0.5,
-            "responseText": _get_search_response(text, language)
+            "responseText": _get_search_response(text, language),
         }
 
 
-def _generate_response_text(command_info: Dict, captured_group: Optional[str], language: str) -> str:
+def _generate_response_text(
+    command_info: Dict, captured_group: Optional[str], language: str
+) -> str:
     """Generate natural language response for command."""
     responses = {
         "en": {
@@ -215,7 +244,7 @@ def _generate_response_text(command_info: Dict, captured_group: Optional[str], l
             "volume": lambda q: f"Setting volume to {q}" if q else "Adjusting volume",
             "favorite": lambda q: "Added to favorites",
             "recommend": lambda q: "Getting recommendations",
-            "language": lambda q: f"Switching to {q}" if q else "Changing language"
+            "language": lambda q: f"Switching to {q}" if q else "Changing language",
         },
         "he": {
             "play": lambda q: f"מנגן {q}" if q else "מנגן תוכן",
@@ -227,7 +256,7 @@ def _generate_response_text(command_info: Dict, captured_group: Optional[str], l
             "volume": lambda q: f"הצבת עוצמה ל {q}" if q else "כיוונון עוצמה",
             "favorite": lambda q: "נוסף למועדפים",
             "recommend": lambda q: "קבלת המלצות",
-            "language": lambda q: f"מעבר ל {q}" if q else "שינוי שפה"
+            "language": lambda q: f"מעבר ל {q}" if q else "שינוי שפה",
         },
         "es": {
             "play": lambda q: f"Reproduciendo {q}" if q else "Reproduciendo contenido",
@@ -236,11 +265,13 @@ def _generate_response_text(command_info: Dict, captured_group: Optional[str], l
             "resume": lambda q: "Reanudando reproducción",
             "next": lambda q: "Saltando al siguiente",
             "previous": lambda q: "Volviendo al anterior",
-            "volume": lambda q: f"Ajustando volumen a {q}" if q else "Ajustando volumen",
+            "volume": lambda q: (
+                f"Ajustando volumen a {q}" if q else "Ajustando volumen"
+            ),
             "favorite": lambda q: "Agregado a favoritos",
             "recommend": lambda q: "Obteniendo recomendaciones",
-            "language": lambda q: f"Cambiando a {q}" if q else "Cambiando idioma"
-        }
+            "language": lambda q: f"Cambiando a {q}" if q else "Cambiando idioma",
+        },
     }
 
     lang_responses = responses.get(language, responses["en"])
@@ -255,7 +286,7 @@ def _get_search_response(query: str, language: str) -> str:
     responses = {
         "en": f"Searching for {query}",
         "he": f"חיפוש עבור {query}",
-        "es": f"Buscando {query}"
+        "es": f"Buscando {query}",
     }
     return responses.get(language, f"Searching for {query}")
 
@@ -292,8 +323,8 @@ async def process_voice_command(
             extra={
                 "language": request.language,
                 "command_type": result["commandType"],
-                "confidence": result["confidence"]
-            }
+                "confidence": result["confidence"],
+            },
         )
 
         return VoiceCommandResponse(
@@ -302,20 +333,22 @@ async def process_voice_command(
             action=result["action"],
             actionData=result["actionData"],
             responseText=result["responseText"],
-            confidence=result["confidence"]
+            confidence=result["confidence"],
         )
 
     except Exception as e:
         logger.error(f"[Voice] Command processing error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Voice command processing failed"
+            detail="Voice command processing failed",
         )
 
 
 @router.post("/suggestions", response_model=VoiceCommandSuggestionsResponse)
 async def get_voice_command_suggestions(
-    partial: str = Query(..., min_length=1, max_length=200, description="Partial transcription"),
+    partial: str = Query(
+        ..., min_length=1, max_length=200, description="Partial transcription"
+    ),
     language: str = Query("en", description="Language code (en, he, es)"),
     current_user=Depends(verify_oauth_token),
 ) -> VoiceCommandSuggestionsResponse:
@@ -341,9 +374,25 @@ async def get_voice_command_suggestions(
 
         # Common command starters
         common_commands = {
-            "en": ["play", "search", "pause", "resume", "next", "previous", "show favorites"],
+            "en": [
+                "play",
+                "search",
+                "pause",
+                "resume",
+                "next",
+                "previous",
+                "show favorites",
+            ],
             "he": ["הנגן", "חיפוש", "הפסק", "המשך", "הבא", "הקודם", "הצג מועדפים"],
-            "es": ["reproducir", "buscar", "pausar", "reanudar", "siguiente", "anterior", "mostrar favoritos"]
+            "es": [
+                "reproducir",
+                "buscar",
+                "pausar",
+                "reanudar",
+                "siguiente",
+                "anterior",
+                "mostrar favoritos",
+            ],
         }
 
         commands = common_commands.get(language, common_commands["en"])
@@ -352,10 +401,11 @@ async def get_voice_command_suggestions(
         for cmd in commands:
             if cmd.startswith(text) or text in cmd:
                 confidence = len(text) / len(cmd)  # Simple fuzzy match
-                suggestions.append(VoiceCommandSuggestion(
-                    suggestion=cmd,
-                    confidence=min(confidence + 0.5, 0.95)
-                ))
+                suggestions.append(
+                    VoiceCommandSuggestion(
+                        suggestion=cmd, confidence=min(confidence + 0.5, 0.95)
+                    )
+                )
 
         # Limit to top 5
         suggestions = sorted(suggestions, key=lambda s: s.confidence, reverse=True)[:5]
@@ -363,14 +413,13 @@ async def get_voice_command_suggestions(
         # If no matches, suggest top commands
         if not suggestions:
             for cmd in commands[:3]:
-                suggestions.append(VoiceCommandSuggestion(
-                    suggestion=cmd,
-                    confidence=0.3
-                ))
+                suggestions.append(
+                    VoiceCommandSuggestion(suggestion=cmd, confidence=0.3)
+                )
 
         logger.info(
             f"[Voice] Generated {len(suggestions)} suggestions for user {current_user.id}",
-            extra={"language": language, "partial": text}
+            extra={"language": language, "partial": text},
         )
 
         return VoiceCommandSuggestionsResponse(suggestions=suggestions)
@@ -387,5 +436,5 @@ async def health_check():
     return {
         "status": "healthy",
         "service": "voice_proxy",
-        "features": ["command_processing", "command_suggestions"]
+        "features": ["command_processing", "command_suggestions"],
     }

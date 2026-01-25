@@ -56,9 +56,20 @@ async def _get_podcast_languages(podcast_id: str) -> list:
             "$project": {
                 "langs": {
                     "$cond": {
-                        "if": {"$gt": [{"$size": {"$ifNull": ["$available_languages", []]}}, 0]},
+                        "if": {
+                            "$gt": [
+                                {"$size": {"$ifNull": ["$available_languages", []]}},
+                                0,
+                            ]
+                        },
                         "then": "$available_languages",
-                        "else": {"$cond": {"if": "$original_language", "then": ["$original_language"], "else": []}}
+                        "else": {
+                            "$cond": {
+                                "if": "$original_language",
+                                "then": ["$original_language"],
+                                "else": [],
+                            }
+                        },
                     }
                 }
             }
@@ -81,24 +92,32 @@ async def _batch_get_podcast_languages(podcast_ids: list) -> dict:
                 "podcast_id": 1,
                 "langs": {
                     "$cond": {
-                        "if": {"$gt": [{"$size": {"$ifNull": ["$available_languages", []]}}, 0]},
+                        "if": {
+                            "$gt": [
+                                {"$size": {"$ifNull": ["$available_languages", []]}},
+                                0,
+                            ]
+                        },
                         "then": "$available_languages",
-                        "else": {"$cond": {"if": "$original_language", "then": ["$original_language"], "else": []}}
+                        "else": {
+                            "$cond": {
+                                "if": "$original_language",
+                                "then": ["$original_language"],
+                                "else": [],
+                            }
+                        },
                     }
-                }
+                },
             }
         },
         {"$unwind": {"path": "$langs", "preserveNullAndEmptyArrays": True}},
-        {
-            "$group": {
-                "_id": "$podcast_id",
-                "languages": {"$addToSet": "$langs"}
-            }
-        },
+        {"$group": {"_id": "$podcast_id", "languages": {"$addToSet": "$langs"}}},
     ]
     try:
         results = await PodcastEpisode.aggregate(pipeline).to_list(length=None)
-        return {r["_id"]: sorted([lang for lang in r["languages"] if lang]) for r in results}
+        return {
+            r["_id"]: sorted([lang for lang in r["languages"] if lang]) for r in results
+        }
     except Exception:
         # If aggregation fails, return empty dict (podcasts will show without language info)
         return {}

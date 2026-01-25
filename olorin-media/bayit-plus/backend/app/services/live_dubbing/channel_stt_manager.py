@@ -261,9 +261,7 @@ class ChannelSTTManager:
         except asyncio.CancelledError:
             logger.info(f"Broadcast loop cancelled for channel {self.channel_id}")
         except Exception as e:
-            logger.error(
-                f"Broadcast loop error for channel {self.channel_id}: {e}"
-            )
+            logger.error(f"Broadcast loop error for channel {self.channel_id}: {e}")
             self._is_running = False
 
     def get_subscriber_count(self) -> int:

@@ -12,11 +12,9 @@ from typing import Any, Dict, List, Optional
 import httpx
 
 from app.core.config import settings
-from app.models.live_feature_quota import (
-    FeatureType,
-    LiveFeatureUsageSession,
-    UsageSessionStatus,
-)
+from app.models.live_feature_quota import (FeatureType,
+                                           LiveFeatureUsageSession,
+                                           UsageSessionStatus)
 from app.models.voice_config import VoiceConfiguration, VoiceProviderHealth
 from app.services.elevenlabs_tts_streaming_service import \
     ElevenLabsTTSStreamingService
@@ -120,9 +118,7 @@ class VoiceManagementService:
             return config
 
     @staticmethod
-    async def test_voice(
-        voice_id: str, text: str, language: str = "en"
-    ) -> bytes:
+    async def test_voice(voice_id: str, text: str, language: str = "en") -> bytes:
         """
         Generate test audio using TTS service
 
@@ -143,9 +139,7 @@ class VoiceManagementService:
         try:
             await tts_service.connect(voice_id=voice_id)
 
-            async for chunk in tts_service.generate_speech(
-                text, voice_id, language
-            ):
+            async for chunk in tts_service.generate_speech(text, voice_id, language):
                 audio_chunks.append(chunk)
 
             return b"".join(audio_chunks)
@@ -171,8 +165,7 @@ class VoiceManagementService:
             not force_refresh
             and VoiceManagementService._voices_cache is not None
             and VoiceManagementService._voices_cache_expires_at is not None
-            and datetime.utcnow()
-            < VoiceManagementService._voices_cache_expires_at
+            and datetime.utcnow() < VoiceManagementService._voices_cache_expires_at
         ):
             return VoiceManagementService._voices_cache.get("voices", [])
 
@@ -293,17 +286,13 @@ class VoiceManagementService:
         for session in sessions:
             bucket_key = session.started_at.strftime("%Y-%m-%d %H:00")
             if bucket_key in buckets:
-                buckets[bucket_key]["duration_minutes"] += (
-                    session.duration_seconds / 60
-                )
+                buckets[bucket_key]["duration_minutes"] += session.duration_seconds / 60
                 buckets[bucket_key]["cost_usd"] += session.estimated_total_cost
                 buckets[bucket_key]["session_count"] += 1
 
         return {
             "period": period,
-            "data": [
-                {"timestamp": k, **v} for k, v in sorted(buckets.items())
-            ],
+            "data": [{"timestamp": k, **v} for k, v in sorted(buckets.items())],
         }
 
     @staticmethod
@@ -337,17 +326,15 @@ class VoiceManagementService:
 
         for session in sessions:
             breakdown["total_cost"] += session.estimated_total_cost
-            breakdown["by_feature"][session.feature_type] += (
-                session.estimated_total_cost
-            )
+            breakdown["by_feature"][
+                session.feature_type
+            ] += session.estimated_total_cost
             breakdown["by_component"]["stt"] += session.estimated_stt_cost
-            breakdown["by_component"]["translation"] += (
-                session.estimated_translation_cost
-            )
+            breakdown["by_component"][
+                "translation"
+            ] += session.estimated_translation_cost
             breakdown["by_component"]["tts"] += session.estimated_tts_cost
-            breakdown["total_duration_minutes"] += (
-                session.duration_seconds / 60
-            )
+            breakdown["total_duration_minutes"] += session.duration_seconds / 60
 
         return breakdown
 
@@ -397,14 +384,10 @@ class VoiceManagementService:
             error_message = str(e)
             logger.error(f"Provider health check failed for {provider}: {e}")
 
-        latency_ms = (
-            datetime.utcnow() - start_time
-        ).total_seconds() * 1000
+        latency_ms = (datetime.utcnow() - start_time).total_seconds() * 1000
 
         # Update health record
-        health_record = await VoiceProviderHealth.find_one(
-            {"provider": provider}
-        )
+        health_record = await VoiceProviderHealth.find_one({"provider": provider})
 
         if health_record:
             health_record.is_healthy = is_healthy

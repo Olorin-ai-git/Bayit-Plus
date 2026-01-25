@@ -9,11 +9,9 @@ Contains bilingual (Hebrew/English) keyword sets for:
 - Seed content (fallback content when database is empty)
 """
 
-from app.models.youngsters_content import (
-    YoungstersAgeGroup,
-    YoungstersContentCategory,
-    YoungstersSubcategory,
-)
+from app.models.youngsters_content import (YoungstersAgeGroup,
+                                           YoungstersContentCategory,
+                                           YoungstersSubcategory)
 
 # Allowed content ratings for youngsters (PG-13 and below)
 YOUNGSTERS_ALLOWED_RATINGS = ["G", "PG", "PG-13", "TV-G", "TV-PG", "TV-14"]

@@ -8,10 +8,10 @@ Maintains audit trail for compliance.
 
 import logging
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
 
-from app.models.live_dubbing import LiveDubbingSession
 from app.core.redis_client import get_redis_client
+from app.models.live_dubbing import LiveDubbingSession
 from app.services.live_dubbing.session_store import get_session_store
 
 logger = logging.getLogger(__name__)

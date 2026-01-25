@@ -12,7 +12,8 @@ from app.core.config import settings
 from app.models.content import Content
 from app.models.trivia import ContentTrivia, TriviaFactModel
 from app.services.tmdb_service import TMDBService
-from app.services.trivia.fact_generators import fetch_tmdb_facts, generate_ai_facts
+from app.services.trivia.fact_generators import (fetch_tmdb_facts,
+                                                 generate_ai_facts)
 
 logger = logging.getLogger(__name__)
 

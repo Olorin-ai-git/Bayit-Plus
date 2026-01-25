@@ -43,6 +43,8 @@ export { GlassSectionItem } from './GlassSectionItem';
 // Page and Loading Components
 export { GlassPageHeader } from './GlassPageHeader';
 export type { PageType } from './GlassPageHeader';
+export { GlassLoadingSpinner } from './GlassLoadingSpinner';
+export type { GlassLoadingSpinnerProps } from './GlassLoadingSpinner';
 export {
   GlassSkeleton,
   ContentCardSkeleton,

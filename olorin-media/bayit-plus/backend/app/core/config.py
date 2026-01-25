@@ -21,10 +21,13 @@ class Settings(BaseSettings):
 
     # Security (REQUIRED - no defaults for sensitive fields)
     SECRET_KEY: str  # Required, minimum 32 characters
-    SECRET_KEY_OLD: str = ""  # Old secret for zero-downtime JWT rotation (remove after 7 days)
+    SECRET_KEY_OLD: str = (
+        ""  # Old secret for zero-downtime JWT rotation (remove after 7 days)
+    )
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7  # 7 days for refresh tokens
     ALGORITHM: str = "HS256"
+    CSRF_ENABLED: bool = False  # CSRF protection disabled by default
 
     # MongoDB (REQUIRED - no defaults for connection strings)
     MONGODB_URI: str  # Required, must be set via environment
@@ -138,7 +141,12 @@ class Settings(BaseSettings):
             import os
 
             if os.getenv("DEBUG", "").lower() == "true":
-                return ["http://localhost:3200", "http://localhost:3211", "http://localhost:8000", "http://localhost:8001"]
+                return [
+                    "http://localhost:3200",
+                    "http://localhost:3211",
+                    "http://localhost:8000",
+                    "http://localhost:8001",
+                ]
             raise ValueError(
                 "BACKEND_CORS_ORIGINS must be configured in production. "
                 "Set it as JSON array or comma-separated URLs."
@@ -291,7 +299,9 @@ class Settings(BaseSettings):
 
     # Librarian Audit Recovery
     AUDIT_STUCK_TIMEOUT_MINUTES: int = 30  # Audit considered stuck after 30 minutes
-    AUDIT_NO_ACTIVITY_TIMEOUT_MINUTES: int = 15  # No activity for 15 minutes is suspicious
+    AUDIT_NO_ACTIVITY_TIMEOUT_MINUTES: int = (
+        15  # No activity for 15 minutes is suspicious
+    )
     AUDIT_HEALTH_CHECK_INTERVAL_SECONDS: int = 300  # Check every 5 minutes
 
     # EPG Configuration
@@ -327,7 +337,8 @@ class Settings(BaseSettings):
         default=False, description="Enable automatic podcast translation"
     )
     PODCAST_TRANSLATION_POLL_INTERVAL: int = Field(
-        default=300, description="Interval in seconds to check for untranslated episodes"
+        default=300,
+        description="Interval in seconds to check for untranslated episodes",
     )
     PODCAST_TRANSLATION_MAX_CONCURRENT: int = Field(
         default=2, description="Maximum number of concurrent translation workers"
@@ -483,7 +494,9 @@ class Settings(BaseSettings):
             ],
         )
 
-    def _parse_domain_list(self, value: str | list[str], default: list[str]) -> list[str]:
+    def _parse_domain_list(
+        self, value: str | list[str], default: list[str]
+    ) -> list[str]:
         """
         Parse domain list from string or list.
 
@@ -524,7 +537,9 @@ class Settings(BaseSettings):
     )
 
     # Audio Quality Settings
-    TARGET_LUFS: float = Field(default=-16.0, description="Target LUFS for normalization")
+    TARGET_LUFS: float = Field(
+        default=-16.0, description="Target LUFS for normalization"
+    )
     PEAK_LIMITER: float = Field(default=-1.5, description="Peak limiter in dB")
     VOCAL_VOLUME_DB: float = Field(default=0.0, description="Vocal volume adjustment")
     BACKGROUND_VOLUME_DB: float = Field(
@@ -545,7 +560,8 @@ class Settings(BaseSettings):
         default=True, description="Enable speaker boost for clarity"
     )
     ELEVENLABS_MODEL: str = Field(
-        default="eleven_multilingual_v2", description="ElevenLabs TTS model (v2 multilingual with Hebrew support)"
+        default="eleven_multilingual_v2",
+        description="ElevenLabs TTS model (v2 multilingual with Hebrew support)",
     )
     ELEVENLABS_HEBREW_VOICE_ID: str = Field(
         default="", description="ElevenLabs voice ID for Hebrew (female)"
@@ -662,9 +678,14 @@ class Settings(BaseSettings):
     KIDS_CONTENT_DEFAULT_AGE_MAX: int = 12
 
     # Trivia Feature Configuration
-    TRIVIA_ENABLED: bool = Field(default=True, description="Enable trivia feature globally")
+    TRIVIA_ENABLED: bool = Field(
+        default=True, description="Enable trivia feature globally"
+    )
     TRIVIA_DEFAULT_DISPLAY_DURATION_SECONDS: int = Field(
-        default=10, ge=5, le=30, description="Default trivia display duration in seconds"
+        default=10,
+        ge=5,
+        le=30,
+        description="Default trivia display duration in seconds",
     )
     TRIVIA_MIN_INTERVAL_SECONDS: int = Field(
         default=300, ge=60, le=1800, description="Minimum interval between trivia facts"
@@ -682,10 +703,16 @@ class Settings(BaseSettings):
         default=200, ge=50, le=500, description="Max length for title sanitization"
     )
     TRIVIA_SANITIZE_DESCRIPTION_MAX_LEN: int = Field(
-        default=500, ge=100, le=2000, description="Max length for description sanitization"
+        default=500,
+        ge=100,
+        le=2000,
+        description="Max length for description sanitization",
     )
     TRIVIA_SANITIZE_FIELD_MAX_LEN: int = Field(
-        default=100, ge=50, le=500, description="Max length for other field sanitization"
+        default=100,
+        ge=50,
+        le=500,
+        description="Max length for other field sanitization",
     )
 
     @field_validator("TRIVIA_MIN_INTERVAL_SECONDS")
@@ -829,20 +856,19 @@ class Settings(BaseSettings):
     # ============================================
     # Configuration for URL transformation scripts (bucket upgrades, S3→GCS migration)
     OLD_BUCKET_NAME: str = Field(
-        default="bayit-plus-media/",
-        description="Old GCS bucket name for URL migration"
+        default="bayit-plus-media/", description="Old GCS bucket name for URL migration"
     )
     NEW_BUCKET_NAME: str = Field(
         default="bayit-plus-media-new/",
-        description="New GCS bucket name for URL migration"
+        description="New GCS bucket name for URL migration",
     )
     S3_PATTERN: str = Field(
         default=r"s3\.amazonaws\.com",
-        description="S3 URL pattern to replace during migration"
+        description="S3 URL pattern to replace during migration",
     )
     GCS_PATTERN: str = Field(
         default="storage.googleapis.com",
-        description="GCS URL pattern for S3→GCS migration"
+        description="GCS URL pattern for S3→GCS migration",
     )
 
     # ============================================

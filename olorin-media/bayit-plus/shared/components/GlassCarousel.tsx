@@ -13,6 +13,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { GlassView } from './ui';
+import { GlassPlaceholder } from '@olorin/glass-ui';
 import { SubtitleFlags } from './SubtitleFlags';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 import { useDirection } from '../hooks/useDirection';
@@ -197,7 +198,14 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
       <View style={styles.container}>
         <GlassView intensity="low" style={[styles.carouselWrapper, { height }]}>
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyIcon}>🎬</Text>
+            <GlassPlaceholder
+              contentType="vod"
+              width={400}
+              height={600}
+              accessibilityRole="image"
+              accessibilityLabel="No content available"
+              contentReason="unavailable"
+            />
             <Text style={styles.emptyText}>{t('empty.noContent')}</Text>
           </View>
         </GlassView>

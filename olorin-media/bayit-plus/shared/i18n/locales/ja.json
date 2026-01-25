@@ -678,7 +678,12 @@
     "clearHistory": "履歴をクリア",
     "noResults": "結果が見つかりませんでした",
     "tryDifferent": "別のキーワードをお試しください",
-    "suggestions": "検索候補",
+    "suggestions": {
+      "trendingTitle": "Trending Searches",
+      "categoriesTitle": "Browse Categories",
+      "recentTitle": "Recent Searches",
+      "clearRecent": "Clear"
+    },
     "trending": "トレンドの検索",
     "popular": "人気の検索",
     "searchIn": "検索対象",
@@ -700,7 +705,22 @@
     "showingResults": "検索結果を表示中",
     "voiceSearch": "音声検索",
     "speak": "話してください",
-    "listening": "聞いています..."
+    "listening": "聞いています...",
+    "controls": {
+      "placeholder": "Search for content...",
+      "hints": {
+        "searchInput": "Enter keywords to search"
+      }
+    },
+    "semantic": {
+      "keyword": "Keyword",
+      "semantic": "AI Search",
+      "infoTitle": "AI-Powered Search",
+      "info": "AI search understands context and finds exact moments in videos by analyzing scenes, dialogue, and visual content."
+    },
+    "empty": {
+      "clearSearch": "Clear search"
+    }
   },
   "liveTV": {
     "title": "ライブTV",
@@ -1057,7 +1077,7 @@
     "exitPictureInPicture": "ピクチャーインピクチャーを終了",
     "settings": "設定",
     "quality": "画質",
-    "speed": "再生速度",
+    "speed": "速度",
     "subtitles": "字幕",
     "audio": "音声",
     "off": "オフ",
@@ -1093,7 +1113,6 @@
     "startOver": "最初から",
     "restart": "最初から再生",
     "subtitlesOff": "オフ",
-    "speed": "速度",
     "relatedContent": "関連コンテンツ",
     "upNext": "次のコンテンツ",
     "autoPlayIn": "{{seconds}}秒後に自動再生",

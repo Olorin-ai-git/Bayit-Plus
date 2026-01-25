@@ -62,8 +62,17 @@ class ElevenLabsTTSStreamingService:
         voice_id: Optional[str] = None,
         model_id: str = "eleven_turbo_v2_5",
         output_format: str = "mp3_44100_128",
+        language_code: Optional[str] = None,
     ) -> None:
-        """Establish WebSocket connection to ElevenLabs TTS."""
+        """
+        Establish WebSocket connection to ElevenLabs TTS.
+
+        Args:
+            voice_id: ElevenLabs voice ID
+            model_id: Model to use (default: eleven_turbo_v2_5)
+            output_format: Audio format (default: mp3_44100_128)
+            language_code: Language code for proper pronunciation (e.g., 'he' for Hebrew, 'en' for English)
+        """
         if self._connected:
             logger.warning("Already connected to ElevenLabs TTS")
             return
@@ -89,6 +98,11 @@ class ElevenLabsTTSStreamingService:
                 "generation_config": {"chunk_length_schedule": [120, 160, 250, 290]},
                 "xi_api_key": self.config.elevenlabs_api_key,
             }
+
+            # Add language_code if provided (ensures proper pronunciation)
+            if language_code:
+                init_message["language_code"] = language_code
+
             await self.websocket.send(json.dumps(init_message))
 
             self._connected = True

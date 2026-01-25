@@ -60,11 +60,9 @@ export function useVoiceResponseCoordinator(
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    console.log('[VoiceResponseCoordinator] Hook mounted, isMountedRef set to true');
     isMountedRef.current = true;
 
     return () => {
-      console.log('[VoiceResponseCoordinator] Hook cleanup running, setting isMountedRef to false');
       isMountedRef.current = false;
       // Cancel any pending operations if component unmounts
       abortControllerRef.current?.abort();

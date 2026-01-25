@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Union
 import pymongo
 from beanie import Document
 from pydantic import BaseModel, ConfigDict, Field, field_validator
-from pymongo import IndexModel, TEXT
+from pymongo import TEXT, IndexModel
 
 
 class ContentBase(BaseModel):
@@ -532,7 +532,9 @@ class PodcastEpisode(Document):
     translation_status: str = "pending"  # pending, processing, completed, failed
 
     # Translation stage tracking (for resumption after failures)
-    translation_stages: Dict[str, Any] = Field(default_factory=dict)  # Stores completed stage data
+    translation_stages: Dict[str, Any] = Field(
+        default_factory=dict
+    )  # Stores completed stage data
     # Example structure:
     # {
     #   "downloaded": {"audio_path": "/tmp/...", "timestamp": "..."},

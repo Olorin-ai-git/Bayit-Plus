@@ -27,7 +27,9 @@ async def get_channels(
         query_conditions.append(LiveChannel.category == category)
 
     # Limit to 50 channels per request for memory safety
-    channels = await LiveChannel.find(*query_conditions).sort("order").limit(50).to_list()
+    channels = (
+        await LiveChannel.find(*query_conditions).sort("order").limit(50).to_list()
+    )
 
     return {
         "channels": [

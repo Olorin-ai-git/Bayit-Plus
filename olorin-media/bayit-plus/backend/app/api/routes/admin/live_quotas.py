@@ -45,14 +45,16 @@ async def get_user_quota(
         user = await User.get(user_id)
 
         return {
-            "user": {
-                "id": str(user.id),
-                "email": user.email,
-                "name": user.name,
-                "subscription_tier": user.subscription_tier,
-            }
-            if user
-            else None,
+            "user": (
+                {
+                    "id": str(user.id),
+                    "email": user.email,
+                    "name": user.name,
+                    "subscription_tier": user.subscription_tier,
+                }
+                if user
+                else None
+            ),
             "quota": {
                 "subtitle_minutes_per_hour": quota.subtitle_minutes_per_hour,
                 "subtitle_minutes_per_day": quota.subtitle_minutes_per_day,
@@ -82,7 +84,11 @@ async def update_user_limits(
     """Admin updates user's quota limits"""
     try:
         # Build dict of non-None values
-        new_limits = {k: v for k, v in limits.model_dump().items() if v is not None and k != "notes"}
+        new_limits = {
+            k: v
+            for k, v in limits.model_dump().items()
+            if v is not None and k != "notes"
+        }
 
         if not new_limits and not limits.notes:
             raise HTTPException(status_code=400, detail="No limits provided to update")

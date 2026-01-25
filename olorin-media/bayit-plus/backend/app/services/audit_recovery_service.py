@@ -157,9 +157,7 @@ class AuditRecoveryService:
             "audit_id": audit_id,
         }
 
-    async def recover_stuck_audit(
-        self, audit_id: str, reason: str
-    ) -> Dict[str, any]:
+    async def recover_stuck_audit(self, audit_id: str, reason: str) -> Dict[str, any]:
         """
         Recover a stuck audit by marking it as failed and adding recovery logs.
 
@@ -180,9 +178,7 @@ class AuditRecoveryService:
 
         current_status = audit.get("status")
         if current_status in ["completed", "failed", "cancelled"]:
-            logger.info(
-                f"Audit {audit_id} already in terminal state: {current_status}"
-            )
+            logger.info(f"Audit {audit_id} already in terminal state: {current_status}")
             return {
                 "success": False,
                 "error": f"Audit already {current_status}",

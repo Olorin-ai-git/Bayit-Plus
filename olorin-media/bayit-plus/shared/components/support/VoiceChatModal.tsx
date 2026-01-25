@@ -236,13 +236,12 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
     }
 
     if (voiceState === 'listening') {
-      // Use static image for listening - spritesheet has inconsistent frames
       return (
-        <Image
-          source={WIZARD_AVATARS.listening}
-          className="w-full h-full"
-          style={{ width: WIZARD_SIZE, height: WIZARD_SIZE }}
-          resizeMode="contain"
+        <WizardSprite
+          spritesheet="listening"
+          size={WIZARD_SIZE}
+          playing={true}
+          loop={true}
         />
       );
     }
@@ -261,103 +260,112 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
   if (!visible) return null;
 
   return (
-    <View className="absolute top-0 left-0 right-0 bottom-0 z-[9999]">
+    <View
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 9999,
+        pointerEvents: 'box-none',
+      }}
+    >
       {/* Backdrop - tap to close */}
       <TouchableWithoutFeedback onPress={onClose}>
-        <View className="absolute top-0 left-0 right-0 bottom-0 bg-transparent" />
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'transparent',
+          }}
+        />
       </TouchableWithoutFeedback>
 
-      {/* Fixed-size Panel */}
+      {/* Minimal Circular Wizard */}
       <Animated.View
-        className={`absolute ${isRTL ? 'left-4' : 'right-4'} bg-[rgba(13,13,26,0.95)] rounded-2xl p-4 items-center border border-primary/30 shadow-primary/30 ${isTV ? 'bottom-24 right-8' : 'bottom-8'}`}
         style={{
+          position: 'fixed',
+          [isRTL ? 'left' : 'right']: isTV ? 32 : 16,
+          bottom: isTV ? 96 : 32,
           opacity: opacityAnim,
           transform: [{ scale: scaleAnim }],
-          width: PANEL_WIDTH,
+          width: WIZARD_SIZE + 24,
+          height: WIZARD_SIZE + 24,
+          borderRadius: (WIZARD_SIZE + 24) / 2,
+          backgroundColor: 'rgba(13,13,26,0.95)',
+          borderWidth: 2,
+          borderColor: 'rgba(139,92,246,0.3)',
+          shadowColor: '#8b5cf6',
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.3,
           shadowRadius: 16,
           elevation: 10,
+          alignItems: 'center',
+          justifyContent: 'center',
           ...(Platform.OS === 'web' ? {
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
           } : {}),
         }}
       >
-        {/* Fixed-size Wizard Container */}
-        <View className="items-center justify-center overflow-hidden" style={{ width: WIZARD_SIZE, height: WIZARD_SIZE }}>
-          {/* Voice state effects overlay */}
-          <WizardEffects
-            voiceState={voiceState}
-            size={WIZARD_SIZE}
-            audioLevel={audioLevel}
-          />
+        {/* Voice state effects overlay */}
+        <WizardEffects
+          voiceState={voiceState}
+          size={WIZARD_SIZE}
+          audioLevel={audioLevel}
+        />
 
-          <View className="items-center justify-center" style={{ width: WIZARD_SIZE, height: WIZARD_SIZE }}>
-            {renderWizard()}
-          </View>
+        {/* Wizard Sprite */}
+        <View style={{ width: WIZARD_SIZE, height: WIZARD_SIZE }}>
+          {renderWizard()}
         </View>
 
-        {/* Name Badge */}
-        <View className="items-center mt-2">
-          <Text className={`text-white font-bold ${isTV ? 'text-xl' : 'text-lg'}`}>Olorin</Text>
-          <Text className={`text-primary font-medium ${isTV ? 'text-xs' : 'text-[10px]'}`}>{t('support.wizard.role', 'Your Guide')}</Text>
-        </View>
-
-        {/* Speech Text Display - Fixed height container */}
-        <View className={`w-full justify-center ${!hasText ? 'min-h-0 h-0 mt-0 overflow-hidden' : 'mt-3'}`} style={{ minHeight: hasText ? SPEECH_BUBBLE_HEIGHT : 0 }}>
-          <View className="bg-primary/15 rounded-lg p-3 w-full border border-primary/20">
-            <Text
-              className={`text-white text-center ${isTV ? 'text-sm leading-5' : 'text-xs leading-4'} ${isRTL ? 'text-right' : ''}`}
-              numberOfLines={3}
-            >
-              {displayText || ' '}
+        {/* Voice Error Indicator (minimal) */}
+        {voiceError && (
+          <View
+            style={{
+              position: 'absolute',
+              top: -8,
+              right: -8,
+              width: 32,
+              height: 32,
+              borderRadius: 16,
+              backgroundColor:
+                voiceError.type === 'mic'
+                  ? 'rgba(245,158,11,0.9)'
+                  : voiceError.type === 'connection'
+                  ? 'rgba(59,130,246,0.9)'
+                  : 'rgba(239,68,68,0.9)',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderWidth: 2,
+              borderColor: '#fff',
+            }}
+          >
+            <Text style={{ fontSize: isTV ? 18 : 16 }}>
+              {voiceError.type === 'mic' ? '🎤' : voiceError.type === 'connection' ? '📡' : '⚠️'}
             </Text>
           </View>
-        </View>
-
-        {/* State Indicator */}
-        <View className="mt-2 px-3 py-1 bg-primary/10 rounded-sm">
-          <Text className={`text-primary font-semibold uppercase tracking-wider ${isTV ? 'text-[11px]' : 'text-[9px]'}`}>
-            {voiceState === 'speaking' && currentIntroText
-              ? t('support.wizard.introducing', 'Introducing...')
-              : voiceState === 'listening'
-              ? t('support.wizard.listening', 'Listening...')
-              : voiceState === 'processing'
-              ? t('support.wizard.thinking', 'Thinking...')
-              : voiceState === 'speaking'
-              ? t('support.wizard.speaking', 'Speaking...')
-              : voiceState === 'error'
-              ? t('support.wizard.error', 'Error occurred')
-              : t('support.wizard.ready', 'Ready to help')}
-          </Text>
-        </View>
-
-        {/* Voice Error Toast */}
-        {voiceError && (
-          <TouchableWithoutFeedback onPress={clearVoiceError}>
-            <View className={`mt-2 flex-row items-center p-2 rounded-md border w-full ${
-              voiceError.type === 'mic'
-                ? 'bg-[rgba(245,158,11,0.2)] border-[rgba(245,158,11,0.4)]'
-                : voiceError.type === 'connection'
-                ? 'bg-[rgba(59,130,246,0.2)] border-[rgba(59,130,246,0.4)]'
-                : 'bg-[rgba(239,68,68,0.2)] border-[rgba(239,68,68,0.4)]'
-            }`}>
-              <Text className={`${isTV ? 'text-lg' : 'text-sm'} mr-1`}>
-                {voiceError.type === 'mic' ? '🎤' : voiceError.type === 'connection' ? '📡' : '⚠️'}
-              </Text>
-              <Text className={`flex-1 text-white ${isTV ? 'text-xs' : 'text-[10px]'}`} numberOfLines={2}>
-                {voiceError.message}
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
         )}
 
-        {/* Audio Level Indicator (debug) */}
+        {/* Audio Level Ring Indicator */}
         {voiceState === 'listening' && audioLevel > 0.01 && (
-          <View className="mt-1 w-full h-1 bg-white/10 rounded-sm overflow-hidden">
-            <View className="h-full bg-primary rounded-sm" style={{ width: `${Math.min(100, audioLevel * 200)}%` }} />
-          </View>
+          <View
+            style={{
+              position: 'absolute',
+              top: -4,
+              left: -4,
+              right: -4,
+              bottom: -4,
+              borderRadius: (WIZARD_SIZE + 32) / 2,
+              borderWidth: 3,
+              borderColor: `rgba(139,92,246,${Math.min(1, audioLevel * 2)})`,
+            }}
+          />
         )}
       </Animated.View>
     </View>

@@ -87,7 +87,9 @@ class ContentCleanupService:
             # Clean the series name
             series_name = cls._remove_tags(series_name)
             result["series_name"] = series_name.strip()
-            result["clean_title"] = f"{series_name} S{result['season']:02d}E{result['episode']:02d}"
+            result["clean_title"] = (
+                f"{series_name} S{result['season']:02d}E{result['episode']:02d}"
+            )
         else:
             # Not an episode, just clean the title
             clean = cls._remove_tags(title)

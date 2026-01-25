@@ -234,7 +234,9 @@ class DubbingSession(Document):
     class Settings:
         name = "dubbing_sessions"
         indexes = [
-            IndexModel([("session_id", ASCENDING)], unique=True, name="session_id_unique"),
+            IndexModel(
+                [("session_id", ASCENDING)], unique=True, name="session_id_unique"
+            ),
             "partner_id",
             "status",
             "started_at",

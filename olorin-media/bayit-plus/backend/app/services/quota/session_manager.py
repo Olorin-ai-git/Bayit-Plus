@@ -9,8 +9,8 @@ from typing import Dict, Optional
 
 from app.core.config import settings
 from app.models.live_feature_quota import (FeatureType,
-                                             LiveFeatureUsageSession,
-                                             UsageSessionStatus)
+                                           LiveFeatureUsageSession,
+                                           UsageSessionStatus)
 
 logger = logging.getLogger(__name__)
 
@@ -63,16 +63,22 @@ class SessionManager:
             avg_chars = settings.LIVE_QUOTA_AVG_CHARS_PER_MINUTE_ENGLISH
         else:
             # Default to average of Hebrew and English
-            avg_chars = (settings.LIVE_QUOTA_AVG_CHARS_PER_MINUTE_HEBREW +
-                        settings.LIVE_QUOTA_AVG_CHARS_PER_MINUTE_ENGLISH) // 2
+            avg_chars = (
+                settings.LIVE_QUOTA_AVG_CHARS_PER_MINUTE_HEBREW
+                + settings.LIVE_QUOTA_AVG_CHARS_PER_MINUTE_ENGLISH
+            ) // 2
 
         chars_processed = minutes * avg_chars
-        translation_cost = (chars_processed / 1000) * settings.LIVE_QUOTA_COST_TRANSLATION_PER_1K_CHARS
+        translation_cost = (
+            chars_processed / 1000
+        ) * settings.LIVE_QUOTA_COST_TRANSLATION_PER_1K_CHARS
 
         # TTS only for dubbing, not subtitles
         tts_cost = 0.0
         if feature_type == FeatureType.DUBBING:
-            tts_cost = (chars_processed / 1000) * settings.LIVE_QUOTA_COST_TTS_PER_1K_CHARS
+            tts_cost = (
+                chars_processed / 1000
+            ) * settings.LIVE_QUOTA_COST_TTS_PER_1K_CHARS
 
         return {
             "stt_cost": round(stt_cost, 4),
@@ -165,7 +171,9 @@ class SessionManager:
 
         session.status = status
         session.ended_at = datetime.utcnow()
-        session.duration_seconds = (session.ended_at - session.started_at).total_seconds()
+        session.duration_seconds = (
+            session.ended_at - session.started_at
+        ).total_seconds()
         session.updated_at = datetime.utcnow()
         await session.save()
 

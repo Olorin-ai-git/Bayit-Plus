@@ -47,7 +47,7 @@ async def list_all_movies(
                 "id": str(item.id),
                 "title": item.title,
                 "description": item.description,
-                "thumbnail": item.thumbnail,
+                "thumbnail": item.thumbnail or item.poster_url,
                 "backdrop": item.backdrop,
                 "category": item.category_name,
                 "year": item.year,

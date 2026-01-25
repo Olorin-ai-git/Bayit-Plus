@@ -191,8 +191,16 @@ class WhisperTranscriptionService:
 
             # Get file format info
             import subprocess
+
             try:
-                probe_cmd = ["ffprobe", "-v", "error", "-show_format", "-show_streams", audio_path]
+                probe_cmd = [
+                    "ffprobe",
+                    "-v",
+                    "error",
+                    "-show_format",
+                    "-show_streams",
+                    audio_path,
+                ]
                 probe_result = subprocess.run(probe_cmd, capture_output=True, text=True)
                 logger.info(f"   File format info: {probe_result.stdout[:200]}...")
             except Exception as e:
@@ -211,7 +219,9 @@ class WhisperTranscriptionService:
             import subprocess
             import tempfile
 
-            logger.info("   Converting audio to WAV format for better API compatibility...")
+            logger.info(
+                "   Converting audio to WAV format for better API compatibility..."
+            )
 
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_wav:
                 temp_wav_path = temp_wav.name
@@ -220,19 +230,23 @@ class WhisperTranscriptionService:
                 # Convert to WAV using ffmpeg (16kHz mono for optimal Whisper performance)
                 ffmpeg_cmd = [
                     "ffmpeg",
-                    "-i", audio_path,
-                    "-acodec", "pcm_s16le",  # 16-bit PCM
-                    "-ar", "16000",           # 16kHz sample rate
-                    "-ac", "1",               # Mono
-                    "-y",                     # Overwrite
-                    temp_wav_path
+                    "-i",
+                    audio_path,
+                    "-acodec",
+                    "pcm_s16le",  # 16-bit PCM
+                    "-ar",
+                    "16000",  # 16kHz sample rate
+                    "-ac",
+                    "1",  # Mono
+                    "-y",  # Overwrite
+                    temp_wav_path,
                 ]
 
                 result = subprocess.run(
                     ffmpeg_cmd,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
-                    check=True
+                    check=True,
                 )
 
                 wav_size_mb = os.path.getsize(temp_wav_path) / (1024 * 1024)
@@ -240,7 +254,9 @@ class WhisperTranscriptionService:
 
                 # If converted file is still too large, use chunking
                 if wav_size_mb > MAX_SIZE_MB:
-                    logger.info(f"   WAV file still exceeds {MAX_SIZE_MB}MB, using chunking...")
+                    logger.info(
+                        f"   WAV file still exceeds {MAX_SIZE_MB}MB, using chunking..."
+                    )
                     return await self._transcribe_large_file(temp_wav_path, language)
 
                 # Transcribe the WAV file
@@ -249,11 +265,15 @@ class WhisperTranscriptionService:
 
                 try:
                     with open(temp_wav_path, "rb") as audio_file:
-                        logger.info(f"   File opened, size: {os.path.getsize(temp_wav_path)} bytes")
+                        logger.info(
+                            f"   File opened, size: {os.path.getsize(temp_wav_path)} bytes"
+                        )
 
                         if language:
                             lang_code = WHISPER_LANGUAGE_CODES.get(language, language)
-                            logger.info(f"   Requesting transcription with language: {lang_code}")
+                            logger.info(
+                                f"   Requesting transcription with language: {lang_code}"
+                            )
                             transcript = await self.client.audio.transcriptions.create(
                                 model="whisper-1",
                                 file=audio_file,
@@ -261,7 +281,9 @@ class WhisperTranscriptionService:
                                 response_format="verbose_json",
                             )
                         else:
-                            logger.info(f"   Requesting transcription with auto-detection")
+                            logger.info(
+                                f"   Requesting transcription with auto-detection"
+                            )
                             # Auto-detect language
                             transcript = await self.client.audio.transcriptions.create(
                                 model="whisper-1",
@@ -275,7 +297,7 @@ class WhisperTranscriptionService:
                     logger.error(f"   Whisper API error details:")
                     logger.error(f"     Error type: {type(api_error).__name__}")
                     logger.error(f"     Error message: {str(api_error)}")
-                    if hasattr(api_error, 'response'):
+                    if hasattr(api_error, "response"):
                         logger.error(f"     Response: {api_error.response}")
                     raise
             finally:
@@ -329,7 +351,9 @@ class WhisperTranscriptionService:
                 "default=noprint_wrappers=1:nokey=1",
                 audio_path,
             ]
-            result = subprocess.run(duration_cmd, capture_output=True, text=True, check=True)
+            result = subprocess.run(
+                duration_cmd, capture_output=True, text=True, check=True
+            )
             total_duration = float(result.stdout.strip())
 
             # Split into 10-minute chunks (600 seconds)
@@ -337,7 +361,9 @@ class WhisperTranscriptionService:
             num_chunks = int((total_duration + chunk_duration - 1) / chunk_duration)
 
             logger.info(f"   Audio duration: {total_duration:.1f}s")
-            logger.info(f"   Splitting into {num_chunks} chunks of {chunk_duration}s each")
+            logger.info(
+                f"   Splitting into {num_chunks} chunks of {chunk_duration}s each"
+            )
 
             # Transcribe each chunk
             transcripts = []
@@ -348,7 +374,9 @@ class WhisperTranscriptionService:
                     start_time = chunk_idx * chunk_duration
                     chunk_path = os.path.join(temp_dir, f"chunk_{chunk_idx}.mp3")
 
-                    logger.info(f"   Creating chunk {chunk_idx + 1}/{num_chunks} (starting at {start_time}s)...")
+                    logger.info(
+                        f"   Creating chunk {chunk_idx + 1}/{num_chunks} (starting at {start_time}s)..."
+                    )
 
                     # Use ffmpeg to extract chunk
                     ffmpeg_cmd = [
@@ -371,7 +399,7 @@ class WhisperTranscriptionService:
                         ffmpeg_cmd,
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
-                        check=True
+                        check=True,
                     )
 
                     # Verify chunk was created and has reasonable size
@@ -380,10 +408,14 @@ class WhisperTranscriptionService:
                         continue
 
                     chunk_size_mb = os.path.getsize(chunk_path) / (1024 * 1024)
-                    logger.info(f"   Chunk {chunk_idx + 1} size: {chunk_size_mb:.2f} MB")
+                    logger.info(
+                        f"   Chunk {chunk_idx + 1} size: {chunk_size_mb:.2f} MB"
+                    )
 
                     # Transcribe chunk
-                    logger.info(f"   Transcribing chunk {chunk_idx + 1}/{num_chunks}...")
+                    logger.info(
+                        f"   Transcribing chunk {chunk_idx + 1}/{num_chunks}..."
+                    )
 
                     with open(chunk_path, "rb") as chunk_file:
                         if language or detected_lang:

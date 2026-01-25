@@ -35,6 +35,7 @@ export { GlassCard, type GlassCardProps } from './components/GlassCard';
 export { GlassAvatar, type GlassAvatarProps } from './components/GlassAvatar';
 export { GlassStatCard, type GlassStatCardProps } from './components/GlassStatCard';
 export { GlassBadge, type GlassBadgeProps, type BadgeVariant, type BadgeSize } from './components/GlassBadge';
+export { GlassPlaceholder, type GlassPlaceholderProps } from './components/GlassPlaceholder';
 
 // Navigation components
 export { GlassTabs, type GlassTabsProps, type Tab as GlassTabItem, type TabVariant } from './components/GlassTabs';
