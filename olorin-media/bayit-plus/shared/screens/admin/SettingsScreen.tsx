@@ -18,11 +18,11 @@ import { AdminLayout } from '../../components/admin/AdminLayout';
 import { settingsService } from '../../services/adminApi';
 import { SystemSettings } from '../../types/rbac';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
-import { useModal } from '../../contexts/ModalContext';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 
 export const SettingsScreen: React.FC = () => {
   const { t } = useTranslation();
-  const { showError, showSuccess, showConfirm } = useModal();
+  const notifications = useNotifications();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -43,7 +43,7 @@ export const SettingsScreen: React.FC = () => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : t('admin.settings.loadError', 'Failed to load settings');
       setError(errorMessage);
-      showError(errorMessage);
+      notifications.showError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -64,7 +64,7 @@ export const SettingsScreen: React.FC = () => {
       setFeatureFlags(prev => ({ ...prev, [flag]: enabled }));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : t('admin.settings.flagError', 'Failed to update feature flag');
-      showError(errorMessage);
+      notifications.showError(errorMessage);
     }
   };
 
@@ -74,50 +74,54 @@ export const SettingsScreen: React.FC = () => {
     try {
       await settingsService.updateSettings(settings);
       setHasChanges(false);
-      showSuccess(t('admin.settings.savedMessage', 'Settings have been saved successfully'), t('admin.settings.saved', 'Saved'));
+      notifications.showSuccess(t('admin.settings.savedMessage', 'Settings have been saved successfully'), t('admin.settings.saved', 'Saved'));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : t('admin.settings.saveError', 'Failed to save settings');
-      showError(errorMessage);
+      notifications.showError(errorMessage);
     } finally {
       setSaving(false);
     }
   };
 
   const handleClearCache = () => {
-    showConfirm(
-      t('admin.settings.clearCacheConfirm', 'Are you sure you want to clear the system cache?'),
-      async () => {
-        try {
-          await settingsService.clearCache();
-          showSuccess(t('admin.settings.cacheCleared', 'Cache has been cleared successfully.'));
-        } catch (err) {
-          throw err;
-        }
+    notifications.show({
+      level: 'warning',
+      message: t('admin.settings.clearCacheConfirm', 'Are you sure you want to clear the system cache?'),
+      title: t('admin.settings.clearCache', 'Clear Cache'),
+      dismissable: true,
+      action: {
+        label: t('admin.settings.clear', 'Clear'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await settingsService.clearCache();
+            notifications.showSuccess(t('admin.settings.cacheCleared', 'Cache has been cleared successfully.'));
+          } catch (err) {
+            throw err;
+          }
+        },
       },
-      {
-        title: t('admin.settings.clearCache', 'Clear Cache'),
-        confirmText: t('admin.settings.clear', 'Clear'),
-        destructive: true,
-      }
-    );
+    });
   };
 
   const handleResetAnalytics = () => {
-    showConfirm(
-      t('admin.settings.resetAnalyticsConfirm', 'Are you sure you want to reset all analytics data? This action cannot be undone.'),
-      async () => {
-        try {
-          await settingsService.resetAnalytics();
-          showSuccess(t('admin.settings.analyticsReset', 'Analytics have been reset successfully.'));
-        } catch (err) {
-          throw err;
-        }
+    notifications.show({
+      level: 'warning',
+      message: t('admin.settings.resetAnalyticsConfirm', 'Are you sure you want to reset all analytics data? This action cannot be undone.'),
+      title: t('admin.settings.resetAnalytics', 'Reset Analytics'),
+      dismissable: true,
+      action: {
+        label: t('admin.settings.reset', 'Reset'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await settingsService.resetAnalytics();
+            notifications.showSuccess(t('admin.settings.analyticsReset', 'Analytics have been reset successfully.'));
+          } catch (err) {
+            throw err;
+          }
+        },
       },
-      {
-        title: t('admin.settings.resetAnalytics', 'Reset Analytics'),
-        confirmText: t('admin.settings.reset', 'Reset'),
-        destructive: true,
-      }
     );
   };
 
