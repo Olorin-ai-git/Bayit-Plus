@@ -1,0 +1,107 @@
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Python
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+**/*.so
+.Python
+**/build/
+**/develop-eggs/
+**/dist/
+**/downloads/
+**/eggs/
+**/.eggs/
+**/lib64/
+**/parts/
+**/sdist/
+**/var/
+**/wheels/
+**/*.egg-info/
+**/*.egg
+MANIFEST
+
+# Virtual environments
+**/venv/
+**/ENV/
+**/env/
+**/.venv
+
+# Testing
+**/.pytest_cache/
+**/.coverage
+**/htmlcov/
+**/.tox/
+**/.hypothesis/
+backend/tests/
+backend/test/
+
+# IDEs
+.vscode/
+.idea/
+**/*.swp
+**/*.swo
+*~
+**/.DS_Store
+
+# Documentation (exclude only from backend, not packages)
+backend/docs/
+**/*.md
+!packages/**/*.md
+!README.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Deployment config files
+.env
+.env.*
+!.env.example
+**/credentials.json
+**/service-account.json
+**/token.json
+**/*.pem
+**/*.key
+
+# Logs
+**/*.log
+backend/logs/
+backend_server.log
+backend_debug.log
+backend.log
+
+# Node modules (for frontend)
+node_modules/
+**/node_modules/
+
+# Build artifacts (frontend)
+shared/build/
+shared/dist/
+
+# Uploads
+backend/uploads/
+
+# Scripts (shell scripts excluded, but scripts directory needed for migration models)
+**/*.sh
+
+# Config files
+.gcp-config
+.gcloudignore
+backend/DEPLOYMENT*.md
+backend/QUICKSTART.md
+
+# Docker
+**/docker-compose*.yml
+
+# Cloud Build
+cloudbuild.yaml
+
+# Large files
+**/*.zip
+**/*.tar.gz
+**/*.sql
+**/*.dump
