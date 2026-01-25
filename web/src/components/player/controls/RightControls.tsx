@@ -31,6 +31,7 @@ interface RightControlsProps {
   onSceneSearchToggle?: () => void
   onSettingsToggle?: () => void
   renderWatchPartyButton?: () => React.ReactNode
+  renderCastButton?: () => React.ReactNode
   renderSubtitleControls?: () => React.ReactNode
   renderLiveSubtitleControls?: () => React.ReactNode
   renderDubbingControls?: () => React.ReactNode
@@ -54,6 +55,7 @@ export default function RightControls({
   onSceneSearchToggle,
   onSettingsToggle,
   renderWatchPartyButton,
+  renderCastButton,
   renderSubtitleControls,
   renderLiveSubtitleControls,
   renderDubbingControls,
@@ -70,6 +72,7 @@ export default function RightControls({
   return (
     <View style={styles.rightControls}>
       {renderWatchPartyButton && renderWatchPartyButton()}
+      {renderCastButton && renderCastButton()}
 
       {/* Chapters */}
       {!isLive && hasChapters && onChaptersPanelToggle && (

@@ -7,6 +7,7 @@ import VideoPlayerPanels from './VideoPlayerPanels'
 import VideoPlayerControlsOverlay from './VideoPlayerControlsOverlay'
 import VideoPlayerWatchParty from './VideoPlayerWatchParty'
 import { BufferedLiveDubbingPlayer } from '../BufferedLiveDubbingPlayer'
+import { StreamLimitExceededModal } from './StreamLimitExceededModal'
 import {
   useVideoPlayer,
   useSubtitles,
@@ -16,7 +17,10 @@ import {
   useTrivia,
   usePlayerPanels,
   usePlayerControlRenderers,
+  useCastSession,
+  usePlaybackSession,
 } from './hooks'
+import { castConfig } from '@/config/castConfig'
 import { useLiveFeatureQuota } from '@/hooks/useLiveFeatureQuota'
 import { VideoPlayerProps } from './types'
 
@@ -42,6 +46,12 @@ export default function VideoPlayer({
 
   const { usageStats } = useLiveFeatureQuota()
   const [hoveredButton, setHoveredButton] = useState<string | null>(null)
+  const [showStreamLimitModal, setShowStreamLimitModal] = useState(false)
+  const [streamLimitError, setStreamLimitError] = useState<{
+    maxStreams: number
+    activeStreams: number
+    activeDevices: Array<{ device_id: string; device_name: string; content_id: string }>
+  } | null>(null)
 
   const { videoRef, containerRef, state, controls } = useVideoPlayer({
     src,
@@ -80,6 +90,38 @@ export default function VideoPlayer({
     onRawDubbedAudio: (audio, text) => {
       if (bufferedPlayerAddSegment) {
         bufferedPlayerAddSegment(audio, text)
+      }
+    },
+  })
+
+  const cast = useCastSession({
+    videoRef,
+    metadata: {
+      title: title || '',
+      posterUrl: poster,
+      contentId: contentId || '',
+      streamUrl: src,
+      duration: state.duration,
+    },
+    enabled: !isWidget && castConfig.featureEnabled,
+  })
+
+  // Playback session management for concurrent stream limit enforcement
+  const { sessionId } = usePlaybackSession({
+    contentId,
+    contentType,
+    isPlaying: state.isPlaying,
+    enabled: !isWidget && !!user, // Only track sessions for logged-in users
+    onLimitExceeded: (error) => {
+      setStreamLimitError({
+        maxStreams: error.max_streams,
+        activeStreams: error.active_sessions,
+        activeDevices: error.active_devices,
+      })
+      setShowStreamLimitModal(true)
+      // Pause playback when limit is exceeded
+      if (videoRef.current) {
+        videoRef.current.pause()
       }
     },
   })
@@ -145,6 +187,33 @@ export default function VideoPlayer({
     }
   }, [dubbing.isConnected])
 
+  // Update cast metadata when content changes
+  useEffect(() => {
+    if (cast.isConnected) {
+      cast.updateMetadata({
+        title: title || '',
+        posterUrl: poster,
+        contentId: contentId || '',
+        streamUrl: src,
+        duration: state.duration,
+      })
+    }
+  }, [title, poster, contentId, src, state.duration, cast.isConnected, cast.updateMetadata])
+
+  // Sync playback state to cast device
+  useEffect(() => {
+    if (cast.isConnected && castConfig.autoSync) {
+      const interval = setInterval(() => {
+        cast.syncPlaybackState({
+          currentTime: state.currentTime,
+          isPlaying: state.isPlaying,
+          volume: state.volume,
+        })
+      }, castConfig.syncIntervalMs)
+      return () => clearInterval(interval)
+    }
+  }, [cast.isConnected, state.currentTime, state.isPlaying, state.volume, cast.syncPlaybackState])
+
   useEffect(() => {
     const handleTTSPlaying = () => setIsTTSPlaying(true)
     const handleTTSStopped = () => setIsTTSPlaying(false)
@@ -175,6 +244,7 @@ export default function VideoPlayer({
     renderLiveSubtitleControls,
     renderDubbingControls,
     renderRecordButton,
+    renderCastButton,
   } = usePlayerControlRenderers({
     user,
     contentId,
@@ -200,6 +270,7 @@ export default function VideoPlayer({
     setLiveSubtitleLang,
     handleLiveSubtitleCue,
     dubbing,
+    cast,
     setIsRecording,
     setRecordingDuration,
     onShowUpgrade,
@@ -341,6 +412,16 @@ export default function VideoPlayer({
         sendMessage={sendMessage}
         title={title}
       />
+
+      {streamLimitError && (
+        <StreamLimitExceededModal
+          visible={showStreamLimitModal}
+          maxStreams={streamLimitError.maxStreams}
+          activeStreams={streamLimitError.activeStreams}
+          activeDevices={streamLimitError.activeDevices}
+          onClose={() => setShowStreamLimitModal(false)}
+        />
+      )}
     </div>
   )
 }

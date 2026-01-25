@@ -1,42 +1,33 @@
-import React, { useState, useCallback, lazy, Suspense } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, Pressable, StyleSheet } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Grid, List } from 'lucide-react';
-import { useDirection } from '@/hooks/useDirection';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAuthStore } from '@/stores/authStore';
 import { subscriptionService } from '@/services/api';
 import { sanitizeI18n } from '@/utils/security/sanitizeI18n';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassButton, GlassView } from '@bayit/shared/ui';
-import { PlanHeader } from './components/PlanHeader';
+import { GlassButton } from '@bayit/shared/ui';
 import { BillingToggle } from './components/BillingToggle';
-import { PlanCard } from './components/PlanCard';
+import { EnhancedPlanCard } from './components/EnhancedPlanCard';
+import { EnhancedComparisonTable } from './components/EnhancedComparisonTable';
+import { PremiumFeaturesShowcase } from './components/PremiumFeaturesShowcase';
 import logger from '@/utils/logger';
 
-// Lazy load comparison table for performance
-const PlanComparisonTable = lazy(() =>
-  import('./components/PlanComparisonTable').then(module => ({
-    default: module.PlanComparisonTable
-  }))
-);
-
 const plansConfig = [
-  { id: 'basic', price: '$9.99' },
+  { id: 'basic', price: '$9.99', popular: false },
   { id: 'premium', price: '$14.99', popular: true },
-  { id: 'family', price: '$19.99' },
+  { id: 'family', price: '$19.99', popular: false },
 ];
 
 export default function SubscribePage() {
   const { t } = useTranslation();
-  const { isRTL } = useDirection();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
 
   const [selectedPlan, setSelectedPlan] = useState('premium');
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [loading, setLoading] = useState(false);
-  const [showComparison, setShowComparison] = useState(false);
 
   const handleSubscribe = useCallback(async () => {
     if (!isAuthenticated) {
@@ -55,161 +46,167 @@ export default function SubscribePage() {
     }
   }, [isAuthenticated, selectedPlan, navigate]);
 
-  const handleViewToggle = useCallback((view: 'cards' | 'comparison') => {
-    setShowComparison(view === 'comparison');
-  }, []);
-
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {/* Decorative blur circles */}
-      <View style={styles.blurCircleTop} />
-      <View style={styles.blurCircleBottom} />
-
-      {/* Header */}
-      <PlanHeader />
-
-      {/* View Toggle */}
-      <View style={styles.viewToggleContainer}>
-        <GlassView style={styles.viewToggle}>
-          <Pressable
-            onPress={() => handleViewToggle('cards')}
-            style={[styles.viewOption, !showComparison && styles.viewOptionSelected]}
-          >
-            <Grid size={16} color={!showComparison ? colors.text : colors.textMuted} />
-            <Text style={[styles.viewOptionText, !showComparison && styles.viewOptionTextSelected]}>
-              {sanitizeI18n(t('subscribe.viewCards'))}
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => handleViewToggle('comparison')}
-            style={[styles.viewOption, showComparison && styles.viewOptionSelected]}
-          >
-            <List size={16} color={showComparison ? colors.text : colors.textMuted} />
-            <Text style={[styles.viewOptionText, showComparison && styles.viewOptionTextSelected]}>
-              {sanitizeI18n(t('subscribe.viewComparison'))}
-            </Text>
-          </Pressable>
-        </GlassView>
+    <View style={styles.container}>
+      {/* Background Gradient */}
+      <View style={styles.backgroundGradient}>
+        <LinearGradient
+          colors={[
+            'rgba(168, 85, 247, 0.15)',
+            'rgba(139, 92, 246, 0.1)',
+            'rgba(0, 0, 0, 0)',
+          ]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFillObject}
+        />
       </View>
 
-      {/* Billing Toggle */}
-      {!showComparison && <BillingToggle billingPeriod={billingPeriod} onToggle={setBillingPeriod} />}
+      {/* Content Container */}
+      <View style={styles.content}>
+        {/* Hero Section */}
+        <View style={styles.heroSection}>
+          <Text style={styles.heroTitle}>
+            {sanitizeI18n(t('subscribe.title'))}
+          </Text>
+          <Text style={styles.heroSubtitle}>
+            {sanitizeI18n(t('subscribe.subtitle'))}
+          </Text>
+        </View>
 
-      {/* Content: Cards or Comparison */}
-      {showComparison ? (
-        <Suspense fallback={<ActivityIndicator size="large" color={colors.primary.DEFAULT} />}>
-          <PlanComparisonTable />
-        </Suspense>
-      ) : (
-        <View style={styles.plansGrid}>
+        {/* Billing Toggle */}
+        <View style={styles.billingSection}>
+          <BillingToggle billingPeriod={billingPeriod} onToggle={setBillingPeriod} />
+        </View>
+
+        {/* Plan Cards Grid */}
+        <View style={styles.planCardsGrid}>
           {plansConfig.map((plan) => (
-            <PlanCard
+            <EnhancedPlanCard
               key={plan.id}
               planId={plan.id}
+              price={plan.price}
+              isPopular={plan.popular}
               isSelected={selectedPlan === plan.id}
               onSelect={() => setSelectedPlan(plan.id)}
               billingPeriod={billingPeriod}
-              planConfig={plan}
             />
           ))}
         </View>
-      )}
 
-      {/* CTA */}
-      {!showComparison && (
-        <View style={styles.ctaContainer}>
+        {/* Premium Features Showcase */}
+        <PremiumFeaturesShowcase />
+
+        {/* Divider */}
+        <View style={styles.divider} />
+
+        {/* Comparison Table */}
+        <View style={styles.comparisonSection}>
+          <EnhancedComparisonTable />
+        </View>
+
+        {/* CTA Section */}
+        <View style={styles.ctaSection}>
           <GlassButton
-            title={loading ? sanitizeI18n(t('subscribe.processing')) : sanitizeI18n(t('subscribe.startTrial'))}
+            title={
+              loading
+                ? sanitizeI18n(t('subscribe.processing'))
+                : sanitizeI18n(t('subscribe.startTrial'))
+            }
             onPress={handleSubscribe}
             disabled={loading}
             variant="primary"
             style={styles.ctaButton}
           />
-          <Text style={styles.ctaSubtext}>{sanitizeI18n(t('subscribe.noCharge'))}</Text>
+          <Text style={styles.ctaDisclaimer}>
+            {sanitizeI18n(t('subscribe.noCharge'))}
+          </Text>
         </View>
-      )}
-    </ScrollView>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  contentContainer: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xl,
-    maxWidth: 1200,
-    marginHorizontal: 'auto',
+  container: {
+    flex: 1,
     width: '100%',
-    position: 'relative',
+    alignItems: 'center',
   },
-  blurCircleTop: {
+  backgroundGradient: {
     position: 'absolute',
-    width: 384,
-    height: 384,
     top: 0,
-    right: 0,
-    borderRadius: 9999,
-    backgroundColor: colors.primary.DEFAULT,
-    opacity: 0.3,
-  },
-  blurCircleBottom: {
-    position: 'absolute',
-    width: 288,
-    height: 288,
-    bottom: 0,
     left: 0,
-    borderRadius: 9999,
-    backgroundColor: colors.secondary.DEFAULT,
-    opacity: 0.3,
+    right: 0,
+    height: 600,
+    pointerEvents: 'none',
+    zIndex: 0,
   },
-  viewToggleContainer: {
+  content: {
+    width: '100%',
+    maxWidth: 1280,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xl * 2,
     alignItems: 'center',
-    marginBottom: spacing.lg,
-    zIndex: 10,
   },
-  viewToggle: {
-    flexDirection: 'row',
-    padding: spacing.xs,
-    borderRadius: borderRadius.full,
-  },
-  viewOption: {
-    flexDirection: 'row',
+  heroSection: {
     alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
+    width: '100%',
+    marginBottom: spacing.xl * 2,
   },
-  viewOptionSelected: {
-    backgroundColor: colors.primary.DEFAULT,
+  heroTitle: {
+    fontSize: 48,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    marginBottom: spacing.md,
+    textAlign: 'center',
+    letterSpacing: -0.5,
   },
-  viewOptionText: {
-    fontSize: 14,
-    color: colors.textMuted,
+  heroSubtitle: {
+    fontSize: 18,
+    color: 'rgba(255, 255, 255, 0.7)',
+    maxWidth: 600,
+    textAlign: 'center',
+    lineHeight: 28,
   },
-  viewOptionTextSelected: {
-    color: colors.text,
-    fontWeight: '600',
+  billingSection: {
+    marginBottom: spacing.xl * 2,
+    alignItems: 'center',
+    width: '100%',
   },
-  plansGrid: {
+  planCardsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     gap: spacing.lg,
-    marginBottom: spacing.xl,
-    zIndex: 10,
+    marginBottom: spacing.xl * 3,
+    width: '100%',
   },
-  ctaContainer: {
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    maxWidth: 800,
+    marginBottom: spacing.xl * 3,
+    width: '100%',
+  },
+  comparisonSection: {
+    marginBottom: spacing.xl * 3,
+    width: '100%',
+  },
+  ctaSection: {
     alignItems: 'center',
-    zIndex: 10,
+    marginBottom: spacing.xl * 2,
+    width: '100%',
   },
   ctaButton: {
-    paddingHorizontal: spacing.xl * 1.5,
-    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl * 2,
+    paddingVertical: spacing.lg,
+    minWidth: 280,
   },
-  ctaSubtext: {
+  ctaDisclaimer: {
     fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
     marginTop: spacing.md,
-    color: colors.textMuted,
+    textAlign: 'center',
   },
 });

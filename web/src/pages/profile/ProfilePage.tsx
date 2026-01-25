@@ -12,6 +12,7 @@ import { QuickActions } from './components/QuickActions';
 import { OverviewTab } from './tabs/OverviewTab';
 import { AIVoiceTab } from './tabs/AIVoiceTab';
 import { SecurityTab } from './tabs/SecurityTab';
+import { DevicesTab } from './tabs/DevicesTab';
 import { useProfileData } from './hooks/useProfileData';
 import type { TabId } from './types';
 
@@ -53,6 +54,7 @@ export default function ProfilePage() {
     { id: 'overview' as TabId, label: t('profile.tabs.overview', 'Overview') },
     { id: 'ai' as TabId, label: t('profile.tabs.ai', 'AI & Voice') },
     { id: 'security' as TabId, label: t('profile.tabs.security', 'Security') },
+    { id: 'devices' as TabId, label: t('profile.tabs.devices', 'Devices') },
   ];
 
   return (
@@ -78,6 +80,7 @@ export default function ProfilePage() {
         {activeTab === 'overview' && <OverviewTab isRTL={isRTL} recentActivity={recentActivity} />}
         {activeTab === 'ai' && <AIVoiceTab isRTL={isRTL} />}
         {activeTab === 'security' && <SecurityTab isRTL={isRTL} />}
+        {activeTab === 'devices' && <DevicesTab isRTL={isRTL} />}
       </View>
 
       <GlassModal

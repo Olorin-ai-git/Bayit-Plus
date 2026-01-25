@@ -32,6 +32,7 @@ interface VideoPlayerControlsOverlayProps {
   renderLiveSubtitleControls: () => React.ReactNode
   renderDubbingControls: () => React.ReactNode
   renderRecordButton: () => React.ReactNode
+  renderCastButton?: () => React.ReactNode
   contentId?: string
 }
 
@@ -57,6 +58,7 @@ export default function VideoPlayerControlsOverlay({
   renderLiveSubtitleControls,
   renderDubbingControls,
   renderRecordButton,
+  renderCastButton,
   contentId,
 }: VideoPlayerControlsOverlayProps) {
   const { t } = useTranslation()
@@ -135,6 +137,7 @@ export default function VideoPlayerControlsOverlay({
           renderLiveSubtitleControls={renderLiveSubtitleControls}
           renderDubbingControls={renderDubbingControls}
           renderRecordButton={renderRecordButton}
+          renderCastButton={renderCastButton}
         />
       </GlassView>
     </View>

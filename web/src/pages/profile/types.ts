@@ -1,4 +1,4 @@
-export type TabId = 'overview' | 'ai' | 'security';
+export type TabId = 'overview' | 'ai' | 'security' | 'devices';
 
 export interface UserStats {
   favorites: number;
