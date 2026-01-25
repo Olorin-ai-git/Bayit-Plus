@@ -1,13 +1,13 @@
 /**
  * GlassLiveControlsPanel Component
  * Horizontal expandable glassmorphic panel for live channel controls
- * Contains Language Settings, Live Translate, and Live Dubbing buttons
+ * Contains Live Language Magic (premium), Live Translate, and Live Dubbing buttons
  */
 
 import { useRef, useEffect, useState } from 'react'
 import { View, Text, Pressable, Animated, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Languages, Maximize, Minimize } from 'lucide-react'
+import { Languages, Maximize, Minimize, Sparkles } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
@@ -60,7 +60,7 @@ export function GlassLiveControlsPanel({
 
   const panelWidth = expandAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [200, 580],
+    outputRange: [260, 580],
   })
 
   const contentOpacity = expandAnim.interpolate({
@@ -76,14 +76,14 @@ export function GlassLiveControlsPanel({
         {/* Glass background with single clean border */}
         <View style={styles.glassBackground}>
           <View style={styles.contentRow}>
-            {/* Language Settings Toggle Button */}
+            {/* Live Language Magic Toggle Button */}
             <Pressable
               onPress={onToggleExpand}
               onHoverIn={() => setIsHovered(true)}
               onHoverOut={() => setIsHovered(false)}
               style={[styles.languageSettingsButton, isHovered && styles.buttonHovered]}
               accessibilityRole="button"
-              accessibilityLabel={t('player.languageSettings', 'Language Settings')}
+              accessibilityLabel={t('player.liveLanguageMagic', 'Live Language Magic')}
               accessibilityState={{ expanded: isExpanded }}
             >
               <View style={styles.flagBadge}>
@@ -99,8 +99,13 @@ export function GlassLiveControlsPanel({
                   isExpanded && styles.textActive,
                 ]}
               >
-                {t('player.languageSettings', 'Language Settings')}
+                {t('player.liveLanguageMagic', 'Live Language Magic')}
               </Text>
+              <Sparkles
+                size={isTV ? 18 : 16}
+                color={colors.primary.DEFAULT}
+                style={styles.premiumIcon}
+              />
             </Pressable>
 
             {/* Expanded Controls */}
@@ -202,6 +207,9 @@ const styles = StyleSheet.create({
   },
   textActive: {
     color: colors.primary.DEFAULT,
+  },
+  premiumIcon: {
+    marginLeft: spacing.xs / 2,
   },
   flagBadge: {
     minWidth: 32,
