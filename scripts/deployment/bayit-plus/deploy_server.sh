@@ -5,6 +5,9 @@ set -euo pipefail
 # Deploys FastAPI backend to Google Cloud Run with complete configuration
 # All configuration from environment variables and .env file
 
+# Error trap to show where script failed
+trap 'echo -e "\n\033[0;31m[ERROR]\033[0m Script failed at line $LINENO. Last command: $BASH_COMMAND\033[0m"; exit 1' ERR
+
 # Get repository root and backend path
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -285,6 +288,7 @@ EOF
         local secret_name=$1
         local env_key=$2
         local value=""
+        local error_output=""
 
         # Try to read from backend/.env
         if [[ -f "$ENV_FILE" ]]; then
@@ -298,15 +302,32 @@ EOF
 
         if [[ -n "$value" ]]; then
             if gcloud secrets describe "$secret_name" >/dev/null 2>&1; then
-                echo -n "$value" | gcloud secrets versions add "$secret_name" --data-file=- 2>/dev/null
-                print_success "Updated: $secret_name"
+                # Update existing secret - capture error output
+                error_output=$(echo -n "$value" | gcloud secrets versions add "$secret_name" --data-file=- 2>&1)
+                if [[ $? -eq 0 ]]; then
+                    print_success "Updated: $secret_name"
+                else
+                    print_error "Failed to update secret: $secret_name"
+                    echo "  Error: $error_output"
+                    echo "  Env Key: $env_key"
+                    return 1
+                fi
             else
-                echo -n "$value" | gcloud secrets create "$secret_name" --data-file=- 2>/dev/null
-                print_success "Created: $secret_name"
+                # Create new secret - capture error output
+                error_output=$(echo -n "$value" | gcloud secrets create "$secret_name" --data-file=- 2>&1)
+                if [[ $? -eq 0 ]]; then
+                    print_success "Created: $secret_name"
+                else
+                    print_error "Failed to create secret: $secret_name"
+                    echo "  Error: $error_output"
+                    echo "  Env Key: $env_key"
+                    return 1
+                fi
             fi
         else
             log_warning "Skipped: $secret_name (not found in .env or environment)"
         fi
+        return 0
     }
 
     # SECURITY FIX: MongoDB credentials must come from environment/.env ONLY
@@ -326,8 +347,14 @@ EOF
         exit 1
     fi
 
-    echo -n "$MONGODB_URI" | gcloud secrets create bayit-mongodb-url --data-file=- 2>/dev/null || \
-        echo -n "$MONGODB_URI" | gcloud secrets versions add bayit-mongodb-url --data-file=-
+    log_substep "Creating MongoDB URL secret..."
+    ERROR_OUT=$(echo -n "$MONGODB_URI" | gcloud secrets create bayit-mongodb-url --data-file=- 2>&1) || \
+        ERROR_OUT=$(echo -n "$MONGODB_URI" | gcloud secrets versions add bayit-mongodb-url --data-file=- 2>&1)
+    if [[ $? -ne 0 ]]; then
+        print_error "Failed to create/update bayit-mongodb-url secret"
+        echo "  Error: $ERROR_OUT"
+        exit 1
+    fi
     print_success "Created: bayit-mongodb-url"
 
     # Read MONGODB_DB_NAME from .env file or environment
@@ -439,7 +466,11 @@ EOF
     create_or_update_secret "bayit-librarian-modal-max-height" "LIBRARIAN_MODAL_MAX_HEIGHT"
 
     # Series Linker Configuration
-    create_or_update_secret "bayit-series-linker-title-similarity" "SERIES_LINKER_TITLE_SIMILARITY_THRESHOLD"
+    log_substep "Creating Series Linker configuration secrets..."
+    create_or_update_secret "bayit-series-linker-title-similarity" "SERIES_LINKER_TITLE_SIMILARITY_THRESHOLD" || {
+        print_error "Failed at Series Linker title similarity secret"
+        exit 1
+    }
     create_or_update_secret "bayit-series-linker-auto-link-confidence" "SERIES_LINKER_AUTO_LINK_CONFIDENCE_THRESHOLD"
     create_or_update_secret "bayit-series-linker-batch-size" "SERIES_LINKER_AUTO_LINK_BATCH_SIZE"
     create_or_update_secret "bayit-series-linker-duplicate-strategy" "SERIES_LINKER_DUPLICATE_RESOLUTION_STRATEGY"

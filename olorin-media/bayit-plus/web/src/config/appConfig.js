@@ -12,9 +12,23 @@ import logger from '@/utils/logger';
 // eslint-disable-next-line no-undef
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
-// Single source of truth: .env file (VITE_APP_MODE)
+// Single source of truth: .env file (VITE_APP_MODE, REACT_APP_MODE, or NODE_ENV)
 // TV builds use demo mode
-export const APP_MODE = IS_TV_BUILD ? 'demo' : import.meta.env.VITE_APP_MODE;
+// Support both Vite (VITE_*) and Webpack (REACT_APP_*) environment variables
+const getEnvMode = () => {
+  if (typeof process !== 'undefined' && process.env) {
+    // Try VITE_APP_MODE first (for Vite builds)
+    if (process.env.VITE_APP_MODE) return process.env.VITE_APP_MODE;
+    // Try REACT_APP_MODE (for Webpack builds)
+    if (process.env.REACT_APP_MODE) return process.env.REACT_APP_MODE;
+    // Fall back to NODE_ENV
+    if (process.env.NODE_ENV) return process.env.NODE_ENV;
+  }
+  // Default fallback
+  return 'development';
+};
+
+export const APP_MODE = IS_TV_BUILD ? 'demo' : getEnvMode();
 
 export const isDemo = APP_MODE === 'demo' || IS_TV_BUILD;
 export const isProduction = APP_MODE === 'production' && !IS_TV_BUILD;
@@ -56,6 +70,10 @@ export const config = {
 };
 
 // Log mode on startup
-logger.info(`Bayit+ running in ${APP_MODE.toUpperCase()} mode`, 'appConfig');
+if (APP_MODE && typeof APP_MODE === 'string') {
+  logger.info(`Bayit+ running in ${APP_MODE.toUpperCase()} mode`, 'appConfig');
+} else {
+  logger.warn('APP_MODE is not set, defaulting to development mode', 'appConfig');
+}
 
 export default config;

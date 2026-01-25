@@ -247,6 +247,90 @@ class BrowserUploadSession(Document):
         ]
 
 
+class DryRunReason(str, Enum):
+    """Reason why a file would or wouldn't be uploaded in dry run"""
+
+    NEW_FILE = "new_file"
+    DUPLICATE_HASH = "duplicate_hash"
+    DUPLICATE_FILENAME = "duplicate_filename"
+    DUPLICATE_IN_QUEUE = "duplicate_in_queue"
+    VALIDATION_FAILED = "validation_failed"
+
+
+class DryRunDuplicateInfo(BaseModel):
+    """Information about existing duplicate content"""
+
+    content_id: str
+    title: str
+    stream_url: str
+    created_at: datetime
+
+
+class DryRunFileInfo(BaseModel):
+    """File information from dry run"""
+
+    hash: Optional[str] = None
+    size: int
+    filename: str
+
+
+class DryRunResult(BaseModel):
+    """Result of dry run for a single file"""
+
+    would_upload: bool
+    reason: DryRunReason
+    file_info: DryRunFileInfo
+    duplicate_info: Optional[DryRunDuplicateInfo] = None
+    validation_errors: List[str] = Field(default_factory=list)
+    estimated_stages: List[str] = Field(default_factory=list)
+
+
+class DryRunResponse(BaseModel):
+    """Response for dry run operation"""
+
+    results: List[DryRunResult]
+    summary: Dict[str, int]
+
+
+class UrlValidationResponse(BaseModel):
+    """Response for URL validation"""
+
+    valid: bool
+    accessible: bool
+    file_size: Optional[int] = None
+    content_type: Optional[str] = None
+    filename: Optional[str] = None
+    error: Optional[str] = None
+
+
+class UrlUploadRequest(BaseModel):
+    """Request to upload from URL"""
+
+    url: List[str] = Field(..., description="URLs to download and upload")
+    content_type: ContentType
+    headers: Dict[str, str] = Field(default_factory=dict)
+    timeout: int = Field(default=300, description="Download timeout in seconds")
+
+
+class UrlUploadJob(BaseModel):
+    """Status of URL upload job"""
+
+    job_id: str
+    url: str
+    status: str  # downloading, downloaded, queued, processing, completed, failed
+    download_progress: float = 0.0
+    error: Optional[str] = None
+
+
+class UrlUploadResponse(BaseModel):
+    """Response for URL upload request"""
+
+    success: bool
+    count: int
+    jobs: List[UrlUploadJob]
+    error: Optional[str] = None
+
+
 class UploadHashLock(Document):
     """
     Distributed lock for preventing duplicate uploads during processing.

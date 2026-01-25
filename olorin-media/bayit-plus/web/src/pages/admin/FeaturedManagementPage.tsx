@@ -1,239 +1,66 @@
-import { useState, useEffect, useCallback } from 'react'
-import { View, Text, Pressable, ScrollView, Image, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Star, X, AlertCircle, RefreshCw, GripVertical, Film, Tv, Save } from 'lucide-react'
-import { adminContentService, Content } from '@/services/adminApi'
-import { GlassReorderableList } from '@bayit/shared/ui'
-import { GlassCard, GlassButton, GlassSelect, GlassPageHeader } from '@bayit/shared/ui'
-import { useDirection } from '@/hooks/useDirection'
-import { useNotifications } from '@olorin/glass-ui/hooks'
+import { Star, AlertCircle, RefreshCw, Save } from 'lucide-react'
+import { GlassReorderableList, GlassButton, GlassPageHeader } from '@bayit/shared/ui'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
-import logger from '@/utils/logger'
-import { spacing, colors, borderRadius } from '@olorin/design-tokens'
-
-type ContentType = 'all' | 'movie' | 'series'
+import { useDirection } from '@/hooks/useDirection'
+import { useFeaturedData } from '@/hooks/admin/useFeaturedData'
+import FeaturedItemCard from '@/components/admin/featured/FeaturedItemCard'
+import FeaturedFilters from '@/components/admin/featured/FeaturedFilters'
+import AdminLoadingState from '@/components/admin/shared/AdminLoadingState'
+import AdminEmptyState from '@/components/admin/shared/AdminEmptyState'
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
 
 export default function FeaturedManagementPage() {
   const { t } = useTranslation()
   const { isRTL } = useDirection()
-  const notifications = useNotifications()
-  const [items, setItems] = useState<Content[]>([])
-  const [originalItems, setOriginalItems] = useState<Content[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [filterType, setFilterType] = useState<ContentType>('all')
-  const [hasChanges, setHasChanges] = useState(false)
 
-  const loadFeaturedContent = useCallback(async () => {
-    setIsLoading(true)
-    setError(null)
-    try {
-      const response = await adminContentService.getContent({
-        is_featured: true,
-        page_size: 100,
-      })
-      const sortedItems = (response.items || []).sort((a, b) =>
-        (a.featured_order ?? 999) - (b.featured_order ?? 999)
-      )
-      setItems(sortedItems)
-      setOriginalItems(sortedItems)
-      setHasChanges(false)
-    } catch (err: unknown) {
-      const errorObj = err as { detail?: string; message?: string }
-      let msg = 'Failed to load featured content'
-      if (errorObj?.detail) {
-        msg = errorObj.detail
-      } else if (errorObj?.message) {
-        msg = errorObj.message
-      }
-      logger.error(msg, 'FeaturedManagementPage', err)
-      setError(msg)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
+  const {
+    filteredItems,
+    isLoading,
+    isSaving,
+    error,
+    filterType,
+    hasChanges,
+    setFilterType,
+    setError,
+    handleReorder,
+    handleSaveOrder,
+    handleRemoveFromFeatured,
+    refresh,
+  } = useFeaturedData()
 
-  useEffect(() => {
-    loadFeaturedContent()
-  }, [loadFeaturedContent])
-
-  const handleReorder = useCallback((fromIndex: number, toIndex: number) => {
-    setItems(prevItems => {
-      const newItems = [...prevItems]
-      const [removed] = newItems.splice(fromIndex, 1)
-      newItems.splice(toIndex, 0, removed)
-      return newItems
-    })
-    setHasChanges(true)
-  }, [])
-
-  const handleSaveOrder = async () => {
-    setIsSaving(true)
-    setError(null)
-    try {
-      // Update each item with its new order
-      const updatePromises = items.map((item, index) =>
-        adminContentService.updateContent(item.id, { featured_order: index })
-      )
-      await Promise.all(updatePromises)
-      setOriginalItems(items)
-      setHasChanges(false)
-    } catch (err: unknown) {
-      const errorObj = err as { detail?: string; message?: string }
-      let msg = 'Failed to save order'
-      if (errorObj?.detail) {
-        msg = errorObj.detail
-      } else if (errorObj?.message) {
-        msg = errorObj.message
-      }
-      logger.error(msg, 'FeaturedManagementPage', err)
-      setError(msg)
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
-  const handleRemoveFromFeatured = (item: Content) => {
-    notifications.show({
-      level: 'warning',
-      message: t('admin.featured.confirmUnfeature', 'Remove from featured?'),
-      dismissable: true,
-      action: {
-        label: t('admin.featured.remove', 'Remove'),
-        type: 'action',
-        onPress: async () => {
-          try {
-            await adminContentService.featureContent(item.id)
-            await loadFeaturedContent()
-          } catch (err: unknown) {
-            const errorObj = err as { detail?: string; message?: string }
-            const msg = errorObj?.message || 'Failed to remove from featured'
-            logger.error(msg, 'FeaturedManagementPage', err)
-            setError(msg)
-          }
-        },
-      },
-    })
-  }
-
-  const filteredItems = items.filter(item => {
-    if (filterType === 'all') return true
-    // Determine if item is a series or movie based on stream_type or other indicators
-    const isSeries = item.stream_type === 'series' || Boolean(item.genre?.includes('Series'))
-    if (filterType === 'series') return isSeries
-    if (filterType === 'movie') return !isSeries
-    return true
-  })
-
-  const pageConfig = ADMIN_PAGE_CONFIG.featured;
-  const IconComponent = pageConfig.icon;
-
-  const renderItem = (item: Content, index: number, isDragging: boolean) => (
-    <GlassCard
-      style={[
-        styles.itemCard,
-        isDragging && styles.itemCardDragging,
-      ]}
-    >
-      <View style={[styles.itemContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        {/* Drag Handle */}
-        <View style={styles.dragHandle} data-drag-handle="true">
-          <GripVertical size={20} color={colors.textMuted} />
-        </View>
-
-        {/* Order Badge */}
-        <View style={styles.orderBadge}>
-          <Text style={styles.orderText}>{index + 1}</Text>
-        </View>
-
-        {/* Thumbnail */}
-        <View style={styles.thumbnailContainer}>
-          {item.thumbnail ? (
-            <Image
-              source={{ uri: item.thumbnail }}
-              style={styles.thumbnail}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={styles.thumbnailPlaceholder}>
-              <Film size={24} color={colors.textMuted} />
-            </View>
-          )}
-        </View>
-
-        {/* Content Info */}
-        <View style={[styles.itemInfo, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
-          <Text style={[styles.itemTitle, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
-            {item.title}
-          </Text>
-          <View style={[styles.metaRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            {/* Type Badge */}
-            <View style={[
-              styles.typeBadge,
-              item.stream_type === 'series' ? styles.seriesBadge : styles.movieBadge
-            ]}>
-              {item.stream_type === 'series' ? (
-                <Tv size={12} color={colors.text} />
-              ) : (
-                <Film size={12} color={colors.text} />
-              )}
-              <Text style={styles.typeText}>
-                {item.stream_type === 'series' ? t('common.series', 'Series') : t('common.movie', 'Movie')}
-              </Text>
-            </View>
-            {item.category_name && (
-              <Text style={styles.categoryText}>{item.category_name}</Text>
-            )}
-            {item.year && (
-              <Text style={styles.yearText}>{item.year}</Text>
-            )}
-          </View>
-        </View>
-
-        {/* Remove Button */}
-        <Pressable
-          onPress={() => handleRemoveFromFeatured(item)}
-          style={({ hovered }: { hovered?: boolean }) => [
-            styles.removeButton,
-            hovered && styles.removeButtonHovered,
-          ]}
-        >
-          <X size={18} color={colors.error} />
-        </Pressable>
-      </View>
-    </GlassCard>
-  )
+  const pageConfig = ADMIN_PAGE_CONFIG.featured
+  const IconComponent = pageConfig.icon
 
   return (
-    <ScrollView className="flex-1">
+    <ScrollView style={styles.container}>
       <View style={styles.content}>
         {/* Page Header */}
         <GlassPageHeader
-          title={t('admin.featured.title', 'Featured Content')}
-          subtitle={t('admin.featured.subtitle', 'Manage carousel order by dragging items')}
+          title={t('admin.featured.title')}
+          subtitle={t('admin.featured.subtitle')}
           icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
           iconColor={pageConfig.iconColor}
           iconBackgroundColor={pageConfig.iconBackgroundColor}
-          badge={items.length}
+          badge={filteredItems.length}
           isRTL={isRTL}
           action={
             <View style={[styles.headerActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <GlassButton
                 title=""
-                onPress={loadFeaturedContent}
+                onPress={refresh}
                 variant="ghost"
-                icon={<RefreshCw size={20} color="white" />}
+                icon={<RefreshCw size={20} />}
                 disabled={isLoading}
               />
               {hasChanges && (
                 <GlassButton
-                  title={t('common.save', 'Save')}
+                  title={t('common.save')}
                   onPress={handleSaveOrder}
                   variant="primary"
-                  icon={<Save size={18} color="white" />}
+                  icon={<Save size={18} />}
                   loading={isSaving}
-                  style={styles.saveButton}
                 />
               )}
             </View>
@@ -243,65 +70,56 @@ export default function FeaturedManagementPage() {
         {/* Unsaved Changes Warning */}
         {hasChanges && (
           <View style={styles.warningBanner}>
-            <AlertCircle size={18} color={colors.warning} />
-            <Text style={styles.warningText}>
-              {t('admin.featured.unsavedChanges', 'You have unsaved changes')}
-            </Text>
+            <AlertCircle size={18} color={colors.warning.DEFAULT} />
+            <Text style={styles.warningText}>{t('admin.featured.unsavedChanges')}</Text>
           </View>
         )}
 
         {/* Filters */}
-        <View style={[styles.filtersContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <View style={styles.filterWrapper}>
-            <GlassSelect
-              placeholder={t('common.all', 'All')}
-              value={filterType}
-              onChange={(value) => setFilterType(value as ContentType)}
-              options={[
-                { value: 'all', label: t('common.all', 'All') },
-                { value: 'movie', label: t('common.movies', 'Movies') },
-                { value: 'series', label: t('common.series', 'Series') },
-              ]}
-            />
-          </View>
-          <View style={styles.countBadge}>
-            <Text style={styles.countText}>
-              {t('admin.featured.count', { count: filteredItems.length, defaultValue: '{{count}} items' })}
-            </Text>
-          </View>
-        </View>
+        <FeaturedFilters
+          filterType={filterType}
+          itemCount={filteredItems.length}
+          onFilterChange={setFilterType}
+          isRTL={isRTL}
+        />
 
         {/* Error Message */}
         {error && (
           <View style={styles.errorContainer}>
-            <AlertCircle size={18} color="#ef4444" />
-            <Text className="flex-1 text-red-500 text-sm">{error}</Text>
-            <Pressable onPress={() => setError(null)}>
-              <X size={18} color="#ef4444" />
-            </Pressable>
+            <AlertCircle size={18} color={colors.error.DEFAULT} />
+            <Text style={[styles.errorText, { flex: 1 }]}>{error}</Text>
+            <GlassButton
+              title=""
+              onPress={() => setError(null)}
+              variant="ghost"
+              icon={<AlertCircle size={18} />}
+            />
           </View>
         )}
 
         {/* Content List */}
         {isLoading ? (
-          <View className="flex-1 justify-center items-center gap-2">
-            <Text className="text-sm text-gray-400">{t('common.loading', 'Loading...')}</Text>
-          </View>
+          <AdminLoadingState message={t('common.loading')} isRTL={isRTL} />
         ) : filteredItems.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Star size={48} color={colors.textMuted} />
-            <Text style={styles.emptyTitle}>
-              {t('admin.featured.empty', 'No featured content')}
-            </Text>
-            <Text style={styles.emptyHint}>
-              {t('admin.featured.emptyHint', 'Add content to featured from the Content Library')}
-            </Text>
-          </View>
+          <AdminEmptyState
+            icon={<Star size={48} color={colors.textSecondary} />}
+            title={t('admin.featured.empty')}
+            message={t('admin.featured.emptyHint')}
+            isRTL={isRTL}
+          />
         ) : (
           <GlassReorderableList
             items={filteredItems}
             onReorder={handleReorder}
-            renderItem={renderItem}
+            renderItem={(item, index, isDragging) => (
+              <FeaturedItemCard
+                item={item}
+                index={index}
+                isDragging={isDragging}
+                onRemove={handleRemoveFromFeatured}
+                isRTL={isRTL}
+              />
+            )}
             keyExtractor={(item) => item.id}
             style={styles.list}
           />
@@ -312,185 +130,48 @@ export default function FeaturedManagementPage() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   content: {
     padding: spacing.lg,
   },
   headerActions: {
+    flexDirection: 'row',
     gap: spacing.sm,
     alignItems: 'center',
-  },
-  saveButton: {
-    minWidth: 100,
   },
   warningBanner: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
     padding: spacing.md,
-    backgroundColor: colors.warning + '20',
+    backgroundColor: colors.warning.DEFAULT + '20',
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: colors.warning + '40',
+    borderColor: colors.warning.DEFAULT + '40',
     marginBottom: spacing.md,
   },
   warningText: {
     flex: 1,
-    fontSize: 14,
-    color: colors.warning,
+    fontSize: fontSize.sm,
+    color: colors.warning.DEFAULT,
     fontWeight: '500',
-  },
-  filtersContainer: {
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-    alignItems: 'center',
-  },
-  filterWrapper: {
-    flex: 1,
-  },
-  countBadge: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.primary + '20',
-    borderRadius: borderRadius.full,
-  },
-  countText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.primary,
   },
   errorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
     padding: spacing.md,
-    backgroundColor: '#ef444420',
+    backgroundColor: colors.error.DEFAULT + '20',
     borderRadius: borderRadius.md,
     marginBottom: spacing.md,
   },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-    gap: spacing.md,
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  emptyHint: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    textAlign: 'center',
+  errorText: {
+    fontSize: fontSize.sm,
+    color: colors.error.DEFAULT,
   },
   list: {
     gap: spacing.md,
   },
-  itemCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.md,
-    backgroundColor: colors.backgroundLighter,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  itemCardDragging: {
-    opacity: 0.7,
-    transform: [{ scale: 1.02 }],
-  },
-  dragHandle: {
-    padding: spacing.sm,
-  },
-  orderBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.primary + '20',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  orderText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: colors.primary,
-  },
-  thumbnailContainer: {
-    position: 'relative',
-  },
-  thumbnail: {
-    width: 80,
-    height: 120,
-    borderRadius: borderRadius.md,
-  },
-  thumbnailPlaceholder: {
-    width: 80,
-    height: 120,
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.backgroundLighter,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  typeBadge: {
-    position: 'absolute',
-    top: spacing.xs,
-    left: spacing.xs,
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  movieBadge: {
-    backgroundColor: colors.primary + 'CC',
-  },
-  seriesBadge: {
-    backgroundColor: colors.secondary + 'CC',
-  },
-  typeText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#ffffff',
-    textTransform: 'uppercase',
-  },
-  itemContent: {
-    flex: 1,
-  },
-  itemInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginBottom: spacing.xs,
-  },
-  itemTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    flex: 1,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  yearText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  categoryText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  removeButton: {
-    width: 36,
-    height: 36,
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.error + '20',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  removeButtonHovered: {
-    backgroundColor: colors.error + '30',
-  },
-});
-
+})
