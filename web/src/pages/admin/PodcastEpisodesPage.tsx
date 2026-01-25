@@ -8,7 +8,7 @@ import { GlassTable } from '@bayit/shared/ui/web'
 import { adminPodcastsService, adminPodcastEpisodesService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
-import { useModal } from '@/contexts/ModalContext'
+import { useNotifications } from '@olorin/glass-ui/hooks'
 import logger from '@/utils/logger'
 import type { PodcastEpisode, PaginatedResponse, TranslationStatus } from '@/types/content'
 
@@ -50,7 +50,7 @@ export default function PodcastEpisodesPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { isRTL, textAlign, flexDirection } = useDirection()
-  const { showConfirm } = useModal()
+  const notifications = useNotifications()
   const [podcastTitle, setPodcastTitle] = useState('')
   const [items, setItems] = useState<PodcastEpisode[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -138,23 +138,28 @@ export default function PodcastEpisodesPage() {
   }
 
   const handleDelete = (id: string) => {
-    showConfirm(
-      t('admin.content.confirmDelete'),
-      async () => {
-        try {
-          setDeleting(id)
-          await adminPodcastEpisodesService.deleteEpisode(podcastId!, id)
-          setItems(items.filter((item) => item.id !== id))
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : 'Failed to delete episode'
-          logger.error(msg, 'PodcastEpisodesPage', err)
-          setError(msg)
-        } finally {
-          setDeleting(null)
-        }
+    notifications.show({
+      level: 'warning',
+      message: t('admin.content.confirmDelete'),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            setDeleting(id)
+            await adminPodcastEpisodesService.deleteEpisode(podcastId!, id)
+            setItems(items.filter((item) => item.id !== id))
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : 'Failed to delete episode'
+            logger.error(msg, 'PodcastEpisodesPage', err)
+            setError(msg)
+          } finally {
+            setDeleting(null)
+          }
+        },
       },
-      { destructive: true, confirmText: t('common.delete', 'Delete') }
-    )
+    })
   }
 
   const handleTranslate = async (episodeId: string) => {

@@ -9,7 +9,7 @@ import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags'
 import { adminContentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
-import { useModal } from '@/contexts/ModalContext'
+import { useNotifications } from '@olorin/glass-ui/hooks'
 import logger from '@/utils/logger'
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization'
 import type { Podcast, PaginatedResponse } from '@/types/content'
@@ -27,7 +27,7 @@ interface EditingPodcast extends Partial<Podcast> {
 export default function PodcastsPage() {
   const { t, i18n } = useTranslation()
   const { isRTL, textAlign, flexDirection } = useDirection()
-  const { showConfirm } = useModal()
+  const notifications = useNotifications()
   const [items, setItems] = useState<Podcast[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -82,23 +82,28 @@ export default function PodcastsPage() {
   }
 
   const handleDelete = (id: string) => {
-    showConfirm(
-      t('admin.content.confirmDelete'),
-      async () => {
-        try {
-          setDeleting(id)
-          await adminContentService.deletePodcast(id)
-          setItems(items.filter((item) => item.id !== id))
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : 'Failed to delete podcast'
-          logger.error(msg, 'PodcastsPage', err)
-          setError(msg)
-        } finally {
-          setDeleting(null)
-        }
+    notifications.show({
+      level: 'warning',
+      message: t('admin.content.confirmDelete'),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            setDeleting(id)
+            await adminContentService.deletePodcast(id)
+            setItems(items.filter((item) => item.id !== id))
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : 'Failed to delete podcast'
+            logger.error(msg, 'PodcastsPage', err)
+            setError(msg)
+          } finally {
+            setDeleting(null)
+          }
+        },
       },
-      { destructive: true, confirmText: t('common.delete', 'Delete') }
-    )
+    })
   }
 
   const columns = useMemo(() => [

@@ -7,7 +7,7 @@ import { marketingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassButton, GlassModal, GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
-import { useModal } from '@/contexts/ModalContext';
+import { useNotifications as useNotificationSystem } from '@olorin/glass-ui/hooks';
 import logger from '@/utils/logger';
 
 interface PushNotification {
@@ -42,7 +42,7 @@ const formatDate = (dateStr: string) => {
 export default function PushNotificationsPage() {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
-  const { showConfirm } = useModal();
+  const notificationSystem = useNotificationSystem();
   const [notifications, setNotifications] = useState<PushNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 });
@@ -120,30 +120,41 @@ export default function PushNotificationsPage() {
   };
 
   const handleSend = (notification: PushNotification) => {
-    showConfirm(
-      t('admin.pushNotifications.confirmSend', { title: notification.title }),
-      async () => {
-        try {
-          await marketingService.sendPushNotification(notification.id);
-          loadNotifications();
-        } catch (error) {
-          logger.error('Failed to send push notification', 'PushNotificationsPage', error);
-        }
+    notificationSystem.show({
+      level: 'info',
+      message: t('admin.pushNotifications.confirmSend', { title: notification.title }),
+      dismissable: true,
+      action: {
+        label: t('common.send', 'Send'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await marketingService.sendPushNotification(notification.id);
+            loadNotifications();
+          } catch (error) {
+            logger.error('Failed to send push notification', 'PushNotificationsPage', error);
+          }
+        },
       },
-      { confirmText: t('common.send', 'Send') }
-    );
+    });
   };
 
   const handleDelete = (notification: PushNotification) => {
-    showConfirm(
-      t('admin.pushNotifications.confirmDelete', { title: notification.title }),
-      async () => {
-        try {
-          await marketingService.deletePushNotification(notification.id);
-          loadNotifications();
-        } catch (error) {
-          logger.error('Failed to delete push notification', 'PushNotificationsPage', error);
-        }
+    notificationSystem.show({
+      level: 'warning',
+      message: t('admin.pushNotifications.confirmDelete', { title: notification.title }),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await marketingService.deletePushNotification(notification.id);
+            loadNotifications();
+          } catch (error) {
+            logger.error('Failed to delete push notification', 'PushNotificationsPage', error);
+          }
+        },
       },
       { destructive: true, confirmText: t('common.delete', 'Delete') }
     );
