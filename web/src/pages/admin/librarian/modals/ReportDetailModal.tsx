@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { FileText } from 'lucide-react';
+import { FileText, AlertCircle, AlertTriangle, Info, Archive } from 'lucide-react';
 import { GlassModal, GlassButton, GlassCard, GlassBadge } from '@bayit/shared/ui';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { AuditReportDetail, LibrarianConfig } from '@/services/librarianService';
@@ -13,6 +13,49 @@ interface ReportDetailModalProps {
   onClose: () => void;
   onViewLogs: (auditId: string) => void;
 }
+
+// Utility Functions
+type BadgeVariant = 'default' | 'primary' | 'success' | 'danger' | 'warning' | 'purple' | 'info';
+
+const formatExecutionTime = (seconds: number | undefined): string => {
+  if (seconds === undefined || seconds === null) return '—';
+  if (seconds < 1) return `${(seconds * 1000).toFixed(0)}ms`;
+  if (seconds < 60) return `${seconds.toFixed(1)}s`;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}m ${remainingSeconds.toFixed(0)}s`;
+};
+
+const formatDateTime = (dateString: string | undefined): string => {
+  if (!dateString) return '—';
+  try {
+    return new Intl.DateTimeFormat('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'medium',
+    }).format(new Date(dateString));
+  } catch {
+    return dateString;
+  }
+};
+
+const formatNumber = (value: number | undefined | null): string => {
+  if (value === undefined || value === null) return '—';
+  return new Intl.NumberFormat('en-US').format(value);
+};
+
+const getStatusVariant = (status: string): BadgeVariant => {
+  switch (status) {
+    case 'completed': return 'success';
+    case 'failed': return 'danger';
+    case 'in_progress': return 'warning';
+    case 'partial': return 'info';
+    default: return 'default';
+  }
+};
+
+const hasInsights = (insights: string[] | null | undefined): boolean => {
+  return Array.isArray(insights) && insights.length > 0;
+};
 
 export const ReportDetailModal = ({
   visible,
@@ -34,11 +77,12 @@ export const ReportDetailModal = ({
     >
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
           <Text style={styles.loadingText}>{t('admin.librarian.loading')}</Text>
         </View>
       ) : report ? (
         <>
+          {/* Action Bar */}
           <View style={styles.actionBar}>
             <GlassButton
               title={t('admin.librarian.reports.viewLogs')}
@@ -51,92 +95,134 @@ export const ReportDetailModal = ({
               style={styles.actionButton}
             />
           </View>
-          <ScrollView style={{ maxHeight: config?.ui.modal_max_height || 600 }}>
-            <GlassCard style={styles.card}>
-              <Text style={styles.cardTitle}>{t('admin.librarian.reports.detailModal.summary')}</Text>
-              <View style={styles.row}>
-                <View style={styles.rowItem}>
-                  <Text style={styles.label}>{t('admin.librarian.reports.detailModal.status')}</Text>
-                  <GlassBadge
-                    text={t(`admin.librarian.status.${report.status}`, report.status)}
-                    variant={
-                      report.status === 'completed' ? 'success' :
-                      report.status === 'failed' ? 'error' : 'warning'
-                    }
-                  />
-                </View>
-                <View style={styles.rowItem}>
-                  <Text style={styles.label}>{t('admin.librarian.reports.detailModal.executionTime')}</Text>
-                  <Text style={styles.statValue}>{report.execution_time_seconds.toFixed(1)}s</Text>
-                </View>
-              </View>
-              <View style={styles.row}>
-                <View style={styles.rowItem}>
-                  <Text style={styles.label}>{t('admin.librarian.reports.detailModal.totalItems')}</Text>
-                  <Text style={styles.statValue}>{report.summary.total_items ?? 0}</Text>
-                </View>
-                <View style={styles.rowItem}>
-                  <Text style={styles.label}>{t('admin.librarian.reports.detailModal.healthyItems')}</Text>
-                  <Text style={styles.statValue}>{report.summary.healthy_items ?? 0}</Text>
-                </View>
-              </View>
-            </GlassCard>
 
-            <GlassCard style={styles.card}>
-              <Text style={styles.cardTitle}>{t('admin.librarian.reports.detailModal.issuesFound')}</Text>
-              {report.audit_type === 'ai_agent' ? (
-                <View style={styles.centeredBox}>
-                  <Text style={styles.metricLarge}>{report.summary.issues_found ?? 0}</Text>
-                  <Text style={styles.metricLabel}>{t('admin.librarian.reports.detailModal.totalIssues')}</Text>
-                  {report.ai_insights && report.ai_insights.length > 0 && (
-                    <Text style={styles.insightHint}>{t('admin.librarian.reports.detailModal.seeInsightsBelow')}</Text>
-                  )}
-                </View>
-              ) : (
-                <View style={styles.gridContainer}>
-                  <View style={styles.gridItem}>
-                    <Text style={styles.metricLarge}>{report.broken_streams?.length ?? 0}</Text>
-                    <Text style={styles.metricLabel}>{t('admin.librarian.reports.detailModal.brokenStreams')}</Text>
-                  </View>
-                  <View style={styles.gridItem}>
-                    <Text style={styles.metricLarge}>{report.missing_metadata?.length ?? 0}</Text>
-                    <Text style={styles.metricLabel}>{t('admin.librarian.reports.detailModal.missingMetadata')}</Text>
-                  </View>
-                  <View style={styles.gridItem}>
-                    <Text style={styles.metricLarge}>{report.misclassifications?.length ?? 0}</Text>
-                    <Text style={styles.metricLabel}>{t('admin.librarian.reports.detailModal.misclassifications')}</Text>
-                  </View>
-                  <View style={styles.gridItem}>
-                    <Text style={styles.metricLarge}>{report.orphaned_items?.length ?? 0}</Text>
-                    <Text style={styles.metricLabel}>{t('admin.librarian.reports.detailModal.orphanedItems')}</Text>
-                  </View>
-                </View>
+          <ScrollView style={{ maxHeight: config?.ui.modal_max_height || 600 }}>
+            {/* 1. Status Header Card */}
+            <GlassCard style={styles.statusHeaderCard}>
+              <GlassBadge
+                variant={getStatusVariant(report.status)}
+                size="lg"
+                dot
+                style={styles.statusBadge}
+              >
+                {t(`admin.librarian.status.${report.status}`, report.status)}
+              </GlassBadge>
+              <View style={styles.heroMetricContainer}>
+                <Text style={styles.heroMetricValue}>
+                  {formatExecutionTime(report.execution_time_seconds)}
+                </Text>
+                <Text style={styles.heroMetricLabel}>
+                  {t('admin.librarian.reports.detailModal.executionTime')}
+                </Text>
+              </View>
+              {report.completed_at && (
+                <Text style={styles.timestampText}>
+                  {formatDateTime(report.completed_at)}
+                </Text>
               )}
             </GlassCard>
 
+            {/* 2. Metrics Summary Card */}
             <GlassCard style={styles.card}>
-              <Text style={styles.cardTitle}>{t('admin.librarian.reports.detailModal.fixesApplied')}</Text>
-              <View style={styles.centeredBox}>
-                <Text style={styles.fixesValue}>
-                  {report.audit_type === 'ai_agent'
-                    ? (report.summary.issues_fixed ?? 0)
-                    : (report.fixes_applied?.length ?? 0)}
-                </Text>
-                <Text style={styles.fixesLabel}>
-                  {t('admin.librarian.reports.detailModal.totalFixes', {
-                    count: report.audit_type === 'ai_agent'
-                      ? (report.summary.issues_fixed ?? 0)
-                      : (report.fixes_applied?.length ?? 0)
-                  })}
-                </Text>
+              <Text style={styles.cardTitle}>
+                {t('admin.librarian.reports.detailModal.summary')}
+              </Text>
+              <View style={styles.metricsGrid}>
+                <View style={styles.metricBox}>
+                  <Text style={styles.metricValue}>
+                    {formatNumber(report.summary.total_items)}
+                  </Text>
+                  <Text style={styles.metricLabel}>
+                    {t('admin.librarian.reports.detailModal.totalItems')}
+                  </Text>
+                </View>
+                <View style={styles.metricBox}>
+                  <Text style={styles.metricValue}>
+                    {formatNumber(report.summary.healthy_items)}
+                  </Text>
+                  <Text style={styles.metricLabel}>
+                    {t('admin.librarian.reports.detailModal.healthyItems')}
+                  </Text>
+                </View>
+                <View style={[styles.metricBox, styles.metricBoxIssues]}>
+                  <Text style={[styles.metricValue, styles.metricValueIssues]}>
+                    {formatNumber(report.summary.issues_found)}
+                  </Text>
+                  <Text style={styles.metricLabel}>
+                    {t('admin.librarian.reports.detailModal.issuesFound')}
+                  </Text>
+                </View>
+                <View style={[styles.metricBox, styles.metricBoxFixes]}>
+                  <Text style={[styles.metricValue, styles.metricValueFixes]}>
+                    {formatNumber(report.summary.issues_fixed)}
+                  </Text>
+                  <Text style={styles.metricLabel}>
+                    {t('admin.librarian.reports.detailModal.fixesApplied')}
+                  </Text>
+                </View>
               </View>
             </GlassCard>
 
-            {report.ai_insights && report.ai_insights.length > 0 && (
+            {/* 3. Issues Breakdown Card (only for daily_incremental) */}
+            {report.audit_type === 'daily_incremental' && (
               <GlassCard style={styles.card}>
-                <Text style={styles.cardTitle}>{t('admin.librarian.reports.detailModal.aiInsights')}</Text>
-                {report.ai_insights.map((insight, index) => (
-                  <View key={index} style={styles.insightRow}>
+                <Text style={styles.cardTitle}>
+                  {t('admin.librarian.reports.detailModal.issuesBreakdown')}
+                </Text>
+                <View style={styles.issuesGrid}>
+                  <View style={styles.issueTypeBox}>
+                    <AlertCircle size={24} color={colors.error.DEFAULT} />
+                    <Text style={[styles.issueTypeValue, styles.issueTypeValueError]}>
+                      {formatNumber(report.broken_streams?.length)}
+                    </Text>
+                    <Text style={styles.issueTypeLabel}>
+                      {t('admin.librarian.reports.detailModal.brokenStreams')}
+                    </Text>
+                  </View>
+                  <View style={styles.issueTypeBox}>
+                    <AlertTriangle size={24} color="#fb923c" />
+                    <Text style={[styles.issueTypeValue, styles.issueTypeValueWarning]}>
+                      {formatNumber(report.missing_metadata?.length)}
+                    </Text>
+                    <Text style={styles.issueTypeLabel}>
+                      {t('admin.librarian.reports.detailModal.missingMetadata')}
+                    </Text>
+                  </View>
+                  <View style={styles.issueTypeBox}>
+                    <Info size={24} color={colors.info.DEFAULT} />
+                    <Text style={[styles.issueTypeValue, styles.issueTypeValueInfo]}>
+                      {formatNumber(report.misclassifications?.length)}
+                    </Text>
+                    <Text style={styles.issueTypeLabel}>
+                      {t('admin.librarian.reports.detailModal.misclassifications')}
+                    </Text>
+                  </View>
+                  <View style={styles.issueTypeBox}>
+                    <Archive size={24} color={colors.textMuted} />
+                    <Text style={styles.issueTypeValue}>
+                      {formatNumber(report.orphaned_items?.length)}
+                    </Text>
+                    <Text style={styles.issueTypeLabel}>
+                      {t('admin.librarian.reports.detailModal.orphanedItems')}
+                    </Text>
+                  </View>
+                </View>
+              </GlassCard>
+            )}
+
+            {/* 4. AI Insights Card */}
+            {hasInsights(report.ai_insights) && (
+              <GlassCard style={styles.insightsCard}>
+                <View style={styles.insightsHeader}>
+                  <Text style={styles.cardTitle}>
+                    {t('admin.librarian.reports.detailModal.aiInsights')}
+                  </Text>
+                  <GlassBadge variant="purple" size="sm">
+                    {report.ai_insights!.length}
+                  </GlassBadge>
+                </View>
+                {report.ai_insights!.map((insight, index) => (
+                  <View key={index} style={styles.insightItem}>
                     <Text style={styles.bulletPoint}>•</Text>
                     <Text style={styles.insightText}>{insight}</Text>
                   </View>
@@ -181,80 +267,153 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     color: colors.text,
   },
-  row: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.xs,
+
+  // Status Header Card
+  statusHeaderCard: {
+    marginBottom: spacing.lg,
+    padding: spacing.xl,
+    alignItems: 'center',
+    backgroundColor: colors.glassStrong,
+    borderColor: colors.glassBorder,
+    borderWidth: 1,
   },
-  rowItem: {
-    flex: 1,
+  statusBadge: {
+    marginBottom: spacing.md,
   },
-  label: {
-    fontSize: 13,
-    marginBottom: spacing.xs,
+  heroMetricContainer: {
+    alignItems: 'center',
+    marginTop: spacing.sm,
+  },
+  heroMetricValue: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: colors.primary.DEFAULT,
+    lineHeight: 44,
+  },
+  heroMetricLabel: {
+    fontSize: fontSize.sm,
     color: colors.textMuted,
+    marginTop: spacing.xs,
   },
-  statValue: {
-    fontSize: fontSize.xl,
-    fontWeight: '600',
-    color: colors.text,
+  timestampText: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+    marginTop: spacing.md,
+    fontStyle: 'italic',
   },
-  centeredBox: {
+
+  // Metrics Grid
+  metricsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+  },
+  metricBox: {
+    flex: 1,
+    minWidth: '45%',
     alignItems: 'center',
     padding: spacing.lg,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    minHeight: 100,
+    justifyContent: 'center',
   },
-  metricLarge: {
-    fontSize: 32,
+  metricBoxIssues: {
+    borderColor: 'rgba(251, 146, 60, 0.5)',
+  },
+  metricBoxFixes: {
+    borderColor: 'rgba(16, 185, 129, 0.5)',
+  },
+  metricValue: {
+    fontSize: 30,
     fontWeight: 'bold',
+    color: colors.text,
     marginBottom: spacing.xs,
-    color: colors.primary.DEFAULT,
+  },
+  metricValueIssues: {
+    color: '#fb923c',
+  },
+  metricValueFixes: {
+    color: colors.success.DEFAULT,
   },
   metricLabel: {
     fontSize: fontSize.xs,
     textAlign: 'center',
     color: colors.textMuted,
   },
-  insightHint: {
-    fontSize: 13,
-    marginTop: spacing.xs,
-    fontStyle: 'italic',
-    color: colors.textMuted,
-  },
-  gridContainer: {
+
+  // Issues Breakdown Grid
+  issuesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.md,
   },
-  gridItem: {
+  issueTypeBox: {
     flex: 1,
     minWidth: '45%',
     alignItems: 'center',
-    padding: spacing.md,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    borderRadius: borderRadius.xl,
+    padding: spacing.lg,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: borderRadius.lg,
     borderWidth: 1,
     borderColor: colors.glassBorder,
+    minHeight: 120,
+    justifyContent: 'center',
   },
-  fixesValue: {
-    fontSize: 48,
+  issueTypeValue: {
+    fontSize: 28,
     fontWeight: 'bold',
+    color: colors.text,
+    marginTop: spacing.sm,
     marginBottom: spacing.xs,
-    color: colors.success.DEFAULT,
   },
-  fixesLabel: {
-    fontSize: fontSize.sm,
+  issueTypeValueError: {
+    color: colors.error.DEFAULT,
+  },
+  issueTypeValueWarning: {
+    color: '#fb923c',
+  },
+  issueTypeValueInfo: {
+    color: colors.info.DEFAULT,
+  },
+  issueTypeLabel: {
+    fontSize: fontSize.xs,
+    textAlign: 'center',
     color: colors.textMuted,
   },
-  insightRow: {
+
+  // AI Insights Card
+  insightsCard: {
+    marginBottom: spacing.md,
+    padding: spacing.lg,
+    backgroundColor: 'rgba(88, 28, 135, 0.15)',
+    borderColor: colors.primary.DEFAULT,
+    borderWidth: 1,
+  },
+  insightsHeader: {
     flexDirection: 'row',
-    marginBottom: spacing.xs,
-    paddingHorizontal: spacing.xs,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  insightItem: {
+    flexDirection: 'row',
+    borderLeftWidth: 3,
+    borderLeftColor: colors.primary.DEFAULT,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    borderRadius: borderRadius.md,
+    marginBottom: spacing.sm,
   },
   bulletPoint: {
     fontSize: fontSize.base,
     marginTop: 2,
-    marginRight: spacing.xs,
+    marginRight: spacing.sm,
     color: colors.primary.DEFAULT,
+    fontWeight: 'bold',
   },
   insightText: {
     flex: 1,

@@ -107,7 +107,13 @@ export const SubscriptionsScreen: React.FC = () => {
       loadSubscriptions();
       notifications.showSuccess(t('admin.subscriptions.extendedMessage', `Subscription extended by ${days} days`), t('admin.subscriptions.extended', 'Extended'));
     } catch (error) {
-      console.error('Error extending subscription:', error);
+      subscriptionsLogger.error('Error extending subscription', {
+        subscriptionId: selectedSub.id,
+        days,
+        userId: selectedSub.user.id,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 
@@ -132,7 +138,14 @@ export const SubscriptionsScreen: React.FC = () => {
       loadSubscriptions();
       notifications.showSuccess(t('admin.subscriptions.discountMessage', `${percent}% discount applied for ${months} months`), t('admin.subscriptions.discountApplied', 'Discount Applied'));
     } catch (error) {
-      console.error('Error applying discount:', error);
+      subscriptionsLogger.error('Error applying discount', {
+        subscriptionId: selectedSub.id,
+        discountPercent: percent,
+        discountMonths: months,
+        userId: selectedSub.user.id,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 
@@ -150,7 +163,13 @@ export const SubscriptionsScreen: React.FC = () => {
             await subscriptionsService.cancelSubscription(sub.id, 'Cancelled by admin');
             loadSubscriptions();
           } catch (error) {
-            console.error('Error cancelling subscription:', error);
+            subscriptionsLogger.error('Error cancelling subscription', {
+              subscriptionId: sub.id,
+              userId: sub.user.id,
+              reason: 'Cancelled by admin',
+              error: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            });
           }
         },
       },
@@ -162,7 +181,12 @@ export const SubscriptionsScreen: React.FC = () => {
       await subscriptionsService.pauseSubscription(sub.id);
       loadSubscriptions();
     } catch (error) {
-      console.error('Error pausing subscription:', error);
+      subscriptionsLogger.error('Error pausing subscription', {
+        subscriptionId: sub.id,
+        userId: sub.user.id,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 
@@ -171,7 +195,12 @@ export const SubscriptionsScreen: React.FC = () => {
       await subscriptionsService.resumeSubscription(sub.id);
       loadSubscriptions();
     } catch (error) {
-      console.error('Error resuming subscription:', error);
+      subscriptionsLogger.error('Error resuming subscription', {
+        subscriptionId: sub.id,
+        userId: sub.user.id,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 

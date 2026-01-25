@@ -21,6 +21,10 @@ import { isTV } from '../../utils/platform';
 import { SupportTicketCard } from '../../components/admin/SupportTicketCard';
 import { SupportTicketDetail } from '../../components/admin/SupportTicketDetail';
 import { supportConfig } from '../../config/supportConfig';
+import { logger } from '../../utils/logger';
+
+// Scoped logger for support dashboard screen
+const supportDashboardLogger = logger.scope('Admin:SupportDashboard');
 
 interface AdminTicket {
   id: string;
@@ -95,7 +99,10 @@ export const SupportDashboardScreen: React.FC = () => {
         });
       }
     } catch (err) {
-      console.error('[SupportDashboard] Error loading data:', err);
+      supportDashboardLogger.error('Error loading dashboard data', {
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       setError(t('admin.support.loadError', 'Failed to load dashboard data'));
     } finally {
       setLoading(false);
@@ -146,7 +153,12 @@ export const SupportDashboardScreen: React.FC = () => {
         }
       }
     } catch (err) {
-      console.error('[SupportDashboard] Error updating ticket:', err);
+      supportDashboardLogger.error('Error updating ticket', {
+        ticketId,
+        updates,
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
     }
   };
 

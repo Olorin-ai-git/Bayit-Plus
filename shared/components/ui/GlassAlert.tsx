@@ -5,6 +5,10 @@
 
 import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
 import { GlassModal, type ModalButton, type ModalType } from './GlassModal';
+import { logger } from '../../utils/logger';
+
+// Scoped logger for glass alert component
+const glassAlertLogger = logger.scope('UI:GlassAlert');
 
 // Types for Alert.alert compatibility
 export interface AlertButton {
@@ -225,7 +229,7 @@ export const useGlassAlert = (): AlertContextType => {
  * // Drop-in replacement for Alert.alert
  * GlassAlert.alert('Title', 'Message', [
  *   { text: 'Cancel', style: 'cancel' },
- *   { text: 'OK', onPress: () => console.log('OK pressed') },
+ *   { text: 'OK', onPress: () => logger.info('OK pressed') },
  * ]);
  * ```
  */
@@ -243,10 +247,15 @@ export const GlassAlert = {
     options?: AlertOptions
   ) => {
     if (!globalAlertHandler) {
-      console.warn(
-        'GlassAlert not initialized. Falling back to console.error.'
-      );
-      console.error(`[Alert] ${title}: ${message}`);
+      glassAlertLogger.warn('GlassAlert not initialized - fallback logging', {
+        title,
+        message,
+        buttonCount: buttons?.length || 0,
+      });
+      glassAlertLogger.error('Alert fallback', {
+        title,
+        message,
+      });
       return;
     }
     globalAlertHandler.alert(title, message, buttons, options);
@@ -262,7 +271,10 @@ export const GlassAlert = {
     onCancel?: () => void
   ) => {
     if (!globalAlertHandler) {
-      console.warn('GlassAlert not initialized.');
+      glassAlertLogger.warn('GlassAlert not initialized - confirm fallback', {
+        title,
+        message,
+      });
       return;
     }
     globalAlertHandler.confirm(title, message, onConfirm, onCancel);
@@ -273,7 +285,10 @@ export const GlassAlert = {
    */
   error: (title: string, message?: string, onDismiss?: () => void) => {
     if (!globalAlertHandler) {
-      console.error(`[Error] ${title}: ${message}`);
+      glassAlertLogger.error('Error alert fallback', {
+        title,
+        message,
+      });
       return;
     }
     globalAlertHandler.error(title, message, onDismiss);
@@ -284,7 +299,10 @@ export const GlassAlert = {
    */
   success: (title: string, message?: string, onDismiss?: () => void) => {
     if (!globalAlertHandler) {
-      console.log(`[Success] ${title}: ${message}`);
+      glassAlertLogger.info('Success alert fallback', {
+        title,
+        message,
+      });
       return;
     }
     globalAlertHandler.success(title, message, onDismiss);
@@ -295,7 +313,10 @@ export const GlassAlert = {
    */
   warning: (title: string, message?: string, onDismiss?: () => void) => {
     if (!globalAlertHandler) {
-      console.warn(`[Warning] ${title}: ${message}`);
+      glassAlertLogger.warn('Warning alert fallback', {
+        title,
+        message,
+      });
       return;
     }
     globalAlertHandler.warning(title, message, onDismiss);
@@ -306,7 +327,10 @@ export const GlassAlert = {
    */
   info: (title: string, message?: string, onDismiss?: () => void) => {
     if (!globalAlertHandler) {
-      console.info(`[Info] ${title}: ${message}`);
+      glassAlertLogger.info('Info alert fallback', {
+        title,
+        message,
+      });
       return;
     }
     globalAlertHandler.info(title, message, onDismiss);

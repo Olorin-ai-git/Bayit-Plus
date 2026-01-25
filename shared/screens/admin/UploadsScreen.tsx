@@ -30,6 +30,10 @@ import uploadService, {
   MonitoredFolderCreate,
   MonitoredFolderUpdate,
 } from '../../services/uploadService';
+import { logger } from '../../utils/logger';
+
+// Scoped logger for uploads screen
+const uploadsLogger = logger.scope('Admin:Uploads');
 
 export const UploadsScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -60,7 +64,10 @@ export const UploadsScreen: React.FC = () => {
       const folders = await uploadService.getMonitoredFolders();
       setMonitoredFolders(folders);
     } catch (err) {
-      console.error('Failed to load monitored folders:', err);
+      uploadsLogger.error('Failed to load monitored folders', {
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
     } finally {
       setLoading(false);
     }

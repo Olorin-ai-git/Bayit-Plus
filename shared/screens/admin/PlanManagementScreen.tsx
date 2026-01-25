@@ -21,6 +21,10 @@ import { subscriptionsService, SubscriptionPlan } from '../../services/adminApi'
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { formatCurrency } from '../../utils/formatters';
 import { getPlanColor } from '../../utils/adminConstants';
+import { logger } from '../../utils/logger';
+
+// Scoped logger for plan management screen
+const planManagementLogger = logger.scope('Admin:PlanManagement');
 
 export const PlanManagementScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -48,7 +52,10 @@ export const PlanManagementScreen: React.FC = () => {
       const data = await subscriptionsService.getPlans();
       setPlans(data);
     } catch (err) {
-      console.error('Error loading plans:', err);
+      planManagementLogger.error('Error loading plans', {
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       setError(t('admin.plans.loadError', 'Failed to load subscription plans. Please try again.'));
       setPlans([]);
     } finally {
@@ -119,7 +126,17 @@ export const PlanManagementScreen: React.FC = () => {
         t('common.success', 'Success')
       );
     } catch (error) {
-      console.error('Error saving plan:', error);
+      planManagementLogger.error('Error saving plan', {
+        isEdit: !!editingPlan,
+        planId: editingPlan?.id,
+        formData: {
+          name: formData.name,
+          price: formData.price,
+          interval: formData.interval,
+        },
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       notifications.showError(t('admin.plans.saveError', 'Failed to save plan'), t('common.error', 'Error'));
     } finally {
       setSaving(false);
@@ -140,7 +157,12 @@ export const PlanManagementScreen: React.FC = () => {
             await subscriptionsService.deletePlan(plan.id);
             loadPlans();
           } catch (error) {
-            console.error('Error deleting plan:', error);
+            planManagementLogger.error('Error deleting plan', {
+              planId: plan.id,
+              planName: plan.name,
+              error: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            });
           }
         },
       },

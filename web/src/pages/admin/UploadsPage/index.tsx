@@ -24,6 +24,7 @@ import { UrlInputPanel } from './components/UrlImport/UrlInputPanel';
 import { MonitoredFolders } from './components/MonitoredFolders';
 import { DryRunToggle } from './components/DryRun/DryRunToggle';
 import { DryRunPreview } from './components/DryRun/DryRunPreview';
+import { ConnectionStatus } from './components/ConnectionStatus';
 
 type UploadMode = 'browser' | 'url';
 
@@ -32,7 +33,7 @@ const UploadsPage: React.FC = () => {
   const [uploadMode, setUploadMode] = useState<UploadMode>('browser');
 
   // Queue management
-  const { queueState, connected, loading, refreshQueue } = useUploadQueue();
+  const { queueState, connected, loading, refreshQueue, reconnecting, reconnectAttempt } = useUploadQueue();
 
   // Dry run functionality
   const { dryRunEnabled, results, showPreview, toggleDryRun, reset, setShowPreview } = useDryRun();
@@ -57,6 +58,15 @@ const UploadsPage: React.FC = () => {
           iconColor={pageConfig.iconColor}
           iconBackgroundColor={pageConfig.iconBackgroundColor}
           badge={connected ? undefined : 'Disconnected'}
+        />
+
+        {/* Connection Status Banner */}
+        <ConnectionStatus
+          connected={connected}
+          reconnecting={reconnecting}
+          reconnectAttempt={reconnectAttempt}
+          maxAttempts={10}
+          onRefresh={refreshQueue}
         />
 
         {/* Queue Dashboard - Collapsible */}

@@ -33,12 +33,13 @@ export const useUploadQueue = () => {
   });
 
   const [connected, setConnected] = useState(false);
+  const [reconnecting, setReconnecting] = useState(false);
+  const [reconnectAttempt, setReconnectAttempt] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const reconnectAttemptsRef = useRef(0);
 
   /**
    * Fetches queue data from API
@@ -90,7 +91,8 @@ export const useUploadQueue = () => {
       ws.onopen = () => {
         logger.info('✅ Uploads WebSocket connected', 'useUploadQueue');
         setConnected(true);
-        reconnectAttemptsRef.current = 0;
+        setReconnecting(false);
+        setReconnectAttempt(0);
       };
 
       ws.onmessage = (event) => {
@@ -122,11 +124,17 @@ export const useUploadQueue = () => {
         wsRef.current = null;
 
         // Reconnect with exponential backoff
-        if (reconnectAttemptsRef.current < WS_MAX_RECONNECT_ATTEMPTS) {
-          reconnectAttemptsRef.current++;
-          const delay = WS_RECONNECT_DELAY * Math.pow(1.5, reconnectAttemptsRef.current - 1);
-          logger.info(`[WebSocket] Reconnecting in ${delay}ms (attempt ${reconnectAttemptsRef.current})`, 'useUploadQueue');
+        if (reconnectAttempt < WS_MAX_RECONNECT_ATTEMPTS) {
+          const nextAttempt = reconnectAttempt + 1;
+          setReconnectAttempt(nextAttempt);
+          setReconnecting(true);
+
+          const delay = WS_RECONNECT_DELAY * Math.pow(1.5, nextAttempt - 1);
+          logger.info(`[WebSocket] Reconnecting in ${delay}ms (attempt ${nextAttempt})`, 'useUploadQueue');
           reconnectTimeoutRef.current = setTimeout(connectWebSocket, delay);
+        } else {
+          logger.error('[WebSocket] Max reconnection attempts reached', 'useUploadQueue');
+          setReconnecting(false);
         }
       };
 
@@ -166,6 +174,8 @@ export const useUploadQueue = () => {
   return {
     queueState,
     connected,
+    reconnecting,
+    reconnectAttempt,
     loading,
     error,
     refreshQueue,

@@ -7,6 +7,7 @@
 import React from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Upload } from 'lucide-react';
 import { GlassCard } from '@bayit/shared/ui';
 import { colors, spacing } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
@@ -17,6 +18,8 @@ import {
   RecentCompletedList,
   QueuePausedWarning,
 } from './components';
+import { EmptyState } from '@/pages/admin/UploadsPage/components/EmptyState';
+import { SkeletonCard, SkeletonStatCard } from '@/pages/admin/UploadsPage/components/Shared/SkeletonLoader';
 import { GlassQueueProps } from './types';
 import { isDuplicate } from './utils';
 
@@ -45,10 +48,14 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
   if (loading) {
     const loadingContent = (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
-          {t('common.loading')}
-        </Text>
+        <View style={styles.skeletonStats}>
+          <SkeletonStatCard />
+          <SkeletonStatCard />
+          <SkeletonStatCard />
+        </View>
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
       </View>
     );
 
@@ -77,7 +84,7 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
         />
       )}
 
-      {activeJob && (
+      {activeJob ? (
         <ActiveJobCard
           job={activeJob}
           isRTL={isRTL}
@@ -85,6 +92,18 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
           onCancelJob={onCancelJob}
           cancellingJob={cancellingJob}
         />
+      ) : (
+        <View style={styles.activeJobSection}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            {t('admin.uploads.queueDashboard.activeJob')}
+          </Text>
+          <EmptyState
+            icon={Upload}
+            iconColor="rgba(139, 92, 246, 0.4)"
+            title={t('admin.uploads.queueDashboard.noActiveJob')}
+            description={t('admin.uploads.queueDashboard.noActiveJobDescription')}
+          />
+        </View>
       )}
 
       <QueuedItemsList
@@ -109,9 +128,12 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
 
 const styles = StyleSheet.create({
   loadingContainer: {
-    padding: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 24,
+  },
+  skeletonStats: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.xl,
   },
   loadingText: {
     marginTop: 16,
@@ -122,6 +144,17 @@ const styles = StyleSheet.create({
   },
   contentPadding: {
     padding: 24,
+  },
+  activeJobSection: {
+    marginBottom: 24,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: colors.glassBorder,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
   },
 });
 

@@ -22,6 +22,10 @@ import { DashboardStats, AuditLog, ChartDataPoint } from '../../types/rbac';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { formatNumber, formatCurrency, formatDateTime } from '../../utils/formatters';
 import { getActivityIcon } from '../../utils/adminConstants';
+import { logger } from '../../utils/logger';
+
+// Scoped logger for admin dashboard screen
+const adminDashboardLogger = logger.scope('Admin:Dashboard');
 
 const { width } = Dimensions.get('window');
 
@@ -49,7 +53,10 @@ export const AdminDashboardScreen: React.FC = () => {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load dashboard data';
       setError(message);
-      console.error('Error loading dashboard data:', err);
+      adminDashboardLogger.error('Error loading dashboard data', {
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
     } finally {
       setLoading(false);
     }

@@ -11,6 +11,7 @@ Feature documentation and implementation guides:
 - Subscription and payment features
 - Live streaming functionality
 - Content import and management
+- **Librarian Audit Log Improvements** (`LIBRARIAN_AUDIT_LOG_IMPROVEMENTS.md`) - Comprehensive UI/UX enhancements for Live Audit Log and Recent Reports components with search, filtering, sorting, quick audit triggers, and enhanced table layout - ✅ ENHANCEMENT COMPLETE - 2026-01-25 **NEW**
 
 ### `/deployment/`
 Deployment guides and status:

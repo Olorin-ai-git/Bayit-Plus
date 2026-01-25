@@ -21,6 +21,10 @@ import { Transaction } from '../../types/rbac';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { formatDate, formatCurrency } from '../../utils/formatters';
 import { getStatusColor, getPaymentMethodIcon } from '../../utils/adminConstants';
+import { logger } from '../../utils/logger';
+
+// Scoped logger for transactions screen
+const transactionsLogger = logger.scope('Admin:Transactions');
 
 export const TransactionsScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -55,7 +59,11 @@ export const TransactionsScreen: React.FC = () => {
       setTransactions(response.items);
       setTotalTransactions(response.total);
     } catch (err) {
-      console.error('Error loading transactions:', err);
+      transactionsLogger.error('Error loading transactions', {
+        filters,
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       setError(err instanceof Error ? err.message : 'Failed to load transactions');
       setTransactions([]);
       setTotalTransactions(0);
@@ -111,7 +119,13 @@ export const TransactionsScreen: React.FC = () => {
       notifications.showSuccess(t('admin.transactions.refundSuccess', 'The refund has been processed successfully.'), t('admin.transactions.refundProcessed', 'Refund Processed'));
       loadTransactions();
     } catch (error) {
-      console.error('Error processing refund:', error);
+      transactionsLogger.error('Error processing refund', {
+        transactionId: selectedTransaction.id,
+        refundAmount: amount,
+        refundReason,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       notifications.showError(t('admin.transactions.refundError', 'Failed to process refund'), t('common.error', 'Error'));
     }
   };
@@ -122,7 +136,11 @@ export const TransactionsScreen: React.FC = () => {
       // In a real app, this would trigger a download
       notifications.showSuccess(t('admin.transactions.exportMessage', 'Transaction data has been exported.'), t('admin.transactions.exportSuccess', 'Export Ready'));
     } catch (error) {
-      console.error('Error exporting transactions:', error);
+      transactionsLogger.error('Error exporting transactions', {
+        filters,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 
@@ -131,7 +149,11 @@ export const TransactionsScreen: React.FC = () => {
       await billingService.generateInvoice(transaction.id);
       notifications.showSuccess(t('admin.transactions.invoiceMessage', 'Invoice has been generated and is ready for download.'), t('admin.transactions.invoiceGenerated', 'Invoice Generated'));
     } catch (error) {
-      console.error('Error generating invoice:', error);
+      transactionsLogger.error('Error generating invoice', {
+        transactionId: transaction.id,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 

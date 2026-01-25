@@ -21,6 +21,10 @@ import { AuditLog, AuditAction } from '../../types/rbac';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { formatDate, formatDateTime } from '../../utils/formatters';
 import { getActivityIcon } from '../../utils/adminConstants';
+import { logger } from '../../utils/logger';
+
+// Scoped logger for audit logs screen
+const auditLogsLogger = logger.scope('Admin:AuditLogs');
 
 export const AuditLogsScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -51,7 +55,11 @@ export const AuditLogsScreen: React.FC = () => {
       setLogs(response.items);
       setTotalLogs(response.total);
     } catch (err) {
-      console.error('Error loading logs:', err);
+      auditLogsLogger.error('Error loading logs', {
+        filters,
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       setError(t('admin.logs.loadError', 'Failed to load audit logs. Please try again.'));
       setLogs([]);
       setTotalLogs(0);
@@ -71,7 +79,11 @@ export const AuditLogsScreen: React.FC = () => {
       await auditLogsService.exportLogs(filters);
       notifications.showSuccess(t('admin.logs.exportedMessage', 'Audit logs have been exported'), t('admin.logs.exported', 'Exported'));
     } catch (error) {
-      console.error('Error exporting logs:', error);
+      auditLogsLogger.error('Error exporting logs', {
+        filters,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     }
   };
 
