@@ -64,7 +64,7 @@ steps:
       # WebAuthn Configuration (Production Values)
       - '--set-env-vars=WEBAUTHN_RP_ID=bayit.tv'
       - '--set-env-vars=WEBAUTHN_RP_NAME=Bayit Plus'
-      - '--set-env-vars=WEBAUTHN_ORIGIN=https://bayit.tv,https://www.bayit.tv'
+      - '--set-env-vars=^:^WEBAUTHN_ORIGIN=https://bayit.tv,https://www.bayit.tv'
 
       # Secrets from Google Secret Manager
       - '--update-secrets=SECRET_KEY=bayit-backend-secret-key:latest'
