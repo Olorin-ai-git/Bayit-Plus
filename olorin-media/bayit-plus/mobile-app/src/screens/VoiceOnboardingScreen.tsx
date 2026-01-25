@@ -16,12 +16,12 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Mic, Volume2, Sparkles, Check } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { speechService, wakeWordService, ttsService } from '../services';
 import { VoiceWaveform } from '../components/voice';
 import { colors, spacing } from '@olorin/design-tokens';
@@ -36,6 +36,7 @@ type OnboardingStep = 'welcome' | 'permissions' | 'test-wake-word' | 'complete';
 export default function VoiceOnboardingScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const notifications = useNotifications();
 
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
   const [hasPermissions, setHasPermissions] = useState(false);
@@ -57,18 +58,20 @@ export default function VoiceOnboardingScreen() {
         // Speak welcome message
         await ttsService.speak(t('voiceOnboarding.permissionsGranted'));
       } else {
-        Alert.alert(
-          t('voiceOnboarding.permissionRequired.title'),
+        notifications.showWarning(
           t('voiceOnboarding.permissionRequired.message'),
-          [{ text: t('common.ok') }]
+          t('voiceOnboarding.permissionRequired.title')
         );
       }
     } catch (error: any) {
-      Alert.alert(t('common.error'), error.message || t('voiceOnboarding.permissionError'));
+      notifications.showError(
+        error.message || t('voiceOnboarding.permissionError'),
+        t('common.error')
+      );
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [notifications, t]);
 
   // Test wake word detection
   const handleTestWakeWord = useCallback(async () => {
@@ -100,10 +103,13 @@ export default function VoiceOnboardingScreen() {
       // Speak instructions
       await ttsService.speak(t('voiceOnboarding.speakWakeWord'));
     } catch (error: any) {
-      Alert.alert(t('common.error'), t('voiceOnboarding.wakeWordError', { error: error.message }));
+      notifications.showError(
+        t('voiceOnboarding.wakeWordError', { error: error.message }),
+        t('common.error')
+      );
       setIsTestingWakeWord(false);
     }
-  }, []);
+  }, [notifications, t]);
 
   // Skip wake word test
   const handleSkipWakeWord = useCallback(async () => {

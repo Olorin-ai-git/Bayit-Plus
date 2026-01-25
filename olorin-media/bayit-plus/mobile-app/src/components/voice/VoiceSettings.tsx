@@ -17,8 +17,8 @@ import {
   TouchableOpacity,
   Switch,
   SafeAreaView,
-  Alert,
 } from 'react-native';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { useConversationContextMobile } from '../../hooks/useConversationContextMobile';
 
 interface VoiceSettingsProps {
@@ -50,6 +50,7 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
 }) => {
   const [settings, setSettings] = useState<VoiceSettingsState>(DEFAULT_SETTINGS);
   const conversationContext = useConversationContextMobile();
+  const notifications = useNotifications();
 
   const handleSettingChange = useCallback(
     (key: keyof VoiceSettingsState, value: any) => {
@@ -61,40 +62,38 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
   );
 
   const handleClearHistory = useCallback(() => {
-    Alert.alert(
-      'Clear Command History',
-      'Are you sure you want to delete all voice command history?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            conversationContext.clear();
-            Alert.alert('Success', 'Command history cleared');
-          },
+    notifications.show({
+      level: 'warning',
+      message: 'Are you sure you want to delete all voice command history?',
+      title: 'Clear Command History',
+      dismissable: true,
+      action: {
+        label: 'Delete',
+        type: 'action',
+        onPress: () => {
+          conversationContext.clear();
+          notifications.showSuccess('Command history cleared', 'Success');
         },
-      ]
-    );
-  }, [conversationContext]);
+      },
+    });
+  }, [conversationContext, notifications]);
 
   const handleResetSettings = useCallback(() => {
-    Alert.alert(
-      'Reset Settings',
-      'Reset voice settings to defaults?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Reset',
-          style: 'destructive',
-          onPress: () => {
-            setSettings(DEFAULT_SETTINGS);
-            onSettingsChange?.(DEFAULT_SETTINGS);
-          },
+    notifications.show({
+      level: 'warning',
+      message: 'Reset voice settings to defaults?',
+      title: 'Reset Settings',
+      dismissable: true,
+      action: {
+        label: 'Reset',
+        type: 'action',
+        onPress: () => {
+          setSettings(DEFAULT_SETTINGS);
+          onSettingsChange?.(DEFAULT_SETTINGS);
         },
-      ]
-    );
-  }, [onSettingsChange]);
+      },
+    });
+  }, [onSettingsChange, notifications]);
 
   return (
     <SafeAreaView className="flex-1 bg-slate-900">

@@ -21,7 +21,6 @@ import {
   ActivityIndicator,
   Image,
   SafeAreaView,
-  Alert,
   Animated,
   PanResponder,
   Dimensions,
@@ -32,6 +31,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { downloadsService, type Download } from '@bayit/shared-services';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useDirection } from '@bayit/shared-hooks';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { colors } from '@olorin/design-tokens';
@@ -203,7 +203,7 @@ const SwipeableDownloadCard: React.FC<SwipeableDownloadCardProps> = ({
               <View className="absolute bottom-12 left-0 right-0 h-[3px] bg-black/50">
                 <View
                   className="h-full rounded"
-                  style={{ width: `${item.progress}%`, backgroundColor: colors.primary }}
+                  style={{ width: `${item.progress}%`, backgroundColor: colors.primary.DEFAULT }}
                 />
               </View>
             )}
@@ -235,10 +235,10 @@ const SwipeableDownloadCard: React.FC<SwipeableDownloadCardProps> = ({
                   className="mt-1 items-center gap-1"
                   style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}
                 >
-                  <Text className="text-[11px] font-semibold" style={{ color: colors.primary }}>
+                  <Text className="text-[11px] font-semibold" style={{ color: colors.primary.DEFAULT }}>
                     {item.progress}%
                   </Text>
-                  <ActivityIndicator size="small" color={colors.primary} />
+                  <ActivityIndicator size="small" color={colors.primary.DEFAULT} />
                 </View>
               )}
             </View>
@@ -254,6 +254,7 @@ export const DownloadsScreenMobile: React.FC = () => {
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
   const { isPhone } = useResponsive();
+  const notifications = useNotifications();
 
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -314,9 +315,9 @@ export const DownloadsScreenMobile: React.FC = () => {
 
   const handleItemPress = useCallback((item: DownloadItem) => {
     if (item.status !== 'completed') {
-      Alert.alert(
-        t('downloads.notReady', 'Download Not Ready'),
-        t('downloads.waitForCompletion', 'Please wait for the download to complete.')
+      notifications.showWarning(
+        t('downloads.waitForCompletion', 'Please wait for the download to complete.'),
+        t('downloads.notReady', 'Download Not Ready')
       );
       return;
     }
@@ -327,38 +328,30 @@ export const DownloadsScreenMobile: React.FC = () => {
       title: getLocalizedText(item, 'title'),
       type: item.type === 'podcast' ? 'podcast' : 'vod',
     });
-  }, [navigation, getLocalizedText, t]);
+  }, [navigation, getLocalizedText, t, notifications]);
 
   const handleDeleteDownload = useCallback(async (id: string) => {
-    Alert.alert(
-      t('downloads.confirmDelete', 'Delete Download?'),
-      t('downloads.confirmDeleteMessage', 'This will remove the downloaded content from your device.'),
-      [
-        {
-          text: t('common.cancel', 'Cancel'),
-          style: 'cancel',
-          onPress: () => {
-            // Reset any animation
-            setDownloads(prev => [...prev]);
-          },
+    notifications.show({
+      level: 'warning',
+      message: t('downloads.confirmDeleteMessage', 'This will remove the downloaded content from your device.'),
+      title: t('downloads.confirmDelete', 'Delete Download?'),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await downloadsService.deleteDownload(id);
+            setDownloads(prev => prev.filter(item => item.id !== id));
+            ReactNativeHapticFeedback.trigger('notificationSuccess');
+          } catch (err) {
+            moduleLogger.error('Failed to delete download:', err);
+            ReactNativeHapticFeedback.trigger('notificationError');
+          }
         },
-        {
-          text: t('common.delete', 'Delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await downloadsService.deleteDownload(id);
-              setDownloads(prev => prev.filter(item => item.id !== id));
-              ReactNativeHapticFeedback.trigger('notificationSuccess');
-            } catch (err) {
-              moduleLogger.error('Failed to delete download:', err);
-              ReactNativeHapticFeedback.trigger('notificationError');
-            }
-          },
-        },
-      ]
-    );
-  }, [t]);
+      },
+    });
+  }, [t, notifications]);
 
   const renderHeader = () => (
     <View>
@@ -391,7 +384,7 @@ export const DownloadsScreenMobile: React.FC = () => {
         <View className="flex-1 h-1.5 bg-white/10 rounded overflow-hidden">
           <View
             className="h-full rounded"
-            style={{ width: '35%', backgroundColor: colors.primary }}
+            style={{ width: '35%', backgroundColor: colors.primary.DEFAULT }}
           />
         </View>
         <Text className="text-xs font-medium" style={{ color: colors.text }}>
@@ -423,7 +416,7 @@ export const DownloadsScreenMobile: React.FC = () => {
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center" style={{ backgroundColor: colors.background }}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
         <Text className="text-base mt-4" style={{ color: colors.text }}>
           {t('common.loading')}
         </Text>
@@ -453,7 +446,7 @@ export const DownloadsScreenMobile: React.FC = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={colors.primary}
+            tintColor={colors.primary.DEFAULT}
             colors={[colors.primary]}
           />
         }

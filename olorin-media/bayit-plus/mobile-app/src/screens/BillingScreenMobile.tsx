@@ -19,7 +19,6 @@ import {
   RefreshControl,
   ActivityIndicator,
   SafeAreaView,
-  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +27,7 @@ import { GlassView, GlassButton } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
 import { subscriptionService } from '@bayit/shared-services';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 
 import logger from '@/utils/logger';
@@ -63,6 +63,7 @@ export const BillingScreenMobile: React.FC = () => {
   const navigation = useNavigation<any>();
   const { isRTL, textAlign } = useDirection();
   const { user } = useAuthStore();
+  const notifications = useNotifications();
 
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -113,15 +114,15 @@ export const BillingScreenMobile: React.FC = () => {
       await loadBillingData();
     } catch (error) {
       moduleLogger.error('Failed to set default payment method:', error);
-      Alert.alert(t('common.error'), t('billing.setDefaultError'));
+      notifications.showError(t('billing.setDefaultError'), t('common.error'));
     }
-  }, [t, loadBillingData]);
+  }, [t, loadBillingData, notifications]);
 
   const handleDownloadInvoice = useCallback((invoiceId: string) => {
     ReactNativeHapticFeedback.trigger('impactLight');
     // Download invoice functionality
-    Alert.alert(t('billing.downloadStarted'), t('billing.checkDownloads'));
-  }, [t]);
+    notifications.showInfo(t('billing.checkDownloads'), t('billing.downloadStarted'));
+  }, [t, notifications]);
 
   const renderPaymentMethod = (method: PaymentMethod) => (
     <TouchableOpacity
