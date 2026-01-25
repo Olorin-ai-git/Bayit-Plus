@@ -50,6 +50,7 @@ interface UsePlayerControlRenderersParams {
 
   // Callbacks
   onShowUpgrade?: () => void
+  onHoveredButtonChange?: (button: string | null) => void
 }
 
 export function usePlayerControlRenderers({
@@ -79,6 +80,7 @@ export function usePlayerControlRenderers({
   setIsRecording,
   setRecordingDuration,
   onShowUpgrade,
+  onHoveredButtonChange,
 }: UsePlayerControlRenderersParams) {
   const isPremium = user?.subscription?.plan === 'premium' || user?.subscription?.plan === 'family'
 
@@ -125,10 +127,11 @@ export function usePlayerControlRenderers({
         targetLang={liveSubtitleLang}
         onLanguageChange={setLiveSubtitleLang}
         onDisableDubbing={dubbing.disconnect}
+        onHoveredButtonChange={onHoveredButtonChange}
       />
     ) : null
   , [isLive, contentId, isPremium, videoRef, handleLiveSubtitleCue, onShowUpgrade,
-     liveSubtitleLang, setLiveSubtitleLang, dubbing.disconnect])
+     liveSubtitleLang, setLiveSubtitleLang, dubbing.disconnect, onHoveredButtonChange])
 
   const renderDubbingControls = useCallback(() =>
     isLive && contentId ? (
@@ -139,6 +142,7 @@ export function usePlayerControlRenderers({
         isPremium={isPremium}
         targetLanguage={dubbing.targetLanguage}
         availableLanguages={dubbing.availableLanguages}
+        availableVoices={dubbing.availableVoices}
         latencyMs={dubbing.latencyMs}
         error={dubbing.error}
         onDisableSubtitles={() => liveSubtitleService.disconnect()}
@@ -155,10 +159,20 @@ export function usePlayerControlRenderers({
           }
         }}
         onLanguageChange={dubbing.setTargetLanguage}
+        onOriginalVolumeChange={dubbing.setOriginalVolume}
+        onDubbedVolumeChange={dubbing.setDubbedVolume}
+        onVoiceChange={(voiceId) => {
+          // Reconnect with new voice
+          if (dubbing.isConnected) {
+            dubbing.disconnect()
+            setTimeout(() => dubbing.connect(dubbing.targetLanguage, voiceId), 500)
+          }
+        }}
         onShowUpgrade={onShowUpgrade}
+        onHoveredButtonChange={onHoveredButtonChange}
       />
     ) : null
-  , [isLive, contentId, isPremium, dubbing, onShowUpgrade])
+  , [isLive, contentId, isPremium, dubbing, onShowUpgrade, onHoveredButtonChange])
 
   const renderRecordButton = useCallback(() =>
     isLive && contentId ? (

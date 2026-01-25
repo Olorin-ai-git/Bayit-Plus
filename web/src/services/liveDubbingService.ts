@@ -106,6 +106,8 @@ class LiveDubbingService {
   private audioContext: AudioContext | null = null
   private isConnected = false
   private syncDelayMs = AUDIO_CONFIG.defaultSyncDelayMs
+  private bufferedMode = false // Disable immediate playback for buffered mode
+  private chunkCount = 0
 
   // Audio mixing
   private originalGain: GainNode | null = null
@@ -125,8 +127,10 @@ class LiveDubbingService {
     onConnected: ConnectionCallback,
     onError: ErrorCallback,
     voiceId?: string,
-    platform = 'web'
+    platform = 'web',
+    bufferedMode = false // Disable immediate playback for buffered video sync
   ): Promise<void> {
+    this.bufferedMode = bufferedMode
     // Fail-fast: validate configuration before attempting to connect
     try {
       validateConfiguration()
@@ -178,7 +182,12 @@ class LiveDubbingService {
           } else if (msg.type === 'dubbed_audio') {
             const audioMsg = msg.data as DubbedAudioMessage
             console.log(`[LiveDubbing] Dubbed audio #${audioMsg?.sequence}: "${audioMsg?.translated_text?.substring(0, 30)}..."`)
-            await this.playDubbedAudio(audioMsg?.data)
+
+            // Only play audio immediately if not in buffered mode
+            if (!this.bufferedMode) {
+              await this.playDubbedAudio(audioMsg?.data)
+            }
+
             onDubbedAudio(audioMsg)
           } else if (msg.type === 'latency_report') {
             console.log(`[LiveDubbing] Latency: ${msg.avg_total_ms}ms (STT: ${msg.avg_stt_ms}ms, Trans: ${msg.avg_translation_ms}ms, TTS: ${msg.avg_tts_ms}ms)`)

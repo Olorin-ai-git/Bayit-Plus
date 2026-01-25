@@ -225,9 +225,12 @@ class LiveDubbingService:
                 self.session_id
             )
 
-            # Step 3: Connect TTS provider (one per session, needed for dubbing)
-            logger.info(f"Connecting TTS provider for session {self.session_id}")
-            await self._tts_provider.connect(self.voice_id)
+            # Step 3: TTS provider connection is created per-transcript (not per-session)
+            # This avoids ElevenLabs 20-second timeout between transcripts
+            logger.info(
+                f"TTS will connect per-transcript for session {self.session_id} "
+                "(avoids 20s timeout)"
+            )
 
             # Step 4: Save initial session state to Redis for recovery on reconnect
             session_store = await get_session_store()
@@ -293,11 +296,9 @@ class LiveDubbingService:
             except Exception as e:
                 logger.error(f"Error unsubscribing from STT manager: {e}")
 
-        # Close TTS provider (STT provider is managed by ChannelSTTManager)
-        try:
-            await self._tts_provider.close()
-        except Exception as e:
-            logger.debug(f"Error closing TTS provider: {e}")
+        # TTS provider is created/closed per-transcript (not per-session)
+        # STT provider is managed by ChannelSTTManager
+        # No cleanup needed here
 
         # Update session record and remove from Redis
         if self._session:
@@ -508,6 +509,9 @@ class LiveDubbingService:
         """
         Synthesize text to speech with circuit breaker protection.
 
+        Creates a NEW TTS connection for each transcript to avoid 20-second timeout.
+        ElevenLabs streaming TTS expects continuous input or it disconnects.
+
         Args:
             text: Text to synthesize
             audio_chunks: List to append audio chunks to
@@ -516,10 +520,17 @@ class LiveDubbingService:
             CircuitBreakerError: If circuit breaker is open
             Exception: If TTS service fails
         """
-        await self._tts_provider.send_text_chunk(text, flush=True)
+        # Create fresh TTS connection for this transcript (avoids 20s timeout)
+        tts = get_tts_provider()
+        try:
+            await tts.connect(self.voice_id)
+            await tts.send_text_chunk(text, flush=True)
 
-        async for audio_chunk in self._tts_provider.receive_audio():
-            audio_chunks.append(audio_chunk)
+            async for audio_chunk in tts.receive_audio():
+                audio_chunks.append(audio_chunk)
+        finally:
+            # Close TTS connection after receiving audio
+            await tts.close()
 
     def _update_latency_metrics(
         self, stt_ms: float, translation_ms: float, tts_ms: float

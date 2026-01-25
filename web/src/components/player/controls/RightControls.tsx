@@ -19,6 +19,9 @@ interface RightControlsProps {
   toggleFullscreen: () => void
   isLive?: boolean
   liveSubtitleLang?: string
+  availableLanguages?: string[]
+  onLanguageChange?: (lang: string) => void
+  isDubbingActive?: boolean
   showChaptersPanel?: boolean
   showSceneSearchPanel?: boolean
   showSettings?: boolean
@@ -39,6 +42,9 @@ export default function RightControls({
   toggleFullscreen,
   isLive = false,
   liveSubtitleLang = 'en',
+  availableLanguages = ['en', 'es', 'he', 'ar', 'ru', 'fr'],
+  onLanguageChange = () => {},
+  isDubbingActive = false,
   showChaptersPanel = false,
   showSceneSearchPanel = false,
   showSettings = false,
@@ -128,8 +134,11 @@ export default function RightControls({
           isExpanded={showSettings}
           onToggleExpand={onSettingsToggle}
           currentLanguage={liveSubtitleLang}
+          availableLanguages={availableLanguages}
+          onLanguageChange={onLanguageChange}
           isFullscreen={state.isFullscreen}
           onToggleFullscreen={toggleFullscreen}
+          isDubbingActive={isDubbingActive}
           renderLiveSubtitleControls={renderLiveSubtitleControls}
           renderDubbingControls={renderDubbingControls}
         />

@@ -146,7 +146,10 @@ function SystemWidgetCard({
         {/* Reset Position Button - only visible on hover for added widgets */}
         {isHovered && widget.is_added && (
           <Pressable
-            onPress={() => onResetPosition(widget.id)}
+            onPress={(e) => {
+              e?.stopPropagation?.();
+              onResetPosition(widget.id);
+            }}
             style={styles.resetButton}
           >
             <RotateCcw size={16} color={colors.text} />
@@ -422,6 +425,9 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   resetButton: {
+    position: 'absolute',
+    top: spacing.md,
+    right: 140,
     width: 32,
     height: 32,
     borderRadius: 16,
@@ -430,7 +436,6 @@ const styles = StyleSheet.create({
     borderColor: colors.glassBorder,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: spacing.xs,
   },
   actionButton: {
     minWidth: 90,

@@ -120,7 +120,10 @@ export default function WidgetCard({
           <View style={styles.actionButtons}>
             <GlassButton
               title=""
-              onPress={() => onResetPosition(widget.id)}
+              onPress={(e) => {
+                e?.stopPropagation?.();
+                onResetPosition(widget.id);
+              }}
               variant="ghost"
               size="sm"
               icon={<RotateCcw size={16} color={colors.text} />}
@@ -129,7 +132,10 @@ export default function WidgetCard({
             />
             <GlassButton
               title=""
-              onPress={() => onToggleVisibility(widget.id)}
+              onPress={(e) => {
+                e?.stopPropagation?.();
+                onToggleVisibility(widget.id);
+              }}
               variant={isHidden ? 'warning' : 'ghost'}
               size="sm"
               icon={isHidden ? <Eye size={16} color={colors.text} /> : <EyeOff size={16} color={colors.text} />}
@@ -138,7 +144,10 @@ export default function WidgetCard({
             />
             <GlassButton
               title=""
-              onPress={() => onDelete(widget.id)}
+              onPress={(e) => {
+                e?.stopPropagation?.();
+                onDelete(widget.id);
+              }}
               variant="danger"
               size="sm"
               icon={<Trash2 size={16} color={colors.text} />}
@@ -261,6 +270,9 @@ const styles = StyleSheet.create({
     color: colors.warning.DEFAULT,
   },
   actionButtons: {
+    position: 'absolute',
+    top: spacing.md,
+    right: spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs / 2,

@@ -23,6 +23,7 @@ interface LiveSubtitleControlsProps {
   targetLang: string
   onLanguageChange: (lang: string) => void
   onDisableDubbing?: () => void
+  onHoveredButtonChange?: (button: string | null) => void
 }
 
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error'
@@ -37,6 +38,7 @@ export default function LiveSubtitleControls({
   targetLang,
   onLanguageChange,
   onDisableDubbing,
+  onHoveredButtonChange,
 }: LiveSubtitleControlsProps) {
   const { t } = useTranslation()
   // Initialize enabled state by checking actual service connection
@@ -153,7 +155,11 @@ export default function LiveSubtitleControls({
   }
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      onMouseEnter={() => onHoveredButtonChange?.('liveTranslate')}
+      onMouseLeave={() => onHoveredButtonChange?.(null)}
+    >
       <GlassLiveControlButton
         icon={
           <Languages
