@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, Globe, ChevronDown, ChevronUp } from 'lucide-react'
 import { adminContentService } from '@/services/adminApi'
@@ -393,4 +393,177 @@ export default function LiveChannelsPage() {
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.md,
+  },
+  addButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+  },
+  cellText: {
+    fontSize: 13,
+    color: colors.text,
+  },
+  urlText: {
+    fontFamily: 'monospace',
+    color: colors.textSecondary,
+  },
+  badge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.full,
+    alignSelf: 'flex-start',
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  actionsCell: {
+    gap: spacing.sm,
+    alignItems: 'center',
+  },
+  actionButton: {
+    width: 32,
+    height: 32,
+    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  editForm: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  formTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  input: {
+    marginBottom: spacing.md,
+  },
+  subtitleSection: {
+    marginTop: spacing.md,
+    padding: spacing.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  subtitleHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: spacing.sm,
+  },
+  subtitleHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  subtitleHeaderText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  subtitleContent: {
+    gap: spacing.md,
+    marginTop: spacing.md,
+  },
+  selectGroup: {
+    gap: spacing.sm,
+  },
+  selectLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  languageChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  languageChip: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  languageChipSelected: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  languageChipText: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+  languageChipTextSelected: {
+    color: colors.text,
+    fontWeight: '600',
+  },
+  helperText: {
+    fontSize: 12,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+  },
+  formActions: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginTop: spacing.lg,
+  },
+  cancelBtn: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cancelBtnText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.textSecondary,
+  },
+  saveBtn: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  saveBtnText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+  },
+});
 

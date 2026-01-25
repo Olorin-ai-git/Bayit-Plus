@@ -132,7 +132,7 @@ export const GlassAvatar: React.FC<GlassAvatarProps> = ({
             borderRadius: avatarSize * 0.175,
             right: 0,
             bottom: 0,
-            backgroundColor: colors.primary,
+            backgroundColor: colors.primary.DEFAULT,
             borderColor: colors.background,
           }}
         >

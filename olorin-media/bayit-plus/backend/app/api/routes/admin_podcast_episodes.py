@@ -64,6 +64,9 @@ async def get_podcast_episodes(
                 "available_languages": item.available_languages,
                 "original_language": item.original_language,
                 "retry_count": item.retry_count,
+                "translation_progress": item.translation_progress,
+                "translation_eta_seconds": item.translation_eta_seconds,
+                "translation_started_at": item.translation_started_at.isoformat() if item.translation_started_at else None,
             }
             for item in items
         ],
@@ -409,4 +412,98 @@ async def get_failed_translations(
         "page": page,
         "page_size": page_size,
         "total_pages": (total + page_size - 1) // page_size,
+    }
+
+
+@router.post("/translation/retry-all-failed")
+@limiter.limit("3/hour")  # Rate limit: 3 requests per hour to prevent abuse
+async def retry_all_failed_translations(
+    request: Request,
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
+):
+    """
+    Retry all failed translation episodes that haven't exceeded max retries.
+
+    Rate limited to 3 requests per hour.
+    Requires CONTENT_UPDATE permission.
+
+    Returns:
+        Summary of queued episodes, total failed, and skipped episodes with reasons.
+    """
+    # Find all failed episodes that can be retried
+    failed_episodes = await PodcastEpisode.find(
+        {
+            "translation_status": "failed",
+            "$expr": {"$lt": ["$retry_count", "$max_retries"]},
+        }
+    ).to_list()
+
+    # Skip episodes already being processed
+    eligible_episodes = [
+        ep for ep in failed_episodes if ep.translation_status != "processing"
+    ]
+
+    # Episodes that will be skipped with reasons
+    skipped = []
+    total_failed = len(failed_episodes)
+
+    for episode in failed_episodes:
+        if episode.retry_count >= episode.max_retries:
+            skipped.append({
+                "episode_id": str(episode.id),
+                "podcast_id": episode.podcast_id,
+                "title": episode.title,
+                "reason": "max_retries_exceeded",
+                "retry_count": episode.retry_count,
+                "max_retries": episode.max_retries,
+            })
+        elif episode.translation_status == "processing":
+            skipped.append({
+                "episode_id": str(episode.id),
+                "podcast_id": episode.podcast_id,
+                "title": episode.title,
+                "reason": "already_processing",
+            })
+
+    # Queue eligible episodes for translation
+    worker = get_translation_worker()
+    queued_count = 0
+
+    for episode in eligible_episodes:
+        try:
+            # Queue the episode (worker will pick it up)
+            await PodcastEpisode.find_one({"_id": episode.id}).update(
+                {"$set": {"translation_status": "pending"}}
+            )
+            # Add to worker queue
+            await worker.queue_episode(str(episode.id))
+            queued_count += 1
+        except Exception as e:
+            skipped.append({
+                "episode_id": str(episode.id),
+                "podcast_id": episode.podcast_id,
+                "title": episode.title,
+                "reason": f"queue_error: {str(e)}",
+            })
+
+    # Log audit action
+    await log_audit(
+        user=current_user,
+        action=AuditAction.UPDATE,
+        resource_type="podcast_translation",
+        resource_id="bulk",
+        details={
+            "episodes_queued": queued_count,
+            "total_failed": total_failed,
+            "skipped": len(skipped),
+        },
+    )
+
+    return {
+        "status": "queued",
+        "episodes_queued": queued_count,
+        "total_failed": total_failed,
+        "skipped": len(skipped),
+        "skipped_episodes": skipped,
+        "message": f"Queued {queued_count} of {total_failed} failed episodes for translation retry",
     }

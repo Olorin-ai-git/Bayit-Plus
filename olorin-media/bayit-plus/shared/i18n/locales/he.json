@@ -1678,6 +1678,7 @@
       "queued": "בתור",
       "andMore": "ועוד {{count}} נוספים",
       "monitoredFolders": "תיקיות מנוטרות",
+      "monitoredFoldersSubtitle": "Configure folders for automatic content monitoring and upload",
       "noMonitoredFolders": "לא הוגדרו תיקיות מנוטרות",
       "configureFoldersHelp": "לחץ על 'הוסף תיקייה' להגדרת תיקיות מנוטרות להעלאות אוטומטיות",
       "addFolder": "הוסף תיקייה",
@@ -1688,6 +1689,7 @@
       "triggerUploadSuccess": "נמצאו {{files_found}} קבצים חדשים להעלאה",
       "triggerUploadFailed": "הפעלת סריקת העלאה נכשלה",
       "noFilesFound": "לא נמצאו קבצים חדשים בתיקיות המנוטרות",
+      "scanComplete": "Scan Complete",
       "sessionIssue": "בעיית סשן",
       "sessionIssueHelp": "הסשן שלך אולי פג. אנא רענן את הדף כדי לשחזר את החיבור.",
       "sessionExpired": "הסשן פג. אנא רענן את הדף או התחבר שוב.",
@@ -1752,6 +1754,7 @@
         "namePlaceholder": "תיקיית הסרטים שלי",
         "path": "נתיב תיקייה",
         "pathHelp": "הזן את נתיב השרת לתיקייה (למשל, /Volumes/USB Drive/Movies)",
+        "pathReadOnly": "Path cannot be changed after folder is created",
         "contentType": "סוג תוכן",
         "enabled": "מופעל",
         "autoUpload": "העלאה אוטומטית"
@@ -1762,7 +1765,13 @@
         "audiobook": "ספרי אודיו"
       },
       "errors": {
-        "pathRequired": "נתיב תיקייה נדרש"
+        "pathRequired": "נתיב תיקייה נדרש",
+        "loadFailed": "Failed to load upload data",
+        "resumeFailed": "Failed to resume upload queue",
+        "clearFailed": "Failed to clear upload queue",
+        "triggerFailed": "Failed to trigger upload scan",
+        "saveFailed": "Failed to save folder configuration",
+        "deleteFailed": "Failed to delete folder"
       },
       "manualUpload": {
         "title": "העלאה ידנית",
@@ -1784,7 +1793,14 @@
         "invalidFileType": "סוג קובץ לא חוקי. רק קבצי וידאו נתמכים.",
         "filesCount": "{{count}} קבצים נבחרו",
         "pendingRestore": "{{count}} קבצים ממתינים מהפעלה קודמת",
-        "pendingRestoreHint": "גרור או בחר את אותם קבצים לשחזור תור ההעלאות"
+        "pendingRestoreHint": "גרור או בחר את אותם קבצים לשחזור תור ההעלאות",
+        "invalidFiles": "{{count}} file(s) rejected - invalid type or too large",
+        "validationFailed": "Validation Failed",
+        "uploadFailedDetails": "Failed: {{files}}",
+        "uploadFiles": "Upload {{count}} file(s)",
+        "uploadComplete": "Upload Complete",
+        "successful": "{{count}} successful",
+        "failed": "{{count}} failed"
       }
     },
     "librarian": {

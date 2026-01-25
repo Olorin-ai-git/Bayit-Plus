@@ -163,7 +163,7 @@ export const WatchlistScreenMobile: React.FC = () => {
             {/* Progress bar for continue watching */}
             {item.progress !== undefined && item.progress > 0 && (
               <View className="absolute bottom-[52px] left-0 right-0 h-1 bg-black/50">
-                <View className="h-full" style={{ width: `${item.progress}%`, backgroundColor: colors.primary }} />
+                <View className="h-full" style={{ width: `${item.progress}%`, backgroundColor: colors.primary.DEFAULT }} />
               </View>
             )}
 
@@ -202,7 +202,7 @@ export const WatchlistScreenMobile: React.FC = () => {
               {item.progress !== undefined && item.progress > 0 && (
                 <Text
                   className="text-xs font-semibold mt-1"
-                  style={{ textAlign: isRTL ? 'right' : 'left', color: colors.primary, ...typography.caption }}
+                  style={{ textAlign: isRTL ? 'right' : 'left', color: colors.primary.DEFAULT, ...typography.caption }}
                 >
                   {item.progress}% {t('watchlist.watched')}
                 </Text>
@@ -217,7 +217,7 @@ export const WatchlistScreenMobile: React.FC = () => {
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center" style={{ backgroundColor: colors.background }}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
         <Text className="mt-4" style={{ ...typography.body, color: colors.text }}>{t('common.loading')}</Text>
       </View>
     );
@@ -274,7 +274,7 @@ export const WatchlistScreenMobile: React.FC = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={colors.primary}
+            tintColor={colors.primary.DEFAULT}
             colors={[colors.primary]}
           />
         }

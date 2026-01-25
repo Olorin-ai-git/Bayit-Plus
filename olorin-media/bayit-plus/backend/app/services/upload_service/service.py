@@ -18,7 +18,9 @@ from beanie.operators import In
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.core.config import settings
-from app.core.exceptions import (DuplicateContentError, HashLockConflictError,
+from app.core.exceptions import (DuplicateContentError,
+                                 DuplicateUploadQueueError,
+                                 HashLockConflictError,
                                  TransactionRollbackError)
 from app.models.upload import (ContentType, QueueStats, UploadJob,
                                UploadJobResponse, UploadStatus)
@@ -105,7 +107,9 @@ class UploadService:
             logger.warning(
                 f"File with same name already queued: {path.name} (job: {existing_job.job_id})"
             )
-            raise ValueError(f"File already in upload queue: {existing_job.filename}")
+            raise DuplicateUploadQueueError(
+                filename=existing_job.filename, existing_job_id=existing_job.job_id
+            )
 
         job = UploadJob(
             job_id=str(uuid4()),

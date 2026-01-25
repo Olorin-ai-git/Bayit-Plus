@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, Pressable } from 'react-native';;
+import { View, Text, ScrollView, ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Mail, Bell, Users, TrendingUp } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import { marketingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassPageHeader } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import logger from '@/utils/logger';
 
 interface MarketingMetrics {
@@ -104,15 +105,29 @@ export default function MarketingDashboardPage() {
     }
   };
 
+  const pageConfig = ADMIN_PAGE_CONFIG['marketing-dashboard'];
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.marketing')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.marketingDashboard.subtitle')}</Text>
-        </View>
-        <GlassButton title={t('admin.marketingDashboard.refresh')} variant="ghost" icon={<RefreshCw size={16} color="white" />} onPress={handleRefresh} disabled={refreshing} />
-      </View>
+      <GlassPageHeader
+        title={t('admin.titles.marketing')}
+        subtitle={t('admin.marketingDashboard.subtitle')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        badge={metrics.activeSegments}
+        isRTL={isRTL}
+        action={
+          <GlassButton
+            title={t('admin.marketingDashboard.refresh')}
+            variant="ghost"
+            icon={<RefreshCw size={16} color="white" />}
+            onPress={handleRefresh}
+            disabled={refreshing}
+          />
+        }
+      />
 
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.marketing.emailMetrics')}</Text>
@@ -197,4 +212,130 @@ export default function MarketingDashboardPage() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  errorContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  errorIcon: {
+    fontSize: 24,
+  },
+  section: {
+    marginBottom: spacing.xl,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+  },
+  bottomSection: {
+    gap: spacing.lg,
+    marginBottom: spacing.xl,
+  },
+  campaignsSection: {
+    flex: 1,
+  },
+  campaignsList: {
+    gap: spacing.sm,
+  },
+  campaignItem: {
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+  },
+  campaignIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.backgroundLighter,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  campaignInfo: {
+    flex: 1,
+  },
+  campaignName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  campaignStats: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+  campaignStatus: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.sm,
+  },
+  campaignStatusText: {
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  segmentsSection: {
+    flex: 1,
+  },
+  segmentsList: {
+    gap: spacing.sm,
+  },
+  segmentItem: {
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+  },
+  segmentIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.backgroundLighter,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  segmentInfo: {
+    flex: 1,
+  },
+  segmentName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  segmentCount: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  quickLinksSection: {
+    marginBottom: spacing.xl,
+  },
+  quickLinks: {
+    gap: spacing.md,
+  },
+  quickLinkCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.lg,
+  },
+  quickLinkText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+  },
+});
 

@@ -174,6 +174,13 @@ export default function HomePage() {
   }, []);
 
   const checkMorningRitual = async () => {
+    // Skip ritual check if not authenticated
+    const { isAuthenticated } = useAuthStore.getState();
+    if (!isAuthenticated) {
+      logger.debug('Skipping morning ritual check - not authenticated', 'HomePage');
+      return;
+    }
+
     try {
       const result = await ritualService.shouldShow();
       if (result.show_ritual) setShowMorningRitual(true);
@@ -226,6 +233,14 @@ export default function HomePage() {
 
   // Load continue watching independently
   const loadContinueWatching = async () => {
+    // Skip continue watching if not authenticated
+    const { isAuthenticated } = useAuthStore.getState();
+    if (!isAuthenticated) {
+      logger.debug('Skipping continue watching - not authenticated', 'HomePage');
+      setContinueLoading(false);
+      return;
+    }
+
     try {
       const continueData = await historyService.getContinueWatching();
       setContinueWatching(continueData.items || []);

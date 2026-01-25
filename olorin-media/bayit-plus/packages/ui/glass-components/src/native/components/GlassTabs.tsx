@@ -89,9 +89,9 @@ const TabButton: React.FC<TabButtonProps> = ({
       case 'pills':
         return isActive ? '#000000' : colors.textSecondary;
       case 'underline':
-        return isActive ? colors.primary : colors.textSecondary;
+        return isActive ? colors.primary.DEFAULT : colors.textSecondary;
       default:
-        return isActive ? colors.primary : colors.text;
+        return isActive ? colors.primary.DEFAULT : colors.text;
     }
   };
 
@@ -127,11 +127,11 @@ const TabButton: React.FC<TabButtonProps> = ({
         <Text className={getTextClassName()} style={{ color: getTextColor() }}>{tab.label}</Text>
         {tab.badge !== undefined && (
           <View className="bg-glassPurpleLight px-2 py-0.5 rounded-full mr-2">
-            <Text className="text-[10px] font-semibold" style={{ color: colors.primary }}>{tab.badge}</Text>
+            <Text className="text-[10px] font-semibold" style={{ color: colors.primary.DEFAULT }}>{tab.badge}</Text>
           </View>
         )}
         {variant === 'underline' && isActive && (
-          <View className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: colors.primary }} />
+          <View className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: colors.primary.DEFAULT }} />
         )}
       </Animated.View>
     </TouchableOpacity>

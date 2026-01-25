@@ -48,6 +48,7 @@ import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { optimizeTMDBImageUrl } from '../utils/imageUtils';
+import { useAuthStore } from '../stores/authStore';
 import { spacing, colors, typography } from '@olorin/design-tokens';
 
 import logger from '@/utils/logger';
@@ -108,6 +109,13 @@ export const HomeScreenMobile: React.FC = () => {
   }, [i18n.language]);
 
   const checkMorningRitual = async () => {
+    // Skip ritual check if not authenticated
+    const { isAuthenticated } = useAuthStore.getState();
+    if (!isAuthenticated) {
+      moduleLogger.debug('Skipping morning ritual check - not authenticated');
+      return;
+    }
+
     try {
       const result = (await ritualService.shouldShow()) as {
         show_ritual: boolean;
@@ -126,11 +134,15 @@ export const HomeScreenMobile: React.FC = () => {
     try {
       setIsLoading(true);
 
+      // Check authentication for user-specific content
+      const { isAuthenticated } = useAuthStore.getState();
+
       // Use Promise.allSettled for graceful partial failure handling
+      // Only fetch continue watching if authenticated
       const results = await Promise.allSettled([
         contentService.getFeatured(),
         liveService.getChannels(),
-        historyService.getContinueWatching(),
+        isAuthenticated ? historyService.getContinueWatching() : Promise.resolve({ items: [] }),
         contentService.getCategories(),
       ]);
 

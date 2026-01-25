@@ -58,6 +58,9 @@ Code reviews and assessments:
 - Performance reviews
 - Data architecture assessments
 - **Notification Ecosystem Audit** (`NOTIFICATION_ECOSYSTEM_AUDIT_2026-01-24.md`) - Comprehensive audit of GlassToast notification system usage across all Olorin platforms
+- **Web Notification Migration Review** (`WEB_NOTIFICATION_MIGRATION_REVIEW_2026-01-25.md`) - Frontend developer review of web platform notification migration with accessibility, performance, and browser compatibility analysis - 2026-01-25
+- **Notification System Security Review** (`NOTIFICATION_SYSTEM_SECURITY_REVIEW_2026-01-25.md`) - Comprehensive security audit of unified notification system migration with OWASP Top 10 compliance, XSS prevention, and privacy assessment - 2026-01-25
+- **Admin Page Security Review** (`ADMIN_PAGE_SECURITY_REVIEW_2026-01-25.md`) - Critical security review of admin page rebuilds (ContentEditorPage & ContentLibraryPage) with input validation, batch operations, SSRF prevention, and audit logging assessment - 2026-01-25 **NEW**
 - **Podcast Translation Premium Protection Audit** (`PODCAST_TRANSLATION_PREMIUM_PROTECTION_AUDIT.md`) - Critical security and revenue audit of podcast translation premium protection - 2026-01-24
 
 ### `/cli/` **NEW - 2026-01-24**

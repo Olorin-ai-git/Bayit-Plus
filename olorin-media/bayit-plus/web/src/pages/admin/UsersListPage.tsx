@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { UserPlus, Edit, Ban, Key, Trash2 } from 'lucide-react';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassButton, GlassModal, GlassInput } from '@bayit/shared/ui';
+import { GlassButton, GlassModal, GlassInput, GlassPageHeader } from '@bayit/shared/ui';
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import { GlassTable, GlassTableCell, type GlassTableColumn } from '@bayit/shared/ui/web';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
@@ -264,21 +265,29 @@ export default function UsersListPage() {
     },
   ];
 
+  const pageConfig = ADMIN_PAGE_CONFIG.users;
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.users')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.users.subtitle')}</Text>
-        </View>
-        <Link to="/admin/users/new" style={styles.link}>
-          <GlassButton
-            title={t('admin.users.addUser')}
-            variant="primary"
-            icon={<UserPlus size={18} color="white" />}
-          />
-        </Link>
-      </View>
+      <GlassPageHeader
+        title={t('admin.titles.users')}
+        subtitle={t('admin.users.subtitle')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        badge={pagination.total}
+        isRTL={isRTL}
+        action={
+          <Link to="/admin/users/new" style={styles.link}>
+            <GlassButton
+              title={t('admin.users.addUser')}
+              variant="primary"
+              icon={<UserPlus size={18} color="white" />}
+            />
+          </Link>
+        }
+      />
 
       <View style={[styles.filtersRow, { flexDirection }]}>
         {FILTERS.map((status) => (

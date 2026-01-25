@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight, Mail, Key, Ban, UserCheck, Edit2, Trash2, Clock } from 'lucide-react';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassCard, GlassButton, GlassModal, GlassInput, GlassToggle, GlassView } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal, GlassInput, GlassToggle, GlassView, GlassPageHeader } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { useNotifications } from '@olorin/glass-ui/hooks';;
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import logger from '@/utils/logger';
 
 interface User {
@@ -231,8 +232,20 @@ export default function UserDetailPage() {
 
   const statusStyle = statusColors[user.status] || statusColors.inactive;
 
+  const pageConfig = ADMIN_PAGE_CONFIG['user-detail'];
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
+      <GlassPageHeader
+        title={user.name}
+        subtitle={t('admin.userDetail.subtitle')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        isRTL={isRTL}
+      />
+
       <GlassView className="flex flex-row justify-between items-start mb-6">
         <GlassButton
           title={t('admin.users.backToList', { defaultValue: 'Back to list' })}
@@ -475,4 +488,198 @@ export default function UserDetailPage() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.lg,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+  },
+  errorIcon: {
+    fontSize: 24,
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+  },
+  backText: {
+    fontSize: 14,
+  },
+  mainContent: {
+    gap: spacing.lg,
+  },
+  profileCard: {
+    padding: spacing.lg,
+  },
+  profileHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  avatar: {
+    width: 64,
+    height: 64,
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  profileInfo: {
+    flex: 1,
+    gap: spacing.xs,
+  },
+  statusBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.full,
+    marginTop: spacing.xs,
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  banReason: {
+    fontSize: 13,
+    color: colors.error,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    padding: spacing.sm,
+    borderRadius: borderRadius.md,
+    marginTop: spacing.sm,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginTop: spacing.md,
+  },
+  actionButton: {
+    flex: 1,
+    minWidth: 120,
+  },
+  detailsSection: {
+    gap: spacing.lg,
+  },
+  infoCard: {
+    padding: spacing.lg,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  infoRow: {
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    gap: spacing.sm,
+  },
+  infoLabel: {
+    fontSize: 13,
+    color: colors.textMuted,
+    fontWeight: '500',
+    minWidth: 120,
+  },
+  infoValue: {
+    fontSize: 13,
+    color: colors.text,
+    flex: 1,
+  },
+  activityCard: {
+    padding: spacing.lg,
+  },
+  emptyText: {
+    fontSize: 13,
+    color: colors.textMuted,
+    textAlign: 'center',
+    paddingVertical: spacing.lg,
+  },
+  activityItem: {
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'space-between',
+  },
+  activityAction: {
+    fontSize: 13,
+    color: colors.text,
+    textTransform: 'capitalize',
+    flex: 1,
+  },
+  activityDate: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  billingCard: {
+    padding: spacing.lg,
+  },
+  billingItem: {
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  billingType: {
+    fontSize: 13,
+    color: colors.text,
+    textTransform: 'capitalize',
+  },
+  billingDate: {
+    fontSize: 12,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+  },
+  billingAmount: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.success,
+  },
+  modalText: {
+    fontSize: 14,
+    color: colors.text,
+    lineHeight: 20,
+  },
+  okButton: {
+    flex: 1,
+  },
+  modalInput: {
+    marginTop: spacing.sm,
+  },
+  editModalContent: {
+    gap: spacing.md,
+  },
+  formRow: {
+    gap: spacing.sm,
+  },
+  formLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  roleButtons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  roleButton: {
+    flex: 1,
+    minWidth: 100,
+  },
+  roleButtonText: {
+    fontSize: 12,
+  },
+});
 

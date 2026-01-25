@@ -4,8 +4,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { campaignsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassCard, GlassButton, GlassToggle, GlassInput } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassToggle, GlassInput, GlassPageHeader } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import logger from '@/utils/logger';
 
 interface CampaignFormData {
@@ -111,18 +112,19 @@ export default function CampaignEditPage() {
     );
   }
 
+  const pageConfig = ADMIN_PAGE_CONFIG['campaign-edit'];
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ padding: spacing.lg }}>
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>
-            {isNew ? t('admin.campaigns.createTitle') : t('admin.campaigns.editTitle')}
-          </Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
-            {t('admin.campaigns.formSubtitle')}
-          </Text>
-        </View>
-      </View>
+      <GlassPageHeader
+        title={isNew ? t('admin.campaigns.createTitle') : t('admin.campaigns.editTitle')}
+        subtitle={t('admin.campaignEdit.subtitle')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        isRTL={isRTL}
+      />
 
       <GlassCard style={styles.formCard}>
         <View style={styles.formGroup}>

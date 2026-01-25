@@ -302,7 +302,16 @@ export default function HierarchicalContentTable({
             return (
               <View style={styles.episodeThumbnailWrapper}>
                 {episode.thumbnail ? (
-                  <View style={[styles.episodeThumbnail, { backgroundImage: `url(${episode.thumbnail})` } as any]} />
+                  <img
+                    src={episode.thumbnail}
+                    alt={episode.title}
+                    style={{
+                      width: 50,
+                      height: 30,
+                      borderRadius: borderRadius.sm,
+                      objectFit: 'cover',
+                    }}
+                  />
                 ) : (
                   <View style={styles.episodeThumbnailPlaceholder}>
                     <Film size={14} color="rgba(255,255,255,0.4)" />
@@ -316,7 +325,16 @@ export default function HierarchicalContentTable({
             <View style={styles.contentThumbnailWrapper}>
               <View style={styles.contentThumbnail}>
                 {item.thumbnail ? (
-                  <View style={[styles.thumbnailImage, { backgroundImage: `url(${item.thumbnail})` } as any]} />
+                  <img
+                    src={item.thumbnail}
+                    alt={item.title}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: borderRadius.sm,
+                      objectFit: 'cover',
+                    }}
+                  />
                 ) : (
                   <View style={styles.thumbnailPlaceholder}>
                     {item.is_series ? (
@@ -509,14 +527,8 @@ const styles = StyleSheet.create({
   episodeThumbnailWrapper: {
     width: 60,
     paddingHorizontal: 4,
-  },
-  episodeThumbnail: {
-    width: 50,
-    height: 30,
-    borderRadius: borderRadius.sm,
-    // @ts-ignore - Web CSS
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   episodeThumbnailPlaceholder: {
     width: 50,
@@ -538,13 +550,6 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.sm,
     overflow: 'hidden',
     position: 'relative',
-  },
-  thumbnailImage: {
-    width: '100%',
-    height: '100%',
-    // @ts-ignore - Web CSS
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
   },
   thumbnailPlaceholder: {
     width: '100%',

@@ -11,10 +11,10 @@ import {
   Modal,
   TextInput,
   ScrollView,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { DataTable, Column } from '../../components/admin/DataTable';
 import { marketingService, MarketingFilter } from '../../services/adminApi';
@@ -25,6 +25,7 @@ import { getStatusColor } from '../../utils/adminConstants';
 
 export const PushNotificationsScreen: React.FC = () => {
   const { t } = useTranslation();
+  const notificationSystem = useNotifications();
   const [notifications, setNotifications] = useState<PushNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -87,7 +88,7 @@ export const PushNotificationsScreen: React.FC = () => {
 
   const handleSaveNotification = async () => {
     if (!formData.title.trim() || !formData.body.trim()) {
-      Alert.alert(t('common.error', 'Error'), t('admin.push.requiredFields', 'Title and body are required'));
+      notificationSystem.showError(t('admin.push.requiredFields', 'Title and body are required'), t('common.error', 'Error'));
       return;
     }
     setSaving(true);
@@ -114,25 +115,25 @@ export const PushNotificationsScreen: React.FC = () => {
   };
 
   const handleSendNotification = async (notification: PushNotification) => {
-    Alert.alert(
-      t('admin.push.sendConfirm', 'Send Notification'),
-      t('admin.push.sendMessage', 'Send this notification to all targeted users now?'),
-      [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-        {
-          text: t('admin.push.send', 'Send Now'),
-          onPress: async () => {
-            try {
-              await marketingService.sendPushNotification(notification.id);
-              loadNotifications();
-              Alert.alert(t('admin.push.sent', 'Sent'), t('admin.push.sentMessage', 'Notification is being sent'));
-            } catch (error) {
-              console.error('Error sending:', error);
-            }
-          },
+    notificationSystem.show({
+      level: 'warning',
+      title: t('admin.push.sendConfirm', 'Send Notification'),
+      message: t('admin.push.sendMessage', 'Send this notification to all targeted users now?'),
+      dismissable: true,
+      action: {
+        label: t('admin.push.send', 'Send Now'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await marketingService.sendPushNotification(notification.id);
+            loadNotifications();
+            notificationSystem.showSuccess(t('admin.push.sentMessage', 'Notification is being sent'), t('admin.push.sent', 'Sent'));
+          } catch (error) {
+            console.error('Error sending:', error);
+          }
         },
-      ]
-    );
+      },
+    });
   };
 
   const handleSchedule = (notification: PushNotification) => {
@@ -147,32 +148,31 @@ export const PushNotificationsScreen: React.FC = () => {
       await marketingService.schedulePushNotification(selectedNotification.id, scheduleDate);
       setShowScheduleModal(false);
       loadNotifications();
-      Alert.alert(t('admin.push.scheduled', 'Scheduled'), t('admin.push.scheduledMessage', 'Notification has been scheduled'));
+      notificationSystem.showSuccess(t('admin.push.scheduledMessage', 'Notification has been scheduled'), t('admin.push.scheduled', 'Scheduled'));
     } catch (error) {
       console.error('Error scheduling:', error);
     }
   };
 
   const handleDeleteNotification = async (notification: PushNotification) => {
-    Alert.alert(
-      t('admin.push.deleteConfirm', 'Delete Notification'),
-      t('admin.push.deleteMessage', `Delete "${notification.title}"?`),
-      [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-        {
-          text: t('common.delete', 'Delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await marketingService.deletePushNotification(notification.id);
-              loadNotifications();
-            } catch (error) {
-              console.error('Error deleting:', error);
-            }
-          },
+    notificationSystem.show({
+      level: 'warning',
+      title: t('admin.push.deleteConfirm', 'Delete Notification'),
+      message: t('admin.push.deleteMessage', `Delete "${notification.title}"?`),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await marketingService.deletePushNotification(notification.id);
+            loadNotifications();
+          } catch (error) {
+            console.error('Error deleting:', error);
+          }
         },
-      ]
-    );
+      },
+    });
   };
 
   const columns: Column<PushNotification>[] = [

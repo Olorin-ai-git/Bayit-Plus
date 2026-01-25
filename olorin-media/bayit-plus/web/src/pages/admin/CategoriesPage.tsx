@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react'
 import { adminContentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
-import { GlassInput } from '@bayit/shared/ui'
+import { GlassInput, GlassPageHeader } from '@bayit/shared/ui'
 import { GlassTable, GlassTableCell, type GlassTableColumn } from '@bayit/shared/ui/web'
 import { useDirection } from '@/hooks/useDirection'
-import { useNotifications } from '@/hooks/useNotifications'
+import { useNotifications } from '@olorin/glass-ui/hooks'
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import logger from '@/utils/logger'
 import type { Category, PaginatedResponse } from '@/types/content'
 
@@ -171,15 +172,21 @@ export default function CategoriesPage() {
     },
   ]
 
+  const pageConfig = ADMIN_PAGE_CONFIG.categories;
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ padding: spacing.lg }}>
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.categories', { defaultValue: 'Categories' })}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
-            {t('admin.categories.subtitle', { defaultValue: 'Manage content categories' })}
-          </Text>
-        </View>
+      <GlassPageHeader
+        title={t('admin.titles.categories', { defaultValue: 'Categories' })}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        badge={items.length}
+        isRTL={isRTL}
+      />
+
+      <View style={[styles.actionsRow, { flexDirection }]}>
         <Pressable
           onPress={() => {
             setEditingId('new')
@@ -256,22 +263,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
+  actionsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     marginBottom: spacing.lg,
-    gap: spacing.md,
-  },
-  pageTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
   },
   addButton: {
     flexDirection: 'row',

@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { PodcastEpisode, AudioQuality } from '../types/podcast'
 import { AudioCacheService } from '../services/mobile/AudioCacheService'
 import { useNetworkQuality } from './useNetworkQuality'
+import { useAuthStore } from '@/stores/authStore'
 import logger from '@/utils/logger'
 
 interface UsePodcastPlayerOptions {
@@ -13,8 +15,13 @@ interface UsePodcastPlayerOptions {
 
 export function usePodcastPlayer({ episode, autoPlay = false, savePosition = true }: UsePodcastPlayerOptions) {
   const { i18n } = useTranslation()
+  const navigate = useNavigate()
+  const { user } = useAuthStore()
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const cacheService = useRef(new AudioCacheService())
+
+  // Check premium status
+  const isPremium = user?.can_access_premium_features() || false
 
   const [currentLanguage, setCurrentLanguage] = useState<string>(
     episode.availableLanguages.includes(i18n.language) ? i18n.language : episode.originalLanguage
@@ -27,6 +34,11 @@ export function usePodcastPlayer({ episode, autoPlay = false, savePosition = tru
   const [audioUrl, setAudioUrl] = useState<string>('')
 
   const { quality } = useNetworkQuality()
+
+  // Upgrade handler
+  const handleShowUpgrade = () => {
+    navigate('/subscribe')
+  }
 
   useEffect(() => {
     async function loadAudio() {
@@ -138,6 +150,8 @@ export function usePodcastPlayer({ episode, autoPlay = false, savePosition = tru
     duration,
     audioUrl,
     switchLanguage,
+    isPremium,
+    onShowUpgrade: handleShowUpgrade,
     play: () => audioRef.current?.play(),
     pause: () => audioRef.current?.pause(),
     seek: (time: number) => {

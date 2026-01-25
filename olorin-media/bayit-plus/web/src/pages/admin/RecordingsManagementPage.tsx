@@ -4,13 +4,14 @@
  */
 
 import { useState, useEffect } from 'react'
-import { View, Text, FlatList, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Search, Trash2, Play, HardDrive, Users, Video } from 'lucide-react'
 import { useDirection } from '@/hooks/useDirection'
 import { useNotifications } from '@olorin/glass-ui/hooks'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
-import { GlassView, GlassInput } from '@bayit/shared/ui'
+import { GlassView, GlassInput, GlassPageHeader } from '@bayit/shared/ui'
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import logger from '@/utils/logger'
 import axios from 'axios'
 
@@ -126,13 +127,7 @@ export default function RecordingsManagementPage() {
           }
         },
       },
-      {
-        title: t('admin.recordings.deleteRecording'),
-        confirmText: t('common.delete'),
-        cancelText: t('common.cancel'),
-        destructive: true
-      }
-    )
+    })
   }
 
   const formatBytes = (bytes: number): string => {
@@ -162,40 +157,50 @@ export default function RecordingsManagementPage() {
     })
   }
 
+  const pageConfig = ADMIN_PAGE_CONFIG.recordings;
+  const IconComponent = pageConfig.icon;
+
   const renderHeader = () => (
-    <View className="flex flex-row justify-between items-start mb-6">
-      <Text style={[styles.pageTitle, { textAlign }]}>
-        {t('admin.recordings.title')}
-      </Text>
+    <>
+      <GlassPageHeader
+        title={t('admin.recordings.title')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        badge={stats?.total_recordings}
+        isRTL={isRTL}
+      />
 
       {/* Stats Cards */}
-      {stats && (
-        <View style={[styles.statsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <GlassView style={styles.statCard}>
-            <Video size={24} color={colors.primary} />
-            <Text style={styles.statValue}>{stats.total_recordings}</Text>
-            <Text style={styles.statLabel}>{t('admin.recordings.totalRecordings')}</Text>
-          </GlassView>
+      <View style={styles.statsSection}>
+        {stats && (
+          <View style={[styles.statsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <GlassView style={styles.statCard}>
+              <Video size={24} color={colors.primary} />
+              <Text style={styles.statValue}>{stats.total_recordings}</Text>
+              <Text style={styles.statLabel}>{t('admin.recordings.totalRecordings')}</Text>
+            </GlassView>
 
-          <GlassView style={styles.statCard}>
-            <HardDrive size={24} color={colors.success} />
-            <Text style={styles.statValue}>{formatBytes(stats.total_storage_bytes)}</Text>
-            <Text style={styles.statLabel}>{t('admin.recordings.totalStorage')}</Text>
-          </GlassView>
+            <GlassView style={styles.statCard}>
+              <HardDrive size={24} color={colors.success} />
+              <Text style={styles.statValue}>{formatBytes(stats.total_storage_bytes)}</Text>
+              <Text style={styles.statLabel}>{t('admin.recordings.totalStorage')}</Text>
+            </GlassView>
 
-          <GlassView style={styles.statCard}>
-            <Users size={24} color={colors.warning} />
-            <Text style={styles.statValue}>{stats.total_users}</Text>
-            <Text style={styles.statLabel}>{t('admin.recordings.totalUsers')}</Text>
-          </GlassView>
+            <GlassView style={styles.statCard}>
+              <Users size={24} color={colors.warning} />
+              <Text style={styles.statValue}>{stats.total_users}</Text>
+              <Text style={styles.statLabel}>{t('admin.recordings.totalUsers')}</Text>
+            </GlassView>
 
-          <GlassView style={styles.statCard}>
-            <Play size={24} color={colors.error} />
-            <Text style={styles.statValue}>{stats.active_sessions}</Text>
-            <Text style={styles.statLabel}>{t('admin.recordings.activeSessions')}</Text>
-          </GlassView>
-        </View>
-      )}
+            <GlassView style={styles.statCard}>
+              <Play size={24} color={colors.error} />
+              <Text style={styles.statValue}>{stats.active_sessions}</Text>
+              <Text style={styles.statLabel}>{t('admin.recordings.activeSessions')}</Text>
+            </GlassView>
+          </View>
+        )}
+      </View>
 
       {/* Search Bar */}
       <GlassInput
@@ -205,7 +210,7 @@ export default function RecordingsManagementPage() {
         onChangeText={setSearchQuery}
         containerStyle={styles.searchContainer}
       />
-    </View>
+    </>
   )
 
   const renderRecordingItem = ({ item }: { item: AdminRecording }) => (
@@ -300,4 +305,129 @@ export default function RecordingsManagementPage() {
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  statsSection: {
+    marginBottom: spacing.lg,
+  },
+  statsContainer: {
+    gap: spacing.md,
+  },
+  statCard: {
+    flex: 1,
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+  searchContainer: {
+    marginBottom: spacing.lg,
+  },
+  recordingCard: {
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    borderRadius: borderRadius.lg,
+  },
+  cardContent: {
+    gap: spacing.md,
+    alignItems: 'center',
+  },
+  cardInfo: {
+    flex: 1,
+    gap: spacing.xs,
+  },
+  recordingTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  recordingMeta: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  subtitleBadge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+    borderRadius: borderRadius.full,
+    alignSelf: 'flex-start',
+    marginTop: spacing.xs,
+  },
+  subtitleText: {
+    fontSize: 11,
+    color: '#8b5cf6',
+    fontWeight: '600',
+  },
+  cardActions: {
+    gap: spacing.sm,
+  },
+  actionButton: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  deleteButton: {
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+    gap: spacing.md,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.text,
+    textAlign: 'center',
+  },
+  emptyText: {
+    fontSize: 14,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+  listContent: {
+    padding: spacing.lg,
+  },
+  pagination: {
+    padding: spacing.lg,
+    gap: spacing.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pageButton: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.md,
+  },
+  pageButtonDisabled: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    opacity: 0.5,
+  },
+  pageButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  pageInfo: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+});
 

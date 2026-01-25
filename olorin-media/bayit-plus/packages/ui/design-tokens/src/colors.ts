@@ -198,7 +198,6 @@ export const colors = {
   info,
   live,
   gold,
-  glass,
   transparent: 'transparent',
   current: 'currentColor',
   white: '#ffffff',
@@ -228,6 +227,7 @@ export const colors = {
   buttonDisabledText: 'rgba(255, 255, 255, 0.3)', // Disabled button text
 
   // Flattened glass properties (for convenience/backward compatibility)
+  glass: glass.bg,              // Default glass background (medium intensity)
   glassLight: glass.bgLight,
   glassMedium: glass.bgMedium,
   glassStrong: glass.bgStrong,

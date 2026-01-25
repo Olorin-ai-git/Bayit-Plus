@@ -232,7 +232,7 @@ export default function PlayerProfilePage() {
         <View style={styles.quickStats}>
           <GlassStatCard
             icon={Gamepad2}
-            iconColor={colors.primary}
+            iconColor={colors.primary.DEFAULT}
             label={t('stats.gamesPlayed', 'Games Played')}
             value={stats.chess_games_played}
           />
@@ -315,10 +315,10 @@ export default function PlayerProfilePage() {
                 </View>
                 <View style={[styles.statRow, isRTL && styles.statRowRTL]}>
                   <View style={[styles.statLabelWithIcon, isRTL && styles.statLabelWithIconRTL]}>
-                    <Target size={16} color={colors.primary} />
+                    <Target size={16} color={colors.primary.DEFAULT} />
                     <Text style={styles.statLabel}>{t('stats.peakRating', 'Peak Rating')}</Text>
                   </View>
-                  <Text style={[styles.statValue, { color: colors.primary }]}>{stats.peak_rating}</Text>
+                  <Text style={[styles.statValue, { color: colors.primary.DEFAULT }]}>{stats.peak_rating}</Text>
                 </View>
                 <View style={[styles.statRow, isRTL && styles.statRowRTL]}>
                   <View style={[styles.statLabelWithIcon, isRTL && styles.statLabelWithIconRTL]}>

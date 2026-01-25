@@ -9,7 +9,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Plus, Edit, Trash2, X, AlertCircle, Eye, EyeOff, Tv, Globe, Film, Podcast, Radio } from 'lucide-react';
-import { GlassButton, GlassCard } from '@bayit/shared/ui';
+import { GlassButton, GlassCard, GlassPageHeader } from '@bayit/shared/ui';
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web';
 import WidgetFormModal from '@/components/widgets/WidgetFormModal';
 import { adminWidgetsService } from '@/services/adminApi';
@@ -248,26 +249,29 @@ export default function WidgetsPage() {
     },
   ];
 
+  const pageConfig = ADMIN_PAGE_CONFIG.widgets;
+  const IconComponent = pageConfig.icon;
+
   return (
     <View className="flex-1 w-full min-h-full">
       <ScrollView className="flex-1 w-full" contentContainerStyle={{ padding: spacing.lg, minWidth: '100%' }}>
-        <View style={[
-          styles.headerContainer,
-          isRTL && styles.headerContainerRTL
-        ]}>
-          <View>
-            <Text style={[styles.headerTitle, { textAlign }]}>{t('admin.widgets.title')}</Text>
-            <Text style={[styles.headerSubtitle, { textAlign }]}>
-              {t('admin.widgets.subtitle')}
-            </Text>
-          </View>
-          <GlassButton
-            title={t('admin.widgets.newWidget')}
-            onPress={handleCreate}
-            variant="primary"
-            icon={<Plus size={18} color={colors.text} />}
-          />
-        </View>
+        <GlassPageHeader
+          title={t('admin.widgets.title')}
+          subtitle={t('admin.widgets.subtitle')}
+          icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+          iconColor={pageConfig.iconColor}
+          iconBackgroundColor={pageConfig.iconBackgroundColor}
+          badge={items.length}
+          isRTL={isRTL}
+          action={
+            <GlassButton
+              title={t('admin.widgets.newWidget')}
+              onPress={handleCreate}
+              variant="primary"
+              icon={<Plus size={18} color={colors.text} />}
+            />
+          }
+        />
 
         {error && (
           <GlassCard className="p-4 mb-6">

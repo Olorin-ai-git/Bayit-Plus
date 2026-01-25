@@ -381,11 +381,22 @@ const createAxiosInstance = (authStore: AuthStore): AxiosInstance => {
     },
   });
 
-  // Add auth token and CSRF token to requests
+  // Add auth token, Accept-Language, and CSRF token to requests
   adminApi.interceptors.request.use((config) => {
     const token = authStore.getState().token;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    // Add Accept-Language header for localization
+    try {
+      // Dynamically import i18n to get current language
+      const i18n = require('../i18n').default;
+      const currentLang = i18n.language || 'he';
+      config.headers['Accept-Language'] = currentLang;
+    } catch (error) {
+      // Fallback to Hebrew if i18n not available
+      config.headers['Accept-Language'] = 'he';
     }
 
     // Add CSRF token from cookie for state-changing requests

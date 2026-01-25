@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';;
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';;
 import { useTranslation } from 'react-i18next';
 import { Plus, Send, Clock, Trash2, Edit } from 'lucide-react';
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web';
 import { marketingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassButton, GlassModal, GlassInput } from '@bayit/shared/ui';
+import { GlassButton, GlassModal, GlassInput, GlassPageHeader } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { useNotifications as useNotificationSystem } from '@olorin/glass-ui/hooks';
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import logger from '@/utils/logger';
 
 interface PushNotification {
@@ -156,8 +157,7 @@ export default function PushNotificationsPage() {
           }
         },
       },
-      { destructive: true, confirmText: t('common.delete', 'Delete') }
-    );
+    });
   };
 
   const openScheduleModal = (notification: PushNotification) => {
@@ -236,14 +236,27 @@ export default function PushNotificationsPage() {
     },
   ];
 
+  const pageConfig = ADMIN_PAGE_CONFIG.notifications;
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.pushNotifications')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.pushNotifications.subtitle')}</Text>
-        </View>
-        <GlassButton title={t('admin.pushNotifications.newNotification')} variant="primary" icon={<Plus size={16} color="white" />} onPress={() => setShowCreateModal(true)} />
+      <GlassPageHeader
+        title={t('admin.titles.pushNotifications')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        badge={notifications.length}
+        isRTL={isRTL}
+      />
+
+      <View style={[styles.actionsRow, { flexDirection }]}>
+        <GlassButton
+          title={t('admin.pushNotifications.newNotification')}
+          variant="primary"
+          icon={<Plus size={16} color="white" />}
+          onPress={() => setShowCreateModal(true)}
+        />
       </View>
 
       <View style={[styles.filtersRow, { flexDirection }]}>
@@ -304,4 +317,92 @@ export default function PushNotificationsPage() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  actionsRow: {
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  badge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.full,
+    alignSelf: 'flex-start',
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  notificationTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  notificationBody: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  statText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  dateText: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  actionButton: {
+    width: 32,
+    height: 32,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: spacing.xs,
+  },
+  filtersRow: {
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+    flexWrap: 'wrap',
+  },
+  filterButton: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  filterButtonActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  filterText: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    fontWeight: '500',
+  },
+  filterTextActive: {
+    color: colors.text,
+    fontWeight: '600',
+  },
+  modalContent: {
+    gap: spacing.lg,
+  },
+  formGroup: {
+    gap: spacing.sm,
+  },
+  input: {
+    marginBottom: spacing.sm,
+  },
+  textArea: {
+    minHeight: 100,
+  },
+  modalText: {
+    fontSize: 14,
+    color: colors.text,
+    lineHeight: 20,
+  },
+});
 

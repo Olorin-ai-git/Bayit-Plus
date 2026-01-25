@@ -10,11 +10,11 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  Alert,
   ScrollView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { DataTable, Column } from '../../components/admin/DataTable';
 import { StatCard } from '../../components/admin/StatCard';
@@ -29,6 +29,7 @@ type SubscriptionWithUser = Subscription & { user: User };
 export const SubscriptionsScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
+  const notifications = useNotifications();
   const [subscriptions, setSubscriptions] = useState<SubscriptionWithUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -89,14 +90,14 @@ export const SubscriptionsScreen: React.FC = () => {
     if (!selectedSub) return;
     const days = parseInt(extendDays);
     if (isNaN(days) || days <= 0) {
-      Alert.alert(t('common.error', 'Error'), t('admin.subscriptions.invalidDays', 'Please enter a valid number of days'));
+      notifications.showError(t('admin.subscriptions.invalidDays', 'Please enter a valid number of days'), t('common.error', 'Error'));
       return;
     }
     try {
       await subscriptionsService.extendSubscription(selectedSub.id, days);
       setShowExtendModal(false);
       loadSubscriptions();
-      Alert.alert(t('admin.subscriptions.extended', 'Extended'), t('admin.subscriptions.extendedMessage', `Subscription extended by ${days} days`));
+      notifications.showSuccess(t('admin.subscriptions.extendedMessage', `Subscription extended by ${days} days`), t('admin.subscriptions.extended', 'Extended'));
     } catch (error) {
       console.error('Error extending subscription:', error);
     }
@@ -114,39 +115,38 @@ export const SubscriptionsScreen: React.FC = () => {
     const percent = parseInt(discountPercent);
     const months = parseInt(discountMonths);
     if (isNaN(percent) || percent <= 0 || percent > 100 || isNaN(months) || months <= 0) {
-      Alert.alert(t('common.error', 'Error'), t('admin.subscriptions.invalidDiscount', 'Please enter valid discount values'));
+      notifications.showError(t('admin.subscriptions.invalidDiscount', 'Please enter valid discount values'), t('common.error', 'Error'));
       return;
     }
     try {
       await subscriptionsService.applyDiscount(selectedSub.id, percent, months);
       setShowDiscountModal(false);
       loadSubscriptions();
-      Alert.alert(t('admin.subscriptions.discountApplied', 'Discount Applied'), t('admin.subscriptions.discountMessage', `${percent}% discount applied for ${months} months`));
+      notifications.showSuccess(t('admin.subscriptions.discountMessage', `${percent}% discount applied for ${months} months`), t('admin.subscriptions.discountApplied', 'Discount Applied'));
     } catch (error) {
       console.error('Error applying discount:', error);
     }
   };
 
   const handleCancel = async (sub: SubscriptionWithUser) => {
-    Alert.alert(
-      t('admin.subscriptions.cancelConfirm', 'Cancel Subscription'),
-      t('admin.subscriptions.cancelMessage', 'Are you sure you want to cancel this subscription?'),
-      [
-        { text: t('common.no', 'No'), style: 'cancel' },
-        {
-          text: t('common.yes', 'Yes'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await subscriptionsService.cancelSubscription(sub.id, 'Cancelled by admin');
-              loadSubscriptions();
-            } catch (error) {
-              console.error('Error cancelling subscription:', error);
-            }
-          },
+    notifications.show({
+      level: 'warning',
+      title: t('admin.subscriptions.cancelConfirm', 'Cancel Subscription'),
+      message: t('admin.subscriptions.cancelMessage', 'Are you sure you want to cancel this subscription?'),
+      dismissable: true,
+      action: {
+        label: t('common.yes', 'Yes'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await subscriptionsService.cancelSubscription(sub.id, 'Cancelled by admin');
+            loadSubscriptions();
+          } catch (error) {
+            console.error('Error cancelling subscription:', error);
+          }
         },
-      ]
-    );
+      },
+    });
   };
 
   const handlePause = async (sub: SubscriptionWithUser) => {

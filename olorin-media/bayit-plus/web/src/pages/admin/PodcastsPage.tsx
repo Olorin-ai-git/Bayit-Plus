@@ -3,7 +3,8 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, Music } from 'lucide-react'
-import { GlassInput, GlassButton, GlassCheckbox } from '@bayit/shared/ui'
+import { GlassInput, GlassButton, GlassCheckbox, GlassPageHeader } from '@bayit/shared/ui'
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web'
 import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags'
 import { adminContentService } from '@/services/adminApi'
@@ -207,27 +208,33 @@ export default function PodcastsPage() {
     },
   ], [t, i18n.language, isRTL, deleting, handleEdit, handleDelete])
 
+  const pageConfig = ADMIN_PAGE_CONFIG.podcasts;
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.podcasts', { defaultValue: 'Podcasts' })}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
-            {t('admin.podcasts.subtitle', { defaultValue: 'Manage podcasts and episodes' })}
-          </Text>
-        </View>
-        <GlassButton
-          variant="primary"
-          onPress={() => {
-            setEditingId('new')
-            setEditData({ is_active: true })
-          }}
-          icon={<Plus size={18} color={colors.text} />}
-          accessibilityLabel={t('admin.actions.newPodcast', { defaultValue: 'Create new podcast' })}
-        >
-          {t('admin.actions.new', { defaultValue: 'New' })}
-        </GlassButton>
-      </View>
+      <GlassPageHeader
+        title={t('admin.titles.podcasts', { defaultValue: 'Podcasts' })}
+        subtitle={t('admin.podcasts.subtitle', { defaultValue: 'Manage podcasts and episodes' })}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        badge={items.length}
+        isRTL={isRTL}
+        action={
+          <GlassButton
+            variant="primary"
+            onPress={() => {
+              setEditingId('new')
+              setEditData({ is_active: true })
+            }}
+            icon={<Plus size={18} color={colors.text} />}
+            accessibilityLabel={t('admin.actions.newPodcast', { defaultValue: 'Create new podcast' })}
+          >
+            {t('admin.actions.new', { defaultValue: 'New' })}
+          </GlassButton>
+        }
+      />
 
       {error && (
         <View style={[styles.errorContainer, { marginBottom: spacing.lg }]}>

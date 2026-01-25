@@ -6,10 +6,12 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
+import { useAuthStore } from '@/stores/authStore';
 
 export function useVoiceSettings() {
   const { i18n } = useTranslation();
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
+  const { isAuthenticated, isHydrated } = useAuthStore();
 
   const {
     preferences,
@@ -27,8 +29,11 @@ export function useVoiceSettings() {
   } = useVoiceSettingsStore();
 
   useEffect(() => {
-    loadPreferences();
-  }, [loadPreferences]);
+    // Only load preferences if user is authenticated and store is hydrated
+    if (isAuthenticated && isHydrated) {
+      loadPreferences();
+    }
+  }, [loadPreferences, isAuthenticated, isHydrated]);
 
   return {
     preferences,

@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { View, Text, Pressable, ScrollView, StyleSheet, Image } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react'
-import { GlassInput, GlassCheckbox } from '@bayit/shared/ui'
+import { GlassInput, GlassCheckbox, GlassPageHeader } from '@bayit/shared/ui'
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web'
 import { adminContentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -189,26 +190,32 @@ export default function RadioStationsPage() {
     },
   ]
 
+  const pageConfig = ADMIN_PAGE_CONFIG['radio-stations'];
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.pageTitle, { textAlign }]}>{t('admin.titles.radioStations', 'Radio Stations')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
-            {t('admin.radioStations.subtitle', 'Manage radio stations')}
-          </Text>
-        </View>
-        <Pressable
-          onPress={() => {
-            setEditingId('new')
-            setEditData({ is_active: true, order: items.length + 1 })
-          }}
-          style={styles.addButton}
-        >
-          <Plus size={18} color={colors.text} />
-          <Text style={styles.addButtonText}>{t('admin.actions.new', 'New')}</Text>
-        </Pressable>
-      </View>
+      <GlassPageHeader
+        title={t('admin.titles.radioStations', 'Radio Stations')}
+        subtitle={t('admin.radioStations.subtitle', 'Manage radio stations')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        badge={items.length}
+        isRTL={isRTL}
+        action={
+          <Pressable
+            onPress={() => {
+              setEditingId('new')
+              setEditData({ is_active: true, order: items.length + 1 })
+            }}
+            style={styles.addButton}
+          >
+            <Plus size={18} color={colors.text} />
+            <Text style={styles.addButtonText}>{t('admin.actions.new', 'New')}</Text>
+          </Pressable>
+        }
+      />
 
       {error && (
         <View style={[styles.errorContainer, { marginBottom: spacing.lg }]}>

@@ -168,6 +168,26 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
         await get().updatePreferences({ wake_word_cooldown_ms: clampedMs });
       },
 
+      setMode: async (mode) => {
+        await get().updatePreferences({ voice_mode: mode });
+      },
+
+      setVoiceFeedbackEnabled: async (enabled) => {
+        await get().updatePreferences({ voice_feedback_enabled: enabled });
+      },
+
+      setTTSVolume: async (volume) => {
+        // Clamp between 0-1
+        const clampedVolume = Math.max(0, Math.min(1, volume));
+        await get().updatePreferences({ tts_volume: clampedVolume });
+      },
+
+      setTTSSpeed: async (speed) => {
+        // Clamp between 0.5-2.0
+        const clampedSpeed = Math.max(0.5, Math.min(2.0, speed));
+        await get().updatePreferences({ tts_speed: clampedSpeed });
+      },
+
       resetToDefaults: () => {
         set({ preferences: DEFAULT_VOICE_PREFERENCES });
       },

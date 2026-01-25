@@ -16,7 +16,8 @@ from app.models.chapters import VideoChapters
 from app.models.chat_translation import ChatTranslationCacheDoc
 from app.models.chess import ChessChatMessage, ChessGame
 from app.models.content import (Content, EPGEntry, LiveChannel, Podcast,
-                                PodcastEpisode, RadioStation)
+                                PodcastEpisode, RadioStation,
+                                TranslationStageMetrics)
 from app.models.content_embedding import ContentEmbedding, RecapSession
 from app.models.content_taxonomy import (Audience, ContentSection, Genre,
                                          SectionSubcategory)
@@ -102,6 +103,7 @@ async def connect_to_mongo():
         RadioStation,
         Podcast,
         PodcastEpisode,
+        TranslationStageMetrics,
         # Content taxonomy models (new classification system)
         ContentSection,
         SectionSubcategory,

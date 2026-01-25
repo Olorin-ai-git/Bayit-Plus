@@ -1128,6 +1128,28 @@
     "emptyHint": "Download content for offline viewing",
     "paused": "Paused"
   },
+  "podcast": {
+    "selectLanguage": "Select Language",
+    "switchToLanguage": "Switch to {{language}}",
+    "premiumRequiredForTranslation": "Premium subscription required for podcast translation",
+    "player": {
+      "switchingLanguage": "Switching..."
+    },
+    "languages": {
+      "he": {
+        "short": "HE",
+        "full": "Hebrew"
+      },
+      "en": {
+        "short": "EN",
+        "full": "English"
+      },
+      "es": {
+        "short": "ES",
+        "full": "Spanish"
+      }
+    }
+  },
   "watchlist": {
     "filters": {
       "all": "All",
@@ -1607,6 +1629,9 @@
         "requiredFields": "Name and subject are required"
       }
     },
+    "campaignEdit": {
+      "subtitle": "Edit campaign details and settings"
+    },
     "dashboard": {
       "subtitle": "System Overview",
       "refresh": "Refresh",
@@ -1830,6 +1855,7 @@
       "queued": "Queued",
       "andMore": "And {{count}} more",
       "monitoredFolders": "Monitored Folders",
+      "monitoredFoldersSubtitle": "Configure folders for automatic content monitoring and upload",
       "noMonitoredFolders": "No monitored folders configured",
       "configureFoldersHelp": "Click 'Add Folder' to configure monitored folders for automatic uploads",
       "addFolder": "Add Folder",
@@ -1840,6 +1866,7 @@
       "triggerUploadSuccess": "Found {{files_found}} new files to upload",
       "triggerUploadFailed": "Failed to trigger upload scan",
       "noFilesFound": "No new files found in monitored folders",
+      "scanComplete": "Scan Complete",
       "sessionIssue": "Session Issue",
       "sessionIssueHelp": "Your session may have expired. Please refresh the page to restore connection.",
       "sessionExpired": "Session expired. Please refresh the page or log in again.",
@@ -1904,6 +1931,7 @@
         "namePlaceholder": "My Movies Folder",
         "path": "Folder Path",
         "pathHelp": "Enter the server path to the folder (e.g., /Volumes/USB Drive/Movies)",
+        "pathReadOnly": "Path cannot be changed after folder is created",
         "contentType": "Content Type",
         "enabled": "Enabled",
         "autoUpload": "Auto Upload"
@@ -1914,7 +1942,13 @@
         "audiobook": "Audiobooks"
       },
       "errors": {
-        "pathRequired": "Folder path is required"
+        "pathRequired": "Folder path is required",
+        "loadFailed": "Failed to load upload data",
+        "resumeFailed": "Failed to resume upload queue",
+        "clearFailed": "Failed to clear upload queue",
+        "triggerFailed": "Failed to trigger upload scan",
+        "saveFailed": "Failed to save folder configuration",
+        "deleteFailed": "Failed to delete folder"
       },
       "manualUpload": {
         "title": "Manual Upload",
@@ -1936,7 +1970,14 @@
         "invalidFileType": "Invalid file type. Only video files are supported.",
         "filesCount": "{{count}} file(s) selected",
         "pendingRestore": "{{count}} file(s) pending from previous session",
-        "pendingRestoreHint": "Drop or select the same files to restore your upload queue"
+        "pendingRestoreHint": "Drop or select the same files to restore your upload queue",
+        "invalidFiles": "{{count}} file(s) rejected - invalid type or too large",
+        "validationFailed": "Validation Failed",
+        "uploadFailedDetails": "Failed: {{files}}",
+        "uploadFiles": "Upload {{count}} file(s)",
+        "uploadComplete": "Upload Complete",
+        "successful": "{{count}} successful",
+        "failed": "{{count}} failed"
       }
     },
     "librarian": {
@@ -2664,6 +2705,9 @@
         "mergeSuccess": "Merge Successful"
       }
     },
+    "contentEditor": {
+      "subtitle": "Edit content metadata and information"
+    },
     "categories": {
       "subtitle": "Manage content categories",
       "emptyMessage": "No categories found",
@@ -2740,6 +2784,9 @@
         }
       }
     },
+    "podcastEpisodes": {
+      "subtitle": "Manage podcast episodes and metadata"
+    },
     "translation": {
       "title": "Translation Dashboard",
       "subtitle": "Monitor podcast episode translations",
@@ -2804,6 +2851,9 @@
       "registered": "Registered",
       "billingHistory": "Billing History",
       "noPayments": "No payments"
+    },
+    "userDetail": {
+      "subtitle": "User account details and activity history"
     },
     "campaigns": {
       "subtitle": "Manage coupon codes and discounts",

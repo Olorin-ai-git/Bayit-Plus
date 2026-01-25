@@ -6,8 +6,9 @@ import { RefreshCw, UserPlus, Tag, Mail, BarChart3 } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import { dashboardService } from '@/services/adminApi';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
-import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassPageHeader } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import logger from '@/utils/logger';
 
 interface DashboardStats {
@@ -158,20 +159,29 @@ export default function AdminDashboardPage() {
   if (loading || !stats) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
         <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
 
+  const pageConfig = ADMIN_PAGE_CONFIG.dashboard;
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {/* Header */}
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.headerTitle, { textAlign }]}>{t('admin.dashboard.title')}</Text>
-          <Text style={[styles.headerSubtitle, { textAlign }]}>{t('admin.dashboard.subtitle')}</Text>
-        </View>
+      {/* Page Header */}
+      <GlassPageHeader
+        title={t('admin.dashboard.title')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        badge={stats?.total_users}
+        isRTL={isRTL}
+      />
+
+      {/* Actions Row */}
+      <View style={[styles.actionsRow, { flexDirection }]}>
         <GlassButton
           title={t('admin.dashboard.refresh')}
           onPress={handleRefresh}
@@ -309,7 +319,7 @@ export default function AdminDashboardPage() {
             <Link to="/admin/users/new" style={{ textDecoration: 'none' }}>
               <Pressable style={[styles.quickActionItem, { flexDirection }]}>
                 <View style={[styles.quickActionIconContainer, styles.quickActionPurple]}>
-                  <UserPlus size={20} color={colors.primary} />
+                  <UserPlus size={20} color={colors.primary.DEFAULT} />
                 </View>
                 <Text style={[styles.quickActionText, { textAlign }]}>{t('admin.actions.addUser')}</Text>
               </Pressable>
@@ -377,21 +387,10 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.textMuted,
   },
-  header: {
+  actionsRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: spacing.sm,
     marginBottom: spacing.md,
-  },
-  headerTitle: {
-    fontSize: fontSize['2xl'],
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  headerSubtitle: {
-    fontSize: fontSize.sm,
-    color: colors.textMuted,
-    marginTop: 4,
   },
   section: {
     marginBottom: spacing.md,

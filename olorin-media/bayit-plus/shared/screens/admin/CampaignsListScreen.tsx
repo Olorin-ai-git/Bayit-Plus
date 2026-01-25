@@ -10,11 +10,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   Modal,
-  Alert,
   ScrollView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { DataTable, Column } from '../../components/admin/DataTable';
 import { campaignsService, CampaignsFilter } from '../../services/adminApi';
@@ -29,6 +29,7 @@ type CampaignType = 'discount' | 'trial' | 'referral' | 'promotional' | 'all';
 export const CampaignsListScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
+  const notifications = useNotifications();
 
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
@@ -95,10 +96,7 @@ export const CampaignsListScreen: React.FC = () => {
       setShowStatsModal(true);
     } catch (err) {
       console.error('Error loading campaign stats:', err);
-      Alert.alert(
-        t('common.error', 'Error'),
-        t('admin.campaigns.statsError', 'Failed to load campaign statistics')
-      );
+      notifications.showError(t('admin.campaigns.statsError', 'Failed to load campaign statistics'), t('common.error', 'Error'));
     }
   };
 
@@ -121,25 +119,24 @@ export const CampaignsListScreen: React.FC = () => {
   };
 
   const handleDeleteCampaign = async (campaign: Campaign) => {
-    Alert.alert(
-      t('admin.campaigns.deleteConfirm', 'Delete Campaign'),
-      t('admin.campaigns.deleteMessage', `Are you sure you want to delete "${campaign.name}"?`),
-      [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-        {
-          text: t('common.delete', 'Delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await campaignsService.deleteCampaign(campaign.id);
-              loadCampaigns();
-            } catch (error) {
-              console.error('Error deleting campaign:', error);
-            }
-          },
+    notifications.show({
+      level: 'warning',
+      title: t('admin.campaigns.deleteConfirm', 'Delete Campaign'),
+      message: t('admin.campaigns.deleteMessage', `Are you sure you want to delete "${campaign.name}"?`),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await campaignsService.deleteCampaign(campaign.id);
+            loadCampaigns();
+          } catch (error) {
+            console.error('Error deleting campaign:', error);
+          }
         },
-      ]
-    );
+      },
+    });
   };
 
 

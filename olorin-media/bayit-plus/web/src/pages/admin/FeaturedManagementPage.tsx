@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, Pressable, ScrollView, Image } from 'react-native';
+import { View, Text, Pressable, ScrollView, Image, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Star, X, AlertCircle, RefreshCw, GripVertical, Film, Tv, Save } from 'lucide-react'
 import { adminContentService, Content } from '@/services/adminApi'
 import { GlassReorderableList } from '@bayit/shared/ui'
-import { GlassCard, GlassButton, GlassSelect } from '@bayit/shared/ui'
+import { GlassCard, GlassButton, GlassSelect, GlassPageHeader } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
 import { useNotifications } from '@olorin/glass-ui/hooks'
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import logger from '@/utils/logger'
 import { spacing, colors, borderRadius } from '@olorin/design-tokens'
 
@@ -125,6 +126,9 @@ export default function FeaturedManagementPage() {
     return true
   })
 
+  const pageConfig = ADMIN_PAGE_CONFIG.featured;
+  const IconComponent = pageConfig.icon;
+
   const renderItem = (item: Content, index: number, isDragging: boolean) => (
     <GlassCard
       style={[
@@ -204,40 +208,37 @@ export default function FeaturedManagementPage() {
   return (
     <ScrollView className="flex-1">
       <View style={styles.content}>
-        {/* Header */}
-        <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <View style={{ flex: 1 }}>
-            <View style={[styles.titleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <Star size={28} color={colors.warning} fill={colors.warning} />
-              <Text style={[styles.pageTitle, { textAlign: isRTL ? 'right' : 'left' }]}>
-                {t('admin.featured.title', 'Featured Content')}
-              </Text>
-            </View>
-            <Text style={[styles.subtitle, { textAlign: isRTL ? 'right' : 'left' }]}>
-              {t('admin.featured.subtitle', 'Manage carousel order by dragging items')}
-            </Text>
-          </View>
-          <View style={[styles.headerActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <GlassButton
-              title=""
-              onPress={loadFeaturedContent}
-              variant="ghost"
-              icon={<RefreshCw size={20} color="rgba(255,255,255,0.8)" />}
-              disabled={isLoading}
-              style={styles.iconButton}
-            />
-            {hasChanges && (
+        {/* Page Header */}
+        <GlassPageHeader
+          title={t('admin.featured.title', 'Featured Content')}
+          subtitle={t('admin.featured.subtitle', 'Manage carousel order by dragging items')}
+          icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+          iconColor={pageConfig.iconColor}
+          iconBackgroundColor={pageConfig.iconBackgroundColor}
+          badge={items.length}
+          isRTL={isRTL}
+          action={
+            <View style={[styles.headerActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <GlassButton
-                title={t('common.save', 'Save')}
-                onPress={handleSaveOrder}
-                variant="primary"
-                icon={<Save size={18} color="#fff" />}
-                loading={isSaving}
-                style={styles.saveButton}
+                title=""
+                onPress={loadFeaturedContent}
+                variant="ghost"
+                icon={<RefreshCw size={20} color="white" />}
+                disabled={isLoading}
               />
-            )}
-          </View>
-        </View>
+              {hasChanges && (
+                <GlassButton
+                  title={t('common.save', 'Save')}
+                  onPress={handleSaveOrder}
+                  variant="primary"
+                  icon={<Save size={18} color="white" />}
+                  loading={isSaving}
+                  style={styles.saveButton}
+                />
+              )}
+            </View>
+          }
+        />
 
         {/* Unsaved Changes Warning */}
         {hasChanges && (
@@ -309,4 +310,187 @@ export default function FeaturedManagementPage() {
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  content: {
+    padding: spacing.lg,
+  },
+  headerActions: {
+    gap: spacing.sm,
+    alignItems: 'center',
+  },
+  saveButton: {
+    minWidth: 100,
+  },
+  warningBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    backgroundColor: colors.warning + '20',
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.warning + '40',
+    marginBottom: spacing.md,
+  },
+  warningText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.warning,
+    fontWeight: '500',
+  },
+  filtersContainer: {
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+    alignItems: 'center',
+  },
+  filterWrapper: {
+    flex: 1,
+  },
+  countBadge: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.primary + '20',
+    borderRadius: borderRadius.full,
+  },
+  countText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    backgroundColor: '#ef444420',
+    borderRadius: borderRadius.md,
+    marginBottom: spacing.md,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+    gap: spacing.md,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  emptyHint: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  list: {
+    gap: spacing.md,
+  },
+  itemCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    backgroundColor: colors.backgroundLighter,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  itemCardDragging: {
+    opacity: 0.7,
+    transform: [{ scale: 1.02 }],
+  },
+  dragHandle: {
+    padding: spacing.sm,
+  },
+  orderBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.primary + '20',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  orderText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  thumbnailContainer: {
+    position: 'relative',
+  },
+  thumbnail: {
+    width: 80,
+    height: 120,
+    borderRadius: borderRadius.md,
+  },
+  thumbnailPlaceholder: {
+    width: 80,
+    height: 120,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.backgroundLighter,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  typeBadge: {
+    position: 'absolute',
+    top: spacing.xs,
+    left: spacing.xs,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+  },
+  movieBadge: {
+    backgroundColor: colors.primary + 'CC',
+  },
+  seriesBadge: {
+    backgroundColor: colors.secondary + 'CC',
+  },
+  typeText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#ffffff',
+    textTransform: 'uppercase',
+  },
+  itemContent: {
+    flex: 1,
+  },
+  itemInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.xs,
+  },
+  itemTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    flex: 1,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  yearText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  categoryText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  removeButton: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.error + '20',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  removeButtonHovered: {
+    backgroundColor: colors.error + '30',
+  },
+});
 

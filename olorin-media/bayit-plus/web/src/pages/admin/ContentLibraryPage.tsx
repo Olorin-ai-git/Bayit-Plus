@@ -1,11 +1,28 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next'
-import { Search, X, AlertCircle, RefreshCw, Trash2, Star, StarOff, Filter, Merge } from 'lucide-react'
-import HierarchicalContentTable from '@/components/admin/HierarchicalContentTable'
+import { Search, X, AlertCircle, RefreshCw, Trash2, Star, StarOff, Filter, Merge, Eye, Edit2 } from 'lucide-react'
 import MergeWizard from '@/components/admin/content/MergeWizard'
 import { adminContentService } from '@/services/adminApi'  // Web-specific version with correct auth store
-import { GlassInput, GlassSelect, GlassButton, GlassCheckbox, GlassPageHeader } from '@bayit/shared/ui'
+import {
+  GlassInput,
+  GlassSelect,
+  GlassButton,
+  GlassCheckbox,
+  GlassPageHeader,
+  GlassHierarchicalTable,
+  ThumbnailCell,
+  TitleCell,
+  BadgeCell,
+  ActionsCell,
+  TextCell,
+  createViewAction,
+  createEditAction,
+  createDeleteAction,
+  createStarAction,
+  type HierarchicalTableColumn,
+  type HierarchicalTableRow,
+} from '@bayit/shared/ui'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { useDirection } from '@/hooks/useDirection'
 import { useNotifications } from '@olorin/glass-ui/hooks'
@@ -29,10 +46,60 @@ interface ContentItem {
   review_issue_type?: string
 }
 
+interface Episode {
+  id: string
+  title: string
+  thumbnail?: string
+  duration?: string
+  season?: number
+  episode?: number
+  is_published: boolean
+  is_featured: boolean
+  view_count?: number
+}
+
 interface Pagination {
   page: number
   pageSize: number
   total: number
+}
+
+// Language flag mapping
+const getLanguageFlag = (lang: string): string => {
+  const flags: Record<string, string> = {
+    'he': '🇮🇱',
+    'en': '🇺🇸',
+    'ar': '🇸🇦',
+    'ru': '🇷🇺',
+    'es': '🇪🇸',
+    'fr': '🇫🇷',
+    'de': '🇩🇪',
+    'it': '🇮🇹',
+    'pt': '🇵🇹',
+    'zh': '🇨🇳',
+    'ja': '🇯🇵',
+    'ko': '🇰🇷',
+  }
+  return flags[lang] || '🌐'
+}
+
+// Language name mapping
+const getLanguageName = (lang: string): string => {
+  const names: Record<string, string> = {
+    'he': 'Hebrew',
+    'en': 'English',
+    'ar': 'Arabic',
+    'ru': 'Russian',
+    'es': 'Spanish',
+    'fr': 'French',
+    'de': 'German',
+    'it': 'Italian',
+    'pt': 'Portuguese',
+    'zh': 'Chinese',
+    'ja': 'Japanese',
+    'ko': 'Korean',
+  }
+  return names[lang] || lang
 }
 
 export default function ContentLibraryPage() {
@@ -56,6 +123,11 @@ export default function ContentLibraryPage() {
   const [selectedItemsData, setSelectedItemsData] = useState<ContentItem[]>([])
   const [isBatchProcessing, setIsBatchProcessing] = useState(false)
   const [showMergeModal, setShowMergeModal] = useState(false)
+
+  // Episode loading state
+  const [expandedSeries, setExpandedSeries] = useState<Set<string>>(new Set())
+  const [episodeCache, setEpisodeCache] = useState<Record<string, Episode[]>>({})
+  const [loadingEpisodes, setLoadingEpisodes] = useState<Set<string>>(new Set())
 
   // Debug merge modal state
   useEffect(() => {
@@ -104,7 +176,8 @@ export default function ContentLibraryPage() {
       }
 
       setItems(filteredItems)
-      setPagination((prev) => ({ ...prev, total: filteredItems.length }))
+      // Use total from API response, not filtered items length
+      setPagination((prev) => ({ ...prev, total: response.total || response.pagination?.total || 0 }))
     } catch (err: any) {
       // Extract meaningful error message
       let msg = 'Failed to load content'
@@ -315,7 +388,236 @@ export default function ContentLibraryPage() {
     setSelectedIds(ids)
   }, [])
 
-  const pageConfig = ADMIN_PAGE_CONFIG.contentLibrary;
+  const handleExpandToggle = useCallback(
+    async (rowId: string, expanded: boolean) => {
+      const newExpanded = new Set(expandedSeries)
+
+      if (!expanded) {
+        // Collapse
+        newExpanded.delete(rowId)
+        setExpandedSeries(newExpanded)
+      } else {
+        // Expand - load episodes if not cached
+        newExpanded.add(rowId)
+        setExpandedSeries(newExpanded)
+
+        if (!episodeCache[rowId]) {
+          try {
+            setLoadingEpisodes((prev) => new Set(prev).add(rowId))
+            const response = await adminContentService.getSeriesEpisodes(rowId)
+            setEpisodeCache((prev) => ({
+              ...prev,
+              [rowId]: response.episodes || [],
+            }))
+          } catch (err) {
+            logger.error('Failed to load episodes', 'ContentLibraryPage', err)
+          } finally {
+            setLoadingEpisodes((prev) => {
+              const next = new Set(prev)
+              next.delete(rowId)
+              return next
+            })
+          }
+        }
+      }
+    },
+    [expandedSeries, episodeCache]
+  )
+
+  // Transform data to hierarchical table format
+  const hierarchicalData = useMemo<HierarchicalTableRow<ContentItem | Episode>[]>(() => {
+    const filtered = showOnlyWithSubtitles
+      ? items.filter(item => item.available_subtitles && item.available_subtitles.length > 0)
+      : items
+
+    return filtered.map(item => {
+      // For series, always provide children array (empty if not expanded, populated if expanded)
+      // This enables the chevron to show even before episodes are loaded
+      let children: HierarchicalTableRow<Episode>[] | undefined = undefined
+
+      if (item.is_series) {
+        if (expandedSeries.has(item.id)) {
+          // Expanded: show actual episodes from cache
+          children = (episodeCache[item.id] || []).map(episode => ({
+            id: episode.id,
+            data: episode,
+          }))
+        } else {
+          // Not expanded: empty array to show chevron
+          children = []
+        }
+      }
+      // Movies have undefined children (no chevron)
+
+      return {
+        id: item.id,
+        data: item,
+        children,
+        isExpanded: expandedSeries.has(item.id),
+      }
+    })
+  }, [items, showOnlyWithSubtitles, expandedSeries, episodeCache])
+
+  // Column definitions
+  const columns = useMemo<HierarchicalTableColumn<ContentItem | Episode>[]>(() => [
+    // Thumbnail Column
+    {
+      key: 'thumbnail',
+      label: '',
+      width: 80,
+      render: (value, row) => (
+        <ThumbnailCell
+          uri={value}
+          type={(row as ContentItem).is_series ? 'series' : 'movie'}
+          size="medium"
+        />
+      ),
+      renderChild: (value) => (
+        <ThumbnailCell
+          uri={value}
+          type="episode"
+          size="small"
+        />
+      ),
+    },
+    // Title Column
+    {
+      key: 'title',
+      label: t('admin.content.columns.title', 'Title'),
+      render: (value, row) => {
+        const contentRow = row as ContentItem
+        return (
+          <TitleCell
+            title={value}
+            subtitle={contentRow.is_series ? t('admin.content.type.series', 'Series') : t('admin.content.type.movie', 'Movie')}
+            badge={contentRow.is_series && contentRow.episode_count ? `${contentRow.episode_count} episodes` : undefined}
+            badgeColor="#a855f7"
+          />
+        )
+      },
+      renderChild: (value, episode) => {
+        const ep = episode as Episode
+        return (
+          <TitleCell
+            title={value}
+            subtitle={ep.season && ep.episode ? `S${ep.season}E${ep.episode}` : undefined}
+          />
+        )
+      },
+    },
+    // Category Column
+    {
+      key: 'category_name',
+      label: t('admin.content.columns.category', 'Category'),
+      width: 150,
+      render: (value) => <TextCell text={value || '-'} align="left" />,
+    },
+    // Year Column
+    {
+      key: 'year',
+      label: t('admin.content.columns.year', 'Year'),
+      width: 100,
+      align: 'center',
+      render: (value) => <TextCell text={value || '-'} align="center" />,
+    },
+    // Subtitles Column
+    {
+      key: 'available_subtitles',
+      label: t('admin.content.columns.subtitles', 'Subtitles'),
+      width: 150,
+      render: (value) => {
+        const subtitles = value as string[] | undefined
+        if (!subtitles || subtitles.length === 0) {
+          return <TextCell text="-" muted align="center" />
+        }
+        return (
+          <View style={{ flexDirection: 'row', gap: spacing.xs, flexWrap: 'wrap', alignItems: 'center' }}>
+            {subtitles.slice(0, 4).map((lang, index) => (
+              <Text key={index} style={{ fontSize: 18 }} title={getLanguageName(lang)}>
+                {getLanguageFlag(lang)}
+              </Text>
+            ))}
+            {subtitles.length > 4 && (
+              <Text style={{ fontSize: fontSize.xs, color: colors.textMuted }}>
+                +{subtitles.length - 4}
+              </Text>
+            )}
+          </View>
+        )
+      },
+    },
+    // Status Column
+    {
+      key: 'is_published',
+      label: t('admin.content.columns.status', 'Status'),
+      width: 120,
+      render: (value) => (
+        <BadgeCell
+          label={value ? t('admin.content.status.published', 'Published') : t('admin.content.status.draft', 'Draft')}
+          variant={value ? 'success' : 'warning'}
+        />
+      ),
+      renderChild: (value) => (
+        <BadgeCell
+          label={value ? t('admin.content.status.published', 'Published') : t('admin.content.status.draft', 'Draft')}
+          variant={value ? 'success' : 'warning'}
+        />
+      ),
+    },
+    // Actions Column
+    {
+      key: 'actions',
+      label: t('admin.content.columns.actions', 'Actions'),
+      width: 180,
+      align: 'right',
+      render: (_, row) => {
+        const contentRow = row as ContentItem
+        return (
+          <ActionsCell
+            actions={[
+              createStarAction(
+                () => handleToggleFeatured(contentRow.id),
+                contentRow.is_featured
+              ),
+              createViewAction(() => {
+                // Navigate to content detail page
+                window.location.href = `/admin/content/${contentRow.id}`
+              }),
+              createEditAction(() => {
+                // Navigate to content edit page
+                window.location.href = `/admin/content/${contentRow.id}/edit`
+              }),
+              createDeleteAction(() => handleDeleteContent(contentRow.id)),
+            ]}
+            align="right"
+          />
+        )
+      },
+      renderChild: (_, episode) => {
+        const ep = episode as Episode
+        return (
+          <ActionsCell
+            actions={[
+              createStarAction(
+                () => handleToggleFeatured(ep.id),
+                ep.is_featured
+              ),
+              createViewAction(() => {
+                window.location.href = `/admin/episodes/${ep.id}`
+              }),
+              createEditAction(() => {
+                window.location.href = `/admin/episodes/${ep.id}/edit`
+              }),
+              createDeleteAction(() => handleDeleteContent(ep.id)),
+            ]}
+            align="right"
+          />
+        )
+      },
+    },
+  ], [t, handleToggleFeatured, handleDeleteContent])
+
+  const pageConfig = ADMIN_PAGE_CONFIG['content-library'];
   const IconComponent = pageConfig.icon;
 
   return (
@@ -448,20 +750,19 @@ export default function ContentLibraryPage() {
         )}
 
         {/* Hierarchical Content Table */}
-        <HierarchicalContentTable
-          items={showOnlyWithSubtitles
-            ? items.filter(item => item.available_subtitles && item.available_subtitles.length > 0)
-            : items
-          }
+        <GlassHierarchicalTable
+          columns={columns}
+          rows={hierarchicalData}
           loading={isLoading}
-          onTogglePublish={handleTogglePublish}
-          onToggleFeatured={handleToggleFeatured}
-          onDelete={handleDeleteContent}
           pagination={pagination}
           onPageChange={(page) => setPagination((prev) => ({ ...prev, page }))}
           emptyMessage={t('admin.content.emptyMessage', { defaultValue: 'No content found' })}
+          isRTL={isRTL}
+          selectable
           selectedIds={selectedIds}
           onSelectionChange={handleSelectionChange}
+          onExpandToggle={handleExpandToggle}
+          expandable
         />
 
         {/* Merge Wizard */}

@@ -16,6 +16,7 @@ from fastapi import (APIRouter, Depends, File, HTTPException, Query,
 
 from app.api.routes.admin_uploads.dependencies import has_permission
 from app.core.config import settings
+from app.core.exceptions import DuplicateUploadQueueError
 from app.models.admin import Permission
 from app.models.upload import (BrowserUploadSession, ContentType,
                                UploadJobResponse)
@@ -221,11 +222,26 @@ async def complete_browser_upload(
         )
 
         # Enqueue for processing
-        job = await upload_service.enqueue_upload(
-            source_path=str(final_path),
-            content_type=ContentType(metadata["content_type"]),
-            user_id=metadata["user_id"],
-        )
+        try:
+            job = await upload_service.enqueue_upload(
+                source_path=str(final_path),
+                content_type=ContentType(metadata["content_type"]),
+                user_id=metadata["user_id"],
+            )
+        except DuplicateUploadQueueError as e:
+            # File already queued - return 409 Conflict with user-friendly message
+            logger.warning(
+                f"Duplicate upload attempt for {metadata['filename']}: {e.existing_job_id}"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail={
+                    "message": f"This file is already in the upload queue",
+                    "filename": e.filename,
+                    "existing_job_id": e.existing_job_id,
+                    "action": "Please wait for the existing upload to complete or cancel it first",
+                },
+            )
 
         # Update metadata
         metadata["status"] = "completed"

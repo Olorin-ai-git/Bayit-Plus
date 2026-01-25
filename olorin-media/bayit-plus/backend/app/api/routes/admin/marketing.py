@@ -121,9 +121,44 @@ async def get_recent_campaigns(
 
 @router.get("/marketing/segments/summary")
 async def get_audience_segments(
+    request: Request,
     current_user: User = Depends(has_permission(Permission.MARKETING_READ)),
 ):
-    """Get audience segments summary with user counts."""
+    """Get audience segments summary with user counts.
+    Returns localized segment names based on Accept-Language header.
+    """
+    # Get user's preferred language from Accept-Language header
+    accept_language = request.headers.get("Accept-Language", "he")
+    preferred_lang = accept_language.split(",")[0].split("-")[0].lower()
+
+    # Localized segment names
+    segment_translations = {
+        "he": {
+            "all_users": "כל המשתמשים",
+            "active_subscribers": "מנויים פעילים",
+            "new_users": "משתמשים חדשים (7 ימים)",
+            "expired_subscribers": "מנויים שפג תוקפם",
+            "inactive_users": "לא פעילים (30 יום)",
+        },
+        "en": {
+            "all_users": "All Users",
+            "active_subscribers": "Active Subscribers",
+            "new_users": "New Users (7 days)",
+            "expired_subscribers": "Expired Subscribers",
+            "inactive_users": "Inactive (30 days)",
+        },
+        "es": {
+            "all_users": "Todos los Usuarios",
+            "active_subscribers": "Suscriptores Activos",
+            "new_users": "Nuevos Usuarios (7 días)",
+            "expired_subscribers": "Suscriptores Expirados",
+            "inactive_users": "Inactivos (30 días)",
+        },
+    }
+
+    # Default to Hebrew if language not supported
+    translations = segment_translations.get(preferred_lang, segment_translations["he"])
+
     now = datetime.utcnow()
     seven_days_ago = now - timedelta(days=7)
     thirty_days_ago = now - timedelta(days=30)
@@ -136,11 +171,11 @@ async def get_audience_segments(
     inactive_users = await User.find(User.last_login < thirty_days_ago).count()
 
     return [
-        {"name": "כל המשתמשים", "count": total_users},
-        {"name": "מנויים פעילים", "count": active_subscribers},
-        {"name": "משתמשים חדשים (7 ימים)", "count": new_users},
-        {"name": "מנויים שפג תוקפם", "count": expired_subscribers},
-        {"name": "לא פעילים (30 יום)", "count": inactive_users},
+        {"name": translations["all_users"], "count": total_users},
+        {"name": translations["active_subscribers"], "count": active_subscribers},
+        {"name": translations["new_users"], "count": new_users},
+        {"name": translations["expired_subscribers"], "count": expired_subscribers},
+        {"name": translations["inactive_users"], "count": inactive_users},
     ]
 
 

@@ -311,17 +311,34 @@ EOF
 
     # SECURITY FIX: MongoDB credentials must come from environment/.env ONLY
     # No hardcoded fallback values
-    if [[ -z "${MONGODB_URL:-}" ]]; then
-        print_error "MONGODB_URL environment variable is required"
-        log_info "Set MONGODB_URL in backend/.env or as environment variable"
+    # Read MONGODB_URI from .env file or environment
+    MONGODB_URI=""
+    if [[ -f "$ENV_FILE" ]]; then
+        MONGODB_URI=$(grep "^MONGODB_URI=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2-)
+    fi
+    if [[ -z "$MONGODB_URI" ]]; then
+        MONGODB_URI="${MONGODB_URI:-}"
+    fi
+
+    if [[ -z "$MONGODB_URI" ]]; then
+        print_error "MONGODB_URI environment variable is required"
+        log_info "Set MONGODB_URI in backend/.env or as environment variable"
         exit 1
     fi
 
-    echo -n "$MONGODB_URL" | gcloud secrets create bayit-mongodb-url --data-file=- 2>/dev/null || \
-        echo -n "$MONGODB_URL" | gcloud secrets versions add bayit-mongodb-url --data-file=-
+    echo -n "$MONGODB_URI" | gcloud secrets create bayit-mongodb-url --data-file=- 2>/dev/null || \
+        echo -n "$MONGODB_URI" | gcloud secrets versions add bayit-mongodb-url --data-file=-
     print_success "Created: bayit-mongodb-url"
 
-    MONGODB_DB="${MONGODB_DB_NAME:-bayit_plus}"
+    # Read MONGODB_DB_NAME from .env file or environment
+    MONGODB_DB=""
+    if [[ -f "$ENV_FILE" ]]; then
+        MONGODB_DB=$(grep "^MONGODB_DB_NAME=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2-)
+    fi
+    if [[ -z "$MONGODB_DB" ]]; then
+        MONGODB_DB="${MONGODB_DB_NAME:-bayit_plus}"
+    fi
+
     echo -n "$MONGODB_DB" | gcloud secrets create bayit-mongodb-db-name --data-file=- 2>/dev/null || \
         echo -n "$MONGODB_DB" | gcloud secrets versions add bayit-mongodb-db-name --data-file=-
     print_success "Created: bayit-mongodb-db-name"
@@ -349,7 +366,16 @@ EOF
     create_or_update_secret "bayit-sentry-dsn" "SENTRY_DSN"
 
     # Google redirect URI - must come from environment variable
-    if [[ -z "${GOOGLE_REDIRECT_URI:-}" ]]; then
+    # Read GOOGLE_REDIRECT_URI from .env file or environment
+    GOOGLE_REDIRECT_URI=""
+    if [[ -f "$ENV_FILE" ]]; then
+        GOOGLE_REDIRECT_URI=$(grep "^GOOGLE_REDIRECT_URI=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2-)
+    fi
+    if [[ -z "$GOOGLE_REDIRECT_URI" ]]; then
+        GOOGLE_REDIRECT_URI="${GOOGLE_REDIRECT_URI:-}"
+    fi
+
+    if [[ -z "$GOOGLE_REDIRECT_URI" ]]; then
         print_error "GOOGLE_REDIRECT_URI environment variable is required"
         log_info "Set GOOGLE_REDIRECT_URI in backend/.env or as environment variable"
         log_info "Example: GOOGLE_REDIRECT_URI=https://bayit.tv/auth/google/callback"
@@ -365,10 +391,19 @@ EOF
         echo -n "$BUCKET_NAME" | gcloud secrets versions add bayit-gcs-bucket-name --data-file=-
 
     # CORS origins - must come from environment variable
-    if [[ -z "${CORS_ORIGINS:-}" ]]; then
-        print_error "CORS_ORIGINS environment variable is required"
-        log_info "Set CORS_ORIGINS in backend/.env or as environment variable"
-        log_info "Example: CORS_ORIGINS='[\"https://bayit.tv\",\"https://www.bayit.tv\",\"http://localhost:3000\"]'"
+    # Read BACKEND_CORS_ORIGINS from .env file or environment
+    CORS_ORIGINS=""
+    if [[ -f "$ENV_FILE" ]]; then
+        CORS_ORIGINS=$(grep "^BACKEND_CORS_ORIGINS=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2-)
+    fi
+    if [[ -z "$CORS_ORIGINS" ]]; then
+        CORS_ORIGINS="${BACKEND_CORS_ORIGINS:-}"
+    fi
+
+    if [[ -z "$CORS_ORIGINS" ]]; then
+        print_error "BACKEND_CORS_ORIGINS environment variable is required"
+        log_info "Set BACKEND_CORS_ORIGINS in backend/.env or as environment variable"
+        log_info "Example: BACKEND_CORS_ORIGINS='[\"https://bayit.tv\",\"https://www.bayit.tv\",\"http://localhost:3000\"]'"
         exit 1
     fi
 

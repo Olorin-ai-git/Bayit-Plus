@@ -23,13 +23,9 @@ router = APIRouter()
 class SectionCreateRequest(BaseModel):
     """Request model for creating a section."""
 
-    name: str = Field(..., min_length=1, max_length=100)
-    name_en: Optional[str] = None
-    name_es: Optional[str] = None
     slug: str = Field(..., min_length=1, max_length=50, pattern=r"^[a-z0-9-]+$")
-    description: Optional[str] = None
-    description_en: Optional[str] = None
-    description_es: Optional[str] = None
+    name_key: str = Field(..., min_length=1, max_length=200)  # i18n translation key
+    description_key: Optional[str] = None  # i18n translation key
     thumbnail: Optional[str] = None
     icon: Optional[str] = None
     color: Optional[str] = None
@@ -44,13 +40,9 @@ class SectionCreateRequest(BaseModel):
 class SectionUpdateRequest(BaseModel):
     """Request model for updating a section."""
 
-    name: Optional[str] = None
-    name_en: Optional[str] = None
-    name_es: Optional[str] = None
     slug: Optional[str] = None
-    description: Optional[str] = None
-    description_en: Optional[str] = None
-    description_es: Optional[str] = None
+    name_key: Optional[str] = None  # i18n translation key
+    description_key: Optional[str] = None  # i18n translation key
     thumbnail: Optional[str] = None
     icon: Optional[str] = None
     color: Optional[str] = None
@@ -65,11 +57,11 @@ class SectionUpdateRequest(BaseModel):
 class SubcategoryCreateRequest(BaseModel):
     """Request model for creating a subcategory."""
 
-    name: str = Field(..., min_length=1, max_length=100)
-    name_en: Optional[str] = None
-    name_es: Optional[str] = None
     slug: str = Field(..., min_length=1, max_length=50, pattern=r"^[a-z0-9-]+$")
-    description: Optional[str] = None
+    name_key: str = Field(..., min_length=1, max_length=200)  # i18n translation key
+    description_key: Optional[str] = None  # i18n translation key
+    icon: Optional[str] = None
+    thumbnail: Optional[str] = None
     order: int = 0
     is_active: bool = True
 
@@ -77,11 +69,11 @@ class SubcategoryCreateRequest(BaseModel):
 class SubcategoryUpdateRequest(BaseModel):
     """Request model for updating a subcategory."""
 
-    name: Optional[str] = None
-    name_en: Optional[str] = None
-    name_es: Optional[str] = None
     slug: Optional[str] = None
-    description: Optional[str] = None
+    name_key: Optional[str] = None  # i18n translation key
+    description_key: Optional[str] = None  # i18n translation key
+    icon: Optional[str] = None
+    thumbnail: Optional[str] = None
     order: Optional[int] = None
     is_active: Optional[bool] = None
 
@@ -109,11 +101,9 @@ async def get_categories(
         result_items.append(
             {
                 "id": str(item.id),
-                "name": item.name,
-                "name_en": item.name_en,
-                "name_es": item.name_es,
                 "slug": item.slug,
-                "description": item.description,
+                "name_key": item.name_key,
+                "description_key": item.description_key,
                 "thumbnail": item.thumbnail,
                 "icon": item.icon,
                 "color": item.color,
@@ -162,9 +152,11 @@ async def get_category(
         subcategories = [
             {
                 "id": str(sub.id),
-                "name": sub.name,
-                "name_en": sub.name_en,
                 "slug": sub.slug,
+                "name_key": sub.name_key,
+                "description_key": sub.description_key,
+                "icon": sub.icon,
+                "thumbnail": sub.thumbnail,
                 "order": sub.order,
                 "is_active": sub.is_active,
             }
@@ -175,13 +167,9 @@ async def get_category(
 
     return {
         "id": str(section.id),
-        "name": section.name,
-        "name_en": section.name_en,
-        "name_es": section.name_es,
         "slug": section.slug,
-        "description": section.description,
-        "description_en": section.description_en,
-        "description_es": section.description_es,
+        "name_key": section.name_key,
+        "description_key": section.description_key,
         "thumbnail": section.thumbnail,
         "icon": section.icon,
         "color": section.color,
@@ -208,13 +196,9 @@ async def create_category(
         raise HTTPException(status_code=400, detail="Slug already exists")
 
     section = ContentSection(
-        name=data.name,
-        name_en=data.name_en,
-        name_es=data.name_es,
         slug=data.slug,
-        description=data.description,
-        description_en=data.description_en,
-        description_es=data.description_es,
+        name_key=data.name_key,
+        description_key=data.description_key,
         thumbnail=data.thumbnail,
         icon=data.icon,
         color=data.color,
@@ -232,11 +216,11 @@ async def create_category(
         AuditAction.CATEGORY_CREATED,
         "section",
         str(section.id),
-        {"name": section.name, "slug": section.slug},
+        {"name_key": section.name_key, "slug": section.slug},
         request,
     )
 
-    return {"id": str(section.id), "name": section.name, "slug": section.slug}
+    return {"id": str(section.id), "name_key": section.name_key, "slug": section.slug}
 
 
 @router.patch("/categories/{category_id}")
@@ -257,18 +241,6 @@ async def update_category(
 
     changes = {}
 
-    if data.name is not None:
-        changes["name"] = {"old": section.name, "new": data.name}
-        section.name = data.name
-
-    if data.name_en is not None:
-        changes["name_en"] = {"old": section.name_en, "new": data.name_en}
-        section.name_en = data.name_en
-
-    if data.name_es is not None:
-        changes["name_es"] = {"old": section.name_es, "new": data.name_es}
-        section.name_es = data.name_es
-
     if data.slug is not None:
         existing = await ContentSection.find_one(ContentSection.slug == data.slug)
         if existing and str(existing.id) != category_id:
@@ -276,15 +248,16 @@ async def update_category(
         changes["slug"] = {"old": section.slug, "new": data.slug}
         section.slug = data.slug
 
-    if data.description is not None:
-        changes["description"] = {"old": section.description, "new": data.description}
-        section.description = data.description
+    if data.name_key is not None:
+        changes["name_key"] = {"old": section.name_key, "new": data.name_key}
+        section.name_key = data.name_key
 
-    if data.description_en is not None:
-        section.description_en = data.description_en
-
-    if data.description_es is not None:
-        section.description_es = data.description_es
+    if data.description_key is not None:
+        changes["description_key"] = {
+            "old": section.description_key,
+            "new": data.description_key,
+        }
+        section.description_key = data.description_key
 
     if data.thumbnail is not None:
         changes["thumbnail"] = {"changed": True}
@@ -370,7 +343,7 @@ async def delete_category(
         AuditAction.CATEGORY_DELETED,
         "section",
         category_id,
-        {"name": section.name, "slug": section.slug},
+        {"name_key": section.name_key, "slug": section.slug},
         request,
     )
 
@@ -429,15 +402,16 @@ async def get_subcategories(
 
     return {
         "section_id": category_id,
-        "section_name": section.name,
+        "section_slug": section.slug,
+        "section_name_key": section.name_key,
         "subcategories": [
             {
                 "id": str(sub.id),
-                "name": sub.name,
-                "name_en": sub.name_en,
-                "name_es": sub.name_es,
                 "slug": sub.slug,
-                "description": sub.description,
+                "name_key": sub.name_key,
+                "description_key": sub.description_key,
+                "icon": sub.icon,
+                "thumbnail": sub.thumbnail,
                 "order": sub.order,
                 "is_active": sub.is_active,
             }
@@ -476,11 +450,11 @@ async def create_subcategory(
 
     subcategory = SectionSubcategory(
         section_id=category_id,
-        name=data.name,
-        name_en=data.name_en,
-        name_es=data.name_es,
         slug=data.slug,
-        description=data.description,
+        name_key=data.name_key,
+        description_key=data.description_key,
+        icon=data.icon,
+        thumbnail=data.thumbnail,
         order=data.order,
         is_active=data.is_active,
     )
@@ -491,11 +465,11 @@ async def create_subcategory(
         AuditAction.CATEGORY_CREATED,
         "subcategory",
         str(subcategory.id),
-        {"name": subcategory.name, "section": section.name},
+        {"name_key": subcategory.name_key, "section_slug": section.slug},
         request,
     )
 
-    return {"id": str(subcategory.id), "name": subcategory.name}
+    return {"id": str(subcategory.id), "name_key": subcategory.name_key}
 
 
 @router.patch("/subcategories/{subcategory_id}")
@@ -514,12 +488,6 @@ async def update_subcategory(
     if not subcategory:
         raise HTTPException(status_code=404, detail="Subcategory not found")
 
-    if data.name is not None:
-        subcategory.name = data.name
-    if data.name_en is not None:
-        subcategory.name_en = data.name_en
-    if data.name_es is not None:
-        subcategory.name_es = data.name_es
     if data.slug is not None:
         existing = await SectionSubcategory.find_one(
             SectionSubcategory.section_id == subcategory.section_id,
@@ -528,8 +496,14 @@ async def update_subcategory(
         if existing and str(existing.id) != subcategory_id:
             raise HTTPException(status_code=400, detail="Slug already exists")
         subcategory.slug = data.slug
-    if data.description is not None:
-        subcategory.description = data.description
+    if data.name_key is not None:
+        subcategory.name_key = data.name_key
+    if data.description_key is not None:
+        subcategory.description_key = data.description_key
+    if data.icon is not None:
+        subcategory.icon = data.icon
+    if data.thumbnail is not None:
+        subcategory.thumbnail = data.thumbnail
     if data.order is not None:
         subcategory.order = data.order
     if data.is_active is not None:
@@ -542,7 +516,7 @@ async def update_subcategory(
         AuditAction.CATEGORY_UPDATED,
         "subcategory",
         subcategory_id,
-        {"name": subcategory.name},
+        {"name_key": subcategory.name_key},
         request,
     )
 
@@ -576,7 +550,7 @@ async def delete_subcategory(
         AuditAction.CATEGORY_DELETED,
         "subcategory",
         subcategory_id,
-        {"name": subcategory.name},
+        {"name_key": subcategory.name_key},
         request,
     )
 
