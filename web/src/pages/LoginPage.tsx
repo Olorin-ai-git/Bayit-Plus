@@ -167,7 +167,7 @@ export default function LoginPage() {
                 {t('login.password')}
               </Text>
               <Link to="/forgot-password" style={{ textDecoration: 'none' }}>
-                <Text style={[styles.forgotPasswordLink, { color: colors.primary }]}>
+                <Text style={styles.forgotPasswordLink}>
                   {t('login.forgotPassword')}
                 </Text>
               </Link>
@@ -257,12 +257,7 @@ export default function LoginPage() {
               {t('login.noAccount')}
             </Text>
             <Link to="/register" style={{ textDecoration: 'none' }}>
-              <Text
-                style={[
-                  IS_TV_BUILD ? styles.signUpLinkTV : styles.signUpLink,
-                  { color: colors.primary }
-                ]}
-              >
+              <Text style={IS_TV_BUILD ? styles.signUpLinkTV : styles.signUpLink}>
                 {t('login.signUp')}
               </Text>
             </Link>
@@ -467,6 +462,7 @@ const styles = StyleSheet.create({
   forgotPasswordLink: {
     fontSize: 13,
     fontWeight: '500',
+    color: colors.primary.DEFAULT,
   },
   // Login Button
   loginButton: {
@@ -556,11 +552,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     lineHeight: 20,
+    color: colors.primary.DEFAULT,
   },
   signUpLinkTV: {
     fontSize: 20,
     fontWeight: '600',
     lineHeight: 28,
+    color: colors.primary.DEFAULT,
   },
   // Footer
   footer: {
