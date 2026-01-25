@@ -8,7 +8,7 @@ import { adminContentService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassButton } from '@bayit/shared/ui'
 import { useDirection } from '@/hooks/useDirection'
-import { useModal } from '@/contexts/ModalContext'
+import { useNotifications } from '@olorin/glass-ui/hooks'
 import logger from '@/utils/logger'
 import type { RadioStation, PaginatedResponse } from '@/types/content'
 
@@ -25,7 +25,7 @@ interface EditingStation extends Partial<RadioStation> {
 export default function RadioStationsPage() {
   const { t } = useTranslation()
   const { isRTL, textAlign, flexDirection } = useDirection()
-  const { showConfirm } = useModal()
+  const notifications = useNotifications()
   const [items, setItems] = useState<RadioStation[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -88,23 +88,28 @@ export default function RadioStationsPage() {
   }
 
   const handleDelete = (id: string) => {
-    showConfirm(
-      t('admin.content.confirmDelete', 'Delete this radio station?'),
-      async () => {
-        try {
-          setDeleting(id)
-          await adminContentService.deleteRadioStation(id)
-          setItems(items.filter((item) => item.id !== id))
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : t('admin.radioStations.errors.deleteFailed', 'Failed to delete radio station')
-          logger.error(msg, 'RadioStationsPage', err)
-          setError(msg)
-        } finally {
-          setDeleting(null)
-        }
+    notifications.show({
+      level: 'warning',
+      message: t('admin.content.confirmDelete', 'Delete this radio station?'),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            setDeleting(id)
+            await adminContentService.deleteRadioStation(id)
+            setItems(items.filter((item) => item.id !== id))
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : t('admin.radioStations.errors.deleteFailed', 'Failed to delete radio station')
+            logger.error(msg, 'RadioStationsPage', err)
+            setError(msg)
+          } finally {
+            setDeleting(null)
+          }
+        },
       },
-      { destructive: true, confirmText: t('common.delete', 'Delete') }
-    )
+    })
   }
 
   const columns = [

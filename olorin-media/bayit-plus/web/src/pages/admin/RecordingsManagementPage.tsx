@@ -8,7 +8,7 @@ import { View, Text, FlatList, ActivityIndicator, Pressable } from 'react-native
 import { useTranslation } from 'react-i18next'
 import { Search, Trash2, Play, HardDrive, Users, Video } from 'lucide-react'
 import { useDirection } from '@/hooks/useDirection'
-import { useModal } from '@/contexts/ModalContext'
+import { useNotifications } from '@olorin/glass-ui/hooks'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassView, GlassInput } from '@bayit/shared/ui'
 import logger from '@/utils/logger'
@@ -40,7 +40,7 @@ interface RecordingStats {
 export default function RecordingsManagementPage() {
   const { t } = useTranslation()
   const { isRTL, flexDirection, textAlign } = useDirection()
-  const { showConfirm, showError, showSuccess } = useModal()
+  const notifications = useNotifications()
 
   const [recordings, setRecordings] = useState<AdminRecording[]>([])
   const [stats, setStats] = useState<RecordingStats | null>(null)
@@ -75,7 +75,7 @@ export default function RecordingsManagementPage() {
       setTotalPages(response.data.total_pages)
     } catch (error) {
       logger.error('Failed to load recordings', 'RecordingsManagementPage', error)
-      showError(t('admin.recordings.loadFailed'))
+      notifications.showError(t('admin.recordings.loadFailed'))
     } finally {
       setLoading(false)
     }
@@ -99,26 +99,32 @@ export default function RecordingsManagementPage() {
   }
 
   const handleDelete = (recording: AdminRecording) => {
-    showConfirm(
-      t('admin.recordings.confirmDelete', { title: recording.title }),
-      async () => {
-        try {
-          const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
-          const token = authData?.state?.token
+    notifications.show({
+      level: 'warning',
+      message: t('admin.recordings.confirmDelete', { title: recording.title }),
+      dismissable: true,
+      action: {
+        label: t('common.delete', 'Delete'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
+            const token = authData?.state?.token
 
-          await axios.delete(`${API_BASE_URL}/admin/recordings/${recording.id}`, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          })
+            await axios.delete(`${API_BASE_URL}/admin/recordings/${recording.id}`, {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            })
 
-          showSuccess(t('admin.recordings.deleteSuccess'))
-          await loadRecordings()
-          await loadStats()
-        } catch (error) {
-          logger.error('Failed to delete recording', 'RecordingsManagementPage', error)
-          showError(t('admin.recordings.deleteFailed'))
-        }
+            notifications.showSuccess(t('admin.recordings.deleteSuccess'))
+            await loadRecordings()
+            await loadStats()
+          } catch (error) {
+            logger.error('Failed to delete recording', 'RecordingsManagementPage', error)
+            notifications.showError(t('admin.recordings.deleteFailed'))
+          }
+        },
       },
       {
         title: t('admin.recordings.deleteRecording'),
