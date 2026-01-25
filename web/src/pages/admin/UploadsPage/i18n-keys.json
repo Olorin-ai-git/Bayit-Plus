@@ -1,0 +1,106 @@
+{
+  "admin": {
+    "uploads": {
+      "title": "Uploads Management",
+      "contentTypes": {
+        "movie": "Movie",
+        "series": "Series",
+        "podcast": "Podcast"
+      },
+      "stages": {
+        "browserUpload": "Browser Upload",
+        "hashCalculation": "Hash Calculation",
+        "duplicateCheck": "Duplicate Check",
+        "metadataExtraction": "Metadata Extraction",
+        "gcsUpload": "Cloud Upload",
+        "databaseInsert": "Database Insert"
+      },
+      "manualUpload": {
+        "title": "Manual Upload",
+        "browserUpload": "Browser Upload",
+        "urlUpload": "URL Upload",
+        "dragOrClick": "Drag files here or click to browse",
+        "dropFiles": "Drop files to upload",
+        "acceptedFormats": "Accepted formats",
+        "maxSize": "Max file size",
+        "noFilesSelected": "No files selected",
+        "fileName": "File Name",
+        "fileSize": "File Size",
+        "progress": "Progress",
+        "status": "Status",
+        "contentType": "Content Type",
+        "uploadFiles": "Upload Files",
+        "clearFiles": "Clear Files",
+        "invalidFiles": "{{count}} file(s) rejected",
+        "uploadSuccess": "{{count}} file(s) uploaded successfully",
+        "uploadFailed": "{{count}} file(s) failed to upload",
+        "uploadCancelled": "Upload cancelled",
+        "uploadComplete": "Upload Complete",
+        "successful": "Successful",
+        "failed": "Failed",
+        "total": "Total",
+        "fileList": "File upload list",
+        "dropZoneAriaLabel": "File upload dropzone. Click or press Enter to select files"
+      },
+      "dryRun": {
+        "toggle": "Dry Run Mode",
+        "enabled": "Preview uploads before uploading",
+        "preview": "Upload Preview",
+        "willUpload": "Will Upload",
+        "duplicates": "Duplicates",
+        "errors": "Errors",
+        "proceedWithUpload": "Proceed with {{count}} upload(s)",
+        "skipDuplicates": "Skip duplicates automatically",
+        "new_file": "New upload",
+        "duplicate_hash": "Duplicate (same file hash)",
+        "duplicate_filename": "Duplicate (same filename)",
+        "duplicate_in_queue": "Already in upload queue",
+        "validation_failed": "Validation failed",
+        "existingContent": "Existing content:"
+      },
+      "urlUpload": {
+        "title": "Upload from URL",
+        "placeholder": "Enter URLs (one per line)",
+        "hint": "Enter one URL per line",
+        "validate": "Validate URL",
+        "upload": "Import from URL",
+        "accessible": "URL is accessible",
+        "notAccessible": "URL not accessible",
+        "downloading": "Downloading from URL...",
+        "downloadComplete": "Download complete",
+        "downloadFailed": "Download failed",
+        "invalidUrl": "Invalid URL format",
+        "fileTooLarge": "File too large (max 10GB)",
+        "uploadSuccess": "{{count}} file(s) imported successfully"
+      },
+      "monitoredFolders": {
+        "title": "Monitored Folders",
+        "addFolder": "Add Folder",
+        "editFolder": "Edit Folder",
+        "folderName": "Folder Name",
+        "folderPath": "Folder Path",
+        "contentType": "Content Type",
+        "enabled": "Enabled",
+        "autoUpload": "Auto Upload",
+        "lastScan": "Last scan",
+        "filesFound": "Files found",
+        "scanTriggered": "Folder scan triggered",
+        "addSuccess": "Folder added successfully",
+        "updateSuccess": "Folder updated successfully",
+        "deleteSuccess": "Folder deleted successfully",
+        "confirmDelete": "Are you sure you want to delete this folder?"
+      },
+      "errors": {
+        "loadFailed": "Failed to load upload data",
+        "uploadFailed": "Upload failed",
+        "addFolderFailed": "Failed to add folder",
+        "updateFolderFailed": "Failed to update folder",
+        "deleteFolderFailed": "Failed to delete folder",
+        "scanFolderFailed": "Failed to scan folder",
+        "dryRunFailed": "Dry run failed",
+        "urlValidationFailed": "URL validation failed",
+        "urlUploadFailed": "URL upload failed"
+      }
+    }
+  }
+}
