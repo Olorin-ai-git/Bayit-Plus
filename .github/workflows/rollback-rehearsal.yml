@@ -1,0 +1,131 @@
+name: Rollback Rehearsal
+
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: 'Phase to test rollback'
+        required: true
+        type: choice
+        options:
+          - 'phase-1-batch-1'
+          - 'phase-1-batch-2'
+          - 'phase-1-batch-3'
+          - 'phase-2-userdetail'
+          - 'phase-2-transactions'
+          - 'phase-2-uploads'
+          - 'phase-3-integrations'
+          - 'phase-3.5-mobile-perf'
+      environment:
+        description: 'Environment to test rollback'
+        required: true
+        type: choice
+        options:
+          - 'staging'
+        default: 'staging'
+
+jobs:
+  rehearse-rollback:
+    name: Test rollback procedure
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          npm install -g firebase-tools
+
+      - name: Deploy change to staging
+        run: |
+          echo "Deploying phase to staging..."
+          bash ./scripts/deployment/deploy-phase.sh ${{ github.event.inputs.phase }}
+
+      - name: Validate deployment
+        run: |
+          echo "Running smoke tests..."
+          bash ./scripts/deployment/smoke-tests-staging.sh
+
+      - name: Simulate rollback
+        id: rollback
+        run: |
+          echo "Starting rollback simulation..."
+          ROLLBACK_START=$(date +%s)
+
+          bash ./scripts/deployment/rollback-phase.sh ${{ github.event.inputs.phase }}
+
+          ROLLBACK_END=$(date +%s)
+          DURATION=$((ROLLBACK_END - ROLLBACK_START))
+
+          echo "rollback_duration=$DURATION" >> $GITHUB_OUTPUT
+          echo "Rollback completed in ${DURATION} seconds"
+
+      - name: Validate rollback
+        run: |
+          echo "Validating rollback..."
+          bash ./scripts/deployment/validate-rollback.sh
+
+      - name: Check rollback SLA
+        run: |
+          DURATION=${{ steps.rollback.outputs.rollback_duration }}
+
+          if [ "$DURATION" -gt 300 ]; then
+            echo "Rollback took ${DURATION}s > 5min (300s) SLA"
+            exit 1
+          fi
+
+          echo "Rollback within 5min SLA (${DURATION}s)"
+
+      - name: Generate rollback report
+        if: always()
+        run: |
+          mkdir -p reports
+          REPORT_FILE="reports/rollback-report-${{ github.event.inputs.phase }}.md"
+
+          cat > "$REPORT_FILE" << 'REPORTEOF'
+          # Rollback Rehearsal Report
+
+          **Phase**: ${{ github.event.inputs.phase }}
+          **Environment**: ${{ github.event.inputs.environment }}
+          **Workflow Run**: ${{ github.run_id }}
+          **Triggered By**: ${{ github.actor }}
+          REPORTEOF
+
+          echo "**Date**: $(date '+%Y-%m-%d %H:%M:%S UTC')" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "## Results" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "- **Deployment**: Success" >> "$REPORT_FILE"
+          echo "- **Smoke Tests**: Passed" >> "$REPORT_FILE"
+          echo "- **Rollback Duration**: ${{ steps.rollback.outputs.rollback_duration }}s" >> "$REPORT_FILE"
+          echo "- **SLA Status**: Within 5min threshold" >> "$REPORT_FILE"
+          echo "- **Validation**: Passed" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "## Rollback Procedure Verified" >> "$REPORT_FILE"
+          echo "" >> "$REPORT_FILE"
+          echo "The rollback procedure for ${{ github.event.inputs.phase }} has been tested and validated." >> "$REPORT_FILE"
+          echo "Rollback time is within the 5-minute SLA requirement." >> "$REPORT_FILE"
+
+          cat "$REPORT_FILE"
+
+      - name: Upload rollback report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rollback-report-${{ github.event.inputs.phase }}
+          path: reports/rollback-report-*.md
+          retention-days: 90

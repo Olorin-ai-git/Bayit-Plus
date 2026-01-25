@@ -1,0 +1,51 @@
+name: Console Log Detection
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [develop, feature/*]
+
+jobs:
+  detect-violations:
+    name: Scan for console.log
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect console.* in production code
+        run: |
+          VIOLATIONS=$(grep -r "console\.\(log\|error\|warn\|info\|debug\)" \
+            --include="*.ts" \
+            --include="*.tsx" \
+            --include="*.js" \
+            --include="*.jsx" \
+            --exclude-dir="node_modules" \
+            --exclude-dir="__tests__" \
+            --exclude-dir="test" \
+            --exclude-dir="demo" \
+            --exclude-dir="cli" \
+            --exclude-dir="scripts" \
+            . | wc -l)
+
+          echo "Console violations found: $VIOLATIONS"
+
+          if [ "$VIOLATIONS" -gt 0 ]; then
+            echo "❌ FAILED: Console logging in production code"
+            grep -r "console\." \
+              --include="*.ts" \
+              --include="*.tsx" \
+              --include="*.js" \
+              --include="*.jsx" \
+              --exclude-dir="node_modules" \
+              --exclude-dir="__tests__" \
+              --exclude-dir="test" \
+              --exclude-dir="demo" \
+              --exclude-dir="cli" \
+              --exclude-dir="scripts" \
+              . | head -20
+            exit 1
+          fi
+
+          echo "✅ PASSED: No console violations"
