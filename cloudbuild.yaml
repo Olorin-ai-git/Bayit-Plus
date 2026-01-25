@@ -17,6 +17,7 @@ steps:
       - '--region=${_REGION}'
       - '--platform=managed'
       - '--allow-unauthenticated'
+      - '--port=8080'
       - '--memory=${_MEMORY}'
       - '--cpu=${_CPU}'
       - '--timeout=300'
@@ -78,6 +79,11 @@ steps:
       - '--update-secrets=FRONTEND_WEB_URL=bayit-frontend-web-url:latest'
       - '--update-secrets=GCS_BUCKET_NAME=bayit-gcs-bucket-name:latest'
       - '--update-secrets=TMDB_API_KEY=bayit-tmdb-api-key:latest'
+      - '--update-secrets=CHROMECAST_RECEIVER_APP_ID=bayit-chromecast-receiver-id:latest'
+
+      # Casting Feature Configuration
+      - '--set-env-vars=CAST_ENABLE_AIRPLAY=true'
+      - '--set-env-vars=CAST_ENABLE_CHROMECAST=true'
 
 images:
   - 'gcr.io/$PROJECT_ID/bayit-backend:$BUILD_ID'
