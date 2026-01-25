@@ -16,10 +16,10 @@ import {
   ScrollView,
   TouchableOpacity,
   FlatList,
-  Alert,
   SafeAreaView,
 } from 'react-native';
 import { formatDistanceToNow } from 'date-fns';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 
 export interface VoiceCommand {
   id: string;
@@ -51,6 +51,7 @@ export const VoiceCommandHistory: React.FC<VoiceCommandHistoryProps> = ({
   maxItems = 50,
 }) => {
   const [selectedCommandId, setSelectedCommandId] = useState<string | null>(null);
+  const notifications = useNotifications();
 
   const handleCommandPress = useCallback(
     (command: VoiceCommand) => {
@@ -62,22 +63,21 @@ export const VoiceCommandHistory: React.FC<VoiceCommandHistoryProps> = ({
 
   const handleDeleteCommand = useCallback(
     (commandId: string) => {
-      Alert.alert(
-        'Delete Command',
-        'Remove this command from history?',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Delete',
-            style: 'destructive',
-            onPress: () => {
-              onCommandDelete?.(commandId);
-            },
+      notifications.show({
+        level: 'warning',
+        message: 'Remove this command from history?',
+        title: 'Delete Command',
+        dismissable: true,
+        action: {
+          label: 'Delete',
+          type: 'action',
+          onPress: () => {
+            onCommandDelete?.(commandId);
           },
-        ]
-      );
+        },
+      });
     },
-    [onCommandDelete]
+    [onCommandDelete, notifications]
   );
 
   const sortedCommands = [...commands]
