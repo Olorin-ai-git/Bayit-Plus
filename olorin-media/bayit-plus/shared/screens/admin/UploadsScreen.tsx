@@ -11,9 +11,9 @@ import {
   ScrollView,
   RefreshControl,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { StatCard } from '../../components/admin/StatCard';
 import { UploadProgress } from '../../components/admin/UploadProgress';
@@ -33,6 +33,7 @@ import uploadService, {
 
 export const UploadsScreen: React.FC = () => {
   const { t } = useTranslation();
+  const notifications = useNotifications();
   const {
     stats,
     activeJob,
@@ -78,9 +79,9 @@ export const UploadsScreen: React.FC = () => {
   const handleCancelUpload = async (jobId: string) => {
     try {
       await uploadService.cancelUpload(jobId);
-      Alert.alert('Success', 'Upload cancelled');
+      notifications.showSuccess('Upload cancelled', 'Success');
     } catch (err) {
-      Alert.alert('Error', 'Failed to cancel upload');
+      notifications.showError('Failed to cancel upload', 'Error');
     }
   };
 
@@ -88,13 +89,13 @@ export const UploadsScreen: React.FC = () => {
     setScanning(true);
     try {
       const result = await uploadService.scanNow(folderId);
-      Alert.alert(
-        'Scan Complete',
-        `Found ${result.files_found || 0} files, enqueued ${result.files_enqueued || 0} for upload`
+      notifications.showSuccess(
+        `Found ${result.files_found || 0} files, enqueued ${result.files_enqueued || 0} for upload`,
+        'Scan Complete'
       );
       await loadMonitoredFolders();
     } catch (err) {
-      Alert.alert('Error', 'Failed to scan folders');
+      notifications.showError('Failed to scan folders', 'Error');
     } finally {
       setScanning(false);
     }
@@ -124,26 +125,25 @@ export const UploadsScreen: React.FC = () => {
   };
 
   const handleRemoveFolder = async (folderId: string) => {
-    Alert.alert(
-      'Remove Folder',
-      'Are you sure you want to remove this monitored folder?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await uploadService.removeMonitoredFolder(folderId);
-              await loadMonitoredFolders();
-              Alert.alert('Success', 'Folder removed');
-            } catch (err) {
-              Alert.alert('Error', 'Failed to remove folder');
-            }
-          },
+    notifications.show({
+      level: 'warning',
+      title: 'Remove Folder',
+      message: 'Are you sure you want to remove this monitored folder?',
+      dismissable: true,
+      action: {
+        label: 'Remove',
+        type: 'action',
+        onPress: async () => {
+          try {
+            await uploadService.removeMonitoredFolder(folderId);
+            await loadMonitoredFolders();
+            notifications.showSuccess('Folder removed', 'Success');
+          } catch (err) {
+            notifications.showError('Failed to remove folder', 'Error');
+          }
         },
-      ]
-    );
+      },
+    });
   };
 
   const handleToggleFolder = async (folder: MonitoredFolder) => {
@@ -153,7 +153,7 @@ export const UploadsScreen: React.FC = () => {
       });
       await loadMonitoredFolders();
     } catch (err) {
-      Alert.alert('Error', 'Failed to update folder');
+      notifications.showError('Failed to update folder', 'Error');
     }
   };
 
