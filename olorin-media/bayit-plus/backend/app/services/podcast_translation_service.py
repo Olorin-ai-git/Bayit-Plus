@@ -1,11 +1,12 @@
 """
 Podcast Translation Service
-Orchestrates the complete podcast translation pipeline using Whisper STT on original audio.
+Orchestrates the complete podcast translation pipeline with background sound preservation.
 Supports resuming from previously completed stages.
 
-Pipeline: Download → Trim → Transcribe (Whisper) → Remove Commercials → Translate → TTS → Upload
-Note: Vocal separation SKIPPED - degrades transcription quality
+Pipeline: Download → Trim → Separate Vocals → Transcribe (Whisper on vocals only) → Remove Commercials → Translate → TTS → Mix with Background → Upload
+Note: Vocals separated from background to preserve music/sound effects in translation
 Note: Commercials automatically detected and removed before translation
+Note: Translated vocals mixed back with original background audio
 """
 
 import asyncio
@@ -132,7 +133,7 @@ class PodcastTranslationService:
                 logger.info(f"✅ Reusing downloaded audio from previous attempt")
                 original_path = stages["downloaded"]["audio_path"]
             else:
-                logger.info(f"Step 1/7: Downloading audio for episode {episode.id}")
+                logger.info(f"Step 1/8: Downloading audio for episode {episode.id}")
                 original_path = await self._download_audio(episode.audio_url)
 
                 # Trim audio if max_duration_seconds is specified
@@ -156,17 +157,43 @@ class PodcastTranslationService:
                     episode.id, "downloaded", {"audio_path": original_path}
                 )
 
-            # Stage 2: Transcribe original audio using Whisper (or reuse)
-            # NOTE: Vocal separation SKIPPED - degrades transcription quality
+            # Stage 1.5: Separate vocals from background (or reuse)
+            if (
+                "vocals_separated" in stages
+                and Path(stages["vocals_separated"].get("vocals_path", "")).exists()
+                and Path(stages["vocals_separated"].get("background_path", "")).exists()
+            ):
+                logger.info(f"✅ Reusing separated vocals from previous attempt")
+                vocals_path = stages["vocals_separated"]["vocals_path"]
+                background_path = stages["vocals_separated"]["background_path"]
+            else:
+                logger.info(
+                    f"Step 1.5/8: Separating vocals from background for episode {episode.id}"
+                )
+                output_dir = str(self.temp_dir / str(episode.id) / "separated")
+                vocals_path, background_path = await self.audio_processor.separate_vocals(
+                    audio_path=original_path, output_dir=output_dir
+                )
+                logger.info(
+                    f"✅ Vocals separated: vocals={vocals_path}, background={background_path}"
+                )
+                await self._save_stage(
+                    episode.id,
+                    "vocals_separated",
+                    {"vocals_path": vocals_path, "background_path": background_path},
+                )
+
+            # Stage 2: Transcribe vocals only using Whisper (or reuse)
+            # NOTE: Transcribing vocals only (without background) improves accuracy
             if "transcribed" in stages:
                 logger.info(f"✅ Reusing transcript from previous attempt")
                 transcript = stages["transcribed"]["transcript"]
                 detected_lang = stages["transcribed"]["detected_lang"]
             else:
                 logger.info(
-                    f"Step 2/7: Transcribing original audio with Whisper for episode {episode.id}"
+                    f"Step 2/8: Transcribing vocals with Whisper for episode {episode.id}"
                 )
-                transcript, detected_lang = await self._transcribe_audio(original_path)
+                transcript, detected_lang = await self._transcribe_audio(vocals_path)
                 await self._save_stage(
                     episode.id,
                     "transcribed",
@@ -192,7 +219,7 @@ class PodcastTranslationService:
                 ]
             else:
                 logger.info(
-                    f"Step 2.5/7: Detecting and removing commercials for episode {episode.id}"
+                    f"Step 2.5/8: Detecting and removing commercials for episode {episode.id}"
                 )
                 clean_transcript, removed_commercials = await self._remove_commercials(
                     transcript
@@ -261,7 +288,7 @@ class PodcastTranslationService:
                 translated_text = stages["translated"]["translated_text"]
             else:
                 logger.info(
-                    f"Step 3/7: Translating from {source_lang_code} to {target_lang_code} for episode {episode.id}"
+                    f"Step 3/8: Translating from {source_lang_code} to {target_lang_code} for episode {episode.id}"
                 )
                 # Create translation provider for target language
                 translation_provider = TranslationProvider(
@@ -283,31 +310,56 @@ class PodcastTranslationService:
                 )
 
             # Stage 5: Generate TTS for translated text (or reuse)
-            translated_audio_path = str(
-                self.temp_dir / str(episode.id) / f"translated_{target_lang_code}.mp3"
+            translated_vocals_path = str(
+                self.temp_dir / str(episode.id) / f"translated_vocals_{target_lang_code}.mp3"
             )
             if (
                 "tts_generated" in stages
                 and Path(stages["tts_generated"].get("tts_path", "")).exists()
             ):
                 logger.info(f"✅ Reusing TTS audio from previous attempt")
-                translated_audio_path = stages["tts_generated"]["tts_path"]
+                translated_vocals_path = stages["tts_generated"]["tts_path"]
             else:
-                logger.info(f"Step 4/7: Generating TTS for episode {episode.id}")
-                translated_audio_path = await self._generate_tts(
+                logger.info(f"Step 4/8: Generating TTS for episode {episode.id}")
+                translated_vocals_path = await self._generate_tts(
                     text=translated_text,
                     language=target_lang_code,
-                    output_path=translated_audio_path,
+                    output_path=translated_vocals_path,
                     gender=gender,
                 )
                 await self._save_stage(
-                    episode.id, "tts_generated", {"tts_path": translated_audio_path}
+                    episode.id, "tts_generated", {"tts_path": translated_vocals_path}
+                )
+
+            # Stage 5.5: Mix translated vocals with original background (or reuse)
+            translated_audio_path = str(
+                self.temp_dir / str(episode.id) / f"translated_mixed_{target_lang_code}.mp3"
+            )
+            if (
+                "audio_mixed" in stages
+                and Path(stages["audio_mixed"].get("mixed_path", "")).exists()
+            ):
+                logger.info(f"✅ Reusing mixed audio from previous attempt")
+                translated_audio_path = stages["audio_mixed"]["mixed_path"]
+            else:
+                logger.info(
+                    f"Step 4.5/8: Mixing translated vocals with original background for episode {episode.id}"
+                )
+                translated_audio_path = await self.audio_processor.mix_audio(
+                    vocals_path=translated_vocals_path,
+                    background_path=background_path,
+                    output_path=translated_audio_path,
+                )
+                logger.info(
+                    f"✅ Audio mixed: translated vocals + original background = {translated_audio_path}"
+                )
+                await self._save_stage(
+                    episode.id, "audio_mixed", {"mixed_path": translated_audio_path}
                 )
 
             # Stage 6: Upload to GCS
-            # NOTE: Audio mixing SKIPPED - using TTS output directly (no background music)
             logger.info(
-                f"Step 5/7: Uploading translated audio for episode {episode.id}"
+                f"Step 5/8: Uploading translated audio for episode {episode.id}"
             )
             translated_url = await self._upload_translated_audio(
                 audio_path=translated_audio_path,
@@ -316,7 +368,7 @@ class PodcastTranslationService:
             )
 
             # Stage 7: Atomic update of episode document
-            logger.info(f"Step 6/7: Updating database for episode {episode.id}")
+            logger.info(f"Step 6/8: Updating database for episode {episode.id}")
             translation_data = {
                 "language": target_lang_code,
                 "audio_url": translated_url,
@@ -347,9 +399,9 @@ class PodcastTranslationService:
                 }
             )
 
-            # Stage 7: Cleanup temporary files
+            # Stage 8: Cleanup temporary files
             logger.info(
-                f"Step 7/7: Cleaning up temporary files for episode {episode.id}"
+                f"Step 7/8: Cleaning up temporary files for episode {episode.id}"
             )
             await self.audio_processor.cleanup_temp_files(str(episode.id))
 

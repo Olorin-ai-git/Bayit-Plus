@@ -457,6 +457,109 @@ class WhisperTranscriptionService:
             logger.error(f"❌ Large file transcription error: {str(e)}")
             raise
 
+    async def transcribe_with_word_timestamps(
+        self, audio_path: str, language: Optional[str] = None
+    ) -> list[dict]:
+        """
+        Transcribe audio file with word-level timestamps.
+        Required for speaker diarization alignment.
+
+        Args:
+            audio_path: Path to audio file
+            language: Optional language code
+
+        Returns:
+            List of dictionaries with word-level data:
+            [
+                {"word": "hello", "start": 0.0, "end": 0.5},
+                {"word": "world", "start": 0.5, "end": 1.0},
+                ...
+            ]
+
+        Raises:
+            Exception: If transcription fails
+        """
+        try:
+            import os
+            import subprocess
+            import tempfile
+
+            logger.info(f"📝 Transcribing with word timestamps: {audio_path}")
+
+            # Convert to WAV for better compatibility
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_wav:
+                temp_wav_path = temp_wav.name
+
+            try:
+                # Convert to WAV using ffmpeg
+                ffmpeg_cmd = [
+                    "ffmpeg",
+                    "-i",
+                    audio_path,
+                    "-acodec",
+                    "pcm_s16le",
+                    "-ar",
+                    "16000",
+                    "-ac",
+                    "1",
+                    "-y",
+                    temp_wav_path,
+                ]
+
+                subprocess.run(
+                    ffmpeg_cmd,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    check=True,
+                )
+
+                # Transcribe with timestamp_granularities for word-level timestamps
+                with open(temp_wav_path, "rb") as audio_file:
+                    if language:
+                        lang_code = WHISPER_LANGUAGE_CODES.get(language, language)
+                        transcript = await self.client.audio.transcriptions.create(
+                            model="whisper-1",
+                            file=audio_file,
+                            language=lang_code,
+                            response_format="verbose_json",
+                            timestamp_granularities=["word"],
+                        )
+                    else:
+                        transcript = await self.client.audio.transcriptions.create(
+                            model="whisper-1",
+                            file=audio_file,
+                            response_format="verbose_json",
+                            timestamp_granularities=["word"],
+                        )
+
+            finally:
+                # Clean up temp WAV file
+                if os.path.exists(temp_wav_path):
+                    os.remove(temp_wav_path)
+
+            # Extract word-level timestamps
+            words_with_timestamps = []
+
+            if hasattr(transcript, "words") and transcript.words:
+                for word_data in transcript.words:
+                    words_with_timestamps.append(
+                        {
+                            "word": word_data.word,
+                            "start": word_data.start,
+                            "end": word_data.end,
+                        }
+                    )
+
+            logger.info(
+                f"✅ Extracted {len(words_with_timestamps)} words with timestamps"
+            )
+
+            return words_with_timestamps
+
+        except Exception as e:
+            logger.error(f"❌ Word timestamp transcription error: {str(e)}")
+            raise
+
     def verify_service_availability(self) -> bool:
         """Verify OpenAI API is available."""
         try:
