@@ -7,7 +7,7 @@
 import { useState, useEffect } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { MessageSquare, Languages, Volume2 } from 'lucide-react'
+import { Radio, Languages, Volume2 } from 'lucide-react'
 import { GlassButton } from '@bayit/shared/components/ui/GlassButton'
 import { GlassSlider } from '@bayit/shared/components/ui/GlassSlider'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -104,7 +104,7 @@ export default function DubbingControls({
         {/* Main Toggle Button */}
         <GlassLiveControlButton
           icon={
-            <MessageSquare
+            <Radio
               size={18}
               color={isEnabled ? colors.primary : colors.textSecondary}
             />

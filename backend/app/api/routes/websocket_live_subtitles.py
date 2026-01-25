@@ -9,6 +9,7 @@ import logging
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
+from app.core.config import settings
 from app.models.content import LiveChannel
 from app.models.live_feature_quota import FeatureType, UsageSessionStatus
 from app.services.live_feature_quota_service import live_feature_quota_service
@@ -58,7 +59,26 @@ async def websocket_live_subtitles(
     """
     Live subtitle translation. Client sends: auth message + binary audio chunks.
     Server sends: connected, subtitle, error
+
+    Security Features:
+    - Enforces wss:// (secure WebSocket) in production
+    - Validates JWT token from authentication message
+    - Rate limits connections and audio chunks per user
+    - Validates channel and subscription tier
     """
+    # SECURITY: Step 0 - Enforce wss:// in production
+    if settings.olorin.dubbing.require_secure_websocket and not settings.DEBUG:
+        if websocket.url.scheme != "wss":
+            await websocket.close(
+                code=4000,
+                reason="Secure WebSocket (wss://) required in production",
+            )
+            logger.warning(
+                f"WebSocket connection rejected: insecure protocol ({websocket.url.scheme}) "
+                f"from {websocket.client}"
+            )
+            return
+
     # Accept connection (then authenticate via message)
     await websocket.accept()
 

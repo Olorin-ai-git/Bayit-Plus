@@ -7,7 +7,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Globe } from 'lucide-react'
+import { Languages } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassLiveControlButton } from './controls/GlassLiveControlButton'
 import liveSubtitleService, { LiveSubtitleCue } from '@/services/liveSubtitleService'
@@ -156,7 +156,7 @@ export default function LiveSubtitleControls({
     <View style={styles.container}>
       <GlassLiveControlButton
         icon={
-          <Globe
+          <Languages
             size={18}
             color={enabled ? colors.primary : colors.textSecondary}
           />
