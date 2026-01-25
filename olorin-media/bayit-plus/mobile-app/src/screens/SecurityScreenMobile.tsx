@@ -121,27 +121,26 @@ export const SecurityScreenMobile: React.FC = () => {
       navigation.navigate('TwoFactorSetup');
     } else {
       // Disable 2FA - confirm first
-      Alert.alert(
-        t('security.disable2FATitle'),
-        t('security.disable2FAMessage'),
-        [
-          { text: t('common.cancel'), style: 'cancel' },
-          {
-            text: t('security.disable'),
-            style: 'destructive',
-            onPress: async () => {
-              try {
-                await securityService.disableTwoFactor();
-                setTwoFactorEnabled(false);
-                ReactNativeHapticFeedback.trigger('notificationSuccess');
-              } catch (error) {
-                moduleLogger.error('Failed to disable 2FA:', error);
-                Alert.alert(t('common.error'), t('security.disable2FAError'));
-              }
-            },
+      notifications.show({
+        level: 'warning',
+        title: t('security.disable2FATitle'),
+        message: t('security.disable2FAMessage'),
+        dismissable: true,
+        action: {
+          label: t('security.disable'),
+          type: 'action',
+          onPress: async () => {
+            try {
+              await securityService.disableTwoFactor();
+              setTwoFactorEnabled(false);
+              ReactNativeHapticFeedback.trigger('notificationSuccess');
+            } catch (error) {
+              moduleLogger.error('Failed to disable 2FA:', error);
+              notifications.showError(t('security.disable2FAError'), t('common.error'));
+            }
           },
-        ]
-      );
+        },
+      });
     }
   }, [navigation, t]);
 
@@ -162,7 +161,7 @@ export const SecurityScreenMobile: React.FC = () => {
           ReactNativeHapticFeedback.trigger('notificationSuccess');
         } catch (error) {
           moduleLogger.error('Failed to enable biometric:', error);
-          Alert.alert(t('common.error'), t('security.enableBiometricError'));
+          notifications.showError(t('security.enableBiometricError'), t('common.error'));
         }
       }
     } else {
@@ -178,28 +177,27 @@ export const SecurityScreenMobile: React.FC = () => {
   const handleRemoveDevice = useCallback(async (deviceId: string) => {
     ReactNativeHapticFeedback.trigger('notificationWarning');
 
-    Alert.alert(
-      t('security.removeDeviceTitle'),
-      t('security.removeDeviceMessage'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('security.remove'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await securityService.removeDevice(deviceId);
-              setDevices(prev => prev.filter(d => d.id !== deviceId));
-              ReactNativeHapticFeedback.trigger('notificationSuccess');
-            } catch (error) {
-              moduleLogger.error('Failed to remove device:', error);
-              Alert.alert(t('common.error'), t('security.removeDeviceError'));
-            }
-          },
+    notifications.show({
+      level: 'warning',
+      title: t('security.removeDeviceTitle'),
+      message: t('security.removeDeviceMessage'),
+      dismissable: true,
+      action: {
+        label: t('security.remove'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await securityService.removeDevice(deviceId);
+            setDevices(prev => prev.filter(d => d.id !== deviceId));
+            ReactNativeHapticFeedback.trigger('notificationSuccess');
+          } catch (error) {
+            moduleLogger.error('Failed to remove device:', error);
+            notifications.showError(t('security.removeDeviceError'), t('common.error'));
+          }
         },
-      ]
-    );
-  }, [t]);
+      },
+    });
+  }, [t, notifications]);
 
   const getDeviceIcon = (type: string) => {
     switch (type.toLowerCase()) {
@@ -438,25 +436,24 @@ export const SecurityScreenMobile: React.FC = () => {
             title={t('security.signOutAllDevices')}
             onPress={() => {
               ReactNativeHapticFeedback.trigger('notificationWarning');
-              Alert.alert(
-                t('security.signOutAllTitle'),
-                t('security.signOutAllMessage'),
-                [
-                  { text: t('common.cancel'), style: 'cancel' },
-                  {
-                    text: t('security.signOut'),
-                    style: 'destructive',
-                    onPress: async () => {
-                      try {
-                        await securityService.signOutAllDevices();
-                        navigation.navigate('Login');
-                      } catch (error) {
-                        moduleLogger.error('Failed to sign out all devices:', error);
-                      }
-                    },
+              notifications.show({
+                level: 'warning',
+                title: t('security.signOutAllTitle'),
+                message: t('security.signOutAllMessage'),
+                dismissable: true,
+                action: {
+                  label: t('security.signOut'),
+                  type: 'action',
+                  onPress: async () => {
+                    try {
+                      await securityService.signOutAllDevices();
+                      navigation.navigate('Login');
+                    } catch (error) {
+                      moduleLogger.error('Failed to sign out all devices:', error);
+                    }
                   },
-                ]
-              );
+                },
+              });
             }}
             variant="danger"
           />
