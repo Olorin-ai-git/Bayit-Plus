@@ -69,13 +69,17 @@ from app.models.upload import (BrowserUploadSession, MonitoredFolder,
 # Models
 from app.models.user import User
 from app.models.user_system_widget import UserSystemWidget
+from app.models.playback_session import PlaybackSession
+from app.models.notification_event import NotificationEvent, NotificationMetrics
+from app.models.passkey_credential import PasskeyCredential, PasskeySession, PasskeyChallenge
+from app.models.voice_config import VoiceConfiguration, VoiceProviderHealth
 from app.models.verification import VerificationToken
 from app.models.watchlist import Conversation, WatchHistory, WatchlistItem
 from app.models.widget import Widget
 from app.models.youngsters_content import YoungstersContentSource
 from app.services.mcp_content_discovery import ContentDiscoveryQueue
 # Migration tracking models (script infrastructure)
-from scripts.migrations.models import MigrationRecord, RollbackData
+from scripts.backend.migrations.models import MigrationRecord, RollbackData
 
 
 class Database:
@@ -96,6 +100,14 @@ async def connect_to_mongo():
     # Build document models list
     document_models: List[Type[Document]] = [
         User,
+        PlaybackSession,
+        NotificationEvent,
+        NotificationMetrics,
+        PasskeyCredential,
+        PasskeySession,
+        PasskeyChallenge,
+        VoiceConfiguration,
+        VoiceProviderHealth,
         VerificationToken,
         Content,
         LiveChannel,

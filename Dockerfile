@@ -51,6 +51,9 @@ COPY --from=builder /build/packages /build/packages
 # Copy application code
 COPY --chown=bayit:bayit backend/app ./app
 
+# Copy scripts directory (needed for migration models)
+COPY --chown=bayit:bayit scripts ./scripts
+
 # Switch to non-root user
 USER bayit
 
