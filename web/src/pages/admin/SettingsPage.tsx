@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { Save, RefreshCw, Trash2, AlertTriangle } from 'lucide-react';
 import { settingsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
-import { GlassCard, GlassButton, GlassModal, GlassInput, GlassToggle, GlassView } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal, GlassInput, GlassToggle, GlassView, GlassPageHeader } from '@bayit/shared/ui';
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import { useDirection } from '@/hooks/useDirection';
-import { useModal } from '@/contexts/ModalContext';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import logger from '@/utils/logger';
 
 interface SystemSettings {
@@ -22,7 +23,7 @@ interface SystemSettings {
 export default function SettingsPage() {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
-  const { showConfirm } = useModal();
+  const notifications = useNotifications();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<SystemSettings | null>(null);
@@ -84,39 +85,49 @@ export default function SettingsPage() {
   };
 
   const handleClearCache = () => {
-    showConfirm(
-      t('admin.settings.confirmClearCache'),
-      async () => {
-        try {
-          await settingsService.clearCache();
-          setSuccessMessage(t('admin.settings.cacheCleared'));
-          setSuccessModalOpen(true);
-        } catch (error: any) {
-          logger.error('Failed to clear cache', 'SettingsPage', error);
-          setErrorMessage(error?.message || error?.detail || 'Failed to clear cache. Please check your permissions.');
-          setErrorModalOpen(true);
-        }
+    notifications.show({
+      level: 'warning',
+      message: t('admin.settings.confirmClearCache'),
+      dismissable: true,
+      action: {
+        label: t('common.confirm', 'Confirm'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await settingsService.clearCache();
+            setSuccessMessage(t('admin.settings.cacheCleared'));
+            setSuccessModalOpen(true);
+          } catch (error: any) {
+            logger.error('Failed to clear cache', 'SettingsPage', error);
+            setErrorMessage(error?.message || error?.detail || 'Failed to clear cache. Please check your permissions.');
+            setErrorModalOpen(true);
+          }
+        },
       },
-      { confirmText: t('common.confirm', 'Confirm') }
-    );
+    });
   };
 
   const handleResetAnalytics = () => {
-    showConfirm(
-      t('admin.settings.confirmResetAnalytics'),
-      async () => {
-        try {
-          await settingsService.resetAnalytics();
-          setSuccessMessage(t('admin.settings.analyticsReset'));
-          setSuccessModalOpen(true);
-        } catch (error: any) {
-          logger.error('Failed to reset analytics', 'SettingsPage', error);
-          setErrorMessage(error?.message || error?.detail || 'Failed to reset analytics. Please check your permissions.');
-          setErrorModalOpen(true);
-        }
+    notifications.show({
+      level: 'warning',
+      message: t('admin.settings.confirmResetAnalytics'),
+      dismissable: true,
+      action: {
+        label: t('common.reset', 'Reset'),
+        type: 'action',
+        onPress: async () => {
+          try {
+            await settingsService.resetAnalytics();
+            setSuccessMessage(t('admin.settings.analyticsReset'));
+            setSuccessModalOpen(true);
+          } catch (error: any) {
+            logger.error('Failed to reset analytics', 'SettingsPage', error);
+            setErrorMessage(error?.message || error?.detail || 'Failed to reset analytics. Please check your permissions.');
+            setErrorModalOpen(true);
+          }
+        },
       },
-      { destructive: true, confirmText: t('common.reset', 'Reset') }
-    );
+    });
   };
 
   if (loading || !settings) {
@@ -128,15 +139,28 @@ export default function SettingsPage() {
     );
   }
 
+  const pageConfig = ADMIN_PAGE_CONFIG.settings;
+  const IconComponent = pageConfig.icon;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
-      <View style={[styles.header, { flexDirection }]}>
-        <View>
-          <Text style={[styles.title, { textAlign }]}>{t('admin.titles.settings')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>{t('admin.settings.subtitle')}</Text>
-        </View>
-        <GlassButton title={t('admin.settings.saveChanges')} variant="success" icon={<Save size={16} color="white" />} onPress={handleSave} disabled={!hasChanges || saving} />
-      </View>
+      <GlassPageHeader
+        title={t('admin.titles.settings')}
+        subtitle={t('admin.settings.subtitle')}
+        icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig.iconColor}
+        iconBackgroundColor={pageConfig.iconBackgroundColor}
+        isRTL={isRTL}
+        action={
+          <GlassButton
+            title={t('admin.settings.saveChanges')}
+            variant="success"
+            icon={<Save size={16} color="white" />}
+            onPress={handleSave}
+            disabled={!hasChanges || saving}
+          />
+        }
+      />
 
       <View style={styles.cardsContainer}>
         <GlassCard style={styles.card}>
