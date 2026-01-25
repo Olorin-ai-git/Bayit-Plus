@@ -14,6 +14,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { ttsService } from '@bayit/shared-services';
 import i18n from '@bayit/shared-i18n';
 import { Notifications } from '@olorin/glass-ui/hooks';
+import type { NotificationOptions } from '@olorin/glass-ui';
 import logger from './logger';
 
 export type ErrorSeverity = 'info' | 'warning' | 'error' | 'critical';
@@ -304,7 +305,7 @@ class ErrorHandler {
    * Show error alert to user
    */
   showErrorAlert(errorDetails: ErrorDetails, onRetry?: () => void): void {
-    let notification: any = {
+    const notification: NotificationOptions = {
       level: errorDetails.severity === 'critical' ? 'error' : 'warning',
       message: errorDetails.userMessage,
       title: i18n.t('errors.title'),
