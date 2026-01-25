@@ -57,8 +57,8 @@ COPY --chown=bayit:bayit scripts ./scripts
 # Switch to non-root user
 USER bayit
 
-# Expose port (Cloud Run uses PORT env var)
-EXPOSE 8000
+# Expose port (Cloud Run uses PORT env var, defaults to 8080)
+EXPOSE 8080
 
-# Run application (use PORT env var, default to 8000 for local dev)
-CMD sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 4"
+# Run application (use PORT env var, default to 8080 for Cloud Run)
+CMD sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080} --workers 4"
