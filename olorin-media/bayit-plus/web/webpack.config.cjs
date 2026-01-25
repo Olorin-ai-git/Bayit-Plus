@@ -219,6 +219,13 @@ module.exports = (env, argv) => {
         'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || '/api/v1'),
         // Picovoice Porcupine wake word access key
         'import.meta.env.VITE_PICOVOICE_ACCESS_KEY': JSON.stringify(process.env.VITE_PICOVOICE_ACCESS_KEY || ''),
+        // Cast Configuration (AirPlay & Chromecast)
+        'import.meta.env.VITE_CAST_ENABLE_AIRPLAY': JSON.stringify(process.env.VITE_CAST_ENABLE_AIRPLAY || 'false'),
+        'import.meta.env.VITE_CAST_ENABLE_CHROMECAST': JSON.stringify(process.env.VITE_CAST_ENABLE_CHROMECAST || 'false'),
+        'import.meta.env.VITE_CHROMECAST_RECEIVER_APP_ID': JSON.stringify(process.env.VITE_CHROMECAST_RECEIVER_APP_ID || ''),
+        'import.meta.env.VITE_CAST_SYNC_INTERVAL_MS': JSON.stringify(process.env.VITE_CAST_SYNC_INTERVAL_MS || '1000'),
+        'import.meta.env.VITE_CAST_AUTO_SYNC': JSON.stringify(process.env.VITE_CAST_AUTO_SYNC || 'true'),
+        'import.meta.env.VITE_CAST_SDK_URL': JSON.stringify(process.env.VITE_CAST_SDK_URL || 'https://www.gstatic.com/cv/js/sender/v1/cast_sender.js'),
       }),
       new webpack.ProvidePlugin({
         process: 'process/browser',

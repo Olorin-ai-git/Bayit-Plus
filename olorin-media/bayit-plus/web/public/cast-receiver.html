@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayit+ Cast Receiver</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+        }
+
+        #splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+            overflow: hidden;
+        }
+
+        #splash.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Fullscreen background video */
+        #splash .splash-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            object-fit: fill;
+            object-position: center center;
+            z-index: 1;
+        }
+
+        /* Slogan overlay - appears after video ends */
+        #splash .slogan-overlay {
+            position: fixed;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            opacity: 0;
+            transition: opacity 0.8s ease-out;
+            background: rgba(168, 85, 247, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(147, 51, 234, 0.4);
+            border-radius: 16px;
+            padding: 12px 32px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        #splash .slogan-overlay.show {
+            opacity: 1;
+        }
+
+        #splash .slogan-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+            text-align: center;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(192, 132, 252, 0.9) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+
+        #media-info {
+            position: absolute;
+            bottom: 100px;
+            left: 50px;
+            right: 50px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            z-index: 100;
+        }
+
+        #media-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #media-subtitle {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        #live-badge {
+            display: none;
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            background: #ff0000;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        #live-badge.visible {
+            display: block;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen with Intro Video -->
+    <div id="splash">
+        <!-- Fullscreen background video -->
+        <video
+            id="splash-video"
+            class="splash-bg"
+            autoplay
+            muted
+            playsinline
+            preload="auto"
+        >
+            <source src="/assets/video/intro/Bayit_Intro_English.mp4" type="video/mp4" />
+        </video>
+
+        <!-- Slogan overlay -->
+        <div class="slogan-overlay">
+            <p class="slogan-text">Your Home. Anywhere.</p>
+        </div>
+    </div>
+
+    <!-- Live Badge -->
+    <div id="live-badge" class="pulse">● LIVE</div>
+
+    <!-- Media Info -->
+    <div id="media-info">
+        <div id="media-title"></div>
+        <div id="media-subtitle"></div>
+    </div>
+
+    <!-- Cast Receiver SDK -->
+    <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+
+    <script>
+        // Handle intro video playback
+        (function() {
+            const video = document.getElementById('splash-video');
+            const sloganOverlay = document.querySelector('.slogan-overlay');
+            const splash = document.getElementById('splash');
+
+            if (!video || !sloganOverlay || !splash) return;
+
+            // Play video on load
+            video.addEventListener('canplay', function onCanPlay() {
+                video.play().catch(err => {
+                    console.log('[Bayit+ Receiver] Video autoplay blocked:', err);
+                    // If autoplay fails, show slogan immediately
+                    sloganOverlay.classList.add('show');
+                });
+                video.removeEventListener('canplay', onCanPlay);
+            });
+
+            // Show slogan when video ends
+            video.addEventListener('ended', function() {
+                sloganOverlay.classList.add('show');
+                // Auto-hide splash after showing slogan briefly (unless media starts loading)
+                setTimeout(function() {
+                    if (!window.mediaLoading) {
+                        splash.classList.add('hidden');
+                    }
+                }, 2000);
+            });
+
+            // Handle video load errors
+            video.addEventListener('error', function(e) {
+                console.log('[Bayit+ Receiver] Video load error, showing slogan');
+                sloganOverlay.classList.add('show');
+                setTimeout(function() {
+                    if (!window.mediaLoading) {
+                        splash.classList.add('hidden');
+                    }
+                }, 2000);
+            });
+
+            // Load the video
+            video.load();
+        })();
+    </script>
+
+    <script>
+        const context = cast.framework.CastReceiverContext.getInstance();
+        const playerManager = context.getPlayerManager();
+
+        // Configure receiver options
+        const options = new cast.framework.CastReceiverOptions();
+        options.disableIdleTimeout = false;
+        options.maxInactivity = 3600; // 1 hour
+
+        // Media element customization
+        const playbackConfig = new cast.framework.PlaybackConfig();
+        playbackConfig.autoResumeDuration = 5; // Resume playback after 5 seconds
+        playbackConfig.autoPauseDuration = null; // Don't auto-pause
+
+        // Handle media loading
+        playerManager.setMessageInterceptor(
+            cast.framework.messages.MessageType.LOAD,
+            (loadRequestData) => {
+                console.log('[Bayit+ Receiver] Loading media:', loadRequestData);
+
+                // Flag that media is loading
+                window.mediaLoading = true;
+
+                // Hide splash screen when media loads
+                setTimeout(() => {
+                    document.getElementById('splash').classList.add('hidden');
+                }, 500);
+
+                return loadRequestData;
+            }
+        );
+
+        // Update media info display
+        playerManager.addEventListener(
+            cast.framework.events.EventType.MEDIA_STATUS,
+            (event) => {
+                const media = event.media;
+                if (!media) return;
+
+                const metadata = media.metadata;
+                const titleEl = document.getElementById('media-title');
+                const subtitleEl = document.getElementById('media-subtitle');
+                const liveBadge = document.getElementById('live-badge');
+
+                if (metadata) {
+                    titleEl.textContent = metadata.title || '';
+                    subtitleEl.textContent = metadata.subtitle || '';
+                }
+
+                // Show LIVE badge for live streams
+                if (media.streamType === cast.framework.messages.StreamType.LIVE) {
+                    liveBadge.classList.add('visible');
+                } else {
+                    liveBadge.classList.remove('visible');
+                }
+            }
+        );
+
+        // Handle errors
+        playerManager.addEventListener(
+            cast.framework.events.EventType.ERROR,
+            (error) => {
+                console.error('[Bayit+ Receiver] Error:', error);
+            }
+        );
+
+        // Log ready state
+        context.addEventListener(
+            cast.framework.system.EventType.READY,
+            () => {
+                console.log('[Bayit+ Receiver] Ready to cast');
+            }
+        );
+
+        // Start receiver
+        context.start(options);
+        console.log('[Bayit+ Receiver] Initialized');
+    </script>
+</body>
+</html>

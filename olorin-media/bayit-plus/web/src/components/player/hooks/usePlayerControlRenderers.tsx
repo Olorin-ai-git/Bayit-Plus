@@ -4,11 +4,13 @@ import SubtitleControls from '../SubtitleControls'
 import LiveSubtitleControls from '../LiveSubtitleControls'
 import { DubbingControls } from '../dubbing'
 import { RecordButton } from '../RecordButton'
+import CastButton from '../controls/CastButton'
 import liveSubtitleService from '@/services/liveSubtitleService'
 import { SubtitleTrack, SubtitleSettings } from '@/types/subtitle'
 import { UseLiveDubbingState } from './useLiveDubbing'
 import { WatchParty } from '@/types/watchparty'
 import { SubtitleCue } from '../types'
+import { CastSession } from '../types/cast'
 
 interface UsePlayerControlRenderersParams {
   // User and content
@@ -45,6 +47,9 @@ interface UsePlayerControlRenderersParams {
   // Dubbing
   dubbing: UseLiveDubbingState
 
+  // Cast
+  cast: CastSession
+
   // Recording
   setIsRecording: (recording: boolean) => void
   setRecordingDuration: (duration: number) => void
@@ -79,6 +84,7 @@ export function usePlayerControlRenderers({
   setLiveSubtitleLang,
   handleLiveSubtitleCue,
   dubbing,
+  cast,
   setIsRecording,
   setRecordingDuration,
   onShowUpgrade,
@@ -191,17 +197,28 @@ export function usePlayerControlRenderers({
     ) : null
   , [isLive, contentId, isPremium, onShowUpgrade, setIsRecording, setRecordingDuration])
 
+  const renderCastButton = useCallback(() =>
+    cast.isAvailable ? (
+      <CastButton
+        castSession={cast}
+        onHoveredButtonChange={onHoveredButtonChange}
+      />
+    ) : null
+  , [cast, onHoveredButtonChange])
+
   return useMemo(() => ({
     renderWatchPartyButton,
     renderSubtitleControls,
     renderLiveSubtitleControls,
     renderDubbingControls,
     renderRecordButton,
+    renderCastButton,
   }), [
     renderWatchPartyButton,
     renderSubtitleControls,
     renderLiveSubtitleControls,
     renderDubbingControls,
     renderRecordButton,
+    renderCastButton,
   ])
 }

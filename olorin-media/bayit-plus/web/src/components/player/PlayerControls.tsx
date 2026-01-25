@@ -30,6 +30,7 @@ interface PlayerControlsProps {
   renderLiveSubtitleControls?: () => React.ReactNode
   renderDubbingControls?: () => React.ReactNode
   renderRecordButton?: () => React.ReactNode
+  renderCastButton?: () => React.ReactNode
 }
 
 export default function PlayerControls({
@@ -54,6 +55,7 @@ export default function PlayerControls({
   renderLiveSubtitleControls,
   renderDubbingControls,
   renderRecordButton,
+  renderCastButton,
 }: PlayerControlsProps) {
   return (
     <View style={styles.controlsRow}>
@@ -81,6 +83,7 @@ export default function PlayerControls({
         onSceneSearchToggle={onSceneSearchToggle}
         onSettingsToggle={onSettingsToggle}
         renderWatchPartyButton={renderWatchPartyButton}
+        renderCastButton={renderCastButton}
         renderSubtitleControls={renderSubtitleControls}
         renderLiveSubtitleControls={renderLiveSubtitleControls}
         renderDubbingControls={renderDubbingControls}

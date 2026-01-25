@@ -13,3 +13,5 @@ export type { UseLiveDubbingOptions, UseLiveDubbingState } from './useLiveDubbin
 export { useTrivia } from './useTrivia'
 export { usePlayerPanels } from './usePlayerPanels'
 export { usePlayerControlRenderers } from './usePlayerControlRenderers'
+export { useCastSession } from './useCastSession'
+export { usePlaybackSession } from './usePlaybackSession'
