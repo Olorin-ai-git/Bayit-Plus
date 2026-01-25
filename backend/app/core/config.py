@@ -120,6 +120,9 @@ class Settings(BaseSettings):
     # OpenAI (Whisper speech-to-text)
     OPENAI_API_KEY: str = ""
 
+    # HuggingFace (for speaker diarization models)
+    HUGGINGFACE_TOKEN: str = ""
+
     # Speech-to-Text Provider Selection
     # Options: "google" (Google Cloud), "whisper" (OpenAI Whisper), or "elevenlabs" (ElevenLabs Scribe v2)
     # ElevenLabs offers lowest latency (~150ms) with excellent Hebrew support
