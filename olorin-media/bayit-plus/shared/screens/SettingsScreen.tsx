@@ -6,9 +6,9 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GlassView, TVSwitch } from '../components/ui';
@@ -75,6 +75,7 @@ const SettingRow: React.FC<SettingRowProps> = ({
 
 export default function SettingsScreen() {
   const { t, i18n } = useTranslation();
+  const notificationSystem = useNotifications();
   const navigation = useNavigation<any>();
   const { isRTL, textAlign, flexDirection } = useDirection();
   const { user, logout } = useAuthStore();
@@ -235,9 +236,9 @@ export default function SettingsScreen() {
 
   const handlePINSubmit = async () => {
     if (pinInput.length !== 4) {
-      Alert.alert(
-        t('settings.invalidPIN', 'Invalid PIN'),
-        t('settings.pinMustBe4Digits', 'PIN must be 4 digits')
+      notificationSystem.showError(
+        t('settings.pinMustBe4Digits', 'PIN must be 4 digits'),
+        t('settings.invalidPIN', 'Invalid PIN')
       );
       return;
     }
@@ -249,9 +250,9 @@ export default function SettingsScreen() {
       await AsyncStorage.setItem('bayit_parental_control_pin', pinInput);
       await AsyncStorage.setItem('bayit_parental_controls_enabled', 'true');
 
-      Alert.alert(
-        t('settings.pinSet', 'PIN Set'),
-        t('settings.parentalControlsEnabled', 'Parental controls have been enabled')
+      notificationSystem.showSuccess(
+        t('settings.parentalControlsEnabled', 'Parental controls have been enabled'),
+        t('settings.pinSet', 'PIN Set')
       );
     } else if (pinModalMode === 'verify') {
       // Verify PIN to disable
@@ -259,14 +260,14 @@ export default function SettingsScreen() {
         setParentalControlsEnabled(false);
         await AsyncStorage.setItem('bayit_parental_controls_enabled', 'false');
 
-        Alert.alert(
-          t('settings.success', 'Success'),
-          t('settings.parentalControlsDisabled', 'Parental controls have been disabled')
+        notificationSystem.showSuccess(
+          t('settings.parentalControlsDisabled', 'Parental controls have been disabled'),
+          t('settings.success', 'Success')
         );
       } else {
-        Alert.alert(
-          t('settings.incorrectPIN', 'Incorrect PIN'),
-          t('settings.tryAgain', 'Please try again')
+        notificationSystem.showError(
+          t('settings.tryAgain', 'Please try again'),
+          t('settings.incorrectPIN', 'Incorrect PIN')
         );
         setPinInput('');
         return;
@@ -276,9 +277,9 @@ export default function SettingsScreen() {
       setParentalControlPIN(pinInput);
       await AsyncStorage.setItem('bayit_parental_control_pin', pinInput);
 
-      Alert.alert(
-        t('settings.pinChanged', 'PIN Changed'),
-        t('settings.pinChangedSuccess', 'Your PIN has been updated')
+      notificationSystem.showSuccess(
+        t('settings.pinChangedSuccess', 'Your PIN has been updated'),
+        t('settings.pinChanged', 'PIN Changed')
       );
     }
 
