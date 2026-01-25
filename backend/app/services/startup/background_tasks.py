@@ -162,6 +162,33 @@ async def _cleanup_upload_sessions_task() -> None:
         await asyncio.sleep(settings.UPLOAD_SESSION_CLEANUP_INTERVAL_SECONDS)
 
 
+async def _cleanup_stale_playback_sessions_task() -> None:
+    """Clean up stale playback sessions (no heartbeat for 2+ minutes)."""
+    from app.services.session_manager import session_manager
+
+    # Wait for server to initialize
+    await asyncio.sleep(30)
+
+    while True:
+        try:
+            # Run cleanup (2-minute heartbeat timeout)
+            cleaned_count = await session_manager.cleanup_stale_sessions(
+                timeout_seconds=120
+            )
+
+            if cleaned_count > 0:
+                logger.info(f"Cleaned up {cleaned_count} stale playback sessions")
+
+        except asyncio.CancelledError:
+            logger.info("Playback session cleanup task cancelled")
+            break
+        except Exception as e:
+            logger.error(f"Playback session cleanup error: {e}", exc_info=True)
+
+        # Run cleanup every 5 minutes (300 seconds)
+        await asyncio.sleep(300)
+
+
 def start_background_tasks() -> None:
     """Start all background tasks."""
     global _running_tasks
@@ -197,6 +224,11 @@ def start_background_tasks() -> None:
     task = asyncio.create_task(get_session_monitor())
     _running_tasks.append(task)
     logger.info("Started live feature session monitor (checks every 5 minutes)")
+
+    # Playback session cleanup (always runs)
+    task = asyncio.create_task(_cleanup_stale_playback_sessions_task())
+    _running_tasks.append(task)
+    logger.info("Started playback session cleanup background task (every 5 minutes)")
 
 
 async def stop_background_tasks() -> None:

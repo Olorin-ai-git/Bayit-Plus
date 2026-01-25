@@ -20,6 +20,7 @@
     "recommended": "מומלץ",
     "edit": "ערוך",
     "delete": "מחק",
+    "disconnect": "התנתק",
     "add": "הוסף",
     "enabled": "מופעל",
     "disabled": "כבוי",
@@ -963,6 +964,15 @@
     "restart": "התחל מההתחלה",
     "subtitlesOff": "כבוי",
     "speed": "מהירות",
+    "cast": {
+      "start": "שדר לטלוויזיה",
+      "connected": "משדר ל{{device}}",
+      "disconnect": "התנתק מ{{device}}",
+      "connecting": "מתחבר למכשיר שידור...",
+      "error": "שגיאה בהתחברות למכשיר שידור",
+      "noDevices": "לא נמצאו מכשירי שידור",
+      "unsupported": "השידור אינו זמין לתוכן זה"
+    },
     "selectQuality": "בחר איכות וידאו",
     "quality4k": "4K Ultra HD",
     "quality1080p": "1080p Full HD",
@@ -2796,7 +2806,45 @@
     "selected": "נבחר",
     "processing": "מעבד...",
     "startTrial": "התחל ניסיון חינם",
-    "noCharge": "לא יחויב כרטיס האשראי במהלך תקופת הניסיון"
+    "noCharge": "לא יחויב כרטיס האשראי במהלך תקופת הניסיון",
+    "premiumShowcase": {
+      "title": "חווה אינטליגנציה פרימיום",
+      "subtitle": "תכונות מבוססות בינה מלאכותית שמתאימות את עצמן לאופן הצפייה שלך",
+      "videoTitle": "ראה ווידג'טים בפעולה",
+      "videoDescription": "צפה במבוא של דקותיים לווידג'טים צפים",
+      "widgetTitle": "הדגמה חיה אינטראקטיבית",
+      "widgetDescription": "גרור, שנה גודל ובצע ריבוי משימות עם כאן 11",
+      "aiAssistant": {
+        "title": "עוזר חכם AI",
+        "description": "המלצות מותאמות אישית המופעלות על ידי למידת מכונה"
+      },
+      "floatingWidgets": {
+        "title": "ווידג'טים צפים",
+        "description": "צפה במספר ערוצים תוך כדי גלישה בתוכן"
+      },
+      "a11y": {
+        "playVideo": "הפעל סרטון הצגת ווידג'טים",
+        "playVideoHint": "פותח הדגמת וידאו במסך מלא"
+      },
+      "badges": {
+        "aiPowered": "מופעל על ידי AI",
+        "interactiveDemo": "הדגמה אינטראקטיבית"
+      }
+    },
+    "comparison": {
+      "title": "השוואת מסלולים",
+      "subtitle": "מצא את המסלול המושלם עבורך",
+      "features": "תכונות",
+      "perMonth": "/חודש",
+      "scrollHint": "→ גלול כדי לראות את כל המסלולים ←",
+      "categories": {
+        "content": "גישה לתוכן",
+        "quality": "איכות וביצועים",
+        "devices": "מכשירים וסטרימינג",
+        "features": "תכונות",
+        "support": "תמיכה"
+      }
+    }
   },
   "notFound": {
     "title": "הדף לא נמצא",

@@ -27,6 +27,9 @@ target 'BayitPlus' do
     :production => !post_install_setup_env
   )
 
+  # Google Cast SDK for Chromecast support
+  pod 'google-cast-sdk', '~> 4.8'
+
   post_install do |installer|
     react_native_post_install(
       installer,

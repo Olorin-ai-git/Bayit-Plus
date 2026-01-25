@@ -29,14 +29,17 @@ from app.models.jewish_news import (JewishNewsAggregatedResponse,
 from app.models.live_feature_quota import (FeatureType, LiveFeatureQuota,
                                            LiveFeatureUsageSession,
                                            UsageSessionStatus, UsageStats)
+from app.models.migration import MigrationRecord, RollbackData
 from app.models.passkey_credential import (PasskeyChallenge, PasskeyCredential,
                                            PasskeySession)
 from app.models.recording import (Recording, RecordingQuota, RecordingSchedule,
                                   RecordingSession, RecordingSubtitleCue)
 from app.models.subscription import (SUBSCRIPTION_PLANS, Invoice, Subscription,
                                      SubscriptionPlan)
-from app.models.user import (TokenResponse, User, UserCreate, UserLogin,
-                             UserResponse, UserUpdate)
+from app.models.playback_session import (PlaybackSession, PlaybackSessionCreate,
+                                         PlaybackSessionResponse)
+from app.models.user import (Device, TokenResponse, User, UserCreate,
+                             UserLogin, UserResponse, UserUpdate)
 from app.models.user_system_widget import (UserSystemWidget,
                                            UserSystemWidgetPositionUpdate,
                                            UserSystemWidgetPreferencesUpdate,
@@ -51,6 +54,11 @@ __all__ = [
     "UserUpdate",
     "UserResponse",
     "TokenResponse",
+    "Device",
+    # Playback Session
+    "PlaybackSession",
+    "PlaybackSessionCreate",
+    "PlaybackSessionResponse",
     # Content
     "Content",
     "ContentBase",
@@ -131,4 +139,7 @@ __all__ = [
     "FeatureType",
     "UsageSessionStatus",
     "UsageStats",
+    # Migration Tracking
+    "MigrationRecord",
+    "RollbackData",
 ]

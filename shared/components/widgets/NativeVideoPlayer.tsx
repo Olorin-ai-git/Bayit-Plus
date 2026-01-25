@@ -15,6 +15,7 @@ interface NativeVideoPlayerProps {
   onLoad: () => void;
   onEnd: () => void;
   onError: () => void;
+  enableCast?: boolean;
 }
 
 export const NativeVideoPlayer: React.FC<NativeVideoPlayerProps> = ({
@@ -24,7 +25,13 @@ export const NativeVideoPlayer: React.FC<NativeVideoPlayerProps> = ({
   onLoad,
   onEnd,
   onError,
+  enableCast = false,
 }) => {
+  // Note: Cast functionality placeholder
+  // Intro videos use native controls, so custom cast button would require
+  // disabling native controls and building full control overlay.
+  // For simplicity, cast is managed at the MobileVideoPlayer component level.
+
   return (
     <Video
       source={{ uri: videoUrl }}

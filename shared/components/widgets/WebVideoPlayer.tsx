@@ -17,6 +17,7 @@ interface WebVideoPlayerProps {
   onLoadedData: () => void;
   onEnded: () => void;
   onError: () => void;
+  enableCast?: boolean;
 }
 
 export const WebVideoPlayer: React.FC<WebVideoPlayerProps> = ({
@@ -28,8 +29,14 @@ export const WebVideoPlayer: React.FC<WebVideoPlayerProps> = ({
   onLoadedData,
   onEnded,
   onError,
+  enableCast = false,
 }) => {
   const { t } = useTranslation();
+
+  // Note: Cast functionality placeholder
+  // Intro videos use native controls, so custom cast button would require
+  // disabling native controls and building full control overlay.
+  // For simplicity, cast is managed at the VideoPlayer component level.
 
   return (
     <video

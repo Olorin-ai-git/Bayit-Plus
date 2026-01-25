@@ -11,7 +11,7 @@ from typing import List, Optional
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.core.database import get_database
-from scripts.migrations.models import MigrationRecord
+from app.models.migration import MigrationRecord
 
 
 class MigrationRegistry:

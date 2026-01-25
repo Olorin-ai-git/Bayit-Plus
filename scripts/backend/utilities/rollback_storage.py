@@ -8,7 +8,7 @@ from typing import List, Dict, Any
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
-from scripts.migrations.models import RollbackData
+from app.models.migration import RollbackData
 
 
 class RollbackStorage:

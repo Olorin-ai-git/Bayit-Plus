@@ -17,6 +17,7 @@
     "recommended": "Recomendado",
     "edit": "Editar",
     "delete": "Eliminar",
+    "disconnect": "Desconectar",
     "add": "Agregar",
     "enabled": "Habilitado",
     "disabled": "Deshabilitado",
@@ -882,6 +883,15 @@
     "auto": "Automático",
     "subtitlesOff": "Desactivados",
     "speed": "Velocidad",
+    "cast": {
+      "start": "Transmitir a TV",
+      "connected": "Transmitiendo a {{device}}",
+      "disconnect": "Desconectar de {{device}}",
+      "connecting": "Conectando al dispositivo de transmisión...",
+      "error": "Error al conectar al dispositivo de transmisión",
+      "noDevices": "No se encontraron dispositivos de transmisión",
+      "unsupported": "La transmisión no está disponible para este contenido"
+    },
     "subscription": {
       "requiredMessage": "requiere una suscripción paga",
       "requiredTitle": "Suscripción Requerida",
@@ -2625,7 +2635,45 @@
     "selected": "Seleccionado",
     "processing": "Procesando...",
     "startTrial": "Comenzar Prueba Gratis",
-    "noCharge": "Tu tarjeta de crédito no será cobrada durante el período de prueba"
+    "noCharge": "Tu tarjeta de crédito no será cobrada durante el período de prueba",
+    "premiumShowcase": {
+      "title": "Experimenta la Inteligencia Premium",
+      "subtitle": "Funciones impulsadas por IA que se adaptan a tu forma de ver",
+      "videoTitle": "Ver Widgets en Acción",
+      "videoDescription": "Mira nuestra introducción de 2 minutos a los widgets flotantes",
+      "widgetTitle": "Demo Interactiva en Vivo",
+      "widgetDescription": "Arrastra, redimensiona y multitarea con Kan11",
+      "aiAssistant": {
+        "title": "Asistente Inteligente AI",
+        "description": "Recomendaciones personalizadas impulsadas por aprendizaje automático"
+      },
+      "floatingWidgets": {
+        "title": "Widgets Flotantes",
+        "description": "Mira múltiples canales mientras navegas por el contenido"
+      },
+      "a11y": {
+        "playVideo": "Reproducir vídeo de introducción a widgets",
+        "playVideoHint": "Abre demostración en vídeo a pantalla completa"
+      },
+      "badges": {
+        "aiPowered": "IMPULSADO POR IA",
+        "interactiveDemo": "DEMO INTERACTIVA"
+      }
+    },
+    "comparison": {
+      "title": "Comparar Planes",
+      "subtitle": "Encuentra el plan perfecto para ti",
+      "features": "Características",
+      "perMonth": "/mes",
+      "scrollHint": "← Desplázate para ver todos los planes →",
+      "categories": {
+        "content": "Acceso al Contenido",
+        "quality": "Calidad y Rendimiento",
+        "devices": "Dispositivos y Streaming",
+        "features": "Características",
+        "support": "Soporte"
+      }
+    }
   },
   "notFound": {
     "title": "Página no encontrada",

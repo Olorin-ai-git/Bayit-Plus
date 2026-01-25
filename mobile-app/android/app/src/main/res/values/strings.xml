@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bayit+</string>
+
+    <!-- Google Cast Receiver Application ID -->
+    <!-- Obtained from https://cast.google.com/publish/ on 2026-01-25 -->
+    <!-- Must match VITE_CHROMECAST_RECEIVER_APP_ID in web/.env -->
+    <string name="cast_receiver_app_id">F79FF160</string>
+</resources>

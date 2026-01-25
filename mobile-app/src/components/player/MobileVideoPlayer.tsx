@@ -5,6 +5,7 @@
  * - HLS streaming support
  * - Background audio (for PiP widgets)
  * - iOS native PiP support (AVPictureInPictureController)
+ * - AirPlay and Chromecast support
  * - Playback controls
  * - Loading and error states
  */
@@ -14,6 +15,8 @@ import { View, Text, ActivityIndicator, Pressable } from 'react-native';
 import Video, { VideoRef } from 'react-native-video';
 import { Play, Pause } from 'lucide-react-native';
 import logger from '@/utils/logger';
+import { useCastSession } from './hooks/useCastSession';
+import CastButton from './controls/CastButton';
 
 const moduleLogger = logger.scope('MobileVideoPlayer');
 
@@ -21,8 +24,12 @@ interface MobileVideoPlayerProps {
   src: string;
   title: string;
   isLive: boolean;
+  contentId?: string;
+  posterUrl?: string;
   autoPlay?: boolean;
   muted?: boolean;
+  enableCast?: boolean;
+  castReceiverAppId?: string | null;
   onPlaybackStateChange?: (isPlaying: boolean) => void;
 }
 
@@ -30,8 +37,12 @@ export default function MobileVideoPlayer({
   src,
   title,
   isLive,
+  contentId,
+  posterUrl,
   autoPlay = false,
   muted = false,
+  enableCast = true,
+  castReceiverAppId = null,
   onPlaybackStateChange,
 }: MobileVideoPlayerProps) {
   const videoRef = useRef<VideoRef>(null);
@@ -39,6 +50,21 @@ export default function MobileVideoPlayer({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showControls, setShowControls] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  // Cast session
+  const cast = useCastSession({
+    metadata: {
+      title,
+      posterUrl,
+      contentId: contentId || '',
+      streamUrl: src,
+      duration,
+    },
+    enabled: enableCast,
+    receiverAppId: castReceiverAppId,
+  });
 
   // Toggle play/pause
   const togglePlayPause = useCallback(() => {
@@ -68,6 +94,46 @@ export default function MobileVideoPlayer({
     setLoading(isBuffering);
   }, []);
 
+  // Handle progress updates
+  const handleProgress = useCallback(({ currentTime: time }: { currentTime: number }) => {
+    setCurrentTime(time);
+  }, []);
+
+  // Handle load with duration
+  const handleLoadWithData = useCallback((data: any) => {
+    setLoading(false);
+    setError(null);
+    if (data?.duration) {
+      setDuration(data.duration);
+    }
+  }, []);
+
+  // Sync cast playback state on state changes (event-driven)
+  useEffect(() => {
+    if (cast.isConnected) {
+      cast.syncPlaybackState({
+        currentTime,
+        isPlaying,
+        volume: muted ? 0 : 1,
+      });
+    }
+  }, [cast.isConnected, isPlaying, muted]); // Removed currentTime from deps for performance
+
+  // Periodic time sync (less frequent - every 5 seconds)
+  useEffect(() => {
+    if (!cast.isConnected) return;
+
+    const interval = setInterval(() => {
+      cast.syncPlaybackState({
+        currentTime,
+        isPlaying,
+        volume: muted ? 0 : 1,
+      });
+    }, 5000); // ✅ Every 5 seconds instead of 1 second
+
+    return () => clearInterval(interval);
+  }, [cast.isConnected]);
+
   // Show controls on tap
   const handleTap = useCallback(() => {
     setShowControls((prev) => !prev);
@@ -87,9 +153,10 @@ export default function MobileVideoPlayer({
         playInBackground={false} // Video stops in background (use audio widgets for background audio)
         playWhenInactive={false}
         // PiP is handled by react-native-video automatically on iOS
-        onLoad={handleLoad}
+        onLoad={handleLoadWithData}
         onError={handleError}
         onBuffer={handleBuffer}
+        onProgress={handleProgress}
       />
 
       {/* Loading Indicator */}
@@ -122,6 +189,11 @@ export default function MobileVideoPlayer({
                 <Text className="text-xs font-bold text-white">LIVE</Text>
               </View>
             )}
+
+            {/* Cast Button */}
+            <View className="absolute top-4 right-4">
+              <CastButton castSession={cast} />
+            </View>
           </View>
         )}
       </Pressable>
