@@ -1452,7 +1452,9 @@
     "error": "エラーが発生しました",
     "tryAgain": "もう一度お試しください",
     "alreadySubscribed": "既に登録されています",
-    "manageSubscription": "サブスクリプション管理"
+    "manageSubscription": "サブスクリプション管理",
+    "viewComparison": "完全な比較を表示",
+    "viewCards": "プランを表示"
   },
   "footer": {
     "about": "会社概要",
@@ -1646,7 +1648,38 @@
     "selectPlan": "プランを選択",
     "currentPlan": "現在のプラン",
     "upgrade": "アップグレード",
-    "downgrade": "ダウングレード"
+    "downgrade": "ダウングレード",
+    "non_registered": {
+      "name": "閲覧のみ",
+      "description": "コンテンツライブラリを探索"
+    },
+    "registered_free": {
+      "name": "無料アカウント",
+      "description": "無料機能のアカウントを作成"
+    },
+    "comparison": {
+      "title": "プランを比較",
+      "subtitle": "あなたに最適なプランを見つける",
+      "categories": {
+        "content": "コンテンツアクセス",
+        "quality": "品質とパフォーマンス",
+        "devices": "デバイスとストリーミング",
+        "features": "プレミアム機能",
+        "support": "カスタマーサポート"
+      },
+      "features": {
+        "browseContent": "コンテンツライブラリを閲覧",
+        "vodAccess": "オンデマンド映画とシリーズ",
+        "liveChannels": "ライブTVチャンネル",
+        "radioPodcasts": "ラジオとポッドキャスト",
+        "videoQuality": "ビデオ品質",
+        "simultaneousDevices": "同時デバイス数",
+        "aiAssistant": "AIスマートアシスタント",
+        "familyProfiles": "ファミリープロフィール",
+        "offlineDownloads": "オフライン用ダウンロード",
+        "customerSupport": "カスタマーサポート"
+      }
+    }
   },
   "admin": {
     "title": "管理者",

@@ -3228,6 +3228,14 @@
     }
   },
   "plans": {
+    "non_registered": {
+      "name": "Browse Only",
+      "description": "Explore our content library"
+    },
+    "registered_free": {
+      "name": "Free Account",
+      "description": "Create an account for free features"
+    },
     "basic": {
       "name": "Basic",
       "features": [
@@ -3270,6 +3278,29 @@
         "Download for offline"
       ],
       "notIncluded": []
+    },
+    "comparison": {
+      "title": "Compare Plans",
+      "subtitle": "Find the perfect plan for your needs",
+      "categories": {
+        "content": "Content Access",
+        "quality": "Quality & Performance",
+        "devices": "Devices & Streaming",
+        "features": "Premium Features",
+        "support": "Customer Support"
+      },
+      "features": {
+        "browseContent": "Browse Content Library",
+        "vodAccess": "On-Demand Movies & Series",
+        "liveChannels": "Live TV Channels",
+        "radioPodcasts": "Radio & Podcasts",
+        "videoQuality": "Video Quality",
+        "simultaneousDevices": "Simultaneous Devices",
+        "aiAssistant": "AI Smart Assistant",
+        "familyProfiles": "Family Profiles",
+        "offlineDownloads": "Download for Offline",
+        "customerSupport": "Customer Support"
+      }
     }
   },
   "subscribe": {
@@ -3285,7 +3316,9 @@
     "selected": "Selected",
     "processing": "Processing...",
     "startTrial": "Start Free Trial",
-    "noCharge": "Your credit card won't be charged during the trial period"
+    "noCharge": "Your credit card won't be charged during the trial period",
+    "viewComparison": "View Full Comparison",
+    "viewCards": "View Plans"
   },
   "notFound": {
     "title": "Page Not Found",

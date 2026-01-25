@@ -588,6 +588,37 @@
         "Download offline"
       ],
       "notIncluded": []
+    },
+    "non_registered": {
+      "name": "Solo navigazione",
+      "description": "Esplora la nostra libreria di contenuti"
+    },
+    "registered_free": {
+      "name": "Account gratuito",
+      "description": "Crea un account per funzionalità gratuite"
+    },
+    "comparison": {
+      "title": "Confronta i piani",
+      "subtitle": "Trova il piano perfetto per le tue esigenze",
+      "categories": {
+        "content": "Accesso ai contenuti",
+        "quality": "Qualità e prestazioni",
+        "devices": "Dispositivi e streaming",
+        "features": "Funzionalità premium",
+        "support": "Supporto clienti"
+      },
+      "features": {
+        "browseContent": "Sfoglia la libreria di contenuti",
+        "vodAccess": "Film e serie on demand",
+        "liveChannels": "Canali TV in diretta",
+        "radioPodcasts": "Radio e podcast",
+        "videoQuality": "Qualità video",
+        "simultaneousDevices": "Dispositivi simultanei",
+        "aiAssistant": "Assistente intelligente IA",
+        "familyProfiles": "Profili famiglia",
+        "offlineDownloads": "Scarica per offline",
+        "customerSupport": "Supporto clienti"
+      }
     }
   },
   "subscribe": {
@@ -603,7 +634,9 @@
     "selected": "Selezionato",
     "processing": "Elaborazione...",
     "startTrial": "Inizia prova gratuita",
-    "noCharge": "La tua carta non verrà addebitata durante il periodo di prova"
+    "noCharge": "La tua carta non verrà addebitata durante il periodo di prova",
+    "viewComparison": "Vedi confronto completo",
+    "viewCards": "Vedi piani"
   },
   "footer": {
     "brandDescription": "La tua casa negli USA. Trasmissioni TV, VOD, radio e podcast in ebraico.",
