@@ -24,6 +24,7 @@ if (sentryEnabled) {
 // Context Providers
 import { ProfileProvider } from "@bayit/shared-contexts";
 import { ModalProvider } from "@bayit/shared-contexts";
+import { NotificationProvider } from "@olorin/glass-ui/contexts";
 
 // Navigation
 import { linking } from "./src/navigation/linking";
@@ -89,13 +90,15 @@ function App(): React.JSX.Element {
               minimumDuration={2000}
             />
           ) : (
-            <ModalProvider>
-              <ProfileProvider>
-                <NavigationContainer linking={linking}>
-                  <AppContent />
-                </NavigationContainer>
-              </ProfileProvider>
-            </ModalProvider>
+            <NotificationProvider position="bottom" maxVisible={3}>
+              <ModalProvider>
+                <ProfileProvider>
+                  <NavigationContainer linking={linking}>
+                    <AppContent />
+                  </NavigationContainer>
+                </ProfileProvider>
+              </ModalProvider>
+            </NotificationProvider>
           )}
         </SafeAreaProvider>
       </I18nextProvider>

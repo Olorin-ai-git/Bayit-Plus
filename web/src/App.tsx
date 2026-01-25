@@ -4,6 +4,7 @@ import { initWebI18n, setupWebDirectionListener } from '@bayit/shared-i18n/web'
 import { useDirection } from '@/hooks/useDirection'
 import { VoiceListeningProvider } from '@bayit/shared-contexts'
 import { ModalProvider } from '@/contexts/ModalContext'
+import { NotificationProvider } from '@olorin/glass-ui/contexts'
 import Layout from './components/layout/Layout'
 import FullscreenVideoOverlay from './components/player/FullscreenVideoOverlay'
 import { useAuthStore } from '@/stores/authStore'
@@ -155,7 +156,7 @@ function App() {
   }, [])
 
   return (
-    <>
+    <NotificationProvider position="top" maxVisible={3}>
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
         {/* Auth Routes (no layout) */}
@@ -239,7 +240,7 @@ function App() {
 
       {/* Fullscreen Video Player Overlay - can be triggered from anywhere */}
       <FullscreenVideoOverlay />
-    </>
+    </NotificationProvider>
   )
 }
 
