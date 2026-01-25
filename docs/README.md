@@ -41,6 +41,8 @@ Implementation notes and session reports:
 - **UI/UX Implementations**:
   - `MISSING_ASSETS_IMPLEMENTATION.md` - Complete technical specification for missing asset fixes
   - `MISSING_ASSETS_SUMMARY.md` - Executive summary of missing assets implementation
+- **Security Implementations**:
+  - `PODCAST_TRANSLATION_PREMIUM_PROTECTION_IMPLEMENTATION.md` - Premium protection implementation for podcast translation feature - 2026-01-24
 
 ### `/operations/`
 Database operations and maintenance:
@@ -56,14 +58,23 @@ Code reviews and assessments:
 - Performance reviews
 - Data architecture assessments
 - **Notification Ecosystem Audit** (`NOTIFICATION_ECOSYSTEM_AUDIT_2026-01-24.md`) - Comprehensive audit of GlassToast notification system usage across all Olorin platforms
+- **Podcast Translation Premium Protection Audit** (`PODCAST_TRANSLATION_PREMIUM_PROTECTION_AUDIT.md`) - Critical security and revenue audit of podcast translation premium protection - 2026-01-24
 
 ### `/cli/` **NEW - 2026-01-24**
 Olorin CLI tooling documentation:
 - **Quick Start Guide** (`QUICK_START.md`) - Get started with the Olorin CLI in minutes
 - **Phase 1 Implementation** (`PHASE_1_IMPLEMENTATION.md`) - Complete implementation details for Bash Router
+- **Phase 1.5 Configuration Audit** (`PHASE_1_5_CONFIGURATION_AUDIT.md`) - Environment variable inventory and validation **NEW**
 - Command reference and usage examples
 - Health check and environment validation
 - Script discovery integration
+
+### `/ENVIRONMENT_VARIABLES.md` **NEW - 2026-01-24**
+Complete environment variables reference:
+- 80+ environment variables documented across all services
+- Security best practices (never commit secrets, strong keys, rotation schedule)
+- Validation rules and examples
+- Troubleshooting guide
 
 ## 🗂️ Additional Documentation Locations
 
@@ -87,9 +98,10 @@ Located in `/backend/docs/`:
 
 ### Getting Started
 1. **Olorin CLI** (Recommended): `/docs/cli/QUICK_START.md` **NEW**
-2. Read `/QUICK_START_GUIDE.md` (project root)
-3. Backend setup: `/backend/QUICKSTART.md`
-4. Development: `/backend/README.md`
+2. **Environment Setup**: `/docs/ENVIRONMENT_VARIABLES.md` **NEW**
+3. Read `/QUICK_START_GUIDE.md` (project root)
+4. Backend setup: `/backend/QUICKSTART.md`
+5. Development: `/backend/README.md`
 
 ### Key Features
 - **Live Translation**: `/features/LIVE_TRANSLATION_EXPANSION.md`
@@ -158,7 +170,9 @@ When adding new documentation:
 
 This documentation structure was organized on January 13, 2026 to improve project organization.
 
-**Latest Update:** January 24, 2026 - Added `/cli/` directory with Olorin CLI documentation (Phase 1 complete).
+**Latest Updates:**
+- **January 24, 2026 (Phase 1.5):** Added environment variables documentation (`ENVIRONMENT_VARIABLES.md`) and validation infrastructure
+- **January 24, 2026 (Phase 1):** Added `/cli/` directory with Olorin CLI documentation (Bash Router complete)
 
 ### Previous Structure
 Before organization, documentation was scattered across:
