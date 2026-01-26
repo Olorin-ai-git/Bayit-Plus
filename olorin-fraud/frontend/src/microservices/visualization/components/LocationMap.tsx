@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { MapPin, Navigation, ZoomIn, ZoomOut, Layers, Filter } from 'lucide-react';
+import { MapPin, Navigation, ZoomIn, ZoomOut, Layers, Filter, User, Building, Smartphone, CreditCard, AlertTriangle } from 'lucide-react';
+import { ICON_REGISTRY } from '@olorin/shared-icons';
 
 interface Location {
   id: string;
@@ -45,13 +46,14 @@ const LocationMap: React.FC<LocationMapProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   // Get marker style based on location type and risk level
+  // Icons from unified system (@olorin/shared-icons)
   const getMarkerStyle = useCallback((location: Location) => {
     const baseStyles = {
-      customer: { bg: 'bg-blue-500', icon: '👤', border: 'border-blue-600' },
-      business: { bg: 'bg-green-500', icon: '🏢', border: 'border-green-600' },
-      device: { bg: 'bg-purple-500', icon: '📱', border: 'border-purple-600' },
-      transaction: { bg: 'bg-orange-500', icon: '💳', border: 'border-orange-600' },
-      risk: { bg: 'bg-red-500', icon: '⚠️', border: 'border-red-600' },
+      customer: { bg: 'bg-blue-500', icon: 'User', iconName: 'profile', border: 'border-blue-600' },
+      business: { bg: 'bg-green-500', icon: 'Building', iconName: 'home', border: 'border-green-600' },
+      device: { bg: 'bg-purple-500', icon: 'Smartphone', iconName: 'download', border: 'border-purple-600' },
+      transaction: { bg: 'bg-orange-500', icon: 'CreditCard', iconName: 'plans', border: 'border-orange-600' },
+      risk: { bg: 'bg-red-500', icon: 'AlertTriangle', iconName: 'error', border: 'border-red-600' },
     };
 
     const riskStyles = {

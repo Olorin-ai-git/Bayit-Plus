@@ -459,7 +459,7 @@ import { getAuth } from 'firebase/auth'
 // src/services/api.ts (Line 8-9)
 const API_BASE_URL = isLocalDev
   ? '/api'
-  : 'https://israeli-radio-manager-534446777606.us-east1.run.app/api'
+  : 'https://station-ai-534446777606.us-east1.run.app/api'
   //  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   //  HARDCODED PRODUCTION URL - VIOLATES CLAUDE.md
 ```

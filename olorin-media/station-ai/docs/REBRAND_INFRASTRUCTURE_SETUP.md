@@ -102,7 +102,7 @@ certbot certonly --dns-cloudflare \
 
 **Verification:**
 ```bash
-curl -I https://marketing.radio.olorin.ai
+curl -I https://marketing.station.olorin.ai
 # Should return: Location: https://marketing.station.olorin.ai
 ```
 

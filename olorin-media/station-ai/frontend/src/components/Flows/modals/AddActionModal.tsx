@@ -78,7 +78,7 @@ export default function AddActionModal({
     queryKey: ['voicePresets'],
     queryFn: async () => {
       const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      const baseUrl = isLocalDev ? '' : 'https://israeli-radio-manager-534446777606.us-east1.run.app'
+      const baseUrl = isLocalDev ? '' : (import.meta.env.VITE_API_URL || 'https://station-ai-534446777606.us-east1.run.app')
       const response = await fetch(`${baseUrl}/api/voices/`)
       if (!response.ok) return []
       return response.json()

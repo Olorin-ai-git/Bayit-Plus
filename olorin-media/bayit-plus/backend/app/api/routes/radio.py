@@ -1,10 +1,52 @@
+import asyncio
+import logging
 from typing import Optional
 
+import aiohttp
 from fastapi import APIRouter, HTTPException, Query
 
 from app.models.content import RadioStation
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
+
+
+async def validate_stream_url(url: str, timeout: int = 5) -> bool:
+    """
+    Validate that a stream URL is accessible with timeout handling.
+
+    This function prevents clients from attempting to play unavailable streams
+    by validating stream accessibility before returning URLs to the frontend.
+
+    Args:
+        url: Stream URL to validate
+        timeout: Connection timeout in seconds (default 5)
+
+    Returns:
+        True if stream is accessible (200-299 or 206), False otherwise
+    """
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.head(
+                url,
+                timeout=aiohttp.ClientTimeout(total=timeout),
+                allow_redirects=True,
+                ssl=False
+            ) as response:
+                # Accept 200-299 (success) and 206 (partial content for streaming)
+                is_valid = response.status in range(200, 300) or response.status == 206
+                if is_valid:
+                    logger.debug(f"[Radio] Stream validation succeeded: {response.status}")
+                return is_valid
+    except asyncio.TimeoutError:
+        logger.warning(f"[Radio] Stream validation timeout for {url}")
+        return False
+    except aiohttp.ClientError as e:
+        logger.warning(f"[Radio] Stream validation failed for {url}: {str(e)}")
+        return False
+    except Exception as e:
+        logger.error(f"[Radio] Unexpected error during stream validation: {str(e)}")
+        return False
 
 
 @router.get("/stations")
@@ -61,11 +103,65 @@ async def get_station(station_id: str):
 
 
 @router.get("/{station_id}/stream")
-async def get_stream_url(station_id: str):
-    """Get radio stream URL (available to all users)."""
+async def get_stream_url(
+    station_id: str,
+    validate: bool = Query(True, description="Validate stream URL accessibility")
+):
+    """
+    Get radio stream URL with optional validation.
+
+    Validates that the stream URL is accessible before returning it, preventing
+    clients from attempting to play unavailable streams. Uses a 5-second timeout
+    to detect network issues early.
+
+    Args:
+        station_id: ID of the radio station
+        validate: Whether to validate stream URL (default: True). Pass validate=false
+                 for testing purposes only.
+
+    Returns:
+        JSON object with:
+        - url: Stream URL for playback
+        - type: Stream type (e.g., 'hls')
+
+    Raises:
+        404: Station not found or inactive
+        503: Stream URL is not accessible (validation failed/timeout)
+    """
+    # Get station from database
     station = await RadioStation.get(station_id)
     if not station or not station.is_active:
+        logger.warning(f"[Radio] Station not found or inactive: {station_id}")
         raise HTTPException(status_code=404, detail="Station not found")
+
+    # Validate stream URL is accessible (can be disabled with ?validate=false for testing)
+    if validate:
+        is_accessible = await validate_stream_url(station.stream_url)
+
+        if not is_accessible:
+            logger.error(
+                f"[Radio] Stream URL not accessible for station {station.name}",
+                extra={
+                    "station_id": station_id,
+                    "station_name": station.name,
+                    "stream_url": station.stream_url,
+                    "stream_type": station.stream_type
+                }
+            )
+            raise HTTPException(
+                status_code=503,
+                detail=f"Stream for {station.name} is temporarily unavailable. Please try again later."
+            )
+
+    logger.info(
+        f"[Radio] Stream URL retrieved for {station.name}",
+        extra={
+            "station_id": station_id,
+            "station_name": station.name,
+            "stream_type": station.stream_type,
+            "validation_enabled": validate
+        }
+    )
 
     return {
         "url": station.stream_url,

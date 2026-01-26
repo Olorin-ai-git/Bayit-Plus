@@ -11,7 +11,8 @@ import { useNavigation } from '@react-navigation/native'
 import { GlassView } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { Recording } from '@/services/recordingApi'
-import { useModal } from '@/contexts/ModalContext'
+import { useNotifications } from '@olorin/glass-ui/hooks'
+import logger from '@/utils/logger'
 
 interface RecordingCardProps {
   recording: Recording
@@ -30,7 +31,7 @@ export const RecordingCard: React.FC<RecordingCardProps> = ({
 }) => {
   const { t } = useTranslation()
   const navigation = useNavigation()
-  const { showConfirm } = useModal()
+  const notifications = useNotifications()
 
   const handlePlay = () => {
     // @ts-ignore
@@ -38,16 +39,20 @@ export const RecordingCard: React.FC<RecordingCardProps> = ({
   }
 
   const handleDelete = () => {
-    showConfirm(
-      t('recordings.confirmDelete'),
-      () => onDelete(recording.id),
-      {
-        title: t('recordings.deleteRecording'),
-        confirmText: t('common.delete'),
-        cancelText: t('common.cancel'),
-        destructive: true
-      }
-    )
+    notifications.show({
+      level: 'warning',
+      title: t('recordings.deleteRecording'),
+      message: t('recordings.confirmDelete'),
+      action: {
+        label: t('common.delete'),
+        type: 'action' as const,
+        onPress: () => {
+          logger.info('Recording deletion confirmed', 'RecordingCard', { id: recording.id })
+          onDelete(recording.id)
+        },
+      },
+      dismissable: true,
+    })
   }
 
   return (

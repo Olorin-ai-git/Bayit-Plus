@@ -432,7 +432,7 @@ For issues or questions:
 1. Check logs: `tail -f backend.log`
 2. Review MongoDB: Check `audit_reports` collection
 3. Test API: Use curl or Postman
-4. Contact: admin@radio.olorin.ai
+4. Contact: admin@station.olorin.ai
 
 ---
 

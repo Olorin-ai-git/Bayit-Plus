@@ -8,8 +8,9 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
-import { useModal } from '@/contexts/ModalContext';
+import { useNotifications } from '@olorin/glass-ui/hooks';
 import { useAuthStore } from '@/stores/authStore';
+import { logger } from '@/utils/logger';
 import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
 import ContentCarousel from '@/components/content/ContentCarousel';
@@ -37,7 +38,7 @@ import { WatchPageProps } from './types';
 export function WatchPage({ type = 'vod' }: WatchPageProps) {
   const { t } = useTranslation();
   const { isRTL } = useDirection();
-  const { showConfirm, showError } = useModal();
+  const notifications = useNotifications();
   const user = useAuthStore((s) => s.user);
   const params = useParams();
   const navigate = useNavigate();
@@ -110,34 +111,39 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
   };
 
   const onDeleteEpisode = (episodeId: string) => {
-    showConfirm(
-      t('watch.confirmDeleteEpisode'),
-      async () => {
-        await handleDeleteEpisode(contentId, episodeId, () => {
-          window.location.reload();
-        });
+    notifications.show({
+      level: 'warning',
+      title: t('watch.deleteEpisode'),
+      message: t('watch.confirmDeleteEpisode'),
+      action: {
+        label: t('common.delete'),
+        type: 'action' as const,
+        onPress: async () => {
+          logger.info('Episode deletion confirmed', 'WatchPage', { contentId, episodeId })
+          await handleDeleteEpisode(contentId, episodeId, () => {
+            window.location.reload();
+          });
+        },
       },
-      {
-        title: t('watch.deleteEpisode'),
-        confirmText: t('common.delete'),
-        cancelText: t('common.cancel'),
-        destructive: true,
-      }
-    );
+      dismissable: true,
+    });
   };
 
   // Show notification if user tries to access content without being logged in
   useEffect(() => {
     if (!loading && content && !streamUrl && !user) {
-      showError(
+      logger.warn('Unauthenticated access attempt', 'WatchPage', {
+        contentId,
+        contentTitle: content.title || content.name
+      })
+      notifications.showError(
         t('auth.loginToWatch', { title: content.title || content.name || t('common.thisContent') }),
-        {
-          title: t('auth.loginRequired'),
-          onClose: () => navigate('/auth/login'),
-        }
-      );
+        t('auth.loginRequired')
+      )
+      // Redirect to login
+      navigate('/auth/login')
     }
-  }, [loading, content, streamUrl, user, showError, navigate, t]);
+  }, [loading, content, streamUrl, user, notifications, navigate, t, contentId]);
 
   if (loading) {
     return <LoadingState />;

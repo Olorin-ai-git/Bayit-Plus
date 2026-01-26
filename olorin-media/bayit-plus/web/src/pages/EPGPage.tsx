@@ -12,14 +12,14 @@ import EPGRecordModal, { RecordingSettings } from '@/components/epg/EPGRecordMod
 import { RecordingStatus } from '@/components/epg/EPGRecordingIndicator'
 import { useAuthStore } from '@/stores/authStore'
 import { recordingApi } from '@/services/recordingApi'
-import { useModal } from '@/contexts/ModalContext'
+import { useNotifications } from '@olorin/glass-ui/hooks'
 import { GlassButton, GlassPageHeader } from '@bayit/shared/ui'
 import logger from '@/utils/logger'
 
 const EPGPage: React.FC = () => {
   const { t } = useTranslation()
   const { user } = useAuthStore()
-  const { showError } = useModal()
+  const notifications = useNotifications()
 
   // View state
   const [viewMode, setViewMode] = useState<EPGViewMode>('grid')
@@ -209,7 +209,7 @@ const EPGPage: React.FC = () => {
       })
     } catch (err: any) {
       logger.error('Failed to start/schedule recording', 'EPGPage', err)
-      showError(err.message || t('epg.recordingFailed'), t('common.error'))
+      notifications.showError(err.message || t('epg.recordingFailed'), t('common.error'))
     }
   }, [recordModal, t])
 

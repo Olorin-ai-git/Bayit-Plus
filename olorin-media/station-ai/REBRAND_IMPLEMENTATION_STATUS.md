@@ -88,14 +88,14 @@
 - ✅ Updated `portal-main/src/App.tsx`:
   - "Radio Management" → "Station-AI"
   - REACT_APP_RADIO_URL → REACT_APP_STATION_URL
-  - radio.olorin.ai → station.olorin.ai
+  - station.olorin.ai → station.olorin.ai
 - ✅ Updated `portal-main/src/pages/HomePage.tsx`:
-  - radio.olorin.ai → station.olorin.ai
+  - station.olorin.ai → station.olorin.ai
 - ✅ Updated `station-ai/README.md`:
-  - Title: "Israeli Radio Manager" → "Station-AI"
+  - Title: "Station-AI" → "Station-AI"
   - Added AI-powered branding
 - ✅ Updated `station-ai/frontend/src/i18n/en.json`:
-  - app.name: "Israeli Radio Manager" → "Station-AI"
+  - app.name: "Station-AI" → "Station-AI"
   - app.tagline: Updated to "AI-Powered Radio Management"
 
 **Remaining Work (30 files):**
@@ -153,12 +153,12 @@ Use these patterns to update remaining files:
 
 | Find | Replace | Files | Notes |
 |------|---------|-------|-------|
-| `Israeli Radio Manager` | `Station-AI` | All text | Display text |
+| `Station-AI` | `Station-AI` | All text | Display text |
 | `israeli-radio-manager` | `station-ai` | Python, docs | Package refs |
 | `israeli_radio` | `station_ai` | Python code | EXCEPT DB name |
 | `israeliRadioManager` | `stationAi` | TypeScript | Variables |
 | `IsraeliRadioManager` | `StationAI` | TypeScript | Classes |
-| `radio.olorin.ai` | `station.olorin.ai` | All | URLs |
+| `station.olorin.ai` | `station.olorin.ai` | All | URLs |
 | `REACT_APP_RADIO_URL` | `REACT_APP_STATION_URL` | .env, config | Env vars |
 
 **CRITICAL: Do NOT change these:**
@@ -409,7 +409,7 @@ firebase deploy --only hosting:station
 
 **If OpenAPI/Swagger exists:**
 - Update endpoint descriptions
-- Update server URLs (radio.olorin.ai → station.olorin.ai)
+- Update server URLs (station.olorin.ai → station.olorin.ai)
 
 **Estimated Time:** 30 minutes
 
@@ -599,7 +599,7 @@ firebase deploy --only hosting:station
 ```bash
 curl -f https://marketing.station.olorin.ai || echo "FAILED"
 curl -f https://station.olorin.ai/api/health || echo "API FAILED"
-curl -I https://marketing.radio.olorin.ai | grep -i location
+curl -I https://marketing.station.olorin.ai | grep -i location
 # Should see: Location: https://marketing.station.olorin.ai
 ```
 

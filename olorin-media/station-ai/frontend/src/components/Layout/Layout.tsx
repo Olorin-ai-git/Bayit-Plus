@@ -2,6 +2,7 @@ import { ReactNode, useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useQueryClient } from '@tanstack/react-query'
+import { ICON_REGISTRY } from '@olorin/shared-icons'
 import {
   LayoutDashboard,
   CalendarDays,
@@ -136,7 +137,7 @@ export default function Layout({ children }: LayoutProps) {
     const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     const wsUrl = isLocalDev
       ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws/`
-      : 'wss://israeli-radio-manager-534446777606.us-east1.run.app/ws/'
+      : (import.meta.env.VITE_WS_URL || 'wss://station-ai-534446777606.us-east1.run.app/ws/')
 
     console.log('WebSocket URL:', wsUrl)
     let reconnectAttempts = 0
@@ -270,19 +271,20 @@ export default function Layout({ children }: LayoutProps) {
     }
   }, [isRTL, playNow, queryClient])
 
+  // Navigation items with unified icon system integration (@olorin/shared-icons)
   const navItems = [
-    { path: '/', icon: LayoutDashboard, label: t('nav.dashboard') },
-    { path: '/calendar', icon: CalendarDays, label: isRTL ? 'לוח שידורים' : 'Broadcast Schedule' },
-    { path: '/campaigns', icon: Megaphone, label: isRTL ? 'קמפיינים' : 'Campaigns' },
-    { path: '/actions-studio', icon: Blocks, label: isRTL ? 'סטודיו פעולות' : 'Actions Studio' },
-    { path: '/library', icon: Library, label: t('nav.library') },
-    { path: '/upload', icon: Upload, label: t('nav.upload') },
-    { path: '/agent', icon: Bot, label: t('nav.agent') },
-    { path: '/settings', icon: Settings, label: t('nav.settings') },
-    { path: '/help', icon: HelpCircle, label: isRTL ? 'עזרה' : 'Help' },
+    { path: '/', icon: LayoutDashboard, iconName: 'home', label: t('nav.dashboard') },
+    { path: '/calendar', icon: CalendarDays, iconName: 'epg', label: isRTL ? 'לוח שידורים' : 'Broadcast Schedule' },
+    { path: '/campaigns', icon: Megaphone, iconName: 'search', label: isRTL ? 'קמפיינים' : 'Campaigns' },
+    { path: '/actions-studio', icon: Blocks, iconName: 'settings', label: isRTL ? 'סטודיו פעולות' : 'Actions Studio' },
+    { path: '/library', icon: Library, iconName: 'watchlist', label: t('nav.library') },
+    { path: '/upload', icon: Upload, iconName: 'download', label: t('nav.upload') },
+    { path: '/agent', icon: Bot, iconName: 'search', label: t('nav.agent') },
+    { path: '/settings', icon: Settings, iconName: 'settings', label: t('nav.settings') },
+    { path: '/help', icon: HelpCircle, iconName: 'support', label: isRTL ? 'עזרה' : 'Help' },
     ...(role === 'admin' ? [
-      { path: '/admin', icon: Shield, label: isRTL ? 'ניהול' : 'Admin' },
-      { path: '/admin/librarian', icon: Bot, label: isRTL ? 'ספרן AI' : 'Librarian AI' }
+      { path: '/admin', icon: Shield, iconName: 'admin', label: isRTL ? 'ניהול' : 'Admin' },
+      { path: '/admin/librarian', icon: Bot, iconName: 'search', label: isRTL ? 'ספרן AI' : 'Librarian AI' }
     ] : []),
   ]
 

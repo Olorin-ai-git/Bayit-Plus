@@ -9,7 +9,7 @@ import { getIdToken } from '../../lib/firebase'
 const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
 const API_BASE_URL = isLocalDev
   ? '/api'
-  : 'https://israeli-radio-manager-534446777606.us-east1.run.app/api'
+  : `${import.meta.env.VITE_API_URL || 'https://station-ai-534446777606.us-east1.run.app'}/api`
 
 interface LibrarianStatus {
   last_audit_date: string | null

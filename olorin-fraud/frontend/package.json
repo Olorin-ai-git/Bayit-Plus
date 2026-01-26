@@ -9,6 +9,7 @@
     "@headlessui/react": "2.2.8",
     "@headlessui/tailwindcss": "0.2.2",
     "@heroicons/react": "^2.0.18",
+    "@olorin/shared-icons": "file:../../olorin-media/bayit-plus/packages/ui/shared-icons",
     "@tanstack/react-query": "5.89.0",
     "@tanstack/react-query-devtools": "5.89.0",
     "@testing-library/jest-dom": "^5.16.5",

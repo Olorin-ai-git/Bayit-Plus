@@ -79,45 +79,72 @@ export function loadCastSDK(
   onLoaded: () => void,
   onError: () => void
 ): (() => void) | undefined {
-  // Check if SDK already loaded
-  if (window.chrome?.cast) {
+  // Check if SDK framework is already available (fully loaded)
+  if (window.chrome?.cast?.framework?.CastContext) {
     onLoaded()
     return
   }
 
-  // Check if script already exists
+  // Check if SDK script is already loaded or loading
   const existingScript = document.querySelector(`script[src="${CAST_SDK_URL}"]`)
   if (existingScript) {
+    // Script is loading/loaded, wait for callback
     return
   }
 
-  // Load SDK with integrity verification
-  const script = document.createElement('script')
-  script.src = CAST_SDK_URL
-  script.async = true
-  script.integrity = CAST_SDK_INTEGRITY
-  script.crossOrigin = 'anonymous'
+  // Create a timeout to handle SDK loading failures
+  const loadTimeout = setTimeout(() => {
+    log.warn('Cast SDK loading timeout after 5 seconds')
+    onError()
+  }, 5000)
 
-  // Handle SDK load success/failure
+  // Handle SDK load success/failure via Google's callback mechanism
   window.__onGCastApiAvailable = (isAvailable) => {
-    if (isAvailable) {
+    clearTimeout(loadTimeout)
+
+    if (isAvailable && window.chrome?.cast?.framework?.CastContext) {
+      // Successfully initialized Chromecast framework
       onLoaded()
-      log.info('SDK loaded successfully')
+      log.info('Chromecast SDK loaded successfully', {
+        framework: 'CastContext available',
+        timestamp: new Date().toISOString()
+      })
     } else {
+      // Chromecast SDK failed to initialize - provide diagnostic details
       onError()
-      log.error('SDK failed to load')
+      const errorDetails = {
+        isAvailable,
+        hasChromeObject: !!window.chrome,
+        hasCastObject: !!window.chrome?.cast,
+        hasFrameworkObject: !!window.chrome?.cast?.framework,
+        hasCastContext: !!window.chrome?.cast?.framework?.CastContext,
+        userAgent: navigator.userAgent.substring(0, 100),
+        timestamp: new Date().toISOString()
+      }
+      log.error('Chromecast SDK initialization failed', errorDetails)
     }
   }
 
-  // Handle integrity check failure
+  // Load SDK script
+  const script = document.createElement('script')
+  script.src = CAST_SDK_URL
+  script.async = true
+
+  // Handle script loading errors (network failure, CORS, 404, etc.)
   script.onerror = () => {
-    log.error('Cast SDK failed integrity check - possible CDN compromise')
+    clearTimeout(loadTimeout)
+    log.error('Cast SDK script failed to load from CDN', {
+      url: CAST_SDK_URL,
+      timestamp: new Date().toISOString()
+    })
     onError()
   }
 
-  document.body.appendChild(script)
+  // Use head instead of body for better load order
+  const target = document.head || document.body
+  target.appendChild(script)
 
   return () => {
-    // Cleanup handled by browser
+    clearTimeout(loadTimeout)
   }
 }

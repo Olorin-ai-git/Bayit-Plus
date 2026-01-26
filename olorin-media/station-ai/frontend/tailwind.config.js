@@ -8,18 +8,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary - Red/Coral from logo chili
+        // Primary - Wizard Purple brand color
         primary: {
-          50: '#fef2f2',
-          100: '#fee2e2',
-          200: '#fecaca',
-          300: '#fca5a5',
-          400: '#f87171',
-          500: '#ef4444',
-          600: '#dc2626',
-          700: '#b91c1c',
-          800: '#991b1b',
-          900: '#7f1d1d',
+          50: '#faf5ff',
+          100: '#f3e8ff',
+          200: '#e9d5ff',
+          300: '#d8b4fe',
+          400: '#c084fc',
+          500: '#9333ea',
+          600: '#7e22ce',
+          700: '#6b21a8',
+          800: '#581c87',
+          900: '#3b0764',
         },
         // Dark theme backgrounds
         dark: {
@@ -59,8 +59,8 @@ export default {
       boxShadow: {
         'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
         'glass-sm': '0 4px 16px 0 rgba(0, 0, 0, 0.25)',
-        'glow': '0 0 20px rgba(239, 68, 68, 0.3)',
-        'glow-lg': '0 0 40px rgba(239, 68, 68, 0.4)',
+        'glow': '0 0 20px rgba(147, 51, 234, 0.3)',
+        'glow-lg': '0 0 40px rgba(147, 51, 234, 0.4)',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

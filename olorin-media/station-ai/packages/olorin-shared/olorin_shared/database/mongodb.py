@@ -24,7 +24,7 @@ class MongoDBConnection:
 
     All Olorin platforms use the same MongoDB Atlas cluster but different databases:
     - bayit-plus: bayit_plus
-    - israeli-radio-manager: israeli_radio
+    - station-ai: israeli_radio
     - olorin-fraud: olorin
     """
 

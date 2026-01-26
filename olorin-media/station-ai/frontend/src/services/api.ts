@@ -111,7 +111,7 @@ export const api = {
   getEmergencyStreamUrl: (relativeUrl: string) => {
     // relativeUrl is like /api/playback/stream/emergency/filename.mp3
     // We need to prepend the backend base URL
-    const backendBase = isLocalDev ? '' : 'https://israeli-radio-manager-534446777606.us-east1.run.app'
+    const backendBase = isLocalDev ? '' : (import.meta.env.VITE_API_URL || 'https://station-ai-534446777606.us-east1.run.app')
     return `${backendBase}${relativeUrl}`
   },
   logPlayStart: (contentId: string) =>

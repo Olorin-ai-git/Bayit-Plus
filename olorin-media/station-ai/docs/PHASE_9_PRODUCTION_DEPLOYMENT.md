@@ -110,7 +110,7 @@ curl -I https://station.olorin.ai
 
 **Redirect old URLs** to new Station-AI domains:
 - `israeli-radio-475c9.web.app` → `station.olorin.ai`
-- `marketing.radio.olorin.ai` → `marketing.station.olorin.ai`
+- `marketing.station.olorin.ai` → `marketing.station.olorin.ai`
 
 **Firebase Hosting Configuration** (`firebase.json`):
 
@@ -483,13 +483,13 @@ Sentry.init({
 
 ### 8.1 Announcement Email Template
 
-**Subject**: Station-AI is Live! 🎙️ (Formerly Israeli Radio Manager)
+**Subject**: Station-AI is Live! 🎙️ (Formerly Station-AI)
 
 **Body**:
 ```
 Hi [User Name],
 
-We're excited to announce that Israeli Radio Manager has been rebranded to **Station-AI**!
+We're excited to announce that Station-AI has been rebranded to **Station-AI**!
 
 🎯 What's Changed:
 - New name: Station-AI (The DJ That Never Sleeps)
@@ -524,7 +524,7 @@ The Station-AI Team
 // components/AnnouncementBanner.tsx
 <div className="bg-purple-600 text-white p-4 text-center">
   <p>
-    🎉 We've rebranded! Israeli Radio Manager is now <strong>Station-AI</strong>.
+    🎉 We've rebranded! Station-AI is now <strong>Station-AI</strong>.
     <a href="/announcement" className="underline ml-2">Learn more →</a>
   </p>
 </div>

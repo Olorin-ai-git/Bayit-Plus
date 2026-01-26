@@ -20,11 +20,13 @@
     "@tanstack/react-query": "^5.17.0",
     "axios": "^1.6.2",
     "@olorin/glass-ui": "file:../../../../olorin-core/packages/glass-components",
+    "@olorin/shared-icons": "file:../../../olorin-media/bayit-plus/packages/ui/shared-icons",
     "clsx": "^2.0.0",
     "i18next": "^25.8.0",
     "react-i18next": "^16.5.3",
     "i18next-browser-languagedetector": "^7.0.1",
-    "@olorin/shared-i18n": "file:../../../../olorin-core/packages/shared-i18n"
+    "@olorin/shared-i18n": "file:../../../../olorin-core/packages/shared-i18n",
+    "lucide-react": "^0.303.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

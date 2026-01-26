@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Home, LayoutDashboard, DollarSign } from 'lucide-react';
 import { useAuth } from '@/context/AuthProvider';
 import { GlassButton } from '@/components/glass';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -22,13 +23,16 @@ export function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/upload" className="hover:text-blue-400 transition-colors">
+            <Link to="/upload" className="flex items-center gap-2 hover:text-blue-400 transition-colors">
+              <Home size={18} />
               {t('nav.newCV')}
             </Link>
-            <Link to="/dashboard" className="hover:text-blue-400 transition-colors">
+            <Link to="/dashboard" className="flex items-center gap-2 hover:text-blue-400 transition-colors">
+              <LayoutDashboard size={18} />
               {t('nav.dashboard')}
             </Link>
-            <Link to="/pricing" className="hover:text-blue-400 transition-colors">
+            <Link to="/pricing" className="flex items-center gap-2 hover:text-blue-400 transition-colors">
+              <DollarSign size={18} />
               {t('nav.pricing')}
             </Link>
           </nav>

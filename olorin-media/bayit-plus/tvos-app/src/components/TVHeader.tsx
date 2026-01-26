@@ -14,9 +14,11 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { Home, Tv, Calendar, Film, Radio, Mic, Sparkles, BookOpen, Users, Disc3, Settings, Search } from 'lucide-react-native';
 import { useAuthStore, useChatbotStore, useVoiceSettingsStore } from '@bayit/shared-stores';
 import { VoiceSearchButton, LanguageSelector, AnimatedLogo, SoundwaveVisualizer } from '@bayit/shared';
 import { ProfileDropdown } from '@bayit/shared/ProfileDropdown';
+import { ICON_REGISTRY } from '@olorin/shared-icons';
 import { colors, spacing } from '@olorin/design-tokens';
 import LinearGradient from 'react-native-linear-gradient';
 import { chatService } from '@bayit/shared-services';
@@ -24,15 +26,15 @@ import { useConstantListening } from '@bayit/shared-hooks';
 
 // Navigation links - matching web app navigation with TV-specific additions
 const navLinkKeys = [
-  { route: 'Home', key: 'nav.home' },
-  { route: 'LiveTV', key: 'nav.liveTV' },
-  { route: 'EPG', key: 'nav.epg' },
-  { route: 'VOD', key: 'nav.vod' },
-  { route: 'Radio', key: 'nav.radio' },
-  { route: 'Podcasts', key: 'nav.podcasts' },
-  { route: 'Flows', key: 'nav.flows' },
-  { route: 'Judaism', key: 'nav.judaism' },
-  { route: 'Children', key: 'nav.children' },
+  { route: 'Home', key: 'nav.home', icon: Home },
+  { route: 'LiveTV', key: 'nav.liveTV', icon: Tv },
+  { route: 'EPG', key: 'nav.epg', icon: Calendar },
+  { route: 'VOD', key: 'nav.vod', icon: Film },
+  { route: 'Radio', key: 'nav.radio', icon: Radio },
+  { route: 'Podcasts', key: 'nav.podcasts', icon: Mic },
+  { route: 'Flows', key: 'nav.flows', icon: Sparkles },
+  { route: 'Judaism', key: 'nav.judaism', icon: BookOpen },
+  { route: 'Children', key: 'nav.children', icon: Users },
 ];
 
 interface TVHeaderProps {
@@ -144,21 +146,28 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
   // Navigation component
   const NavSection = (
     <View className="flex-row items-center gap-2">
-      {navLinkKeys.map((link) => {
+      {navLinkKeys.map((link: any) => {
         const isActive = isNavActive(link.route);
         const isFocused = focusedNav === link.route;
+        const IconComponent = link.icon;
+        const iconColor = isActive ? '#ffffff' : '#a0a0a0';
         return (
           <Pressable
             key={link.route}
             onPress={() => onNavigate(link.route)}
             onFocus={() => setFocusedNav(link.route)}
             onBlur={() => setFocusedNav(null)}
-            className={`px-4 py-2.5 rounded-lg border-2 ${
+            className={`px-4 py-2.5 rounded-lg border-2 flex-row items-center gap-2 ${
               isActive ? 'bg-purple-500' : 'bg-white/5'
             } ${
               isFocused ? 'border-purple-500 bg-purple-500/30 scale-105' : 'border-transparent'
             }`}
           >
+            <IconComponent
+              size={24}
+              color={iconColor}
+              strokeWidth={isFocused ? 2.5 : 2}
+            />
             <Text className={`text-xl font-medium ${
               isActive ? 'text-white font-semibold' : 'text-gray-400'
             }`}>
@@ -182,7 +191,11 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
           focusedAction === 'recordings' ? 'border-purple-500 bg-purple-500/30 scale-105' : 'border-transparent'
         }`}
       >
-        <Text className="text-[32px]">📹</Text>
+        <Disc3
+          size={32}
+          color={focusedAction === 'recordings' ? '#ffffff' : '#a0a0a0'}
+          strokeWidth={2}
+        />
       </Pressable>
 
       {/* Settings Button */}
@@ -194,7 +207,11 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
           focusedAction === 'settings' ? 'border-purple-500 bg-purple-500/30 scale-105' : 'border-transparent'
         }`}
       >
-        <Text className="text-[32px]">⚙️</Text>
+        <Settings
+          size={32}
+          color={focusedAction === 'settings' ? '#ffffff' : '#a0a0a0'}
+          strokeWidth={2}
+        />
       </Pressable>
 
       {/* Profile/Login */}
@@ -229,7 +246,11 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
           focusedAction === 'search' ? 'border-purple-500 bg-purple-500/30 scale-105' : 'border-transparent'
         }`}
       >
-        <Text className="text-[32px]">🔍</Text>
+        <Search
+          size={32}
+          color={focusedAction === 'search' ? '#ffffff' : '#a0a0a0'}
+          strokeWidth={2}
+        />
       </Pressable>
 
       {/* Soundwave Visualizer - for TV wake word listening mode */}

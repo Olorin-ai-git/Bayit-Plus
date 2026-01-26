@@ -1,18 +1,36 @@
-# Station-AI 🎙️
+# Station-AI 🎙️🤖
 
-AI-powered radio station management platform for automated broadcasting. Professional management dashboard for Israeli Hebrew-speaking radio stations broadcasting in the Miami/Boca Raton/Florida Keys area.
+**Next-generation AI-powered radio station management**. Harness the power of artificial intelligence to automate your entire broadcasting workflow. Station-AI is a professional management platform for Hebrew-speaking radio stations in the Miami/Boca Raton/Florida Keys area, featuring autonomous AI orchestration, intelligent scheduling, and 24/7 automated operation.
 
-## Features
+## 🚀 AI-Powered Features
 
-- **Content Management**: Organize songs, shows, and commercials
-- **AI Orchestration**: Claude-powered agent for intelligent scheduling
-- **Dual Language UI**: Full Hebrew (RTL) and English support
-- **Google Drive Integration**: Sync content from cloud storage
-- **Gmail Integration**: Auto-import attachments
-- **Multi-Channel Notifications**: Email, Push, and SMS alerts
-- **Two Operating Modes**:
-  - **Full Automation**: 24/7 autonomous operation
-  - **Prompt Mode**: User confirmation for important actions
+### Intelligent Automation
+- **🤖 AI Orchestrator**: Anthropic Claude-powered agent makes real-time broadcasting decisions
+- **🎯 Smart Scheduling**: Autonomous content selection based on time, audience, and flow patterns
+- **🔄 Adaptive Flows**: Create automated broadcasting sequences with AI-driven content selection
+- **📊 Intelligent Librarian**: AI agent automatically audits and fixes content metadata issues
+
+### Professional Broadcasting
+- **📚 Content Management**: Organize songs, shows, commercials, jingles, and newsflashes
+- **📅 Campaign Scheduler**: Advanced commercial campaign management with grid-based scheduling
+- **🎙️ Voice Synthesis**: ElevenLabs TTS integration for automated announcements
+- **📞 Notification System**: Multi-channel alerts via Email, Push notifications, and SMS
+
+### Modern User Experience
+- **🌐 Dual Language**: Full Hebrew (RTL) and English support with `@olorin/shared-i18n`
+- **💬 AI Chat Interface**: Natural language control - chat with your station in Hebrew or English
+- **🎨 Glassmorphism UI**: Modern dark-mode interface with purple wizard theme (#9333ea)
+- **🔐 Role-Based Access**: Firebase Auth with admin, editor, and viewer roles
+
+### Cloud Integration
+- **☁️ Google Cloud Storage**: Reliable GCS-backed audio streaming
+- **📧 Gmail Integration**: Auto-import audio attachments directly into your library
+- **🔄 Real-time Sync**: WebSocket-powered live updates across all clients
+- **📦 Automatic Backups**: Weekly scheduled backups to GCS with 30-day retention
+
+### Operating Modes
+- **🚀 Full Automation**: 24/7 autonomous operation - AI makes all decisions
+- **👤 Prompt Mode**: Human-in-the-loop - user confirmation for important actions
 
 ## Tech Stack
 
@@ -41,7 +59,7 @@ AI-powered radio station management platform for automated broadcasting. Profess
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd israeli-radio-manager
+   cd station-ai
    ```
 
 2. **Set up the backend**
@@ -149,7 +167,7 @@ Replace the placeholder logo at:
 ### Project Structure
 
 ```
-israeli-radio-manager/
+station-ai/
 ├── backend/          # Python FastAPI backend
 │   ├── app/
 │   │   ├── agent/    # AI orchestrator

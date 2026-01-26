@@ -42,7 +42,7 @@ Firebase requires explicit authorization of domains that can use OAuth authentic
 
 ## Current Deployment URLs
 - **Production:** https://israeli-radio-475c9.web.app
-- **Backend API:** https://israeli-radio-manager-534446777606.us-east1.run.app
+- **Backend API:** https://station-ai-534446777606.us-east1.run.app
 
 ## Alternative: Enable Google Sign-In Provider
 While in the Firebase Console Authentication settings, also ensure:

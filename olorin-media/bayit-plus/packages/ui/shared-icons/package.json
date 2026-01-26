@@ -1,0 +1,89 @@
+{
+  "name": "@olorin/shared-icons",
+  "version": "2.0.0",
+  "description": "Olorin.ai Unified Icon System - Professional icon registry for all platforms (Web, Mobile, TV)",
+  "license": "UNLICENSED",
+  "private": true,
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./web": {
+      "types": "./dist/web/index.d.ts",
+      "import": "./dist/web/index.mjs",
+      "require": "./dist/web/index.js"
+    },
+    "./native": {
+      "types": "./dist/native/index.d.ts",
+      "import": "./dist/native/index.mjs",
+      "require": "./dist/native/index.js"
+    },
+    "./registry": {
+      "types": "./dist/registry/index.d.ts",
+      "import": "./dist/registry/index.mjs",
+      "require": "./dist/registry/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "dependencies": {
+    "@olorin/design-tokens": "2.0.0"
+  },
+  "peerDependencies": {
+    "lucide-react": "^0.303.0",
+    "react": "^18.3.1",
+    "react-native": "^0.76.0"
+  },
+  "peerDependenciesMeta": {
+    "lucide-react": {
+      "optional": false
+    },
+    "react": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.9",
+    "@types/react-native": "^0.73.0",
+    "lucide-react": "^0.303.0",
+    "react": "^18.3.1",
+    "react-native": "^0.76.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.0"
+  },
+  "keywords": [
+    "icons",
+    "lucide",
+    "olorin",
+    "bayit-plus",
+    "design-system"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olorin-ai/olorin-ecosystem.git",
+    "directory": "packages/ui/shared-icons"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  }
+}

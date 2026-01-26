@@ -10,7 +10,7 @@
     --bg-tertiary: #334155;
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
-    --accent: #ef4444;
+    --accent: #9333ea;
     --glass-bg: rgba(30, 41, 59, 0.7);
     --glass-border: rgba(255, 255, 255, 0.1);
   }
@@ -257,10 +257,10 @@
 /* Glow effects */
 @keyframes glow-pulse {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
   }
   50% {
-    box-shadow: 0 0 40px rgba(239, 68, 68, 0.5);
+    box-shadow: 0 0 40px rgba(147, 51, 234, 0.5);
   }
 }
 
@@ -323,16 +323,16 @@
 
 /* Drop shadow glow effect */
 .drop-shadow-glow {
-  filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.4));
+  filter: drop-shadow(0 0 20px rgba(147, 51, 234, 0.4));
 }
 
 /* Shadow glow for hover effects */
 .shadow-glow {
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.2), 0 8px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 20px rgba(147, 51, 234, 0.2), 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 .shadow-glow-lg {
-  box-shadow: 0 0 30px rgba(239, 68, 68, 0.3), 0 12px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 30px rgba(147, 51, 234, 0.3), 0 12px 24px rgba(0, 0, 0, 0.4);
 }
 
 /* Neon text glow effect */
@@ -341,11 +341,11 @@
   text-shadow: 
     0 0 10px #fff,
     0 0 20px #fff,
-    0 0 30px #ef4444,
-    0 0 40px #ef4444,
-    0 0 50px #ef4444,
-    0 0 60px #ef4444,
-    0 0 70px #ef4444;
+    0 0 30px #9333ea,
+    0 0 40px #9333ea,
+    0 0 50px #9333ea,
+    0 0 60px #9333ea,
+    0 0 70px #9333ea;
   animation: neon-flicker 3s ease-in-out infinite alternate;
 }
 
@@ -354,19 +354,19 @@
     text-shadow: 
       0 0 10px #fff,
       0 0 20px #fff,
-      0 0 30px #ef4444,
-      0 0 40px #ef4444,
-      0 0 50px #ef4444,
-      0 0 60px #ef4444,
-      0 0 70px #ef4444;
+      0 0 30px #9333ea,
+      0 0 40px #9333ea,
+      0 0 50px #9333ea,
+      0 0 60px #9333ea,
+      0 0 70px #9333ea;
   }
   20%, 24%, 55% {    
     text-shadow: 
       0 0 5px #fff,
       0 0 10px #fff,
-      0 0 15px #ef4444,
-      0 0 20px #ef4444,
-      0 0 25px #ef4444;
+      0 0 15px #9333ea,
+      0 0 20px #9333ea,
+      0 0 25px #9333ea;
   }
 }
 

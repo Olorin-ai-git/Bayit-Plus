@@ -8,9 +8,9 @@ set -e
 
 # Configuration
 PROJECT_ID="${GCP_PROJECT_ID:-israeli-radio-475c9}"
-REGION="us-east1"
-SERVICE_URL="https://israeli-radio-manager-534446777606.us-east1.run.app"
-SERVICE_ACCOUNT="israeli-radio-manager@${PROJECT_ID}.iam.gserviceaccount.com"
+REGION="${GCP_REGION:-us-east1}"
+SERVICE_URL="${STATION_AI_SERVICE_URL:-https://station-ai-534446777606.us-east1.run.app}"
+SERVICE_ACCOUNT="${STATION_AI_SERVICE_ACCOUNT:-station-ai@${PROJECT_ID}.iam.gserviceaccount.com}"
 
 echo "========================================"
 echo "Setting up Weekly Backup Scheduler"

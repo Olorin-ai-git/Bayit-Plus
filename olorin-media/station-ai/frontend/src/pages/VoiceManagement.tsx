@@ -42,7 +42,7 @@ interface TTSStatus {
 const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
 const API_BASE_URL = isLocalDev
   ? ''
-  : 'https://israeli-radio-manager-534446777606.us-east1.run.app'
+  : (import.meta.env.VITE_API_URL || 'https://station-ai-534446777606.us-east1.run.app')
 
 export default function VoiceManagement() {
   const { i18n } = useTranslation()

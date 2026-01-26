@@ -59,7 +59,7 @@ export default function MyRecordingsPage() {
       await loadQuota()
     } catch (error) {
       logger.error('Failed to delete recording', 'MyRecordingsPage', error)
-      // Error handling is in RecordingCard via useModal
+      // Error handling is in RecordingCard via useNotifications
     }
   }
 
