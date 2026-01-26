@@ -46,6 +46,20 @@ ${BOLD}${CYAN}COMMON COMMANDS (Fast Path):${NC}
   ${GREEN}lint${NC}                 Run linters across all workspaces
                         Example: olorin lint
 
+${BOLD}${CYAN}CONTENT UPLOAD:${NC}
+  ${GREEN}upload-movies${NC} [opts] Upload movies from drive or URL to GCS/MongoDB
+                        Example: olorin upload-movies --dry-run
+                        Example: olorin upload-movies --url https://example.com/movie.mp4
+                        Example: olorin upload-movies --limit 5
+
+  ${GREEN}upload-series${NC} [opts] Upload TV series from drive or URL
+                        Example: olorin upload-series --dry-run
+                        Example: olorin upload-series --series "Game of Thrones"
+                        Example: olorin upload-series --url https://example.com/episode.mkv
+
+  ${GREEN}upload${NC}               Show upload command menu
+                        Example: olorin upload
+
 ${BOLD}${CYAN}SCRIPT DISCOVERY:${NC}
   ${GREEN}script${NC} [query]       Discover and execute scripts
                         Example: olorin script backup
@@ -106,6 +120,15 @@ ${BOLD}${CYAN}EXAMPLES:${NC}
 
   # Run all tests
   ${GREEN}olorin test${NC}
+
+  # Upload movies from external drive
+  ${GREEN}olorin upload-movies --dry-run${NC}
+
+  # Upload movie from URL
+  ${GREEN}olorin upload-movies --url https://example.com/movie.mp4${NC}
+
+  # Upload TV series
+  ${GREEN}olorin upload-series --series "Breaking Bad"${NC}
 
 ${BOLD}${CYAN}QUICK START:${NC}
   1. Run health check:     ${GREEN}olorin health${NC}

@@ -19,6 +19,8 @@ from typing import Optional, Dict
 import logging
 from datetime import datetime
 import argparse
+import tempfile
+import shutil
 
 # Add backend directory to path
 script_dir = os.path.dirname(os.path.abspath(__file__))  # scripts/backend
@@ -39,6 +41,45 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+async def download_from_url(url: str, dest_dir: str) -> Optional[str]:
+    """Download file from URL to destination directory."""
+    try:
+        import httpx
+
+        logger.info(f"Downloading from URL: {url}")
+
+        # Extract filename from URL
+        filename = url.split('/')[-1].split('?')[0]
+        if not filename:
+            filename = f"download_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
+
+        dest_path = os.path.join(dest_dir, filename)
+
+        async with httpx.AsyncClient(timeout=600.0) as client:
+            async with client.stream('GET', url) as response:
+                response.raise_for_status()
+
+                total_size = int(response.headers.get('content-length', 0))
+                downloaded = 0
+
+                with open(dest_path, 'wb') as f:
+                    async for chunk in response.aiter_bytes(chunk_size=8192):
+                        f.write(chunk)
+                        downloaded += len(chunk)
+
+                        # Progress update every 10MB
+                        if total_size > 0 and downloaded % (10 * 1024 * 1024) < 8192:
+                            progress = (downloaded / total_size) * 100
+                            logger.info(f"  Downloaded: {downloaded / (1024**2):.1f}MB / {total_size / (1024**2):.1f}MB ({progress:.1f}%)")
+
+        logger.info(f"  Download complete: {dest_path}")
+        return dest_path
+
+    except Exception as e:
+        logger.error(f"  Failed to download from URL: {e}")
+        return None
 
 
 def extract_movie_metadata(filename: str) -> Dict[str, any]:
@@ -160,12 +201,30 @@ async def upload_to_gcs(file_path: str, destination_blob_name: str) -> str:
         return None
 
 
-async def upload_movies(source_dir: str, dry_run: bool = False, limit: Optional[int] = None, start_from: Optional[str] = None):
-    """Upload movies from directory to GCS and MongoDB Atlas."""
+async def upload_movies(source_dir: str = None, source_url: str = None, dry_run: bool = False, limit: Optional[int] = None, start_from: Optional[str] = None):
+    """Upload movies from directory or URL to GCS and MongoDB Atlas."""
+
+    # Handle URL source
+    temp_dir = None
+    if source_url:
+        logger.info("URL source detected - downloading file...")
+        temp_dir = tempfile.mkdtemp(prefix='olorin_upload_')
+
+        downloaded_file = await download_from_url(source_url, temp_dir)
+        if not downloaded_file:
+            logger.error("Failed to download from URL")
+            shutil.rmtree(temp_dir, ignore_errors=True)
+            return
+
+        source_dir = temp_dir
+        logger.info(f"Using temporary directory: {source_dir}")
+
     source_path = Path(source_dir)
 
     if not source_path.exists():
         logger.error(f"Source directory not found: {source_dir}")
+        if temp_dir:
+            shutil.rmtree(temp_dir, ignore_errors=True)
         return
 
     logger.info(f"Scanning directory: {source_dir}")
@@ -351,15 +410,23 @@ async def upload_movies(source_dir: str, dry_run: bool = False, limit: Optional[
     logger.info(f"  Failed:    {stats['failed']}")
     logger.info("="*60)
 
+    # Cleanup temporary directory if used
+    if temp_dir:
+        logger.info(f"Cleaning up temporary directory: {temp_dir}")
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Upload movies from USB drive to GCS and MongoDB Atlas'
+        description='Upload movies from USB drive or URL to GCS and MongoDB Atlas'
     )
     parser.add_argument(
         '--source',
-        default='/Volumes/USB Drive/Movies',
         help='Source directory containing movie files'
+    )
+    parser.add_argument(
+        '--url',
+        help='URL to download movie file from'
     )
     parser.add_argument(
         '--dry-run',
@@ -379,8 +446,17 @@ def main():
 
     args = parser.parse_args()
 
+    # Validate input
+    if args.url and args.source:
+        logger.error("Cannot specify both --source and --url")
+        sys.exit(1)
+
+    if not args.url and not args.source:
+        args.source = '/Volumes/USB Drive/Movies'
+
     asyncio.run(upload_movies(
         source_dir=args.source,
+        source_url=args.url,
         dry_run=args.dry_run,
         limit=args.limit,
         start_from=args.start_from

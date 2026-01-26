@@ -55,24 +55,24 @@ export const UrlInputPanel: React.FC = () => {
 
       <View style={styles.actions}>
         <GlassButton
+          title={t('admin.uploads.urlUpload.validate')}
           onPress={handleValidate}
           variant="secondary"
           disabled={!urls.trim() || uploading}
           loading={validating}
-          leftIcon={<Link size={18} />}
-        >
-          {t('admin.uploads.urlUpload.validate')}
-        </GlassButton>
+          icon={<Link size={18} />}
+          iconPosition="left"
+        />
 
         <GlassButton
+          title={t('admin.uploads.urlUpload.upload')}
           onPress={handleUpload}
           variant="primary"
           disabled={!urls.trim() || uploading}
           loading={uploading}
-          leftIcon={<Upload size={18} />}
-        >
-          {t('admin.uploads.urlUpload.upload')}
-        </GlassButton>
+          icon={<Upload size={18} />}
+          iconPosition="left"
+        />
       </View>
     </View>
   );

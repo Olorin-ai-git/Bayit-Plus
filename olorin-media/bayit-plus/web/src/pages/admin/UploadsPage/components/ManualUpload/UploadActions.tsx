@@ -28,23 +28,23 @@ export const UploadActions: React.FC<UploadActionsProps> = ({
   return (
     <View style={styles.container}>
       <GlassButton
+        title={t('admin.uploads.manualUpload.uploadFiles')}
         onPress={onUpload}
         variant="primary"
         disabled={!hasFiles || isUploading}
         loading={isUploading}
-        leftIcon={<Upload size={18} />}
-      >
-        {t('admin.uploads.manualUpload.uploadFiles')}
-      </GlassButton>
+        icon={<Upload size={18} />}
+        iconPosition="left"
+      />
 
       <GlassButton
+        title={t('admin.uploads.manualUpload.clearFiles')}
         onPress={onClear}
         variant="secondary"
         disabled={!hasFiles || isUploading}
-        leftIcon={<Trash2 size={18} />}
-      >
-        {t('admin.uploads.manualUpload.clearFiles')}
-      </GlassButton>
+        icon={<Trash2 size={18} />}
+        iconPosition="left"
+      />
     </View>
   );
 };

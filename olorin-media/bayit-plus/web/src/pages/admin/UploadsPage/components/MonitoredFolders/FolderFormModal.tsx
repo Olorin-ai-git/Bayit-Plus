@@ -109,12 +109,18 @@ export const FolderFormModal: React.FC<FolderFormModalProps> = ({
         </View>
 
         <View style={styles.actions}>
-          <GlassButton onPress={onClose} variant="secondary" disabled={saving}>
-            {t('common.cancel')}
-          </GlassButton>
-          <GlassButton onPress={handleSave} variant="primary" loading={saving}>
-            {t('common.save')}
-          </GlassButton>
+          <GlassButton
+            title={t('common.cancel')}
+            onPress={onClose}
+            variant="secondary"
+            disabled={saving}
+          />
+          <GlassButton
+            title={t('common.save')}
+            onPress={handleSave}
+            variant="primary"
+            loading={saving}
+          />
         </View>
       </View>
     </GlassModal>
