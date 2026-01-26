@@ -53,6 +53,16 @@ module.exports = (env, argv) => {
       alias: {
         // @olorin packages from packages/ui directory (no /src - files are in root)
         '@olorin/design-tokens': path.resolve(packagesPath, 'design-tokens'),
+        // Glass UI - use web version for web builds from dist outputs
+        '@olorin/glass-ui$': path.resolve(packagesPath, 'glass-components/dist/web'),
+        // Glass UI subpath exports (e.g., @olorin/glass-ui/contexts)
+        '@olorin/glass-ui/web': path.resolve(packagesPath, 'glass-components/dist/web'),
+        '@olorin/glass-ui/native': path.resolve(packagesPath, 'glass-components/dist/native'),
+        '@olorin/glass-ui/hooks': path.resolve(packagesPath, 'glass-components/dist/hooks'),
+        '@olorin/glass-ui/theme': path.resolve(packagesPath, 'glass-components/dist/theme'),
+        '@olorin/glass-ui/stores': path.resolve(packagesPath, 'glass-components/dist/stores'),
+        '@olorin/glass-ui/contexts': path.resolve(packagesPath, 'glass-components/dist/contexts'),
+        '@olorin/glass-ui': path.resolve(packagesPath, 'glass-components/dist/native'),
         '@olorin/shared-hooks': path.resolve(packagesPath, 'shared-hooks'),
         '@olorin/shared-i18n': path.resolve(packagesPath, 'shared-i18n'),
         '@olorin/shared-services': path.resolve(packagesPath, 'shared-services'),
