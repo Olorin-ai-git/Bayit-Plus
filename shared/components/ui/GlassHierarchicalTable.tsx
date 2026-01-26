@@ -5,6 +5,8 @@
  * - Expandable/collapsible parent rows with nested children
  * - Multi-select with checkboxes
  * - Customizable columns with render functions
+ * - Column sorting with direction toggle
+ * - Resizable column widths by dragging
  * - Proper glassmorphic styling
  * - RTL support
  * - Pagination
@@ -16,7 +18,7 @@
 
 import React, { useState, useCallback, ReactNode, useRef, useEffect } from 'react';
 import { View, Text, Pressable, ActivityIndicator, StyleSheet, Image, Animated } from 'react-native';
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import { ChevronRight, ChevronDown, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { GlassView } from './GlassView';
 import { GlassCheckbox } from './GlassCheckbox';
@@ -29,7 +31,11 @@ export interface HierarchicalTableColumn<T = any> {
   key: string;
   label: string;
   width?: number | string;
+  minWidth?: number;
+  maxWidth?: number;
   align?: 'left' | 'center' | 'right';
+  sortable?: boolean;
+  resizable?: boolean;
   render?: (value: any, row: T, level: number) => ReactNode;
   renderChild?: (value: any, row: T, parent: T, level: number) => ReactNode;
 }
@@ -63,6 +69,9 @@ export interface HierarchicalTableProps<T = any> {
   onExpandToggle?: (rowId: string, expanded: boolean) => void;
   expandable?: boolean;
   defaultExpandAll?: boolean;
+  sortBy?: string;
+  sortDirection?: 'asc' | 'desc';
+  onSort?: (columnKey: string, direction: 'asc' | 'desc') => void;
   style?: any;
 }
 
@@ -86,6 +95,9 @@ export function GlassHierarchicalTable<T extends Record<string, any>>({
   onExpandToggle,
   expandable = true,
   defaultExpandAll = false,
+  sortBy,
+  sortDirection,
+  onSort,
   style,
 }: HierarchicalTableProps<T>) {
   // ============================================
@@ -98,6 +110,22 @@ export function GlassHierarchicalTable<T extends Record<string, any>>({
     }
     return new Set();
   });
+
+  // Column width state - initialize from column definitions
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const widths: Record<string, number> = {};
+    columns.forEach(column => {
+      if (typeof column.width === 'number') {
+        widths[column.key] = column.width;
+      }
+    });
+    return widths;
+  });
+
+  // Resize drag state
+  const [resizingColumn, setResizingColumn] = useState<string | null>(null);
+  const resizeStartX = useRef<number>(0);
+  const resizeStartWidth = useRef<number>(0);
 
   // ============================================
   // Handlers
@@ -168,6 +196,119 @@ export function GlassHierarchicalTable<T extends Record<string, any>>({
     if (column.align) return column.align;
     return isRTL ? 'right' : 'left';
   };
+
+  const getColumnWidth = (column: HierarchicalTableColumn): number | string | undefined => {
+    // Use state width if available (user has resized)
+    if (columnWidths[column.key] !== undefined) {
+      return columnWidths[column.key];
+    }
+    // Otherwise use column definition width
+    return column.width;
+  };
+
+  const handleSort = useCallback((columnKey: string) => {
+    if (!onSort) return;
+
+    console.log('[GlassHierarchicalTable] handleSort called:', {
+      columnKey,
+      currentSortBy: sortBy,
+      currentSortDirection: sortDirection,
+    });
+
+    // Toggle direction: if already sorting by this column, toggle direction
+    // Otherwise, start with ascending
+    const newDirection = sortBy === columnKey && sortDirection === 'asc' ? 'desc' : 'asc';
+
+    console.log('[GlassHierarchicalTable] Calling onSort with:', {
+      columnKey,
+      newDirection,
+    });
+
+    onSort(columnKey, newDirection);
+  }, [sortBy, sortDirection, onSort]);
+
+  const getSortIcon = (columnKey: string) => {
+    console.log('[GlassHierarchicalTable] getSortIcon:', {
+      columnKey,
+      sortBy,
+      sortDirection,
+      isMatch: sortBy === columnKey,
+    });
+
+    if (sortBy !== columnKey) {
+      return <ArrowUpDown size={14} color={colors.textMuted} style={{ opacity: 0.4 }} />;
+    }
+
+    return sortDirection === 'asc'
+      ? <ArrowUp size={14} color={colors.primary.DEFAULT} />
+      : <ArrowDown size={14} color={colors.primary.DEFAULT} />;
+  };
+
+  // Column resize handlers
+  const handleResizeStart = useCallback((e: any, columnKey: string, currentWidth: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setResizingColumn(columnKey);
+    resizeStartX.current = e.pageX || e.clientX;
+    resizeStartWidth.current = currentWidth;
+
+    console.log('[GlassHierarchicalTable] Resize start:', { columnKey, currentWidth, startX: resizeStartX.current });
+  }, []);
+
+  const handleResizeMove = useCallback((e: any) => {
+    if (!resizingColumn) return;
+
+    const currentX = e.pageX || e.clientX;
+    const deltaX = isRTL ? resizeStartX.current - currentX : currentX - resizeStartX.current;
+    const newWidth = resizeStartWidth.current + deltaX;
+
+    // Get column config for constraints
+    const column = columns.find(col => col.key === resizingColumn);
+    if (!column) return;
+
+    const minWidth = column.minWidth || 100;
+    const maxWidth = column.maxWidth || 600;
+    const constrainedWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+
+    setColumnWidths(prev => ({
+      ...prev,
+      [resizingColumn]: constrainedWidth,
+    }));
+  }, [resizingColumn, columns, isRTL]);
+
+  const handleResizeEnd = useCallback(() => {
+    if (resizingColumn) {
+      console.log('[GlassHierarchicalTable] Resize end:', {
+        columnKey: resizingColumn,
+        finalWidth: columnWidths[resizingColumn]
+      });
+      setResizingColumn(null);
+    }
+  }, [resizingColumn, columnWidths]);
+
+  // Setup global mouse event listeners for resize
+  useEffect(() => {
+    if (resizingColumn) {
+      document.addEventListener('mousemove', handleResizeMove);
+      document.addEventListener('mouseup', handleResizeEnd);
+      document.addEventListener('mouseleave', handleResizeEnd);
+
+      return () => {
+        document.removeEventListener('mousemove', handleResizeMove);
+        document.removeEventListener('mouseup', handleResizeEnd);
+        document.removeEventListener('mouseleave', handleResizeEnd);
+      };
+    }
+  }, [resizingColumn, handleResizeMove, handleResizeEnd]);
+
+  // Debug: Log when sort props change
+  useEffect(() => {
+    console.log('[GlassHierarchicalTable] Sort props updated:', {
+      sortBy,
+      sortDirection,
+    });
+  }, [sortBy, sortDirection]);
 
   // ============================================
   // Animated Components
@@ -299,13 +440,14 @@ export function GlassHierarchicalTable<T extends Record<string, any>>({
             {/* Data Columns */}
             {columns.map((column) => {
               const renderFn = level > 0 && column.renderChild ? column.renderChild : column.render;
+              const columnWidth = getColumnWidth(column);
 
               return (
                 <View
                   key={column.key}
                   style={[
                     styles.cell,
-                    column.width ? { width: column.width as any, flex: undefined } : { flex: 1 },
+                    columnWidth ? { width: columnWidth as any, flex: undefined } : { flex: 1 },
                     level > 0 && styles.childCell,
                   ]}
                 >
@@ -368,19 +510,72 @@ export function GlassHierarchicalTable<T extends Record<string, any>>({
         {expandable && <View style={styles.expandCell} />}
 
         {/* Column Headers */}
-        {columns.map((column) => (
-          <View
-            key={column.key}
-            style={[
-              styles.headerCell,
-              column.width ? { width: column.width as any, flex: undefined } : { flex: 1 },
-            ]}
-          >
-            <Text style={[styles.headerText, { textAlign: getTextAlign(column) }]}>
-              {column.label}
-            </Text>
-          </View>
-        ))}
+        {columns.map((column, columnIndex) => {
+          const isSortable = column.sortable !== false; // Sortable by default unless explicitly set to false
+          const isSorted = sortBy === column.key;
+          const isResizable = column.resizable !== false; // Resizable by default
+          const isLastColumn = columnIndex === columns.length - 1;
+          const columnWidth = getColumnWidth(column);
+          const numericWidth = typeof columnWidth === 'number' ? columnWidth : undefined;
+
+          return (
+            <View
+              key={column.key}
+              style={[
+                styles.headerCellContainer,
+                columnWidth ? { width: columnWidth as any, flex: undefined } : { flex: 1 },
+              ]}
+            >
+              <Pressable
+                style={[
+                  styles.headerCell,
+                  isSortable && styles.headerCellSortable,
+                ]}
+                onPress={() => isSortable && handleSort(column.key)}
+                disabled={!isSortable}
+              >
+                <View style={[styles.headerContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                  <Text
+                    style={[
+                      styles.headerText,
+                      { textAlign: getTextAlign(column) },
+                      isSorted && styles.headerTextSorted,
+                    ]}
+                  >
+                    {column.label}
+                  </Text>
+                  {isSortable && (
+                    <View style={styles.sortIcon}>
+                      {getSortIcon(column.key)}
+                    </View>
+                  )}
+                </View>
+              </Pressable>
+
+              {/* Resize Handle */}
+              {isResizable && !isLastColumn && (
+                <Pressable
+                  style={[
+                    styles.resizeHandle,
+                    resizingColumn === column.key && styles.resizeHandleActive,
+                  ]}
+                  onMouseDown={(e: any) => handleResizeStart(e, column.key, numericWidth || 150)}
+                  onHoverIn={() => {
+                    // Visual feedback on hover
+                  }}
+                  onHoverOut={() => {
+                    // Remove hover feedback
+                  }}
+                >
+                  <View style={[
+                    styles.resizeHandleLine,
+                    resizingColumn === column.key && styles.resizeHandleLineActive,
+                  ]} />
+                </Pressable>
+              )}
+            </View>
+          );
+        })}
       </View>
 
       {/* Body */}
@@ -453,8 +648,27 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255, 255, 255, 0.08)',
     paddingVertical: spacing.md,
   },
+  headerCellContainer: {
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'stretch',
+  },
   headerCell: {
+    flex: 1,
     paddingHorizontal: spacing.md,
+    justifyContent: 'center',
+  },
+  headerCellSortable: {
+    cursor: 'pointer',
+    // @ts-ignore - web-only property
+    ':hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    },
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   headerText: {
     fontSize: fontSize.sm,
@@ -462,6 +676,46 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+  },
+  headerTextSorted: {
+    color: colors.primary.DEFAULT,
+  },
+  sortIcon: {
+    marginLeft: spacing.xs,
+  },
+  resizeHandle: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 16,
+    cursor: 'col-resize',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+    // @ts-ignore - web-only property
+    userSelect: 'none',
+    // @ts-ignore - web-only property
+    ':hover .resizeHandleLine': {
+      backgroundColor: colors.primary.DEFAULT,
+      opacity: 0.5,
+    },
+  },
+  resizeHandleLine: {
+    width: 2,
+    height: '70%',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 1,
+    // @ts-ignore - web-only property
+    transition: 'background-color 0.2s, opacity 0.2s',
+  },
+  resizeHandleLineActive: {
+    backgroundColor: colors.primary.DEFAULT,
+    opacity: 1,
+  },
+  resizeHandleActive: {
+    // Active state when dragging
   },
 
   // Body

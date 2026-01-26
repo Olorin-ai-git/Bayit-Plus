@@ -34,6 +34,8 @@ export default function ContentLibraryPage() {
     selectedItemsData,
     isBatchProcessing,
     hierarchicalData,
+    sortBy,
+    sortDirection,
     setFilters,
     setShowOnlyWithSubtitles,
     setPagination,
@@ -43,6 +45,7 @@ export default function ContentLibraryPage() {
     handleBatchMerge,
     handleBatchDelete,
     handleBatchFeature,
+    handleSort,
     refresh,
     clearSelection,
   } = useContentData()
@@ -136,8 +139,19 @@ export default function ContentLibraryPage() {
             <GlassButton
               title={t('common.filters')}
               onPress={() => setShowFiltersDropdown(true)}
-              variant="secondary"
+              variant={
+                filters.content_type || filters.is_published !== undefined || showOnlyWithSubtitles
+                  ? 'primary'
+                  : 'secondary'
+              }
               icon={<Filter size={16} />}
+              badge={
+                [
+                  filters.content_type && filters.content_type !== '',
+                  filters.is_published !== undefined,
+                  showOnlyWithSubtitles,
+                ].filter(Boolean).length || undefined
+              }
             />
           </View>
 
@@ -168,6 +182,9 @@ export default function ContentLibraryPage() {
             onSelectionChange={handleSelectionChange}
             onExpandToggle={handleExpandToggle}
             expandable
+            sortBy={sortBy}
+            sortDirection={sortDirection}
+            onSort={handleSort}
           />
 
           {/* Merge Wizard */}

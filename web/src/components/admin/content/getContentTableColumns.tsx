@@ -62,6 +62,9 @@ export function getContentTableColumns(
       key: 'thumbnail',
       label: '',
       width: 80,
+      minWidth: 60,
+      maxWidth: 120,
+      resizable: false, // Don't allow resizing thumbnail column
       render: (value, row) => (
         <ThumbnailCell
           uri={value}
@@ -99,12 +102,16 @@ export function getContentTableColumns(
       key: 'category_name',
       label: t('admin.content.columns.category', 'Category'),
       width: 150,
+      minWidth: 100,
+      maxWidth: 250,
       render: (value) => <TextCell text={value || '-'} align="left" />,
     },
     {
       key: 'year',
       label: t('admin.content.columns.year', 'Year'),
       width: 100,
+      minWidth: 80,
+      maxWidth: 150,
       align: 'center',
       render: (value) => <TextCell text={value || '-'} align="center" />,
     },
@@ -112,6 +119,8 @@ export function getContentTableColumns(
       key: 'available_subtitles',
       label: t('admin.content.columns.subtitles', 'Subtitles'),
       width: 150,
+      minWidth: 120,
+      maxWidth: 250,
       render: (value) => {
         const subtitles = value as string[] | undefined
         if (!subtitles || subtitles.length === 0) {
@@ -137,6 +146,8 @@ export function getContentTableColumns(
       key: 'is_published',
       label: t('admin.content.columns.status', 'Status'),
       width: 120,
+      minWidth: 100,
+      maxWidth: 180,
       render: (value) => (
         <BadgeCell
           label={value ? t('admin.content.status.published', 'Published') : t('admin.content.status.draft', 'Draft')}
@@ -154,7 +165,10 @@ export function getContentTableColumns(
       key: 'actions',
       label: t('common.actions'),
       width: 180,
+      minWidth: 150,
+      maxWidth: 250,
       align: 'right',
+      resizable: false, // Don't allow resizing actions column
       render: (_, row) => {
         const content = row as ContentItem
         return (

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { GlassView, GlassInput, GlassButton } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
+import { uploadsService } from '@/services/adminApi'
 
 interface ImageUploaderProps {
   value?: string
@@ -68,8 +69,7 @@ export function ImageUploader({
     setError(null)
 
     try {
-      const { uploadsService } = await import('../../services/adminApi')
-      const response = await uploadsService.uploadImage(file, 'content')
+      const response = await uploadsService.uploadImage(file, 'thumbnails')
       onChange(response.url)
       setError(null)
     } catch (err) {
@@ -106,7 +106,6 @@ export function ImageUploader({
     setError(null)
 
     try {
-      const { uploadsService } = await import('../../services/adminApi')
       const response = await uploadsService.validateUrl(urlInput)
       if (response.valid) {
         onChange(urlInput)
@@ -139,26 +138,55 @@ export function ImageUploader({
       {label && <Text style={[styles.label, { textAlign }]}>{label}</Text>}
 
       {value ? (
-        <GlassView style={styles.previewContainer} intensity="medium">
-          <Image
-            source={{ uri: value }}
-            style={[styles.preview, { width: previewWidth, height: previewHeight }]}
-            resizeMode="cover"
-          />
-          <Pressable
-            onPress={handleClear}
+        <>
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
             disabled={isUploading}
-            style={styles.clearButton}
-          >
-            <GlassView style={styles.clearButtonInner} intensity="high">
-              <X size={16} color={colors.error} />
-            </GlassView>
-          </Pressable>
-          <View style={styles.successMessage}>
-            <CheckCircle size={16} color={colors.success} />
-            <Text style={styles.successText}>{t('admin.content.editor.imageUpload.success')}</Text>
-          </View>
-        </GlassView>
+            style={{
+              position: 'absolute',
+              width: 0,
+              height: 0,
+              opacity: 0,
+              overflow: 'hidden',
+              pointerEvents: 'none',
+            }}
+          />
+
+          <GlassView style={styles.previewContainer} intensity="medium">
+            <Image
+              source={{ uri: value }}
+              style={[styles.preview, { width: previewWidth, height: previewHeight }]}
+              resizeMode="cover"
+            />
+            <Pressable
+              onPress={handleClear}
+              disabled={isUploading}
+              style={styles.clearButton}
+            >
+              <GlassView style={styles.clearButtonInner} intensity="high">
+                <X size={16} color={colors.error} />
+              </GlassView>
+            </Pressable>
+            <View style={styles.successMessage}>
+              <CheckCircle size={16} color={colors.success} />
+              <Text style={styles.successText}>{t('admin.content.editor.imageUpload.success')}</Text>
+            </View>
+            <View style={styles.changeButtonContainer}>
+              <GlassButton
+                title={t('admin.content.editor.imageUpload.changeImage')}
+                onPress={() => fileInputRef.current?.click()}
+                variant="secondary"
+                disabled={isUploading}
+                loading={isUploading}
+                fullWidth
+              />
+            </View>
+          </GlassView>
+        </>
       ) : (
         <>
           {/* Hidden file input */}
@@ -316,6 +344,10 @@ const styles = StyleSheet.create({
   successText: {
     fontSize: 12,
     color: colors.success.DEFAULT,
+  },
+  changeButtonContainer: {
+    marginTop: spacing.md,
+    width: '100%',
   },
   dropZone: {
     borderRadius: borderRadius.lg,

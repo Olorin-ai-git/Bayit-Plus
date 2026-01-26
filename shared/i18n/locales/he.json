@@ -1711,6 +1711,11 @@
         "noSourcesDescription": "אין מקורות תוכן חינמיים זמינים כרגע עבור {{type}}"
       },
       "filters": {
+        "contentType": "סוג תוכן",
+        "series": "סדרות",
+        "movies": "סרטים",
+        "podcasts": "פודקאסטים",
+        "radioStations": "תחנות רדיו",
         "allStatus": "כל הסטטוסים"
       },
       "showOnlyWithSubtitles": "הצג רק עם כתוביות",
@@ -1858,6 +1863,7 @@
           "validateButton": "הוסף",
           "validating": "מאמת...",
           "clear": "הסר תמונה",
+          "changeImage": "החלף תמונה",
           "errors": {
             "imageOnly": "נא לבחור קובץ תמונה",
             "tooLarge": "גודל הקובץ חייב להיות פחות מ-{{maxSize}}MB",
