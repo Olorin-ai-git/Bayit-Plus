@@ -91,9 +91,14 @@ cd /Users/olorin/Documents/olorin/backend
 poetry run python -c "
 from motor.motor_asyncio import AsyncIOMotorClient
 import asyncio
+import os
 
 async def check():
-    client = AsyncIOMotorClient('mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/bayit_plus?retryWrites=true&w=majority')
+    mongodb_uri = os.getenv('MONGODB_URI')
+    if not mongodb_uri:
+        raise ValueError('MONGODB_URI environment variable not set')
+
+    client = AsyncIOMotorClient(mongodb_uri)
     db = client['bayit_plus']
     count = await db.content.count_documents({'category_name': 'Movies'})
     print(f'Movies in database: {count}')

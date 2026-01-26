@@ -1,21 +1,21 @@
 # GCP Configuration for Bayit+ Backend
-# Reuses infrastructure from Israeli-Radio-Manager project
 
 # ================================================
-# EXISTING INFRASTRUCTURE (FROM ISRAELI-RADIO-MANAGER)
+# GCP PROJECT CONFIGURATION
 # ================================================
 
 # GCP Project (BAYIT PLUS - SEPARATE PROJECT)
 GCP_PROJECT_ID=bayit-plus
 GCP_PROJECT_NUMBER=624470113582
 
-# Region (existing deployments use us-east1)
+# Region
 GCP_REGION=us-east1
 
-# MongoDB Atlas (SHARED - same cluster, different database)
-MONGODB_CLUSTER=cluster0.ydrvaft.mongodb.net
+# MongoDB Atlas (NEW DEDICATED CLUSTER FOR BAYIT+)
+# Migrated from old cluster (ydrvaft) to new cluster (fnjp1v) on 2026-01-26
+MONGODB_CLUSTER=cluster0.fnjp1v.mongodb.net
 MONGODB_USERNAME=admin_db_user
-# Note: Password is in Secret Manager
+# Note: Password is in Secret Manager (bayit-mongodb-url secret)
 
 # Service Account Files (REUSE)
 # Located in: /Users/olorin/Documents/Israeli-Radio-Manager/backend/

@@ -1,12 +1,22 @@
-# CVPlus MongoDB Atlas Migration Plan v4.0
+# CVPlus MongoDB Atlas Migration Plan v4.0 (ARCHIVED)
 
-## Executive Summary
+⚠️ **STATUS**: This is a historical planning document. CVPlus has been successfully migrated and now uses a dedicated MongoDB cluster.
 
-Migrate olorin-cvplus from Firebase Firestore to MongoDB Atlas using centralized olorin-shared database infrastructure. This migration aligns CVPlus with the Olorin ecosystem database strategy and enables advanced features like vector search, aggregations, and better performance.
+## Current Configuration (Updated January 26, 2026)
 
-**Duration**: 25 days (comprehensive quality-first approach with complete implementations)
-**Risk Level**: Medium (data migration with full rollback capability)
-**Database**: `cvplus` on shared MongoDB Atlas cluster (extracted from URI, not hardcoded)
+**Cluster**: cluster0.xwvtofw.mongodb.net (NEW DEDICATED CLUSTER)
+**Database**: cvplus_production
+**Previous Cluster**: cluster0.ydrvaft.mongodb.net (RETIRED)
+
+---
+
+## Original Executive Summary (v4.0 Planning)
+
+This document originally planned the migration of olorin-cvplus from Firebase Firestore to MongoDB Atlas using centralized olorin-shared database infrastructure. The migration is now complete and CVPlus runs on a dedicated cluster.
+
+**Original Duration Estimate**: 25 days (comprehensive quality-first approach with complete implementations)
+**Actual Migration Date**: January 26, 2026
+**Risk Level**: Medium (data migration with full rollback capability - COMPLETED)
 **Scope**: Web platform only (no iOS/tvOS - they don't exist)
 
 ## Version History

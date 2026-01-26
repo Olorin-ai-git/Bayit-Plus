@@ -533,6 +533,12 @@ EOF
     create_or_update_secret "bayit-apple-bundle-id-ios" "APPLE_BUNDLE_ID_IOS"
     create_or_update_secret "bayit-apple-bundle-id-tvos" "APPLE_BUNDLE_ID_TVOS"
 
+    # WebAuthn (Passkey/Biometric Authentication)
+    log_substep "Creating WebAuthn configuration secrets..."
+    create_or_update_secret "bayit-webauthn-rp-id" "WEBAUTHN_RP_ID"
+    create_or_update_secret "bayit-webauthn-rp-name" "WEBAUTHN_RP_NAME"
+    create_or_update_secret "bayit-webauthn-origin" "WEBAUTHN_ORIGIN"
+
     # Feature Flags
     create_or_update_secret "bayit-feature-scene-search-enabled" "FEATURE_SCENE_SEARCH_ENABLED"
 

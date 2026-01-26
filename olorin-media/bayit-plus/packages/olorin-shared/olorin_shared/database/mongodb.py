@@ -41,9 +41,6 @@ class MongoDBConnection:
     - olorin-fraud: olorin
     """
 
-    # Shared MongoDB Atlas cluster
-    CLUSTER_HOST = "cluster0.ydrvaft.mongodb.net"
-
     def __init__(self):
         """Initialize MongoDB connection manager."""
         self.client: Optional[AsyncIOMotorClient] = None
@@ -57,7 +54,7 @@ class MongoDBConnection:
         if not self.mongodb_uri:
             raise ConfigurationError(
                 "MONGODB_URI environment variable is required. "
-                "Format: mongodb+srv://username:password@cluster0.ydrvaft.mongodb.net/?retryWrites=true&w=majority"
+                "Format: mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority"
             )
 
         if not self.mongodb_db_name:
@@ -88,7 +85,7 @@ class MongoDBConnection:
             return self.client
 
         try:
-            logger.info(f"Connecting to MongoDB Atlas cluster: {self.CLUSTER_HOST}")
+            logger.info(f"Connecting to MongoDB Atlas")
             logger.info(f"Database: {self.mongodb_db_name}")
 
             # Create Motor client with connection pooling

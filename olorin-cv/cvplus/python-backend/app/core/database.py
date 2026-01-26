@@ -4,7 +4,8 @@ Follows Olorin ecosystem database patterns
 
 INTEGRATES WITH:
 - olorin-shared: MongoDB connection patterns
-- MongoDB Atlas: cluster0.ydrvaft.mongodb.net
+- MongoDB Atlas: cluster0.xwvtofw.mongodb.net (CVPlus - NEW DEDICATED CLUSTER)
+- Database: cvplus_production
 - Beanie ODM for async operations
 """
 

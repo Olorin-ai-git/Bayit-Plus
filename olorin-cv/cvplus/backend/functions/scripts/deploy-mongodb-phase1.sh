@@ -27,13 +27,14 @@ ENVIRONMENT="${1:-staging}"
 GCP_PROJECT_STAGING="cvplus-ai"
 GCP_PROJECT_PRODUCTION="cvplus-ai"  # Same for now, can be different
 
-# MongoDB Configuration
-MONGODB_CLUSTER="cluster0.ydrvaft.mongodb.net"
+# MongoDB Configuration (NEW DEDICATED CLUSTER FOR CVPLUS)
+# Migrated from cluster0.ydrvaft.mongodb.net on January 26, 2026
+MONGODB_CLUSTER="cluster0.xwvtofw.mongodb.net"
 
 # Select project based on environment
 if [ "$ENVIRONMENT" = "production" ]; then
     GCP_PROJECT="$GCP_PROJECT_PRODUCTION"
-    DB_NAME="cvplus"
+    DB_NAME="cvplus_production"
     echo "⚠️  WARNING: Deploying to PRODUCTION"
     read -p "Are you sure? (yes/no): " confirmation
     if [ "$confirmation" != "yes" ]; then

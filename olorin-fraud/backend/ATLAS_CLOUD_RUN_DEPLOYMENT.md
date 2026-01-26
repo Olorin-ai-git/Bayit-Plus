@@ -304,7 +304,7 @@ gh run view --log
 ### MongoDB Atlas Dashboard
 
 **URL:** https://cloud.mongodb.com
-**Cluster:** cluster0.ydrvaft.mongodb.net
+**Cluster:** cluster0.aqe2wwx.mongodb.net
 **Database:** olorin
 
 **Monitor:**

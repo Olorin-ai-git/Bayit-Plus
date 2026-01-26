@@ -44,9 +44,20 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 BACKEND_DIR="$PROJECT_ROOT/backend"
+ENV_FILE="$BACKEND_DIR/.env"
 
-# MongoDB Configuration
-MONGODB_URI="mongodb+srv://admin_db_user:Jersey1973!@cluster0.ydrvaft.mongodb.net/bayit_plus?retryWrites=true&w=majority&appName=Cluster0"
+# Load MongoDB Configuration from environment
+if [[ -f "$ENV_FILE" ]]; then
+    MONGODB_URI=$(grep "^MONGODB_URI=" "$ENV_FILE" | cut -d'=' -f2-)
+else
+    echo "Error: .env file not found at $ENV_FILE"
+    exit 1
+fi
+
+if [[ -z "$MONGODB_URI" ]]; then
+    echo "Error: MONGODB_URI not configured in .env file"
+    exit 1
+fi
 
 # Default options
 DRY_RUN=false

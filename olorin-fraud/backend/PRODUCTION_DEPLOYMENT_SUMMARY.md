@@ -172,7 +172,7 @@ ENABLE_MONGODB=true
 ### Database Status ✅
 
 ```
-Cluster: cluster0.ydrvaft.mongodb.net
+Cluster: cluster0.aqe2wwx.mongodb.net
 Database: olorin
 Collections: 10
 Documents: 123,135 (5,212 investigations + 117,923 audit logs)

@@ -66,7 +66,7 @@ Secrets:
 ============================================================
 
 Database: olorin
-URI: mongodb+srv://admin_db_user:***@cluster0.ydrvaft.mongodb.net
+URI: mongodb+srv://admin_db_user:***@cluster0.aqe2wwx.mongodb.net
 
 🔌 Connecting to MongoDB Atlas...
 ✅ Connected to MongoDB Atlas
@@ -225,7 +225,7 @@ gcloud run services logs read olorin-backend-production \
 ## MongoDB Atlas Access
 
 **Dashboard**: https://cloud.mongodb.com
-**Cluster**: cluster0.ydrvaft.mongodb.net
+**Cluster**: cluster0.aqe2wwx.mongodb.net
 **Database**: olorin
 **Version**: 8.0.17
 
@@ -235,7 +235,7 @@ gcloud run services logs read olorin-backend-production \
 
 **Connection String** (stored in GCP Secret Manager):
 ```
-mongodb+srv://admin_db_user:***@cluster0.ydrvaft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+mongodb+srv://admin_db_user:***@cluster0.aqe2wwx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 ```
 
 ---

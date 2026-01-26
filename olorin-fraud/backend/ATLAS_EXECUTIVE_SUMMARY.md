@@ -40,7 +40,7 @@ The Olorin investigation platform has been successfully migrated from local Mong
 - Connection pooling configured (20-100 connections)
 - Retry writes enabled
 - Write concern: majority
-- Atlas cluster: cluster0.ydrvaft.mongodb.net
+- Atlas cluster: cluster0.aqe2wwx.mongodb.net
 
 ### 3. Comprehensive Testing ✅
 All test scripts passing:
@@ -175,7 +175,7 @@ All test scripts passing:
 ## Technical Details
 
 ### Atlas Cluster
-- **Host:** cluster0.ydrvaft.mongodb.net
+- **Host:** cluster0.aqe2wwx.mongodb.net
 - **Database:** olorin
 - **Tier:** M30+ (recommended for production)
 - **Authentication:** admin_db_user with password
@@ -213,7 +213,7 @@ w: majority
 
 ### MongoDB Atlas Dashboard
 - **URL:** https://cloud.mongodb.com
-- **Cluster:** cluster0.ydrvaft.mongodb.net
+- **Cluster:** cluster0.aqe2wwx.mongodb.net
 - **Database:** olorin
 
 ### Test Scripts

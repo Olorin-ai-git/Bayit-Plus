@@ -1,12 +1,18 @@
-# Data Migration Complete - Local MongoDB to Atlas
+# Data Migration - Local MongoDB to Atlas (Archived)
 
-## ✅ Successfully Migrated
+## ℹ️ Historical Record
 
-All data from local MongoDB has been migrated to MongoDB Atlas!
+This document records the initial migration from local MongoDB to MongoDB Atlas (cluster0.ydrvaft.mongodb.net) on January 11, 2026.
+
+**Note:** Data has been subsequently migrated to a new dedicated cluster (cluster0.fnjp1v.mongodb.net) on January 26, 2026. See current cluster configuration in backend/.env.
+
+---
+
+## Original Migration (Local → Atlas)
 
 **Date:** January 11, 2026
 **Source:** Local MongoDB (`bayit_plus` database)
-**Destination:** MongoDB Atlas (`bayit_plus` database on cluster0.ydrvaft.mongodb.net)
+**Destination:** MongoDB Atlas (`bayit_plus` database on cluster0.ydrvaft.mongodb.net - superseded)
 
 ---
 

@@ -31,9 +31,9 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Configuration
+# Configuration (UPDATED WITH NEW CVPlus CLUSTER - January 26, 2026)
 GCP_PROJECT_PRODUCTION="cvplus-ai"
-MONGODB_CLUSTER="cluster0.ydrvaft.mongodb.net"
+MONGODB_CLUSTER="cluster0.xwvtofw.mongodb.net"
 MONGODB_DATABASE="cvplus_production"
 FIREBASE_PROJECT="cvplus-ai"
 

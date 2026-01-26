@@ -1,23 +1,23 @@
-# Bayit+ Deployment Options
+# Bayit+ Deployment Configuration
 
-You have two deployment strategies available, based on the existing Israeli-Radio-Manager infrastructure.
+Bayit+ Backend is deployed to Google Cloud with dedicated MongoDB infrastructure.
 
-## Option 1: Use Existing Infrastructure (RECOMMENDED)
+## Current Deployment
 
-**Script:** `./deploy-with-existing-infra.sh`
+**Status:** Active and migrated to new dedicated MongoDB cluster
 
-### What Gets Reused:
-✅ **GCP Project:** `israeli-radio-475c9` (already configured)
-✅ **MongoDB Atlas Cluster:** `cluster0.ydrvaft.mongodb.net` (new database: `bayit_plus`)
-✅ **Service Account:** Existing service account with permissions
-✅ **OAuth Credentials:** Google OAuth already configured
-✅ **Region:** `us-east1` (proven working, same as Israeli-Radio)
-✅ **Secrets:** ELEVENLABS_API_KEY, ANTHROPIC_API_KEY can be shared
+### Infrastructure:
+✅ **GCP Project:** `bayit-plus`
+✅ **Cloud Run Service:** `bayit-plus-backend`
+✅ **MongoDB Cluster:** `cluster0.fnjp1v.mongodb.net` (NEW - dedicated cluster)
+✅ **Database:** `bayit_plus`
+✅ **GCS Bucket:** `bayit-plus-media-new`
+✅ **Region:** `us-east1`
 
-### What Gets Created (New):
-🆕 **Cloud Run Service:** `bayit-plus-backend`
-🆕 **GCS Bucket:** `bayit-plus-media`
-🆕 **MongoDB Database:** `bayit_plus` (on existing cluster)
+### Migration History:
+- **Original Cluster:** `cluster0.ydrvaft.mongodb.net` (shared, discontinued for Bayit+)
+- **New Cluster:** `cluster0.fnjp1v.mongodb.net` (dedicated, January 2026)
+- **Status:** Data migrated, old cluster databases deleted (except station_ai)
 🆕 **Bayit+ Secrets:** Stripe keys, secret key, CORS settings
 
 ### Benefits:

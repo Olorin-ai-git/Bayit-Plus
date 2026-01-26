@@ -426,6 +426,38 @@ main() {
     fi
 
     # ============================================================
+    # STEP 3.5: Prepare Secrets for Backend Deployment
+    # ============================================================
+    if [[ "$SKIP_BACKEND" != "true" ]]; then
+        log_step "Preparing Backend Secrets"
+
+        print_info "Ensuring backend configuration secrets exist in Google Cloud Secret Manager..."
+
+        # Source the secrets creation function from deploy_server.sh
+        if [[ -f "$SCRIPT_DIR/deploy_server.sh" ]]; then
+            # Extract the create_or_update_secret function from deploy_server.sh
+            source <(grep -A 20 "create_or_update_secret()" "$SCRIPT_DIR/deploy_server.sh" | head -20)
+
+            # Load environment variables from backend/.env
+            if [[ -f "$REPO_ROOT/backend/.env" ]]; then
+                export $(grep "^WEBAUTHN_" "$REPO_ROOT/backend/.env" | xargs)
+
+                # Create/Update WebAuthn configuration secrets
+                print_info "Configuring WebAuthn secrets..."
+                create_or_update_secret "bayit-webauthn-rp-id" "WEBAUTHN_RP_ID"
+                create_or_update_secret "bayit-webauthn-rp-name" "WEBAUTHN_RP_NAME"
+                create_or_update_secret "bayit-webauthn-origin" "WEBAUTHN_ORIGIN"
+
+                print_success "Backend secrets prepared"
+            else
+                print_warning "backend/.env not found - skipping secret preparation"
+            fi
+        else
+            print_warning "deploy_server.sh not found - secrets will be created during backend deployment"
+        fi
+    fi
+
+    # ============================================================
     # STEP 4: Deploy Backend to Cloud Run
     # ============================================================
     if [[ "$SKIP_BACKEND" != "true" ]]; then

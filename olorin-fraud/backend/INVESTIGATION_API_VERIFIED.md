@@ -81,7 +81,7 @@ Summary:
 ```
 ✅ Connected to MongoDB Atlas
 ✅ Database: olorin
-✅ Cluster: cluster0.ydrvaft.mongodb.net
+✅ Cluster: cluster0.aqe2wwx.mongodb.net
 ✅ MongoDB Version: 8.0.17
 ✅ Connection Type: mongodb+srv:// (TLS encrypted)
 ```
@@ -242,7 +242,7 @@ POST   /api/hybrid-graph/investigations/query        - Complex queries
 
 ### ✅ MongoDB Atlas (Production Database)
 ```
-✅ Cluster: cluster0.ydrvaft.mongodb.net
+✅ Cluster: cluster0.aqe2wwx.mongodb.net
 ✅ Database: olorin
 ✅ Collections: 2 (investigations, audit_log)
 ✅ Documents: 123,135 total

@@ -105,19 +105,17 @@ async def get_station(station_id: str):
 @router.get("/{station_id}/stream")
 async def get_stream_url(
     station_id: str,
-    validate: bool = Query(True, description="Validate stream URL accessibility")
+    validate: bool = Query(False, description="Validate stream URL accessibility")
 ):
     """
     Get radio stream URL with optional validation.
 
-    Validates that the stream URL is accessible before returning it, preventing
-    clients from attempting to play unavailable streams. Uses a 5-second timeout
-    to detect network issues early.
+    Returns the stream URL for playback. Client-side players handle stream validation
+    and provide better error handling for network issues.
 
     Args:
         station_id: ID of the radio station
-        validate: Whether to validate stream URL (default: True). Pass validate=false
-                 for testing purposes only.
+        validate: Whether to validate stream URL (default: False for performance)
 
     Returns:
         JSON object with:
@@ -126,7 +124,6 @@ async def get_stream_url(
 
     Raises:
         404: Station not found or inactive
-        503: Stream URL is not accessible (validation failed/timeout)
     """
     # Get station from database
     station = await RadioStation.get(station_id)
@@ -134,23 +131,17 @@ async def get_stream_url(
         logger.warning(f"[Radio] Station not found or inactive: {station_id}")
         raise HTTPException(status_code=404, detail="Station not found")
 
-    # Validate stream URL is accessible (can be disabled with ?validate=false for testing)
+    # Optional validation (disabled by default for performance)
     if validate:
-        is_accessible = await validate_stream_url(station.stream_url)
-
+        is_accessible = await validate_stream_url(station.stream_url, timeout=5)
         if not is_accessible:
-            logger.error(
-                f"[Radio] Stream URL not accessible for station {station.name}",
+            logger.warning(
+                f"[Radio] Stream validation failed for {station.name}",
                 extra={
                     "station_id": station_id,
                     "station_name": station.name,
                     "stream_url": station.stream_url,
-                    "stream_type": station.stream_type
                 }
-            )
-            raise HTTPException(
-                status_code=503,
-                detail=f"Stream for {station.name} is temporarily unavailable. Please try again later."
             )
 
     logger.info(

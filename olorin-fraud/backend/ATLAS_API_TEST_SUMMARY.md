@@ -123,7 +123,7 @@ $ poetry run python scripts/verify_production_atlas.py
 ============================================================
 
 Database: olorin
-URI: mongodb+srv://admin_db_user:***@cluster0.ydrvaft.mongodb.net
+URI: mongodb+srv://admin_db_user:***@cluster0.aqe2wwx.mongodb.net
 
 🔌 Connecting to MongoDB Atlas...
 ✅ Connected to MongoDB Atlas

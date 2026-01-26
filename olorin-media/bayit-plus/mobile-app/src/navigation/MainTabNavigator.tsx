@@ -10,15 +10,13 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { MainTabParamList } from './types';
 import TabBar from '../components/navigation/TabBar';
 
-// Import mobile-optimized screens
-import {
-  HomeScreenMobile,
-  LiveTVScreenMobile,
-  VODScreenMobile,
-  RadioScreenMobile,
-  PodcastsScreenMobile,
-  ProfileScreenMobile,
-} from '../screens';
+// Import simplified mobile screens (no external dependencies)
+import { HomeScreenMobile } from '../screens/SimpleHomeScreenMobile';
+import { LiveTVScreenMobile } from '../screens/SimpleLiveTVScreenMobile';
+import { VODScreenMobile } from '../screens/SimpleVODScreenMobile';
+import { RadioScreenMobile } from '../screens/SimpleRadioScreenMobile';
+import { PodcastsScreenMobile } from '../screens/SimplePodcastsScreenMobile';
+import { ProfileScreenMobile } from '../screens/SimpleProfileScreenMobile';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 

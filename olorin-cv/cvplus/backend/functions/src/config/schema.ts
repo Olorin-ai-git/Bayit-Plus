@@ -27,8 +27,9 @@ export const ConfigSchema = z.object({
 
   // MongoDB Configuration (REQUIRED - uses olorin-shared)
   // Reference: olorin-media/bayit-plus/packages/olorin-shared/olorin_shared/database/mongodb.py
+  // CVPlus uses dedicated cluster (NEW): mongodb+srv://username:password@cluster0.xwvtofw.mongodb.net/cvplus_production
   mongodb: z.object({
-    uri: z.string().min(1), // mongodb+srv://username:password@cluster0.ydrvaft.mongodb.net/...
+    uri: z.string().min(1), // mongodb+srv://username:password@cluster0.xwvtofw.mongodb.net/cvplus_production...
     dbName: z.string().min(1),
     maxPoolSize: z.number().int().positive().default(100),
     minPoolSize: z.number().int().positive().default(20),

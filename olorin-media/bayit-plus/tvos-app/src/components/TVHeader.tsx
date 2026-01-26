@@ -17,12 +17,16 @@ import { useTranslation } from 'react-i18next';
 import { Home, Tv, Calendar, Film, Radio, Mic, Sparkles, BookOpen, Users, Disc3, Settings, Search } from 'lucide-react-native';
 import { useAuthStore, useChatbotStore, useVoiceSettingsStore } from '@bayit/shared-stores';
 import { VoiceSearchButton, LanguageSelector, AnimatedLogo, SoundwaveVisualizer } from '@bayit/shared';
-import { ProfileDropdown } from '@bayit/shared/ProfileDropdown';
+// import { ProfileDropdown } from '@bayit/shared/ProfileDropdown'; // TODO: Component not available yet
 import { ICON_REGISTRY } from '@olorin/shared-icons';
 import { colors, spacing } from '@olorin/design-tokens';
 import LinearGradient from 'react-native-linear-gradient';
 import { chatService } from '@bayit/shared-services';
 import { useConstantListening } from '@bayit/shared-hooks';
+import { useVoiceTV } from '../hooks/useVoiceTV';
+import { TVVoiceIndicator } from './voice/TVVoiceIndicator';
+import { TVVoiceResponseDisplay } from './voice/TVVoiceResponseDisplay';
+import { TVProactiveSuggestionBanner } from './voice/TVProactiveSuggestionBanner';
 
 // Navigation links - matching web app navigation with TV-specific additions
 const navLinkKeys = [
@@ -51,7 +55,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
   const { i18n, t } = useTranslation();
   const navigation = useNavigation<any>();
   const { user, isAuthenticated, logout } = useAuthStore();
-  const { sendMessage, toggleOpen } = useChatbotStore();
+  const { sendMessage, setOpen: setChatbotOpen } = useChatbotStore();
   const { preferences } = useVoiceSettingsStore();
   const { width } = useWindowDimensions();
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
@@ -60,55 +64,24 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
   const [focusedNav, setFocusedNav] = useState<string | null>(null);
   const [focusedAction, setFocusedAction] = useState<string | null>(null);
 
-  // Voice settings for TV
-  const [micAvailable, setMicAvailable] = useState<boolean | null>(null);
-  const wakeWordActive = preferences?.wake_word_enabled && micAvailable === true;
-
-  // Check if microphone is available
-  useEffect(() => {
-    // On tvOS, we assume mic is available via native module
-    // The native AudioCaptureModule handles mic access
-    setMicAvailable(true);
-  }, []);
-
-  // Handle voice transcript - send to chatbot
-  const handleVoiceTranscript = useCallback((text: string) => {
-    if (text) {
-      console.log('[TV Voice] Transcript received:', text);
-      toggleOpen();
-      sendMessage(text);
-    }
-  }, [sendMessage, toggleOpen]);
-
-  // Handle voice errors
-  const handleVoiceError = useCallback((error: Error) => {
-    console.warn('[TV Voice] Error:', error.message);
-  }, []);
-
-  // Wake word listening hook for TV
+  // New voice system hook
   const {
     isListening,
-    isProcessing,
-    isSendingToServer,
-    audioLevel,
-    isSupported: wakeWordSupported,
-  } = useConstantListening({
-    enabled: wakeWordActive,
-    onTranscript: handleVoiceTranscript,
-    onError: handleVoiceError,
-    silenceThresholdMs: preferences?.silence_threshold_ms || 2500,
-    vadSensitivity: preferences?.vad_sensitivity || 'medium',
-    transcribeAudio: chatService.transcribeAudio,
-  });
+    transcript,
+    error,
+    hasPermissions,
+    startListening,
+    stopListening,
+    requestPermissions,
+  } = useVoiceTV();
 
-  // Show soundwave on TV only if mic is available
-  const showSoundwave = micAvailable === true;
-
-  const handleVoiceTranscribed = (text: string) => {
-    if (text) {
-      sendMessage(text);
+  // Handle transcript completion
+  useEffect(() => {
+    if (transcript) {
+      setChatbotOpen(true);
+      sendMessage(transcript);
     }
-  };
+  }, [transcript, setChatbotOpen, sendMessage]);
 
   const handleProfileNavigate = (path: string) => {
     // Convert web paths to RN screen names
@@ -253,15 +226,13 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
         />
       </Pressable>
 
-      {/* Soundwave Visualizer - for TV wake word listening mode */}
-      {showSoundwave && (
-        <View className="h-[60px] min-w-[120px] justify-center items-center px-2 bg-purple-500/30 rounded-lg border-2 border-purple-500">
-          <SoundwaveVisualizer
-            audioLevel={audioLevel || 0}
-            isListening={isListening || wakeWordActive}
-            isProcessing={isProcessing}
-            isSendingToServer={isSendingToServer}
-            compact
+      {/* Voice Indicator - Show when listening */}
+      {isListening && (
+        <View className="px-3">
+          <TVVoiceIndicator
+            size="small"
+            showLabel={false}
+            onPress={() => stopListening()}
           />
         </View>
       )}
@@ -281,15 +252,33 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
   );
 
   return (
-    <View className="h-[100px] w-full border-b border-purple-500/20 bg-black/80">
-      <LinearGradient
-        colors={[colors.dark['950'], colors.dark['950']]}
-        className="flex-1 flex-row items-center justify-between px-12 w-full"
-      >
-        {LogoSection}
-        {NavSection}
-        {ActionsSection}
-      </LinearGradient>
+    <View className="w-full bg-black/80">
+      {/* Proactive Suggestion Banner - Top banner with voice command suggestions */}
+      <TVProactiveSuggestionBanner
+        visible={!isListening}
+        onDismiss={() => {}}
+        onSuggestionPress={(suggestionId) => {
+          // Handle suggestion press - typically triggers a command
+        }}
+      />
+
+      {/* Main Header */}
+      <View className="h-[100px] w-full border-b border-purple-500/20">
+        <LinearGradient
+          colors={[colors.dark['950'], colors.dark['950']]}
+          className="flex-1 flex-row items-center justify-between px-12 w-full"
+        >
+          {LogoSection}
+          {NavSection}
+          {ActionsSection}
+        </LinearGradient>
+      </View>
+
+      {/* Voice Response Display - Shows voice command responses */}
+      <TVVoiceResponseDisplay
+        autoDismissMs={5000}
+        onDismiss={() => {}}
+      />
     </View>
   );
 };
