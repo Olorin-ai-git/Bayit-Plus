@@ -27,7 +27,8 @@ PROJECT_ID="${GCP_PROJECT_ID:-bayit-plus}"
 REGION="${GCP_REGION:-us-east1}"
 JOB_NAME="library-integrity-check"
 SCHEDULER_JOB_NAME="library-integrity-weekly-check"
-SERVICE_ACCOUNT="${CLOUD_RUN_SERVICE_ACCOUNT:-bayit-plus-cloud-run@${PROJECT_ID}.iam.gserviceaccount.com}"
+# Use default compute service account for Cloud Scheduler OAuth
+SERVICE_ACCOUNT="${CLOUD_RUN_SERVICE_ACCOUNT:-624470113582-compute@developer.gserviceaccount.com}"
 
 # Schedule: Every Sunday at 2:00 AM UTC
 SCHEDULE="0 2 * * 0"
