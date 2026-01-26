@@ -50,7 +50,10 @@ const UploadsPage: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* Page Header */}
         <GlassPageHeader
           title={t('admin.uploads.title')}
@@ -71,48 +74,60 @@ const UploadsPage: React.FC = () => {
         />
 
         {/* Queue Dashboard - Collapsible */}
-        <GlassDraggableExpander
-          title={t('admin.uploads.queueDashboard.title')}
-          defaultExpanded={true}
-        >
-          <View style={styles.section}>
-            <QueueDashboard queueState={queueState} onRefresh={refreshQueue} loading={loading} />
-          </View>
-        </GlassDraggableExpander>
+        <View style={styles.expanderWrapper}>
+          <GlassDraggableExpander
+            title={t('admin.uploads.queueDashboard.title')}
+            defaultExpanded={true}
+            minHeight={400}
+            maxHeight={1200}
+          >
+            <View style={styles.section}>
+              <QueueDashboard queueState={queueState} onRefresh={refreshQueue} loading={loading} />
+            </View>
+          </GlassDraggableExpander>
+        </View>
 
         {/* Manual Upload Section */}
-        <GlassDraggableExpander
-          title={t('admin.uploads.manualUpload.title')}
-          defaultExpanded={true}
-        >
-          <View style={styles.section}>
-            {/* Dry Run Toggle */}
-            <DryRunToggle enabled={dryRunEnabled} onChange={toggleDryRun} />
+        <View style={styles.expanderWrapper}>
+          <GlassDraggableExpander
+            title={t('admin.uploads.manualUpload.title')}
+            defaultExpanded={true}
+            minHeight={500}
+            maxHeight={1200}
+          >
+            <View style={styles.section}>
+              {/* Dry Run Toggle */}
+              <DryRunToggle enabled={dryRunEnabled} onChange={toggleDryRun} />
 
-            {/* Upload Mode Tabs */}
-            <GlassTabs
-              tabs={[
-                { id: 'browser', label: t('admin.uploads.manualUpload.browserUpload') },
-                { id: 'url', label: t('admin.uploads.manualUpload.urlUpload') },
-              ]}
-              activeTab={uploadMode}
-              onChange={(tab) => setUploadMode(tab as UploadMode)}
-            />
+              {/* Upload Mode Tabs */}
+              <GlassTabs
+                tabs={[
+                  { id: 'browser', label: t('admin.uploads.manualUpload.browserUpload') },
+                  { id: 'url', label: t('admin.uploads.manualUpload.urlUpload') },
+                ]}
+                activeTab={uploadMode}
+                onChange={(tab) => setUploadMode(tab as UploadMode)}
+              />
 
-            {/* Upload Interface */}
-            {uploadMode === 'browser' ? <ManualUpload /> : <UrlInputPanel />}
-          </View>
-        </GlassDraggableExpander>
+              {/* Upload Interface */}
+              {uploadMode === 'browser' ? <ManualUpload /> : <UrlInputPanel />}
+            </View>
+          </GlassDraggableExpander>
+        </View>
 
         {/* Monitored Folders Section */}
-        <GlassDraggableExpander
-          title={t('admin.uploads.monitoredFolders.title')}
-          defaultExpanded={false}
-        >
-          <View style={styles.section}>
-            <MonitoredFolders />
-          </View>
-        </GlassDraggableExpander>
+        <View style={styles.expanderWrapper}>
+          <GlassDraggableExpander
+            title={t('admin.uploads.monitoredFolders.title')}
+            defaultExpanded={false}
+            minHeight={400}
+            maxHeight={1000}
+          >
+            <View style={styles.section}>
+              <MonitoredFolders />
+            </View>
+          </GlassDraggableExpander>
+        </View>
 
         {/* Dry Run Preview Modal */}
         <DryRunPreview
@@ -129,6 +144,15 @@ const UploadsPage: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    padding: spacing.md,
+    gap: spacing.md,
+  },
+  expanderWrapper: {
+    minHeight: 0,
+    flexShrink: 1,
   },
   section: {
     padding: spacing.lg,

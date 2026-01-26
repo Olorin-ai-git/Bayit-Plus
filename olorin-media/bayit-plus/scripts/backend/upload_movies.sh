@@ -17,6 +17,7 @@
 #   --dry-run            Show what would be done without uploading
 #   --limit N            Process only first N movies (for testing)
 #   --start-from LETTER  Start from movies beginning with letter (e.g., "T")
+#   --save-hash          Save computed hashes to MongoDB (useful with --dry-run)
 #   --drive-name NAME    External drive volume name (default: auto-detect)
 #   --help               Show this help message
 #
@@ -40,13 +41,13 @@
 #   ./upload_movies.sh --dry-run --limit 10
 #
 # Prerequisites:
-#   - MongoDB Atlas connection string in MONGODB_URL environment variable
+#   - MongoDB Atlas connection string in MONGODB_URI environment variable
 #   - Google Cloud credentials configured (gcloud auth or service account)
 #   - Python 3.11+ with Poetry
 #   - Backend dependencies installed (poetry install)
 #
 # Environment Variables:
-#   MONGODB_URL           MongoDB Atlas connection string (REQUIRED)
+#   MONGODB_URI           MongoDB Atlas connection string (REQUIRED)
 #   GCS_BUCKET_NAME       Google Cloud Storage bucket name
 #   TMDB_API_KEY          TMDB API key for metadata (optional)
 #   GOOGLE_APPLICATION_CREDENTIALS  Path to GCS service account key (optional)
@@ -68,12 +69,27 @@ PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 BACKEND_DIR="${PROJECT_ROOT}/backend"
 PYTHON_SCRIPT="${SCRIPT_DIR}/upload_real_movies.py"
 
+# Load backend .env if it exists (safe parsing)
+if [[ -f "${BACKEND_DIR}/.env" ]]; then
+    while IFS='=' read -r key value; do
+        # Skip comments and empty lines
+        [[ -z "$key" || "$key" =~ ^[[:space:]]*# ]] && continue
+        # Remove leading/trailing whitespace from key
+        key=$(echo "$key" | xargs)
+        # Export only if key is a valid variable name
+        if [[ "$key" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
+            export "$key=$value"
+        fi
+    done < "${BACKEND_DIR}/.env"
+fi
+
 # Default values (configuration-driven)
 SOURCE_DIR=""
 SOURCE_URL=""
 DRY_RUN=false
 LIMIT=""
 START_FROM=""
+SAVE_HASH=false
 DRIVE_NAME=""
 SHOW_HELP=false
 
@@ -132,8 +148,18 @@ detect_external_drives() {
 }
 
 select_drive() {
-    local drives
-    mapfile -t drives < <(detect_external_drives)
+    local drives=()
+    local drive_output
+
+    drive_output=$(detect_external_drives 2>/dev/null) || {
+        print_error "No external drives found. Please mount your drive or specify --source manually."
+        exit 1
+    }
+
+    # Read drives into array (bash 3.x compatible)
+    while IFS= read -r line; do
+        [[ -n "$line" ]] && drives+=("$line")
+    done <<< "$drive_output"
 
     if [[ ${#drives[@]} -eq 0 ]]; then
         print_error "No external drives found. Please mount your drive or specify --source manually."
@@ -146,14 +172,14 @@ select_drive() {
     fi
 
     # Multiple drives - let user select
-    print_info "Multiple external drives detected:"
+    print_info "Multiple external drives detected:" >&2
     local i=1
     for drive in "${drives[@]}"; do
-        echo "  $i) $drive"
+        echo "  $i) $drive" >&2
         ((i++))
     done
 
-    echo -n "Select drive number (1-${#drives[@]}): "
+    echo -n "Select drive number (1-${#drives[@]}): " >&2
     read -r selection
 
     if [[ ! "$selection" =~ ^[0-9]+$ ]] || [[ "$selection" -lt 1 ]] || [[ "$selection" -gt ${#drives[@]} ]]; then
@@ -213,18 +239,18 @@ check_prerequisites() {
     fi
     print_success "Poetry found"
 
-    # Check MongoDB URL
-    if [[ -z "${MONGODB_URL:-}" ]]; then
-        print_error "MONGODB_URL environment variable not set"
+    # Check MongoDB URI
+    if [[ -z "${MONGODB_URI:-}" ]]; then
+        print_error "MONGODB_URI environment variable not set"
         print_info "Please set MongoDB Atlas connection string:"
-        print_info "  export MONGODB_URL='mongodb+srv://user:pass@cluster.mongodb.net'"
+        print_info "  export MONGODB_URI='mongodb+srv://user:pass@cluster.mongodb.net'"
         exit 1
     fi
 
     # Verify it's not localhost
-    if [[ "$MONGODB_URL" == *"localhost"* ]]; then
+    if [[ "$MONGODB_URI" == *"localhost"* ]]; then
         print_error "Cannot use localhost for production uploads"
-        print_info "Please set MONGODB_URL to MongoDB Atlas connection string"
+        print_info "Please set MONGODB_URI to MongoDB Atlas connection string"
         exit 1
     fi
     print_success "MongoDB Atlas connection configured"
@@ -286,6 +312,10 @@ while [[ $# -gt 0 ]]; do
         --start-from)
             START_FROM="$2"
             shift 2
+            ;;
+        --save-hash)
+            SAVE_HASH=true
+            shift
             ;;
         --drive-name)
             DRIVE_NAME="$2"
@@ -399,10 +429,17 @@ main() {
         echo ""
     fi
 
+    if [[ "$SAVE_HASH" == true ]]; then
+        python_cmd+=" --save-hash"
+        print_info "Will save computed hashes to MongoDB"
+        echo ""
+    fi
+
     # Show summary
     print_info "Configuration:"
     echo "  Source:      $SOURCE_DIR"
     echo "  Dry Run:     $DRY_RUN"
+    echo "  Save Hash:   $SAVE_HASH"
     [[ -n "$LIMIT" ]] && echo "  Limit:       $LIMIT movies"
     [[ -n "$START_FROM" ]] && echo "  Start From:  $START_FROM"
     echo ""
