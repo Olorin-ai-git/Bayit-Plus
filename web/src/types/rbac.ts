@@ -98,6 +98,9 @@ export interface User {
   name: string;
   avatar?: string;
   is_active: boolean;
+  is_banned?: boolean;
+  ban_reason?: string;
+  banned_at?: string;
   role: Role;
   permissions?: Permission[];
   subscription?: Subscription;

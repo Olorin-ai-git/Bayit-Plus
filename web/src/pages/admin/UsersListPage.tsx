@@ -170,10 +170,16 @@ export default function UsersListPage() {
     </View>
   );
 
-  const renderStatusBadge = (status: string) => {
-    const normalizedStatus = status?.toLowerCase() || 'inactive';
-    const variant = normalizedStatus === 'active' ? 'success' : normalizedStatus === 'banned' ? 'error' : 'default';
-    const style = STATUS_COLORS[normalizedStatus] || STATUS_COLORS.inactive;
+  const renderStatusBadge = (user: User) => {
+    let status = 'inactive';
+    if (user.is_banned) {
+      status = 'banned';
+    } else if (user.is_active) {
+      status = 'active';
+    }
+
+    const variant = status === 'active' ? 'success' : status === 'banned' ? 'error' : 'default';
+    const style = STATUS_COLORS[status] || STATUS_COLORS.inactive;
     return (
       <GlassTableCell.Badge variant={variant}>
         {t(style.labelKey)}
@@ -242,7 +248,7 @@ export default function UsersListPage() {
       key: 'status',
       label: t('admin.users.columns.status'),
       width: 100,
-      render: (status: string) => renderStatusBadge(status),
+      render: (_: any, user: User) => renderStatusBadge(user),
       align: isRTL ? 'right' : 'left',
     },
     {
