@@ -114,6 +114,7 @@ export interface ExecuteAgentOptions {
   budgetLimit?: number;
   sessionId?: string;
   actionMode?: ActionMode;
+  autoConfirm?: boolean;
 }
 
 export interface HealthStatus {

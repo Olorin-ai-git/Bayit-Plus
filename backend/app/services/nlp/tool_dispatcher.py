@@ -238,6 +238,84 @@ async def execute_tool(
         except Exception as e:
             return f"Failed to get diff: {str(e)}"
 
+    elif tool_name == "execute_bash_script":
+        import subprocess
+        from pathlib import Path
+
+        script_path = tool_input["script_path"]
+        args = tool_input.get("args", [])
+        is_dry_run = tool_input.get("dry_run", False)
+
+        # Resolve script path
+        if not script_path.startswith('/'):
+            # Relative path - resolve from project root
+            project_root = Path(__file__).parent.parent.parent.parent
+            script_path = project_root / script_path
+        else:
+            script_path = Path(script_path)
+
+        # Security check - ensure script is within project
+        try:
+            project_root = Path(__file__).parent.parent.parent.parent
+            script_path = script_path.resolve()
+            script_path.relative_to(project_root)
+        except ValueError:
+            return f"Security error: Script must be within project directory"
+
+        if not script_path.exists():
+            return f"Script not found: {script_path}"
+
+        if not script_path.suffix == '.sh':
+            return f"Only bash scripts (.sh) are allowed: {script_path}"
+
+        # Build command
+        cmd = [str(script_path)] + args
+
+        if is_dry_run or dry_run:
+            return (
+                f"[DRY RUN] Would execute bash script:\n"
+                f"Script: {script_path}\n"
+                f"Args: {' '.join(args) if args else '(none)'}\n"
+                f"Command: {' '.join(cmd)}\n\n"
+                f"To execute, set dry_run=false"
+            )
+
+        # Make script executable
+        try:
+            subprocess.run(["chmod", "+x", str(script_path)], check=False)
+        except Exception:
+            pass
+
+        # Execute script
+        try:
+            logger.info(f"Executing bash script: {script_path} {' '.join(args)}")
+
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=300,  # 5 minutes max
+                cwd=script_path.parent
+            )
+
+            output = []
+            if result.stdout:
+                output.append("=== STDOUT ===")
+                output.append(result.stdout)
+            if result.stderr:
+                output.append("=== STDERR ===")
+                output.append(result.stderr)
+
+            if result.returncode == 0:
+                return f"✓ Script executed successfully:\n\n" + "\n".join(output)
+            else:
+                return f"✖ Script failed with exit code {result.returncode}:\n\n" + "\n".join(output)
+
+        except subprocess.TimeoutExpired:
+            return f"Script execution timed out after 5 minutes"
+        except Exception as e:
+            return f"Error executing script: {str(e)}"
+
     # Platform-specific tools
     elif platform == "bayit":
         return await execute_bayit_tool(tool_name, tool_input, dry_run)
@@ -457,6 +535,314 @@ async def execute_bayit_tool(
             status_info.append("Deployment logs directory not found")
 
         return "\n".join(status_info)
+
+    elif tool_name == "organize_series":
+        import subprocess
+        from pathlib import Path
+
+        is_dry_run = tool_input.get("dry_run", False)
+        limit = tool_input.get("limit")
+
+        # Build command to execute the bash script
+        script_path = Path(__file__).parent.parent.parent.parent / "scripts" / "bayit-organize-series.sh"
+
+        if not script_path.exists():
+            return f"Script not found: {script_path}"
+
+        # Make script executable
+        try:
+            subprocess.run(["chmod", "+x", str(script_path)], check=False)
+        except Exception:
+            pass
+
+        # Build command args
+        cmd = [str(script_path)]
+        if is_dry_run or dry_run:
+            cmd.append("--dry-run")
+        if limit:
+            cmd.extend(["--limit", str(limit)])
+
+        if is_dry_run or dry_run:
+            return (
+                f"[DRY RUN] Would organize series:\n"
+                f"Command: {' '.join(cmd)}\n"
+                f"Dry run: {is_dry_run or dry_run}\n"
+                f"Limit: {limit if limit else 'none'}\n\n"
+                f"To execute, set dry_run=false"
+            )
+
+        # Execute
+        try:
+            logger.info(f"Executing series organization: {' '.join(cmd)}")
+
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=600,  # 10 minutes max
+                cwd=script_path.parent
+            )
+
+            output = []
+            if result.stdout:
+                output.append(result.stdout)
+            if result.stderr:
+                output.append(result.stderr)
+
+            if result.returncode == 0:
+                return f"✓ Series organization complete:\n\n" + "\n".join(output)
+            else:
+                return f"✖ Series organization failed with exit code {result.returncode}:\n\n" + "\n".join(output)
+
+        except subprocess.TimeoutExpired:
+            return f"Series organization timed out after 10 minutes"
+        except Exception as e:
+            return f"Error organizing series: {str(e)}"
+
+    elif tool_name == "attach_posters":
+        import subprocess
+        from pathlib import Path
+
+        content_type = tool_input.get("content_type", "all")
+        limit = tool_input.get("limit")
+
+        script_path = Path(__file__).parent.parent.parent.parent / "scripts" / "backend" / "bayit-attach-posters.sh"
+
+        if not script_path.exists():
+            return f"Script not found: {script_path}"
+
+        subprocess.run(["chmod", "+x", str(script_path)], check=False)
+
+        cmd = [str(script_path)]
+        if content_type != "all":
+            cmd.extend(["--type", content_type])
+        if limit:
+            cmd.extend(["--limit", str(limit)])
+
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=600, cwd=script_path.parent)
+            if result.returncode == 0:
+                return f"✓ Poster attachment complete:\n{result.stdout}"
+            else:
+                return f"✖ Poster attachment failed:\n{result.stderr}\n{result.stdout}"
+        except Exception as e:
+            return f"Error attaching posters: {str(e)}"
+
+    elif tool_name == "attach_podcast_radio_posters":
+        import subprocess
+        from pathlib import Path
+
+        limit = tool_input.get("limit")
+
+        script_path = Path(__file__).parent.parent.parent.parent / "scripts" / "backend" / "bayit-attach-podcast-radio-posters.sh"
+
+        if not script_path.exists():
+            return f"Script not found: {script_path}"
+
+        subprocess.run(["chmod", "+x", str(script_path)], check=False)
+
+        cmd = [str(script_path)]
+        if limit:
+            cmd.extend(["--limit", str(limit)])
+
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=600, cwd=script_path.parent)
+            if result.returncode == 0:
+                return f"✓ Podcast/radio poster attachment complete:\n{result.stdout}"
+            else:
+                return f"✖ Poster attachment failed:\n{result.stderr}\n{result.stdout}"
+        except Exception as e:
+            return f"Error attaching posters: {str(e)}"
+
+    elif tool_name == "add_subtitles":
+        import subprocess
+        from pathlib import Path
+
+        content_id = tool_input.get("content_id")
+        language = tool_input.get("language", "en")
+        auto_generate = tool_input.get("auto_generate", False)
+
+        script_path = Path(__file__).parent.parent.parent.parent / "scripts" / "backend" / "bayit-add-subtitles.sh"
+
+        if not script_path.exists():
+            return f"Script not found: {script_path}"
+
+        subprocess.run(["chmod", "+x", str(script_path)], check=False)
+
+        cmd = [str(script_path), "--language", language]
+        if content_id:
+            cmd.extend(["--content-id", content_id])
+        if auto_generate:
+            cmd.append("--auto-generate")
+
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800, cwd=script_path.parent)
+            if result.returncode == 0:
+                return f"✓ Subtitles added successfully:\n{result.stdout}"
+            else:
+                return f"✖ Subtitle addition failed:\n{result.stderr}\n{result.stdout}"
+        except Exception as e:
+            return f"Error adding subtitles: {str(e)}"
+
+    elif tool_name == "sync_podcasts":
+        import subprocess
+        from pathlib import Path
+
+        podcast_id = tool_input.get("podcast_id")
+        force = tool_input.get("force", False)
+
+        script_path = Path(__file__).parent.parent.parent.parent / "scripts" / "backend" / "bayit-sync-podcasts.sh"
+
+        if not script_path.exists():
+            return f"Script not found: {script_path}"
+
+        subprocess.run(["chmod", "+x", str(script_path)], check=False)
+
+        cmd = [str(script_path)]
+        if podcast_id:
+            cmd.extend(["--podcast-id", podcast_id])
+        if force:
+            cmd.append("--force")
+
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=600, cwd=script_path.parent)
+            if result.returncode == 0:
+                return f"✓ Podcasts synced successfully:\n{result.stdout}"
+            else:
+                return f"✖ Podcast sync failed:\n{result.stderr}\n{result.stdout}"
+        except Exception as e:
+            return f"Error syncing podcasts: {str(e)}"
+
+    elif tool_name == "translate_podcast":
+        import subprocess
+        from pathlib import Path
+
+        podcast_id = tool_input["podcast_id"]
+        target_languages = tool_input.get("target_languages", ["en"])
+
+        script_path = Path(__file__).parent.parent.parent.parent / "scripts" / "backend" / "bayit-translate-podcast.sh"
+
+        if not script_path.exists():
+            return f"Script not found: {script_path}"
+
+        subprocess.run(["chmod", "+x", str(script_path)], check=False)
+
+        cmd = [str(script_path), "--podcast-id", podcast_id, "--languages", ",".join(target_languages)]
+
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800, cwd=script_path.parent)
+            if result.returncode == 0:
+                return f"✓ Podcast translated successfully:\n{result.stdout}"
+            else:
+                return f"✖ Podcast translation failed:\n{result.stderr}\n{result.stdout}"
+        except Exception as e:
+            return f"Error translating podcast: {str(e)}"
+
+    elif tool_name == "update_podcast_covers":
+        import subprocess
+        from pathlib import Path
+
+        source = tool_input.get("source", "both")
+
+        script_path = Path(__file__).parent.parent.parent.parent / "scripts" / "backend" / "bayit-update-podcast-covers.sh"
+
+        if not script_path.exists():
+            return f"Script not found: {script_path}"
+
+        subprocess.run(["chmod", "+x", str(script_path)], check=False)
+
+        cmd = [str(script_path), "--source", source]
+
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=600, cwd=script_path.parent)
+            if result.returncode == 0:
+                return f"✓ Podcast covers updated:\n{result.stdout}"
+            else:
+                return f"✖ Podcast cover update failed:\n{result.stderr}\n{result.stdout}"
+        except Exception as e:
+            return f"Error updating podcast covers: {str(e)}"
+
+    elif tool_name == "check_series_integrity":
+        import subprocess
+        from pathlib import Path
+
+        series_id = tool_input.get("series_id")
+        fix_issues = tool_input.get("fix_issues", False)
+
+        script_path = Path(__file__).parent.parent.parent.parent / "scripts" / "backend" / "bayit-check-series-integrity.sh"
+
+        if not script_path.exists():
+            return f"Script not found: {script_path}"
+
+        subprocess.run(["chmod", "+x", str(script_path)], check=False)
+
+        cmd = [str(script_path)]
+        if series_id:
+            cmd.extend(["--series-id", series_id])
+        if fix_issues:
+            cmd.append("--fix")
+
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=600, cwd=script_path.parent)
+            if result.returncode == 0:
+                return f"✓ Series integrity check complete:\n{result.stdout}"
+            else:
+                return f"✖ Series integrity check failed:\n{result.stderr}\n{result.stdout}"
+        except Exception as e:
+            return f"Error checking series integrity: {str(e)}"
+
+    elif tool_name == "verify_library_integrity":
+        import subprocess
+        from pathlib import Path
+
+        check_type = tool_input.get("check_type", "quick")
+
+        script_path = Path(__file__).parent.parent.parent.parent / "scripts" / "backend" / "bayit-verify-library-integrity.sh"
+
+        if not script_path.exists():
+            return f"Script not found: {script_path}"
+
+        subprocess.run(["chmod", "+x", str(script_path)], check=False)
+
+        cmd = [str(script_path), "--check-type", check_type]
+
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800, cwd=script_path.parent)
+            if result.returncode == 0:
+                return f"✓ Library integrity verified:\n{result.stdout}"
+            else:
+                return f"✖ Library integrity check failed:\n{result.stderr}\n{result.stdout}"
+        except Exception as e:
+            return f"Error verifying library integrity: {str(e)}"
+
+    elif tool_name == "cleanup_titles":
+        import subprocess
+        from pathlib import Path
+
+        is_dry_run = tool_input.get("dry_run", True)
+
+        script_path = Path(__file__).parent.parent.parent.parent / "scripts" / "backend" / "bayit-cleanup-titles.sh"
+
+        if not script_path.exists():
+            return f"Script not found: {script_path}"
+
+        subprocess.run(["chmod", "+x", str(script_path)], check=False)
+
+        cmd = [str(script_path)]
+        if is_dry_run or dry_run:
+            cmd.append("--dry-run")
+
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=600, cwd=script_path.parent)
+            if result.returncode == 0:
+                return f"✓ Title cleanup complete:\n{result.stdout}"
+            else:
+                return f"✖ Title cleanup failed:\n{result.stderr}\n{result.stdout}"
+        except Exception as e:
+            return f"Error cleaning up titles: {str(e)}"
+
+    elif tool_name in ["localize_content", "backup_database", "restore_database", "find_duplicates", "upload_series", "upload_movies"]:
+        return f"Tool '{tool_name}' is not yet implemented. Please use the execute_bash_script tool to run the corresponding script manually."
 
     else:
         raise ValueError(f"Unknown Bayit+ tool: {tool_name}")

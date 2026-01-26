@@ -240,6 +240,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
           height: formState.position_height,
           z_index: 100,
         },
+        is_active: true, // New widgets are active by default
         is_muted: formState.is_muted ?? true,
         is_closable: formState.is_closable ?? true,
         is_draggable: formState.is_draggable ?? true,
@@ -510,7 +511,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
 const styles = StyleSheet.create({
   content: {
     maxHeight: 500,
-    paddingHorizontal: spacing.sm,
+    paddingHorizontal: spacing.lg,
   },
   contentInner: {
     gap: spacing.xl,
@@ -518,7 +519,7 @@ const styles = StyleSheet.create({
   },
   section: {
     gap: spacing.md,
-    paddingHorizontal: spacing.xs,
+    paddingHorizontal: 0,
   },
   sectionTitle: {
     fontSize: 13,
@@ -526,16 +527,17 @@ const styles = StyleSheet.create({
     color: colors.primary.DEFAULT,
     textTransform: 'uppercase',
     letterSpacing: 1,
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
   },
   input: {
     width: '100%',
+    maxWidth: '100%',
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderWidth: 1,
     borderColor: colors.glassBorder,
     borderRadius: borderRadius.lg,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.sm,
     fontSize: 15,
     color: colors.text,
     minHeight: 48,

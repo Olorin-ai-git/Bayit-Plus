@@ -114,8 +114,11 @@ export default function WidgetManager() {
 
         case 'radio':
           if (widget.content.station_id) {
+            logger.debug('Fetching radio stream', { stationId: widget.content.station_id, component: 'WidgetManager' });
             const response = await radioService.getStreamUrl(widget.content.station_id);
+            logger.debug('Radio stream response', { response, component: 'WidgetManager' });
             streamUrl = response?.url || response?.stream_url;
+            logger.debug('Final radio streamUrl', { streamUrl, component: 'WidgetManager' });
             const stationData = await radioService.getStation(widget.content.station_id).catch(() => null);
             coverUrl = stationData?.logo;
           }

@@ -17,6 +17,20 @@ DESTRUCTIVE_TOOLS: Set[str] = {
     "update_content_metadata",  # Bulk updates can be destructive
     "upload_content",           # Can overwrite existing content
     "run_content_audit",        # When dry_run=false, makes changes
+    "execute_bash_script",      # Can execute arbitrary scripts
+    "organize_series",          # When dry_run=false, modifies database
+    "attach_posters",           # Modifies content metadata
+    "attach_podcast_radio_posters",  # Modifies podcast/radio metadata
+    "add_subtitles",            # Adds/modifies subtitle files
+    "sync_podcasts",            # Syncs and potentially overwrites podcast data
+    "translate_podcast",        # Generates and stores translations
+    "update_podcast_covers",    # Updates podcast cover images
+    "cleanup_titles",           # Modifies content titles
+    "localize_content",         # Adds translations to content
+    "backup_database",          # Creates backups (safe but marks as important)
+    "restore_database",         # Restores database (VERY destructive)
+    "upload_series",            # Uploads new content to database
+    "upload_movies",            # Uploads new content to database
 }
 
 # Base CLI Tools - Available to all platforms
@@ -250,6 +264,31 @@ CLI_TOOLS: List[Dict] = [
             },
             "required": []
         }
+    },
+    {
+        "name": "execute_bash_script",
+        "description": "Execute a bash script from the scripts directory",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "script_path": {
+                    "type": "string",
+                    "description": "Path to bash script (relative to project root or absolute)"
+                },
+                "args": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Command-line arguments to pass to the script",
+                    "default": []
+                },
+                "dry_run": {
+                    "type": "boolean",
+                    "description": "If true, preview the command without executing",
+                    "default": False
+                }
+            },
+            "required": ["script_path"]
+        }
     }
 ]
 
@@ -403,6 +442,314 @@ PLATFORM_TOOLS: Dict[str, List[Dict]] = {
                     }
                 },
                 "required": []
+            }
+        },
+        {
+            "name": "organize_series",
+            "description": "Organize all series in the database - groups episodes into series, fetches TMDB metadata, creates series parent objects",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "dry_run": {
+                        "type": "boolean",
+                        "description": "If true, preview changes without making them",
+                        "default": False
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Limit processing to N series (for testing)",
+                        "default": None
+                    }
+                },
+                "required": []
+            }
+        },
+        {
+            "name": "attach_posters",
+            "description": "Find and attach missing posters to content using TMDB API",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "content_type": {
+                        "type": "string",
+                        "enum": ["movies", "series", "all"],
+                        "description": "Type of content to process",
+                        "default": "all"
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Limit processing to N items",
+                        "default": None
+                    }
+                },
+                "required": []
+            }
+        },
+        {
+            "name": "attach_podcast_radio_posters",
+            "description": "Find and attach missing posters to podcasts and radio stations",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "limit": {
+                        "type": "integer",
+                        "description": "Limit processing to N items",
+                        "default": None
+                    }
+                },
+                "required": []
+            }
+        },
+        {
+            "name": "add_subtitles",
+            "description": "Add subtitles to movies and series episodes",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "content_id": {
+                        "type": "string",
+                        "description": "Specific content ID to add subtitles to (optional)"
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "Subtitle language code (en, he, etc.)",
+                        "default": "en"
+                    },
+                    "auto_generate": {
+                        "type": "boolean",
+                        "description": "Auto-generate subtitles using AI if not found",
+                        "default": False
+                    }
+                },
+                "required": []
+            }
+        },
+        {
+            "name": "sync_podcasts",
+            "description": "Sync latest podcast episodes from RSS feeds",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "podcast_id": {
+                        "type": "string",
+                        "description": "Specific podcast ID to sync (syncs all if not provided)"
+                    },
+                    "force": {
+                        "type": "boolean",
+                        "description": "Force re-sync even if recently updated",
+                        "default": False
+                    }
+                },
+                "required": []
+            }
+        },
+        {
+            "name": "translate_podcast",
+            "description": "Translate podcast episodes to multiple languages",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "podcast_id": {
+                        "type": "string",
+                        "description": "Podcast ID to translate"
+                    },
+                    "target_languages": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Target language codes (en, es, fr, etc.)",
+                        "default": ["en"]
+                    }
+                },
+                "required": ["podcast_id"]
+            }
+        },
+        {
+            "name": "update_podcast_covers",
+            "description": "Update podcast covers from RSS feeds or Apple Podcasts",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "source": {
+                        "type": "string",
+                        "enum": ["rss", "apple", "both"],
+                        "description": "Source to fetch covers from",
+                        "default": "both"
+                    }
+                },
+                "required": []
+            }
+        },
+        {
+            "name": "check_series_integrity",
+            "description": "Verify series structure and find missing episodes",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "series_id": {
+                        "type": "string",
+                        "description": "Specific series ID to check (checks all if not provided)"
+                    },
+                    "fix_issues": {
+                        "type": "boolean",
+                        "description": "Attempt to fix found issues",
+                        "default": False
+                    }
+                },
+                "required": []
+            }
+        },
+        {
+            "name": "verify_library_integrity",
+            "description": "Run comprehensive zero-trust verification of entire content library",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "check_type": {
+                        "type": "string",
+                        "enum": ["quick", "full", "deep"],
+                        "description": "Depth of integrity check",
+                        "default": "quick"
+                    }
+                },
+                "required": []
+            }
+        },
+        {
+            "name": "cleanup_titles",
+            "description": "Clean and normalize all content titles",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "dry_run": {
+                        "type": "boolean",
+                        "description": "Preview changes without applying",
+                        "default": True
+                    }
+                },
+                "required": []
+            }
+        },
+        {
+            "name": "localize_content",
+            "description": "Add translations for content metadata (titles, descriptions, etc.)",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "target_languages": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Target language codes",
+                        "default": ["en", "es", "fr"]
+                    },
+                    "content_type": {
+                        "type": "string",
+                        "enum": ["movies", "series", "podcasts", "all"],
+                        "description": "Type of content to localize",
+                        "default": "all"
+                    }
+                },
+                "required": []
+            }
+        },
+        {
+            "name": "backup_database",
+            "description": "Create a backup of the MongoDB database",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "collections": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Specific collections to backup (backs up all if not provided)"
+                    },
+                    "compress": {
+                        "type": "boolean",
+                        "description": "Compress backup file",
+                        "default": True
+                    }
+                },
+                "required": []
+            }
+        },
+        {
+            "name": "restore_database",
+            "description": "Restore MongoDB database from backup",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "backup_file": {
+                        "type": "string",
+                        "description": "Path to backup file to restore"
+                    },
+                    "collections": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Specific collections to restore (restores all if not provided)"
+                    }
+                },
+                "required": ["backup_file"]
+            }
+        },
+        {
+            "name": "find_duplicates",
+            "description": "Find duplicate content in the database",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "content_type": {
+                        "type": "string",
+                        "enum": ["movies", "series", "podcasts", "all"],
+                        "description": "Type of content to check for duplicates",
+                        "default": "all"
+                    },
+                    "criteria": {
+                        "type": "string",
+                        "enum": ["title", "url", "hash", "all"],
+                        "description": "Criteria to use for detecting duplicates",
+                        "default": "title"
+                    }
+                },
+                "required": []
+            }
+        },
+        {
+            "name": "upload_series",
+            "description": "Upload series content from USB or local path",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "source_path": {
+                        "type": "string",
+                        "description": "Path to source directory (USB or local)"
+                    },
+                    "series_name": {
+                        "type": "string",
+                        "description": "Specific series name to upload (uploads all if not provided)"
+                    },
+                    "season": {
+                        "type": "integer",
+                        "description": "Specific season to upload"
+                    }
+                },
+                "required": ["source_path"]
+            }
+        },
+        {
+            "name": "upload_movies",
+            "description": "Upload movie content from USB or local path",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "source_path": {
+                        "type": "string",
+                        "description": "Path to source directory (USB or local)"
+                    },
+                    "filter_pattern": {
+                        "type": "string",
+                        "description": "Glob pattern to filter files"
+                    }
+                },
+                "required": ["source_path"]
             }
         }
     ],

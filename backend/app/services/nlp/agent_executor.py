@@ -76,6 +76,7 @@ class AgentExecutor:
         session_id: Optional[str] = None,
         action_mode: Literal["smart", "confirm_all"] = "smart",
         conversation_history: Optional[List[Dict[str, Any]]] = None,
+        auto_confirm: bool = False,
     ) -> AgentExecutionResult:
         """
         Execute multi-step agent workflow.
@@ -89,6 +90,7 @@ class AgentExecutor:
             session_id: Optional session ID for conversation continuity
             action_mode: "smart" (confirm destructive) or "confirm_all"
             conversation_history: Previous messages from session
+            auto_confirm: If True, auto-confirm destructive operations without prompting
 
         Returns:
             AgentExecutionResult with tool calls, cost, and pending confirmations
@@ -159,6 +161,7 @@ class AgentExecutor:
                             session_id=session_id,
                             tool_calls=tool_calls,
                             pending_confirmations=pending_confirmations,
+                            auto_confirm=auto_confirm,
                         )
                         tool_outputs.append(tool_result)
 
@@ -224,13 +227,16 @@ class AgentExecutor:
         session_id: Optional[str],
         tool_calls: List[ToolCall],
         pending_confirmations: List[Dict[str, Any]],
+        auto_confirm: bool = False,
     ) -> Dict[str, Any]:
         """Handle a tool call, checking for destructive operations."""
         tool_name = block.name
         tool_input = block.input
 
         is_destructive = tool_name in DESTRUCTIVE_TOOLS
-        needs_confirmation = is_destructive or (action_mode == "confirm_all" and not self._is_read_only(tool_name))
+        needs_confirmation = (
+            is_destructive or (action_mode == "confirm_all" and not self._is_read_only(tool_name))
+        ) and not auto_confirm
 
         if needs_confirmation and not dry_run:
             context_hash = self._compute_context_hash(platform, tool_name, tool_input)

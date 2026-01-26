@@ -36,6 +36,7 @@ export function registerAiCommand(program: Command): void {
     .option('--platform <platform>', 'Target platform (bayit, fraud, cvplus)', 'bayit')
     .option('--max-iterations <n>', 'Max agent iterations', '20')
     .option('--budget <amount>', 'Max cost in USD', '0.50')
+    .option('--no-auto-confirm', 'Require manual confirmation for destructive operations')
     .action(async (query: string, options) => {
       const spinner = ora('Processing your request...').start();
 
@@ -59,6 +60,7 @@ export function registerAiCommand(program: Command): void {
           dryRun: options.dryRun,
           maxIterations: parseInt(options.maxIterations),
           budgetLimit: parseFloat(options.budget),
+          autoConfirm: options.autoConfirm !== false,
         });
 
         displayAgentResult(result, spinner);
@@ -112,6 +114,7 @@ export function registerAiCommand(program: Command): void {
     .option('--action-mode <mode>', 'Action mode: smart (confirm destructive) or confirm_all', 'smart')
     .option('--budget <amount>', 'Max cost per query in USD', '0.50')
     .option('--max-iterations <n>', 'Max agent iterations per query', '20')
+    .option('--no-auto-confirm', 'Require manual confirmation for destructive operations')
     .action(async (options) => {
       try {
         await runInteractiveMode({
@@ -119,6 +122,7 @@ export function registerAiCommand(program: Command): void {
           actionMode: options.actionMode as ActionMode,
           budget: parseFloat(options.budget),
           maxIterations: parseInt(options.maxIterations),
+          autoConfirm: options.autoConfirm !== false,
         });
       } catch (error) {
         process.stderr.write(chalk.red(`Error: ${(error as Error).message}\n`));
@@ -134,6 +138,7 @@ export function registerAiCommand(program: Command): void {
     .option('--action-mode <mode>', 'Action mode: smart or confirm_all', 'smart')
     .option('--budget <amount>', 'Max cost per query in USD', '0.50')
     .option('--max-iterations <n>', 'Max agent iterations per query', '20')
+    .option('--no-auto-confirm', 'Require manual confirmation for destructive operations')
     .action(async (options) => {
       try {
         await runInteractiveMode({
@@ -141,6 +146,7 @@ export function registerAiCommand(program: Command): void {
           actionMode: options.actionMode as ActionMode,
           budget: parseFloat(options.budget),
           maxIterations: parseInt(options.maxIterations),
+          autoConfirm: options.autoConfirm !== false,
         });
       } catch (error) {
         process.stderr.write(chalk.red(`Error: ${(error as Error).message}\n`));
