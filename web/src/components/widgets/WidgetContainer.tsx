@@ -143,19 +143,61 @@ export default function WidgetContainer({
     }
   }, []);
 
+  // Parse Hebrew date from episode title (e.g., "25 בינואר 2026")
+  const parseHebrewDate = useCallback((title: string): Date | null => {
+    try {
+      // Hebrew month names mapping
+      const hebrewMonths: Record<string, number> = {
+        'בינואר': 0,    // January
+        'בפברואר': 1,   // February
+        'במרץ': 2,      // March
+        'באפריל': 3,    // April
+        'במאי': 4,      // May
+        'ביוני': 5,     // June
+        'ביולי': 6,     // July
+        'באוגוסט': 7,   // August
+        'בספטמבר': 8,   // September
+        'באוקטובר': 9,  // October
+        'בנובמבר': 10,  // November
+        'בדצמבר': 11,   // December
+      };
+
+      // Pattern: "DD בחודש YYYY" anywhere in title
+      const datePattern = /(\d{1,2})\s+(בינואר|בפברואר|במרץ|באפריל|במאי|ביוני|ביולי|באוגוסט|בספטמבר|באוקטובר|בנובמבר|בדצמבר)\s+(\d{4})/;
+      const match = title.match(datePattern);
+
+      if (match) {
+        const day = parseInt(match[1], 10);
+        const monthName = match[2];
+        const year = parseInt(match[3], 10);
+        const month = hebrewMonths[monthName];
+
+        if (!isNaN(day) && month !== undefined && !isNaN(year)) {
+          return new Date(year, month, day);
+        }
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
+  }, []);
+
   // Format last updated time or episode broadcast date
   const formatTimestamp = useCallback(() => {
-    console.log('formatTimestamp called:', {
-      contentType: widget.content.content_type,
-      hasEpisodeData: !!episodeData,
-      episodeData,
-      publishedAt: episodeData?.publishedAt
-    });
-
     // For podcasts, show episode broadcast date if available
-    if (widget.content.content_type === 'podcast' && episodeData?.publishedAt) {
-      // Parse DD/MM/YYYY format
-      const publishedDate = parseDDMMYYYY(episodeData.publishedAt);
+    if (widget.content.content_type === 'podcast' && episodeData) {
+      let publishedDate: Date | null = null;
+
+      // Try parsing from episode title first (more accurate)
+      if (episodeData.title) {
+        publishedDate = parseHebrewDate(episodeData.title);
+      }
+
+      // Fallback to publishedAt field if title parsing failed
+      if (!publishedDate && episodeData.publishedAt) {
+        publishedDate = parseDDMMYYYY(episodeData.publishedAt);
+      }
 
       if (publishedDate) {
         // Normalize both dates to midnight for accurate day comparison
@@ -183,7 +225,7 @@ export default function WidgetContainer({
     if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
     if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
     return lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }, [lastUpdated, widget.content.content_type, episodeData, parseDDMMYYYY]);
+  }, [lastUpdated, widget.content.content_type, episodeData, parseDDMMYYYY, parseHebrewDate]);
 
   // Update timestamp display every minute
   const [, setUpdateTrigger] = useState(0);

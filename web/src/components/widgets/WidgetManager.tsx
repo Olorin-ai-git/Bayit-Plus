@@ -17,8 +17,8 @@ import type { Widget, WidgetPosition } from '@/types/widget';
 import type { PodcastEpisode } from '@/types/podcast';
 import logger from '@/utils/logger';
 
-// Cache for stream URLs to avoid repeated API calls
-const streamUrlCache: Record<string, string> = {};
+// Cache for stream URLs and episode data to avoid repeated API calls
+const streamUrlCache: Record<string, { streamUrl?: string; episodeData?: PodcastEpisode }> = {};
 
 export default function WidgetManager() {
   const location = useLocation();
@@ -62,7 +62,7 @@ export default function WidgetManager() {
     const cacheKey = `${widget.content.content_type}-${widget.content.live_channel_id || widget.content.podcast_id || widget.content.content_id || widget.content.station_id}`;
 
     if (streamUrlCache[cacheKey]) {
-      return { streamUrl: streamUrlCache[cacheKey] };
+      return streamUrlCache[cacheKey];
     }
 
     try {
@@ -96,25 +96,17 @@ export default function WidgetManager() {
 
             // Fetch latest episode
             try {
-              console.log('Fetching episodes for podcast:', widget.content.podcast_id);
               const episodesResponse = await podcastService.getEpisodes(widget.content.podcast_id, {
                 limit: 1,
                 sort: '-publishedAt' // Sort by newest first
               });
               const latestEpisode = episodesResponse?.episodes?.[0];
 
-              console.log('Episodes response:', {
-                episodesResponse,
-                latestEpisode,
-                hasAudioUrl: !!(latestEpisode?.audioUrl || latestEpisode?.audio_url)
-              });
-
               if (latestEpisode) {
                 streamUrl = latestEpisode.audioUrl || latestEpisode.audio_url;
                 episodeData = latestEpisode;
               }
             } catch (err) {
-              console.error('Failed to fetch podcast episodes:', err);
               logger.error('Failed to fetch podcast episodes', { error: err, podcastId: widget.content.podcast_id });
             }
           }
@@ -147,8 +139,9 @@ export default function WidgetManager() {
       }
 
       if (streamUrl) {
-        streamUrlCache[cacheKey] = streamUrl;
-        return { streamUrl, episodeData };
+        const result = { streamUrl, episodeData };
+        streamUrlCache[cacheKey] = result;
+        return result;
       }
     } catch (err) {
       logger.error(`Failed to get stream URL`, {
@@ -308,12 +301,6 @@ function WidgetItem({
 
     // Fetch stream URL and episode data for other content types
     getContentStreamUrl(widget).then((data) => {
-      console.log('WidgetItem received data:', {
-        widgetId: widget.id,
-        contentType: widget.content.content_type,
-        streamUrl: data.streamUrl,
-        episodeData: data.episodeData
-      });
       setStreamUrl(data.streamUrl);
       setEpisodeData(data.episodeData);
     });

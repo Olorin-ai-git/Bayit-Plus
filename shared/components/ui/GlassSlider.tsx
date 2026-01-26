@@ -5,7 +5,7 @@
  * Supports web, iOS, tvOS, and Android platforms.
  */
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import {
   View,
   Pressable,
@@ -45,6 +45,7 @@ export function GlassSlider({
 }: GlassSliderProps) {
   const [trackWidth, setTrackWidth] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
+  const trackRef = useRef<View>(null)
   const { isFocused, handleFocus, handleBlur, focusStyle } = useTVFocus({ styleType: 'card' })
 
   // Calculate percentage from value
@@ -132,8 +133,63 @@ export function GlassSlider({
     [disabled, isFocused, step, max, min, value, onValueChange, announceValue]
   )
 
+  // Web-specific mouse drag handlers
+  const handleMouseDown = useCallback(
+    (event: any) => {
+      if (disabled || Platform.OS !== 'web') return
+      event.preventDefault()
+      event.stopPropagation()
+      setIsDragging(true)
+
+      const rect = (event.target as HTMLElement).getBoundingClientRect()
+      const locationX = event.clientX - rect.left
+      const newValue = calculateValue(locationX)
+      onValueChange?.(newValue)
+    },
+    [disabled, calculateValue, onValueChange]
+  )
+
+  const handleMouseMove = useCallback(
+    (event: MouseEvent) => {
+      if (disabled || !isDragging || Platform.OS !== 'web') return
+      event.preventDefault()
+      event.stopPropagation()
+
+      if (trackRef.current) {
+        const rect = (trackRef.current as any).getBoundingClientRect()
+        const locationX = event.clientX - rect.left
+        const newValue = calculateValue(locationX)
+        onValueChange?.(newValue)
+      }
+    },
+    [disabled, isDragging, calculateValue, onValueChange]
+  )
+
+  const handleMouseUp = useCallback(() => {
+    if (Platform.OS !== 'web') return
+    setIsDragging(false)
+    announceValue(value)
+  }, [value, announceValue])
+
+  // Global mouse event listeners for web dragging
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !isDragging) return
+
+    const handleGlobalMouseMove = (e: MouseEvent) => handleMouseMove(e)
+    const handleGlobalMouseUp = () => handleMouseUp()
+
+    window.addEventListener('mousemove', handleGlobalMouseMove)
+    window.addEventListener('mouseup', handleGlobalMouseUp)
+
+    return () => {
+      window.removeEventListener('mousemove', handleGlobalMouseMove)
+      window.removeEventListener('mouseup', handleGlobalMouseUp)
+    }
+  }, [isDragging, handleMouseMove, handleMouseUp])
+
   return (
     <Pressable
+      ref={trackRef as any}
       onLayout={handleLayout}
       onPress={handlePress}
       onPressIn={handleMoveStart}
@@ -143,6 +199,7 @@ export function GlassSlider({
       onFocus={handleFocus}
       onBlur={handleBlur}
       onKeyDown={Platform.OS === 'web' ? handleKeyDown : undefined}
+      onMouseDown={Platform.OS === 'web' ? handleMouseDown as any : undefined}
       focusable={!disabled}
       disabled={disabled}
       testID={testID}
@@ -186,7 +243,8 @@ const styles = StyleSheet.create({
     height: MIN_TOUCH_TARGET,
     justifyContent: 'center',
     paddingHorizontal: 8,
-  },
+    cursor: Platform.OS === 'web' ? 'pointer' : undefined,
+  } as any,
   containerTV: {
     height: TV_TOUCH_TARGET,
     paddingHorizontal: 12,
