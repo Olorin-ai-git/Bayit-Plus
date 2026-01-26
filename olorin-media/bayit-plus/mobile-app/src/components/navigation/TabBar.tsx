@@ -20,7 +20,7 @@ interface TabBarProps {
 
 const ACTIVE_COLOR = colors?.primary || '#a855f7';
 const INACTIVE_COLOR = colors?.textMuted || '#888888';
-const FOCUS_BACKGROUND = colors?.primary300 || 'rgba(168, 85, 247, 0.3)';
+const FOCUS_BACKGROUND = colors?.glass?.purpleLight || 'rgba(88, 28, 135, 0.35)';
 
 const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
   const { t } = useTranslation();
