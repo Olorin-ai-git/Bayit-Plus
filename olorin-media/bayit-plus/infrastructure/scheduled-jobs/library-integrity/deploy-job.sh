@@ -109,7 +109,7 @@ steps:
 images:
   - '${IMAGE_NAME}:latest'
   - '${IMAGE_NAME}:${TIMESTAMP}'
-timeout: 1200s
+timeout: 3600s
 EOF_BUILD
 
 gcloud builds submit \
