@@ -1,0 +1,129 @@
+{
+  "name": "check_content",
+  "description": "Check if content exists in Bayit+ database by ID or title. Diagnose deleted items still appearing in UI, verify database state, and search across all collections.",
+  "category": "debugging",
+  "platform": "bayit",
+  "destructive": false,
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "search_term": {
+        "type": "string",
+        "description": "Content ID or title to search for"
+      },
+      "search_mode": {
+        "type": "string",
+        "enum": ["id", "title", "all_collections"],
+        "default": "id",
+        "description": "Search by ID, title, or across all collections"
+      },
+      "limit": {
+        "type": "integer",
+        "default": 10,
+        "minimum": 1,
+        "maximum": 50,
+        "description": "Maximum number of results for title search"
+      }
+    },
+    "required": ["search_term"]
+  },
+  "handler": {
+    "type": "bash_wrapper",
+    "script_path": "scripts/check-content",
+    "working_directory": ".",
+    "timeout_seconds": 30,
+    "environment": {}
+  },
+  "python_handler": {
+    "type": "python_script",
+    "script_path": "backend/check_content_exists.py",
+    "async": true,
+    "requires_poetry": true
+  },
+  "examples": [
+    {
+      "name": "Check by ID",
+      "input": {
+        "search_term": "696ada05c19ab15ddcd42d04",
+        "search_mode": "id"
+      },
+      "description": "Verify if content with specific ID exists in database"
+    },
+    {
+      "name": "Search by title",
+      "input": {
+        "search_term": "Matrix",
+        "search_mode": "title"
+      },
+      "description": "Find all content matching title (case-insensitive)"
+    },
+    {
+      "name": "Search all collections",
+      "input": {
+        "search_term": "507f1f77bcf86cd799439012",
+        "search_mode": "all_collections"
+      },
+      "description": "Search ID across content, podcasts, radio, and live channels"
+    }
+  ],
+  "use_cases": [
+    "Debugging delete operations - verify content actually deleted from database",
+    "Finding duplicate content - search by title to find multiple entries",
+    "Import verification - confirm content was successfully imported",
+    "Database audit - verify content existence vs UI state",
+    "Troubleshooting - diagnose UI/database sync issues"
+  ],
+  "output": {
+    "type": "object",
+    "properties": {
+      "found": {
+        "type": "boolean",
+        "description": "Whether content was found"
+      },
+      "content": {
+        "type": "object",
+        "description": "Content details if found",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "type": { "type": "string" },
+          "is_published": { "type": "boolean" },
+          "category_name": { "type": "string" }
+        }
+      },
+      "matches": {
+        "type": "array",
+        "description": "Multiple matches for title search",
+        "items": {
+          "type": "object"
+        }
+      }
+    }
+  },
+  "integration": {
+    "claude_skill": "bayit-check-content",
+    "claude_command": "/bayit:check-content",
+    "bash_wrapper": "scripts/check-content",
+    "api_endpoint": null
+  },
+  "metadata": {
+    "python_script": "backend/check_content_exists.py",
+    "cross_collection_script": "backend/check_all_collections.py",
+    "claude_skill_path": ".claude/skills_extracted/bayit-check-content",
+    "claude_command_path": ".claude/commands/bayit-check-content.md",
+    "generated_at": "2026-01-26",
+    "version": "1.0.0",
+    "author": "Claude Sonnet 4.5",
+    "tags": ["debugging", "database", "verification", "audit", "troubleshooting"]
+  },
+  "related_tools": [
+    "bayit-verify-library-integrity",
+    "bayit-audit",
+    "bayit-verify-series-integrity"
+  ],
+  "performance": {
+    "id_search_ms": 50,
+    "title_search_ms": 200,
+    "cross_collection_ms": 300
+  }
+}
