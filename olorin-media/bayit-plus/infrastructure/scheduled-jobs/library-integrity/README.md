@@ -59,7 +59,7 @@ This setup enables zero-trust verification of the complete Bayit+ media library 
 2. **Environment Variables** (from `/Users/olorin/Documents/olorin/olorin-infra/.env`):
    ```bash
    GCP_PROJECT_ID=bayit-plus
-   GCP_REGION=us-central1
+   GCP_REGION=us-east1
    MONGODB_URI=mongodb+srv://...
    SECRET_KEY=...
    GCS_BUCKET_NAME=bayit-plus-media-new
@@ -129,27 +129,27 @@ cd infrastructure/scheduled-jobs/library-integrity
 **Test job manually**:
 ```bash
 gcloud run jobs execute library-integrity-check \
-  --region=us-central1
+  --region=us-east1
 ```
 
 **Test scheduler immediately**:
 ```bash
 gcloud scheduler jobs run library-integrity-weekly-check \
-  --location=us-central1
+  --location=us-east1
 ```
 
 **View job executions**:
 ```bash
 gcloud run jobs executions list \
   --job=library-integrity-check \
-  --region=us-central1
+  --region=us-east1
 ```
 
 **View execution logs**:
 ```bash
 # Get execution ID from list above, then:
 gcloud run jobs executions describe <execution-id> \
-  --region=us-central1
+  --region=us-east1
 
 # Or view logs directly:
 gcloud logging read \
@@ -214,14 +214,14 @@ CMD_ARGS="--batch-size 200 --concurrency 50 ${DRY_RUN} ${VERIFY_HASHES} ${VERIFY
 
 ```bash
 gcloud scheduler jobs describe library-integrity-weekly-check \
-  --location=us-central1
+  --location=us-east1
 ```
 
 ### View Recent Executions
 
 ```bash
 gcloud scheduler jobs describe library-integrity-weekly-check \
-  --location=us-central1 \
+  --location=us-east1 \
   --format="value(state, lastAttemptTime, status)"
 ```
 
@@ -260,7 +260,7 @@ https://console.cloud.google.com/logs?project=bayit-plus
 ```bash
 # Check job configuration
 gcloud run jobs describe library-integrity-check \
-  --region=us-central1 \
+  --region=us-east1 \
   --format=yaml
 
 # Verify environment variables are set
@@ -289,7 +289,7 @@ gcloud run jobs describe library-integrity-check \
 ```bash
 # View scheduler status
 gcloud scheduler jobs describe library-integrity-weekly-check \
-  --location=us-central1
+  --location=us-east1
 
 # Check for errors
 gcloud logging read \
@@ -301,10 +301,10 @@ gcloud logging read \
 ```bash
 # Pause and resume scheduler
 gcloud scheduler jobs pause library-integrity-weekly-check \
-  --location=us-central1
+  --location=us-east1
 
 gcloud scheduler jobs resume library-integrity-weekly-check \
-  --location=us-central1
+  --location=us-east1
 ```
 
 ### Report Not Generated
