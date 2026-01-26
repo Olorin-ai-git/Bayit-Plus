@@ -36,30 +36,26 @@ log_error() {
 deploy_backend() {
   log "📦 Deploying Backend Services (Python/FastAPI)..."
 
-  cd "$PROJECT_ROOT/backend"
+  cd "$PROJECT_ROOT"
 
   # Install dependencies
   log "Installing backend dependencies..."
+  cd backend
   poetry install --no-dev
-
-  # Build package
-  log "Building backend package..."
-  poetry build
+  cd ..
 
   # Deploy to Cloud Run
-  log "Deploying to Cloud Run ${ENVIRONMENT}..."
-  if [ "$ENVIRONMENT" = "production" ]; then
-    gcloud run deploy bayit-backend \
-      --region=us-central1 \
-      --source=. \
-      --set-env-vars="ENV=production"
-  else
-    gcloud run deploy bayit-backend-staging \
-      --region=us-central1 \
-      --source=. \
-      --tag=staging \
-      --set-env-vars="ENV=staging"
-  fi
+  log "Deploying to Cloud Run..."
+  gcloud run deploy bayit-plus-backend \
+    --region=us-east1 \
+    --source=. \
+    --set-env-vars="ENV=production" \
+    --allow-unauthenticated \
+    --memory=2Gi \
+    --cpu=2 \
+    --timeout=300 \
+    --min-instances=1 \
+    --max-instances=10
 
   log "✅ Backend deployment complete"
 }
