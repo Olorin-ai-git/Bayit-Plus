@@ -347,7 +347,7 @@ EOF
         exit 1
     fi
 
-    log_substep "Creating MongoDB URL secret..."
+    log_substep "Creating MongoDB URL secret for Bayit+..."
     ERROR_OUT=$(echo -n "$MONGODB_URI" | gcloud secrets create bayit-mongodb-url --data-file=- 2>&1) || \
         ERROR_OUT=$(echo -n "$MONGODB_URI" | gcloud secrets versions add bayit-mongodb-url --data-file=- 2>&1)
     if [[ $? -ne 0 ]]; then
@@ -369,6 +369,42 @@ EOF
     echo -n "$MONGODB_DB" | gcloud secrets create bayit-mongodb-db-name --data-file=- 2>/dev/null || \
         echo -n "$MONGODB_DB" | gcloud secrets versions add bayit-mongodb-db-name --data-file=-
     print_success "Created: bayit-mongodb-db-name"
+
+    # Station AI MongoDB URL (optional - for Israeli Radio Manager)
+    STATION_AI_MONGODB_URI=""
+    if [[ -f "$ENV_FILE" ]]; then
+        STATION_AI_MONGODB_URI=$(grep "^STATION_AI_MONGODB_URI=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2-)
+    fi
+    if [[ -z "$STATION_AI_MONGODB_URI" ]]; then
+        STATION_AI_MONGODB_URI="${STATION_AI_MONGODB_URI:-}"
+    fi
+
+    if [[ -n "$STATION_AI_MONGODB_URI" ]]; then
+        log_substep "Creating MongoDB URL secret for Station AI..."
+        ERROR_OUT=$(echo -n "$STATION_AI_MONGODB_URI" | gcloud secrets create station-ai-mongodb-url --data-file=- 2>&1) || \
+            ERROR_OUT=$(echo -n "$STATION_AI_MONGODB_URI" | gcloud secrets versions add station-ai-mongodb-url --data-file=- 2>&1)
+        if [[ $? -ne 0 ]]; then
+            print_error "Failed to create/update station-ai-mongodb-url secret"
+            echo "  Error: $ERROR_OUT"
+            exit 1
+        fi
+        print_success "Created: station-ai-mongodb-url"
+
+        # Station AI DB Name
+        STATION_AI_MONGODB_DB=""
+        if [[ -f "$ENV_FILE" ]]; then
+            STATION_AI_MONGODB_DB=$(grep "^STATION_AI_MONGODB_DB_NAME=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2-)
+        fi
+        if [[ -z "$STATION_AI_MONGODB_DB" ]]; then
+            STATION_AI_MONGODB_DB="${STATION_AI_MONGODB_DB_NAME:-station_ai}"
+        fi
+
+        echo -n "$STATION_AI_MONGODB_DB" | gcloud secrets create station-ai-mongodb-db-name --data-file=- 2>/dev/null || \
+            echo -n "$STATION_AI_MONGODB_DB" | gcloud secrets versions add station-ai-mongodb-db-name --data-file=-
+        print_success "Created: station-ai-mongodb-db-name"
+    else
+        log_info "Skipped Station AI secrets (STATION_AI_MONGODB_URI not configured)"
+    fi
 
     # All other secrets from .env
     create_or_update_secret "bayit-secret-key" "SECRET_KEY"
@@ -511,6 +547,7 @@ EOF
 
     log_substep "Granting secret access..."
     for secret in bayit-secret-key bayit-mongodb-url bayit-mongodb-db-name \
+                  station-ai-mongodb-url station-ai-mongodb-db-name \
                   bayit-stripe-api-key bayit-stripe-secret-key bayit-stripe-webhook-secret \
                   bayit-stripe-price-basic bayit-stripe-price-premium bayit-stripe-price-family \
                   bayit-openai-api-key bayit-anthropic-api-key \
@@ -580,19 +617,19 @@ EOF
     # Navigate to repo root for Cloud Build
     cd "$REPO_ROOT"
 
-    # Verify cloudbuild.yaml exists
-    if [[ ! -f "cloudbuild.yaml" ]]; then
-        print_error "cloudbuild.yaml not found at $REPO_ROOT"
+    # Verify cloudbuild.yaml exists in backend directory
+    if [[ ! -f "backend/cloudbuild.yaml" ]]; then
+        print_error "cloudbuild.yaml not found at $REPO_ROOT/backend/cloudbuild.yaml"
         log_info "Current directory: $(pwd)"
-        log_info "Looking for: $REPO_ROOT/cloudbuild.yaml"
+        log_info "Looking for: $REPO_ROOT/backend/cloudbuild.yaml"
         exit 1
     fi
-    log_info "Found cloudbuild.yaml at $REPO_ROOT"
+    log_info "Found cloudbuild.yaml at backend/cloudbuild.yaml"
 
-    # Build and deploy using cloudbuild.yaml (includes all configuration)
+    # Build and deploy using backend/cloudbuild.yaml (includes all configuration)
     gcloud builds submit \
-        --config=cloudbuild.yaml \
-        --substitutions=_REGION=$REGION,_MEMORY=2Gi,_CPU=2,_MAX_INSTANCES=10,_MIN_INSTANCES=1
+        --config=backend/cloudbuild.yaml \
+        --substitutions=_REGION=$REGION,_MEMORY=2Gi,_CPU=2,_MAX_INSTANCES=10,_MIN_INSTANCES=1,_SERVICE_NAME=$SERVICE_NAME
 
     # Get service URL
     SERVICE_URL=$(gcloud run services describe "$SERVICE_NAME" --region "$REGION" --format 'value(status.url)')
