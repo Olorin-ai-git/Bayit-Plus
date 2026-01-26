@@ -226,18 +226,46 @@ export function useContentData() {
     setShowDeleteConfirm(false)
     setIsBatchProcessing(true)
     try {
-      await adminContentService.batchDeleteContent(selectedIds)
-      notifications.showSuccess(
-        t('common.success'),
-        t('admin.content.batchDeleteSuccess', { count: selectedIds.length })
-      )
+      const result = await adminContentService.batchDeleteContent(selectedIds)
+
+      // Handle partial success or complete failure
+      if (result.errors && result.errors.length > 0) {
+        if (result.deleted_count > 0) {
+          // Partial success
+          notifications.showWarning(
+            t('common.partialSuccess'),
+            t('admin.content.batchDeletePartial', {
+              success: result.deleted_count,
+              failed: result.errors.length
+            })
+          )
+          logger.warn('Batch delete partially succeeded', {
+            deleted: result.deleted_count,
+            errors: result.errors
+          })
+        } else {
+          // Complete failure
+          notifications.showError(
+            t('common.error'),
+            result.errors.join(', ')
+          )
+          logger.error('Batch delete failed', { errors: result.errors })
+        }
+      } else {
+        // Complete success
+        notifications.showSuccess(
+          t('common.success'),
+          t('admin.content.batchDeleteSuccess', { count: result.deleted_count })
+        )
+        logger.info('Batch delete successful', { count: result.deleted_count })
+      }
+
       setSelectedIds([])
       setSelectedItemsData([])
       await loadContent()
-      logger.info('Batch delete successful', { count: selectedIds.length })
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to delete content'
-      logger.error('Batch delete failed', { error: err })
+      logger.error('Batch delete request failed', { error: err })
       notifications.showError(t('common.error'), msg)
     } finally {
       setIsBatchProcessing(false)

@@ -832,7 +832,7 @@ export const createAdminApi = (authStore: AuthStore) => {
     adminApi.get(`/admin/content/${seriesId}/episodes`),
 
   // Batch operations
-  batchDeleteContent: (contentIds: string[]): Promise<{ deleted_count: number }> =>
+  batchDeleteContent: (contentIds: string[]): Promise<{ deleted_count: number; errors: string[] }> =>
     adminApi.post('/admin/content/batch/delete', { content_ids: contentIds }),
 
   batchFeatureContent: (contentIds: string[], featured: boolean): Promise<{ updated_count: number }> =>
