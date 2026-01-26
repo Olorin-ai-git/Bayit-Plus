@@ -25,7 +25,7 @@ NC='\033[0m' # No Color
 
 # Configuration
 PROJECT_ID="${GCP_PROJECT_ID:-bayit-plus}"
-REGION="${GCP_REGION:-us-central1}"
+REGION="${GCP_REGION:-us-east1}"
 JOB_NAME="library-integrity-check"
 IMAGE_NAME="gcr.io/${PROJECT_ID}/${JOB_NAME}"
 SERVICE_ACCOUNT="${CLOUD_RUN_SERVICE_ACCOUNT:-bayit-plus-cloud-run@${PROJECT_ID}.iam.gserviceaccount.com}"
