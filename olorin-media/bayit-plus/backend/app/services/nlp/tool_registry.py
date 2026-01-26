@@ -5,7 +5,19 @@ Provides base CLI tools (web search, email, PDF generation, etc.) and
 platform-specific tools for Bayit+, Fraud Detection, and CV Plus.
 """
 
-from typing import Dict, List
+from typing import Dict, List, Set
+
+# Destructive tools that require user confirmation in smart mode
+DESTRUCTIVE_TOOLS: Set[str] = {
+    "deploy_platform",
+    "git_push",
+    "git_commit",
+    "delete_content",
+    "delete_user",
+    "update_content_metadata",  # Bulk updates can be destructive
+    "upload_content",           # Can overwrite existing content
+    "run_content_audit",        # When dry_run=false, makes changes
+}
 
 # Base CLI Tools - Available to all platforms
 CLI_TOOLS: List[Dict] = [
