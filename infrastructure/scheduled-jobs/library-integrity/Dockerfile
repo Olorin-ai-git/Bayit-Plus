@@ -29,7 +29,6 @@ RUN poetry config virtualenvs.create false \
 
 # Copy backend application code
 COPY backend/app ./app
-COPY backend/credentials ./credentials
 
 # Copy scripts
 COPY scripts/backend/verify_library_integrity.py ./verify_library_integrity.py
