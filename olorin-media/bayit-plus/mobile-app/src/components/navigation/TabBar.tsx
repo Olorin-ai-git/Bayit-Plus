@@ -20,6 +20,7 @@ interface TabBarProps {
 
 const ACTIVE_COLOR = colors?.primary || '#a855f7';
 const INACTIVE_COLOR = colors?.textMuted || '#888888';
+const FOCUS_BACKGROUND = colors?.primary300 || 'rgba(168, 85, 247, 0.3)';
 
 const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
   const { t } = useTranslation();
@@ -75,7 +76,7 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
           <Pressable
             key={route.key}
             onPress={() => handlePress(route, isFocused)}
-            className={`flex-1 items-center py-2 px-1 rounded-xl ${isFocused ? 'bg-[rgba(107,33,168,0.3)]' : ''}`}
+            className="flex-1 items-center py-2 px-1 rounded-xl"
             accessibilityRole="tab"
             accessibilityLabel={`${label} tab`}
             accessibilityHint={`Navigate to ${label}`}
@@ -83,6 +84,7 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
             style={({ pressed }) => [
               { opacity: pressed ? 0.7 : 1 },
               { minHeight: 44, minWidth: 44 },
+              isFocused && { backgroundColor: FOCUS_BACKGROUND },
             ]}
             testID={`tab-${route.name.toLowerCase()}`}
           >
