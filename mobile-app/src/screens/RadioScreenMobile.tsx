@@ -28,6 +28,7 @@ import { radioService, contentService } from '@bayit/shared-services';
 import { GlassCategoryPill, GlassView, GlassBadge } from '@bayit/shared';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
+import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, typography } from '@olorin/design-tokens';
 
@@ -63,6 +64,7 @@ export const RadioScreenMobile: React.FC = () => {
   const navigation = useNavigation<any>();
   const { isRTL, direction } = useDirection();
   const { orientation } = useResponsive();
+  const safeAreaPadding = useSafeAreaPadding();
 
   const [stations, setStations] = useState<RadioStation[]>([]);
   const [filteredStations, setFilteredStations] = useState<RadioStation[]>([]);
@@ -222,7 +224,7 @@ export const RadioScreenMobile: React.FC = () => {
   };
 
   return (
-    <View className="flex-1" style={{ backgroundColor: colors.background }}>
+    <View className="flex-1" style={[{ backgroundColor: colors.background }, safeAreaPadding]}>
       {/* Category filters - horizontal scroll */}
       {categories.length > 0 && (
         <View className="py-4">

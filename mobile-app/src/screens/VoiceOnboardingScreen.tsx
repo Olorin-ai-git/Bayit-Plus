@@ -16,9 +16,12 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
+  Alert,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Mic, Volume2, Sparkles, Check } from 'lucide-react-native';
+import { Mic, Volume2, Sparkles, Check, X } from 'lucide-react-native';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@olorin/glass-ui/hooks';
@@ -126,12 +129,55 @@ export default function VoiceOnboardingScreen() {
     navigation.goBack();
   }, [navigation]);
 
+  // Skip voice setup entirely
+  const handleSkipSetup = useCallback(() => {
+    if (Platform.OS === 'ios') {
+      ReactNativeHapticFeedback.trigger('impactMedium');
+    }
+
+    Alert.alert(
+      t('voiceOnboarding.skipSetup.title'),
+      t('voiceOnboarding.skipSetup.message'),
+      [
+        {
+          text: t('common.cancel'),
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: t('voiceOnboarding.skipSetup.confirm'),
+          onPress: () => {
+            if (isTestingWakeWord) {
+              wakeWordService.stopListening();
+            }
+            // Navigate to Main tab bypassing the voice setup
+            navigation.navigate('Main' as never);
+          },
+          style: 'destructive',
+        },
+      ]
+    );
+  }, [navigation, isTestingWakeWord, t]);
+
   // Render current step
   const renderStep = () => {
     switch (currentStep) {
       case 'welcome':
         return (
-          <View className="flex-1 items-center justify-center">
+          <View className="flex-1 items-center justify-center relative">
+            {/* Skip button - top right */}
+            <Pressable
+              onPress={handleSkipSetup}
+              className="absolute top-0 right-0 w-10 h-10 rounded-full bg-white/10 justify-center items-center"
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.skip')}
+              accessibilityHint={t('voiceOnboarding.skipSetup.hint')}
+            >
+              <X size={20} color="white" />
+            </Pressable>
+
             <View className="mb-8">
               <Sparkles size={64} color={colors.primary} />
             </View>

@@ -46,6 +46,7 @@ import {
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
 import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
+import { useAccessibility } from '../hooks/useAccessibility';
 import { getGridColumns } from '../utils/responsive';
 import { optimizeTMDBImageUrl } from '../utils/imageUtils';
 import { useAuthStore } from '@bayit/shared-stores';
@@ -85,6 +86,7 @@ export const HomeScreenMobile: React.FC = () => {
   const navigation = useNavigation<any>();
   const { isRTL, direction } = useDirection();
   const { isPhone, isTablet } = useResponsive();
+  const { scaledFontSize, isReduceMotionEnabled } = useAccessibility();
 
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -289,17 +291,43 @@ export const HomeScreenMobile: React.FC = () => {
             }
           />
           {carouselItems.length > 0 && (
-            <View className="mb-4 px-1">
+            <View className="mb-4 px-1" accessibilityLabel="Featured content carousel" accessibilityRole="list">
               <GlassCarousel
                 items={carouselItems}
                 onItemPress={(item: CarouselItem) =>
                   handleContentPress(item as ContentItem)
                 }
-                autoPlay={true}
+                autoPlay={!isReduceMotionEnabled}
+                animationDuration={isReduceMotionEnabled ? 0 : 300}
                 height={isPhone ? 200 : 300}
+                accessible={true}
+                accessibilityHint="Swipe to browse featured content"
               />
             </View>
           )}
+        </View>
+      ),
+    });
+
+    // Filter section - moved to top for visibility
+    sectionArray.push({
+      id: 'filters',
+      title: '',
+      data: ['filters'],
+      renderItem: () => (
+        <View className="mb-4 px-1" style={{ paddingHorizontal: spacing.md }}>
+          <GlassCheckbox
+            label={t(
+              'home.showOnlyWithSubtitles',
+              'Show only with subtitles'
+            )}
+            checked={showOnlyWithSubtitles}
+            onChange={setShowOnlyWithSubtitles}
+            accessible={true}
+            accessibilityRole="switch"
+            accessibilityLabel={t('home.showOnlyWithSubtitles', 'Show only with subtitles')}
+            accessibilityState={{ checked: showOnlyWithSubtitles }}
+          />
         </View>
       ),
     });
@@ -357,25 +385,6 @@ export const HomeScreenMobile: React.FC = () => {
       renderItem: () => (
         <View className="mb-4 px-1">
           <TelAvivRow />
-        </View>
-      ),
-    });
-
-    // Filter section
-    sectionArray.push({
-      id: 'filters',
-      title: '',
-      data: ['filters'],
-      renderItem: () => (
-        <View className="mb-2" style={{ paddingHorizontal: spacing.md }}>
-          <GlassCheckbox
-            label={t(
-              'home.showOnlyWithSubtitles',
-              'Show only with subtitles'
-            )}
-            checked={showOnlyWithSubtitles}
-            onChange={setShowOnlyWithSubtitles}
-          />
         </View>
       ),
     });

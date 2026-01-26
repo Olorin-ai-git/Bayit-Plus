@@ -17,3 +17,10 @@ export {
   useVoiceFeatures,
 } from './useVoiceFeatures';
 export type { VoiceStateHookOptions, VoiceFeatureOptions } from './useVoiceFeatures';
+
+// Accessibility Hooks
+export { useScaledFontSize } from './useScaledFontSize';
+export { useReducedMotion } from './useReducedMotion';
+export { useAccessibility } from './useAccessibility';
+export { useAccessibilityProps } from './useAccessibilityProps';
+export { useSafeAreaPadding } from './useSafeAreaPadding';

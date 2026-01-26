@@ -11,7 +11,7 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-async def validate_stream_url(url: str, timeout: int = 5) -> bool:
+async def validate_stream_url(url: str, timeout: int = 15) -> bool:
     """
     Validate that a stream URL is accessible with timeout handling.
 
@@ -20,7 +20,7 @@ async def validate_stream_url(url: str, timeout: int = 5) -> bool:
 
     Args:
         url: Stream URL to validate
-        timeout: Connection timeout in seconds (default 5)
+        timeout: Connection timeout in seconds (default 15, increased for reliable CDN response times)
 
     Returns:
         True if stream is accessible (200-299 or 206), False otherwise
