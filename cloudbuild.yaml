@@ -27,9 +27,8 @@ steps:
       # Startup optimization - CPU boost for faster cold start
       - '--cpu-boost'
 
-      # Clear all existing environment variables and secrets first to avoid conflicts
+      # Clear existing environment variables but keep secrets (secrets are managed separately)
       - '--clear-env-vars'
-      - '--clear-secrets'
 
       # Environment Variables (Non-Sensitive)
       - '--set-env-vars=ENVIRONMENT=production'
