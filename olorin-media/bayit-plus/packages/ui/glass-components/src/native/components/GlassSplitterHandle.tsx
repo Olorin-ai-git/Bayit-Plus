@@ -130,7 +130,7 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
           height: 44,
           borderRadius: borderRadius.md,
           backgroundColor: 'transparent',
-          border: `2px solid ${colors.primary.DEFAULT}`,
+          border: `2px solid ${colors.primary}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -142,7 +142,7 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
         }}
         onMouseEnter={(e) => {
           (e.currentTarget as HTMLDivElement).style.opacity = '1';
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = colors.primary.DEFAULT + '30';
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = colors.primary + '30';
           (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.05)';
         }}
         onMouseLeave={(e) => {
@@ -153,7 +153,7 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
       >
         <span
           style={{
-            color: colors.primary.DEFAULT,
+            color: colors.primary,
             fontSize: 16,
             fontWeight: 'bold',
             lineHeight: 1,

@@ -193,7 +193,25 @@ async def execute_bayit_tool(
             budget_limit_usd=1.0
         )
 
-        return f"Audit complete. Issues found: {len(audit_result.issues)}"
+        # Calculate total issues from all issue categories
+        total_issues = (
+            len(audit_result.broken_streams) +
+            len(audit_result.missing_metadata) +
+            len(audit_result.misclassifications) +
+            len(audit_result.orphaned_items)
+        )
+
+        # Use summary count if available, otherwise use calculated total
+        issues_found = audit_result.summary.get("issues_found", total_issues)
+
+        return (
+            f"Audit complete. "
+            f"Issues found: {issues_found} "
+            f"(Broken streams: {len(audit_result.broken_streams)}, "
+            f"Missing metadata: {len(audit_result.missing_metadata)}, "
+            f"Misclassifications: {len(audit_result.misclassifications)}, "
+            f"Orphaned: {len(audit_result.orphaned_items)})"
+        )
 
     else:
         raise ValueError(f"Unknown Bayit+ tool: {tool_name}")
