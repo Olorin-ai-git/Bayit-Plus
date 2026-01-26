@@ -121,9 +121,9 @@ const UserLiveQuotaPage = lazy(() => import('./pages/admin/UserLiveQuotaPage'))
 const LiveUsageAnalyticsPage = lazy(() => import('./pages/admin/LiveUsageAnalyticsPage'))
 const TranslationDashboardPage = lazy(() => import('./pages/admin/TranslationDashboardPage'))
 
-function App() {
-  // Set document direction based on language (RTL for Hebrew/Arabic, LTR for others)
-  useDirection()
+// Auth hydration guard wrapper
+const AppContent = () => {
+  const { isHydrated, isLoading } = useAuthStore()
   const location = useLocation()
 
   // Remove splash screen when navigating away from home page
@@ -132,7 +132,7 @@ function App() {
     if (!isHomePage) {
       const splash = document.getElementById('splash-screen')
       if (splash) {
-        logger.debug('Route changed from home - removing splash screen', 'App', {
+        logger.debug('Route changed from home - removing splash screen', 'AppContent', {
           pathname: location.pathname
         })
         splash.remove()
@@ -141,6 +141,96 @@ function App() {
       }
     }
   }, [location.pathname])
+
+  // Wait for auth hydration before rendering app
+  if (!isHydrated) {
+    logger.debug('Waiting for auth hydration', 'AppContent', { isLoading })
+    return <LoadingFallback />
+  }
+
+  return (
+    <Routes>
+      {/* Auth Routes (no layout) */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
+      <Route path="/profiles" element={<ProfileSelectionPage />} />
+      <Route path="/tv-login" element={<TVLoginPage />} />
+
+      {/* Admin Routes (lazily loaded) */}
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<AdminDashboardPage />} />
+        <Route path="users" element={<UsersListPage />} />
+        <Route path="users/:userId" element={<UserDetailPage />} />
+        <Route path="campaigns" element={<CampaignsListPage />} />
+        <Route path="campaigns/new" element={<CampaignEditPage />} />
+        <Route path="campaigns/:campaignId" element={<CampaignEditPage />} />
+        <Route path="subscriptions" element={<SubscriptionsListPage />} />
+        <Route path="billing" element={<BillingOverviewPage />} />
+        <Route path="transactions" element={<TransactionsPage />} />
+        <Route path="refunds" element={<RefundsPage />} />
+        <Route path="plans" element={<PlanManagementPage />} />
+        <Route path="marketing" element={<MarketingDashboardPage />} />
+        <Route path="emails" element={<EmailCampaignsPage />} />
+        <Route path="push" element={<PushNotificationsPage />} />
+        <Route path="logs" element={<AuditLogsPage />} />
+        <Route path="librarian" element={<LibrarianAgentPage />} />
+        <Route path="live-quotas" element={<LiveUsageAnalyticsPage />} />
+        <Route path="users/:userId/live-quota" element={<UserLiveQuotaPage />} />
+        <Route path="uploads" element={<UploadsPage />} />
+        <Route path="settings" element={<AdminSettingsPage />} />
+        <Route path="content" element={<ContentLibraryPage />} />
+        <Route path="content/new" element={<ContentEditorPage />} />
+        <Route path="content/:contentId/edit" element={<ContentEditorPage />} />
+        <Route path="featured" element={<FeaturedManagementPage />} />
+        <Route path="categories" element={<CategoriesPage />} />
+        <Route path="live-channels" element={<LiveChannelsPage />} />
+        <Route path="radio-stations" element={<RadioStationsPage />} />
+        <Route path="podcasts" element={<AdminPodcastsPage />} />
+        <Route path="podcasts/:podcastId/episodes" element={<PodcastEpisodesPage />} />
+        <Route path="translations" element={<TranslationDashboardPage />} />
+        <Route path="widgets" element={<WidgetsPage />} />
+        <Route path="recordings" element={<RecordingsManagementPage />} />
+      </Route>
+
+      {/* Main Routes with Layout */}
+      <Route element={<VoiceListeningProvider><Layout /></VoiceListeningProvider>}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/live" element={<LivePage />} />
+        <Route path="/live/:channelId" element={<WatchPage type="live" />} />
+        <Route path="/epg" element={<EPGPage />} />
+        <Route path="/vod" element={<VODPage />} />
+        <Route path="/vod/series/:seriesId" element={<SeriesDetailPage />} />
+        <Route path="/vod/movie/:movieId" element={<MovieDetailPage />} />
+        <Route path="/vod/:contentId" element={<WatchPage type="vod" />} />
+        <Route path="/radio" element={<RadioPage />} />
+        <Route path="/radio/:stationId" element={<WatchPage type="radio" />} />
+        <Route path="/podcasts" element={<PodcastsPage />} />
+        <Route path="/podcasts/:showId" element={<WatchPage type="podcast" />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/subscribe" element={<SubscribePage />} />
+        <Route path="/judaism" element={<JudaismPage />} />
+        <Route path="/children" element={<ChildrenPage />} />
+        <Route path="/games" element={<AdminRoute><ChessPage /></AdminRoute>} />
+        <Route path="/friends" element={<FriendsPage />} />
+        <Route path="/player/:userId" element={<PlayerProfilePage />} />
+        <Route path="/favorites" element={<FavoritesPage />} />
+        <Route path="/downloads" element={<DownloadsPage />} />
+        <Route path="/watchlist" element={<WatchlistPage />} />
+        <Route path="/recordings" element={<MyRecordingsPage />} />
+        <Route path="/morning-ritual" element={<MorningRitualPage />} />
+        <Route path="/widgets" element={<UserWidgetsPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
+  )
+}
+
+function App() {
+  // Set document direction based on language (RTL for Hebrew/Arabic, LTR for others)
+  useDirection()
 
   useEffect(() => {
     const initI18n = async () => {
@@ -174,84 +264,7 @@ function App() {
   return (
     <NotificationProvider position="top" maxVisible={3}>
       <Suspense fallback={<LoadingFallback />}>
-        <Routes>
-        {/* Auth Routes (no layout) */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
-        <Route path="/profiles" element={<ProfileSelectionPage />} />
-        <Route path="/tv-login" element={<TVLoginPage />} />
-
-        {/* Admin Routes (lazily loaded) */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboardPage />} />
-          <Route path="users" element={<UsersListPage />} />
-          <Route path="users/:userId" element={<UserDetailPage />} />
-          <Route path="campaigns" element={<CampaignsListPage />} />
-          <Route path="campaigns/new" element={<CampaignEditPage />} />
-          <Route path="campaigns/:campaignId" element={<CampaignEditPage />} />
-          <Route path="subscriptions" element={<SubscriptionsListPage />} />
-          <Route path="billing" element={<BillingOverviewPage />} />
-          <Route path="transactions" element={<TransactionsPage />} />
-          <Route path="refunds" element={<RefundsPage />} />
-          <Route path="plans" element={<PlanManagementPage />} />
-          <Route path="marketing" element={<MarketingDashboardPage />} />
-          <Route path="emails" element={<EmailCampaignsPage />} />
-          <Route path="push" element={<PushNotificationsPage />} />
-          <Route path="logs" element={<AuditLogsPage />} />
-          <Route path="librarian" element={<LibrarianAgentPage />} />
-          <Route path="live-quotas" element={<LiveUsageAnalyticsPage />} />
-          <Route path="users/:userId/live-quota" element={<UserLiveQuotaPage />} />
-          <Route path="uploads" element={<UploadsPage />} />
-          <Route path="settings" element={<AdminSettingsPage />} />
-          <Route path="content" element={<ContentLibraryPage />} />
-          <Route path="content/new" element={<ContentEditorPage />} />
-          <Route path="content/:contentId/edit" element={<ContentEditorPage />} />
-          <Route path="featured" element={<FeaturedManagementPage />} />
-          <Route path="categories" element={<CategoriesPage />} />
-          <Route path="live-channels" element={<LiveChannelsPage />} />
-          <Route path="radio-stations" element={<RadioStationsPage />} />
-          <Route path="podcasts" element={<AdminPodcastsPage />} />
-          <Route path="podcasts/:podcastId/episodes" element={<PodcastEpisodesPage />} />
-          <Route path="translations" element={<TranslationDashboardPage />} />
-          <Route path="widgets" element={<WidgetsPage />} />
-          <Route path="recordings" element={<RecordingsManagementPage />} />
-        </Route>
-
-        {/* Main Routes with Layout */}
-        <Route element={<VoiceListeningProvider><Layout /></VoiceListeningProvider>}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/live" element={<LivePage />} />
-          <Route path="/live/:channelId" element={<WatchPage type="live" />} />
-          <Route path="/epg" element={<EPGPage />} />
-          <Route path="/vod" element={<VODPage />} />
-          <Route path="/vod/series/:seriesId" element={<SeriesDetailPage />} />
-          <Route path="/vod/movie/:movieId" element={<MovieDetailPage />} />
-          <Route path="/vod/:contentId" element={<WatchPage type="vod" />} />
-          <Route path="/radio" element={<RadioPage />} />
-          <Route path="/radio/:stationId" element={<WatchPage type="radio" />} />
-          <Route path="/podcasts" element={<PodcastsPage />} />
-          <Route path="/podcasts/:showId" element={<WatchPage type="podcast" />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/subscribe" element={<SubscribePage />} />
-          <Route path="/judaism" element={<JudaismPage />} />
-          <Route path="/children" element={<ChildrenPage />} />
-          <Route path="/games" element={<AdminRoute><ChessPage /></AdminRoute>} />
-          <Route path="/friends" element={<FriendsPage />} />
-          <Route path="/player/:userId" element={<PlayerProfilePage />} />
-          <Route path="/favorites" element={<FavoritesPage />} />
-          <Route path="/downloads" element={<DownloadsPage />} />
-          <Route path="/watchlist" element={<WatchlistPage />} />
-          <Route path="/recordings" element={<MyRecordingsPage />} />
-          <Route path="/morning-ritual" element={<MorningRitualPage />} />
-          <Route path="/widgets" element={<UserWidgetsPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/help" element={<HelpPage />} />
-          <Route path="/support" element={<SupportPage />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Route>
-        </Routes>
+        <AppContent />
       </Suspense>
 
       {/* Fullscreen Video Player Overlay - can be triggered from anywhere */}

@@ -27,6 +27,10 @@ import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
 import { useNotifications } from '@olorin/glass-ui/hooks';
 import { spacing, colors, typography, touchTarget } from '@olorin/design-tokens';
+import { useScaledFontSize } from '../hooks/useScaledFontSize';
+import logger from '@/utils/logger';
+
+const moduleLogger = logger.scope('SettingsScreenMobile');
 
 type SettingsItemBase = {
   id: string;
@@ -66,6 +70,7 @@ export const SettingsScreenMobile: React.FC = () => {
   const { user } = useAuthStore();
   const { isRTL } = useDirection();
   const notifications = useNotifications();
+  const scaledFontSize = useScaledFontSize();
 
   // Settings state
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -212,7 +217,14 @@ export const SettingsScreenMobile: React.FC = () => {
       {/* Settings Sections */}
       {settingsSections.map((section, sectionIndex) => (
         <View key={section.title} className="mb-8">
-          <Text className="text-[13px] text-white/60 uppercase font-semibold mb-2 px-1" style={typography.bodySmall}>{section.title}</Text>
+          <Text
+            className="text-white/60 uppercase font-semibold mb-2 px-1"
+            style={{ ...typography.bodySmall, fontSize: scaledFontSize.sm }}
+            accessibilityRole="header"
+            accessible={true}
+          >
+            {section.title}
+          </Text>
 
           {section.items.map((item) => (
             <Pressable
@@ -220,12 +232,32 @@ export const SettingsScreenMobile: React.FC = () => {
               onPress={'onPress' in item && item.onPress ? item.onPress : undefined}
               disabled={!('onPress' in item) && !('onToggle' in item)}
               style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+              accessibilityRole={'onPress' in item && item.onPress ? 'button' : 'switch'}
+              accessibilityLabel={item.title}
+              accessibilityHint={
+                'showToggle' in item && item.showToggle
+                  ? `${item.title} toggle. Currently ${('value' in item ? item.value : false) ? 'on' : 'off'}`
+                  : ('onPress' in item && item.onPress ? `Double tap to navigate to ${item.title}` : item.subtitle)
+              }
+              accessible={true}
             >
               <GlassView className="flex-row items-center justify-between py-3 px-6 rounded-xl mb-2" style={{ minHeight: touchTarget.minHeight }}>
                 <View className="flex-1 mr-3">
-                  <Text className="text-white font-medium text-base" style={typography.body}>{item.title}</Text>
+                  <Text
+                    className="text-white font-medium"
+                    style={{ ...typography.body, fontSize: scaledFontSize.base }}
+                    accessibilityElementsHidden
+                  >
+                    {item.title}
+                  </Text>
                   {item.subtitle && (
-                    <Text className="text-white/60 text-[13px] mt-0.5" style={typography.caption}>{item.subtitle}</Text>
+                    <Text
+                      className="text-white/60 mt-0.5"
+                      style={{ ...typography.caption, fontSize: scaledFontSize.sm }}
+                      accessibilityElementsHidden
+                    >
+                      {item.subtitle}
+                    </Text>
                   )}
                 </View>
                 <View className="flex-row items-center gap-2">
@@ -236,10 +268,11 @@ export const SettingsScreenMobile: React.FC = () => {
                       size="medium"
                       isRTL={isRTL}
                       testID={`toggle-${item.id}`}
+                      accessible={false}
                     />
                   )}
                   {'showChevron' in item && item.showChevron && (
-                    <Text className="text-2xl text-white/60">{isRTL ? '‹' : '›'}</Text>
+                    <Text className="text-2xl text-white/60" accessibilityElementsHidden>{isRTL ? '‹' : '›'}</Text>
                   )}
                 </View>
               </GlassView>

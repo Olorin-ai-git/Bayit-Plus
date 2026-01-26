@@ -26,6 +26,7 @@ import { liveService, contentService } from '@bayit/shared-services';
 import { GlassCategoryPill } from '@bayit/shared';
 import { getLocalizedName, getLocalizedCurrentProgram } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
+import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { getGridColumns } from '../utils/responsive';
 import { ChannelCardMobile } from '../components';
 import { spacing, colors, typography } from '@olorin/design-tokens';
@@ -62,6 +63,7 @@ export const LiveTVScreenMobile: React.FC = () => {
   const navigation = useNavigation<any>();
   const { isRTL, direction } = useDirection();
   const { orientation } = useResponsive();
+  const safeAreaPadding = useSafeAreaPadding();
 
   const [channels, setChannels] = useState<Channel[]>([]);
   const [filteredChannels, setFilteredChannels] = useState<Channel[]>([]);
@@ -172,7 +174,7 @@ export const LiveTVScreenMobile: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, safeAreaPadding]}>
       {/* Category filters */}
       {categories.length > 0 && (
         <View style={styles.categoriesSection}>

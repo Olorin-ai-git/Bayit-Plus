@@ -10,7 +10,7 @@
  * - Tap to show/hide controls
  */
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { View, Pressable, Text, Platform } from "react-native";
 import { useRoute, useNavigation, RouteProp } from "@react-navigation/native";
 import { PanGestureHandler } from "react-native-gesture-handler";
@@ -55,6 +55,8 @@ import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import { useTranslation } from "react-i18next";
 import { useDirection } from "@bayit/shared-hooks";
 import { useResponsive } from "../hooks/useResponsive";
+import { useAccessibility } from "../hooks/useAccessibility";
+import { formatVideoDuration } from "../utils/dateFormatter";
 import { BottomSheet } from "../components";
 import {
   ChapterListMobile,
@@ -88,6 +90,7 @@ export const PlayerScreenMobile: React.FC = () => {
   const { t } = useTranslation();
   const { isRTL, direction } = useDirection();
   const { isPhone, orientation } = useResponsive();
+  const { isReduceMotionEnabled } = useAccessibility();
 
   const { id, title, type, t: initialSeekTime } = route.params;
 
@@ -118,6 +121,34 @@ export const PlayerScreenMobile: React.FC = () => {
   const [streamLoading, setStreamLoading] = useState(true);
 
   const translateY = useSharedValue(0);
+  const hideControlsTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Show controls temporarily with auto-hide timer
+  const showControlsTemporarily = useCallback(() => {
+    setShowControls(true);
+
+    // Clear existing timer
+    if (hideControlsTimerRef.current) {
+      clearTimeout(hideControlsTimerRef.current);
+    }
+
+    // Set new auto-hide timer (5 seconds, or 0 if reduce motion is enabled)
+    const delay = isReduceMotionEnabled ? 0 : 5000;
+    if (delay > 0) {
+      hideControlsTimerRef.current = setTimeout(() => {
+        setShowControls(false);
+      }, delay);
+    }
+  }, [isReduceMotionEnabled]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (hideControlsTimerRef.current) {
+        clearTimeout(hideControlsTimerRef.current);
+      }
+    };
+  }, []);
 
   // Fetch stream URL to detect YouTube content
   useEffect(() => {
@@ -281,13 +312,12 @@ export const PlayerScreenMobile: React.FC = () => {
   };
 
   const toggleControls = () => {
-    setShowControls(!showControls);
+    showControlsTemporarily();
   };
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  // Use localized video duration formatter
+  const formatTime = (seconds: number): string => {
+    return formatVideoDuration(seconds);
   };
 
   // Build YouTube embed URL with autoplay
@@ -377,6 +407,9 @@ export const PlayerScreenMobile: React.FC = () => {
                   <Pressable
                     onPress={() => handleSeek(-10)}
                     className="w-[60px] h-[60px] rounded-full bg-black/50 justify-center items-center"
+                    accessibilityRole="button"
+                    accessibilityLabel={t('player.skipBack') || 'Skip back 10 seconds'}
+                    accessibilityHint={t('player.skipBackHint') || 'Double tap to skip back 10 seconds'}
                   >
                     <SkipBack
                       size={28}
@@ -388,6 +421,10 @@ export const PlayerScreenMobile: React.FC = () => {
                   <Pressable
                     onPress={handlePlayPause}
                     className="w-20 h-20 rounded-full bg-purple-500/90 justify-center items-center"
+                    accessibilityRole="button"
+                    accessibilityLabel={isPlaying ? (t('player.pause') || 'Pause video') : (t('player.play') || 'Play video')}
+                    accessibilityHint={isPlaying ? (t('player.pauseHint') || 'Double tap to pause the video') : (t('player.playHint') || 'Double tap to play the video')}
+                    accessibilityState={{ disabled: false }}
                   >
                     {isPlaying ? (
                       <Pause size={36} color={colors.text} fill={colors.text} />
@@ -404,6 +441,9 @@ export const PlayerScreenMobile: React.FC = () => {
                   <Pressable
                     onPress={() => handleSeek(10)}
                     className="w-[60px] h-[60px] rounded-full bg-black/50 justify-center items-center"
+                    accessibilityRole="button"
+                    accessibilityLabel={t('player.skipForward') || 'Skip forward 10 seconds'}
+                    accessibilityHint={t('player.skipForwardHint') || 'Double tap to skip forward 10 seconds'}
                   >
                     <SkipForward
                       size={28}
@@ -418,6 +458,9 @@ export const PlayerScreenMobile: React.FC = () => {
                   <Pressable
                     onPress={handleRestart}
                     className="absolute right-8 w-[60px] h-[60px] rounded-full bg-black/50 justify-center items-center"
+                    accessibilityRole="button"
+                    accessibilityLabel={t('player.restart') || 'Restart video'}
+                    accessibilityHint={t('player.restartHint') || 'Double tap to restart the video from the beginning'}
                   >
                     <RotateCcw
                       size={24}
@@ -434,34 +477,56 @@ export const PlayerScreenMobile: React.FC = () => {
               <View className="pb-8 px-6">
                 <GlassView className="py-4 px-6">
                   {/* Time */}
-                  <Text className="text-xs mb-2" style={{ color: colors.text }}>
+                  <Text className="text-xs mb-2" style={{ color: colors.text }} accessible={true}>
                     {formatTime(currentTime)} / {formatTime(duration)}
                   </Text>
 
-                  {/* Progress bar with chapter markers */}
-                  <View
-                    className="h-1 bg-white/30 rounded mb-4 relative"
+                  {/* Accessible progress bar with chapter markers */}
+                  <Pressable
                     onLayout={(e) =>
                       setProgressBarWidth(e.nativeEvent.layout.width)
                     }
+                    onPress={(e) => {
+                      if (progressBarWidth > 0) {
+                        const x = e.nativeEvent.locationX;
+                        const percent = Math.min(Math.max(x / progressBarWidth, 0), 1);
+                        handleSeekToTime(percent * duration);
+                      }
+                    }}
+                    accessible={true}
+                    accessibilityRole="slider"
+                    accessibilityLabel={t('player.progress') || 'Video progress'}
+                    accessibilityHint={t('player.progressHint') || 'Tap to seek to a time in the video'}
+                    accessibilityValue={{
+                      min: 0,
+                      max: duration,
+                      now: currentTime,
+                      text: `${formatTime(currentTime)} of ${formatTime(duration)}`,
+                    }}
+                    className="mb-4 h-10 justify-center"
                   >
                     <View
-                      className="h-full rounded"
-                      style={{
-                        width: `${(currentTime / duration) * 100}%`,
-                        backgroundColor: colors.primary,
-                      }}
-                    />
-                    {chapters.length > 0 && progressBarWidth > 0 && (
-                      <ChapterMarkers
-                        chapters={chapters}
-                        duration={duration}
-                        currentTime={currentTime}
-                        onSeek={handleSeekToTime}
-                        progressBarWidth={progressBarWidth}
+                      className="h-1 bg-white/30 rounded relative w-full"
+                      pointerEvents="none"
+                    >
+                      <View
+                        className="h-full rounded"
+                        style={{
+                          width: `${(currentTime / duration) * 100}%`,
+                          backgroundColor: colors.primary,
+                        }}
                       />
-                    )}
-                  </View>
+                      {chapters.length > 0 && progressBarWidth > 0 && (
+                        <ChapterMarkers
+                          chapters={chapters}
+                          duration={duration}
+                          currentTime={currentTime}
+                          onSeek={handleSeekToTime}
+                          progressBarWidth={progressBarWidth}
+                        />
+                      )}
+                    </View>
+                  </Pressable>
 
                   {/* Bottom buttons row */}
                   <View className="flex-row justify-between items-center">
@@ -471,9 +536,12 @@ export const PlayerScreenMobile: React.FC = () => {
                         onPress={() => setChaptersVisible(true)}
                         className="flex-row items-center gap-1 py-1 px-2"
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                        accessibilityRole="button"
+                        accessibilityLabel={t('player.chapters') || 'Chapters'}
+                        accessibilityHint={`${chapters.length} chapters available. Double tap to view chapters list`}
                       >
                         <List size={20} color={colors.text} />
-                        <Text className="text-xs" style={{ color: colors.text }}>
+                        <Text className="text-xs" style={{ color: colors.text }} accessibilityElementsHidden>
                           {t("player.chapters")} ({chapters.length})
                         </Text>
                       </Pressable>
@@ -484,6 +552,9 @@ export const PlayerScreenMobile: React.FC = () => {
                       onPress={() => setSettingsVisible(true)}
                       className="w-11 h-11 justify-center items-center"
                       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      accessibilityRole="button"
+                      accessibilityLabel={t('player.settings') || 'Player settings'}
+                      accessibilityHint={t('player.settingsHint') || 'Double tap to open quality, subtitles, and playback speed settings'}
                     >
                       <Settings size={24} color={colors.text} />
                     </Pressable>

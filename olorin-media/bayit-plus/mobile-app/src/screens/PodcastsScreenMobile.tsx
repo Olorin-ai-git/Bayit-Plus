@@ -29,6 +29,7 @@ import { podcastService, contentService } from '@bayit/shared-services';
 import { GlassCategoryPill, GlassView, GlassBadge, GlassButton } from '@bayit/shared';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
+import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { getGridColumns } from '../utils/responsive';
 import { BottomSheet } from '../components';
 import { spacing, colors, typography } from '@olorin/design-tokens';
@@ -77,6 +78,7 @@ export const PodcastsScreenMobile: React.FC = () => {
   const navigation = useNavigation<any>();
   const { isRTL, direction } = useDirection();
   const { orientation } = useResponsive();
+  const safeAreaPadding = useSafeAreaPadding();
 
   const [podcasts, setPodcasts] = useState<Podcast[]>([]);
   const [filteredPodcasts, setFilteredPodcasts] = useState<Podcast[]>([]);
@@ -286,7 +288,7 @@ export const PodcastsScreenMobile: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, safeAreaPadding]}>
       {/* Category filters - wrapping layout */}
       {categories.length > 0 && (
         <View style={styles.categoriesSection}>

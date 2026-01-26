@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import axios from 'axios';
+import { useAuthStore } from './authStore';
 
 
 interface Friend {
@@ -23,6 +24,17 @@ interface FriendRequest {
   sent_at: string;
 }
 
+
+// Helper function to get authorization headers
+const getAuthHeaders = () => {
+  const token = useAuthStore.getState().token;
+  if (!token) {
+    return {};
+  }
+  return {
+    'Authorization': `Bearer ${token}`
+  };
+};
 
 interface FriendsStore {
   friends: Friend[];
@@ -52,31 +64,33 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
   fetchFriends: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get('/api/v1/friends/list');
-      set({ friends: response.data.friends, loading: false });
+      const response = await axios.get('/api/v1/friends/list', { headers: getAuthHeaders() });
+      set({ friends: response.data.friends || [], loading: false });
     } catch (error: any) {
-      set({ error: error.response?.data?.detail || 'Failed to fetch friends', loading: false });
+      const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch friends';
+      set({ error: errorMessage, loading: false, friends: [] });
     }
   },
 
   fetchRequests: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get('/api/v1/friends/requests');
+      const response = await axios.get('/api/v1/friends/requests', { headers: getAuthHeaders() });
       set({
-        incomingRequests: response.data.incoming,
-        outgoingRequests: response.data.outgoing,
+        incomingRequests: response.data.incoming || [],
+        outgoingRequests: response.data.outgoing || [],
         loading: false
       });
     } catch (error: any) {
-      set({ error: error.response?.data?.detail || 'Failed to fetch requests', loading: false });
+      const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch requests';
+      set({ error: errorMessage, loading: false, incomingRequests: [], outgoingRequests: [] });
     }
   },
 
   sendFriendRequest: async (receiverId: string, message?: string) => {
     set({ loading: true, error: null });
     try {
-      await axios.post('/api/v1/friends/request', { receiver_id: receiverId, message });
+      await axios.post('/api/v1/friends/request', { receiver_id: receiverId, message }, { headers: getAuthHeaders() });
       await get().fetchRequests();
       set({ loading: false });
     } catch (error: any) {
@@ -88,7 +102,7 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
   acceptRequest: async (requestId: string) => {
     set({ loading: true, error: null });
     try {
-      await axios.post('/api/v1/friends/request/accept', { request_id: requestId });
+      await axios.post('/api/v1/friends/request/accept', { request_id: requestId }, { headers: getAuthHeaders() });
       await get().fetchFriends();
       await get().fetchRequests();
       set({ loading: false });
@@ -100,7 +114,7 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
   rejectRequest: async (requestId: string) => {
     set({ loading: true, error: null });
     try {
-      await axios.post('/api/v1/friends/request/reject', { request_id: requestId });
+      await axios.post('/api/v1/friends/request/reject', { request_id: requestId }, { headers: getAuthHeaders() });
       await get().fetchRequests();
       set({ loading: false });
     } catch (error: any) {
@@ -111,7 +125,7 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
   cancelRequest: async (requestId: string) => {
     set({ loading: true, error: null });
     try {
-      await axios.post('/api/v1/friends/request/cancel', { request_id: requestId });
+      await axios.post('/api/v1/friends/request/cancel', { request_id: requestId }, { headers: getAuthHeaders() });
       await get().fetchRequests();
       set({ loading: false });
     } catch (error: any) {
@@ -122,7 +136,7 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
   removeFriend: async (friendId: string) => {
     set({ loading: true, error: null });
     try {
-      await axios.delete(`/api/v1/friends/${friendId}`);
+      await axios.delete(`/api/v1/friends/${friendId}`, { headers: getAuthHeaders() });
       await get().fetchFriends();
       set({ loading: false });
     } catch (error: any) {
@@ -131,7 +145,7 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
   },
 
   searchUsers: async (query: string) => {
-    const response = await axios.post('/api/v1/friends/search', { query });
+    const response = await axios.post('/api/v1/friends/search', { query }, { headers: getAuthHeaders() });
     return response.data.users;
   },
 }));

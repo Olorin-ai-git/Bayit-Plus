@@ -30,6 +30,7 @@ import { watchlistService } from '@bayit/shared-services';
 import { GlassView, GlassCategoryPill } from '@bayit/shared';
 import { getLocalizedName } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
+import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, typography } from '@olorin/design-tokens';
 import type { RootStackParamList } from '../navigation/types';
@@ -65,6 +66,7 @@ export const WatchlistScreenMobile: React.FC = () => {
   const route = useRoute<WatchlistRoute>();
   const { isRTL, direction } = useDirection();
   const { orientation } = useResponsive();
+  const safeAreaPadding = useSafeAreaPadding();
 
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -224,9 +226,9 @@ export const WatchlistScreenMobile: React.FC = () => {
   }
 
   return (
-    <View className="flex-1" style={{ backgroundColor: colors.background }}>
+    <View className="flex-1" style={[{ backgroundColor: colors.background }, safeAreaPadding]}>
       {/* Header */}
-      <View className="items-center px-6 pt-6 pb-4" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
+      <View className="items-center px-6 pb-4" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
         <View
           className="w-12 h-12 rounded-full bg-purple-500/20 justify-center items-center"
           style={{ marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md }}

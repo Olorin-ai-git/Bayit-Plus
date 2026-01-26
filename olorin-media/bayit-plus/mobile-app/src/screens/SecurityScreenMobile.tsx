@@ -32,6 +32,7 @@ import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
 import { useNotifications } from '@olorin/glass-ui/hooks';
 import { securityService } from '@bayit/shared-services';
+import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 
 import logger from '@/utils/logger';
@@ -61,6 +62,7 @@ export const SecurityScreenMobile: React.FC = () => {
   const { isRTL, textAlign } = useDirection();
   const { user } = useAuthStore();
   const notifications = useNotifications();
+  const safeAreaPadding = useSafeAreaPadding();
 
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -270,7 +272,7 @@ export const SecurityScreenMobile: React.FC = () => {
   return (
     <SafeAreaView className="flex-1 bg-black">
       <ScrollView
-        contentContainerStyle={{ paddingHorizontal: spacing.md, paddingBottom: spacing.xl }}
+        contentContainerStyle={[{ paddingHorizontal: spacing.md, paddingBottom: spacing.xl }, safeAreaPadding]}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { Text, Pressable, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Home, Tv, Film, Radio, Mic, User } from 'lucide-react-native';
 import { useDirection } from '@bayit/shared-hooks';
@@ -12,6 +13,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView } from '@olorin/glass-ui';
 import { ICON_REGISTRY } from '@olorin/shared-icons';
 import { colors } from '@olorin/design-tokens';
+import { useScaledFontSize } from '../../hooks/useScaledFontSize';
 
 interface TabBarProps {
   state: any;
@@ -53,6 +55,8 @@ const FOCUS_BACKGROUND = colors?.glass?.purpleLight || 'rgba(88, 28, 135, 0.35)'
 const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
   const { t } = useTranslation();
   const { isRTL } = useDirection();
+  const scaledFontSize = useScaledFontSize();
+  const insets = useSafeAreaInsets();
 
   const iconNames: Record<string, string> = {
     Home: 'home',
@@ -93,7 +97,10 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
     <GlassView
       intensity="strong"
       className="border-t border-white/10 py-2 px-4"
-      style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
+      style={{
+        flexDirection: isRTL ? 'row-reverse' : 'row',
+        paddingBottom: Math.max(8, insets.bottom),
+      }}
     >
       {state.routes.map((route: any, index: number) => {
         const isFocused = state.index === index;
@@ -123,9 +130,10 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
               isActive={isFocused}
             />
             <Text
-              className={`text-[12px] mt-1 ${isFocused ? 'font-semibold' : 'font-medium'}`}
-              style={{ color: iconColor }}
+              className={`mt-1 ${isFocused ? 'font-semibold' : 'font-medium'}`}
+              style={{ color: iconColor, fontSize: scaledFontSize.xs }}
               numberOfLines={1}
+              ellipsizeMode="tail"
               accessibilityElementsHidden
             >
               {label}

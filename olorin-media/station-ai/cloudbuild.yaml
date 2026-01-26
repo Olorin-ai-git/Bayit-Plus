@@ -41,6 +41,7 @@ steps:
       - '--min-instances=0'
       - '--port=8080'
       - '--set-env-vars=ENVIRONMENT=production,LOG_LEVEL=INFO,MONGODB_DB_NAME=israeli_radio'
+      - '--set-secrets=MONGODB_URI=bayit-mongodb-url:latest'
     id: 'deploy-to-cloud-run'
     waitFor: ['push-image']
 

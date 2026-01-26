@@ -32,6 +32,7 @@ import { useAuthStore } from '@bayit/shared-stores';
 import { profilesService } from '@bayit/shared-services';
 import { spacing, colors, typography, touchTarget } from '@olorin/design-tokens';
 import { useResponsive } from '../hooks/useResponsive';
+import { useScaledFontSize } from '../hooks/useScaledFontSize';
 
 import logger from '@/utils/logger';
 
@@ -52,6 +53,7 @@ export const ProfileScreenMobile: React.FC = () => {
   const { can, isAdmin } = usePermissions();
   const { isRTL, direction } = useDirection();
   const { isTablet } = useResponsive();
+  const scaledFontSize = useScaledFontSize();
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   const [stats, setStats] = useState<ProfileStats>({
@@ -243,16 +245,26 @@ export const ProfileScreenMobile: React.FC = () => {
         </GlassView>
       )}
 
-      {/* Stats Grid - 1x2 Text-Only Design (removed bottom 2 cards to prevent overlap) */}
+      {/* Stats Grid - 2x2 Responsive Design */}
       <View style={styles.statsGrid}>
+        <GlassView style={styles.statItem}>
+          <Text style={styles.statValue}>{stats.watchTimeMinutes > 0 ? formatWatchTime(stats.watchTimeMinutes) : '0'}</Text>
+          <Text style={styles.statLabel}>{t('profile.watchTime')}</Text>
+        </GlassView>
+
+        <GlassView style={styles.statItem}>
+          <Text style={styles.statValue}>{stats.favoritesCount}</Text>
+          <Text style={styles.statLabel}>{t('profile.favorites')}</Text>
+        </GlassView>
+
         <GlassView style={styles.statItem}>
           <Text style={styles.statValue}>{stats.watchlistCount}</Text>
           <Text style={styles.statLabel}>{t('profile.watchlist')}</Text>
         </GlassView>
 
         <GlassView style={styles.statItem}>
-          <Text style={styles.statValue}>{stats.favoritesCount}</Text>
-          <Text style={styles.statLabel}>{t('profile.favorites')}</Text>
+          <Text style={styles.statValue}>{stats.downloadsCount}</Text>
+          <Text style={styles.statLabel}>{t('profile.downloads')}</Text>
         </GlassView>
       </View>
 
@@ -265,22 +277,26 @@ export const ProfileScreenMobile: React.FC = () => {
             style={({ pressed }) => [
               pressed && styles.menuItemPressed,
             ]}
+            accessibilityRole="button"
+            accessibilityLabel={item.title}
+            accessibilityHint={item.subtitle ? `${item.subtitle}. Double tap to navigate` : 'Double tap to navigate'}
+            accessible={true}
           >
             <GlassView style={styles.menuItem}>
               <View style={styles.menuContent}>
                 <View style={styles.menuLeft}>
-                  <Text style={styles.menuTitle}>{item.title}</Text>
+                  <Text style={styles.menuTitle} accessibilityElementsHidden>{item.title}</Text>
                   {item.subtitle && (
-                    <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
+                    <Text style={styles.menuSubtitle} accessibilityElementsHidden>{item.subtitle}</Text>
                   )}
                 </View>
                 <View style={styles.menuRight}>
                   {item.badge !== undefined && item.badge > 0 && (
                     <View style={styles.badge}>
-                      <Text style={styles.badgeText}>{item.badge}</Text>
+                      <Text style={styles.badgeText} accessibilityElementsHidden>{item.badge}</Text>
                     </View>
                   )}
-                  <Text style={styles.chevron}>{isRTL ? '‹' : '›'}</Text>
+                  <Text style={styles.chevron} accessibilityElementsHidden>{isRTL ? '‹' : '›'}</Text>
                 </View>
               </View>
             </GlassView>

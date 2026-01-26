@@ -25,6 +25,7 @@ import { contentService } from '@bayit/shared-services';
 import { GlassCategoryPill } from '@bayit/shared';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
+import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { getGridColumns } from '../utils/responsive';
 import { ContentCardMobile } from '../components';
 import { colors } from '@olorin/design-tokens';
@@ -63,6 +64,7 @@ export const VODScreenMobile: React.FC = () => {
   const navigation = useNavigation<any>();
   const { isRTL, direction } = useDirection();
   const { orientation } = useResponsive();
+  const safeAreaPadding = useSafeAreaPadding();
 
   const [content, setContent] = useState<Content[]>([]);
   const [filteredContent, setFilteredContent] = useState<Content[]>([]);
@@ -199,7 +201,7 @@ export const VODScreenMobile: React.FC = () => {
   };
 
   return (
-    <View className="flex-1 bg-background">
+    <View className="flex-1 bg-background" style={safeAreaPadding}>
       {/* Category filters - horizontal scroll */}
       {categories.length > 0 && (
         <View className="py-4">

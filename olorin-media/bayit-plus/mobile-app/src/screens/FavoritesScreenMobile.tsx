@@ -27,6 +27,7 @@ import { favoritesService } from '@bayit/shared-services';
 import { GlassView } from '@bayit/shared';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
+import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, typography } from '@olorin/design-tokens';
 import type { RootStackParamList } from '../navigation/types';
@@ -65,6 +66,7 @@ export const FavoritesScreenMobile: React.FC = () => {
   const route = useRoute<FavoritesRoute>();
   const { isRTL, direction } = useDirection();
   const { orientation } = useResponsive();
+  const safeAreaPadding = useSafeAreaPadding();
 
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -205,9 +207,9 @@ export const FavoritesScreenMobile: React.FC = () => {
   }
 
   return (
-    <View className="flex-1 bg-background">
+    <View className="flex-1 bg-background" style={safeAreaPadding}>
       {/* Header */}
-      <View className={`flex-row items-center px-6 pt-6 pb-4 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
+      <View className={`flex-row items-center px-6 pb-4 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
         <View
           className="w-12 h-12 rounded-full bg-yellow-500/20 justify-center items-center"
           style={{ marginLeft: isRTL ? 16 : 0, marginRight: isRTL ? 0 : 16 }}

@@ -31,6 +31,7 @@ import { chatService } from '@bayit/shared-services';
 import { useAuthStore } from '@bayit/shared-stores';
 import { getLocalizedName } from '@bayit/shared-utils';
 import { useResponsive } from '../hooks/useResponsive';
+import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { getGridColumns } from '../utils/responsive';
 import { colors } from '@olorin/design-tokens';
 import type { RootStackParamList } from '../navigation/types';
@@ -72,6 +73,7 @@ export const SearchScreenMobile: React.FC = () => {
   const routeParams = route.params;
   const { isRTL } = useDirection();
   const { orientation } = useResponsive();
+  const safeAreaPadding = useSafeAreaPadding();
 
   // Advanced filters bottom sheet state
   const [showFilters, setShowFilters] = useState(false);
@@ -204,9 +206,9 @@ export const SearchScreenMobile: React.FC = () => {
   const hasActiveFilters = !!(filters.genres?.length || filters.yearMin || filters.ratingMin || filters.subtitleLanguages?.length);
 
   return (
-    <View className="flex-1" style={{ backgroundColor: colors.background }}>
+    <View className="flex-1" style={[{ backgroundColor: colors.background }, safeAreaPadding]}>
       {/* Search Header */}
-      <View className="px-6 pt-6 pb-4 bg-black/40 border-b border-white/10">
+      <View className="px-6 pb-4 bg-black/40 border-b border-white/10">
         <View className="flex-row items-center gap-4 mb-4">
           {/* Back Button */}
           <TouchableOpacity

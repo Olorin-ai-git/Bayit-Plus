@@ -23,6 +23,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { languages as sharedLanguages } from '@bayit/shared-i18n';
+import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { spacing, colors, typography, touchTarget } from '@olorin/design-tokens';
 
 type Language = {
@@ -59,6 +60,7 @@ export const LanguageSettingsScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation();
   const { isRTL } = useDirection();
+  const safeAreaPadding = useSafeAreaPadding();
 
   const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
   const [selectedSubtitleLanguage, setSelectedSubtitleLanguage] = useState(i18n.language);
@@ -117,7 +119,7 @@ export const LanguageSettingsScreen: React.FC = () => {
   );
 
   return (
-    <ScrollView className="flex-1 bg-[#0f0a1a]" contentContainerClassName="px-4 pt-6 pb-24">
+    <ScrollView className="flex-1 bg-[#0f0a1a]" contentContainerStyle={safeAreaPadding} contentContainerClassName="px-4 pb-24">
       {/* Header */}
       <View className="mb-6">
         <Text className="text-3xl font-bold text-white mb-1">{t('settings.language')}</Text>

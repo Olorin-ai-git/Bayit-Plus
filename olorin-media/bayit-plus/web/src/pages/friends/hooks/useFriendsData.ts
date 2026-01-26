@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useFriendsStore } from '../../../stores/friendsStore';
 import type { SearchResult, ModalType } from '../types';
 
-export function useFriendsData() {
+export function useFriendsData(authReady: boolean = false) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -29,10 +29,13 @@ export function useFriendsData() {
     searchUsers,
   } = useFriendsStore();
 
+  // Only fetch data when auth is ready
   useEffect(() => {
-    fetchFriends();
-    fetchRequests();
-  }, []);
+    if (authReady) {
+      fetchFriends();
+      fetchRequests();
+    }
+  }, [authReady, fetchFriends, fetchRequests]);
 
   const showModal = (message: string, type: ModalType = 'info') => {
     setModalMessage(message);

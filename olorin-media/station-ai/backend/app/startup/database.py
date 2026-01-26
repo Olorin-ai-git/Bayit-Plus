@@ -65,27 +65,31 @@ async def init_database(db):
     await db.stream_validation_cache.create_index("stream_url")
     await db.stream_validation_cache.create_index("last_validated")
     await db.stream_validation_cache.create_index([("stream_url", 1), ("last_validated", 1)])
-    await db.stream_validation_cache.create_index("expires_at")
     await db.stream_validation_cache.create_index("is_valid")
     # TTL index - expire documents at expires_at field value
-    await db.stream_validation_cache.create_index(
-        "expires_at",
-        expireAfterSeconds=0,
-        name="stream_validation_cache_ttl"
-    )
+    try:
+        await db.stream_validation_cache.create_index(
+            "expires_at",
+            expireAfterSeconds=0,
+            name="stream_validation_cache_ttl"
+        )
+    except Exception as e:
+        logger.warning(f"stream_validation_cache TTL index creation skipped: {e}")
 
     # Classification verification cache collection indexes
     await db.classification_verification_cache.create_index("content_id")
     await db.classification_verification_cache.create_index([("content_id", 1), ("category_id", 1)])
     await db.classification_verification_cache.create_index("last_verified")
-    await db.classification_verification_cache.create_index("expires_at")
     await db.classification_verification_cache.create_index("is_correct")
     # TTL index - expire documents at expires_at field value
-    await db.classification_verification_cache.create_index(
-        "expires_at",
-        expireAfterSeconds=0,
-        name="classification_verification_cache_ttl"
-    )
+    try:
+        await db.classification_verification_cache.create_index(
+            "expires_at",
+            expireAfterSeconds=0,
+            name="classification_verification_cache_ttl"
+        )
+    except Exception as e:
+        logger.warning(f"classification_verification_cache TTL index creation skipped: {e}")
 
     # Backup collection indexes
     await db.backups.create_index("created_at")
