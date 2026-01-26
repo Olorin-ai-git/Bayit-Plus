@@ -1,0 +1,5 @@
+# Environment variables with secrets
+.env
+
+# Cloud Build logs
+*.log

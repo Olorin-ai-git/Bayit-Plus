@@ -439,14 +439,16 @@ export default function HomePage() {
         </>
       )}
 
-      {/* Content Filters */}
-      <View style={styles.filterSection}>
-        <GlassCheckbox
-          label={t('home.showOnlyWithSubtitles', 'Show only with subtitles')}
-          checked={showOnlyWithSubtitles}
-          onChange={setShowOnlyWithSubtitles}
-        />
-      </View>
+      {/* Content Filters - only visible when authenticated */}
+      {useAuthStore.getState().isAuthenticated && (
+        <View style={styles.filterSection}>
+          <GlassCheckbox
+            label={t('home.showOnlyWithSubtitles', 'Show only with subtitles')}
+            checked={showOnlyWithSubtitles}
+            onChange={setShowOnlyWithSubtitles}
+          />
+        </View>
+      )}
 
       {/* Categories - loads independently */}
       {categoriesLoading ? (

@@ -485,6 +485,10 @@ const styles = StyleSheet.create({
     marginVertical: spacing.md,
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
+    backgroundColor: 'rgba(10, 10, 30, 0.4)',
+    // @ts-ignore - Web-specific CSS properties
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
   },
   backgroundImage: {
     minHeight: isTV ? 320 : 280,
@@ -495,8 +499,11 @@ const styles = StyleSheet.create({
   },
   backgroundOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(10, 10, 30, 0.5)',
     borderRadius: borderRadius.lg,
+    // @ts-ignore - Web-specific CSS properties
+    backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
   },
   contentWrapper: {
     padding: spacing.md,
@@ -538,16 +545,16 @@ const styles = StyleSheet.create({
   },
   contentCard: {
     width: 261,
-    height: 180,
+    height: 220,
     padding: spacing.md,
     borderRadius: borderRadius.lg,
     borderWidth: 2,
     borderColor: 'transparent',
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     overflow: 'hidden',
     // @ts-ignore - Web-specific CSS properties
-    backdropFilter: 'blur(4px)',
-    WebkitBackdropFilter: 'blur(4px)',
+    backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
   },
   contentCardFocused: {
     borderWidth: 2,

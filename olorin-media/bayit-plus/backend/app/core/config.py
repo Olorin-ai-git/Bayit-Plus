@@ -1,15 +1,25 @@
 import json
 import os
 from functools import lru_cache
+from pathlib import Path
 
 from dotenv import load_dotenv
-from pydantic import Field, field_validator
+from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings
 
 from app.core.olorin_config import OlorinSettings
 
-# Load .env file before initializing settings (required for nested configs)
-load_dotenv()
+# Load environment files in proper hierarchy
+# 1. Base platform config (olorin-infra/.env) - lowest priority
+# 2. Backend-specific config (backend/.env) - overrides base platform
+# Path structure: backend/app/core/config.py -> backend/ -> bayit-plus/ -> olorin-media/ -> olorin/ -> olorin-infra/
+base_platform_env = Path(__file__).resolve().parents[5] / "olorin-infra" / ".env"
+backend_env = Path(__file__).resolve().parents[2] / ".env"
+
+if base_platform_env.exists():
+    load_dotenv(base_platform_env, override=False)  # Load base platform config first
+if backend_env.exists():
+    load_dotenv(backend_env, override=True)  # Backend config overrides base platform
 
 
 class Settings(BaseSettings):
@@ -91,9 +101,38 @@ class Settings(BaseSettings):
 
     # Anthropic (Claude)
     ANTHROPIC_API_KEY: str = ""
-    CLAUDE_MODEL: str = "claude-sonnet-4-20250514"
+    CLAUDE_MODEL: str = "claude-haiku-4-5-20251001"
     CLAUDE_MAX_TOKENS_SHORT: int = 200
     CLAUDE_MAX_TOKENS_LONG: int = 500
+
+    # NLP Features (opt-in, requires ANTHROPIC_API_KEY)
+    NLP_ENABLED: bool = Field(
+        default=False,
+        validation_alias=AliasChoices('OLORIN_NLP_ENABLED', 'NLP_ENABLED')
+    )
+    NLP_CONFIDENCE_THRESHOLD: float = Field(
+        default=0.7,
+        validation_alias=AliasChoices('OLORIN_NLP_CONFIDENCE_THRESHOLD', 'NLP_CONFIDENCE_THRESHOLD')
+    )
+    NLP_MAX_COST_PER_QUERY: float = Field(
+        default=0.10,
+        validation_alias=AliasChoices('OLORIN_NLP_MAX_COST_PER_QUERY', 'NLP_MAX_COST_PER_QUERY')
+    )
+
+    # Agent Execution (for multi-step workflows)
+    AGENT_MAX_ITERATIONS: int = Field(default=20)
+    AGENT_BUDGET_LIMIT_USD: float = Field(default=0.50)
+
+    # Voice Commands (opt-in)
+    VOICE_COMMANDS_ENABLED: bool = Field(default=False)
+    VOICE_RESPONSE_ENABLED: bool = Field(default=True)
+    TTS_VOICE_ID: str = Field(
+        default="21m00Tcm4TlvDq8ikWAM"
+    )  # Default ElevenLabs voice for CLI responses
+
+    # Semantic Search (opt-in)
+    SEMANTIC_SEARCH_ENABLED: bool = Field(default=False)
+    SEMANTIC_SEARCH_RERANK: bool = Field(default=True)
 
     # Google OAuth (optional - only required if using Google sign-in)
     GOOGLE_CLIENT_ID: str = ""

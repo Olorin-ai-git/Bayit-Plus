@@ -497,11 +497,6 @@ EOF
     create_or_update_secret "bayit-apple-bundle-id-ios" "APPLE_BUNDLE_ID_IOS"
     create_or_update_secret "bayit-apple-bundle-id-tvos" "APPLE_BUNDLE_ID_TVOS"
 
-    # Olorin.ai Platform Configuration
-    create_or_update_secret "olorin-pinecone-api-key" "PINECONE_API_KEY"
-    create_or_update_secret "olorin-partner-api-key-salt" "PARTNER_API_KEY_SALT"
-    create_or_update_secret "olorin-secret-key" "SECRET_KEY"
-
     # Feature Flags
     create_or_update_secret "bayit-feature-scene-search-enabled" "FEATURE_SCENE_SEARCH_ENABLED"
 
@@ -541,7 +536,6 @@ EOF
                   bayit-community-scrape-interval bayit-yutorah-rss-url bayit-chabad-multimedia-rss-url \
                   bayit-torahanytime-rss-url \
                   bayit-apple-key-id bayit-apple-team-id bayit-apple-bundle-id-ios bayit-apple-bundle-id-tvos \
-                  olorin-pinecone-api-key olorin-partner-api-key-salt olorin-secret-key \
                   bayit-feature-scene-search-enabled \
                   turbo-token turbo-team; do
         gcloud secrets add-iam-policy-binding "$secret" \

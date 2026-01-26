@@ -30,7 +30,7 @@ class SiriService {
       await SiriModule.donatePlayIntent(contentId, contentTitle, contentType);
       moduleLogger.debug('[SiriService] Play intent donated:', contentTitle);
     } catch (error) {
-      moduleLogger.error('Failed to donate play intent:', error', error);
+      moduleLogger.error('Failed to donate play intent:', error);
     }
   }
 
@@ -47,7 +47,7 @@ class SiriService {
       await SiriModule.donateSearchIntent(query);
       moduleLogger.debug('[SiriService] Search intent donated:', query);
     } catch (error) {
-      moduleLogger.error('Failed to donate search intent:', error', error);
+      moduleLogger.error('Failed to donate search intent:', error);
     }
   }
 
@@ -64,7 +64,7 @@ class SiriService {
       await SiriModule.donateWidgetIntent(widgetType, channelId, channelName);
       moduleLogger.debug('[SiriService] Widget intent donated:', channelName);
     } catch (error) {
-      moduleLogger.error('Failed to donate widget intent:', error', error);
+      moduleLogger.error('Failed to donate widget intent:', error);
     }
   }
 
@@ -81,7 +81,7 @@ class SiriService {
       await SiriModule.donateResumeIntent();
       moduleLogger.debug('[SiriService] Resume watching intent donated');
     } catch (error) {
-      moduleLogger.error('Failed to donate resume watching intent:', error', error);
+      moduleLogger.error('Failed to donate resume watching intent:', error);
     }
   }
 
@@ -98,7 +98,7 @@ class SiriService {
       moduleLogger.debug(`[SiriService] Deleted ${result.deleted} shortcuts`);
       return result.deleted;
     } catch (error) {
-      moduleLogger.error('Failed to delete shortcuts:', error', error);
+      moduleLogger.error('Failed to delete shortcuts:', error);
       return 0;
     }
   }
@@ -115,7 +115,7 @@ class SiriService {
       const result = await SiriModule.getSuggestedShortcuts();
       return result.shortcuts || [];
     } catch (error) {
-      moduleLogger.error('Failed to get shortcuts:', error', error);
+      moduleLogger.error('Failed to get shortcuts:', error);
       return [];
     }
   }

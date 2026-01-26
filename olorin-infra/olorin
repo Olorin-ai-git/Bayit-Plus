@@ -1,0 +1,778 @@
+#!/usr/bin/env bash
+# =============================================================================
+# Olorin Platform CLI - High-Level Ecosystem Management
+# =============================================================================
+#
+# Purpose: Unified CLI for managing the entire Olorin ecosystem
+#
+# Usage:
+#   olorin <command> [platform] [options]
+#   olorin <platform> <command> [options]
+#
+# Examples:
+#   olorin status                    # Check all platforms
+#   olorin status bayit              # Check Bayit+ only
+#   olorin start fraud               # Start fraud platform
+#   olorin bayit upload-movies       # Bayit+-specific command
+#   olorin ai "check library"        # NLP command (cross-platform)
+#
+# =============================================================================
+
+set -euo pipefail
+
+# Colors
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly CYAN='\033[0;36m'
+readonly NC='\033[0m'
+
+# Get script directory and project root (resolve symlinks)
+SCRIPT_PATH="${BASH_SOURCE[0]}"
+# Resolve symlink if necessary
+if [ -L "$SCRIPT_PATH" ]; then
+    SCRIPT_PATH="$(readlink "$SCRIPT_PATH")"
+fi
+readonly SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+readonly PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+readonly INFRA_ROOT="$SCRIPT_DIR"
+
+# Platform registry
+readonly PLATFORMS_YAML="$INFRA_ROOT/platforms.yaml"
+
+# NLP Configuration (opt-in)
+readonly NLP_ENABLED="${OLORIN_NLP_ENABLED:-false}"
+
+# Save original arguments
+ORIGINAL_ARGS=("$@")
+
+# Command
+COMMAND="${1:-interactive}"
+shift || true
+
+# Logging helpers
+log_info() {
+    echo -e "${BLUE}ℹ${NC} $*"
+}
+
+log_success() {
+    echo -e "${GREEN}✓${NC} $*"
+}
+
+log_error() {
+    echo -e "${RED}✖${NC} $*" >&2
+}
+
+log_warning() {
+    echo -e "${YELLOW}⚠${NC} $*"
+}
+
+# Check if command is platform-level (ecosystem-wide)
+is_platform_level_command() {
+    case "$1" in
+        interactive|status|health|version|help|--help|-h|--version|-v|ai|config)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+# Check if argument is a known platform
+is_known_platform() {
+    case "$1" in
+        bayit|fraud|cvplus|portals|radio|stationai)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+# Get platform-specific CLI path
+get_platform_cli() {
+    local platform="$1"
+
+    case "$platform" in
+        bayit)
+            echo "$PROJECT_ROOT/olorin-media/bayit-plus/scripts/bayit.sh"
+            ;;
+        fraud)
+            echo "$PROJECT_ROOT/olorin-fraud/scripts/fraud.sh"
+            ;;
+        cvplus)
+            echo "$PROJECT_ROOT/olorin-cv/scripts/cvplus.sh"
+            ;;
+        portals)
+            echo "$PROJECT_ROOT/olorin-portals/scripts/portals.sh"
+            ;;
+        radio)
+            echo "$PROJECT_ROOT/olorin-media/israeli-radio-manager/scripts/radio.sh"
+            ;;
+        stationai)
+            echo "$PROJECT_ROOT/olorin-media/station-ai/scripts/stationai.sh"
+            ;;
+        *)
+            log_error "Unknown platform: $platform"
+            exit 1
+            ;;
+    esac
+}
+
+# Platform-Level Status Check (All Platforms)
+show_ecosystem_status() {
+    echo ""
+    echo -e "${BLUE}╔═══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${BLUE}║  Olorin Ecosystem Status${NC}"
+    echo -e "${BLUE}╚═══════════════════════════════════════════════════════════════╝${NC}"
+    echo ""
+
+    # Check each platform
+    local platforms=("bayit" "fraud" "cvplus" "portals" "radio" "stationai")
+
+    for platform in "${platforms[@]}"; do
+        check_platform_status "$platform"
+    done
+
+    # Shared infrastructure status
+    echo -e "${BLUE}Shared Infrastructure:${NC}"
+
+    # MongoDB Atlas
+    if [ -n "${MONGODB_URI:-}" ]; then
+        echo -e "  ${GREEN}●${NC} MongoDB Atlas (configured)"
+    else
+        echo -e "  ${YELLOW}⚠${NC} MongoDB Atlas (not configured)"
+    fi
+
+    # GCS
+    if [ -n "${GCS_BUCKET_NAME:-}" ]; then
+        echo -e "  ${GREEN}●${NC} Google Cloud Storage (configured)"
+    else
+        echo -e "  ${YELLOW}⚠${NC} Google Cloud Storage (not configured)"
+    fi
+
+    # Anthropic API
+    if [ -n "${ANTHROPIC_API_KEY:-}" ]; then
+        echo -e "  ${GREEN}●${NC} Anthropic API (configured)"
+    else
+        echo -e "  ${YELLOW}⚠${NC} Anthropic API (not configured)"
+    fi
+
+    echo ""
+}
+
+# Check individual platform status
+check_platform_status() {
+    local platform="$1"
+    local platform_cli
+    platform_cli=$(get_platform_cli "$platform")
+
+    local platform_name
+    case "$platform" in
+        bayit) platform_name="Bayit+ Streaming" ;;
+        fraud) platform_name="Olorin Fraud Detection" ;;
+        cvplus) platform_name="CV Plus" ;;
+        portals) platform_name="Marketing Portals" ;;
+        radio) platform_name="Israeli Radio Manager" ;;
+        stationai) platform_name="Station AI" ;;
+    esac
+
+    echo -e "${CYAN}$platform_name:${NC}"
+
+    # Check if platform CLI exists
+    if [ -f "$platform_cli" ]; then
+        # Execute platform status check
+        bash "$platform_cli" status 2>/dev/null || {
+            echo -e "  ${YELLOW}⚠${NC} Platform CLI exists but status check failed"
+        }
+    else
+        echo -e "  ${YELLOW}⚠${NC} Platform CLI not found at: $platform_cli"
+    fi
+
+    echo ""
+}
+
+# Platform-Level Health Check
+show_ecosystem_health() {
+    echo ""
+    echo -e "${BLUE}╔═══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${BLUE}║  Olorin Ecosystem Health${NC}"
+    echo -e "${BLUE}╚═══════════════════════════════════════════════════════════════╝${NC}"
+    echo ""
+
+    # Check Git
+    if git rev-parse --git-dir > /dev/null 2>&1; then
+        local branch
+        branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+        echo -e "${GREEN}●${NC} Git Repository"
+        echo -e "  Branch: $branch"
+
+        if git diff-index --quiet HEAD -- 2>/dev/null; then
+            echo -e "  Status: Clean working tree"
+        else
+            echo -e "  Status: ${YELLOW}Uncommitted changes${NC}"
+        fi
+    else
+        echo -e "${RED}○${NC} Not a git repository"
+    fi
+    echo ""
+
+    # Check Node.js
+    if command -v node &> /dev/null; then
+        echo -e "${GREEN}●${NC} Node.js $(node --version)"
+    else
+        echo -e "${RED}○${NC} Node.js not installed"
+    fi
+
+    # Check Python
+    if command -v python3 &> /dev/null; then
+        echo -e "${GREEN}●${NC} Python $(python3 --version | cut -d' ' -f2)"
+    else
+        echo -e "${RED}○${NC} Python not installed"
+    fi
+
+    # Check Poetry
+    if command -v poetry &> /dev/null; then
+        echo -e "${GREEN}●${NC} Poetry $(poetry --version 2>/dev/null | cut -d' ' -f3)"
+    else
+        echo -e "${YELLOW}⚠${NC} Poetry not installed"
+    fi
+
+    # Check Turbo
+    if command -v turbo &> /dev/null; then
+        echo -e "${GREEN}●${NC} Turbo $(turbo --version)"
+    else
+        echo -e "${YELLOW}⚠${NC} Turbo not installed"
+    fi
+
+    echo ""
+
+    # Load base platform configuration
+    if [ -f "$INFRA_ROOT/.env" ]; then
+        # shellcheck source=/dev/null
+        source "$INFRA_ROOT/.env"
+        echo -e "${GREEN}●${NC} Base platform configuration loaded"
+    else
+        echo -e "${YELLOW}⚠${NC} Base platform configuration not found"
+    fi
+
+    echo ""
+}
+
+# Interactive Mode (REPL)
+start_interactive_mode() {
+    # History file
+    readonly HISTORY_FILE="$HOME/.olorin_history"
+
+    # Enable command history
+    set -o history
+    if [ -f "$HISTORY_FILE" ]; then
+        history -r "$HISTORY_FILE"
+    fi
+
+    # Welcome banner
+    echo ""
+    echo -e "${BLUE}╔═══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${BLUE}║  Olorin CLI - Interactive Mode                                ║${NC}"
+    echo -e "${BLUE}╚═══════════════════════════════════════════════════════════════╝${NC}"
+    echo ""
+    echo -e "${CYAN}Ecosystem Management for All Olorin Platforms${NC}"
+    echo ""
+    echo "Available platforms: bayit, fraud, cvplus, portals, radio, stationai"
+    echo ""
+    echo "Type 'help' for commands, 'exit' or 'quit' to leave"
+    if [ "$NLP_ENABLED" = "true" ]; then
+        echo -e "${GREEN}NLP enabled${NC} - Natural language commands supported"
+    fi
+    echo ""
+
+    # REPL loop
+    while true; do
+        # Prompt
+        echo -ne "${GREEN}olorin>${NC} "
+        read -r input
+
+        # Skip empty input
+        if [ -z "$input" ]; then
+            continue
+        fi
+
+        # Save to history
+        history -s "$input"
+        history -w "$HISTORY_FILE"
+
+        # Parse command
+        read -ra cmd_parts <<< "$input"
+        local cmd="${cmd_parts[0]}"
+        local args=("${cmd_parts[@]:1}")
+
+        # Handle built-in commands
+        case "$cmd" in
+            exit|quit)
+                echo ""
+                echo -e "${CYAN}Goodbye!${NC}"
+                echo ""
+                exit 0
+                ;;
+
+            help)
+                echo ""
+                echo -e "${CYAN}Platform-Level Commands:${NC}"
+                echo "  status                     Check all platforms"
+                echo "  status <platform>          Check specific platform"
+                echo "  health                     Environment and tools health"
+                echo "  start <platform>           Start platform services"
+                echo "  stop [platform]            Stop services"
+                echo "  script <search>            Find scripts across ecosystem"
+                echo "  git <operation>            Git operations"
+                echo "  ai <query>                 Natural language command (if NLP enabled)"
+                echo "  version                    Show CLI version"
+                echo ""
+                echo -e "${CYAN}Platform-Specific Commands:${NC}"
+                echo "  bayit <command>            Bayit+ streaming commands"
+                echo "  fraud <command>            Fraud detection commands"
+                echo "  cvplus <command>           CV Plus commands"
+                echo "  portals <command>          Marketing portals commands"
+                echo "  radio <command>            Radio manager commands"
+                echo "  stationai <command>        Station AI commands"
+                echo ""
+                echo -e "${CYAN}Built-in Commands:${NC}"
+                echo "  help                       Show this help"
+                echo "  exit, quit                 Exit interactive mode"
+                echo ""
+                ;;
+
+            status)
+                if [ ${#args[@]} -gt 0 ] && is_known_platform "${args[0]}"; then
+                    # Status for specific platform
+                    local platform="${args[0]}"
+                    log_info "Checking $platform platform status..."
+
+                    local platform_cli
+                    platform_cli=$(get_platform_cli "$platform")
+
+                    if [ -f "$platform_cli" ]; then
+                        bash "$platform_cli" status "${args[@]:1}"
+                    else
+                        log_error "Platform CLI not found: $platform_cli"
+                    fi
+                else
+                    # Status for all platforms
+                    show_ecosystem_status
+                fi
+                ;;
+
+            health)
+                show_ecosystem_health
+                ;;
+
+            version)
+                echo "Olorin Platform CLI v2.0.0"
+                echo "Ecosystem Management for All Olorin Platforms"
+                echo ""
+                echo "Platforms:"
+                echo "  • Bayit+ Streaming"
+                echo "  • Olorin Fraud Detection"
+                echo "  • CV Plus"
+                echo "  • Marketing Portals"
+                echo "  • Israeli Radio Manager"
+                echo "  • Station AI"
+                echo ""
+                echo "NLP Features: ${NLP_ENABLED}"
+                ;;
+
+            script)
+                # Script discovery
+                local script_finder="$PROJECT_ROOT/scripts/find-all-scripts.sh"
+
+                if [ ! -f "$script_finder" ]; then
+                    log_error "Script discovery tool not found"
+                else
+                    bash "$script_finder" "${args[@]}"
+                fi
+                ;;
+
+            git)
+                # Git operations
+                local git_wrapper="$PROJECT_ROOT/scripts/git/olorin-git.sh"
+
+                if [ -f "$git_wrapper" ]; then
+                    bash "$git_wrapper" "${args[@]}"
+                else
+                    log_warning "Git wrapper not yet implemented"
+                    log_info "Use git operations scripts directly:"
+                    echo "  scripts/git/push.sh - Commit and push with safety checks"
+                    echo "  scripts/git/git_commit_push.sh - Git workflow automation"
+                fi
+                ;;
+
+            ai)
+                # NLP command
+                if [ "$NLP_ENABLED" != "true" ]; then
+                    log_warning "NLP not enabled"
+                    log_info "Enable with: export OLORIN_NLP_ENABLED=true"
+                else
+                    local cli_bin="$PROJECT_ROOT/olorin-media/bayit-plus/cli/bin/olorin.js"
+
+                    if [ -f "$cli_bin" ] && [ -d "$PROJECT_ROOT/olorin-media/bayit-plus/cli/dist" ]; then
+                        # Join all args into single query string
+                        local query="${args[*]}"
+                        node "$cli_bin" ai "$query"
+                    else
+                        log_error "TypeScript CLI not built"
+                        log_info "Build the CLI: cd olorin-media/bayit-plus/cli && npm run build"
+                    fi
+                fi
+                ;;
+
+            start)
+                # Start platform
+                if [ ${#args[@]} -eq 0 ]; then
+                    log_error "Platform required for start command"
+                    log_info "Usage: start <platform>"
+                    log_info "Available platforms: bayit, fraud, cvplus, portals, radio, stationai"
+                else
+                    local platform="${args[0]}"
+
+                    if ! is_known_platform "$platform"; then
+                        log_error "Unknown platform: $platform"
+                        log_info "Available platforms: bayit, fraud, cvplus, portals, radio, stationai"
+                    else
+                        local platform_cli
+                        platform_cli=$(get_platform_cli "$platform")
+
+                        if [ -f "$platform_cli" ]; then
+                            bash "$platform_cli" start "${args[@]:1}"
+                        else
+                            log_error "Platform CLI not found: $platform_cli"
+                        fi
+                    fi
+                fi
+                ;;
+
+            stop)
+                # Stop platform(s)
+                if [ ${#args[@]} -gt 0 ] && is_known_platform "${args[0]}"; then
+                    # Stop specific platform
+                    local platform="${args[0]}"
+                    local platform_cli
+                    platform_cli=$(get_platform_cli "$platform")
+
+                    if [ -f "$platform_cli" ]; then
+                        bash "$platform_cli" stop "${args[@]:1}"
+                    else
+                        log_error "Platform CLI not found: $platform_cli"
+                    fi
+                else
+                    # Stop all platforms
+                    log_warning "Stopping all Olorin platform services..."
+                    pkill -f "turbo run dev" || true
+                    pkill -f "uvicorn app.main:app" || true
+                    pkill -f "vite" || true
+                    pkill -f "webpack" || true
+                    pkill -f "react-native" || true
+                    log_success "All services stopped"
+                fi
+                ;;
+
+            bayit|fraud|cvplus|portals|radio|stationai)
+                # Delegate to platform CLI
+                local platform="$cmd"
+                local platform_cli
+                platform_cli=$(get_platform_cli "$platform")
+
+                if [ ! -f "$platform_cli" ]; then
+                    log_error "Platform CLI not found: $platform_cli"
+                    log_info "This platform may not have a CLI yet"
+                else
+                    bash "$platform_cli" "${args[@]}"
+                fi
+                ;;
+
+            "")
+                # Empty command, do nothing
+                ;;
+
+            *)
+                # Unknown command
+                if [ "$NLP_ENABLED" = "true" ]; then
+                    # Try NLP
+                    local cli_bin="$PROJECT_ROOT/olorin-media/bayit-plus/cli/bin/olorin.js"
+
+                    if [ -f "$cli_bin" ] && [ -d "$PROJECT_ROOT/olorin-media/bayit-plus/cli/dist" ]; then
+                        node "$cli_bin" ai "$input"
+                    else
+                        log_error "Unknown command: $cmd"
+                        echo "Type 'help' for available commands"
+                    fi
+                else
+                    log_error "Unknown command: $cmd"
+                    echo "Type 'help' for available commands"
+                fi
+                ;;
+        esac
+
+        echo ""
+    done
+}
+
+# Main command router
+case "$COMMAND" in
+    # Interactive Mode (default when no arguments)
+    interactive)
+        start_interactive_mode
+        ;;
+
+
+    # Platform-Level Commands (Ecosystem-Wide)
+    status)
+        if [ $# -gt 0 ] && is_known_platform "$1"; then
+            # Status for specific platform
+            PLATFORM="$1"
+            shift
+
+            log_info "Checking $PLATFORM platform status..."
+            platform_cli=$(get_platform_cli "$PLATFORM")
+
+            if [ -f "$platform_cli" ]; then
+                exec bash "$platform_cli" status "$@"
+            else
+                log_error "Platform CLI not found: $platform_cli"
+                exit 1
+            fi
+        else
+            # Status for all platforms
+            show_ecosystem_status
+        fi
+        ;;
+
+    health)
+        show_ecosystem_health
+        ;;
+
+    version|--version|-v)
+        echo "Olorin Platform CLI v2.0.0"
+        echo "Ecosystem Management for All Olorin Platforms"
+        echo ""
+        echo "Platforms:"
+        echo "  • Bayit+ Streaming"
+        echo "  • Olorin Fraud Detection"
+        echo "  • CV Plus"
+        echo "  • Marketing Portals"
+        echo "  • Israeli Radio Manager"
+        echo "  • Station AI"
+        echo ""
+        echo "NLP Features: ${NLP_ENABLED}"
+        exit 0
+        ;;
+
+    # Script Discovery (Ecosystem-Wide)
+    script)
+        # Use ecosystem-wide script discovery tool
+        SCRIPT_FINDER="$PROJECT_ROOT/scripts/find-all-scripts.sh"
+
+        if [ ! -f "$SCRIPT_FINDER" ]; then
+            log_error "Script discovery tool not found at: $SCRIPT_FINDER"
+            exit 1
+        fi
+
+        exec bash "$SCRIPT_FINDER" "$@"
+        ;;
+
+    # Git Operations (Ecosystem-Wide)
+    git)
+        # Delegate to git wrapper (if exists, otherwise show guidance)
+        GIT_WRAPPER="$PROJECT_ROOT/scripts/git/olorin-git.sh"
+
+        if [ -f "$GIT_WRAPPER" ]; then
+            exec bash "$GIT_WRAPPER" "$@"
+        else
+            log_warning "Git wrapper not yet implemented"
+            log_info "Use git operations scripts directly:"
+            echo "  scripts/git/push.sh - Commit and push with safety checks"
+            echo "  scripts/git/git_commit_push.sh - Git workflow automation"
+            echo ""
+            log_info "Or use git directly:"
+            echo "  git $*"
+            exit 1
+        fi
+        ;;
+
+    # AI Commands (Cross-Platform)
+    ai)
+        # Delegate to TypeScript CLI (platform-agnostic)
+        CLI_BIN="$PROJECT_ROOT/olorin-media/bayit-plus/cli/bin/olorin.js"
+
+        if [ ! -f "$CLI_BIN" ]; then
+            log_error "TypeScript CLI not found at: $CLI_BIN"
+            log_info "Build the CLI first: cd olorin-media/bayit-plus/cli && npm install && npm run build"
+            exit 1
+        fi
+
+        if [ ! -d "$PROJECT_ROOT/olorin-media/bayit-plus/cli/dist" ]; then
+            log_error "TypeScript CLI not built"
+            log_info "Build the CLI: cd olorin-media/bayit-plus/cli && npm run build"
+            exit 1
+        fi
+
+        # Delegate to TypeScript CLI with all arguments
+        exec node "$CLI_BIN" ai "$@"
+        ;;
+
+    # Platform-Specific Commands (Delegate to platform CLI)
+    bayit|fraud|cvplus|portals|radio|stationai)
+        PLATFORM="$COMMAND"
+        platform_cli=$(get_platform_cli "$PLATFORM")
+
+        if [ ! -f "$platform_cli" ]; then
+            log_error "Platform CLI not found: $platform_cli"
+            log_info "This platform may not have a CLI yet"
+            exit 1
+        fi
+
+        # Delegate to platform CLI with remaining arguments
+        exec bash "$platform_cli" "$@"
+        ;;
+
+    # Start command - requires platform specification
+    start)
+        if [ $# -eq 0 ]; then
+            log_error "Platform required for start command"
+            log_info "Usage: olorin start <platform>"
+            log_info "Available platforms: bayit, fraud, cvplus, portals, radio, stationai"
+            exit 1
+        fi
+
+        PLATFORM="$1"
+        shift
+
+        if ! is_known_platform "$PLATFORM"; then
+            log_error "Unknown platform: $PLATFORM"
+            log_info "Available platforms: bayit, fraud, cvplus, portals, radio, stationai"
+            exit 1
+        fi
+
+        platform_cli=$(get_platform_cli "$PLATFORM")
+
+        if [ -f "$platform_cli" ]; then
+            exec bash "$platform_cli" start "$@"
+        else
+            log_error "Platform CLI not found: $platform_cli"
+            exit 1
+        fi
+        ;;
+
+    # Stop command - can stop all or specific platform
+    stop)
+        if [ $# -gt 0 ] && is_known_platform "$1"; then
+            # Stop specific platform
+            PLATFORM="$1"
+            shift
+
+            platform_cli=$(get_platform_cli "$PLATFORM")
+
+            if [ -f "$platform_cli" ]; then
+                exec bash "$platform_cli" stop "$@"
+            else
+                log_error "Platform CLI not found: $platform_cli"
+                exit 1
+            fi
+        else
+            # Stop all platforms
+            log_warning "Stopping all Olorin platform services..."
+
+            # Kill common processes
+            pkill -f "turbo run dev" || true
+            pkill -f "uvicorn app.main:app" || true
+            pkill -f "vite" || true
+            pkill -f "webpack" || true
+            pkill -f "react-native" || true
+
+            log_success "All services stopped"
+        fi
+        ;;
+
+    # Help
+    help|--help|-h)
+        echo ""
+        echo -e "${BLUE}╔═══════════════════════════════════════════════════════════════╗${NC}"
+        echo -e "${BLUE}║  Olorin Platform CLI - Ecosystem Management                  ║${NC}"
+        echo -e "${BLUE}╚═══════════════════════════════════════════════════════════════╝${NC}"
+        echo ""
+        echo -e "${CYAN}Interactive Mode:${NC}"
+        echo ""
+        echo "  olorin                            Enter interactive mode (default)"
+        echo ""
+        echo -e "${CYAN}Platform-Level Commands (Ecosystem-Wide):${NC}"
+        echo ""
+        echo "  olorin status                     Check all platforms"
+        echo "  olorin status <platform>          Check specific platform"
+        echo "  olorin health                     Environment and tools health check"
+        echo "  olorin start <platform>           Start platform services"
+        echo "  olorin stop [platform]            Stop services (all or specific)"
+        echo "  olorin script <search>            Find scripts across ecosystem"
+        echo "  olorin git <operation>            Git operations wrapper"
+        echo "  olorin ai <query>                 Natural language command (NLP)"
+        echo "  olorin version                    Show CLI version"
+        echo "  olorin help                       Show this help"
+        echo ""
+        echo -e "${CYAN}Platform-Specific Commands:${NC}"
+        echo ""
+        echo "  olorin bayit <command>            Bayit+ streaming commands"
+        echo "  olorin fraud <command>            Fraud detection commands"
+        echo "  olorin cvplus <command>           CV Plus commands"
+        echo "  olorin portals <command>          Marketing portals commands"
+        echo "  olorin radio <command>            Radio manager commands"
+        echo "  olorin stationai <command>        Station AI commands"
+        echo ""
+        echo -e "${CYAN}Available Platforms:${NC}"
+        echo ""
+        echo -e "  ${GREEN}bayit${NC}       Bayit+ Streaming Platform"
+        echo -e "  ${GREEN}fraud${NC}       Olorin Fraud Detection"
+        echo -e "  ${GREEN}cvplus${NC}      CV Plus (Resume Builder)"
+        echo -e "  ${GREEN}portals${NC}     Marketing Portals"
+        echo -e "  ${GREEN}radio${NC}       Israeli Radio Manager"
+        echo -e "  ${GREEN}stationai${NC}   Station AI Features"
+        echo ""
+        echo -e "${CYAN}Examples:${NC}"
+        echo ""
+        echo "  olorin                            # Enter interactive mode"
+        echo "  olorin status                     # Check all platforms"
+        echo "  olorin status bayit               # Check Bayit+ only"
+        echo "  olorin start fraud                # Start fraud platform"
+        echo "  olorin script deploy              # Find all deployment scripts"
+        echo "  olorin script backend backup      # Find backend backup scripts"
+        echo "  olorin git push \"message\"         # Git commit and push"
+        echo "  olorin bayit upload-movies        # Bayit+-specific upload"
+        echo "  olorin ai \"check library status\"  # NLP command"
+        echo ""
+        echo -e "${CYAN}For Platform-Specific Help:${NC}"
+        echo ""
+        echo "  olorin bayit --help               # Bayit+ commands"
+        echo "  olorin fraud --help               # Fraud commands"
+        echo "  olorin cvplus --help              # CV Plus commands"
+        echo ""
+        exit 0
+        ;;
+
+    *)
+        # Check if NLP is enabled and handle as natural language
+        if [ "$NLP_ENABLED" = "true" ]; then
+            # Treat unknown command as natural language query
+            CLI_BIN="$PROJECT_ROOT/olorin-media/bayit-plus/cli/bin/olorin.js"
+
+            if [ -f "$CLI_BIN" ] && [ -d "$PROJECT_ROOT/olorin-media/bayit-plus/cli/dist" ]; then
+                exec node "$CLI_BIN" ai "${ORIGINAL_ARGS[@]}"
+            fi
+        fi
+
+        log_error "Unknown command: $COMMAND"
+        echo ""
+        log_info "Run: olorin --help"
+        log_info "Or enable NLP: export OLORIN_NLP_ENABLED=true"
+        exit 1
+        ;;
+esac

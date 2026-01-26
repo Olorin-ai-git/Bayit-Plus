@@ -67,23 +67,22 @@ export const config = {
   },
 
   // Media assets - from environment variables with fallback
+  // Note: import.meta is not supported by Hermes (React Native), so we only use process.env
   media: {
     // Marty Jr. from Back to the Future Part 2 (plays before widgets intro)
     martyJrBttf2Video: (typeof process !== 'undefined' && process.env.REACT_APP_MARTY_JR_BTTF2_VIDEO_URL)
-      || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_MARTY_JR_BTTF2_VIDEO_URL)
       || '/assets/video/intro/Marty-Jr.mp4',
     widgetsIntroVideo: (typeof process !== 'undefined' && process.env.REACT_APP_WIDGETS_INTRO_VIDEO_URL)
-      || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_WIDGETS_INTRO_VIDEO_URL)
       || '/media/widgets-intro.mp4',
     olorinAvatarIntro: (typeof process !== 'undefined' && process.env.REACT_APP_OLORIN_AVATAR_INTRO_VIDEO_URL)
-      || (typeof import.meta !== 'undefined' && import.meta.env?.VITE_OLORIN_AVATAR_INTRO_VIDEO_URL)
       || '/media/olorin-avatar-intro.mp4',
   },
 };
 
 // API Base URL - from environment variable or default
-export const API_BASE_URL = typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL
-  ? import.meta.env.VITE_API_URL
-  : '/api/v1';
+// Note: For web (Vite), env vars are injected at build time via define config
+export const API_BASE_URL = (typeof process !== 'undefined' && process.env.VITE_API_URL)
+  || (typeof process !== 'undefined' && process.env.REACT_APP_API_URL)
+  || '/api/v1';
 
 export default config;

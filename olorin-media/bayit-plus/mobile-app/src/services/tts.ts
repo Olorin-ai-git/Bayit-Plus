@@ -55,7 +55,7 @@ class TTSService {
       await TTSModule.speak(text, language, rate);
       moduleLogger.debug('[TTSService] Speaking:', text);
     } catch (error) {
-      moduleLogger.error('Failed to speak:', error', error);
+      moduleLogger.error('Failed to speak:', error);
       throw error;
     }
   }
@@ -72,7 +72,7 @@ class TTSService {
       await TTSModule.stop();
       moduleLogger.debug('[TTSService] Stopped speaking');
     } catch (error) {
-      moduleLogger.error('Failed to stop:', error', error);
+      moduleLogger.error('Failed to stop:', error);
     }
   }
 
@@ -88,7 +88,7 @@ class TTSService {
       await TTSModule.pause();
       moduleLogger.debug('[TTSService] Paused speaking');
     } catch (error) {
-      moduleLogger.error('Failed to pause:', error', error);
+      moduleLogger.error('Failed to pause:', error);
     }
   }
 
@@ -104,7 +104,7 @@ class TTSService {
       await TTSModule.resume();
       moduleLogger.debug('[TTSService] Resumed speaking');
     } catch (error) {
-      moduleLogger.error('Failed to resume:', error', error);
+      moduleLogger.error('Failed to resume:', error);
     }
   }
 
@@ -120,7 +120,7 @@ class TTSService {
       const result = await TTSModule.isSpeaking();
       return result.speaking;
     } catch (error) {
-      moduleLogger.error('Failed to check speaking status:', error', error);
+      moduleLogger.error('Failed to check speaking status:', error);
       return false;
     }
   }
@@ -138,7 +138,7 @@ class TTSService {
       const result = await TTSModule.getAvailableVoices(language);
       return result.voices;
     } catch (error) {
-      moduleLogger.error('Failed to get voices:', error', error);
+      moduleLogger.error('Failed to get voices:', error);
       return [];
     }
   }

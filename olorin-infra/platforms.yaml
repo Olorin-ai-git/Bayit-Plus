@@ -1,0 +1,169 @@
+# =============================================================================
+# Olorin Platform Registry
+# =============================================================================
+#
+# Defines all platforms in the Olorin ecosystem and their services.
+# Used by the Olorin CLI for status checks, health monitoring, and operations.
+#
+# =============================================================================
+
+platforms:
+  # Bayit+ - Streaming Media Platform
+  bayit:
+    name: "Bayit+ Streaming"
+    description: "Jewish cultural streaming platform"
+    location: "olorin-media/bayit-plus"
+    services:
+      - name: "Backend API"
+        type: "backend"
+        port: 8090
+        health_endpoint: "/health"
+        start_command: "poetry run uvicorn app.main:app --reload --port 8090"
+        working_dir: "backend"
+      - name: "Web App"
+        type: "web"
+        port: 3200
+        health_endpoint: "/"
+        start_command: "npm run dev"
+        working_dir: "web"
+      - name: "Mobile App (iOS/Android)"
+        type: "mobile"
+        port: 19006
+        health_endpoint: null
+        start_command: "npm run start"
+        working_dir: "mobile"
+      - name: "tvOS App"
+        type: "tvos"
+        port: null
+        health_endpoint: null
+        start_command: "npm run ios"
+        working_dir: "tv-platforms/apple-tv"
+      - name: "Android TV App"
+        type: "androidtv"
+        port: 3201
+        health_endpoint: null
+        start_command: "npm run android"
+        working_dir: "tv-platforms/android-tv"
+      - name: "Partner Portal"
+        type: "partner"
+        port: 3202
+        health_endpoint: "/"
+        start_command: "npm run dev"
+        working_dir: "partner-portal"
+
+  # Olorin Fraud - Fraud Detection Platform
+  fraud:
+    name: "Olorin Fraud Detection"
+    description: "AI-powered fraud detection and investigation"
+    location: "olorin-fraud"
+    services:
+      - name: "Backend API"
+        type: "backend"
+        port: 8091
+        health_endpoint: "/health"
+        start_command: "poetry run uvicorn app.main:app --reload --port 8091"
+        working_dir: "backend"
+      - name: "Investigation Dashboard"
+        type: "web"
+        port: 3100
+        health_endpoint: "/"
+        start_command: "npm run dev"
+        working_dir: "frontend"
+
+  # Olorin CV - Professional CV Platform
+  cvplus:
+    name: "CV Plus"
+    description: "AI-enhanced professional CV builder"
+    location: "olorin-cv"
+    services:
+      - name: "Backend API"
+        type: "backend"
+        port: 8092
+        health_endpoint: "/health"
+        start_command: "poetry run uvicorn app.main:app --reload --port 8092"
+        working_dir: "backend"
+      - name: "Web App"
+        type: "web"
+        port: 3300
+        health_endpoint: "/"
+        start_command: "npm run dev"
+        working_dir: "web"
+
+  # Olorin Portals - Marketing & Landing Pages
+  portals:
+    name: "Olorin Marketing Portals"
+    description: "Multi-language marketing sites for all platforms"
+    location: "olorin-portals"
+    services:
+      - name: "Main Portal"
+        type: "web"
+        port: 3400
+        health_endpoint: "/"
+        start_command: "npm run dev:main"
+        working_dir: "."
+      - name: "Fraud Portal"
+        type: "web"
+        port: 3401
+        health_endpoint: "/"
+        start_command: "npm run dev:fraud"
+        working_dir: "."
+      - name: "Omen Portal"
+        type: "web"
+        port: 3402
+        health_endpoint: "/"
+        start_command: "npm run dev:omen"
+        working_dir: "."
+
+  # Israeli Radio Manager - Radio Content Management
+  radio:
+    name: "Israeli Radio Manager"
+    description: "Radio station content management system"
+    location: "olorin-media/israeli-radio-manager"
+    services:
+      - name: "Backend API"
+        type: "backend"
+        port: 8093
+        health_endpoint: "/health"
+        start_command: "poetry run uvicorn app.main:app --reload --port 8093"
+        working_dir: "backend"
+      - name: "Admin Dashboard"
+        type: "web"
+        port: 3500
+        health_endpoint: "/"
+        start_command: "npm run dev"
+        working_dir: "web"
+
+  # Station AI - AI-Powered Station Features
+  stationai:
+    name: "Station AI"
+    description: "AI features for radio stations"
+    location: "olorin-media/station-ai"
+    services:
+      - name: "Backend API"
+        type: "backend"
+        port: 8094
+        health_endpoint: "/health"
+        start_command: "poetry run uvicorn app.main:app --reload --port 8094"
+        working_dir: "backend"
+
+# Shared infrastructure services (MongoDB Atlas, GCS, Firebase, etc.)
+# are configured in olorin-infra/.env and used by all platforms
+shared_infrastructure:
+  - name: "MongoDB Atlas"
+    type: "database"
+    connection: "MONGODB_URI"
+  - name: "Google Cloud Storage"
+    type: "storage"
+    connection: "GCS_BUCKET_NAME"
+  - name: "Firebase Auth"
+    type: "authentication"
+    connection: "FIREBASE_PROJECT_ID"
+  - name: "Anthropic API"
+    type: "ai_service"
+    connection: "ANTHROPIC_API_KEY"
+  - name: "ElevenLabs TTS"
+    type: "ai_service"
+    connection: "ELEVENLABS_API_KEY"
+  - name: "Pinecone Vector DB"
+    type: "vector_search"
+    connection: "PINECONE_API_KEY"

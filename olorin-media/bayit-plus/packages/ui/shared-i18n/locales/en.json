@@ -3641,7 +3641,9 @@
       "authenticating": "Authenticating...",
       "success": "Content Unlocked!",
       "cancelled": "Authentication was cancelled",
-      "error": "Authentication failed. Please try again."
+      "error": "Authentication failed. Please try again.",
+      "signInRequired": "Please sign in to watch this content",
+      "signInRequiredTitle": "Sign In Required"
     },
     "qr": {
       "useQR": "Use Phone to Unlock",

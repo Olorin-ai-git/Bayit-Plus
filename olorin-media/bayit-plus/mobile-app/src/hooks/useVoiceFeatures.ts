@@ -282,7 +282,7 @@ export const useVoiceFeatures = (options: VoiceFeatureOptions = {}) => {
       return response;
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
-      moduleLogger.error('Command execution failed:', error', error);
+      moduleLogger.error('Command execution failed:', error);
       throw error;
     }
   }, [voiceCommand, voiceStateOptions.language]);

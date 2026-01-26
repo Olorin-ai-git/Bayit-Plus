@@ -51,7 +51,7 @@ export function useCarPlay(options: UseCarPlayOptions = {}) {
         const connected = await carPlayService.isConnected();
         setIsConnected(connected);
       } catch (error) {
-        moduleLogger.error('Failed to check connection:', error', error);
+        moduleLogger.error('Failed to check connection:', error);
       }
     };
 
@@ -87,7 +87,7 @@ export function useCarPlay(options: UseCarPlayOptions = {}) {
 
         moduleLogger.debug('[useCarPlay] Playing content:', content.title);
       } catch (error) {
-        moduleLogger.error('Failed to play content:', error', error);
+        moduleLogger.error('Failed to play content:', error);
       }
     },
     []
@@ -123,7 +123,7 @@ export function useCarPlay(options: UseCarPlayOptions = {}) {
           position,
         });
       } catch (error) {
-        moduleLogger.error('Failed to update position:', error', error);
+        moduleLogger.error('Failed to update position:', error);
       }
     },
     [currentContent]

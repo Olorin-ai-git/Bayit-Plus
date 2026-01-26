@@ -4,9 +4,11 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { liveService, radioService, podcastService, contentService } from '@/services/api';
 import { ContentData, ContentType } from '../types/watch.types';
 import logger from '@/utils/logger';
+import { useNotificationStore } from '@olorin/glass-ui/stores';
 
 interface UseContentLoaderResult {
   content: ContentData | null;
@@ -20,6 +22,8 @@ export function useContentLoader(
   contentId: string,
   contentType: ContentType
 ): UseContentLoaderResult {
+  const { t } = useTranslation();
+  const addNotification = useNotificationStore((state) => state.add);
   const [content, setContent] = useState<ContentData | null>(null);
   const [streamUrl, setStreamUrl] = useState<string | null>(null);
   const [related, setRelated] = useState<any[]>([]);
@@ -36,46 +40,74 @@ export function useContentLoader(
       let data: ContentData;
       let stream: { url?: string } | undefined;
 
-      switch (contentType) {
-        case 'live':
-          [data, stream] = await Promise.all([
-            liveService.getChannel(contentId),
-            liveService.getStreamUrl(contentId),
-          ]);
-          if ((data as any).available_translation_languages) {
-            logger.debug('Channel available_translation_languages', 'useContentLoader', (data as any).available_translation_languages);
-            setAvailableSubtitleLanguages((data as any).available_translation_languages);
-          } else {
-            logger.debug('No available_translation_languages in channel data', 'useContentLoader');
-          }
-          break;
-        case 'radio':
-          [data, stream] = await Promise.all([
-            radioService.getStation(contentId),
-            radioService.getStreamUrl(contentId),
-          ]);
-          break;
-        case 'podcast':
-          data = await podcastService.getShow(contentId);
-          if (data.latestEpisode) {
-            stream = { url: data.latestEpisode.audioUrl };
-          }
-          break;
-        default:
-          [data, stream] = await Promise.all([
-            contentService.getById(contentId),
-            contentService.getStreamUrl(contentId),
-          ]);
+      // First, fetch content metadata (should work for unauthenticated users)
+      try {
+        switch (contentType) {
+          case 'live':
+            data = await liveService.getChannel(contentId);
+            if ((data as any).available_translation_languages) {
+              logger.debug('Channel available_translation_languages', 'useContentLoader', (data as any).available_translation_languages);
+              setAvailableSubtitleLanguages((data as any).available_translation_languages);
+            } else {
+              logger.debug('No available_translation_languages in channel data', 'useContentLoader');
+            }
+            break;
+          case 'radio':
+            data = await radioService.getStation(contentId);
+            break;
+          case 'podcast':
+            data = await podcastService.getShow(contentId);
+            break;
+          default:
+            data = await contentService.getById(contentId);
+        }
+
+        setContent(data);
+        if (data.related) {
+          setRelated(data.related);
+        }
+      } catch (error: any) {
+        logger.error('Failed to load content metadata', 'useContentLoader', error);
+        setLoading(false);
+        return;
       }
 
-      setContent(data);
-      setStreamUrl(stream?.url || null);
+      // Then, fetch stream URL (may fail for unauthenticated users)
+      try {
+        switch (contentType) {
+          case 'live':
+            stream = await liveService.getStreamUrl(contentId);
+            break;
+          case 'radio':
+            stream = await radioService.getStreamUrl(contentId);
+            break;
+          case 'podcast':
+            if (data.latestEpisode) {
+              stream = { url: data.latestEpisode.audioUrl };
+            }
+            break;
+          default:
+            stream = await contentService.getStreamUrl(contentId);
+        }
 
-      if (data.related) {
-        setRelated(data.related);
+        setStreamUrl(stream?.url || null);
+      } catch (error: any) {
+        logger.error('Failed to load stream URL', 'useContentLoader', error);
+
+        // Handle 401 Unauthorized - user needs to sign in
+        if (error?.status === 401 || error?.response?.status === 401) {
+          addNotification({
+            level: 'warning',
+            message: t('auth.signInRequired', 'Please sign in to watch this content'),
+            title: t('auth.signInRequiredTitle', 'Sign In Required'),
+            duration: 5000,
+          });
+        }
+        // Content metadata is still available, just not the stream
+        setStreamUrl(null);
       }
     } catch (error) {
-      logger.error('Failed to load content', 'useContentLoader', error);
+      logger.error('Unexpected error in loadContent', 'useContentLoader', error);
     } finally {
       setLoading(false);
     }

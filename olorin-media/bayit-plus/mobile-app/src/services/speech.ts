@@ -56,7 +56,7 @@ class SpeechService {
       const result = await SpeechModule.requestPermissions();
       return result;
     } catch (error: any) {
-      moduleLogger.error('Permission request failed:", error', error);
+      moduleLogger.error('Permission request failed:', error);
       throw error;
     }
   }
@@ -73,7 +73,7 @@ class SpeechService {
       const result = await SpeechModule.checkPermissions();
       return result;
     } catch (error) {
-      moduleLogger.error('Permission check failed:", error', error);
+      moduleLogger.error('Permission check failed:', error);
       return { microphone: false, speech: false };
     }
   }
@@ -91,7 +91,7 @@ class SpeechService {
       await SpeechModule.setLanguage(languageCode);
       moduleLogger.debug("[SpeechService] Language set to:", languageCode);
     } catch (error) {
-      moduleLogger.error('Failed to set language:", error', error);
+      moduleLogger.error('Failed to set language:', error);
       throw error;
     }
   }
@@ -125,7 +125,7 @@ class SpeechService {
       await SpeechModule.startRecognition();
       moduleLogger.debug("[SpeechService] Recognition started");
     } catch (error) {
-      moduleLogger.error('Failed to start recognition:", error', error);
+      moduleLogger.error('Failed to start recognition:', error);
       this.cleanup();
       throw error;
     }
@@ -144,7 +144,7 @@ class SpeechService {
       this.cleanup();
       moduleLogger.debug("[SpeechService] Recognition stopped");
     } catch (error) {
-      moduleLogger.error('Failed to stop recognition:", error', error);
+      moduleLogger.error('Failed to stop recognition:', error);
     }
   }
 

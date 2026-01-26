@@ -134,7 +134,7 @@ class BackendProxyService {
 
       return await response.blob();
     } catch (error) {
-      moduleLogger.error('TTS synthesis error:', error', error);
+      moduleLogger.error('TTS synthesis error:', error);
       throw error;
     }
   }
@@ -157,7 +157,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      moduleLogger.error('Failed to get TTS voices:', error', error);
+      moduleLogger.error('Failed to get TTS voices:', error);
       throw error;
     }
   }
@@ -177,7 +177,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      moduleLogger.error('TTS health check error:', error', error);
+      moduleLogger.error('TTS health check error:', error);
       throw error;
     }
   }
@@ -220,7 +220,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      moduleLogger.error('Wake word detection error:', error', error);
+      moduleLogger.error('Wake word detection error:', error);
       throw error;
     }
   }
@@ -243,7 +243,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      moduleLogger.error('Failed to get wake word models:', error', error);
+      moduleLogger.error('Failed to get wake word models:', error);
       throw error;
     }
   }
@@ -263,7 +263,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      moduleLogger.error('Wake word health check error:', error', error);
+      moduleLogger.error('Wake word health check error:', error);
       throw error;
     }
   }
@@ -298,7 +298,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      moduleLogger.error('Analytics tracking error:', error', error);
+      moduleLogger.error('Analytics tracking error:', error);
       throw error;
     }
   }
@@ -337,7 +337,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      moduleLogger.error('Batch analytics tracking error:', error', error);
+      moduleLogger.error('Batch analytics tracking error:', error);
       throw error;
     }
   }
@@ -357,7 +357,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      moduleLogger.error('Analytics health check error:', error', error);
+      moduleLogger.error('Analytics health check error:', error);
       throw error;
     }
   }
@@ -392,7 +392,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      moduleLogger.error('Voice command processing error:', error', error);
+      moduleLogger.error('Voice command processing error:', error);
       throw error;
     }
   }
@@ -425,7 +425,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      moduleLogger.error('Failed to get voice suggestions:', error', error);
+      moduleLogger.error('Failed to get voice suggestions:', error);
       throw error;
     }
   }
@@ -445,7 +445,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      moduleLogger.error('Voice health check error:', error', error);
+      moduleLogger.error('Voice health check error:', error);
       throw error;
     }
   }

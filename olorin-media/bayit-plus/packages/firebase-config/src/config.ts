@@ -39,13 +39,9 @@ export function getFirebaseConfig(): FirebaseConfig {
     const nextKey = `NEXT_PUBLIC_FIREBASE_${key}`;
     const plainKey = `FIREBASE_${key}`;
 
-    // Check import.meta.env (Vite/web)
-    if (typeof import.meta !== 'undefined' && import.meta.env) {
-      const value = import.meta.env[viteKey];
-      if (value) return value;
-    }
-
-    // Check process.env (Node/React Native/Next.js)
+    // Note: import.meta is not supported by Hermes (React Native)
+    // For web builds, Vite injects env vars into process.env via define config
+    // Check process.env (Node/React Native/Next.js/Vite)
     if (typeof process !== 'undefined' && process.env) {
       // Try Next.js public format first
       if (process.env[nextKey]) return process.env[nextKey];

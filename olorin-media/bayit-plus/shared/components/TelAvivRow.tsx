@@ -444,6 +444,10 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.md,
     borderRadius: borderRadius.xl,
     overflow: 'hidden',
+    backgroundColor: 'rgba(10, 10, 30, 0.4)',
+    // @ts-ignore - Web-specific CSS properties
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
   },
   containerMobile: {
     marginVertical: spacing.sm,
@@ -471,8 +475,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(10, 10, 30, 0.6)',
+    backgroundColor: 'rgba(10, 10, 30, 0.5)',
     borderRadius: borderRadius.xl,
+    // @ts-ignore - Web-specific CSS properties
+    backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
   },
   content: {
     position: 'relative',
@@ -592,8 +599,8 @@ const styles = StyleSheet.create({
   card: {
     width: 256,
     minWidth: 256,
-    height: 176,
-    minHeight: 176,
+    height: 220,
+    minHeight: 220,
     padding: spacing.lg,
     borderRadius: borderRadius.lg,
     marginRight: spacing.md,
@@ -604,8 +611,8 @@ const styles = StyleSheet.create({
   cardMobile: {
     width: 176,
     minWidth: 176,
-    height: 128,
-    minHeight: 128,
+    height: 160,
+    minHeight: 160,
     padding: spacing.md,
     borderRadius: borderRadius.md,
     marginRight: spacing.sm,

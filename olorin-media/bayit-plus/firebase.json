@@ -7,14 +7,14 @@
       {
         "source": "/api/**",
         "run": {
-          "serviceId": "bayit-plus-backend",
+          "serviceId": "olorin-backend",
           "region": "us-east1"
         }
       },
       {
         "source": "/uploads/**",
         "run": {
-          "serviceId": "bayit-plus-backend",
+          "serviceId": "olorin-backend",
           "region": "us-east1"
         }
       },
@@ -28,27 +28,6 @@
       }
     ],
     "headers": [
-      {
-        "source": "/cast-receiver.html",
-        "headers": [
-          {
-            "key": "Content-Type",
-            "value": "text/html; charset=utf-8"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate"
-          },
-          {
-            "key": "X-Frame-Options",
-            "value": "ALLOWALL"
-          },
-          {
-            "key": "Content-Security-Policy",
-            "value": "default-src 'self' https://www.gstatic.com; script-src 'self' https://www.gstatic.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; media-src 'self' https: blob:; connect-src 'self' https: wss:;"
-          }
-        ]
-      },
       {
         "source": "**",
         "headers": [
@@ -119,6 +98,45 @@
           {
             "key": "Content-Type",
             "value": "text/vtt"
+          }
+        ]
+      },
+      {
+        "source": "/cast-receiver.html",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "text/html; charset=utf-8"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "ALLOWALL"
+          },
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self' https://www.gstatic.com; script-src 'self' https://www.gstatic.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; media-src 'self' https: blob:; connect-src 'self' https: wss:;"
+          }
+        ]
+      },
+      {
+        "source": "/index.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
           }
         ]
       }

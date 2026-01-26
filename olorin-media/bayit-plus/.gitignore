@@ -93,3 +93,20 @@ secrets/
 
 # Turbo cache
 .turbo/
+
+# iOS / Xcode
+mobile-app/ios/Pods/
+mobile-app/ios/Podfile.lock
+mobile-app/ios/build/
+mobile-app/ios/**/*.xcworkspace/xcuserdata/
+mobile-app/ios/**/*.xcodeproj/xcuserdata/
+mobile-app/ios/**/*.xcodeproj/project.xcworkspace/xcuserdata/
+mobile-app/ios/DerivedData/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# React Native / Metro
+mobile-app/.expo/
+mobile-app/.expo-shared/
+mobile-app/metro-cache/

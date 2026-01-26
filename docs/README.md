@@ -62,6 +62,12 @@
 - [Critical Emergency Fixes](troubleshooting/ARCHIVE_CRITICAL_EMERGENCY_FIX_20250128.md)
 - [Day 3 Integration Polish](troubleshooting/Day3_Integration_Polish_Summary.md)
 
+### ⚙️ CLI & Tools
+- [CLI Restructuring Complete](CLI_RESTRUCTURING_COMPLETE.md) - Platform-level CLI implementation (2026-01-25)
+- [CLI Migration Status](CLI_MIGRATION_STATUS.md) - Audit of scripts requiring migration (zero found)
+- [Script Inventory Comprehensive](SCRIPT_INVENTORY_COMPREHENSIVE.md) - Complete script audit (4,361 scripts) with recommendations
+- [Platform Configuration Architecture](../PLATFORM_CONFIG_ARCHITECTURE.md) - Base platform + subplatform config system
+
 ## 🚀 Quick Start Guides
 
 ### For Developers
