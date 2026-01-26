@@ -14,6 +14,7 @@ import { registerStopCommand } from './commands/stop.js';
 import { registerStatusCommand } from './commands/status.js';
 import { registerAiCommand } from './commands/ai.js';
 import { registerMcpCommand } from './commands/mcp.js';
+import { registerDeployCommand } from './commands/deploy.js';
 import { logger } from './utils/logger.js';
 
 // CLI metadata
@@ -32,6 +33,7 @@ registerStopCommand(program);
 registerStatusCommand(program);
 registerAiCommand(program);
 registerMcpCommand(program);
+registerDeployCommand(program);
 
 // Global options
 program
