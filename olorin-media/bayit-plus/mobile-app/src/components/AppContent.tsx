@@ -4,7 +4,7 @@
  */
 
 import React, { useCallback } from 'react';
-import { View, StatusBar } from 'react-native';
+import { View, StatusBar, StyleSheet } from 'react-native';
 import { RootNavigator } from '../navigation/RootNavigator';
 import VoiceCommandButton from './voice/VoiceCommandButton';
 import ProactiveSuggestionBanner from './voice/ProactiveSuggestionBanner';
@@ -70,7 +70,7 @@ export const AppContent: React.FC = () => {
   };
 
   return (
-    <View className="flex-1 bg-[#0d0d1a]">
+    <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#0d0d1a" />
 
       {/* Main Navigation */}
@@ -110,3 +110,10 @@ export const AppContent: React.FC = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0d0d1a',
+  },
+});

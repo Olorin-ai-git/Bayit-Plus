@@ -3,7 +3,9 @@ Content Importer Service
 Import free/test content from various public sources for testing
 """
 
+import re
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -492,3 +494,301 @@ async def import_available_podcasts(
 ) -> List[Podcast]:
     """Convenience function to import available podcasts"""
     return await ContentImporter.import_public_podcasts(import_all, items)
+
+
+# ============ LOCAL FILE IMPORT FUNCTIONS ============
+
+# Supported video file extensions
+VIDEO_EXTENSIONS = {".mp4", ".mkv", ".avi", ".mov", ".m4v", ".webm", ".wmv", ".flv"}
+
+
+def _parse_movie_filename(filename: str) -> Dict[str, Any]:
+    """
+    Parse movie filename to extract title and year.
+    Handles formats like: "Movie Name (2020).mp4", "Movie.Name.2020.mp4"
+    """
+    name = Path(filename).stem
+
+    # Try to extract year from patterns like (2020) or .2020.
+    year_match = re.search(r"[\(\[]?(\d{4})[\)\]]?", name)
+    year = int(year_match.group(1)) if year_match else None
+
+    # Clean up title - remove year, dots, underscores
+    title = name
+    if year_match:
+        title = name[: year_match.start()]
+    title = title.replace(".", " ").replace("_", " ").strip()
+    title = re.sub(r"\s+", " ", title)  # Normalize whitespace
+
+    return {"title": title, "year": year}
+
+
+def _parse_series_path(path: str) -> Dict[str, Any]:
+    """
+    Parse series directory structure to extract series name, season, episode.
+    Handles: "Series Name/Season 1/S01E05 - Episode Title.mp4"
+    """
+    parts = Path(path).parts
+    filename = Path(path).stem
+
+    # Try to extract season/episode from filename
+    se_match = re.search(r"[Ss](\d+)[Ee](\d+)", filename)
+    season = int(se_match.group(1)) if se_match else None
+    episode = int(se_match.group(2)) if se_match else None
+
+    # Get series name from parent directories
+    series_name = None
+    for part in parts:
+        if part.lower().startswith("season"):
+            continue
+        if not part.startswith(".") and part not in ["Volumes", "USB Drive", "Series"]:
+            series_name = part.replace(".", " ").replace("_", " ")
+
+    # Extract episode title
+    episode_title = filename
+    if se_match:
+        episode_title = filename[se_match.end() :].strip(" -_")
+    if not episode_title:
+        episode_title = f"Episode {episode}" if episode else filename
+
+    return {
+        "series_name": series_name,
+        "season": season,
+        "episode": episode,
+        "episode_title": episode_title,
+    }
+
+
+async def import_movies(
+    source: str,
+    filters: Optional[Dict[str, Any]] = None,
+) -> str:
+    """
+    Import movies from a local directory path.
+
+    Args:
+        source: Local directory path containing movie files
+        filters: Optional filters (limit, name_pattern, etc.)
+
+    Returns:
+        Summary string of import results
+    """
+    filters = filters or {}
+    source_path = Path(source)
+
+    if not source_path.exists():
+        return f"Error: Source path does not exist: {source}"
+
+    if not source_path.is_dir():
+        return f"Error: Source path is not a directory: {source}"
+
+    # Get default category for movies
+    from app.models.content_taxonomy import ContentSection
+
+    movies_section = await ContentSection.find_one(ContentSection.slug == "movies")
+    category_id = str(movies_section.id) if movies_section else "movies"
+
+    imported = []
+    skipped = []
+    errors = []
+
+    limit = filters.get("limit", 100)
+    name_pattern = filters.get("name_pattern")
+
+    # Find all video files in directory
+    video_files = []
+    for ext in VIDEO_EXTENSIONS:
+        video_files.extend(source_path.glob(f"*{ext}"))
+        video_files.extend(source_path.glob(f"*{ext.upper()}"))
+
+    # Also check subdirectories (for organized collections)
+    for ext in VIDEO_EXTENSIONS:
+        video_files.extend(source_path.glob(f"**/*{ext}"))
+        video_files.extend(source_path.glob(f"**/*{ext.upper()}"))
+
+    # Remove duplicates while preserving order
+    seen = set()
+    unique_files = []
+    for f in video_files:
+        if f not in seen:
+            seen.add(f)
+            unique_files.append(f)
+    video_files = unique_files
+
+    for video_file in video_files[:limit]:
+        try:
+            # Apply name filter if provided
+            if name_pattern and name_pattern.lower() not in video_file.name.lower():
+                continue
+
+            # Parse filename for metadata
+            metadata = _parse_movie_filename(video_file.name)
+
+            # Check for existing content by file path
+            existing = await Content.find_one(Content.stream_url == str(video_file))
+            if existing:
+                skipped.append(video_file.name)
+                continue
+
+            # Check by title and year
+            if metadata["year"]:
+                existing = await Content.find_one(
+                    Content.title == metadata["title"],
+                    Content.year == metadata["year"],
+                )
+                if existing:
+                    skipped.append(video_file.name)
+                    continue
+
+            # Create content entry
+            content = Content(
+                title=metadata["title"],
+                year=metadata["year"],
+                stream_url=str(video_file),
+                stream_type="file",
+                category_id=category_id,
+                content_type="movie",
+                content_format="movie",
+                is_published=True,
+                is_series=False,
+            )
+            await content.insert()
+            imported.append(metadata["title"])
+
+        except Exception as e:
+            errors.append(f"{video_file.name}: {e!s}")
+
+    # Build summary
+    summary_lines = [
+        f"Movie Import Complete from {source}",
+        f"- Imported: {len(imported)}",
+        f"- Skipped (duplicates): {len(skipped)}",
+        f"- Errors: {len(errors)}",
+    ]
+
+    if imported:
+        summary_lines.append(f"\nImported movies: {', '.join(imported[:10])}")
+        if len(imported) > 10:
+            summary_lines.append(f"  ... and {len(imported) - 10} more")
+
+    if errors:
+        summary_lines.append(f"\nErrors: {'; '.join(errors[:5])}")
+
+    return "\n".join(summary_lines)
+
+
+async def import_series(
+    source: str,
+    filters: Optional[Dict[str, Any]] = None,
+) -> str:
+    """
+    Import series from a local directory path.
+
+    Args:
+        source: Local directory path containing series folders
+        filters: Optional filters (series_name, season, limit, etc.)
+
+    Returns:
+        Summary string of import results
+    """
+    filters = filters or {}
+    source_path = Path(source)
+
+    if not source_path.exists():
+        return f"Error: Source path does not exist: {source}"
+
+    if not source_path.is_dir():
+        return f"Error: Source path is not a directory: {source}"
+
+    # Get default category for series
+    from app.models.content_taxonomy import ContentSection
+
+    series_section = await ContentSection.find_one(ContentSection.slug == "series")
+    category_id = str(series_section.id) if series_section else "series"
+
+    imported = []
+    skipped = []
+    errors = []
+
+    limit = filters.get("limit", 500)
+    series_filter = filters.get("series_name")
+    season_filter = filters.get("season")
+
+    # Find all video files recursively
+    video_files = []
+    for ext in VIDEO_EXTENSIONS:
+        video_files.extend(source_path.glob(f"**/*{ext}"))
+        video_files.extend(source_path.glob(f"**/*{ext.upper()}"))
+
+    series_episodes: Dict[str, List] = {}
+
+    for video_file in video_files[:limit]:
+        try:
+            # Parse series info from path
+            metadata = _parse_series_path(str(video_file))
+
+            # Apply filters
+            if series_filter and metadata["series_name"]:
+                if series_filter.lower() not in metadata["series_name"].lower():
+                    continue
+
+            if season_filter and metadata["season"] != season_filter:
+                continue
+
+            # Check for existing content
+            existing = await Content.find_one(Content.stream_url == str(video_file))
+            if existing:
+                skipped.append(video_file.name)
+                continue
+
+            # Group by series for summary
+            series_name = metadata["series_name"] or "Unknown Series"
+            if series_name not in series_episodes:
+                series_episodes[series_name] = []
+
+            # Create episode title
+            title = metadata["episode_title"]
+            if metadata["series_name"]:
+                if metadata["season"] and metadata["episode"]:
+                    title = f"{metadata['series_name']} S{metadata['season']:02d}E{metadata['episode']:02d}"
+                else:
+                    title = f"{metadata['series_name']} - {metadata['episode_title']}"
+
+            # Create content entry
+            content = Content(
+                title=title,
+                stream_url=str(video_file),
+                stream_type="file",
+                category_id=category_id,
+                content_type="series",
+                content_format="series",
+                is_published=True,
+                is_series=True,
+                season=metadata["season"],
+                episode=metadata["episode"],
+            )
+            await content.insert()
+            series_episodes[series_name].append(content)
+            imported.append(title)
+
+        except Exception as e:
+            errors.append(f"{video_file.name}: {e!s}")
+
+    # Build summary
+    summary_lines = [
+        f"Series Import Complete from {source}",
+        f"- Total episodes imported: {len(imported)}",
+        f"- Skipped (duplicates): {len(skipped)}",
+        f"- Errors: {len(errors)}",
+        f"- Series found: {len(series_episodes)}",
+    ]
+
+    if series_episodes:
+        summary_lines.append("\nSeries breakdown:")
+        for series_name, episodes in list(series_episodes.items())[:10]:
+            summary_lines.append(f"  - {series_name}: {len(episodes)} episodes")
+
+    if errors:
+        summary_lines.append(f"\nErrors: {'; '.join(errors[:5])}")
+
+    return "\n".join(summary_lines)
