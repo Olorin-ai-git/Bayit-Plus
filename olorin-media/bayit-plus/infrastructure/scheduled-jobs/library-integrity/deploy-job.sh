@@ -149,7 +149,6 @@ gcloud run jobs deploy "${JOB_NAME}" \
   --set-env-vars="SECRET_KEY=${SECRET_KEY}" \
   --set-env-vars="GCP_PROJECT_ID=${GCP_PROJECT_ID}" \
   --set-env-vars="GCS_BUCKET_NAME=${GCS_BUCKET_NAME:-bayit-plus-media-new}" \
-  --set-env-vars="GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/bayit-plus-7c3927963c21.json" \
   --args="${CMD_ARGS}" \
   --quiet
 
