@@ -1,0 +1,67 @@
+#!/bin/bash
+# Bash wrapper for check_content_exists.py
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKEND_DIR="$(cd "$SCRIPT_DIR/../backend" && pwd)"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Help message
+show_help() {
+    echo "Usage: check-content [OPTIONS] <search_term>"
+    echo ""
+    echo "Check if content exists in the database by ID or title"
+    echo ""
+    echo "Options:"
+    echo "  -t, --title    Search by title (case-insensitive)"
+    echo "  -h, --help     Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  check-content 696ada05c19ab15ddcd42d04"
+    echo "  check-content --title \"Matrix\""
+    echo "  check-content -t \"Breaking Bad\""
+}
+
+# Parse arguments
+SEARCH_BY_TITLE=false
+SEARCH_TERM=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -t|--title)
+            SEARCH_BY_TITLE=true
+            shift
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            SEARCH_TERM="$@"
+            break
+            ;;
+    esac
+done
+
+# Validate arguments
+if [ -z "$SEARCH_TERM" ]; then
+    echo -e "${RED}Error: Search term is required${NC}"
+    show_help
+    exit 1
+fi
+
+# Change to backend directory
+cd "$BACKEND_DIR"
+
+# Run the Python script
+if [ "$SEARCH_BY_TITLE" = true ]; then
+    poetry run python check_content_exists.py --title "$SEARCH_TERM"
+else
+    poetry run python check_content_exists.py "$SEARCH_TERM"
+fi
