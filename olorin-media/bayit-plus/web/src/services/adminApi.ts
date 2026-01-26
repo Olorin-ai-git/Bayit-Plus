@@ -73,6 +73,7 @@ export const {
   liveQuotas: liveQuotasService,
   liveChannels: adminLiveChannelsService,
   radioStations: adminRadioStationsService,
+  uploads: uploadsService,
 } = adminApiServices;
 
 // Export default for convenience

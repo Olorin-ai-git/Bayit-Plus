@@ -1381,15 +1381,19 @@
         },
         "imageUpload": {
           "dropHere": "Suelta la imagen aquí o haz clic para navegar",
-          "orPasteUrl": "O pega la URL de la imagen a continuación",
-          "urlPlaceholder": "https://ejemplo.com/imagen.jpg",
-          "validateButton": "Validar URL",
-          "validating": "Validando...",
+          "formats": "PNG, JPG, WebP hasta {{maxSize}}MB",
           "uploading": "Subiendo...",
           "success": "Imagen subida exitosamente",
+          "orPasteUrl": "O pega la URL de la imagen",
+          "urlPlaceholder": "https://ejemplo.com/imagen.jpg",
+          "validateButton": "Agregar",
+          "validating": "Validando...",
+          "clear": "Eliminar imagen",
+          "changeImage": "Cambiar imagen",
           "errors": {
-            "uploadFailed": "Error al subir la imagen",
             "imageOnly": "Solo se permiten archivos de imagen",
+            "tooLarge": "El tamaño del archivo debe ser menor a {{maxSize}}MB",
+            "uploadFailed": "Error al subir la imagen",
             "invalidUrl": "URL de imagen inválida"
           }
         },

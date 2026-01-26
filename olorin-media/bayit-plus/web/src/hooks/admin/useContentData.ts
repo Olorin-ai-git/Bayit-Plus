@@ -54,6 +54,8 @@ export function useContentData() {
     content_type: '',
   })
   const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false)
+  const [sortBy, setSortBy] = useState<string>('title')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
 
   // Episode caching for hierarchical display
   const [expandedSeries, setExpandedSeries] = useState<Set<string>>(new Set())
@@ -66,10 +68,12 @@ export function useContentData() {
   const [isBatchProcessing, setIsBatchProcessing] = useState(false)
 
   const loadContent = useCallback(async () => {
+    console.log('[useContentData] Loading content with filters:', filters)
     setIsLoading(true)
     setError(null)
     try {
       if (filters.content_type === 'podcasts' || filters.content_type === 'radio') {
+        console.log('[useContentData] Loading podcasts/radio content')
         const fetchFn = filters.content_type === 'podcasts'
           ? adminPodcastsService.getPodcasts
           : adminRadioStationsService.getAll
@@ -80,21 +84,33 @@ export function useContentData() {
           search: filters.search,
         })
 
+        console.log('[useContentData] Podcasts/Radio loaded:', response.items.length, 'items')
         setItems(response.items)
         setPagination(prev => ({ ...prev, total: response.total }))
       } else {
-        const response = await adminContentService.getContentHierarchical({
+        const apiFilters = {
           page: pagination.page,
-          pageSize: pagination.pageSize,
+          page_size: pagination.pageSize,
           search: filters.search,
           is_published: filters.is_published,
           content_type: filters.content_type === 'series' ? 'series'
                         : filters.content_type === 'movies' ? 'movies'
                         : undefined,
-        })
+          sort_by: sortBy,
+          sort_direction: sortDirection,
+        }
+        console.log('[useContentData] Loading VOD content with API filters:', apiFilters)
+
+        const response = await adminContentService.getContentHierarchical(apiFilters)
+
+        console.log('[useContentData] VOD content loaded:', response.items.length, 'items, total:', response.total)
+        console.log('[useContentData] First 3 items:', response.items.slice(0, 3).map(item => ({ id: item.id, title: item.title })))
+        console.log('[useContentData] Response object:', response)
 
         setItems(response.items)
         setPagination(prev => ({ ...prev, total: response.total }))
+
+        console.log('[useContentData] State updated - items.length should now be:', response.items.length)
       }
 
       logger.info('Content loaded successfully', {
@@ -109,11 +125,22 @@ export function useContentData() {
     } finally {
       setIsLoading(false)
     }
-  }, [pagination.page, pagination.pageSize, filters])
+  }, [pagination.page, pagination.pageSize, filters, sortBy, sortDirection])
 
   useEffect(() => {
+    console.log('[useContentData] Filters or pagination changed, reloading content')
     loadContent()
   }, [loadContent])
+
+  // Debug: Log when filters change
+  useEffect(() => {
+    console.log('[useContentData] Filters state updated:', filters)
+  }, [filters])
+
+  // Debug: Log when showOnlyWithSubtitles changes
+  useEffect(() => {
+    console.log('[useContentData] showOnlyWithSubtitles changed:', showOnlyWithSubtitles)
+  }, [showOnlyWithSubtitles])
 
   const handleExpandToggle = useCallback(async (rowId: string, expanded: boolean) => {
     const newExpanded = new Set(expandedSeries)
@@ -238,13 +265,26 @@ export function useContentData() {
     }
   }, [selectedIds, loadContent])
 
+  const handleSort = useCallback((columnKey: string, direction: 'asc' | 'desc') => {
+    console.log('[useContentData] Sort changed:', { columnKey, direction })
+    setSortBy(columnKey)
+    setSortDirection(direction)
+    // Reset to first page when sorting changes
+    setPagination(prev => ({ ...prev, page: 1 }))
+  }, [])
+
   // Transform data to hierarchical table format
   const hierarchicalData = useMemo<HierarchicalTableRow<ContentItem | Episode>[]>(() => {
+    console.log('[useContentData] hierarchicalData memo running - items.length:', items.length)
+
     const filtered = showOnlyWithSubtitles
       ? items.filter(item => item.available_subtitles && item.available_subtitles.length > 0)
       : items
 
-    return filtered.map(item => {
+    console.log('[useContentData] After subtitle filter - filtered.length:', filtered.length)
+    console.log('[useContentData] Item titles in order:', filtered.slice(0, 5).map(item => item.title))
+
+    const result = filtered.map(item => {
       let children: HierarchicalTableRow<Episode>[] | undefined = undefined
 
       if (item.is_series) {
@@ -265,6 +305,9 @@ export function useContentData() {
         isExpanded: expandedSeries.has(item.id),
       }
     })
+
+    console.log('[useContentData] hierarchicalData created:', result.length, 'rows')
+    return result
   }, [items, showOnlyWithSubtitles, expandedSeries, episodeCache])
 
   return {
@@ -281,6 +324,8 @@ export function useContentData() {
     selectedItemsData,
     isBatchProcessing,
     hierarchicalData,
+    sortBy,
+    sortDirection,
     setFilters,
     setShowOnlyWithSubtitles,
     setPagination,
@@ -290,6 +335,7 @@ export function useContentData() {
     handleBatchMerge,
     handleBatchDelete,
     handleBatchFeature,
+    handleSort,
     refresh: loadContent,
     clearSelection: () => {
       setSelectedIds([])

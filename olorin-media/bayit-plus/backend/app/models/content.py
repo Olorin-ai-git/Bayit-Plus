@@ -254,10 +254,18 @@ class Content(Document):
             # Core indexes
             "is_featured",
             "is_published",
+            "is_series",
             "series_id",
             "created_at",
             "updated_at",
+            "title",  # For sorting by title
+            "category_name",  # For sorting by category
+            "year",  # For sorting by year
+            "view_count",  # For sorting by views
+            "avg_rating",  # For sorting by rating
             ("is_featured", "is_published"),
+            ("is_series", "is_published"),
+            ("is_series", "created_at"),
             # Series episode indexes for duplicate detection and linking
             ("series_id", "season", "episode"),
             ("content_type", "series_id"),

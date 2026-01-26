@@ -1896,6 +1896,11 @@
         "noSourcesDescription": "No free content sources are currently available for {{type}}"
       },
       "filters": {
+        "contentType": "Content Type",
+        "series": "Series",
+        "movies": "Movies",
+        "podcasts": "Podcasts",
+        "radioStations": "Radio Stations",
         "allStatus": "All Status"
       },
       "showOnlyWithSubtitles": "Show only with subtitles",
@@ -2044,6 +2049,7 @@
           "validateButton": "Add",
           "validating": "Validating...",
           "clear": "Remove image",
+          "changeImage": "Change Image",
           "errors": {
             "imageOnly": "Please select an image file",
             "tooLarge": "File size must be less than {{maxSize}}MB",

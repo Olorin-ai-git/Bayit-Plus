@@ -24,11 +24,16 @@ async def get_content_hierarchical(
     is_featured: Optional[bool] = None,
     is_published: Optional[bool] = None,
     is_kids_content: Optional[bool] = None,
+    content_type: Optional[str] = None,
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, le=100),
+    sort_by: Optional[str] = Query(default="created_at"),
+    sort_direction: Optional[str] = Query(default="desc"),
     current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
 ):
     """Get content in hierarchical structure - only parent items (series and movies), not episodes."""
+    # Debug logging
+    print(f"[admin_content_vod_read] Query params: page={page}, page_size={page_size}, sort_by={sort_by}, sort_direction={sort_direction}, content_type={content_type}, search={search}, is_published={is_published}")
     # Build base query - exclude episodes (items with series_id set) and merged items
     query = Content.find(
         {
@@ -69,35 +74,86 @@ async def get_content_hierarchical(
         query = query.find(Content.is_published == is_published)
     if is_kids_content is not None:
         query = query.find(Content.is_kids_content == is_kids_content)
+    if content_type == "series":
+        query = query.find(Content.is_series == True)
+    elif content_type == "movies":
+        query = query.find(Content.is_series == False)
 
+    # Map frontend column keys to backend Content model fields
+    column_field_map = {
+        "title": "title",
+        "category_name": "category_name",
+        "year": "year",
+        "created_at": "created_at",
+        "updated_at": "updated_at",
+        "view_count": "view_count",
+        "avg_rating": "avg_rating",
+        "is_published": "is_published",
+        "is_featured": "is_featured",
+    }
+
+    # Get the field to sort by (default to created_at if invalid)
+    sort_field = column_field_map.get(sort_by, "created_at")
+
+    # Build sort string with direction prefix (+ for asc, - for desc)
+    sort_prefix = "+" if sort_direction == "asc" else "-"
+    sort_string = f"{sort_prefix}{sort_field}"
+
+    import time
+    start_time = time.time()
+
+    print(f"[admin_content_vod_read] Sorting by: {sort_string} (from sort_by={sort_by}, sort_direction={sort_direction})")
+    print(f"[admin_content_vod_read] Content type filter: {content_type}")
+
+    count_start = time.time()
     total = await query.count()
+    print(f"[admin_content_vod_read] Count took: {(time.time() - count_start) * 1000:.0f}ms")
+
+    query_start = time.time()
     skip = (page - 1) * page_size
-    items = await query.sort(-Content.created_at).skip(skip).limit(page_size).to_list()
+    items = await query.sort(sort_string).skip(skip).limit(page_size).to_list()
+    print(f"[admin_content_vod_read] Main query took: {(time.time() - query_start) * 1000:.0f}ms")
+    print(f"[admin_content_vod_read] Query executed: {len(items)} items returned out of {total} total")
 
     # Batch fetch all subtitle tracks for all content IDs (eliminates N+1 query problem)
+    # Use projection to only fetch content_id and language (exclude massive 'cues' array)
+    # Use PyMongo collection directly for better projection control
+    subtitle_start = time.time()
     content_ids = [str(item.id) for item in items]
-    all_subtitle_tracks = await SubtitleTrackDoc.find(
-        {"content_id": {"$in": content_ids}}
-    ).to_list()
+    from app.core.database import get_database
+    db = get_database()
+    all_subtitle_tracks = await db.subtitle_tracks.find(
+        {"content_id": {"$in": content_ids}},
+        {"content_id": 1, "language": 1}
+    ).to_list(None)
+    print(f"[admin_content_vod_read] Subtitle query took: {(time.time() - subtitle_start) * 1000:.0f}ms")
 
     # Build subtitle map: content_id -> list of unique language codes
     subtitle_map = {}
     for track in all_subtitle_tracks:
-        if track.content_id not in subtitle_map:
-            subtitle_map[track.content_id] = set()
-        subtitle_map[track.content_id].add(track.language)
+        # track is now a dict (projection result), not SubtitleTrackDoc object
+        content_id = track["content_id"]
+        language = track["language"]
+        if content_id not in subtitle_map:
+            subtitle_map[content_id] = set()
+        subtitle_map[content_id].add(language)
 
-    # Batch fetch episode counts for all series (eliminates N+1 query problem)
+    # Batch fetch episode counts for all series using aggregation (server-side counting)
+    episode_start = time.time()
     series_ids = [str(item.id) for item in items if item.is_series]
     episode_counts = {}
     if series_ids:
-        # Fetch all episodes for these series IDs
-        all_episodes = await Content.find({"series_id": {"$in": series_ids}}).to_list()
-
-        # Count episodes per series
-        for episode in all_episodes:
-            series_id = episode.series_id
-            episode_counts[series_id] = episode_counts.get(series_id, 0) + 1
+        # Use aggregation to count episodes per series (much faster than fetching all documents)
+        # Use PyMongo collection directly for aggregation to avoid Beanie cursor issues
+        from app.core.database import get_database
+        db = get_database()
+        pipeline = [
+            {"$match": {"series_id": {"$in": series_ids}}},
+            {"$group": {"_id": "$series_id", "count": {"$sum": 1}}}
+        ]
+        aggregation_result = await db.content.aggregate(pipeline).to_list(None)
+        episode_counts = {doc["_id"]: doc["count"] for doc in aggregation_result}
+        print(f"[admin_content_vod_read] Episode query took: {(time.time() - episode_start) * 1000:.0f}ms")
 
     # Build response with episode counts for series and subtitle availability
     result_items = []
@@ -135,6 +191,8 @@ async def get_content_hierarchical(
         }
 
         result_items.append(item_data)
+
+    print(f"[admin_content_vod_read] TOTAL TIME: {(time.time() - start_time) * 1000:.0f}ms")
 
     return {
         "items": result_items,

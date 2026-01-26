@@ -140,6 +140,9 @@ export interface ContentFilter {
   is_kids_content?: boolean;
   page?: number;
   page_size?: number;
+  sort_by?: string;
+  sort_direction?: 'asc' | 'desc';
+  content_type?: 'series' | 'movies' | string;
 }
 
 export interface Content {
@@ -1097,6 +1100,27 @@ export const createAdminApi = (authStore: AuthStore) => {
       adminApi.get(`/admin/radio-stations/${stationId}`),
   };
 
+  // ============================================
+  // Uploads Service
+  // ============================================
+
+  const uploadsService = {
+    uploadImage: async (file: File, imageType: string = 'general'): Promise<{ url: string; filename: string; size: number }> => {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      return adminApi.post(`/admin/uploads/image?image_type=${imageType}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    },
+
+    validateUrl: async (url: string): Promise<{ valid: boolean; message: string }> => {
+      return adminApi.post(`/admin/uploads/validate-url?url=${encodeURIComponent(url)}`);
+    },
+  };
+
   // Return all services
   return {
     dashboard: dashboardService,
@@ -1114,5 +1138,6 @@ export const createAdminApi = (authStore: AuthStore) => {
     liveQuotas: liveQuotasService,
     liveChannels: adminLiveChannelsService,
     radioStations: adminRadioStationsService,
+    uploads: uploadsService,
   };
 };
