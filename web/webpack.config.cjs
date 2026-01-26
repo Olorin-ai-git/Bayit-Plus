@@ -53,9 +53,8 @@ module.exports = (env, argv) => {
       alias: {
         // @olorin packages from packages/ui directory (no /src - files are in root)
         '@olorin/design-tokens': path.resolve(packagesPath, 'design-tokens'),
-        // Glass UI - use web version for web builds from dist outputs
-        '@olorin/glass-ui$': path.resolve(packagesPath, 'glass-components/dist/web/index.mjs'),
-        // Glass UI subpath exports (e.g., @olorin/glass-ui/contexts) - use .mjs for ES modules
+        // Glass UI - use native version for components (GlassPlaceholder, etc.)
+        // The web version only has theme/hooks; all components are in native (RN Web compatible)
         '@olorin/glass-ui/web': path.resolve(packagesPath, 'glass-components/dist/web/index.mjs'),
         '@olorin/glass-ui/native': path.resolve(packagesPath, 'glass-components/dist/native/index.mjs'),
         '@olorin/glass-ui/hooks': path.resolve(packagesPath, 'glass-components/dist/hooks/index.mjs'),

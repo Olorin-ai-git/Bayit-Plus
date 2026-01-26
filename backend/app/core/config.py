@@ -133,6 +133,54 @@ class Settings(BaseSettings):
     AGENT_MAX_ITERATIONS: int = Field(default=20)
     AGENT_BUDGET_LIMIT_USD: float = Field(default=0.50)
 
+    # NLP Session Management
+    NLP_SESSION_TTL_MINUTES: int = Field(
+        default=30,
+        description="Session expiry time in minutes",
+    )
+    NLP_SESSION_MAX_HISTORY: int = Field(
+        default=50,
+        description="Maximum messages to retain in session history",
+    )
+    NLP_SESSION_CLEANUP_INTERVAL_MINUTES: int = Field(
+        default=5,
+        description="Interval for cleaning up expired sessions",
+    )
+
+    # NLP Ecosystem Context
+    NLP_ECOSYSTEM_CONTEXT_CACHE_TTL_SECONDS: int = Field(
+        default=30,
+        description="Cache TTL for ecosystem context",
+    )
+    NLP_GIT_CONTEXT_CACHE_TTL_SECONDS: int = Field(
+        default=300,
+        description="Cache TTL for git context (5 minutes)",
+    )
+    NLP_GIT_CONTEXT_MAX_COMMITS: int = Field(
+        default=10,
+        description="Maximum recent commits to include in context",
+    )
+
+    # NLP Action Execution
+    NLP_DEFAULT_ACTION_MODE: str = Field(
+        default="smart",
+        description="Default action mode: smart or confirm_all",
+    )
+    NLP_ACTION_TOKEN_TTL_SECONDS: int = Field(
+        default=300,
+        description="TTL for pending action tokens (5 minutes)",
+    )
+
+    # NLP Rate Limiting
+    NLP_RATE_LIMIT_REQUESTS_PER_MINUTE: int = Field(
+        default=30,
+        description="Max NLP requests per minute per user",
+    )
+    NLP_RATE_LIMIT_COST_PER_HOUR_USD: float = Field(
+        default=5.00,
+        description="Max API cost per hour per user",
+    )
+
     # Voice Commands (opt-in)
     VOICE_COMMANDS_ENABLED: bool = Field(default=False)
     VOICE_RESPONSE_ENABLED: bool = Field(default=True)

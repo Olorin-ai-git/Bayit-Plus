@@ -3,9 +3,10 @@
  *
  * Communicates with Bayit+ backend NLP API for:
  * - Intent parsing
- * - Agent execution
+ * - Agent execution with session support
  * - Semantic search
  * - Voice commands
+ * - Session management
  */
 
 import { logger } from '../utils/logger.js';
@@ -14,7 +15,13 @@ import {
   AgentExecutionResult,
   SearchResults,
   VoiceCommandResult,
-  NlpClientConfig
+  NlpClientConfig,
+  CreateSessionOptions,
+  SessionInfo,
+  SessionSummary,
+  ConfirmActionResult,
+  ExecuteAgentOptions,
+  HealthStatus,
 } from './nlp-types.js';
 
 /**
@@ -44,6 +51,99 @@ export class NlpClient {
     logger.debug('NLP Client initialized', { baseUrl: this.baseUrl });
   }
 
+  // Session Management
+
+  /**
+   * Create a new conversation session
+   */
+  async createSession(options: CreateSessionOptions = {}): Promise<SessionInfo> {
+    logger.debug('Creating session', { platform: options.platform || 'bayit' });
+
+    const response = await this.fetch('/api/v1/nlp/sessions', {
+      method: 'POST',
+      body: JSON.stringify({
+        platform: options.platform || 'bayit',
+        user_id: options.userId,
+        action_mode: options.actionMode || 'smart',
+        metadata: options.metadata,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Failed to create session: ${response.status} - ${error}`);
+    }
+
+    const session = await response.json();
+    logger.debug('Session created', { sessionId: session.session_id });
+
+    return session;
+  }
+
+  /**
+   * Get session details
+   */
+  async getSession(sessionId: string): Promise<SessionSummary> {
+    logger.debug('Getting session', { sessionId });
+
+    const response = await this.fetch(`/api/v1/nlp/sessions/${sessionId}`);
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Failed to get session: ${response.status} - ${error}`);
+    }
+
+    return await response.json();
+  }
+
+  /**
+   * End a session and get final summary
+   */
+  async endSession(sessionId: string): Promise<SessionSummary> {
+    logger.debug('Ending session', { sessionId });
+
+    const response = await this.fetch(`/api/v1/nlp/sessions/${sessionId}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Failed to end session: ${response.status} - ${error}`);
+    }
+
+    const summary = await response.json();
+    logger.info('Session ended', { sessionId, totalCost: summary.total_cost });
+
+    return summary;
+  }
+
+  /**
+   * Confirm and execute a pending action
+   */
+  async confirmAction(sessionId: string, actionId: string): Promise<ConfirmActionResult> {
+    logger.info('Confirming action', { sessionId, actionId });
+
+    const response = await this.fetch('/api/v1/nlp/confirm-action', {
+      method: 'POST',
+      body: JSON.stringify({
+        session_id: sessionId,
+        action_id: actionId,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Failed to confirm action: ${response.status} - ${error}`);
+    }
+
+    const result = await response.json();
+    logger.info('Action confirmed', { actionId, success: result.success });
+
+    return result;
+  }
+
+  // Agent Execution
+
   /**
    * Parse natural language command into structured intent
    */
@@ -70,29 +170,26 @@ export class NlpClient {
   }
 
   /**
-   * Execute multi-step agent workflow
+   * Execute multi-step agent workflow with optional session support
    */
-  async executeAgent(request: {
-    query: string;
-    platform?: string;
-    dryRun?: boolean;
-    maxIterations?: number;
-    budgetLimit?: number;
-  }): Promise<AgentExecutionResult> {
+  async executeAgent(options: ExecuteAgentOptions): Promise<AgentExecutionResult> {
     logger.info('Executing agent workflow', {
-      query: request.query,
-      platform: request.platform || 'bayit',
-      dryRun: request.dryRun || false,
+      query: options.query,
+      platform: options.platform || 'bayit',
+      dryRun: options.dryRun || false,
+      sessionId: options.sessionId,
     });
 
     const response = await this.fetch('/api/v1/nlp/execute-agent', {
       method: 'POST',
       body: JSON.stringify({
-        query: request.query,
-        platform: request.platform || 'bayit',
-        dry_run: request.dryRun || false,
-        max_iterations: request.maxIterations,
-        budget_limit: request.budgetLimit,
+        query: options.query,
+        platform: options.platform || 'bayit',
+        dry_run: options.dryRun || false,
+        max_iterations: options.maxIterations,
+        budget_limit: options.budgetLimit,
+        session_id: options.sessionId,
+        action_mode: options.actionMode || 'smart',
       }),
     });
 
@@ -106,6 +203,7 @@ export class NlpClient {
       success: result.success,
       iterations: result.iterations,
       cost: result.total_cost,
+      pendingConfirmations: result.pending_confirmations?.length || 0,
     });
 
     return result;
@@ -186,13 +284,7 @@ export class NlpClient {
   /**
    * Check NLP service health
    */
-  async healthCheck(): Promise<{
-    status: string;
-    nlp_enabled: boolean;
-    voice_commands_enabled: boolean;
-    semantic_search_enabled: boolean;
-    anthropic_api_configured: boolean;
-  }> {
+  async healthCheck(): Promise<HealthStatus> {
     const response = await this.fetch('/api/v1/nlp/health');
 
     if (!response.ok) {
