@@ -5,9 +5,12 @@ Pydantic models for search endpoints.
 """
 
 import re
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from pydantic import BaseModel, Field, field_validator
+
+if TYPE_CHECKING:
+    from app.models.content_embedding import SceneSearchResult
 
 # ObjectId validation regex (24 hex characters)
 OBJECT_ID_PATTERN = re.compile(r"^[0-9a-fA-F]{24}$")
@@ -61,3 +64,13 @@ class SceneSearchResponse(BaseModel):
     query: str
     results: List["SceneSearchResult"]  # type: ignore
     total_results: int
+
+
+# Rebuild model to resolve forward references
+def _rebuild_models() -> None:
+    """Rebuild models after all definitions are complete."""
+    from app.models.content_embedding import SceneSearchResult  # noqa: F401
+    SceneSearchResponse.model_rebuild()
+
+
+_rebuild_models()
