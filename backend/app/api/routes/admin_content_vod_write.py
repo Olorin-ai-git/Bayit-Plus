@@ -257,6 +257,92 @@ async def delete_content(
     return {"message": "Content deleted"}
 
 
+@router.post("/content/batch/delete")
+async def batch_delete_content(
+    data: dict,
+    request: Request,
+    current_user: User = Depends(has_permission(Permission.CONTENT_DELETE)),
+):
+    """Batch delete multiple content items."""
+    content_ids = data.get("content_ids", [])
+
+    if not content_ids:
+        raise HTTPException(status_code=400, detail="No content IDs provided")
+
+    deleted_count = 0
+    errors = []
+
+    for content_id in content_ids:
+        try:
+            content = await Content.get(content_id)
+            if content:
+                await log_audit(
+                    str(current_user.id),
+                    AuditAction.CONTENT_DELETED,
+                    "content",
+                    content_id,
+                    {"title": content.title},
+                    request,
+                )
+                await content.delete()
+                deleted_count += 1
+            else:
+                errors.append(f"Content {content_id} not found")
+        except Exception as e:
+            logger.error(f"Failed to delete content {content_id}: {e}")
+            errors.append(f"Failed to delete {content_id}: {str(e)}")
+
+    return {
+        "deleted_count": deleted_count,
+        "errors": errors
+    }
+
+
+@router.post("/content/batch/feature")
+async def batch_feature_content(
+    data: dict,
+    request: Request,
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
+):
+    """Batch update featured status for multiple content items."""
+    content_ids = data.get("content_ids", [])
+    featured = data.get("featured", True)
+
+    if not content_ids:
+        raise HTTPException(status_code=400, detail="No content IDs provided")
+
+    updated_count = 0
+    errors = []
+
+    for content_id in content_ids:
+        try:
+            content = await Content.get(content_id)
+            if content:
+                content.is_featured = featured
+                content.updated_at = datetime.utcnow()
+                await content.save()
+
+                await log_audit(
+                    str(current_user.id),
+                    AuditAction.CONTENT_UPDATED,
+                    "content",
+                    content_id,
+                    {"is_featured": {"old": not featured, "new": featured}},
+                    request,
+                )
+                updated_count += 1
+            else:
+                errors.append(f"Content {content_id} not found")
+        except Exception as e:
+            logger.error(f"Failed to update content {content_id}: {e}")
+            errors.append(f"Failed to update {content_id}: {str(e)}")
+
+    return {
+        "updated_count": updated_count,
+        "errors": errors
+    }
+
+
 @router.post("/content/batch/merge")
 async def merge_content(
     data: MergeContentRequest,

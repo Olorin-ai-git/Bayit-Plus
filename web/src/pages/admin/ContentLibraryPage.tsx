@@ -9,6 +9,7 @@ import {
   GlassButton,
   GlassPageHeader,
   GlassHierarchicalTable,
+  GlassModal,
 } from '@bayit/shared/ui'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { useDirection } from '@/hooks/useDirection'
@@ -36,6 +37,7 @@ export default function ContentLibraryPage() {
     hierarchicalData,
     sortBy,
     sortDirection,
+    showDeleteConfirm,
     setFilters,
     setShowOnlyWithSubtitles,
     setPagination,
@@ -46,6 +48,8 @@ export default function ContentLibraryPage() {
     handleBatchDelete,
     handleBatchFeature,
     handleSort,
+    confirmBatchDelete,
+    cancelBatchDelete,
     refresh,
     clearSelection,
   } = useContentData()
@@ -53,6 +57,7 @@ export default function ContentLibraryPage() {
   const [showFiltersDropdown, setShowFiltersDropdown] = useState(false)
   const [showMergeModal, setShowMergeModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [deleteItemId, setDeleteItemId] = useState<string | null>(null)
 
   const handleSearch = (query: string) => {
     setSearchQuery(query)
@@ -70,13 +75,25 @@ export default function ContentLibraryPage() {
   }
 
   const handleDeleteContent = (id: string) => {
-    // Confirmation handled by createDeleteAction in column definitions
-    adminContentService.deleteContent(id).then(() => {
+    setDeleteItemId(id)
+  }
+
+  const confirmSingleDelete = async () => {
+    if (!deleteItemId) return
+
+    try {
+      await adminContentService.deleteContent(deleteItemId)
+      setDeleteItemId(null)
       refresh()
-      logger.info('Content deleted', { id })
-    }).catch((err) => {
-      logger.error('Failed to delete content', { error: err, id })
-    })
+      logger.info('Content deleted', { id: deleteItemId })
+    } catch (err) {
+      logger.error('Failed to delete content', { error: err, id: deleteItemId })
+      setDeleteItemId(null)
+    }
+  }
+
+  const cancelSingleDelete = () => {
+    setDeleteItemId(null)
   }
 
   const openMergeWizard = async () => {
@@ -211,6 +228,48 @@ export default function ContentLibraryPage() {
         onSubtitlesChange={setShowOnlyWithSubtitles}
         onClose={() => setShowFiltersDropdown(false)}
         isRTL={isRTL}
+      />
+
+      {/* Batch Delete Confirmation Modal */}
+      <GlassModal
+        visible={showDeleteConfirm}
+        type="confirm"
+        title={t('common.confirmDelete')}
+        message={t('admin.content.confirmBatchDelete', { count: selectedIds.length })}
+        buttons={[
+          {
+            text: t('common.cancel'),
+            style: 'cancel',
+            onPress: cancelBatchDelete,
+          },
+          {
+            text: t('common.delete'),
+            style: 'destructive',
+            onPress: confirmBatchDelete,
+          },
+        ]}
+        onClose={cancelBatchDelete}
+      />
+
+      {/* Single Item Delete Confirmation Modal */}
+      <GlassModal
+        visible={!!deleteItemId}
+        type="confirm"
+        title={t('common.confirmDelete')}
+        message={t('admin.content.confirmDeleteSingle')}
+        buttons={[
+          {
+            text: t('common.cancel'),
+            style: 'cancel',
+            onPress: cancelSingleDelete,
+          },
+          {
+            text: t('common.delete'),
+            style: 'destructive',
+            onPress: confirmSingleDelete,
+          },
+        ]}
+        onClose={cancelSingleDelete}
       />
     </>
   )

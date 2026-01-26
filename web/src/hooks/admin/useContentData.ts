@@ -66,6 +66,7 @@ export function useContentData() {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [selectedItemsData, setSelectedItemsData] = useState<ContentItem[]>([])
   const [isBatchProcessing, setIsBatchProcessing] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const loadContent = useCallback(async () => {
     console.log('[useContentData] Loading content with filters:', filters)
@@ -218,33 +219,34 @@ export function useContentData() {
 
   const handleBatchDelete = useCallback(() => {
     if (selectedIds.length === 0) return
+    setShowDeleteConfirm(true)
+  }, [selectedIds])
 
-    notifications.show({
-      level: 'warning',
-      message: t('admin.content.confirmBatchDelete', { count: selectedIds.length }),
-      dismissable: true,
-      action: {
-        label: t('common.delete'),
-        type: 'action',
-        onPress: async () => {
-          setIsBatchProcessing(true)
-          try {
-            await adminContentService.batchDeleteContent(selectedIds)
-            setSelectedIds([])
-            setSelectedItemsData([])
-            await loadContent()
-            logger.info('Batch delete successful', { count: selectedIds.length })
-          } catch (err) {
-            const msg = err instanceof Error ? err.message : 'Failed to delete content'
-            logger.error('Batch delete failed', { error: err })
-            setError(msg)
-          } finally {
-            setIsBatchProcessing(false)
-          }
-        },
-      },
-    })
+  const confirmBatchDelete = useCallback(async () => {
+    setShowDeleteConfirm(false)
+    setIsBatchProcessing(true)
+    try {
+      await adminContentService.batchDeleteContent(selectedIds)
+      notifications.showSuccess(
+        t('common.success'),
+        t('admin.content.batchDeleteSuccess', { count: selectedIds.length })
+      )
+      setSelectedIds([])
+      setSelectedItemsData([])
+      await loadContent()
+      logger.info('Batch delete successful', { count: selectedIds.length })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to delete content'
+      logger.error('Batch delete failed', { error: err })
+      notifications.showError(t('common.error'), msg)
+    } finally {
+      setIsBatchProcessing(false)
+    }
   }, [selectedIds, notifications, t, loadContent])
+
+  const cancelBatchDelete = useCallback(() => {
+    setShowDeleteConfirm(false)
+  }, [])
 
   const handleBatchFeature = useCallback(async (featured: boolean) => {
     if (selectedIds.length === 0) return
@@ -326,6 +328,7 @@ export function useContentData() {
     hierarchicalData,
     sortBy,
     sortDirection,
+    showDeleteConfirm,
     setFilters,
     setShowOnlyWithSubtitles,
     setPagination,
@@ -336,6 +339,8 @@ export function useContentData() {
     handleBatchDelete,
     handleBatchFeature,
     handleSort,
+    confirmBatchDelete,
+    cancelBatchDelete,
     refresh: loadContent,
     clearSelection: () => {
       setSelectedIds([])
