@@ -40,6 +40,7 @@ export const useUploadQueue = () => {
 
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectAttemptRef = useRef(0); // Use ref to avoid stale closures
 
   /**
    * Fetches queue data from API
@@ -58,9 +59,11 @@ export const useUploadQueue = () => {
       });
 
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
       logger.error('Failed to fetch upload queue', 'useUploadQueue', err);
-      setError(err instanceof Error ? err.message : 'Failed to load queue');
+      // Extract detailed error message from API response
+      const errorMsg = err?.response?.data?.detail || err?.detail || err?.message || 'Failed to load queue';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -71,9 +74,13 @@ export const useUploadQueue = () => {
    */
   const connectWebSocket = useCallback(() => {
     try {
-      const token = localStorage.getItem('token');
+      // Get token from the same source as API calls
+      const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}');
+      const token = authData?.state?.token;
+
       if (!token) {
         logger.warn('No auth token found, skipping WebSocket connection', 'useUploadQueue');
+        setError('Authentication required. Please log in.');
         return;
       }
 
@@ -81,11 +88,20 @@ export const useUploadQueue = () => {
         wsRef.current.close();
       }
 
-      const wsProtocol =
-        API_BASE_URL.startsWith('https') || window.location.protocol === 'https:' ? 'wss' : 'ws';
-      const wsHost = window.location.host;
-      const wsUrl = `${wsProtocol}://${wsHost}/api/v1/admin/uploads/ws?token=${token}`;
+      // Construct WebSocket URL based on API base URL
+      let wsUrl: string;
+      if (API_BASE_URL.startsWith('http')) {
+        // Use API_BASE_URL as base (development mode)
+        const apiUrl = new URL(API_BASE_URL);
+        const wsProtocol = apiUrl.protocol === 'https:' ? 'wss' : 'ws';
+        wsUrl = `${wsProtocol}://${apiUrl.host}/api/v1/admin/uploads/ws?token=${token}`;
+      } else {
+        // Use current host (production mode)
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        wsUrl = `${wsProtocol}://${window.location.host}/api/v1/admin/uploads/ws?token=${token}`;
+      }
 
+      logger.info(`[WebSocket] Connecting to: ${wsUrl.replace(/token=[^&]+/, 'token=***')}`, 'useUploadQueue');
       const ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
@@ -93,6 +109,7 @@ export const useUploadQueue = () => {
         setConnected(true);
         setReconnecting(false);
         setReconnectAttempt(0);
+        reconnectAttemptRef.current = 0; // Reset ref on successful connection
       };
 
       ws.onmessage = (event) => {
@@ -116,6 +133,11 @@ export const useUploadQueue = () => {
       ws.onerror = (error) => {
         logger.error('[WebSocket] Connection error', 'useUploadQueue', error);
         setConnected(false);
+
+        // If we get an error immediately, the endpoint might not exist
+        if (reconnectAttemptRef.current === 0) {
+          logger.error('[WebSocket] Failed to establish initial connection - endpoint may not exist', 'useUploadQueue');
+        }
       };
 
       ws.onclose = () => {
@@ -123,26 +145,35 @@ export const useUploadQueue = () => {
         setConnected(false);
         wsRef.current = null;
 
-        // Reconnect with exponential backoff
-        if (reconnectAttempt < WS_MAX_RECONNECT_ATTEMPTS) {
-          const nextAttempt = reconnectAttempt + 1;
+        // Reconnect with exponential backoff - use ref to avoid stale closure
+        const currentAttempt = reconnectAttemptRef.current;
+        if (currentAttempt < WS_MAX_RECONNECT_ATTEMPTS) {
+          const nextAttempt = currentAttempt + 1;
+          reconnectAttemptRef.current = nextAttempt;
           setReconnectAttempt(nextAttempt);
           setReconnecting(true);
 
           const delay = WS_RECONNECT_DELAY * Math.pow(1.5, nextAttempt - 1);
           logger.info(`[WebSocket] Reconnecting in ${delay}ms (attempt ${nextAttempt})`, 'useUploadQueue');
-          reconnectTimeoutRef.current = setTimeout(connectWebSocket, delay);
+          reconnectTimeoutRef.current = setTimeout(() => {
+            connectWebSocket();
+          }, delay);
         } else {
           logger.error('[WebSocket] Max reconnection attempts reached', 'useUploadQueue');
           setReconnecting(false);
+          setError('WebSocket connection failed after 10 attempts. Using manual refresh.');
+
+          // Could fall back to polling here if needed
+          // setInterval(() => refreshQueue(), QUEUE_REFRESH_INTERVAL);
         }
       };
 
       wsRef.current = ws;
     } catch (err) {
       logger.error('[WebSocket] Failed to connect', 'useUploadQueue', err);
+      setError('WebSocket connection failed');
     }
-  }, []);
+  }, []); // No dependencies - use refs to avoid stale closures
 
   /**
    * Disconnects WebSocket

@@ -256,7 +256,7 @@ class InteractiveSession {
     } else {
       process.stdout.write(chalk.bold.cyan('Command History:\n'));
       process.stdout.write('\n');
-      this.commandHistory.slice(-10).forEach((entry, i) => {
+      this.commandHistory.slice(-10).forEach((entry) => {
         const status = entry.success ? chalk.green('[ok]') : chalk.red('[err]');
         const query = entry.query.length > 50
           ? entry.query.slice(0, 50) + '...'

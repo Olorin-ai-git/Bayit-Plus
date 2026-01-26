@@ -45,17 +45,19 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
   style,
 }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
-  const [contentHeight, setContentHeight] = useState(minHeight);
+  // Initialize with larger default height when expanded
+  const [contentHeight, setContentHeight] = useState(defaultExpanded ? Math.min(600, maxHeight) : minHeight);
 
-  // Animation values
-  const heightAnim = useRef(new Animated.Value(defaultExpanded ? minHeight : 0)).current;
+  // Animation values - use contentHeight for better initial sizing
+  const initialHeight = defaultExpanded ? Math.min(600, maxHeight) : 0;
+  const heightAnim = useRef(new Animated.Value(initialHeight)).current;
   const opacityAnim = useRef(new Animated.Value(defaultExpanded ? 1 : 0)).current;
   const rotateAnim = useRef(new Animated.Value(defaultExpanded ? 1 : 0)).current;
 
   useEffect(() => {
     // Initialize with default state
     if (defaultExpanded) {
-      heightAnim.setValue(minHeight);
+      heightAnim.setValue(contentHeight);
       opacityAnim.setValue(1);
       rotateAnim.setValue(1);
     }

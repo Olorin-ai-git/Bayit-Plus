@@ -17,7 +17,7 @@ import hashlib
 from pathlib import Path
 from typing import Optional, Dict
 import logging
-from datetime import datetime
+from datetime import datetime, UTC
 import argparse
 import tempfile
 import shutil
@@ -157,13 +157,62 @@ async def get_tmdb_metadata(title: str, year: Optional[int] = None) -> Optional[
         return None
 
 
+async def get_cached_hash(db, file_path: str, file_size: int) -> Optional[str]:
+    """Get cached hash from MongoDB if file hasn't changed."""
+    try:
+        cached = await db.hash_cache.find_one({
+            'file_path': file_path,
+            'file_size': file_size,
+        })
+        if cached:
+            return cached.get('file_hash')
+    except Exception as e:
+        logger.warning(f"Could not check hash cache: {e}")
+    return None
+
+
+async def save_hash_to_cache(db, file_path: str, file_hash: str, file_size: int):
+    """Save computed hash to MongoDB cache."""
+    try:
+        await db.hash_cache.update_one(
+            {'file_path': file_path},
+            {
+                '$set': {
+                    'file_path': file_path,
+                    'file_hash': file_hash,
+                    'file_size': file_size,
+                    'updated_at': datetime.now(UTC),
+                },
+                '$setOnInsert': {
+                    'created_at': datetime.now(UTC),
+                }
+            },
+            upsert=True
+        )
+    except Exception as e:
+        logger.warning(f"Could not save hash to cache: {e}")
+
+
 def calculate_file_hash(file_path: str) -> str:
     """Calculate SHA256 hash of a file."""
+    logger.info(f"  Calculating hash (this may take a while for large files)...")
     sha256_hash = hashlib.sha256()
+    file_size = os.path.getsize(file_path)
+    bytes_read = 0
+    last_progress = 0
+
     with open(file_path, "rb") as f:
-        # Read file in chunks to handle large files
-        for byte_block in iter(lambda: f.read(4096), b""):
+        for byte_block in iter(lambda: f.read(8192), b""):
             sha256_hash.update(byte_block)
+            bytes_read += len(byte_block)
+
+            # Progress update every 500MB
+            progress = int(bytes_read / (500 * 1024 * 1024))
+            if progress > last_progress and file_size > 500 * 1024 * 1024:
+                pct = (bytes_read / file_size) * 100
+                logger.info(f"    Hashing: {bytes_read / (1024**3):.1f}GB / {file_size / (1024**3):.1f}GB ({pct:.0f}%)")
+                last_progress = progress
+
     return sha256_hash.hexdigest()
 
 
@@ -201,7 +250,7 @@ async def upload_to_gcs(file_path: str, destination_blob_name: str) -> str:
         return None
 
 
-async def upload_movies(source_dir: str = None, source_url: str = None, dry_run: bool = False, limit: Optional[int] = None, start_from: Optional[str] = None):
+async def upload_movies(source_dir: str = None, source_url: str = None, dry_run: bool = False, limit: Optional[int] = None, start_from: Optional[str] = None, save_hash: bool = False):
     """Upload movies from directory or URL to GCS and MongoDB Atlas."""
 
     # Handle URL source
@@ -231,12 +280,12 @@ async def upload_movies(source_dir: str = None, source_url: str = None, dry_run:
     logger.info(f"Dry run: {dry_run}")
 
     # Initialize database - use Atlas connection string from environment
-    mongodb_url = os.environ.get('MONGODB_URL') or settings.MONGODB_URL
+    mongodb_url = os.environ.get('MONGODB_URI') or settings.MONGODB_URI
     if 'localhost' in mongodb_url:
         # Require proper Atlas credentials from environment
         raise RuntimeError(
             "Cannot use localhost for production uploads. "
-            "Please set MONGODB_URL environment variable to Atlas connection string"
+            "Please set MONGODB_URI environment variable to Atlas connection string"
         )
 
     client = AsyncIOMotorClient(mongodb_url)
@@ -325,17 +374,24 @@ async def upload_movies(source_dir: str = None, source_url: str = None, dry_run:
 
             full_path = os.path.join(directory, filename)
 
-            # Check file size - skip files larger than 10GB
+            # Check file size - skip files larger than 15GB
             file_size = os.path.getsize(full_path)
             file_size_gb = file_size / (1024 ** 3)
-            if file_size_gb > 10:
-                logger.info(f"  Skipped: File too large ({file_size_gb:.1f}GB, max 10GB)")
+            if file_size_gb > 15:
+                logger.info(f"  Skipped: File too large ({file_size_gb:.1f}GB, max 15GB)")
                 stats['skipped'] += 1
                 continue
 
-            # Calculate file hash for duplicate detection
-            file_hash = calculate_file_hash(full_path)
-            logger.info(f"  File hash: {file_hash[:16]}...")
+            # Get or calculate file hash for duplicate detection
+            file_hash = await get_cached_hash(db, full_path, file_size)
+            if file_hash:
+                logger.info(f"  Using cached hash: {file_hash[:16]}...")
+            else:
+                file_hash = calculate_file_hash(full_path)
+                logger.info(f"  File hash: {file_hash[:16]}...")
+                if save_hash:
+                    await save_hash_to_cache(db, full_path, file_hash, file_size)
+                    logger.info(f"  Saved hash to cache")
 
             # Check if file with this hash already exists
             existing = await db.content.find_one({'file_hash': file_hash})
@@ -408,6 +464,8 @@ async def upload_movies(source_dir: str = None, source_url: str = None, dry_run:
     logger.info(f"  Processed: {stats['processed']}")
     logger.info(f"  Skipped:   {stats['skipped']}")
     logger.info(f"  Failed:    {stats['failed']}")
+    if save_hash:
+        logger.info(f"  Hashes saved to MongoDB - subsequent runs will use cached hashes")
     logger.info("="*60)
 
     # Cleanup temporary directory if used
@@ -443,6 +501,11 @@ def main():
         type=str,
         help='Start processing from movies beginning with this letter (e.g., "T")'
     )
+    parser.add_argument(
+        '--save-hash',
+        action='store_true',
+        help='Save computed file hashes to MongoDB cache (useful with --dry-run)'
+    )
 
     args = parser.parse_args()
 
@@ -459,7 +522,8 @@ def main():
         source_url=args.url,
         dry_run=args.dry_run,
         limit=args.limit,
-        start_from=args.start_from
+        start_from=args.start_from,
+        save_hash=args.save_hash
     ))
 
 

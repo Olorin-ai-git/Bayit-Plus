@@ -48,6 +48,8 @@ module.exports = (env, argv) => {
       modules: [
         path.resolve(__dirname, 'node_modules'),
         path.resolve(__dirname, '../node_modules'),
+        path.resolve(__dirname, '../packages/ui'),
+        path.resolve(__dirname, '../shared'),
         'node_modules',
       ],
       alias: {
@@ -131,7 +133,15 @@ module.exports = (env, argv) => {
         // Process all TypeScript and JavaScript files with babel
         {
           test: /\.(ts|tsx|js|jsx)$/,
-          exclude: /node_modules/,
+          exclude: (modulePath) => {
+            // Exclude node_modules except @olorin packages
+            return /node_modules/.test(modulePath) && !/@olorin/.test(modulePath);
+          },
+          include: [
+            path.resolve(__dirname),
+            path.resolve(__dirname, '../shared'),
+            path.resolve(__dirname, '../packages'),
+          ],
           type: 'javascript/auto',
           use: {
             loader: 'babel-loader',
