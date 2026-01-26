@@ -208,14 +208,18 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
   };
 
   if (items.length === 0) {
+    // Calculate responsive placeholder dimensions based on carousel height
+    const placeholderHeight = Math.min(height * 0.5, isMobilePhone ? 200 : 300);
+    const placeholderWidth = placeholderHeight * 0.67; // 2:3 aspect ratio (poster)
+
     return (
       <View style={styles.container}>
         <GlassView intensity="low" style={[styles.carouselWrapper, { height }]}>
           <View style={styles.emptyContainer}>
             <GlassPlaceholder
               contentType="vod"
-              width={400}
-              height={600}
+              width={placeholderWidth}
+              height={placeholderHeight}
               accessibilityRole="image"
               accessibilityLabel="No content available"
               contentReason="unavailable"
