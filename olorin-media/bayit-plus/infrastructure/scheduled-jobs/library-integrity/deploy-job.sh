@@ -85,29 +85,21 @@ gcloud services enable \
   run.googleapis.com \
   containerregistry.googleapis.com \
   cloudscheduler.googleapis.com \
+  cloudbuild.googleapis.com \
   --quiet
 
-# Build Docker image
-echo -e "${BLUE}🐳 Building Docker image...${NC}"
+# Build and push Docker image using Cloud Build
+echo -e "${BLUE}🐳 Building Docker image with Cloud Build...${NC}"
 cd "${PROJECT_ROOT}"
-docker build \
-  -f infrastructure/scheduled-jobs/library-integrity/Dockerfile \
-  -t "${IMAGE_NAME}:latest" \
-  -t "${IMAGE_NAME}:$(date +%Y%m%d-%H%M%S)" \
+
+gcloud builds submit \
+  --tag "${IMAGE_NAME}:latest" \
+  --dockerfile infrastructure/scheduled-jobs/library-integrity/Dockerfile \
+  --timeout=20m \
   .
 
 if [ $? -ne 0 ]; then
-    echo -e "${RED}❌ Docker build failed${NC}"
-    exit 1
-fi
-
-# Push to Container Registry
-echo -e "${BLUE}📤 Pushing image to GCR...${NC}"
-docker push "${IMAGE_NAME}:latest"
-
-if [ $? -ne 0 ]; then
-    echo -e "${RED}❌ Docker push failed${NC}"
-    echo -e "${YELLOW}Try: gcloud auth configure-docker${NC}"
+    echo -e "${RED}❌ Cloud Build failed${NC}"
     exit 1
 fi
 
