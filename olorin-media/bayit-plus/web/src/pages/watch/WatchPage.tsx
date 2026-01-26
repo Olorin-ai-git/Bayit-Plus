@@ -155,6 +155,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
   const isAudio = effectiveType === 'radio' || effectiveType === 'podcast';
   const title = content.title || content.name || '';
   const requiresAuth = !streamUrl && !user;
+  const hasStreamError = !loading && !streamUrl && user;
 
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
@@ -166,6 +167,13 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
             title={title}
             poster={content.backdrop || content.thumbnail}
           />
+        ) : hasStreamError ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorTitle}>{t('watch.streamUnavailable', 'Stream Unavailable')}</Text>
+            <Text style={styles.errorMessage}>
+              {t('watch.streamError', 'Unable to load the stream. Please try again later.')}
+            </Text>
+          </View>
         ) : isAudio ? (
           <AudioPlayer
             src={streamUrl}
@@ -335,5 +343,24 @@ const styles = StyleSheet.create({
   castText: {
     fontSize: fontSize.sm,
     color: colors.textMuted,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: borderRadius['2xl'],
+  },
+  errorTitle: {
+    fontSize: fontSize['2xl'],
+    fontWeight: 'bold',
+    color: colors.error.DEFAULT,
+    marginBottom: spacing.md,
+  },
+  errorMessage: {
+    fontSize: fontSize.base,
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
 });

@@ -65,7 +65,12 @@ export default function AudioPlayer({
 
   // Initialize audio element
   useEffect(() => {
-    if (!src) return
+    if (!src) {
+      setLoading(false)
+      return
+    }
+
+    setLoading(true)
 
     if (!audioRef.current) {
       audioRef.current = new Audio()
@@ -83,6 +88,10 @@ export default function AudioPlayer({
       setIsPlaying(false)
       onEnded?.()
     }
+    const handleError = () => {
+      setLoading(false)
+      setIsPlaying(false)
+    }
 
     audio.addEventListener('canplay', handleCanPlay)
     audio.addEventListener('loadedmetadata', handleLoadedMetadata)
@@ -90,6 +99,7 @@ export default function AudioPlayer({
     audio.addEventListener('play', handlePlay)
     audio.addEventListener('pause', handlePause)
     audio.addEventListener('ended', handleEnded)
+    audio.addEventListener('error', handleError)
 
     return () => {
       audio.removeEventListener('canplay', handleCanPlay)
@@ -98,6 +108,7 @@ export default function AudioPlayer({
       audio.removeEventListener('play', handlePlay)
       audio.removeEventListener('pause', handlePause)
       audio.removeEventListener('ended', handleEnded)
+      audio.removeEventListener('error', handleError)
     }
   }, [src, onEnded])
 

@@ -31,25 +31,25 @@ export const QueueDashboard: React.FC<QueueDashboardProps> = ({
     {
       icon: Upload,
       label: t('admin.uploads.queueDashboard.total'),
-      value: queueState.totalJobs || 0,
+      value: queueState.stats?.total_jobs || 0,
       color: colors.primary.DEFAULT,
     },
     {
       icon: Clock,
       label: t('admin.uploads.queueDashboard.queued'),
-      value: queueState.queuedJobs || 0,
+      value: queueState.stats?.queued || 0,
       color: colors.warning.DEFAULT,
     },
     {
       icon: Play,
       label: t('admin.uploads.queueDashboard.active'),
-      value: queueState.activeJobs || 0,
+      value: queueState.stats?.processing || 0,
       color: colors.info.DEFAULT,
     },
     {
       icon: CheckCircle,
       label: t('admin.uploads.queueDashboard.done'),
-      value: queueState.completedToday || 0,
+      value: queueState.stats?.completed || 0,
       color: colors.success.DEFAULT,
     },
   ];
@@ -84,11 +84,11 @@ export const QueueDashboard: React.FC<QueueDashboardProps> = ({
         <GlassQueue
           stats={queueState.stats}
           activeJob={queueState.activeJob}
-          queuedJobs={queueState.queuedJobs}
+          queue={queueState.queuedJobs}
           recentCompleted={queueState.recentCompleted}
           queuePaused={queueState.queuePaused}
           pauseReason={queueState.pauseReason}
-          onRefresh={onRefresh}
+          loading={loading}
         />
       </View>
     </View>
