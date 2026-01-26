@@ -23,6 +23,7 @@ import { GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@/stores/authStore';
+import { renderIcon } from '@olorin/shared-icons/web';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;

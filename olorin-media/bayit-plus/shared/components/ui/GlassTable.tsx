@@ -3,9 +3,9 @@
  * Uses StyleSheet for React Native Web compatibility
  */
 
-import React, { ReactNode, CSSProperties } from 'react';
+import React, { ReactNode, CSSProperties, useState, useCallback, useRef, useEffect } from 'react';
 import { View, Text, Pressable, ActivityIndicator, Platform, StyleSheet } from 'react-native';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { GlassView } from './GlassView';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
@@ -13,7 +13,11 @@ export interface GlassTableColumn<T = any> {
   key: string;
   label: string;
   width?: number | string;
+  minWidth?: number;
+  maxWidth?: number;
   align?: 'left' | 'center' | 'right';
+  sortable?: boolean;
+  resizable?: boolean;
   render?: (value: any, row: T, index: number) => ReactNode;
 }
 
@@ -36,6 +40,9 @@ export interface GlassTableProps<T = any> {
   onRowPress?: (row: T, index: number) => void;
   stickyHeader?: boolean;
   animateRows?: boolean;
+  sortBy?: string;
+  sortDirection?: 'asc' | 'desc';
+  onSort?: (columnKey: string, direction: 'asc' | 'desc') => void;
   style?: any;
 }
 
@@ -52,9 +59,111 @@ export function GlassTable<T extends Record<string, any>>({
   onRowPress,
   stickyHeader = false,
   animateRows = true,
+  sortBy,
+  sortDirection,
+  onSort,
   style,
 }: GlassTableProps<T>) {
+  // State for column widths
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => {
+    const widths: Record<string, number> = {};
+    columns.forEach(column => {
+      if (typeof column.width === 'number') {
+        widths[column.key] = column.width;
+      }
+    });
+    return widths;
+  });
+
+  // State for column resizing
+  const [resizingColumn, setResizingColumn] = useState<string | null>(null);
+  const resizeStartX = useRef<number>(0);
+  const resizeStartWidth = useRef<number>(0);
+
   const totalPages = pagination ? Math.ceil(pagination.total / pagination.pageSize) : 0;
+
+  // Handle sort column click
+  const handleSort = useCallback((columnKey: string) => {
+    if (!onSort) return;
+
+    // Toggle direction: if already sorting by this column, toggle direction
+    // Otherwise, start with ascending
+    const newDirection = sortBy === columnKey && sortDirection === 'asc' ? 'desc' : 'asc';
+    onSort(columnKey, newDirection);
+  }, [sortBy, sortDirection, onSort]);
+
+  // Get sort icon for column
+  const getSortIcon = (columnKey: string) => {
+    if (sortBy !== columnKey) {
+      return <ArrowUpDown size={14} color={colors.textMuted} style={{ opacity: 0.4 }} />;
+    }
+
+    return sortDirection === 'asc'
+      ? <ArrowUp size={14} color={colors.primary.DEFAULT} />
+      : <ArrowDown size={14} color={colors.primary.DEFAULT} />;
+  };
+
+  // Get column width with state override
+  const getColumnWidth = (column: GlassTableColumn): number | string | undefined => {
+    if (columnWidths[column.key] !== undefined) {
+      return columnWidths[column.key];
+    }
+    return column.width;
+  };
+
+  // Handle column resize start
+  const handleResizeStart = useCallback((e: any, columnKey: string, currentWidth: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setResizingColumn(columnKey);
+    resizeStartX.current = e.pageX || e.clientX;
+    resizeStartWidth.current = currentWidth;
+  }, []);
+
+  // Handle column resize move
+  const handleResizeMove = useCallback((e: any) => {
+    if (!resizingColumn) return;
+
+    const currentX = e.pageX || e.clientX;
+    const deltaX = isRTL ? resizeStartX.current - currentX : currentX - resizeStartX.current;
+    const newWidth = resizeStartWidth.current + deltaX;
+
+    // Get column config for constraints
+    const column = columns.find(col => col.key === resizingColumn);
+    if (!column) return;
+
+    const minWidth = column.minWidth || 100;
+    const maxWidth = column.maxWidth || 600;
+    const constrainedWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+
+    setColumnWidths(prev => ({
+      ...prev,
+      [resizingColumn]: constrainedWidth,
+    }));
+  }, [resizingColumn, columns, isRTL]);
+
+  // Handle column resize end
+  const handleResizeEnd = useCallback(() => {
+    if (resizingColumn) {
+      setResizingColumn(null);
+    }
+  }, [resizingColumn]);
+
+  // Setup global mouse event listeners for resize
+  useEffect(() => {
+    if (resizingColumn) {
+      document.addEventListener('mousemove', handleResizeMove);
+      document.addEventListener('mouseup', handleResizeEnd);
+      document.addEventListener('mouseleave', handleResizeEnd);
+
+      return () => {
+        document.removeEventListener('mousemove', handleResizeMove);
+        document.removeEventListener('mouseup', handleResizeEnd);
+        document.removeEventListener('mouseleave', handleResizeEnd);
+      };
+    }
+  }, [resizingColumn, handleResizeMove, handleResizeEnd]);
 
   const getRowAnimationStyle = (index: number): CSSProperties => {
     if (!animateRows || Platform.OS !== 'web') return {};
@@ -88,19 +197,50 @@ export function GlassTable<T extends Record<string, any>>({
             stickyHeader && styles.stickyHeader
           ]}
         >
-          {columns.map((column) => (
-            <View
-              key={column.key}
-              style={[
-                styles.headerCell,
-                column.width ? { width: column.width as any, flex: undefined } : { flex: 1 }
-              ]}
-            >
-              <Text style={[styles.headerText, { textAlign: getTextAlign(column) }]}>
-                {column.label}
-              </Text>
-            </View>
-          ))}
+          {columns.map((column, index) => {
+            const currentWidth = getColumnWidth(column);
+            const numericWidth = typeof currentWidth === 'number' ? currentWidth : undefined;
+            return (
+              <View
+                key={column.key}
+                style={[
+                  styles.headerCellContainer,
+                  currentWidth ? { width: currentWidth as any, flex: undefined } : { flex: 1 }
+                ]}
+              >
+                <Pressable
+                  onPress={() => column.sortable && handleSort(column.key)}
+                  style={[
+                    styles.headerCell,
+                    column.sortable && styles.headerCellSortable
+                  ]}
+                >
+                  <View style={[styles.headerContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                    <Text style={[styles.headerText, { textAlign: getTextAlign(column) }]}>
+                      {column.label}
+                    </Text>
+                    {column.sortable && (
+                      <View style={styles.sortIcon}>
+                        {getSortIcon(column.key)}
+                      </View>
+                    )}
+                  </View>
+                </Pressable>
+
+                {column.resizable && index < columns.length - 1 && (
+                  <Pressable
+                    onMouseDown={(e) => handleResizeStart(e, column.key, numericWidth || 150)}
+                    style={[
+                      styles.resizeHandle,
+                      resizingColumn === column.key && styles.resizeHandleActive
+                    ]}
+                  >
+                    <View style={styles.resizeHandleLine} />
+                  </Pressable>
+                )}
+              </View>
+            );
+          })}
         </View>
 
         {loading ? (
@@ -127,26 +267,29 @@ export function GlassTable<T extends Record<string, any>>({
                 ]}
               >
                 <View style={[styles.rowContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                  {columns.map((column) => (
-                    <View
-                      key={column.key}
-                      style={[
-                        styles.cell,
-                        column.width ? { width: column.width as any, flex: undefined } : { flex: 1 }
-                      ]}
-                    >
-                      {column.render ? (
-                        column.render(row[column.key], row, rowIndex)
-                      ) : (
-                        <Text
-                          style={[styles.cellText, { textAlign: getTextAlign(column) }]}
-                          numberOfLines={1}
-                        >
-                          {row[column.key]?.toString() || '-'}
-                        </Text>
-                      )}
-                    </View>
-                  ))}
+                  {columns.map((column) => {
+                    const currentWidth = getColumnWidth(column);
+                    return (
+                      <View
+                        key={column.key}
+                        style={[
+                          styles.cell,
+                          currentWidth ? { width: currentWidth as any, flex: undefined } : { flex: 1 }
+                        ]}
+                      >
+                        {column.render ? (
+                          column.render(row[column.key], row, rowIndex)
+                        ) : (
+                          <Text
+                            style={[styles.cellText, { textAlign: getTextAlign(column) }]}
+                            numberOfLines={1}
+                          >
+                            {row[column.key]?.toString() || '-'}
+                          </Text>
+                        )}
+                      </View>
+                    );
+                  })}
                 </View>
               </Pressable>
             );
@@ -289,15 +432,29 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+    position: 'relative' as any,
   },
   stickyHeader: {
     position: 'sticky' as any,
     top: 0,
     zIndex: 10,
   },
+  headerCellContainer: {
+    position: 'relative' as any,
+    flexDirection: 'row' as any,
+  },
   headerCell: {
+    flex: 1,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
+  },
+  headerCellSortable: {
+    cursor: 'pointer',
+    userSelect: 'none',
+  } as any,
+  headerContent: {
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   headerText: {
     fontSize: 13,
@@ -308,6 +465,32 @@ const styles = StyleSheet.create({
     // @ts-ignore - Web CSS
     whiteSpace: 'nowrap',
   },
+  sortIcon: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: spacing.xs / 2,
+  } as any,
+  resizeHandle: {
+    position: 'absolute' as any,
+    right: -1,
+    top: 0,
+    bottom: 0,
+    width: 4,
+    cursor: 'col-resize',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    userSelect: 'none',
+  } as any,
+  resizeHandleActive: {
+    backgroundColor: 'rgba(139, 92, 246, 0.3)',
+  } as any,
+  resizeHandleLine: {
+    width: 1,
+    height: '60%',
+    backgroundColor: 'rgba(139, 92, 246, 0.5)',
+  } as any,
   loadingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
