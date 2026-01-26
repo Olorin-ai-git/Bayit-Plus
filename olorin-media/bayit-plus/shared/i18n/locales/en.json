@@ -20,6 +20,7 @@
     "recommended": "Recommended",
     "edit": "Edit",
     "delete": "Delete",
+    "confirmDelete": "Confirm Delete",
     "add": "Add",
     "enabled": "Enabled",
     "disabled": "Disabled",
