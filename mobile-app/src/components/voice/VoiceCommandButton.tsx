@@ -84,6 +84,16 @@ const VoiceCommandButton: React.FC<VoiceCommandButtonProps> = ({
           disabled={isDisabled}
           isRTL={isRTL}
           testID="voice-command-button"
+          accessibilityLabel={
+            isDisabled
+              ? 'Voice command disabled'
+              : isListening
+              ? 'Voice command listening'
+              : 'Voice command'
+          }
+          accessibilityHint="Double tap to activate voice search"
+          accessibilityRole="button"
+          accessibilityState={{ disabled: isDisabled, busy: isListening }}
           style={[
             styles.fab,
             { backgroundColor: buttonColor },
