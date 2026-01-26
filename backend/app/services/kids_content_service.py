@@ -536,13 +536,20 @@ class KidsContentService:
                 # (We'll count items that match this subcategory's keywords)
                 parent_category = SUBCATEGORY_PARENT_MAP.get(subcat.slug, "educational")
 
+                # Get translated names from labels (SectionSubcategory uses name_key for translations)
+                labels = SUBCATEGORY_LABELS.get(subcat.slug, {
+                    "he": subcat.slug,
+                    "en": subcat.slug,
+                    "es": subcat.slug
+                })
+
                 response = KidsSubcategoryResponse(
                     id=str(subcat.id),
                     slug=subcat.slug,
-                    name=subcat.name,
-                    name_en=subcat.name_en,
-                    name_es=subcat.name_es,
-                    description=subcat.description,
+                    name=labels.get("he", subcat.slug),
+                    name_en=labels.get("en", subcat.slug),
+                    name_es=labels.get("es", subcat.slug),
+                    description=subcat.description_key or "",
                     icon=subcat.icon,
                     parent_category=parent_category,
                     min_age=0,
@@ -558,8 +565,8 @@ class KidsContentService:
                 grouped_by_parent[parent_category].append(
                     {
                         "slug": subcat.slug,
-                        "name": subcat.name,
-                        "name_en": subcat.name_en,
+                        "name": labels.get("he", subcat.slug),
+                        "name_en": labels.get("en", subcat.slug),
                     }
                 )
 

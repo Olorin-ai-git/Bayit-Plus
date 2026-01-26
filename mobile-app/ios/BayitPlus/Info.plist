@@ -33,6 +33,13 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_http._tcp</string>
+		<string>_ws._tcp</string>
+	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Bayit+ needs access to your local network to connect to the development server during testing.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Bayit Plus needs access</string>
 	<key>NSMicrophoneUsageDescription</key>

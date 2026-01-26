@@ -28,9 +28,10 @@
 - **Port**: 8080
 
 ### MongoDB Atlas
-- **Cluster**: `cluster0.ydrvaft.mongodb.net`
-- **Database**: `bayit_plus` (new database created)
-- **Connection**: Verified via Secret Manager
+- **Cluster**: `cluster0.fnjp1v.mongodb.net` (new dedicated cluster)
+- **Database**: `bayit_plus`
+- **Connection**: Verified via Secret Manager (bayit-mongodb-url secret)
+- **Migration**: Completed 2026-01-26 (migrated from cluster0.ydrvaft.mongodb.net)
 
 ### Google Cloud Storage
 - **Bucket**: `gs://bayit-plus-media`

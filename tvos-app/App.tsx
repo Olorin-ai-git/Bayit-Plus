@@ -2,34 +2,40 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { StatusBar, LogBox, View, Pressable, Text, Animated } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { I18nextProvider, useTranslation } from 'react-i18next';
+import { QueryClientProvider } from '@tanstack/react-query';
 import i18n, { loadSavedLanguage } from '@bayit/shared-i18n';
+import { queryClient } from './src/config/queryClient';
 import { GlassAlert, GlassAlertRoot } from '@bayit/shared/components/ui';
+// tvOS screens - import from local src/screens
 import {
   HomeScreen,
   PlayerScreen,
-  LoginScreen,
   LiveTVScreen,
   RadioScreen,
   VODScreen,
   PodcastsScreen,
   SearchScreen,
-  RegisterScreen,
   ProfileScreen,
   FavoritesScreen,
-  DownloadsScreen,
-  WatchlistScreen,
-  MorningRitualScreen,
-  ProfileSelectionScreen,
   ChildrenScreen,
   FlowsScreen,
   JudaismScreen,
   EPGScreen,
+  SettingsScreen,
+} from './src/screens';
+
+// Fallback to shared screens for non-TV-optimized screens
+import {
+  LoginScreen,
+  RegisterScreen,
+  DownloadsScreen,
+  WatchlistScreen,
+  MorningRitualScreen,
+  ProfileSelectionScreen,
   MovieDetailScreen,
   SeriesDetailScreen,
-  SettingsScreen,
   RecordingsScreen,
   HelpScreen,
   SupportScreen,
@@ -48,6 +54,9 @@ import { chatService } from '@bayit/shared-services';
 import { TVHeader } from './src/components/TVHeader';
 import { useTVConstantListening } from './src/hooks/useTVConstantListening';
 import { SplashScreen } from './src/components/SplashScreen';
+import { voiceManager } from './src/services/voiceManager';
+import { TVVoiceErrorAlert } from './src/components/voice/TVVoiceErrorAlert';
+import { useVoiceStore } from './src/stores/voiceStore';
 
 // Ignore specific warnings for TV
 LogBox.ignoreLogs([
@@ -152,24 +161,23 @@ export type MainTabParamList = {
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
-const Tab = createBottomTabNavigator<MainTabParamList>();
+const MainStack = createStackNavigator<MainTabParamList>();
 
-// Main Tab Navigator (tabs hidden - using header navigation)
-function MainTabs() {
+// Main Navigator (tvOS - no tabs, using TVHeader for navigation)
+function MainNavigator() {
   return (
-    <Tab.Navigator
-      tabBar={() => null}
+    <MainStack.Navigator
       screenOptions={{
         headerShown: false,
       }}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="VOD" component={VODScreen} />
-      <Tab.Screen name="LiveTV" component={LiveTVScreen} />
-      <Tab.Screen name="Radio" component={RadioScreen} />
-      <Tab.Screen name="Podcasts" component={PodcastsScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-    </Tab.Navigator>
+      <MainStack.Screen name="Home" component={HomeScreen} />
+      <MainStack.Screen name="VOD" component={VODScreen} />
+      <MainStack.Screen name="LiveTV" component={LiveTVScreen} />
+      <MainStack.Screen name="Radio" component={RadioScreen} />
+      <MainStack.Screen name="Podcasts" component={PodcastsScreen} />
+      <MainStack.Screen name="Profile" component={ProfileScreen} />
+    </MainStack.Navigator>
   );
 }
 
@@ -180,6 +188,15 @@ const AppContent: React.FC = () => {
   const [chatbotVisible, setChatbotVisible] = useState(false);
   const { sendMessage, toggleOpen } = useChatbotStore();
   const { preferences } = useVoiceSettingsStore();
+  const voiceError = useVoiceStore((state) => state.error);
+
+  // Initialize voice manager on mount
+  useEffect(() => {
+    voiceManager.initialize?.();
+    return () => {
+      voiceManager.cleanup?.();
+    };
+  }, []);
 
   // Voice Support for floating wizard hat FAB
   const {
@@ -290,7 +307,7 @@ const AppContent: React.FC = () => {
           <Stack.Screen name="ProfileSelection" component={ProfileSelectionScreen} />
           <Stack.Screen name="CreateProfile" component={ProfileFormScreen} />
           <Stack.Screen name="EditProfile" component={ProfileFormScreen} />
-          <Stack.Screen name="Main" component={MainTabs} />
+          <Stack.Screen name="Main" component={MainNavigator} />
           <Stack.Screen name="MorningRitual" component={MorningRitualScreen} />
           <Stack.Screen name="Judaism" component={JudaismScreen} />
           <Stack.Screen name="Children" component={ChildrenScreen} />
@@ -343,6 +360,9 @@ const AppContent: React.FC = () => {
         onStopListening={stopVoiceListening}
         onInterrupt={interrupt}
       />
+
+      {/* Voice Error Alert */}
+      {voiceError && <TVVoiceErrorAlert onDismiss={() => {}} />}
     </View>
   );
 };
@@ -513,25 +533,27 @@ function App(): React.JSX.Element {
   }, []);
 
   return (
-    <I18nextProvider i18n={i18n}>
-      <SafeAreaProvider>
-        <GlassAlertRoot>
-          {showSplash ? (
-            <SplashScreen onComplete={handleSplashComplete} minimumDuration={3000} />
-          ) : (
-            <ErrorBoundary>
-              <ModalProvider>
-                <ProfileProvider>
-                  <NavigationContainer>
-                    <AppContentWithHandlers />
-                  </NavigationContainer>
-                </ProfileProvider>
-              </ModalProvider>
-            </ErrorBoundary>
-          )}
-        </GlassAlertRoot>
-      </SafeAreaProvider>
-    </I18nextProvider>
+    <QueryClientProvider client={queryClient}>
+      <I18nextProvider i18n={i18n}>
+        <SafeAreaProvider>
+          <GlassAlertRoot>
+            {showSplash ? (
+              <SplashScreen onComplete={handleSplashComplete} minimumDuration={3000} />
+            ) : (
+              <ErrorBoundary>
+                <ModalProvider>
+                  <ProfileProvider>
+                    <NavigationContainer>
+                      <AppContentWithHandlers />
+                    </NavigationContainer>
+                  </ProfileProvider>
+                </ModalProvider>
+              </ErrorBoundary>
+            )}
+          </GlassAlertRoot>
+        </SafeAreaProvider>
+      </I18nextProvider>
+    </QueryClientProvider>
   );
 }
 

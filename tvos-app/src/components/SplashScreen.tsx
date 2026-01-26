@@ -99,7 +99,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   };
 
   return (
-    <Animated.View className="absolute inset-0 bg-black z-[9999]" style={{ opacity: fadeAnim }}>
+    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <Video
         source={videoSource}
         style={styles.video}
@@ -117,11 +117,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 
       {/* Skip button - visible after video loads */}
       {videoLoaded && (
-        <Pressable
-          className="absolute bottom-[60px] right-[60px] px-8 py-4 bg-white/20 rounded-xl border-2 border-transparent focus:bg-purple-500/40 focus:border-purple-500 focus:scale-105"
-          onPress={handleSkip}
-        >
-          <Text className="text-white text-xl font-semibold">Skip</Text>
+        <Pressable style={styles.skipButton} onPress={handleSkip}>
+          <Text style={styles.skipButtonText}>Skip</Text>
         </Pressable>
       )}
     </Animated.View>
@@ -129,12 +126,37 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#000000',
+    zIndex: 9999,
+  },
   video: {
     position: 'absolute',
     top: 0,
     left: 0,
     bottom: 0,
     right: 0,
+  },
+  skipButton: {
+    position: 'absolute',
+    bottom: 60,
+    right: 60,
+    paddingHorizontal: 32,
+    paddingVertical: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  skipButtonText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '600',
   },
 });
 

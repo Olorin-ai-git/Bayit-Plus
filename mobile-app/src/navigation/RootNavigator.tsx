@@ -21,14 +21,12 @@ import type { RootStackParamList } from './types';
 import MainTabNavigator from './MainTabNavigator';
 import { colors } from '@olorin/design-tokens';
 
-// Eager load: Auth screens (needed before Main) & shared screens
-import {
-  LoginScreen,
-  RegisterScreen,
-  MorningRitualScreen,
-  SupportScreen,
-  RecordingsScreen,
-} from '@bayit/shared-screens';
+// Eager load: Auth screens (needed before Main)
+import { LoginScreen } from '../screens/LoginScreen';
+import { RegisterScreen } from '../screens/RegisterScreen';
+import { MorningRitualScreen } from '../screens/MorningRitualScreen';
+import { SupportScreen } from '../screens/SupportScreen';
+import { RecordingsScreen } from '../screens/RecordingsScreen';
 
 // Eager load: Profile selection (needed in auth flow)
 import { ProfileSelectionScreenMobile } from '../screens';
