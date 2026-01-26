@@ -15,6 +15,7 @@ import AudioPlayer from '@/components/player/AudioPlayer';
 import { YnetMivzakimWidget } from './YnetMivzakimWidget';
 import { useDirection } from '@/hooks/useDirection';
 import type { Widget, WidgetPosition } from '@/types/widget';
+import type { PodcastEpisode } from '@/types/podcast';
 import logger from '@/utils/logger';
 
 interface WidgetContainerProps {
@@ -27,6 +28,7 @@ interface WidgetContainerProps {
   onToggleMinimize: () => void;
   onPositionChange: (position: Partial<WidgetPosition>) => void;
   streamUrl?: string;
+  episodeData?: PodcastEpisode;
 }
 
 // Check if this is a TV build
@@ -45,6 +47,7 @@ export default function WidgetContainer({
   onToggleMinimize,
   onPositionChange,
   streamUrl,
+  episodeData,
 }: WidgetContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { isRTL } = useDirection();
@@ -55,6 +58,7 @@ export default function WidgetContainer({
   const [error, setError] = useState<string | null>(null);
   const [isFocused, setIsFocused] = useState(IS_TV_BUILD); // Start focused on TV
   const [refreshKey, setRefreshKey] = useState(0);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [isResizing, setIsResizing] = useState(false);
   const [resizeDirection, setResizeDirection] = useState<string | null>(null);
   const resizeStartRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
@@ -62,6 +66,7 @@ export default function WidgetContainer({
   // Handle manual refresh
   const handleRefresh = useCallback(() => {
     setRefreshKey(prev => prev + 1);
+    setLastUpdated(new Date());
   }, []);
 
   // Minimized widget dimensions
@@ -119,6 +124,75 @@ export default function WidgetContainer({
   const handleToggleMinimize = useCallback(() => {
     onToggleMinimize();
   }, [onToggleMinimize]);
+
+  // Parse DD/MM/YYYY date format
+  const parseDDMMYYYY = useCallback((dateStr: string): Date | null => {
+    try {
+      const parts = dateStr.split('/');
+      if (parts.length !== 3) return null;
+
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+      const year = parseInt(parts[2], 10);
+
+      if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+
+      return new Date(year, month, day);
+    } catch {
+      return null;
+    }
+  }, []);
+
+  // Format last updated time or episode broadcast date
+  const formatTimestamp = useCallback(() => {
+    console.log('formatTimestamp called:', {
+      contentType: widget.content.content_type,
+      hasEpisodeData: !!episodeData,
+      episodeData,
+      publishedAt: episodeData?.publishedAt
+    });
+
+    // For podcasts, show episode broadcast date if available
+    if (widget.content.content_type === 'podcast' && episodeData?.publishedAt) {
+      // Parse DD/MM/YYYY format
+      const publishedDate = parseDDMMYYYY(episodeData.publishedAt);
+
+      if (publishedDate) {
+        // Normalize both dates to midnight for accurate day comparison
+        const todayMidnight = new Date();
+        todayMidnight.setHours(0, 0, 0, 0);
+
+        const publishedMidnight = new Date(publishedDate);
+        publishedMidnight.setHours(0, 0, 0, 0);
+
+        const diffDays = Math.floor((todayMidnight.getTime() - publishedMidnight.getTime()) / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) return 'Today';
+        if (diffDays === 1) return 'Yesterday';
+        if (diffDays > 0 && diffDays < 7) return `${diffDays}d ago`;
+        if (diffDays < 0) return 'Upcoming'; // Future date
+        return publishedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
+    }
+
+    // For other content types, show last updated time
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - lastUpdated.getTime()) / 1000); // seconds
+
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }, [lastUpdated, widget.content.content_type, episodeData, parseDDMMYYYY]);
+
+  // Update timestamp display every minute
+  const [, setUpdateTrigger] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setUpdateTrigger(prev => prev + 1);
+    }, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, []);
 
   // Resize handlers
   const MIN_WIDTH = 200;
@@ -330,6 +404,7 @@ export default function WidgetContainer({
           return (
             <div style={styles.playerWrapper as any}>
               <VideoPlayer
+                key={refreshKey}
                 src={streamUrl}
                 title={widget.title}
                 isLive={true}
@@ -345,6 +420,7 @@ export default function WidgetContainer({
           return (
             <div style={styles.playerWrapper as any}>
               <VideoPlayer
+                key={refreshKey}
                 src={streamUrl}
                 title={widget.title}
                 isLive={false}
@@ -360,6 +436,7 @@ export default function WidgetContainer({
           return (
             <div style={styles.playerWrapper as any}>
               <AudioPlayer
+                key={refreshKey}
                 src={streamUrl}
                 title={widget.title}
                 cover={widget.cover_url || widget.icon}
@@ -375,6 +452,7 @@ export default function WidgetContainer({
           return (
             <div style={styles.playerWrapper as any}>
               <AudioPlayer
+                key={refreshKey}
                 src={streamUrl}
                 title={widget.title}
                 cover={widget.cover_url || widget.icon}
@@ -389,6 +467,7 @@ export default function WidgetContainer({
           }
           return (
             <iframe
+              key={refreshKey}
               src={widget.content.iframe_url}
               title={widget.content.iframe_title || widget.title}
               style={styles.iframe as any}
@@ -505,8 +584,11 @@ export default function WidgetContainer({
 
           {/* Title */}
           <View style={styles.titleContainer}>
-            {widget.icon && <Text style={styles.icon}>{widget.icon}</Text>}
-            <Text style={styles.title} numberOfLines={1}>{widget.title}</Text>
+            <View style={styles.titleRow}>
+              {widget.icon && <Text style={styles.icon}>{widget.icon}</Text>}
+              <Text style={styles.title} numberOfLines={1}>{widget.title}</Text>
+            </View>
+            <Text style={styles.timestamp}>{formatTimestamp()}</Text>
           </View>
         </div>
 
@@ -585,13 +667,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
+    padding: 5,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     backdropFilter: 'blur(8px)',
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-    minHeight: 36,
+    minHeight: 40,
     display: 'flex',
     userSelect: 'none',
   } as any,
@@ -641,11 +722,16 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   } as any,
   titleContainer: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    gap: 2,
+    flex: 1,
+    maxWidth: '40%',
+  },
+  titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    flex: 1,
-    maxWidth: '40%',
   },
   controlsContainer: {
     flexDirection: 'row',
@@ -659,6 +745,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: colors.text,
+  },
+  timestamp: {
+    fontSize: 9,
+    color: 'rgba(255, 255, 255, 0.5)',
+    fontWeight: '400',
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
   },
   controlButton: {
     width: 26,

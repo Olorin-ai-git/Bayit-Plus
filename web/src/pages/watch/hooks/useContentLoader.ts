@@ -74,12 +74,15 @@ export function useContentLoader(
 
       // Then, fetch stream URL (may fail for unauthenticated users)
       try {
+        logger.debug(`Fetching stream URL for ${contentType}`, 'useContentLoader', { contentId, contentType });
+
         switch (contentType) {
           case 'live':
             stream = await liveService.getStreamUrl(contentId);
             break;
           case 'radio':
             stream = await radioService.getStreamUrl(contentId);
+            logger.debug('Radio stream response', 'useContentLoader', stream);
             break;
           case 'podcast':
             if (data.latestEpisode) {
@@ -90,9 +93,16 @@ export function useContentLoader(
             stream = await contentService.getStreamUrl(contentId);
         }
 
-        setStreamUrl(stream?.url || null);
+        const streamUrlValue = stream?.url || null;
+        logger.debug('Setting stream URL', 'useContentLoader', { streamUrlValue });
+        setStreamUrl(streamUrlValue);
       } catch (error: any) {
-        logger.error('Failed to load stream URL', 'useContentLoader', error);
+        logger.error('Failed to load stream URL', 'useContentLoader', {
+          error: error.message || error,
+          status: error?.status || error?.response?.status,
+          contentId,
+          contentType
+        });
 
         // Handle 401 Unauthorized - user needs to sign in
         if (error?.status === 401 || error?.response?.status === 401) {
@@ -100,6 +110,14 @@ export function useContentLoader(
             level: 'warning',
             message: t('auth.signInRequired', 'Please sign in to watch this content'),
             title: t('auth.signInRequiredTitle', 'Sign In Required'),
+            duration: 5000,
+          });
+        } else {
+          // Show generic error notification for other failures
+          addNotification({
+            level: 'error',
+            message: t('errors.streamLoadFailed', 'Failed to load stream. Please try again.'),
+            title: t('errors.streamError', 'Stream Error'),
             duration: 5000,
           });
         }
