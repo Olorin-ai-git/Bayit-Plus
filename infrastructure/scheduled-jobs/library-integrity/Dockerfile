@@ -13,12 +13,19 @@ RUN curl -sSL https://install.python-poetry.org | python3 - \
 # Set working directory
 WORKDIR /app
 
+# Copy local packages first (required dependencies)
+COPY packages/bayit-voice-pipeline /packages/bayit-voice-pipeline
+COPY packages/bayit-translation /packages/bayit-translation
+COPY packages/olorin-core /packages/olorin-core
+COPY packages/olorin-shared /packages/olorin-shared
+COPY packages/python/olorin-i18n /packages/python/olorin-i18n
+
 # Copy backend dependency files
 COPY backend/pyproject.toml backend/poetry.lock ./
 
 # Install dependencies (no dev dependencies)
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-dev --no-interaction --no-ansi
+    && poetry install --only main --no-interaction --no-ansi
 
 # Copy backend application code
 COPY backend/app ./app

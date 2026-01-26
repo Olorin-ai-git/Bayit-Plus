@@ -92,16 +92,37 @@ gcloud services enable \
 echo -e "${BLUE}🐳 Building Docker image with Cloud Build...${NC}"
 cd "${PROJECT_ROOT}"
 
+# Create temporary cloudbuild.yaml
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+cat > /tmp/cloudbuild-library-integrity.yaml <<EOF_BUILD
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'infrastructure/scheduled-jobs/library-integrity/Dockerfile'
+      - '-t'
+      - '${IMAGE_NAME}:latest'
+      - '-t'
+      - '${IMAGE_NAME}:${TIMESTAMP}'
+      - '.'
+images:
+  - '${IMAGE_NAME}:latest'
+  - '${IMAGE_NAME}:${TIMESTAMP}'
+timeout: 1200s
+EOF_BUILD
+
 gcloud builds submit \
-  --tag "${IMAGE_NAME}:latest" \
-  --dockerfile infrastructure/scheduled-jobs/library-integrity/Dockerfile \
-  --timeout=20m \
+  --config=/tmp/cloudbuild-library-integrity.yaml \
   .
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Cloud Build failed${NC}"
+    rm -f /tmp/cloudbuild-library-integrity.yaml
     exit 1
 fi
+
+rm -f /tmp/cloudbuild-library-integrity.yaml
 
 # Load environment variables from olorin-infra
 if [ -f "/Users/olorin/Documents/olorin/olorin-infra/.env" ]; then
