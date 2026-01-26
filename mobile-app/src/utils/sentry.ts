@@ -26,7 +26,7 @@ try {
 import { initLoggerSentry } from "@bayit/shared/utils/logger";
 import { initErrorBoundarySentry } from "@bayit/shared/components/ErrorBoundary";
 
-import logger from '@/utils/logger';
+import logger from './logger';
 
 
 const moduleLogger = logger.scope('sentry');

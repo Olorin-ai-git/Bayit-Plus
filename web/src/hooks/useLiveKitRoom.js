@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   Room,
   RoomEvent,
-  Track,
   createLocalAudioTrack,
   ConnectionState,
 } from 'livekit-client'
@@ -62,6 +61,26 @@ export function useLiveKitRoom(options = {}) {
     }
 
     setParticipants(participantList)
+  }, [])
+
+  // Disconnect from room
+  const disconnect = useCallback(async () => {
+    if (localTrackRef.current) {
+      localTrackRef.current.stop()
+      localTrackRef.current = null
+    }
+
+    if (roomRef.current) {
+      await roomRef.current.disconnect()
+      roomRef.current = null
+    }
+
+    setRoom(null)
+    setIsConnected(false)
+    setIsMuted(true)
+    setIsSpeaking(false)
+    setParticipants([])
+    setConnectionState(ConnectionState.Disconnected)
   }, [])
 
   // Connect to room
@@ -145,27 +164,7 @@ export function useLiveKitRoom(options = {}) {
     } finally {
       setIsConnecting(false)
     }
-  }, [serverUrl, onParticipantJoined, onParticipantLeft, onSpeakingChanged, onConnectionStateChanged, onError, updateParticipants])
-
-  // Disconnect from room
-  const disconnect = useCallback(async () => {
-    if (localTrackRef.current) {
-      localTrackRef.current.stop()
-      localTrackRef.current = null
-    }
-
-    if (roomRef.current) {
-      await roomRef.current.disconnect()
-      roomRef.current = null
-    }
-
-    setRoom(null)
-    setIsConnected(false)
-    setIsMuted(true)
-    setIsSpeaking(false)
-    setParticipants([])
-    setConnectionState(ConnectionState.Disconnected)
-  }, [])
+  }, [serverUrl, onParticipantJoined, onParticipantLeft, onSpeakingChanged, onConnectionStateChanged, onError, updateParticipants, disconnect])
 
   // Toggle microphone
   const toggleMute = useCallback(async () => {

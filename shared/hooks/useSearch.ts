@@ -140,8 +140,9 @@ export function useSearch(options: UseSearchOptions = {}) {
    */
   const getApiBaseUrl = useCallback(() => {
     if (Platform.OS === 'web') {
-      // Web: Use Vite environment variable
-      const apiUrl = typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL;
+      // Web: Use Vite environment variable (injected via vite.config define)
+      // Note: import.meta not supported by Hermes, use process.env which Vite can inject
+      const apiUrl = process.env.VITE_API_URL;
       if (!apiUrl) {
         logger.error('VITE_API_URL not configured', 'useSearch');
         throw new Error('API URL not configured. Set VITE_API_URL in environment.');

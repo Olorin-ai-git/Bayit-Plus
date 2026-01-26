@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "bayit-content": {
+      "command": "node",
+      "args": ["backend/app/mcp_server/server.js"],
+      "env": {
+        "MCP_SERVER_NAME": "bayit-content",
+        "MONGODB_URL": "${MONGODB_URL}"
+      }
+    },
+    "agentvibes": {
+      "command": "npx",
+      "args": ["-y", "--package=agentvibes", "agentvibes-mcp-server"],
+      "env": {}
+    }
+  }
+}

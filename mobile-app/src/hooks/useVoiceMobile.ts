@@ -65,7 +65,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
   useEffect(() => {
     if (hasPermissions) {
       speechService.setLanguage(language).catch((err) => {
-        moduleLogger.error('Failed to set language:", err', err);
+        moduleLogger.error('Failed to set language:', err);
       });
     }
   }, [language, hasPermissions]);
@@ -81,7 +81,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
       const permissions = await speechService.checkPermissions();
       setHasPermissions(permissions.microphone && permissions.speech);
     } catch (err) {
-      moduleLogger.error('Permission check failed:", err', err);
+      moduleLogger.error('Permission check failed:', err);
       setHasPermissions(false);
     }
   }, []);
@@ -98,7 +98,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
       setHasPermissions(result.granted);
       return result.granted;
     } catch (err: any) {
-      moduleLogger.error('Permission request failed:", err', err);
+      moduleLogger.error('Permission request failed:', err);
 
       let message = "Failed to request permissions";
       if (err.code === "PERMISSION_DENIED") {
@@ -230,7 +230,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
 
         setError(null);
       } catch (err: any) {
-        moduleLogger.error('Command processing failed:", err', err);
+        moduleLogger.error('Command processing failed:', err);
         setError(err.message || "Failed to process command");
 
         // Speak error message
@@ -274,7 +274,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
   // Handle speech recognition error
   const handleRecognitionError = useCallback(
     (errorEvent: { error: string }) => {
-      moduleLogger.error('Recognition error:", errorEvent.error', errorEvent.error);
+      moduleLogger.error('Recognition error:', errorEvent.error);
       setError(errorEvent.error);
       setIsListening(false);
     },
@@ -303,7 +303,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
       setTranscript("");
       currentTranscriptRef.current = "";
     } catch (err: any) {
-      moduleLogger.error('Failed to start listening:", err', err);
+      moduleLogger.error('Failed to start listening:', err);
       setError(err.message || "Failed to start voice recognition");
       setIsListening(false);
 
@@ -331,7 +331,7 @@ export function useVoiceMobile(): UseVoiceMobileResult {
         await processCommand(currentTranscriptRef.current);
       }
     } catch (err) {
-      moduleLogger.error('Failed to stop listening:", err', err);
+      moduleLogger.error('Failed to stop listening:', err);
     } finally {
       setIsListening(false);
 

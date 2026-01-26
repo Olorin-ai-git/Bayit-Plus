@@ -3526,7 +3526,9 @@
       "authenticating": "Autenticando...",
       "success": "¡Contenido Desbloqueado!",
       "cancelled": "La autenticación fue cancelada",
-      "error": "La autenticación falló. Por favor, intenta de nuevo."
+      "error": "La autenticación falló. Por favor, intenta de nuevo.",
+      "signInRequired": "Por favor, inicia sesión para ver este contenido",
+      "signInRequiredTitle": "Inicio de Sesión Requerido"
     },
     "qr": {
       "useQR": "Usar Teléfono para Desbloquear",

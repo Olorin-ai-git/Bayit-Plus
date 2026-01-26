@@ -48,7 +48,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 direct_messages, downloads, epg,
                                 family_controls, favorites, friends, health,
                                 history, jerusalem, judaism, librarian, live,
-                                live_dubbing, live_quota, news, notifications,
+                                live_dubbing, live_quota, news, nlp, notifications,
                                 onboarding, party, password_reset,
                                 playback_session, podcasts, profile_stats,
                                 profiles, radio, recordings, ritual, search,
@@ -314,6 +314,12 @@ def register_all_routers(app: FastAPI) -> None:
     # Legacy redirect routes: /api/v1/olorin/* -> /api/v1/olorin/v1/*
     app.include_router(olorin_legacy_router, prefix=prefix, tags=["olorin-legacy"])
     logger.debug("Registered Olorin.ai platform routes (versioned + legacy redirects)")
+
+    # ============================================
+    # NLP Routes (Natural Language Processing for CLI)
+    # ============================================
+    app.include_router(nlp.router, prefix=prefix, tags=["nlp"])
+    logger.debug("Registered NLP routes (intent parsing, agent execution, semantic search, voice commands)")
 
     logger.info(f"All API routers registered with prefix {prefix}")
 

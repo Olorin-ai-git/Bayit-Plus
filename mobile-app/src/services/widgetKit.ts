@@ -44,7 +44,7 @@ class WidgetKitService {
       await WidgetKitModule.updateWidgetData(widgetType, data);
       moduleLogger.debug('[WidgetKitService] Widget data updated:', widgetType);
     } catch (error) {
-      moduleLogger.error('Failed to update widget data:', error', error);
+      moduleLogger.error('Failed to update widget data:', error);
       throw error;
     }
   }
@@ -62,7 +62,7 @@ class WidgetKitService {
       await WidgetKitModule.reloadTimelines(widgetTypes);
       moduleLogger.debug('[WidgetKitService] Widget timelines reloaded');
     } catch (error) {
-      moduleLogger.error('Failed to reload timelines:', error', error);
+      moduleLogger.error('Failed to reload timelines:', error);
     }
   }
 
@@ -78,7 +78,7 @@ class WidgetKitService {
       const result = await WidgetKitModule.getCurrentConfigurations();
       return result.widgets || [];
     } catch (error) {
-      moduleLogger.error('Failed to get configurations:', error', error);
+      moduleLogger.error('Failed to get configurations:', error);
       return [];
     }
   }

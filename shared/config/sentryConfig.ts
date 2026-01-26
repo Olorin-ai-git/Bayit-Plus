@@ -21,21 +21,19 @@ export interface SentryConfig {
  * Works across Web (Vite), React Native (process.env), and Node.js environments.
  */
 export const getSentryConfig = (): SentryConfig => {
-  // Try Vite environment variables first (web)
-  const viteEnv = typeof import.meta !== 'undefined' && (import.meta as any).env;
+  // Note: import.meta not supported by Hermes (React Native)
+  // For web, Vite injects env vars into process.env via define config
 
   // Get DSN from appropriate environment variable
   const dsn =
-    viteEnv?.VITE_SENTRY_DSN ||
-    process.env.SENTRY_DSN ||
     process.env.VITE_SENTRY_DSN ||
+    process.env.SENTRY_DSN ||
     '';
 
   // Get environment
   const environment =
-    viteEnv?.VITE_SENTRY_ENVIRONMENT ||
-    process.env.SENTRY_ENVIRONMENT ||
     process.env.VITE_SENTRY_ENVIRONMENT ||
+    process.env.SENTRY_ENVIRONMENT ||
     'development';
 
   // Get release version

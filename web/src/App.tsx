@@ -1,5 +1,5 @@
 import { useEffect, lazy, Suspense } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { initWebI18n, setupWebDirectionListener } from '@bayit/shared-i18n/web'
 import { useDirection } from '@/hooks/useDirection'
 import { VoiceListeningProvider } from '@bayit/shared-contexts'
@@ -125,6 +125,23 @@ const TranslationDashboardPage = lazy(() => import('./pages/admin/TranslationDas
 function App() {
   // Set document direction based on language (RTL for Hebrew/Arabic, LTR for others)
   useDirection()
+  const location = useLocation()
+
+  // Remove splash screen when navigating away from home page
+  useEffect(() => {
+    const isHomePage = location.pathname === '/' || location.pathname === ''
+    if (!isHomePage) {
+      const splash = document.getElementById('splash-screen')
+      if (splash) {
+        logger.debug('Route changed from home - removing splash screen', 'App', {
+          pathname: location.pathname
+        })
+        splash.remove()
+        window.splashScreenRemoved = true
+        window.dispatchEvent(new Event('splashRemoved'))
+      }
+    }
+  }, [location.pathname])
 
   useEffect(() => {
     const initI18n = async () => {

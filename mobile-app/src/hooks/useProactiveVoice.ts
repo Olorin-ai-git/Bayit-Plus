@@ -185,7 +185,7 @@ export function useProactiveVoice(options: UseProactiveVoiceOptions = {}) {
         try {
           await ttsService.speak(suggestion.message);
         } catch (error) {
-          moduleLogger.error('Failed to speak suggestion:', error', error);
+          moduleLogger.error('Failed to speak suggestion:', error);
         }
       }
 

@@ -7,11 +7,13 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { View, Pressable, ActivityIndicator, Text, StyleSheet } from 'react-native'
 import { X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore'
 import { contentService, liveService, chaptersService, historyService } from '@/services/api'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import VideoPlayer from './VideoPlayer'
 import logger from '@/utils/logger'
+import { useNotificationStore } from '@olorin/glass-ui/stores'
 
 interface Chapter {
   start_time: number
@@ -48,7 +50,9 @@ function getYouTubeVideoId(url: string): string | null {
 }
 
 export default function FullscreenVideoOverlay() {
+  const { t } = useTranslation()
   const { isOpen, content, startTime, closePlayer } = useFullscreenPlayerStore()
+  const addNotification = useNotificationStore((state) => state.add)
   const [streamUrl, setStreamUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [chapters, setChapters] = useState<Chapter[]>([])
@@ -91,16 +95,28 @@ export default function FullscreenVideoOverlay() {
         } else {
           setError('No stream URL available')
         }
-      } catch (err) {
+      } catch (err: any) {
         logger.error('Failed to fetch stream URL', 'FullscreenVideoOverlay', err)
-        setError('Failed to load video')
+
+        // Handle 401 Unauthorized - user needs to sign in
+        if (err?.status === 401 || err?.response?.status === 401) {
+          addNotification({
+            level: 'warning',
+            message: t('auth.signInRequired', 'Please sign in to watch this content'),
+            title: t('auth.signInRequiredTitle', 'Sign In Required'),
+            duration: 5000,
+          })
+          closePlayer()
+        } else {
+          setError('Failed to load video')
+        }
       } finally {
         setLoading(false)
       }
     }
 
     fetchStream()
-  }, [isOpen, content?.id, content?.type, content?.src])
+  }, [isOpen, content?.id, content?.type, content?.src, t, addNotification, closePlayer])
 
   // Fetch chapters for VOD content
   useEffect(() => {

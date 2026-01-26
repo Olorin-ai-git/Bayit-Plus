@@ -1,5 +1,4 @@
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
-const { withNativeWind } = require('nativewind/metro');
 const path = require('path');
 const fs = require('fs');
 
@@ -7,6 +6,7 @@ const projectRoot = __dirname;
 const sharedRoot = path.resolve(__dirname, '../shared');
 const packagesRoot = path.resolve(__dirname, '../packages/ui');
 const nodeModulesPath = path.resolve(projectRoot, 'node_modules');
+const parentNodeModulesPath = path.resolve(__dirname, '../node_modules');
 
 // Build extraNodeModules mapping including scoped packages
 function getExtraNodeModules() {
@@ -55,31 +55,51 @@ function getExtraNodeModules() {
   modules['@olorin/shared-services'] = path.resolve(packagesRoot, 'shared-services/src');
   modules['@olorin/shared-stores'] = path.resolve(packagesRoot, 'shared-stores/src');
   modules['@olorin/glass-ui'] = path.resolve(packagesRoot, 'glass-components/src/native');
+  modules['@olorin/glass-ui/theme'] = path.resolve(packagesRoot, 'glass-components/src/theme');
 
-  // Map all node_modules from mobile-app
-  const nodeModulesList = fs.readdirSync(nodeModulesPath);
+  // Add @/ path alias for local src directory imports
+  modules['@'] = path.resolve(projectRoot, 'src');
 
-  for (const name of nodeModulesList) {
-    if (name.startsWith('.')) continue;
+  // Helper function to add modules from a node_modules directory
+  function addModulesFromPath(nodeModPath) {
+    if (!fs.existsSync(nodeModPath)) return;
 
-    const modulePath = path.resolve(nodeModulesPath, name);
+    const nodeModulesList = fs.readdirSync(nodeModPath);
 
-    // Handle scoped packages like @babel, @react-native, etc.
-    if (name.startsWith('@')) {
-      try {
-        const scopedModules = fs.readdirSync(modulePath);
-        for (const scopedName of scopedModules) {
-          if (scopedName.startsWith('.')) continue;
-          const fullName = `${name}/${scopedName}`;
-          modules[fullName] = path.resolve(modulePath, scopedName);
+    for (const name of nodeModulesList) {
+      if (name.startsWith('.')) continue;
+
+      const modulePath = path.resolve(nodeModPath, name);
+
+      // Handle scoped packages like @babel, @react-native, etc.
+      if (name.startsWith('@')) {
+        try {
+          const scopedModules = fs.readdirSync(modulePath);
+          for (const scopedName of scopedModules) {
+            if (scopedName.startsWith('.')) continue;
+            const fullName = `${name}/${scopedName}`;
+            // Only add if not already mapped (local takes precedence)
+            if (!modules[fullName]) {
+              modules[fullName] = path.resolve(modulePath, scopedName);
+            }
+          }
+        } catch {
+          // Ignore if can't read scoped directory
         }
-      } catch {
-        // Ignore if can't read scoped directory
+      } else {
+        // Only add if not already mapped (local takes precedence)
+        if (!modules[name]) {
+          modules[name] = modulePath;
+        }
       }
-    } else {
-      modules[name] = modulePath;
     }
   }
+
+  // Map all node_modules from mobile-app first (takes precedence)
+  addModulesFromPath(nodeModulesPath);
+
+  // Then add from parent node_modules for hoisted packages
+  addModulesFromPath(parentNodeModulesPath);
 
   return modules;
 }
@@ -91,10 +111,12 @@ function getExtraNodeModules() {
  * @type {import('@react-native/metro-config').MetroConfig}
  */
 const config = {
-  watchFolders: [sharedRoot, packagesRoot],
+  watchFolders: [sharedRoot, packagesRoot, parentNodeModulesPath],
   resolver: {
-    // Make sure shared packages can find node_modules from mobile-app
-    nodeModulesPaths: [nodeModulesPath],
+    // Enable symlinks for monorepo support
+    unstable_enableSymlinks: true,
+    // Make sure shared packages can find node_modules from mobile-app and parent (for hoisted packages)
+    nodeModulesPaths: [nodeModulesPath, parentNodeModulesPath],
     extraNodeModules: getExtraNodeModules(),
     // Add .cjs extension for design-tokens
     sourceExts: ['js', 'jsx', 'ts', 'tsx', 'json', 'cjs'],
@@ -149,6 +171,30 @@ const config = {
       }
       if (moduleName.endsWith('/gazeDetectionService') || moduleName.endsWith('/gazeDetectionService.ts')) {
         return { type: 'empty' };
+      }
+
+      // Handle @/ path alias for local src directory imports
+      if (moduleName.startsWith('@/')) {
+        const relativePath = moduleName.slice(2); // Remove '@/'
+        const srcPath = path.resolve(projectRoot, 'src', relativePath);
+
+        // Try different extensions
+        const extensions = ['.ts', '.tsx', '.js', '.jsx', ''];
+        for (const ext of extensions) {
+          const fullPath = srcPath + ext;
+          if (fs.existsSync(fullPath)) {
+            return { filePath: fullPath, type: 'sourceFile' };
+          }
+        }
+
+        // Try as directory with index file
+        const indexExtensions = ['index.ts', 'index.tsx', 'index.js', 'index.jsx'];
+        for (const indexFile of indexExtensions) {
+          const indexPath = path.resolve(srcPath, indexFile);
+          if (fs.existsSync(indexPath)) {
+            return { filePath: indexPath, type: 'sourceFile' };
+          }
+        }
       }
 
       // Handle @bayit/shared/X subpath imports
@@ -209,6 +255,4 @@ const config = {
   },
 };
 
-module.exports = withNativeWind(mergeConfig(getDefaultConfig(__dirname), config), {
-  input: './global.css',
-});
+module.exports = mergeConfig(getDefaultConfig(__dirname), config);

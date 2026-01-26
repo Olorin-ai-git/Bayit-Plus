@@ -49,7 +49,7 @@ class WakeWordService {
       const result = await WakeWordModule.setLanguage(languageCode);
       moduleLogger.debug("[WakeWordService] Language set:", result);
     } catch (error) {
-      moduleLogger.error('Failed to set language:", error', error);
+      moduleLogger.error('Failed to set language:', error);
       throw error;
     }
   }
@@ -147,7 +147,7 @@ class WakeWordService {
       const result = await WakeWordModule.isActive();
       return result.active;
     } catch (error) {
-      moduleLogger.error('Failed to check active status:", error', error);
+      moduleLogger.error('Failed to check active status:', error);
       return false;
     }
   }

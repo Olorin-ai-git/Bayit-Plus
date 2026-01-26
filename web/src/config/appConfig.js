@@ -9,7 +9,6 @@
 import logger from '@/utils/logger';
 
 // Check if this is a TV build (set by webpack DefinePlugin)
-// eslint-disable-next-line no-undef
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
 // Single source of truth: .env file (VITE_APP_MODE)

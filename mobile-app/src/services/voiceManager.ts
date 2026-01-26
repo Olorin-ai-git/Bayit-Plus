@@ -119,7 +119,7 @@ class VoiceManager {
     });
 
     speechService.addErrorListener((error) => {
-      moduleLogger.error('Speech error:', error', error);
+      moduleLogger.error('Speech error:', error);
       this._onSpeechError(error);
     });
   }
@@ -154,7 +154,7 @@ class VoiceManager {
         }, this.config.wakeWordTimeoutMs);
       }
     } catch (error) {
-      moduleLogger.error('Failed to start background listening:', error', error);
+      moduleLogger.error('Failed to start background listening:', error);
       this._setStage('error', (error as Error).message);
       throw error;
     }
@@ -181,7 +181,7 @@ class VoiceManager {
 
       this._setStage('idle');
     } catch (error) {
-      moduleLogger.error('Failed to stop background listening:', error', error);
+      moduleLogger.error('Failed to stop background listening:', error);
       throw error;
     }
   }
@@ -215,7 +215,7 @@ class VoiceManager {
         this._setStage('timeout');
       }, this.config.listenTimeoutMs);
     } catch (error) {
-      moduleLogger.error('Failed to start manual listening:', error', error);
+      moduleLogger.error('Failed to start manual listening:', error);
       this._setStage('error', (error as Error).message);
       throw error;
     }
@@ -244,7 +244,7 @@ class VoiceManager {
         this._setStage('idle');
       }
     } catch (error) {
-      moduleLogger.error('Failed to stop listening:', error', error);
+      moduleLogger.error('Failed to stop listening:', error);
       throw error;
     }
   }
@@ -282,7 +282,7 @@ class VoiceManager {
         await this.startBackgroundListening();
       }, this.config.listenTimeoutMs);
     } catch (error) {
-      moduleLogger.error('Failed to handle wake word:', error', error);
+      moduleLogger.error('Failed to handle wake word:', error);
       this._setStage('error', (error as Error).message);
       // Return to background listening
       await this.startBackgroundListening().catch((err) => moduleLogger.error("Background operation failed", err));
@@ -346,7 +346,7 @@ class VoiceManager {
           this._setStage('idle');
         }
       } catch (apiError) {
-        moduleLogger.error('API processing failed:', apiError', apiError);
+        moduleLogger.error('API processing failed:', apiError);
         this._setStage('error', (apiError as Error).message);
         // Try to return to background listening
         if (this.config.enableBackgroundListening) {
@@ -354,7 +354,7 @@ class VoiceManager {
         }
       }
     } catch (error) {
-      moduleLogger.error('Failed to handle speech result:', error', error);
+      moduleLogger.error('Failed to handle speech result:', error);
       this._setStage('error', (error as Error).message);
     }
   }
@@ -363,7 +363,7 @@ class VoiceManager {
    * Handle speech recognition error
    */
   private async _onSpeechError(error: any): Promise<void> {
-    moduleLogger.error('Speech recognition error:', error', error);
+    moduleLogger.error('Speech recognition error:', error);
 
     // Clear timeout
     if (this.listenTimeoutHandle) {
@@ -375,7 +375,7 @@ class VoiceManager {
     try {
       await speechService.stopRecognition();
     } catch (e) {
-      moduleLogger.error('Error stopping recognition after error:', e', e);
+      moduleLogger.error('Error stopping recognition after error:', e);
     }
 
     // Signal error state
@@ -419,7 +419,7 @@ class VoiceManager {
         moduleLogger.info('Session metrics', { totalDuration, listenDuration, processingDuration, avgConfidence });
       }
     } catch (error) {
-      moduleLogger.error('Failed to play voice response:', error', error);
+      moduleLogger.error('Failed to play voice response:', error);
       // Don't treat TTS error as critical failure
     }
   }
@@ -461,7 +461,7 @@ class VoiceManager {
       try {
         listener(eventData);
       } catch (error) {
-        moduleLogger.error('Error in event listener:', error', error);
+        moduleLogger.error('Error in event listener:', error);
       }
     });
   }
@@ -533,27 +533,27 @@ class VoiceManager {
       try {
         await speechService.stopRecognition();
       } catch (e) {
-        moduleLogger.error('Error stopping speech recognition:', e', e);
+        moduleLogger.error('Error stopping speech recognition:', e);
       }
 
       // Stop wake word listening
       try {
         await wakeWordService.stopListening();
       } catch (e) {
-        moduleLogger.error('Error stopping wake word listening:', e', e);
+        moduleLogger.error('Error stopping wake word listening:', e);
       }
 
       // Stop TTS
       try {
         await ttsService.stop();
       } catch (e) {
-        moduleLogger.error('Error stopping TTS:', e', e);
+        moduleLogger.error('Error stopping TTS:', e);
       }
 
       this._setStage('idle');
       this.isWakeWordListening = false;
     } catch (error) {
-      moduleLogger.error('Error during cleanup:', error', error);
+      moduleLogger.error('Error during cleanup:', error);
     }
   }
 }

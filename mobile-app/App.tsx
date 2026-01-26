@@ -3,7 +3,6 @@
  * Main app entry point with navigation and context providers
  */
 
-import './global.css';
 import React, { useEffect, useState, useCallback } from "react";
 import { StatusBar, View, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";

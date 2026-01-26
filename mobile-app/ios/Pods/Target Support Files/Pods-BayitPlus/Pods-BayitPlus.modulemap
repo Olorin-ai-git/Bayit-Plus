@@ -1,6 +1,0 @@
-module Pods_BayitPlus {
-  umbrella header "Pods-BayitPlus-umbrella.h"
-
-  export *
-  module * { export * }
-}
