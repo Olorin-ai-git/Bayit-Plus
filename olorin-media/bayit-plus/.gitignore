@@ -110,3 +110,5 @@ mobile-app/ios/DerivedData/
 mobile-app/.expo/
 mobile-app/.expo-shared/
 mobile-app/metro-cache/
+# React Native packager host configuration (local dev only)
+mobile-app/ios/.packager.host
