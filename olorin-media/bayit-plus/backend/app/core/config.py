@@ -13,13 +13,23 @@ from app.core.olorin_config import OlorinSettings
 # 1. Base platform config (olorin-infra/.env) - lowest priority
 # 2. Backend-specific config (backend/.env) - overrides base platform
 # Path structure: backend/app/core/config.py -> backend/ -> bayit-plus/ -> olorin-media/ -> olorin/ -> olorin-infra/
-base_platform_env = Path(__file__).resolve().parents[5] / "olorin-infra" / ".env"
-backend_env = Path(__file__).resolve().parents[2] / ".env"
+try:
+    base_platform_env = Path(__file__).resolve().parents[5] / "olorin-infra" / ".env"
+    if base_platform_env.exists():
+        load_dotenv(base_platform_env, override=False)  # Load base platform config first
+except (IndexError, OSError):
+    # In containerized environments, the monorepo structure doesn't exist
+    # All configuration should come from environment variables
+    pass
 
-if base_platform_env.exists():
-    load_dotenv(base_platform_env, override=False)  # Load base platform config first
-if backend_env.exists():
-    load_dotenv(backend_env, override=True)  # Backend config overrides base platform
+try:
+    backend_env = Path(__file__).resolve().parents[2] / ".env"
+    if backend_env.exists():
+        load_dotenv(backend_env, override=True)  # Backend config overrides base platform
+except (IndexError, OSError):
+    # In containerized environments, no local .env file
+    # All configuration must come from environment variables
+    pass
 
 
 class Settings(BaseSettings):
