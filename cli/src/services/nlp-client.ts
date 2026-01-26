@@ -31,7 +31,7 @@ export class NlpClient {
       || process.env.BACKEND_URL
       || 'http://localhost:8090';
 
-    this.timeout = config.timeout || 60000; // 60 seconds
+    this.timeout = config.timeout || 180000; // 180 seconds (3 minutes for agent workflows)
 
     this.headers = {
       'Content-Type': 'application/json',

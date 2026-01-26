@@ -81,6 +81,163 @@ async def execute_tool(
             pattern=tool_input.get("pattern")
         )
 
+    # Git commands
+    elif tool_name == "git_status":
+        import subprocess
+        repo_path = tool_input.get("repository_path", ".")
+        try:
+            result = subprocess.run(
+                ["git", "status", "--short", "--branch"],
+                cwd=repo_path,
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+            if result.returncode == 0:
+                status_output = result.stdout.strip()
+                if not status_output:
+                    return "Git repository is clean (no changes)"
+                return f"Git Status:\n{status_output}"
+            else:
+                return f"Git error: {result.stderr}"
+        except Exception as e:
+            return f"Failed to get git status: {str(e)}"
+
+    elif tool_name == "git_commit":
+        import subprocess
+        message = tool_input["message"]
+        files = tool_input.get("files", [])
+        add_all = tool_input.get("add_all", False)
+        is_dry_run = tool_input.get("dry_run", True)
+
+        if is_dry_run or dry_run:
+            files_to_commit = "all modified files" if add_all else (", ".join(files) if files else "staged files")
+            return (
+                f"[DRY RUN] Would commit:\n"
+                f"Files: {files_to_commit}\n"
+                f"Message: {message}\n\n"
+                f"To execute commit, set dry_run=false"
+            )
+
+        # Execute the commit
+        try:
+            # Stage files
+            if add_all:
+                subprocess.run(["git", "add", "-A"], check=True, capture_output=True)
+            elif files:
+                subprocess.run(["git", "add"] + files, check=True, capture_output=True)
+
+            # Create commit
+            result = subprocess.run(
+                ["git", "commit", "-m", message],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+
+            if result.returncode == 0:
+                return f"✓ Commit created successfully:\n{result.stdout}\nMessage: {message}"
+            else:
+                return f"Commit failed:\n{result.stderr}"
+        except Exception as e:
+            return f"Error creating commit: {str(e)}"
+
+    elif tool_name == "git_push":
+        import subprocess
+        remote = tool_input.get("remote", "origin")
+        branch = tool_input.get("branch")
+        force = tool_input.get("force", False)
+        is_dry_run = tool_input.get("dry_run", True)
+
+        if is_dry_run or dry_run:
+            force_flag = "--force" if force else ""
+            branch_str = branch if branch else "current branch"
+            return (
+                f"[DRY RUN] Would push:\n"
+                f"Remote: {remote}\n"
+                f"Branch: {branch_str}\n"
+                f"Force: {force}\n\n"
+                f"To execute push, set dry_run=false"
+            )
+
+        # Execute the push
+        try:
+            cmd = ["git", "push", remote]
+            if branch:
+                cmd.append(branch)
+            if force:
+                cmd.append("--force")
+
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+
+            if result.returncode == 0:
+                return f"✓ Push successful:\n{result.stdout}\n{result.stderr}"
+            else:
+                return f"Push failed:\n{result.stderr}"
+        except Exception as e:
+            return f"Error pushing: {str(e)}"
+
+    elif tool_name == "git_pull":
+        import subprocess
+        remote = tool_input.get("remote", "origin")
+        branch = tool_input.get("branch")
+
+        try:
+            cmd = ["git", "pull", remote]
+            if branch:
+                cmd.append(branch)
+
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+
+            if result.returncode == 0:
+                return f"Git pull successful:\n{result.stdout}"
+            else:
+                return f"Git pull failed:\n{result.stderr}"
+        except Exception as e:
+            return f"Failed to pull: {str(e)}"
+
+    elif tool_name == "git_diff":
+        import subprocess
+        file_path = tool_input.get("file")
+        staged = tool_input.get("staged", False)
+
+        try:
+            cmd = ["git", "diff"]
+            if staged:
+                cmd.append("--cached")
+            if file_path:
+                cmd.append(file_path)
+
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+
+            if result.returncode == 0:
+                diff_output = result.stdout.strip()
+                if not diff_output:
+                    return "No changes to show"
+                # Truncate if too long
+                if len(diff_output) > 2000:
+                    diff_output = diff_output[:2000] + "\n... (truncated, total changes are longer)"
+                return f"Git Diff:\n{diff_output}"
+            else:
+                return f"Git diff error: {result.stderr}"
+        except Exception as e:
+            return f"Failed to get diff: {str(e)}"
+
     # Platform-specific tools
     elif platform == "bayit":
         return await execute_bayit_tool(tool_name, tool_input, dry_run)
@@ -212,6 +369,94 @@ async def execute_bayit_tool(
             f"Misclassifications: {len(audit_result.misclassifications)}, "
             f"Orphaned: {len(audit_result.orphaned_items)})"
         )
+
+    elif tool_name == "deploy_platform":
+        import subprocess
+        from pathlib import Path
+
+        environment = tool_input["environment"]
+        platform = tool_input.get("platform", "all")
+        is_dry_run = tool_input.get("dry_run", True)
+
+        if is_dry_run or dry_run:
+            return (
+                f"[DRY RUN] Deployment Plan:\n"
+                f"Environment: {environment}\n"
+                f"Platform: {platform}\n\n"
+                f"Available deployment scripts:\n"
+                f"- scripts/deployment/deploy-staging.sh (staging environment)\n"
+                f"- scripts/deployment/deploy-all-platforms.sh (all platforms)\n"
+                f"- scripts/deployment/deploy-phase.sh (phased rollout)\n"
+                f"- scripts/deploy-ios.sh (iOS only)\n\n"
+                f"To execute deployment, set dry_run=false"
+            )
+
+        # Execute deployment
+        try:
+            # Determine which script to use
+            if environment == "staging":
+                script_path = Path("scripts/deployment/deploy-staging.sh")
+            elif platform == "all":
+                script_path = Path("scripts/deployment/deploy-all-platforms.sh")
+            elif platform == "ios":
+                script_path = Path("scripts/deploy-ios.sh")
+            else:
+                return f"No deployment script found for environment={environment}, platform={platform}"
+
+            if not script_path.exists():
+                return f"Deployment script not found: {script_path}"
+
+            # Make script executable
+            subprocess.run(["chmod", "+x", str(script_path)], check=False)
+
+            # Execute deployment script
+            result = subprocess.run(
+                [str(script_path)],
+                capture_output=True,
+                text=True,
+                timeout=600  # 10 minutes max
+            )
+
+            if result.returncode == 0:
+                return f"✓ Deployment to {environment} successful:\n{result.stdout}\n{result.stderr}"
+            else:
+                return f"Deployment failed:\n{result.stderr}\nOutput:\n{result.stdout}"
+        except subprocess.TimeoutExpired:
+            return f"Deployment timed out after 10 minutes"
+        except Exception as e:
+            return f"Error during deployment: {str(e)}"
+
+    elif tool_name == "get_deployment_status":
+        environment = tool_input.get("environment", "all")
+
+        # Read deployment logs and status
+        import os
+        from pathlib import Path
+
+        logs_dir = Path("scripts/deployment/logs")
+        status_info = []
+
+        if logs_dir.exists():
+            log_files = sorted(logs_dir.glob("deploy_*.log"), reverse=True)
+            if log_files:
+                latest_log = log_files[0]
+                status_info.append(f"Latest deployment: {latest_log.name}")
+
+                # Read last few lines
+                try:
+                    with open(latest_log, 'r') as f:
+                        lines = f.readlines()
+                        last_lines = lines[-10:] if len(lines) > 10 else lines
+                        status_info.append("\nRecent deployment activity:")
+                        status_info.extend([line.strip() for line in last_lines])
+                except Exception:
+                    pass
+            else:
+                status_info.append("No deployment logs found")
+        else:
+            status_info.append("Deployment logs directory not found")
+
+        return "\n".join(status_info)
 
     else:
         raise ValueError(f"Unknown Bayit+ tool: {tool_name}")

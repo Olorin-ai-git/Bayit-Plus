@@ -1,109 +1,31 @@
 /**
  * Bayit+ iOS Mobile App
- * Main app entry point with navigation and context providers
+ * Main app entry point - MINIMAL TEST VERSION
  */
 
-import React, { useEffect, useState, useCallback } from "react";
-import { StatusBar, View, StyleSheet } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { I18nextProvider } from "react-i18next";
-import i18n, { loadSavedLanguage } from "@bayit/shared-i18n";
-
-// Initialize Sentry error tracking (before any other imports that might throw)
-import { initSentry, withSentryErrorBoundary } from "./src/utils/sentry";
-import logger from "./src/utils/logger";
-
-const sentryEnabled = initSentry();
-if (sentryEnabled) {
-  logger.info("Sentry error tracking enabled", "App");
-}
-
-// Context Providers
-import { ProfileProvider } from "@bayit/shared-contexts";
-import { ModalProvider } from "@bayit/shared-contexts";
-import { NotificationProvider } from "@olorin/glass-ui/contexts";
-
-// Navigation
-import { linking } from "./src/navigation/linking";
-
-// App Content (contains voice hooks and navigation)
-import { AppContent } from "./src/components/AppContent";
-
-// Splash Screen
-import { SplashScreen } from "./src/components/SplashScreen";
-
-// Import stores to initialize them
-import { useAuthStore } from "@bayit/shared-stores";
-
-// Utilities
-import { errorHandler, accessibilityService } from "./src/utils";
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
 
 function App(): React.JSX.Element {
-  const [isReady, setIsReady] = useState(false);
-  const [showSplash, setShowSplash] = useState(true);
-
-  logger.info('🚀 App component rendering', { isReady, showSplash }, 'App');
-
-  useEffect(() => {
-    // Initialize app
-    const initializeApp = async () => {
-      try {
-        // Load saved language preference
-        await loadSavedLanguage();
-
-        // Initialize error handler (network monitoring)
-        errorHandler.initialize();
-
-        // Initialize accessibility service
-        await accessibilityService.initialize();
-
-        logger.info("Initialization complete", "App");
-        setIsReady(true);
-      } catch (error) {
-        logger.error("Initialization failed", "App", error);
-        setIsReady(true); // Still allow app to load
-      }
-    };
-
-    initializeApp();
-  }, []);
-
-  const handleSplashComplete = useCallback(() => {
-    logger.info("🎬 ✅ SPLASH COMPLETE - Hiding splash, showing main app", "App");
-    setShowSplash(false);
-  }, []);
-
-  if (!isReady) {
-    return <View style={{ flex: 1, backgroundColor: "#000" }} />;
-  }
-
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <I18nextProvider i18n={i18n}>
-        <SafeAreaProvider>
-          {showSplash ? (
-            <SplashScreen
-              onComplete={handleSplashComplete}
-              minimumDuration={2000}
-            />
-          ) : (
-            <NotificationProvider position="bottom" maxVisible={3}>
-              <ModalProvider>
-                <ProfileProvider>
-                  <NavigationContainer linking={linking}>
-                    <AppContent />
-                  </NavigationContainer>
-                </ProfileProvider>
-              </ModalProvider>
-            </NotificationProvider>
-          )}
-        </SafeAreaProvider>
-      </I18nextProvider>
-    </GestureHandlerRootView>
+    <View style={styles.container}>
+      <Text style={styles.text}>Bayit+ Loading...</Text>
+    </View>
   );
 }
 
-// Wrap with Sentry's error boundary for crash reporting
-export default withSentryErrorBoundary(App);
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0d0d1a',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+});
+
+export default App;

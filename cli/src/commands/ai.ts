@@ -128,7 +128,8 @@ export function registerAiCommand(program: Command): void {
       const query = queryParts.join(' ');
       const askCommand = command.commands.find((cmd: Command) => cmd.name() === 'ask');
       if (askCommand) {
-        await askCommand.parseAsync(['ask', query], { from: 'user' });
+        // Pass the query as the argument, not 'ask'
+        await askCommand.parseAsync([query], { from: 'user' });
       }
     });
 

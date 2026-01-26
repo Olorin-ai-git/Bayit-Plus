@@ -127,6 +127,117 @@ CLI_TOOLS: List[Dict] = [
             },
             "required": ["path"]
         }
+    },
+    {
+        "name": "git_status",
+        "description": "Get git repository status (modified files, branch info, etc.)",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "repository_path": {
+                    "type": "string",
+                    "description": "Path to git repository (defaults to current directory)",
+                    "default": "."
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "git_commit",
+        "description": "Create a git commit with specified message",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "description": "Commit message"
+                },
+                "files": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Specific files to commit (empty for all staged files)"
+                },
+                "add_all": {
+                    "type": "boolean",
+                    "description": "Stage all modified files before committing",
+                    "default": False
+                },
+                "dry_run": {
+                    "type": "boolean",
+                    "description": "If true, show what would be committed without committing",
+                    "default": True
+                }
+            },
+            "required": ["message"]
+        }
+    },
+    {
+        "name": "git_push",
+        "description": "Push commits to remote repository",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "remote": {
+                    "type": "string",
+                    "description": "Remote name (e.g., 'origin')",
+                    "default": "origin"
+                },
+                "branch": {
+                    "type": "string",
+                    "description": "Branch name (defaults to current branch)"
+                },
+                "force": {
+                    "type": "boolean",
+                    "description": "Force push (use with caution)",
+                    "default": False
+                },
+                "dry_run": {
+                    "type": "boolean",
+                    "description": "If true, show what would be pushed without pushing",
+                    "default": True
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "git_pull",
+        "description": "Pull latest changes from remote repository",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "remote": {
+                    "type": "string",
+                    "description": "Remote name",
+                    "default": "origin"
+                },
+                "branch": {
+                    "type": "string",
+                    "description": "Branch name (defaults to current branch)"
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "git_diff",
+        "description": "Show git diff for changes",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "file": {
+                    "type": "string",
+                    "description": "Specific file to diff (empty for all changes)"
+                },
+                "staged": {
+                    "type": "boolean",
+                    "description": "Show staged changes only",
+                    "default": False
+                }
+            },
+            "required": []
+        }
     }
 ]
 
@@ -238,6 +349,48 @@ PLATFORM_TOOLS: Dict[str, List[Dict]] = {
                     }
                 },
                 "required": ["audit_type"]
+            }
+        },
+        {
+            "name": "deploy_platform",
+            "description": "Deploy Bayit+ platform to staging or production environment",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "environment": {
+                        "type": "string",
+                        "enum": ["staging", "production"],
+                        "description": "Target deployment environment"
+                    },
+                    "platform": {
+                        "type": "string",
+                        "enum": ["web", "ios", "tvos", "backend", "all"],
+                        "description": "Platform to deploy (web, ios, tvos, backend, or all)",
+                        "default": "all"
+                    },
+                    "dry_run": {
+                        "type": "boolean",
+                        "description": "If true, show deployment plan without executing",
+                        "default": True
+                    }
+                },
+                "required": ["environment"]
+            }
+        },
+        {
+            "name": "get_deployment_status",
+            "description": "Check deployment status and recent deployments",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "environment": {
+                        "type": "string",
+                        "enum": ["staging", "production", "all"],
+                        "description": "Environment to check status for",
+                        "default": "all"
+                    }
+                },
+                "required": []
             }
         }
     ],

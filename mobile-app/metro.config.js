@@ -48,14 +48,14 @@ function getExtraNodeModules() {
     modules['@picovoice/web-voice-processor'] = path.resolve(projectRoot, 'src/platform-shims/porcupine-web.ts');
   }
 
-  // Add @olorin packages from packages/ui directory
-  modules['@olorin/design-tokens'] = path.resolve(packagesRoot, 'design-tokens/src');
-  modules['@olorin/shared-hooks'] = path.resolve(packagesRoot, 'shared-hooks/src');
-  modules['@olorin/shared-i18n'] = path.resolve(packagesRoot, 'shared-i18n/src');
-  modules['@olorin/shared-services'] = path.resolve(packagesRoot, 'shared-services/src');
-  modules['@olorin/shared-stores'] = path.resolve(packagesRoot, 'shared-stores/src');
-  modules['@olorin/glass-ui'] = path.resolve(packagesRoot, 'glass-components/src/native');
-  modules['@olorin/glass-ui/theme'] = path.resolve(packagesRoot, 'glass-components/src/theme');
+  // Add @olorin packages from packages/ui directory - use built dist files
+  modules['@olorin/design-tokens'] = path.resolve(packagesRoot, 'design-tokens/dist');
+  modules['@olorin/shared-hooks'] = path.resolve(packagesRoot, 'shared-hooks/dist');
+  modules['@olorin/shared-i18n'] = path.resolve(packagesRoot, 'shared-i18n/dist');
+  modules['@olorin/shared-services'] = path.resolve(packagesRoot, 'shared-services/dist');
+  modules['@olorin/shared-stores'] = path.resolve(packagesRoot, 'shared-stores/dist');
+  modules['@olorin/glass-ui'] = path.resolve(packagesRoot, 'glass-components/dist/native');
+  modules['@olorin/glass-ui/theme'] = path.resolve(packagesRoot, 'glass-components/dist/theme');
 
   // Add @/ path alias for local src directory imports
   modules['@'] = path.resolve(projectRoot, 'src');
