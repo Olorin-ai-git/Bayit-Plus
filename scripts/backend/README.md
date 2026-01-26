@@ -27,6 +27,8 @@ backend/scripts/
 - `restore_database.sh` → `production/database/restore_database.sh`
 - `smoke_tests.sh` → `production/deployment/smoke_tests.sh`
 - `run-ci-checks.sh` → `production/ci/run-ci-checks.sh`
+- `upload` → `upload_movies.sh` (shortcut for movie uploads)
+- `upload-series` → `upload_series.sh` (shortcut for series uploads)
 
 ## 📊 Script Inventory
 
@@ -35,10 +37,44 @@ See individual directories for detailed documentation.
 **Key Scripts:**
 - **URL Migrator:** `production/content/url_migrator.py` - Unified URL migration (consolidates 7+ scripts)
 - **Podcast Manager:** `production/content/podcast_manager.py` - Unified podcast management (consolidates 35+ scripts)
+- **Movie Upload:** `upload_movies.sh` - Upload movies from external drives to GCS and MongoDB Atlas
+- **Series Upload:** `upload_series.sh` - Upload TV series from external drives with season/episode organization
 - **Database Backup:** `production/database/backup_database.sh` - Encrypted backups with AES-256
 - **Database Restore:** `production/database/restore_database.sh` - Decryption and safety backups
 
 ## 🚀 Common Tasks
+
+**Upload Movies from External Drive:**
+```bash
+# Dry run to preview
+./upload_movies.sh --dry-run
+
+# Upload first 5 movies (testing)
+./upload_movies.sh --limit 5
+
+# Upload movies starting from letter "T"
+./upload_movies.sh --start-from T
+
+# Auto-detect external drive and upload all
+export MONGODB_URL='mongodb+srv://user:pass@cluster.mongodb.net'
+./upload_movies.sh
+```
+
+**Upload TV Series from External Drive:**
+```bash
+# Dry run to preview
+./upload_series.sh --dry-run
+
+# Upload specific series
+./upload_series.sh --series "Game of Thrones"
+
+# Upload first 2 series (testing)
+./upload_series.sh --limit 2
+
+# Auto-detect external drive and upload all
+export MONGODB_URL='mongodb+srv://user:pass@cluster.mongodb.net'
+./upload_series.sh
+```
 
 **Database Backup:**
 ```bash
@@ -59,7 +95,10 @@ python production/content/podcast_manager.py batch-add podcast_sources.yaml
 
 Required environment variables:
 - `BACKUP_ENCRYPTION_KEY` - Encryption key for backups
-- `MONGODB_URI` - MongoDB connection string
+- `MONGODB_URI` / `MONGODB_URL` - MongoDB connection string
+- `GOOGLE_APPLICATION_CREDENTIALS` - Path to GCS service account key (for movie uploads)
+- `GCS_BUCKET_NAME` - Google Cloud Storage bucket name
+- `TMDB_API_KEY` - TMDB API key for movie metadata (optional)
 
 See `config/paths.env.example` for full configuration options.
 

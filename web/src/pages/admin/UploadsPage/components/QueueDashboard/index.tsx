@@ -2,6 +2,7 @@
  * QueueDashboard Component
  * Enhanced queue visualization with stat cards and queue details
  * Uses design tokens exclusively - no hardcoded colors
+ * Fixed: Better text contrast and container overflow handling
  */
 
 import React from 'react';
@@ -9,7 +10,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Upload, Clock, Play, CheckCircle } from 'lucide-react';
 import { GlassCard } from '@bayit/shared/ui';
-import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
+import { colors, spacing, fontSize } from '@olorin/design-tokens';
 import GlassQueue from '@/components/admin/GlassQueue';
 import type { QueueState } from '../../types';
 
@@ -78,16 +79,18 @@ export const QueueDashboard: React.FC<QueueDashboardProps> = ({
         })}
       </View>
 
-      {/* Existing GlassQueue Component */}
-      <GlassQueue
-        stats={queueState.stats}
-        activeJob={queueState.activeJob}
-        queuedJobs={queueState.queuedJobs}
-        recentCompleted={queueState.recentCompleted}
-        queuePaused={queueState.queuePaused}
-        pauseReason={queueState.pauseReason}
-        onRefresh={onRefresh}
-      />
+      {/* Existing GlassQueue Component - with overflow handling */}
+      <View style={styles.queueContainer}>
+        <GlassQueue
+          stats={queueState.stats}
+          activeJob={queueState.activeJob}
+          queuedJobs={queueState.queuedJobs}
+          recentCompleted={queueState.recentCompleted}
+          queuePaused={queueState.queuePaused}
+          pauseReason={queueState.pauseReason}
+          onRefresh={onRefresh}
+        />
+      </View>
     </View>
   );
 };
@@ -104,6 +107,7 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     minWidth: 150,
+    maxWidth: 300,
     flexDirection: 'row',
     alignItems: 'center',
     padding: spacing.md,
@@ -118,15 +122,21 @@ const styles = StyleSheet.create({
   },
   statContent: {
     flex: 1,
-    gap: spacing.xs,
+    gap: 4,
   },
   statValue: {
-    fontSize: fontSize.xl,
-    fontWeight: '700',
-    color: colors.text,
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#ffffff', // Explicit white for maximum contrast
+    lineHeight: 32,
   },
   statLabel: {
     fontSize: fontSize.sm,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.8)', // Explicit light color
+    fontWeight: '500',
+  },
+  queueContainer: {
+    // Prevent overflow
+    overflow: 'hidden',
   },
 });

@@ -835,21 +835,23 @@
         }, remainingTime);
       }
       
+      // Function to check if we should hide splash
+      function checkAndHideSplash() {
+        if (appReady && windowLoaded && !splashShown && isHomePage) {
+          hideSplashScreen();
+        }
+      }
+
       // Mark window as loaded
       window.addEventListener('load', function() {
         windowLoaded = true;
-        if (appReady && !splashShown && isHomePage) {
-          hideSplashScreen();
-        }
+        checkAndHideSplash();
       });
 
       // Function for React to call when ready
       window.hideSplashWhenReady = function() {
         appReady = true;
-        // Only show splash on home page and first load
-        if (windowLoaded && !splashShown && isHomePage) {
-          hideSplashScreen();
-        }
+        checkAndHideSplash();
       };
       
       // Fallback: Hide after max time even if React doesn't signal ready
