@@ -54,6 +54,7 @@ function getExtraNodeModules() {
   modules['@olorin/shared-i18n'] = path.resolve(packagesRoot, 'shared-i18n/src');
   modules['@olorin/shared-services'] = path.resolve(packagesRoot, 'shared-services/src');
   modules['@olorin/shared-stores'] = path.resolve(packagesRoot, 'shared-stores/src');
+  modules['@olorin/glass-ui'] = path.resolve(packagesRoot, 'glass-components/src/native');
 
   // Map all node_modules from mobile-app
   const nodeModulesList = fs.readdirSync(nodeModulesPath);

@@ -1,12 +1,14 @@
 /**
  * Voice Command Button
- * Floating button for voice input with animated states
+ * Floating action button for voice input using Glass UI components
  */
 
 import React, { useState } from 'react';
-import { TouchableOpacity, Animated, View } from 'react-native';
+import { Animated, View, StyleSheet } from 'react-native';
 import { Mic, MicOff } from 'lucide-react-native';
 import { useDirection } from '@bayit/shared-hooks';
+import { GlassFAB } from '@olorin/glass-ui';
+import { colors } from '@olorin/design-tokens';
 import VoiceWaveform from './VoiceWaveform';
 
 interface VoiceCommandButtonProps {
@@ -15,6 +17,10 @@ interface VoiceCommandButtonProps {
   isListening?: boolean;
   isDisabled?: boolean;
 }
+
+const LISTENING_COLOR = colors?.primary || '#a855f7';
+const DISABLED_COLOR = colors?.textMuted || '#666666';
+const DEFAULT_COLOR = colors?.primary600 || '#8a2be2';
 
 const VoiceCommandButton: React.FC<VoiceCommandButtonProps> = ({
   onPress,
@@ -25,7 +31,6 @@ const VoiceCommandButton: React.FC<VoiceCommandButtonProps> = ({
   const { isRTL } = useDirection();
   const [pulseAnim] = useState(new Animated.Value(1));
 
-  // Pulse animation when listening
   React.useEffect(() => {
     if (isListening) {
       Animated.loop(
@@ -48,59 +53,96 @@ const VoiceCommandButton: React.FC<VoiceCommandButtonProps> = ({
   }, [isListening, pulseAnim]);
 
   const Icon = isDisabled ? MicOff : Mic;
-  const buttonColor = isListening ? '#a855f7' : isDisabled ? '#666666' : '#8a2be2';
+  const buttonColor = isListening ? LISTENING_COLOR : isDisabled ? DISABLED_COLOR : DEFAULT_COLOR;
+
+  const handlePress = () => {
+    if (!isDisabled && onPress) {
+      onPress();
+    }
+  };
 
   return (
     <>
-      {/* Waveform overlay when listening */}
       {isListening && (
-        <View className="absolute bottom-[180px] left-0 right-0 items-center justify-center z-[9998]">
+        <View style={styles.waveformContainer}>
           <VoiceWaveform isListening={true} barCount={7} color={buttonColor} />
         </View>
       )}
 
-      {/* Voice button */}
       <Animated.View
-        className="absolute bottom-[100px] z-[9999]"
         style={[
+          styles.buttonContainer,
           { [isRTL ? 'left' : 'right']: 20 },
           { transform: [{ scale: pulseAnim }] },
         ]}
       >
-        <TouchableOpacity
-          className="w-16 h-16 rounded-full justify-center items-center shadow-lg"
-          style={{
-            backgroundColor: buttonColor,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
-            elevation: 8,
-          }}
-          onPress={onPress}
-          onLongPress={onLongPress}
-          activeOpacity={0.8}
+        <GlassFAB
+          icon={<Icon size={28} color="#ffffff" strokeWidth={2} />}
+          size="lg"
+          variant="primary"
+          onPress={handlePress}
           disabled={isDisabled}
-        >
-          <Icon size={28} color="#ffffff" strokeWidth={2} />
-        </TouchableOpacity>
+          isRTL={isRTL}
+          testID="voice-command-button"
+          style={[
+            styles.fab,
+            { backgroundColor: buttonColor },
+          ]}
+        />
 
-        {/* Glow effect when listening */}
         {isListening && (
           <Animated.View
-            className="absolute w-20 h-20 rounded-full -top-2 -left-2 -z-10"
-            style={{
-              backgroundColor: buttonColor,
-              opacity: pulseAnim.interpolate({
-                inputRange: [1, 1.2],
-                outputRange: [0.3, 0.1],
-              }),
-            }}
+            style={[
+              styles.glowEffect,
+              {
+                backgroundColor: buttonColor,
+                opacity: pulseAnim.interpolate({
+                  inputRange: [1, 1.2],
+                  outputRange: [0.3, 0.1],
+                }),
+              },
+            ]}
           />
         )}
       </Animated.View>
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  waveformContainer: {
+    position: 'absolute',
+    bottom: 180,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 9998,
+  },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 100,
+    zIndex: 9999,
+  },
+  fab: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  glowEffect: {
+    position: 'absolute',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    top: -8,
+    left: -8,
+    zIndex: -1,
+  },
+});
 
 export default VoiceCommandButton;

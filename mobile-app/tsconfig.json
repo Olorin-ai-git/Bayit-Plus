@@ -24,6 +24,8 @@
       "@olorin/shared-i18n/*": ["../packages/ui/shared-i18n/src/*"],
       "@olorin/shared-services": ["../packages/ui/shared-services/src"],
       "@olorin/shared-stores": ["../packages/ui/shared-stores/src"],
+      "@olorin/glass-ui": ["../packages/ui/glass-components/src/native"],
+      "@olorin/glass-ui/*": ["../packages/ui/glass-components/src/*"],
       "@bayit/shared": ["../shared/components"],
       "@bayit/shared/*": ["../shared/components/*"],
       "@bayit/shared-components": ["../shared/components"],

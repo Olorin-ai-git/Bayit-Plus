@@ -15,7 +15,6 @@ import {
   View,
   Text,
   ScrollView,
-  Switch,
   Pressable,
   Platform,
 } from 'react-native';
@@ -23,6 +22,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView, GlassButton } from '@bayit/shared';
+import { GlassToggle } from '@olorin/glass-ui';
 import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
 import { useNotifications } from '@olorin/glass-ui/hooks';
@@ -230,11 +230,12 @@ export const SettingsScreenMobile: React.FC = () => {
                 </View>
                 <View className="flex-row items-center gap-2">
                   {'showToggle' in item && item.showToggle && 'onToggle' in item && item.onToggle && (
-                    <Switch
+                    <GlassToggle
                       value={'value' in item ? item.value : false}
                       onValueChange={item.onToggle}
-                      trackColor={{ false: colors.backgroundElevated, true: colors.primary }}
-                      thumbColor={colors.text}
+                      size="medium"
+                      isRTL={isRTL}
+                      testID={`toggle-${item.id}`}
                     />
                   )}
                   {'showChevron' in item && item.showChevron && (
