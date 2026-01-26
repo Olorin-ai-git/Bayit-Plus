@@ -1,14 +1,15 @@
 /**
  * Connection Status Component
  * Shows WebSocket connection state with visual feedback
+ * Uses design tokens exclusively - no hardcoded colors
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { Wifi, WifiOff, RefreshCw, AlertCircle } from 'lucide-react';
+import { View, Text, StyleSheet } from 'react-native';
+import { WifiOff, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
-import { spacing } from '@olorin/design-tokens';
+import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 
 interface ConnectionStatusProps {
   connected: boolean;
@@ -32,78 +33,79 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
     return null;
   }
 
-  const getStatusConfig = () => {
-    if (reconnecting) {
-      return {
+  const statusConfig = reconnecting
+    ? {
         icon: RefreshCw,
-        iconColor: '#FFA500',
+        iconColor: colors.warning.DEFAULT,
+        bgColor: `${colors.warning.DEFAULT}1A`, // 10% opacity
+        borderColor: colors.warning.DEFAULT,
         title: t('admin.uploads.connectionStatus.reconnecting'),
         message: t('admin.uploads.connectionStatus.reconnectAttempt', {
           current: reconnectAttempt,
           max: maxAttempts,
         }),
         showRefresh: false,
+      }
+    : {
+        icon: WifiOff,
+        iconColor: colors.error.DEFAULT,
+        bgColor: `${colors.error.DEFAULT}1A`,
+        borderColor: colors.error.DEFAULT,
+        title: t('admin.uploads.connectionStatus.connectionLost'),
+        message: t('admin.uploads.connectionStatus.connectionLostDescription'),
+        showRefresh: true,
       };
-    }
 
-    return {
-      icon: WifiOff,
-      iconColor: '#FF6B6B',
-      title: t('admin.uploads.connectionStatus.connectionLost'),
-      message: t('admin.uploads.connectionStatus.connectionLostDescription'),
-      showRefresh: true,
-    };
-  };
-
-  const config = getStatusConfig();
-  const IconComponent = config.icon;
+  const IconComponent = statusConfig.icon;
 
   return (
-    <GlassCard style={styles.container}>
+    <GlassCard
+      style={[
+        styles.container,
+        {
+          backgroundColor: statusConfig.bgColor,
+          borderLeftColor: statusConfig.borderColor,
+        },
+      ]}
+    >
       <View style={styles.content}>
-        <View style={styles.iconContainer}>
-          <IconComponent
-            size={24}
-            color={config.iconColor}
-            style={reconnecting ? styles.spinningIcon : undefined}
-          />
+        <View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: `${statusConfig.iconColor}20` },
+          ]}
+        >
+          <IconComponent size={24} color={statusConfig.iconColor} />
         </View>
 
         <View style={styles.textContainer}>
-          <Text style={styles.title}>{config.title}</Text>
-          <Text style={styles.message}>{config.message}</Text>
+          <Text style={styles.title}>{statusConfig.title}</Text>
+          <Text style={styles.message}>{statusConfig.message}</Text>
         </View>
 
-        {config.showRefresh && onRefresh && (
+        {statusConfig.showRefresh && onRefresh && (
           <GlassButton
+            title={t('admin.uploads.connectionStatus.manualRefresh')}
             variant="secondary"
-            size="small"
+            size="sm"
             onPress={onRefresh}
+            icon={<RefreshCw size={16} color={colors.text} />}
+            iconPosition="left"
             accessibilityLabel={t('admin.uploads.connectionStatus.manualRefresh')}
             accessibilityHint={t('admin.uploads.connectionStatus.manualRefreshHint')}
-          >
-            <RefreshCw size={16} color="#fff" />
-            <Text style={styles.refreshText}>
-              {t('admin.uploads.connectionStatus.manualRefresh')}
-            </Text>
-          </GlassButton>
+          />
         )}
       </View>
 
       {/* ARIA live region for screen readers */}
       <View style={styles.srOnly}>
-        <Text
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        >
+        <Text role="status" aria-live="polite" aria-atomic="true">
           {reconnecting
             ? t('admin.uploads.connectionStatus.reconnectingAnnouncement', {
                 attempt: reconnectAttempt,
                 maxAttempts,
               })
-            : t('admin.uploads.connectionStatus.connectionLostAnnouncement')
-          }
+            : t('admin.uploads.connectionStatus.connectionLostAnnouncement')}
         </Text>
       </View>
     </GlassCard>
@@ -113,9 +115,8 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
 const styles = StyleSheet.create({
   container: {
     marginBottom: spacing.md,
-    backgroundColor: 'rgba(255, 107, 107, 0.1)',
     borderLeftWidth: 4,
-    borderLeftColor: '#FF6B6B',
+    borderRadius: borderRadius.lg,
   },
   content: {
     flexDirection: 'row',
@@ -124,10 +125,9 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -136,21 +136,13 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   title: {
-    color: '#fff',
-    fontSize: 16,
+    color: colors.text,
+    fontSize: fontSize.md,
     fontWeight: '600',
   },
   message: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 14,
-  },
-  refreshText: {
-    color: '#fff',
-    fontSize: 14,
-    marginLeft: spacing.xs,
-  },
-  spinningIcon: {
-    // Animation handled by parent
+    color: colors.textSecondary,
+    fontSize: fontSize.sm,
   },
   srOnly: {
     position: 'absolute',

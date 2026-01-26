@@ -230,6 +230,40 @@ case "$COMMAND" in
         exec "$SCRIPT_DIR/olorin-health.sh" "$@"
         ;;
 
+    # Content uploads
+    upload-movies)
+        log_info "Launching movie upload script..."
+        exec "$SCRIPT_DIR/backend/upload_movies.sh" "$@"
+        ;;
+
+    upload-series)
+        log_info "Launching series upload script..."
+        exec "$SCRIPT_DIR/backend/upload_series.sh" "$@"
+        ;;
+
+    upload)
+        # Generic upload command - show menu or delegate to help
+        if [ $# -eq 0 ]; then
+            log_info "Upload commands:"
+            echo "  olorin upload-movies [options]  - Upload movies from drive or URL"
+            echo "  olorin upload-series [options]  - Upload TV series from drive or URL"
+            echo ""
+            log_info "Examples:"
+            echo "  olorin upload-movies --dry-run"
+            echo "  olorin upload-movies --url https://example.com/movie.mp4"
+            echo "  olorin upload-series --series 'Game of Thrones'"
+            echo "  olorin upload-series --url https://example.com/episode.mkv"
+            echo ""
+            log_info "For more help:"
+            echo "  olorin upload-movies --help"
+            echo "  olorin upload-series --help"
+        else
+            # Pass to upload-movies by default
+            log_info "Launching movie upload script..."
+            exec "$SCRIPT_DIR/backend/upload_movies.sh" "$@"
+        fi
+        ;;
+
     # Complex workflows: Delegate to TypeScript CLI
     agent|skill|deploy|config)
         CLI_BIN="$PROJECT_ROOT/cli/bin/olorin.js"

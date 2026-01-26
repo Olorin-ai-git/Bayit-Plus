@@ -85,16 +85,17 @@ export const DryRunPreview: React.FC<DryRunPreviewProps> = ({
 
         {/* Actions */}
         <View style={styles.actions}>
-          <GlassButton onPress={onCancel} variant="secondary">
-            {t('common.cancel')}
-          </GlassButton>
           <GlassButton
+            title={t('common.cancel')}
+            onPress={onCancel}
+            variant="secondary"
+          />
+          <GlassButton
+            title={t('admin.uploads.dryRun.proceedWithUpload', { count: willUpload })}
             onPress={onProceed}
             variant="primary"
             disabled={willUpload === 0}
-          >
-            {t('admin.uploads.dryRun.proceedWithUpload', { count: willUpload })}
-          </GlassButton>
+          />
         </View>
       </View>
     </GlassModal>

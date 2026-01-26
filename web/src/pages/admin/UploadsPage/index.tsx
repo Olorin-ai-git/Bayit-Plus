@@ -54,10 +54,11 @@ const UploadsPage: React.FC = () => {
         {/* Page Header */}
         <GlassPageHeader
           title={t('admin.uploads.title')}
+          subtitle={t('admin.uploads.subtitle')}
           icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
           iconColor={pageConfig.iconColor}
           iconBackgroundColor={pageConfig.iconBackgroundColor}
-          badge={connected ? undefined : 'Disconnected'}
+          badge={connected ? t('admin.uploads.connectionStatus.connected') : undefined}
         />
 
         {/* Connection Status Banner */}
@@ -75,7 +76,7 @@ const UploadsPage: React.FC = () => {
           defaultExpanded={true}
         >
           <View style={styles.section}>
-            <QueueDashboard queueState={queueState} onRefresh={refreshQueue} />
+            <QueueDashboard queueState={queueState} onRefresh={refreshQueue} loading={loading} />
           </View>
         </GlassDraggableExpander>
 

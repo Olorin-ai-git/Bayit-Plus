@@ -63,9 +63,13 @@ export const MonitoredFolders: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <GlassButton onPress={handleAdd} variant="primary" leftIcon={<Plus size={18} />}>
-          {t('admin.uploads.monitoredFolders.addFolder')}
-        </GlassButton>
+        <GlassButton
+          title={t('admin.uploads.monitoredFolders.addFolder')}
+          onPress={handleAdd}
+          variant="primary"
+          icon={<Plus size={18} />}
+          iconPosition="left"
+        />
       </View>
 
       {folders.length === 0 ? (
@@ -118,22 +122,20 @@ export const MonitoredFolders: React.FC = () => {
           </Text>
           <View style={styles.confirmActions}>
             <GlassButton
+              title={t('common.cancel')}
               onPress={() => {
                 setShowDeleteConfirm(false);
                 setFolderToDelete(null);
               }}
               variant="secondary"
               style={styles.confirmButton}
-            >
-              {t('common.cancel')}
-            </GlassButton>
+            />
             <GlassButton
+              title={t('common.delete')}
               onPress={confirmDelete}
               variant="primary"
               style={[styles.confirmButton, styles.deleteButton]}
-            >
-              {t('common.delete')}
-            </GlassButton>
+            />
           </View>
         </GlassCard>
       </GlassModal>

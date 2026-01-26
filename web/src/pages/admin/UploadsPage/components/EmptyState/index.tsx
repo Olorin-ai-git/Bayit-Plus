@@ -1,13 +1,14 @@
 /**
  * EmptyState Component
  * Beautiful empty state with icon, message, and CTA
+ * Uses design tokens exclusively - no hardcoded colors
  */
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LucideIcon } from 'lucide-react';
 import { GlassButton } from '@bayit/shared/ui';
-import { spacing } from '@olorin/design-tokens';
+import { colors, spacing, fontSize } from '@olorin/design-tokens';
 
 interface EmptyStateProps {
   icon: LucideIcon;
@@ -21,7 +22,7 @@ interface EmptyStateProps {
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
   icon: Icon,
-  iconColor = 'rgba(255, 255, 255, 0.3)',
+  iconColor = colors.textMuted,
   title,
   description,
   actionLabel,
@@ -39,14 +40,14 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
       {actionLabel && onAction && (
         <GlassButton
+          title={actionLabel}
           variant="primary"
           onPress={onAction}
           style={styles.actionButton}
+          icon={ActionIcon ? <ActionIcon size={18} color={colors.text} /> : undefined}
+          iconPosition="left"
           accessibilityLabel={actionLabel}
-        >
-          {ActionIcon && <ActionIcon size={18} color="#fff" />}
-          <Text style={styles.actionText}>{actionLabel}</Text>
-        </GlassButton>
+        />
       )}
     </View>
   );
@@ -64,15 +65,15 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   title: {
-    color: '#fff',
-    fontSize: 20,
+    color: colors.text,
+    fontSize: fontSize.lg,
     fontWeight: '600',
     marginBottom: spacing.sm,
     textAlign: 'center',
   },
   description: {
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 15,
+    color: colors.textSecondary,
+    fontSize: fontSize.md,
     lineHeight: 22,
     textAlign: 'center',
     maxWidth: 400,
@@ -80,13 +81,5 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     marginTop: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  actionText: {
-    color: '#fff',
-    fontSize: 15,
-    fontWeight: '600',
   },
 });
