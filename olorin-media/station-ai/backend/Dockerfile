@@ -7,12 +7,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy shared packages first (from parent context)
+COPY packages/olorin-shared /app/packages/olorin-shared
+
 # Copy requirements and install dependencies
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install olorin-shared package
+RUN pip install --no-cache-dir /app/packages/olorin-shared
+
 # Copy application code
-COPY app/ ./app/
+COPY backend/app/ ./app/
 
 # Create cache directory
 RUN mkdir -p ./cache

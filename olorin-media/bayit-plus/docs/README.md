@@ -47,7 +47,9 @@ Implementation notes and session reports:
   - `PODCAST_TRANSLATION_PREMIUM_PROTECTION_IMPLEMENTATION.md` - Premium protection implementation for podcast translation feature - 2026-01-24
 - **Admin Page Rebuild**:
   - `CONTENT_ADMIN_REBUILD_REVISED_PLAN.md` - Revised implementation plan for rebuilding 4 content admin pages (ContentLibraryPage, FeaturedManagementPage, CategoriesPage, ContentEditorPage) with mandatory pre-implementation fixes addressing console.log violations, missing backend endpoints, incomplete translations, security gaps, and rollback mechanisms - 2026-01-25
-  - `CONTENT_ADMIN_REBUILD_COMPLETION_SUMMARY.md` - Comprehensive completion summary for Phase 1-3 implementation covering all 4 refactored pages, code quality verification, build success, and production readiness status - ✅ BUILD SUCCESSFUL - 2026-01-25 **NEW**
+  - `CONTENT_ADMIN_REBUILD_COMPLETION_SUMMARY.md` - Comprehensive completion summary for Phase 1-3 implementation covering all 4 refactored pages, code quality verification, build success, and production readiness status - ✅ BUILD SUCCESSFUL - 2026-01-25
+- **Radio Stations**:
+  - `RADIO_STATIONS_BULK_UPDATE_SUMMARY.md` - Implementation summary for Israeli radio stations bulk update: 2 scripts created (app context + direct MongoDB), all 33 stations with verified HLS stream URLs, 103FM timeout fixed, comprehensive documentation and monitoring recommendations - ✅ READY FOR DEPLOYMENT - 2026-01-26 **NEW**
 
 ### `/operations/`
 Database operations and maintenance:
@@ -55,6 +57,9 @@ Database operations and maintenance:
 - Content organization operations
 - Database maintenance tasks
 - Data cleanup operations
+- **Israeli Radio Stations Update** (`ISRAELI_RADIO_STATIONS_UPDATE.md`) - Complete guide for updating all 33 Israeli radio stations with current working stream URLs from digital.100fm.co.il, includes deployment scripts, verification procedures, and rollback plan - ✅ DEPLOYED - 2026-01-26
+- **Radio Stations Update Complete** (`RADIO_STATIONS_UPDATE_COMPLETE.md`) - Deployment completion report confirming successful execution: 32 new stations created, 1 updated, 103FM timeout fixed, all 40 stations active and verified in production MongoDB Atlas - ✅ COMPLETE - 2026-01-26 **NEW**
+- **Quick Radio Update** (`QUICK_RADIO_UPDATE.md`) - Fast 5-minute deployment reference guide with one-command update, verification, and rollback procedures
 
 ### `/reviews/`
 Code reviews and assessments:
