@@ -114,11 +114,44 @@ export default function WidgetManager() {
 
         case 'radio':
           if (widget.content.station_id) {
-            logger.debug('Fetching radio stream', { stationId: widget.content.station_id, component: 'WidgetManager' });
-            const response = await radioService.getStreamUrl(widget.content.station_id);
-            logger.debug('Radio stream response', { response, component: 'WidgetManager' });
-            streamUrl = response?.url || response?.stream_url;
-            logger.debug('Final radio streamUrl', { streamUrl, component: 'WidgetManager' });
+            logger.debug('Fetching radio stream', {
+              stationId: widget.content.station_id,
+              component: 'WidgetManager'
+            });
+            try {
+              const response = await radioService.getStreamUrl(widget.content.station_id);
+              streamUrl = response?.url || response?.stream_url;
+              logger.debug('Radio stream URL retrieved successfully', {
+                stationId: widget.content.station_id,
+                component: 'WidgetManager'
+              });
+            } catch (streamError: any) {
+              // Handle backend stream validation failure (503 Service Unavailable)
+              const statusCode = streamError.status || streamError.response?.status;
+              if (statusCode === 503) {
+                logger.warn('Radio stream unavailable (backend validation failed)', {
+                  stationId: widget.content.station_id,
+                  statusCode,
+                  detail: streamError.message || streamError.response?.data?.detail,
+                  component: 'WidgetManager'
+                });
+                // Don't set streamUrl - frontend will show error message to user
+              } else if (statusCode === 404) {
+                logger.warn('Radio station not found', {
+                  stationId: widget.content.station_id,
+                  component: 'WidgetManager'
+                });
+              } else {
+                logger.error('Failed to fetch radio stream URL', {
+                  stationId: widget.content.station_id,
+                  statusCode,
+                  error: streamError.message,
+                  component: 'WidgetManager'
+                });
+              }
+            }
+
+            // Fetch station metadata for cover art
             const stationData = await radioService.getStation(widget.content.station_id).catch(() => null);
             coverUrl = stationData?.logo;
           }

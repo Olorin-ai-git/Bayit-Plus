@@ -35,6 +35,7 @@
     "@olorin/glass-ui": "2.0.0",
     "@olorin/shared-hooks": "2.0.0",
     "@olorin/shared-i18n": "2.0.0",
+    "@olorin/shared-icons": "2.0.0",
     "@olorin/shared-services": "2.0.0",
     "@olorin/shared-stores": "2.0.0",
     "@react-navigation/bottom-tabs": "^7.9.0",

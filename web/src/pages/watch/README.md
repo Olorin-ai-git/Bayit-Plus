@@ -262,7 +262,7 @@ VideoPlayer / AudioPlayer
 - @/components/player
 - @/components/content
 - @/hooks/useDirection
-- @/contexts/ModalContext
+- @olorin/glass-ui/hooks
 - @/utils/logger
 
 ## Testing

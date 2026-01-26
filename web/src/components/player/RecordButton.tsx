@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens'
 import { recordingApi, RecordingSession } from '../../services/recordingApi'
 import { useAuthStore } from '../../store/authStore'
-import { useModal } from '../../contexts/ModalContext'
+import { useNotifications } from '@olorin/glass-ui/hooks'
 import logger from '@/utils/logger'
 
 interface RecordButtonProps {
@@ -29,7 +29,7 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
   onRecordingStateChange
 }) => {
   const { t } = useTranslation()
-  const { showError, showSuccess, showConfirm } = useModal()
+  const notifications = useNotifications()
   const [isRecording, setIsRecording] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const [session, setSession] = useState<RecordingSession | null>(null)
@@ -109,7 +109,7 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
     } catch (err: any) {
       logger.error('Failed to start recording', 'RecordButton', { error: err })
       const errorMessage = err?.detail || err?.message || t('recordings.startFailed')
-      showError(errorMessage, t('recordings.error'))
+      notifications.showError(errorMessage, t('recordings.error'))
     }
   }
 
@@ -130,7 +130,7 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
 
       logger.debug('Recording stopped', 'RecordButton', { recordingId: recording.id })
 
-      showSuccess(
+      notifications.showSuccess(
         t('recordings.savedSuccess', {
           duration: formatDuration(recording.duration_seconds)
         }),
@@ -139,7 +139,7 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
     } catch (err: any) {
       logger.error('Failed to stop recording', 'RecordButton', { error: err })
       const errorMessage = err?.detail || err?.message || t('recordings.stopFailed')
-      showError(errorMessage, t('recordings.error'))
+      notifications.showError(errorMessage, t('recordings.error'))
     }
   }
 

@@ -62,7 +62,14 @@ export function useChromecastWeb({
 
   // Initialize Cast context
   useEffect(() => {
-    if (!sdkLoaded || !receiverAppId || !window.chrome?.cast) {
+    if (!sdkLoaded || !receiverAppId) {
+      return
+    }
+
+    // Check if Cast SDK framework is available
+    if (!window.chrome?.cast?.framework?.CastContext) {
+      log.warn('Cast framework not available - disabling Chromecast support')
+      setIsAvailable(false)
       return
     }
 
@@ -112,7 +119,7 @@ export function useChromecastWeb({
   }, [sdkLoaded, receiverAppId])
 
   const startCast = useCallback(async () => {
-    if (!isAvailable || !window.chrome?.cast) {
+    if (!isAvailable || !window.chrome?.cast?.framework?.CastContext) {
       log.warn('Cannot start cast - not available', { isAvailable })
       return
     }

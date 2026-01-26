@@ -23,6 +23,7 @@ import { GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@/stores/authStore';
+import { renderIcon } from '@olorin/shared-icons/web';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
@@ -49,45 +50,51 @@ interface MenuSection {
 const baseMenuSections: MenuSection[] = [
   {
     items: [
-      { id: 'home', icon: '🏠', labelKey: 'nav.home', path: '/' },
-      { id: 'plans', icon: '💎', labelKey: 'nav.plans', path: '/subscribe' },
-      { id: 'liveTV', icon: '📺', labelKey: 'nav.liveTV', path: '/live' },
-      { id: 'epg', icon: '📅', labelKey: 'nav.epg', path: '/epg' },
-      { id: 'vod', icon: '🎬', labelKey: 'nav.vod', path: '/vod' },
-      { id: 'radio', icon: '📻', labelKey: 'nav.radio', path: '/radio' },
-      { id: 'podcasts', icon: '🎙️', labelKey: 'nav.podcasts', path: '/podcasts' },
+      { id: 'home', icon: 'home', labelKey: 'nav.home', path: '/' },
+      { id: 'plans', icon: 'plans', labelKey: 'nav.plans', path: '/subscribe' },
+      { id: 'liveTV', icon: 'live', labelKey: 'nav.liveTV', path: '/live' },
+      { id: 'epg', icon: 'epg', labelKey: 'nav.epg', path: '/epg' },
+      { id: 'vod', icon: 'vod', labelKey: 'nav.vod', path: '/vod' },
+      { id: 'radio', icon: 'radio', labelKey: 'nav.radio', path: '/radio' },
+      { id: 'podcasts', icon: 'podcasts', labelKey: 'nav.podcasts', path: '/podcasts' },
     ],
   },
   {
     titleKey: 'nav.discover',
     items: [
-      { id: 'flows', icon: '✨', labelKey: 'nav.flows', path: '/flows' },
-      { id: 'judaism', icon: '✡️', labelKey: 'nav.judaism', path: '/judaism' },
-      { id: 'children', icon: '👶', labelKey: 'nav.children', path: '/children' },
-      { id: 'games', icon: '🎮', labelKey: 'nav.games', path: '/games' },
-      { id: 'friends', icon: '👥', labelKey: 'nav.friends', path: '/friends' },
+      { id: 'flows', icon: 'flows', labelKey: 'nav.flows', path: '/flows' },
+      { id: 'judaism', icon: 'judaism', labelKey: 'nav.judaism', path: '/judaism' },
+      { id: 'children', icon: 'children', labelKey: 'nav.children', path: '/children' },
+    ],
+  },
+  {
+    titleKey: 'nav.games',
+    items: [
+      { id: 'games', icon: 'games', labelKey: 'nav.games', path: '/games' },
+      { id: 'friends', icon: 'friends', labelKey: 'nav.friends', path: '/friends' },
     ],
   },
   {
     titleKey: 'nav.favorites',
     items: [
-      { id: 'favorites', icon: '⭐', labelKey: 'nav.favorites', path: '/favorites' },
-      { id: 'watchlist', icon: '📋', labelKey: 'nav.watchlist', path: '/watchlist' },
-      { id: 'downloads', icon: '⬇️', labelKey: 'nav.downloads', path: '/downloads' },
-      { id: 'widgets', icon: '🎯', labelKey: 'nav.widgets', path: '/widgets' },
+      { id: 'favorites', icon: 'favorites', labelKey: 'nav.favorites', path: '/favorites' },
+      { id: 'watchlist', icon: 'watchlist', labelKey: 'nav.watchlist', path: '/watchlist' },
+      { id: 'downloads', icon: 'downloads', labelKey: 'nav.downloads', path: '/downloads' },
+      { id: 'recordings', icon: 'recordings', labelKey: 'nav.recordings', path: '/recordings' },
+      { id: 'widgets', icon: 'widgets', labelKey: 'nav.widgets', path: '/widgets' },
     ],
   },
   {
     titleKey: 'nav.account',
     items: [
-      { id: 'profile', icon: '👤', labelKey: 'nav.profile', path: '/profile' },
+      { id: 'profile', icon: 'profile', labelKey: 'nav.profile', path: '/profile' },
     ],
   },
   {
     titleKey: 'nav.settings',
     items: [
-      { id: 'settings', icon: '⚙️', labelKey: 'nav.settings', path: '/settings' },
-      { id: 'support', icon: '🎧', labelKey: 'nav.support', path: '/support' },
+      { id: 'settings', icon: 'settings', labelKey: 'nav.settings', path: '/settings' },
+      { id: 'support', icon: 'support', labelKey: 'nav.support', path: '/support' },
     ],
   },
 ];
@@ -188,20 +195,19 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
     const isPremium = user?.subscription?.plan === 'premium' || user?.subscription?.plan === 'family';
 
     let sections = baseMenuSections.map(section => {
-      // Add My Recordings to favorites section (premium only)
-      if (section.titleKey === 'nav.favorites' && isPremium) {
-        // Add recordings after downloads
-        const downloadIndex = section.items.findIndex(item => item.id === 'downloads');
-        const newItems = [...section.items];
-        newItems.splice(downloadIndex + 1, 0, {
-          id: 'recordings',
-          icon: '⏺️',
-          labelKey: 'nav.recordings',
-          path: '/recordings'
-        });
+      // Filter out games from Games section (admin only)
+      if (section.titleKey === 'nav.games' && !isAdmin) {
         return {
           ...section,
-          items: newItems,
+          items: section.items.filter(item => item.id !== 'games'),
+        };
+      }
+
+      // Hide recordings from favorites if not premium (already in base, will be filtered)
+      if (section.titleKey === 'nav.favorites' && !isPremium) {
+        return {
+          ...section,
+          items: section.items.filter(item => item.id !== 'recordings'),
         };
       }
 
@@ -210,7 +216,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
         return {
           ...section,
           items: [
-            { id: 'admin', icon: '👨‍💼', labelKey: 'nav.admin', path: '/admin' },
+            { id: 'admin', icon: 'admin', labelKey: 'nav.admin', path: '/admin' },
             ...section.items,
           ],
         };
@@ -475,13 +481,15 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                       },
                     ]}
                   >
-                    <View style={styles.iconContainer}>
-                      <Text style={[
-                        styles.menuIcon,
-                        isActive(item) && styles.menuIconActive,
-                      ]}>
-                        {item.icon}
-                      </Text>
+                    <View style={[
+                      styles.iconContainer,
+                      isActive(item) && styles.iconContainerActive,
+                    ]}>
+                      {renderIcon(
+                        item.icon,
+                        IS_TV_BUILD ? 'lg' : 'md',
+                        'navigation'
+                      )}
                     </View>
                     {showLabels && (
                       <Animated.Text
@@ -726,12 +734,16 @@ const styles = StyleSheet.create({
     height: IS_TV_BUILD ? 48 : 36,
     justifyContent: 'center',
     alignItems: 'center',
+    display: 'flex',
+  },
+  iconContainerActive: {
+    color: colors.primary.DEFAULT,
   },
   menuIcon: {
     fontSize: IS_TV_BUILD ? 24 : 18,
   },
   menuIconActive: {
-    // Active state for icon
+    color: colors.primary.DEFAULT,
   },
   menuLabel: {
     fontSize: IS_TV_BUILD ? 16 : 14,

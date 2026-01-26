@@ -3,7 +3,6 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { initWebI18n, setupWebDirectionListener } from '@bayit/shared-i18n/web'
 import { useDirection } from '@/hooks/useDirection'
 import { VoiceListeningProvider } from '@bayit/shared-contexts'
-import { ModalProvider } from '@/contexts/ModalContext'
 import { NotificationProvider } from '@olorin/glass-ui/contexts'
 import Layout from './components/layout/Layout'
 import FullscreenVideoOverlay from './components/player/FullscreenVideoOverlay'
@@ -184,7 +183,7 @@ function App() {
         <Route path="/tv-login" element={<TVLoginPage />} />
 
         {/* Admin Routes (lazily loaded) */}
-        <Route path="/admin" element={<ModalProvider><AdminLayout /></ModalProvider>}>
+        <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboardPage />} />
           <Route path="users" element={<UsersListPage />} />
           <Route path="users/:userId" element={<UserDetailPage />} />
@@ -220,7 +219,7 @@ function App() {
         </Route>
 
         {/* Main Routes with Layout */}
-        <Route element={<VoiceListeningProvider><ModalProvider><Layout /></ModalProvider></VoiceListeningProvider>}>
+        <Route element={<VoiceListeningProvider><Layout /></VoiceListeningProvider>}>
           <Route path="/" element={<HomePage />} />
           <Route path="/live" element={<LivePage />} />
           <Route path="/live/:channelId" element={<WatchPage type="live" />} />

@@ -57,6 +57,8 @@ export default function AudioPlayer({
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
 
   // Focus states for TV navigation
   const playFocus = useTVFocus({ styleType: 'button' })
@@ -79,7 +81,12 @@ export default function AudioPlayer({
     const audio = audioRef.current
     audio.src = src
 
-    const handleCanPlay = () => setLoading(false)
+    const handleCanPlay = () => {
+      setLoading(false)
+      setError(null)
+      setRetryCount(0)
+    }
+
     const handleLoadedMetadata = () => setDuration(audio.duration)
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime)
     const handlePlay = () => setIsPlaying(true)
@@ -88,9 +95,45 @@ export default function AudioPlayer({
       setIsPlaying(false)
       onEnded?.()
     }
-    const handleError = () => {
+
+    const handleError = (event: any) => {
       setLoading(false)
       setIsPlaying(false)
+
+      const mediaError = audio.error
+      let errorMessage = t('player.errors.streamFailed', 'Stream failed to load')
+
+      // Map HTML5 Media error codes to user-friendly messages
+      if (mediaError) {
+        switch (mediaError.code) {
+          case mediaError.MEDIA_ERR_ABORTED:
+            errorMessage = t('player.errors.loadAborted', 'Loading was aborted')
+            break
+          case mediaError.MEDIA_ERR_NETWORK:
+            errorMessage = t('player.errors.networkError', 'Network error - stream may be unavailable')
+            break
+          case mediaError.MEDIA_ERR_DECODE:
+            errorMessage = t('player.errors.decodeError', 'Cannot decode audio stream')
+            break
+          case mediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+            errorMessage = t('player.errors.unsupportedFormat', 'Audio format not supported')
+            break
+          default:
+            errorMessage = t('player.errors.unknown', 'Unknown playback error')
+        }
+      }
+
+      setError(errorMessage)
+
+      // Attempt retry with exponential backoff (0s, 1s, 2s delays, max 3 total attempts)
+      if (retryCount < 2) {
+        const backoffDelays = [0, 1000, 2000]
+        const delayMs = backoffDelays[retryCount]
+        setTimeout(() => {
+          setRetryCount(retryCount + 1)
+          audio.load()
+        }, delayMs)
+      }
     }
 
     audio.addEventListener('canplay', handleCanPlay)
@@ -99,7 +142,7 @@ export default function AudioPlayer({
     audio.addEventListener('play', handlePlay)
     audio.addEventListener('pause', handlePause)
     audio.addEventListener('ended', handleEnded)
-    audio.addEventListener('error', handleError)
+    audio.addEventListener('error', (e) => handleError(e))
 
     return () => {
       audio.removeEventListener('canplay', handleCanPlay)
@@ -117,10 +160,18 @@ export default function AudioPlayer({
       if (isPlaying) {
         audioRef.current.pause()
       } else {
-        audioRef.current.play()
+        // Validate stream is available before attempting playback
+        if (!src || src.trim() === '') {
+          setError(t('player.errors.noSource', 'No stream available'))
+          setLoading(false)
+          return
+        }
+        audioRef.current.play().catch(() => {
+          // Play promise rejection handled by error event listener
+        })
       }
     }
-  }, [isPlaying])
+  }, [isPlaying, src, t])
 
   const toggleMute = useCallback(() => {
     if (audioRef.current) {
@@ -309,6 +360,27 @@ export default function AudioPlayer({
           </View>
         </View>
       </View>
+
+      {/* Error Display */}
+      {error && (
+        <View style={styles.errorBanner}>
+          <View style={styles.errorContent}>
+            <Text style={styles.errorText}>{error}</Text>
+            {retryCount > 0 && (
+              <Text style={styles.retryText}>
+                {t('player.retrying', 'Retry attempt')} {retryCount}/2
+              </Text>
+            )}
+          </View>
+          <Pressable
+            onPress={() => setError(null)}
+            style={styles.closeErrorButton}
+            accessibilityLabel={t('common.close', 'Close')}
+          >
+            <Text style={styles.closeErrorText}>✕</Text>
+          </Pressable>
+        </View>
+      )}
     </GlassView>
   )
 }
@@ -420,5 +492,40 @@ const styles = StyleSheet.create({
   },
   playIcon: {
     marginLeft: 2,
+  },
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderColor: colors.error.DEFAULT,
+    borderWidth: 1,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    marginTop: spacing.md,
+    gap: spacing.sm,
+  },
+  errorContent: {
+    flex: 1,
+    gap: spacing.xs,
+  },
+  errorText: {
+    color: colors.error.DEFAULT,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  retryText: {
+    color: colors.textMuted,
+    fontSize: 12,
+  },
+  closeErrorButton: {
+    padding: spacing.xs,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeErrorText: {
+    color: colors.error.DEFAULT,
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 })
