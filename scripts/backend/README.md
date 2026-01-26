@@ -105,6 +105,12 @@ python production/content/podcast_manager.py batch-add podcast_sources.yaml
 
 # Verify specific category
 ./bayit-verify-library-integrity.sh --category movies --limit 500
+
+# Automated weekly checks (Cloud Scheduler)
+# See: /infrastructure/scheduled-jobs/library-integrity/README.md
+cd ../../infrastructure/scheduled-jobs/library-integrity
+./deploy-job.sh          # Deploy Cloud Run Job
+./setup-scheduler.sh     # Schedule weekly execution (Sundays 2 AM UTC)
 ```
 
 ## 📝 Configuration

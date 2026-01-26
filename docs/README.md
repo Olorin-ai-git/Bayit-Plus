@@ -19,6 +19,7 @@ Deployment guides and status:
 - Firebase deployment guides
 - Upload status tracking
 - Infrastructure configuration
+- **Automated Library Integrity Checks** (`/infrastructure/scheduled-jobs/library-integrity/`) - Cloud Run Job and Cloud Scheduler setup for weekly automated verification
 
 ### `/testing/`
 Testing documentation and checklists:
