@@ -1,0 +1,32 @@
+{
+  "name": "organize_series",
+  "description": "Script to organize all series in the database.",
+  "category": "content",
+  "platform": "bayit",
+  "destructive": {{DESTRUCTIVE}},
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      {{PROPERTIES}}
+    },
+    "required": [{{REQUIRED_FIELDS}}]
+  },
+  "handler": {
+    "type": "bash_wrapper",
+    "script_path": "scripts/backend/bayit-organize_series.sh",
+    "working_directory": "{{WORKING_DIRECTORY}}",
+    "timeout_seconds": {{TIMEOUT}},
+    "environment": {
+      {{ENVIRONMENT_VARS}}
+    }
+  },
+  "examples": [
+    {{EXAMPLES}}
+  ],
+  "metadata": {
+    "python_script": "scripts/backend/organize_series.py",
+    "claude_skill": "{{CLAUDE_SKILL_NAME}}",
+    "generated_at": "2026-01-26 08:34:53",
+    "version": "1.0.0"
+  }
+}

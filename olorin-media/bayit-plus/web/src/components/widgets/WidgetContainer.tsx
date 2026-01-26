@@ -488,6 +488,7 @@ export default function WidgetContainer({
           );
 
         case 'radio':
+          logger.debug('Radio widget rendering', { streamUrl, stationId: widget.content.station_id, component: 'WidgetContainer' });
           if (!streamUrl) {
             return renderError('Station unavailable');
           }

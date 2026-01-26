@@ -85,6 +85,9 @@ class ExecuteAgentRequest(BaseModel):
     action_mode: Literal["smart", "confirm_all"] = Field(
         default="smart", description="Action execution mode"
     )
+    auto_confirm: bool = Field(
+        default=False, description="Auto-confirm destructive operations without prompting"
+    )
 
 
 class PendingActionResponse(BaseModel):
@@ -451,6 +454,7 @@ async def execute_agent(request: ExecuteAgentRequest):
             session_id=request.session_id,
             action_mode=request.action_mode,
             conversation_history=conversation_history,
+            auto_confirm=request.auto_confirm,
         )
 
         if request.session_id:

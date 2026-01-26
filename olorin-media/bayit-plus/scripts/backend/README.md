@@ -36,6 +36,7 @@ See individual directories for detailed documentation.
 
 **Key Scripts:**
 - **Library Integrity Verification:** `bayit-verify-library-integrity.sh` - Zero-trust verification of complete media library
+- **Category Mismatch Fix:** `bayit-fix-category-mismatch.sh` - Fix category_name/is_series field inconsistencies
 - **URL Migrator:** `production/content/url_migrator.py` - Unified URL migration (consolidates 7+ scripts)
 - **Podcast Manager:** `production/content/podcast_manager.py` - Unified podcast management (consolidates 35+ scripts)
 - **Movie Upload:** `upload_movies.sh` - Upload movies from external drives to GCS and MongoDB Atlas
@@ -90,6 +91,18 @@ python production/content/url_migrator.py bucket_upgrade --execute
 **Podcast Management:**
 ```bash
 python production/content/podcast_manager.py batch-add podcast_sources.yaml
+```
+
+**Fix Content Category/is_series Mismatches:**
+```bash
+# Preview what would be fixed (safe, no changes)
+./bayit-fix-category-mismatch.sh
+
+# Preview with explicit flag
+./bayit-fix-category-mismatch.sh --dry-run
+
+# Execute the fixes
+./bayit-fix-category-mismatch.sh --live
 ```
 
 **Library Integrity Verification:**

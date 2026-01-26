@@ -22,7 +22,7 @@ export function useFeaturedData() {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await adminContentService.getContent({
+      const response = await adminContentService.getContentHierarchical({
         is_featured: true,
         page_size: 100,
       })

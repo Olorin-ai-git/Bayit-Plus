@@ -26,6 +26,7 @@ export interface InteractiveOptions {
   actionMode: ActionMode;
   budget: number;
   maxIterations: number;
+  autoConfirm?: boolean;
 }
 
 interface CommandHistory {
@@ -357,6 +358,7 @@ class InteractiveSession {
         actionMode: this.options.actionMode,
         maxIterations: this.options.maxIterations,
         budgetLimit: this.options.budget,
+        autoConfirm: this.options.autoConfirm !== undefined ? this.options.autoConfirm : true,
       });
 
       this.updateFromResult(query, result);

@@ -1,0 +1,32 @@
+{
+  "name": "{{TOOL_NAME}}",
+  "description": "{{DESCRIPTION}}",
+  "category": "{{CATEGORY}}",
+  "platform": "{{PLATFORM}}",
+  "destructive": {{DESTRUCTIVE}},
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      {{PROPERTIES}}
+    },
+    "required": [{{REQUIRED_FIELDS}}]
+  },
+  "handler": {
+    "type": "bash_wrapper",
+    "script_path": "{{BASH_WRAPPER_PATH}}",
+    "working_directory": "{{WORKING_DIRECTORY}}",
+    "timeout_seconds": {{TIMEOUT}},
+    "environment": {
+      {{ENVIRONMENT_VARS}}
+    }
+  },
+  "examples": [
+    {{EXAMPLES}}
+  ],
+  "metadata": {
+    "python_script": "{{PYTHON_SCRIPT_PATH}}",
+    "claude_skill": "{{CLAUDE_SKILL_NAME}}",
+    "generated_at": "{{TIMESTAMP}}",
+    "version": "1.0.0"
+  }
+}

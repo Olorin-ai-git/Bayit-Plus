@@ -790,9 +790,6 @@ export const createAdminApi = (authStore: AuthStore) => {
   deleteCategory: (categoryId: string): Promise<{ message: string }> =>
     adminApi.delete(`/admin/categories/${categoryId}`),
 
-  getContent: (filters?: ContentFilter): Promise<PaginatedResponse<Content>> =>
-    adminApi.get('/admin/content', { params: filters }),
-
   getContentHierarchical: (filters?: ContentFilter): Promise<PaginatedResponse<Content>> =>
     adminApi.get('/admin/content/hierarchical', { params: filters }),
 

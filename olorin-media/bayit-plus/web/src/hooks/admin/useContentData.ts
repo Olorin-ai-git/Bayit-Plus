@@ -83,7 +83,7 @@ export function useContentData() {
         setItems(response.items)
         setPagination(prev => ({ ...prev, total: response.total }))
       } else {
-        const response = await adminContentService.getContent({
+        const response = await adminContentService.getContentHierarchical({
           page: pagination.page,
           pageSize: pagination.pageSize,
           search: filters.search,

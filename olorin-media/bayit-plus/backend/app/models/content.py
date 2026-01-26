@@ -77,7 +77,7 @@ class Content(Document):
     subcategory_ids: List[str] = Field(default_factory=list)  # ["shiurim", "cartoons"]
 
     # === LEGACY FIELDS (kept for backward compatibility during migration) ===
-    category_id: str  # Maps to primary_section_id after migration
+    category_id: Optional[str] = None  # Maps to primary_section_id after migration
     category_name: Optional[str] = None  # Deprecated - remove after migration
 
     # Metadata

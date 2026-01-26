@@ -80,6 +80,8 @@ from app.models.youngsters_content import YoungstersContentSource
 from app.services.mcp_content_discovery import ContentDiscoveryQueue
 # Migration tracking models
 from app.models.migration import MigrationRecord, RollbackData
+# NLP models
+from app.models.nlp_session import NLPConversationSession
 
 
 class Database:
@@ -233,6 +235,8 @@ async def connect_to_mongo():
         # Migration tracking models (script infrastructure)
         MigrationRecord,
         RollbackData,
+        # NLP conversation session models
+        NLPConversationSession,
     ]
 
     # Conditionally add Olorin models based on database separation setting

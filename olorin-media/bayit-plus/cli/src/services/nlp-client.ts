@@ -190,6 +190,7 @@ export class NlpClient {
         budget_limit: options.budgetLimit,
         session_id: options.sessionId,
         action_mode: options.actionMode || 'smart',
+        auto_confirm: options.autoConfirm || false,
       }),
     });
 
