@@ -3,6 +3,7 @@ Content detail and streaming endpoints.
 """
 
 import logging
+import re
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
@@ -11,9 +12,28 @@ from app.core.security import (get_current_active_user, get_optional_user,
                                get_passkey_session)
 from app.models.content import Content
 from app.models.user import User
+from app.services.ffmpeg.realtime_transcode import needs_transcode_by_extension
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+# User-Agent patterns for native iOS/tvOS apps that can play AC3/DTS directly
+_NATIVE_APP_PATTERNS = [
+    r"Bayit\+/.*CFNetwork",  # iOS/tvOS Bayit+ app
+    r"Darwin/",  # Generic iOS/tvOS/macOS native
+    r"AppleTV",  # tvOS
+    r"com\.bayit\.plus",  # Bundle identifier
+]
+
+
+def _is_native_app(user_agent: str) -> bool:
+    """Check if request is from native iOS/tvOS app (can play AC3/DTS directly)."""
+    if not user_agent:
+        return False
+    for pattern in _NATIVE_APP_PATTERNS:
+        if re.search(pattern, user_agent, re.IGNORECASE):
+            return True
+    return False
 
 
 async def check_visibility_access(
@@ -126,10 +146,27 @@ async def get_content(
     }
 
     if current_user:
-        response["stream_url"] = content.stream_url
-        response["stream_type"] = content.stream_type
+        # Determine stream URL based on platform
+        user_agent = request.headers.get("User-Agent", "")
+        is_native = _is_native_app(user_agent)
+        stream_url = content.stream_url
+        use_transcode = False
+
+        # For web clients, check if transcoding is needed (fast extension-based check)
+        if not is_native and stream_url:
+            if needs_transcode_by_extension(stream_url):
+                use_transcode = True
+                stream_url = f"/api/proxy/transcode/{content_id}"
+
+        response["stream_url"] = stream_url
+        response["direct_url"] = content.stream_url
+        response["stream_type"] = "transcode" if use_transcode else content.stream_type
         response["preview_url"] = content.preview_url
         response["trailer_url"] = content.trailer_url
+        response["is_transcoded"] = use_transcode
+        # For transcoded streams, provide duration in seconds for proper slider
+        if use_transcode and content.video_metadata:
+            response["duration_hint"] = content.video_metadata.get("duration")
 
     return response
 
@@ -239,13 +276,35 @@ async def get_stream_url(
             }
         )
 
+    # Check if web client needs transcoding (default for web apps)
+    user_agent = request.headers.get("User-Agent", "")
+    is_native = _is_native_app(user_agent)
+    use_transcode = False
+    transcode_url = None
+
+    # For web clients, check if transcoding is needed (fast extension-based check)
+    if not is_native and stream_url:
+        if needs_transcode_by_extension(stream_url):
+            use_transcode = True
+            transcode_url = f"/api/proxy/transcode/{content_id}"
+            logger.info(f"Web client needs transcode for {content_id}")
+
+    # For transcoded streams, provide duration in seconds for proper slider
+    duration_hint = None
+    if use_transcode and content.video_metadata:
+        duration_hint = content.video_metadata.get("duration")
+
     return {
-        "url": stream_url,
-        "type": content.stream_type,
+        "url": transcode_url if use_transcode else stream_url,
+        "direct_url": stream_url,  # Always provide direct URL as fallback
+        "type": "transcode" if use_transcode else content.stream_type,
         "quality": current_quality,
         "available_qualities": available_qualities,
         "is_drm_protected": content.is_drm_protected,
         "drm_key_id": content.drm_key_id if content.is_drm_protected else None,
+        "is_transcoded": use_transcode,
+        "platform": "native_app" if is_native else "web_browser",
+        "duration_hint": duration_hint,
     }
 
 

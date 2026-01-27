@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import logger from '@/utils/logger'
 
 interface UseVideoEventListenersOptions {
   videoRef: React.RefObject<HTMLVideoElement>
@@ -25,7 +26,16 @@ export function useVideoEventListeners({
       onTimeUpdate(video.currentTime, video.duration || 0)
     }
 
-    const handlePlay = () => onPlay()
+    const handlePlay = () => {
+      // Log audio state when play starts for debugging
+      logger.debug('Video play event', 'useVideoEventListeners', {
+        muted: video.muted,
+        volume: video.volume,
+        defaultMuted: video.defaultMuted,
+      })
+      onPlay()
+    }
+
     const handlePause = () => onPause()
     const handleEnded = () => {
       onPause()
@@ -37,11 +47,25 @@ export function useVideoEventListeners({
       }
     }
 
+    // When video can play, ensure proper audio state
+    const handleCanPlay = () => {
+      logger.debug('Video canplay event', 'useVideoEventListeners', {
+        muted: video.muted,
+        volume: video.volume,
+        defaultMuted: video.defaultMuted,
+      })
+      // Sync current state to parent
+      if (onVolumeChange) {
+        onVolumeChange(video.volume, video.muted)
+      }
+    }
+
     video.addEventListener('timeupdate', handleTimeUpdate)
     video.addEventListener('play', handlePlay)
     video.addEventListener('pause', handlePause)
     video.addEventListener('ended', handleEnded)
     video.addEventListener('volumechange', handleVolumeChange)
+    video.addEventListener('canplay', handleCanPlay)
 
     // Sync initial volume state when video element is ready
     if (onVolumeChange) {
@@ -54,6 +78,7 @@ export function useVideoEventListeners({
       video.removeEventListener('pause', handlePause)
       video.removeEventListener('ended', handleEnded)
       video.removeEventListener('volumechange', handleVolumeChange)
+      video.removeEventListener('canplay', handleCanPlay)
     }
   }, [videoRef, onTimeUpdate, onPlay, onPause, onEnded, onVolumeChange])
 }

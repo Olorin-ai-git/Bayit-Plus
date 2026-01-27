@@ -2,7 +2,7 @@
  * GlassPlaceholder Component
  *
  * Unified placeholder for content with missing images.
- * Supports all content types (movie, series, podcast, live, radio, vod)
+ * Supports all content types (movie, series, podcast, live, radio, vod, audiobook)
  * with platform-specific icon sizing and full accessibility.
  */
 

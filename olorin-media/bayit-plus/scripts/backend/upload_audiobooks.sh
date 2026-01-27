@@ -1,76 +1,63 @@
 #!/usr/bin/env bash
 
 ################################################################################
-# upload_series.sh
+# upload_audiobooks.sh
 #
 # Purpose:
-#   Easy-to-use wrapper for uploading TV series from external drives to GCS and
-#   MongoDB Atlas. Handles environment setup, drive detection, and series upload.
+#   Easy-to-use wrapper for uploading audiobooks from external drives to GCS and
+#   MongoDB Atlas. Handles environment setup, drive detection, and audiobook upload.
 #
 # Usage:
-#   ./upload_series.sh [OPTIONS]
+#   ./upload_audiobooks.sh [OPTIONS]
 #
 # Options:
 #   --source PATH         Source directory (default: auto-detect external drive)
-#   --url URL            Download episode from URL instead of local source
+#   --url URL            Download audiobook from URL instead of local source
 #   --dry-run            Show what would be done without uploading
-#   --limit N            Process only first N series (for testing)
-#   --series NAME        Filter to specific series name (partial match)
+#   --limit N            Process only first N audiobooks (for testing)
+#   --author NAME        Filter to specific author name (partial match)
+#   --title TITLE        Filter to specific book title (partial match)
 #   --save-hash          Save computed hashes to MongoDB (useful with --dry-run)
 #   --drive-name NAME    External drive volume name (default: auto-detect)
 #   --help               Show this help message
 #
 # Examples:
 #   # Dry run to see what would be uploaded
-#   ./upload_series.sh --dry-run
+#   ./upload_audiobooks.sh --dry-run
 #
 #   # Upload from URL
-#   ./upload_series.sh --url https://example.com/episode.mkv
+#   ./upload_audiobooks.sh --url https://example.com/audiobook.m4b
 #
-#   # Upload first 2 series (testing)
-#   ./upload_series.sh --limit 2
+#   # Upload first 5 audiobooks (testing)
+#   ./upload_audiobooks.sh --limit 5
 #
-#   # Upload specific series only
-#   ./upload_series.sh --series "Game of Thrones"
+#   # Upload audiobooks by specific author only
+#   ./upload_audiobooks.sh --author "Stephen King"
 #
 #   # Specify custom source directory
-#   ./upload_series.sh --source /Volumes/MyDrive/Series
+#   ./upload_audiobooks.sh --source /Volumes/MyDrive/Audiobooks
 #
 #   # Dry run with limit
-#   ./upload_series.sh --dry-run --limit 3
+#   ./upload_audiobooks.sh --dry-run --limit 3
 #
-# Supported Directory Structures:
-#   The script automatically detects and supports 4 directory structure types:
+# Expected Directory Structure:
+#   /Volumes/USB Drive/Audiobooks/
+#     ├── Stephen King/
+#     │   ├── The Shining/
+#     │   │   ├── Chapter01.mp3
+#     │   │   ├── Chapter02.mp3
+#     │   │   └── ...
+#     │   └── It/
+#     │       └── It.m4b (single file)
+#     └── J.K. Rowling/
+#         └── Harry Potter and the Philosopher's Stone/
+#             └── ...
 #
-#   Type A (Legacy Seasons - Traditional):
-#     /Volumes/USB Drive/Series/
-#       ├── Game of Thrones/
-#       │   ├── Season 1/
-#       │   │   ├── Game.of.Thrones.S01E01.mkv
-#       │   │   └── Game.of.Thrones.S01E02.mkv
-#       │   └── Season 2/...
-#       └── Breaking Bad/...
-#
-#   Type B (Flat - Episodes directly in series folder):
-#     /Volumes/USB Drive/Series/
-#       ├── Game of Thrones/
-#       │   ├── S01E01.mkv
-#       │   ├── S01E02.mkv
-#       │   └── S02E01.mkv
-#       └── Breaking Bad/...
-#
-#   Type C (Episode-grouped - Episodes in labeled folders):
-#     /Volumes/USB Drive/Series/
-#       ├── Game of Thrones/
-#       │   ├── S01E01-Winter_is_Coming/video.mkv
-#       │   ├── S01E02-The_Kingsroad/video.mkv
-#       │   └── S02E01-The_North_Remembers/video.mkv
-#       └── Breaking Bad/...
-#
-#   Type D (Mixed - Fallback with warning):
-#     Combination of above types; auto-detected and processed using Type A logic
-#
-#   Note: Structure is auto-detected. No configuration needed.
+# OR flat structure:
+#   /Volumes/USB Drive/Audiobooks/
+#     ├── The Shining - Stephen King.m4b
+#     ├── It - Stephen King.m4a
+#     └── ...
 #
 # Prerequisites:
 #   - MongoDB Atlas connection string in MONGODB_URI environment variable
@@ -81,7 +68,7 @@
 # Environment Variables:
 #   MONGODB_URI           MongoDB Atlas connection string (REQUIRED)
 #   GCS_BUCKET_NAME       Google Cloud Storage bucket name
-#   TMDB_API_KEY          TMDB API key for metadata (optional)
+#   GOOGLE_BOOKS_API_KEY  Google Books API key for metadata (optional)
 #   GOOGLE_APPLICATION_CREDENTIALS  Path to GCS service account key (optional)
 #
 ################################################################################
@@ -99,7 +86,7 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 BACKEND_DIR="${PROJECT_ROOT}/backend"
-PYTHON_SCRIPT="${SCRIPT_DIR}/upload_series.py"
+PYTHON_SCRIPT="${SCRIPT_DIR}/upload_audiobooks.py"
 
 # Load backend .env if it exists (safe parsing)
 if [[ -f "${BACKEND_DIR}/.env" ]]; then
@@ -120,7 +107,8 @@ SOURCE_DIR=""
 SOURCE_URL=""
 DRY_RUN=false
 LIMIT=""
-SERIES_FILTER=""
+AUTHOR_FILTER=""
+TITLE_FILTER=""
 SAVE_HASH=false
 DRIVE_NAME=""
 SHOW_HELP=false
@@ -131,7 +119,7 @@ SHOW_HELP=false
 
 print_header() {
     echo -e "${BLUE}================================${NC}"
-    echo -e "${BLUE}  Series Upload Script${NC}"
+    echo -e "${BLUE}  Audiobook Upload Script${NC}"
     echo -e "${BLUE}================================${NC}"
     echo ""
 }
@@ -220,12 +208,12 @@ select_drive() {
     echo "${drives[$((selection-1))]}"
 }
 
-find_series_directory() {
+find_audiobooks_directory() {
     local drive_path="$1"
 
-    local series_dirs=("Series" "SERIES" "series" "TV Shows" "TV" "Shows")
+    local audiobook_dirs=("Audiobooks" "AUDIOBOOKS" "audiobooks" "Audio Books" "AudioBooks" "Books" "BOOKS")
 
-    for dir_name in "${series_dirs[@]}"; do
+    for dir_name in "${audiobook_dirs[@]}"; do
         local full_path="${drive_path}/${dir_name}"
         if [[ -d "$full_path" ]]; then
             echo "$full_path"
@@ -325,8 +313,12 @@ while [[ $# -gt 0 ]]; do
             LIMIT="$2"
             shift 2
             ;;
-        --series)
-            SERIES_FILTER="$2"
+        --author)
+            AUTHOR_FILTER="$2"
+            shift 2
+            ;;
+        --title)
+            TITLE_FILTER="$2"
             shift 2
             ;;
         --save-hash)
@@ -379,8 +371,12 @@ main() {
             python_cmd+=" --dry-run"
         fi
 
-        if [[ -n "$SERIES_FILTER" ]]; then
-            python_cmd+=" --series \"${SERIES_FILTER}\""
+        if [[ -n "$AUTHOR_FILTER" ]]; then
+            python_cmd+=" --author \"${AUTHOR_FILTER}\""
+        fi
+
+        if [[ -n "$TITLE_FILTER" ]]; then
+            python_cmd+=" --title \"${TITLE_FILTER}\""
         fi
 
         cd "$BACKEND_DIR"
@@ -397,7 +393,7 @@ main() {
         if [[ -n "$DRIVE_NAME" ]]; then
             if [[ -d "/Volumes/$DRIVE_NAME" ]]; then
                 local drive_path="/Volumes/$DRIVE_NAME"
-                SOURCE_DIR=$(find_series_directory "$drive_path")
+                SOURCE_DIR=$(find_audiobooks_directory "$drive_path")
                 print_success "Using drive: $DRIVE_NAME"
             else
                 print_error "Drive not found: /Volumes/$DRIVE_NAME"
@@ -407,11 +403,11 @@ main() {
             local selected_drive
             selected_drive=$(select_drive)
             local drive_path="/Volumes/$selected_drive"
-            SOURCE_DIR=$(find_series_directory "$drive_path")
+            SOURCE_DIR=$(find_audiobooks_directory "$drive_path")
             print_success "Selected drive: $selected_drive"
         fi
 
-        print_info "Series directory: $SOURCE_DIR"
+        print_info "Audiobooks directory: $SOURCE_DIR"
         echo ""
     fi
 
@@ -434,13 +430,19 @@ main() {
 
     if [[ -n "$LIMIT" ]]; then
         python_cmd+=" --limit ${LIMIT}"
-        print_info "Limiting to first ${LIMIT} series"
+        print_info "Limiting to first ${LIMIT} audiobooks"
         echo ""
     fi
 
-    if [[ -n "$SERIES_FILTER" ]]; then
-        python_cmd+=" --series \"${SERIES_FILTER}\""
-        print_info "Filtering to series: ${SERIES_FILTER}"
+    if [[ -n "$AUTHOR_FILTER" ]]; then
+        python_cmd+=" --author \"${AUTHOR_FILTER}\""
+        print_info "Filtering to author: ${AUTHOR_FILTER}"
+        echo ""
+    fi
+
+    if [[ -n "$TITLE_FILTER" ]]; then
+        python_cmd+=" --title \"${TITLE_FILTER}\""
+        print_info "Filtering to title: ${TITLE_FILTER}"
         echo ""
     fi
 
@@ -454,12 +456,13 @@ main() {
     echo "  Source:      $SOURCE_DIR"
     echo "  Dry Run:     $DRY_RUN"
     echo "  Save Hash:   $SAVE_HASH"
-    [[ -n "$LIMIT" ]] && echo "  Limit:       $LIMIT series"
-    [[ -n "$SERIES_FILTER" ]] && echo "  Filter:      $SERIES_FILTER"
+    [[ -n "$LIMIT" ]] && echo "  Limit:       $LIMIT audiobooks"
+    [[ -n "$AUTHOR_FILTER" ]] && echo "  Author:      $AUTHOR_FILTER"
+    [[ -n "$TITLE_FILTER" ]] && echo "  Title:       $TITLE_FILTER"
     echo ""
 
     if [[ "$DRY_RUN" != true ]]; then
-        print_warning "This will upload series to production GCS and MongoDB Atlas"
+        print_warning "This will upload audiobooks to production GCS and MongoDB Atlas"
         echo -n "Continue? (y/N): "
         read -r confirm
 
@@ -470,7 +473,7 @@ main() {
         echo ""
     fi
 
-    print_info "Starting series upload..."
+    print_info "Starting audiobook upload..."
     echo ""
 
     cd "$BACKEND_DIR"

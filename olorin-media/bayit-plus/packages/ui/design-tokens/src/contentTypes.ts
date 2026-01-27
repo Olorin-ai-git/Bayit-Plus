@@ -41,6 +41,13 @@ export const CONTENT_TYPE_CONFIG = {
     iconSize: { ios: 48, tvos: 96, web: 48 },
     aspectRatio: 2/3
   },
+  audiobook: {
+    icon: '🎧',
+    label: 'Audiobook',
+    ttsLabel: 'audiobook',
+    iconSize: { ios: 48, tvos: 96, web: 48 },
+    aspectRatio: 1
+  },
 } as const;
 
 // Freeze to prevent runtime modification (security)

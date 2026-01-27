@@ -53,7 +53,7 @@ interface DownloadItem {
   subtitle_en?: string;
   subtitle_es?: string;
   thumbnail?: string;
-  type: 'movie' | 'series' | 'episode' | 'podcast';
+  type: 'movie' | 'series' | 'episode' | 'podcast' | 'audiobook';
   size: string;
   downloadedAt: string;
   status: 'completed' | 'downloading' | 'paused';
@@ -67,7 +67,7 @@ const formatFileSize = (bytes?: number): string => {
   return `${Math.round(bytes / 1024)} KB`;
 };
 
-const mapContentType = (contentType: string): 'movie' | 'series' | 'episode' | 'podcast' => {
+const mapContentType = (contentType: string): 'movie' | 'series' | 'episode' | 'podcast' | 'audiobook' => {
   switch (contentType) {
     case 'movie':
     case 'vod':
@@ -79,6 +79,8 @@ const mapContentType = (contentType: string): 'movie' | 'series' | 'episode' | '
     case 'podcast_episode':
     case 'podcast':
       return 'podcast';
+    case 'audiobook':
+      return 'audiobook';
     default:
       return 'movie';
   }

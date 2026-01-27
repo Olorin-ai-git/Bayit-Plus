@@ -32,6 +32,12 @@ export interface VideoPlayerProps {
   initialSeekTime?: number
   onShowUpgrade?: () => void
   isWidget?: boolean
+  /** Whether the stream is being transcoded (affects seeking behavior) */
+  isTranscoded?: boolean
+  /** Known content duration in seconds (used for transcoded streams) */
+  contentDuration?: number
+  /** Direct URL for fallback/seeking (used with transcoded streams) */
+  directUrl?: string
 }
 
 export interface PlayerState {

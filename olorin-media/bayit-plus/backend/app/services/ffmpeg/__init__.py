@@ -73,6 +73,15 @@ from app.services.ffmpeg.video_analysis import (VideoAnalysisError,
                                                 get_resolution,
                                                 get_video_duration,
                                                 get_video_info)
+# Re-export realtime transcode functions and exceptions
+from app.services.ffmpeg.realtime_transcode import (
+    RealtimeTranscodeError,
+    check_transcode_requirements,
+    needs_audio_transcode,
+    needs_transcode_by_extension,
+    needs_video_transcode,
+    stream_transcode,
+)
 
 __all__ = [
     # Main service
@@ -130,4 +139,11 @@ __all__ = [
     "resize_video",
     "extract_audio",
     "convert_to_hls",
+    # Realtime Transcode
+    "RealtimeTranscodeError",
+    "check_transcode_requirements",
+    "needs_audio_transcode",
+    "needs_transcode_by_extension",
+    "needs_video_transcode",
+    "stream_transcode",
 ]

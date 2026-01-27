@@ -19,7 +19,7 @@ interface Content {
   id: string;
   title: string;
   thumbnail?: string;
-  type?: 'live' | 'radio' | 'podcast' | 'vod' | 'movie' | 'series';
+  type?: 'live' | 'radio' | 'podcast' | 'vod' | 'movie' | 'series' | 'audiobook';
   is_series?: boolean;
   duration?: string;
   progress?: number;

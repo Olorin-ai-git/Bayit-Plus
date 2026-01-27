@@ -46,7 +46,7 @@ interface FavoriteItem {
   subtitle_en?: string;
   subtitle_es?: string;
   thumbnail?: string;
-  type: 'movie' | 'series' | 'channel' | 'podcast' | 'radio';
+  type: 'movie' | 'series' | 'channel' | 'podcast' | 'radio' | 'audiobook';
   addedAt?: string;
 }
 

@@ -26,6 +26,8 @@ export interface ContentData {
   logo?: string;
   year?: string;
   duration?: string;
+  /** Duration in seconds (used for transcoded streams) */
+  duration_hint?: number;
   rating?: string;
   genre?: string;
   episodeCount?: number;

@@ -3,16 +3,54 @@ Series-specific endpoints.
 """
 
 import logging
+import re
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.core.security import get_optional_user
 from app.models.content import Content
 from app.models.user import User
+from app.services.ffmpeg.realtime_transcode import needs_transcode_by_extension
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+# User-Agent patterns for native iOS/tvOS apps
+_NATIVE_APP_PATTERNS = [
+    r"Bayit\+/.*CFNetwork",
+    r"Darwin/",
+    r"AppleTV",
+    r"com\.bayit\.plus",
+]
+
+
+def _is_native_app(user_agent: str) -> bool:
+    """Check if request is from native iOS/tvOS app."""
+    if not user_agent:
+        return False
+    for pattern in _NATIVE_APP_PATTERNS:
+        if re.search(pattern, user_agent, re.IGNORECASE):
+            return True
+    return False
+
+
+def _get_stream_url_for_platform(
+    content_id: str,
+    stream_url: str,
+    user_agent: str,
+) -> tuple[str, bool]:
+    """Get appropriate stream URL based on platform (fast extension-based check)."""
+    is_native = _is_native_app(user_agent)
+
+    if is_native or not stream_url:
+        return stream_url, False
+
+    # Fast extension-based check
+    if needs_transcode_by_extension(stream_url):
+        return f"/api/proxy/transcode/{content_id}", True
+
+    return stream_url, False
 
 
 @router.get("/series")
@@ -199,7 +237,7 @@ async def get_series_seasons(series_id: str):
 
 
 @router.get("/series/{series_id}/season/{season_num}/episodes")
-async def get_season_episodes(series_id: str, season_num: int):
+async def get_season_episodes(request: Request, series_id: str, season_num: int):
     """Get episodes for a specific season."""
     series = await Content.get(series_id)
     if not series or not series.is_published or not series.is_series:
@@ -215,20 +253,28 @@ async def get_season_episodes(series_id: str, season_num: int):
         .to_list()
     )
 
+    user_agent = request.headers.get("User-Agent", "")
+    episode_list = []
+
+    for ep in episodes:
+        stream_url, is_transcoded = _get_stream_url_for_platform(
+            str(ep.id), ep.stream_url, user_agent
+        )
+        episode_list.append({
+            "id": str(ep.id),
+            "title": ep.title,
+            "description": ep.description,
+            "thumbnail": ep.thumbnail,
+            "episode_number": ep.episode,
+            "duration": ep.duration,
+            "preview_url": ep.preview_url,
+            "stream_url": stream_url,
+            "direct_url": ep.stream_url,
+            "is_transcoded": is_transcoded,
+        })
+
     return {
         "series_id": series_id,
         "season_number": season_num,
-        "episodes": [
-            {
-                "id": str(ep.id),
-                "title": ep.title,
-                "description": ep.description,
-                "thumbnail": ep.thumbnail,
-                "episode_number": ep.episode,
-                "duration": ep.duration,
-                "preview_url": ep.preview_url,
-                "stream_url": ep.stream_url,
-            }
-            for ep in episodes
-        ],
+        "episodes": episode_list,
     }

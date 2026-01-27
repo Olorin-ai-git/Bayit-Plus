@@ -406,6 +406,42 @@ class GCSUploader:
             )
             return []
 
+    async def delete_directory(self, prefix: str) -> bool:
+        """
+        Delete all files in GCS with a given prefix (directory).
+
+        Args:
+            prefix: The prefix to match (e.g., "movies/title/hls")
+
+        Returns:
+            True if all files deleted successfully, False on error
+        """
+        try:
+            client = await self.get_client()
+            bucket = client.bucket(settings.GCS_BUCKET_NAME)
+            blobs = list(bucket.list_blobs(prefix=prefix))
+
+            if not blobs:
+                logger.debug(f"No files found with prefix: {prefix}")
+                return True
+
+            deleted_count = 0
+            for blob in blobs:
+                try:
+                    blob.delete()
+                    deleted_count += 1
+                except Exception as e:
+                    logger.warning(f"Failed to delete {blob.name}: {e}")
+
+            logger.info(f"Deleted {deleted_count}/{len(blobs)} files from {prefix}")
+            return deleted_count == len(blobs)
+
+        except Exception as e:
+            logger.error(
+                f"Failed to delete GCS directory {prefix}: {e}", exc_info=True
+            )
+            return False
+
 
 # Global GCS uploader instance
 gcs_uploader = GCSUploader()

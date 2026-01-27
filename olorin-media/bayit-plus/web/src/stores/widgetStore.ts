@@ -23,7 +23,7 @@ import type {
 export interface VoiceContentItem {
   id: string;
   name: string;
-  type: 'channel' | 'movie' | 'series' | 'podcast' | 'radio';
+  type: 'channel' | 'movie' | 'series' | 'podcast' | 'radio' | 'audiobook';
   thumbnail?: string;
   streamUrl?: string;
   matchedName?: string;
