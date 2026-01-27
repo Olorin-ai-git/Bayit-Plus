@@ -479,6 +479,15 @@ SECTIONS_SEED_DATA = [
         "order": 8,
         "show_on_homepage": True,
     },
+    {
+        "slug": "audiobooks",
+        "name_key": "taxonomy.sections.audiobooks",
+        "icon": "headphones",
+        "color": "#34C759",
+        "order": 9,
+        "show_on_homepage": True,
+        "default_content_format": "audiobook",
+    },
 ]
 
 

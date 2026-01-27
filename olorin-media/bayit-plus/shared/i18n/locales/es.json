@@ -3589,7 +3589,8 @@
       "music": "Música",
       "documentaries": "Documentales",
       "podcasts": "Podcasts",
-      "live": "TV en vivo"
+      "live": "TV en vivo",
+      "audiobooks": "Audiolibros"
     },
     "subcategories": {
       "learning-hebrew": "Aprender Hebreo",
