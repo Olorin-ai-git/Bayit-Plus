@@ -86,6 +86,11 @@ steps:
       - '--update-secrets=TMDB_API_KEY=bayit-tmdb-api-key:latest'
       - '--update-secrets=CHROMECAST_RECEIVER_APP_ID=bayit-chromecast-receiver-id:latest'
 
+      # Google OAuth Secrets
+      - '--update-secrets=GOOGLE_CLIENT_ID=bayit-google-client-id:latest'
+      - '--update-secrets=GOOGLE_CLIENT_SECRET=bayit-google-client-secret:latest'
+      - '--update-secrets=GOOGLE_REDIRECT_URI=bayit-google-redirect-uri:latest'
+
       # Casting Feature Configuration
       - '--set-env-vars=CAST_ENABLE_AIRPLAY=true'
       - '--set-env-vars=CAST_ENABLE_CHROMECAST=true'
