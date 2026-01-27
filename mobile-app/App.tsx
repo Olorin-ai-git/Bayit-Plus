@@ -1,11 +1,35 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+/**
+ * Bayit+ iOS Mobile App
+ * Entry point with SafeAreaProvider required for navigation
+ */
 
-export default function App() {
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './src/config/queryConfig';
+import { AppContent } from './src/components/AppContent';
+
+function App(): React.JSX.Element {
   return (
-    <View style={{ flex: 1, backgroundColor: '#FF0000', justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ color: '#FFFF00', fontSize: 40, fontWeight: 'bold' }}>BAYITPLUS</Text>
-      <Text style={{ color: '#00FF00', fontSize: 20, marginTop: 20 }}>App Running</Text>
-    </View>
+    <SafeAreaProvider>
+      <View style={styles.container}>
+        <QueryClientProvider client={queryClient}>
+          <NavigationContainer>
+            <AppContent />
+          </NavigationContainer>
+        </QueryClientProvider>
+      </View>
+    </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0d0d1a',
+  },
+});
+
+export default App;

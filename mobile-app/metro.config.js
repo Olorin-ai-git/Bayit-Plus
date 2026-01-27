@@ -9,6 +9,7 @@ const path = require('path');
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(__dirname, '..');
 const rootNodeModules = path.resolve(workspaceRoot, 'node_modules');
+const packagesRoot = path.resolve(workspaceRoot, 'packages/ui');
 
 const defaultConfig = getDefaultConfig(__dirname);
 
@@ -19,7 +20,7 @@ const localPackages = ['react', 'react-dom', 'scheduler'];
 
 const config = {
   projectRoot: __dirname,
-  watchFolders: [projectRoot, rootNodeModules],
+  watchFolders: [projectRoot, rootNodeModules, packagesRoot],
   resolver: {
     unstable_enableSymlinks: true,
     nodeModulesPaths: [
@@ -30,13 +31,42 @@ const config = {
     resolverMainFields: ['react.native', 'browser', 'main'],
     // Force React and core packages to resolve from correct locations
     extraNodeModules: {
+      // Babel runtime
       '@babel/runtime': path.resolve(rootNodeModules, '@babel/runtime'),
+
+      // React packages - MUST be from local (React 19.2.0)
       'react': path.resolve(localNodeModules, 'react'),
-      'react-native': path.resolve(rootNodeModules, 'react-native'),
       'react/jsx-runtime': path.resolve(localNodeModules, 'react/jsx-runtime'),
       'react/jsx-dev-runtime': path.resolve(localNodeModules, 'react/jsx-dev-runtime'),
       'scheduler': path.resolve(localNodeModules, 'scheduler'),
       'react-dom': path.resolve(localNodeModules, 'react-dom'),
+
+      // React Native
+      'react-native': path.resolve(rootNodeModules, 'react-native'),
+      'react-native-screens': path.resolve(rootNodeModules, 'react-native-screens'),
+      'react-native-safe-area-context': path.resolve(rootNodeModules, 'react-native-safe-area-context'),
+
+      // Navigation
+      '@react-navigation/native': path.resolve(rootNodeModules, '@react-navigation/native'),
+      '@react-navigation/native-stack': path.resolve(rootNodeModules, '@react-navigation/native-stack'),
+      '@react-navigation/bottom-tabs': path.resolve(rootNodeModules, '@react-navigation/bottom-tabs'),
+      '@react-navigation/core': path.resolve(rootNodeModules, '@react-navigation/core'),
+      '@react-navigation/elements': path.resolve(rootNodeModules, '@react-navigation/elements'),
+      '@react-navigation/routers': path.resolve(rootNodeModules, '@react-navigation/routers'),
+
+      // State management
+      '@tanstack/react-query': path.resolve(rootNodeModules, '@tanstack/react-query'),
+      '@tanstack/query-core': path.resolve(rootNodeModules, '@tanstack/query-core'),
+      'zustand': path.resolve(rootNodeModules, 'zustand'),
+
+      // @olorin packages from packages/ui (using root of each package, not src/)
+      '@olorin/design-tokens': path.resolve(packagesRoot, 'design-tokens'),
+      '@olorin/shared-i18n': path.resolve(packagesRoot, 'shared-i18n'),
+      '@olorin/shared-i18n/native': path.resolve(packagesRoot, 'shared-i18n/native.ts'),
+      '@olorin/shared-hooks': path.resolve(packagesRoot, 'shared-hooks'),
+      '@olorin/shared-icons': path.resolve(packagesRoot, 'shared-icons'),
+      '@olorin/shared-services': path.resolve(packagesRoot, 'shared-services'),
+      '@olorin/shared-stores': path.resolve(packagesRoot, 'shared-stores'),
     },
     // Force resolution of React packages from local node_modules regardless of where the import originates
     resolveRequest: (context, moduleName, platform) => {

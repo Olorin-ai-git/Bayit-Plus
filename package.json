@@ -98,6 +98,7 @@
   "dependencies": {
     "@picovoice/porcupine-web": "^4.0.0",
     "@picovoice/web-voice-processor": "^4.0.9",
+    "@react-native-async-storage/async-storage": "^2.2.0",
     "@simplewebauthn/browser": "^13.2.2",
     "clsx": "^2.1.1",
     "i18next-http-backend": "^3.0.2",

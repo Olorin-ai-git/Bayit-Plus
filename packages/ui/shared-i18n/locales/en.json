@@ -1610,6 +1610,7 @@
       "users": "Users",
       "campaigns": "Campaigns",
       "billing": "Billing",
+      "costDashboard": "Cost Dashboard",
       "billingOverview": "Overview",
       "transactions": "Transactions",
       "refunds": "Refunds",

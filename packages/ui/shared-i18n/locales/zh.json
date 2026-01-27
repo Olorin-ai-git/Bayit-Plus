@@ -1931,6 +1931,24 @@
         "moderator": "版主",
         "user": "用户"
       }
+    },
+    "featured": {
+      "title": "精选内容",
+      "subtitle": "通过拖动项目来管理轮播顺序",
+      "empty": "没有精选内容",
+      "emptyHint": "从内容库中添加精选内容",
+      "count": "{{count}} 项",
+      "confirmUnfeature": "从精选中删除?",
+      "remove": "删除",
+      "unsavedChanges": "您有未保存的更改",
+      "addContent": "添加内容",
+      "addContentToSection": "添加内容到 {{section}}",
+      "selectContentToAdd": "选择要添加的内容",
+      "addSelected": "添加所选 ({{count}})",
+      "noContentAvailable": "没有可用的内容",
+      "contentAdded": "已添加 {{count}} 项",
+      "failedToAdd": "添加内容失败",
+      "publishedOnly": "已发布"
     }
   },
   "cultures": {

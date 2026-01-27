@@ -255,7 +255,7 @@ class TestAudiobooksAdminCRUD:
             json=payload,
             headers=headers,
         )
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
         assert data["title"] == "New Audiobook"
         assert data["author"] == "Jane Doe"
@@ -355,7 +355,7 @@ class TestAudiobooksAuditLogging:
             json=payload,
             headers=headers,
         )
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_201_CREATED
 
         audit_log = await AuditLog.find_one(
             {

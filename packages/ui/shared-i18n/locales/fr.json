@@ -895,6 +895,24 @@
         "moderator": "Modérateur",
         "user": "Utilisateur"
       }
+    },
+    "featured": {
+      "title": "Contenu Vedette",
+      "subtitle": "Gérer l'ordre du carrousel en faisant glisser les éléments",
+      "empty": "Aucun contenu vedette",
+      "emptyHint": "Ajouter du contenu vedette depuis la Bibliothèque de Contenu",
+      "count": "{{count}} éléments",
+      "confirmUnfeature": "Retirer de la vedette ?",
+      "remove": "Retirer",
+      "unsavedChanges": "Vous avez des modifications non enregistrées",
+      "addContent": "Ajouter du Contenu",
+      "addContentToSection": "Ajouter du Contenu à {{section}}",
+      "selectContentToAdd": "Sélectionnez le contenu à ajouter",
+      "addSelected": "Ajouter Sélectionnés ({{count}})",
+      "noContentAvailable": "Aucun contenu disponible",
+      "contentAdded": "{{count}} éléments ajoutés",
+      "failedToAdd": "Erreur lors de l'ajout de contenu",
+      "publishedOnly": "Publié"
     }
   },
   "cultures": {

@@ -1717,6 +1717,24 @@
         "moderator": "モデレーター",
         "user": "ユーザー"
       }
+    },
+    "featured": {
+      "title": "注目コンテンツ",
+      "subtitle": "アイテムをドラッグしてカルーセルの順序を管理",
+      "empty": "注目コンテンツがありません",
+      "emptyHint": "コンテンツライブラリから注目コンテンツを追加",
+      "count": "{{count}} アイテム",
+      "confirmUnfeature": "注目から削除しますか?",
+      "remove": "削除",
+      "unsavedChanges": "保存されていない変更があります",
+      "addContent": "コンテンツを追加",
+      "addContentToSection": "{{section}} にコンテンツを追加",
+      "selectContentToAdd": "追加するコンテンツを選択",
+      "addSelected": "選択したものを追加 ({{count}})",
+      "noContentAvailable": "利用可能なコンテンツがありません",
+      "contentAdded": "{{count}} アイテムが追加されました",
+      "failedToAdd": "コンテンツの追加に失敗",
+      "publishedOnly": "公開済み"
     }
   },
   "cultureClock": {

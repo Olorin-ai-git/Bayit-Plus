@@ -1963,7 +1963,16 @@
       "count": "{{count}} elementos",
       "confirmUnfeature": "¿Quitar de destacado?",
       "remove": "Quitar",
-      "unsavedChanges": "Tienes cambios sin guardar"
+      "unsavedChanges": "Tienes cambios sin guardar",
+      "addContent": "Agregar Contenido",
+      "addContentToSection": "Agregar Contenido a {{section}}",
+      "selectContentToAdd": "Seleccionar contenido para agregar",
+      "addSelected": "Agregar Seleccionados ({{count}})",
+      "noContentAvailable": "No hay contenido disponible",
+      "contentAdded": "Se agregaron {{count}} elementos",
+      "failedToAdd": "Error al agregar contenido",
+      "publishedOnly": "Solo publicados",
+      "saveButton": "Guardar ({{count}})"
     },
     "recordings": {
       "title": "Gestión de Grabaciones",

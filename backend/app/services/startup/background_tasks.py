@@ -230,6 +230,13 @@ def start_background_tasks() -> None:
     _running_tasks.append(task)
     logger.info("Started playback session cleanup background task (every 5 minutes)")
 
+    # Cost aggregation (always runs)
+    from app.services.olorin.cost.jobs.cost_rollup import cost_rollup_job
+
+    task = asyncio.create_task(cost_rollup_job())
+    _running_tasks.append(task)
+    logger.info("Started cost aggregation background task (every 1 hour)")
+
 
 async def stop_background_tasks() -> None:
     """Stop all running background tasks gracefully."""

@@ -1,6 +1,5 @@
 import React from 'react';
-import { Text, Pressable, View, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Text, Pressable, View, StyleSheet, Platform } from 'react-native';
 
 interface TabBarProps {
   state: any;
@@ -10,7 +9,8 @@ interface TabBarProps {
 
 export default function TabBar(props: TabBarProps) {
   const { state, descriptors, navigation } = props;
-  const insets = useSafeAreaInsets();
+  // Use fixed bottom padding instead of safe area insets for now
+  const bottomPadding = Platform.OS === 'ios' ? 34 : 0;
 
   const tabLabels: Record<string, string> = {
     Home: '🏠 Home',
@@ -22,7 +22,7 @@ export default function TabBar(props: TabBarProps) {
   };
 
   return (
-    <View style={[styles.tabBarContainer, { paddingBottom: insets.bottom }]}>
+    <View style={[styles.tabBarContainer, { paddingBottom: bottomPadding }]}>
       {state.routes.map((route: any, index: number) => {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;

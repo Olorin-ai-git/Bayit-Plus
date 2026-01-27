@@ -1863,7 +1863,16 @@
       "count": "{{count}} items",
       "confirmUnfeature": "Remove from featured?",
       "remove": "Remove",
-      "unsavedChanges": "You have unsaved changes"
+      "unsavedChanges": "You have unsaved changes",
+      "addContent": "Add Content",
+      "addContentToSection": "Add Content to {{section}}",
+      "selectContentToAdd": "Select content to add",
+      "addSelected": "Add Selected ({{count}})",
+      "noContentAvailable": "No content available",
+      "contentAdded": "Added {{count}} items",
+      "failedToAdd": "Failed to add content",
+      "publishedOnly": "Published only",
+      "saveButton": "Save ({{count}})"
     },
     "content": {
       "title": "Content Library",

@@ -1678,7 +1678,16 @@
       "count": "{{count}} פריטים",
       "confirmUnfeature": "להסיר מהמובחר?",
       "remove": "הסר",
-      "unsavedChanges": "יש לך שינויים שלא נשמרו"
+      "unsavedChanges": "יש לך שינויים שלא נשמרו",
+      "addContent": "הוסף תוכן",
+      "addContentToSection": "הוסף תוכן ל{{section}}",
+      "selectContentToAdd": "בחר תוכן להוספה",
+      "addSelected": "הוסף נבחרים ({{count}})",
+      "noContentAvailable": "אין תוכן זמין",
+      "contentAdded": "נוספו {{count}} פריטים",
+      "failedToAdd": "נכשל בהוספת תוכן",
+      "publishedOnly": "מפורסם בלבד",
+      "saveButton": "שמור ({{count}})"
     },
     "content": {
       "title": "ספריית תוכן",
