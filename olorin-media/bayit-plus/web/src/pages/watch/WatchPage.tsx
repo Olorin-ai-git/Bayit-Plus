@@ -143,7 +143,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
       // Redirect to login
       navigate('/auth/login')
     }
-  }, [loading, content, streamUrl, user, notifications, navigate, t, contentId]);
+  }, [loading, content, streamUrl, user, navigate, t, contentId]);
 
   if (loading) {
     return <LoadingState />;
