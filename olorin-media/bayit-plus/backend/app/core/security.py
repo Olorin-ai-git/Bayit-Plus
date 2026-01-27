@@ -285,3 +285,14 @@ async def verify_content_access(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Premium subscription required to access this content",
                 )
+
+    # Check audiobook streaming restrictions
+    if action == "stream":
+        content_format = getattr(content, "content_format", None)
+        if content_format == "audiobook":
+            # Only admins can stream audiobooks
+            if not user or not user.is_admin_user():
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Audio content streaming is restricted to administrators",
+                )

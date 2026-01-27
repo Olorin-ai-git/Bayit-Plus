@@ -34,7 +34,7 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.endpoints import (analytics_router, tts_router, voice_router,
                                    wake_word_router)
     # Import search sub-routers
-    from app.api.routes import (admin, admin_categories,
+    from app.api.routes import (admin, admin_audiobooks, admin_categories,
                                 admin_content_importer, admin_content_vod_read,
                                 admin_content_vod_toggles,
                                 admin_content_vod_write, admin_cultures,
@@ -42,7 +42,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 admin_podcast_episodes, admin_podcasts,
                                 admin_radio_stations, admin_taxonomy,
                                 admin_uploads, admin_widgets,
-                                admin_youngsters_content, auth, chapters, chat,
+                                admin_youngsters_content, audiobooks, auth, chapters, chat,
                                 chess, children, content, content_taxonomy,
                                 cultures, device_pairing, devices,
                                 direct_messages, downloads, epg,
@@ -120,6 +120,7 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(live_quota.router, prefix=prefix, tags=["live-quota"])
     app.include_router(radio.router, prefix=f"{prefix}/radio", tags=["radio"])
     app.include_router(podcasts.router, prefix=f"{prefix}/podcasts", tags=["podcasts"])
+    app.include_router(audiobooks.router, prefix=f"{prefix}/audiobooks", tags=["audiobooks"])
     app.include_router(epg.router, prefix=f"{prefix}/epg", tags=["epg"])
     app.include_router(chapters.router, prefix=f"{prefix}/chapters", tags=["chapters"])
     app.include_router(subtitles.router, prefix=prefix, tags=["subtitles"])
@@ -247,6 +248,9 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(
         admin_podcast_episodes.router, prefix=f"{prefix}/admin", tags=["admin-content"]
+    )
+    app.include_router(
+        admin_audiobooks.router, prefix=f"{prefix}/admin", tags=["admin-content"]
     )
     app.include_router(
         admin_content_importer.router, prefix=f"{prefix}/admin", tags=["admin-content"]

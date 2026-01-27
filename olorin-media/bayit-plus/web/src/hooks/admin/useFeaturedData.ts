@@ -107,6 +107,86 @@ export function useFeaturedData() {
     []
   )
 
+  const handleAddToSection = useCallback(
+    async (sectionId: string, contentIds: string[]) => {
+      if (contentIds.length === 0) return
+
+      try {
+        const section = sections.find((s) => s.section_id === sectionId)
+        if (!section) throw new Error('Section not found')
+
+        // Calculate starting order (append to end)
+        const maxOrder = section.items.length > 0 ? section.items.length - 1 : -1
+
+        // Fetch full content objects for new items
+        const contentPromises = contentIds.map(async (id) => {
+          const response = await axios.get(`${API_BASE_URL}/admin/content/${id}`, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          })
+          return response.data
+        })
+
+        const newContentItems: Content[] = await Promise.all(contentPromises)
+
+        // OPTIMISTIC UPDATE
+        setSections((prevSections) =>
+          prevSections.map((s) => {
+            if (s.section_id !== sectionId) return s
+            return {
+              ...s,
+              items: [...s.items, ...newContentItems],
+              hasChanges: true,
+            }
+          })
+        )
+
+        // Prepare API payload
+        const existingItems = section.items.map((item, idx) => ({
+          content_id: item.id,
+          order: idx,
+        }))
+
+        const newItems = contentIds.map((contentId, idx) => ({
+          content_id: contentId,
+          order: maxOrder + 1 + idx,
+        }))
+
+        const payload = {
+          sections: [
+            {
+              section_id: sectionId,
+              items: [...existingItems, ...newItems],
+            },
+          ],
+        }
+
+        // API CALL
+        await axios.post(`${API_BASE_URL}/admin/batch/featured-order`, payload, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        })
+
+        logger.info('Content added to section', { sectionId, count: contentIds.length })
+
+        // Refresh from backend to ensure consistency
+        await loadFeaturedContent()
+      } catch (err: unknown) {
+        // ROLLBACK optimistic update
+        await loadFeaturedContent()
+
+        let msg = 'Failed to add content to section'
+        if (axios.isAxiosError(err)) {
+          msg = err.response?.data?.detail || err.message || msg
+        } else if (err instanceof Error) {
+          msg = err.message
+        }
+        logger.error('Failed to add content', { error: err })
+        setError(msg)
+        throw err
+      }
+    },
+    [sections, token, loadFeaturedContent]
+  )
+
   const handleSaveAllSections = useCallback(async () => {
     setIsSaving(true)
     setError(null)
@@ -168,6 +248,7 @@ export function useFeaturedData() {
     setError,
     handleReorder,
     handleRemoveFromSection,
+    handleAddToSection,
     handleSaveAllSections,
     refresh: loadFeaturedContent,
   }

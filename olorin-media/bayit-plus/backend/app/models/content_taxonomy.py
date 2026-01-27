@@ -320,7 +320,7 @@ class AudienceUpdate(BaseModel):
 
 
 # Content format enum values (not stored in DB, just for reference)
-CONTENT_FORMATS = ["movie", "series", "documentary", "short", "clip"]
+CONTENT_FORMATS = ["movie", "series", "documentary", "short", "clip", "audiobook"]
 
 # Default topic tags (can be extended by users)
 DEFAULT_TOPIC_TAGS = [

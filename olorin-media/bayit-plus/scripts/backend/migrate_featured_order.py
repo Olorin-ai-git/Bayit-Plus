@@ -13,9 +13,15 @@ The script is idempotent - safe to run multiple times.
 
 import asyncio
 import logging
-from datetime import datetime
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
 
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+
+# Add backend directory to Python path
+backend_dir = Path(__file__).parent.parent.parent / "backend"
+sys.path.insert(0, str(backend_dir))
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -26,8 +32,14 @@ logging.basicConfig(
 
 async def get_database() -> AsyncIOMotorDatabase:
     """Get MongoDB connection."""
-    from app.core.database import get_database
-    return get_database()
+    from app.core.database import connect_to_mongo, get_database
+    # Initialize MongoDB connection if not already done
+    try:
+        return get_database()
+    except Exception:
+        # Connection not initialized, initialize it
+        await connect_to_mongo()
+        return get_database()
 
 
 async def migrate_featured_order():
@@ -80,7 +92,7 @@ async def migrate_featured_order():
                     {
                         "$set": {
                             "featured_order": featured_order,
-                            "updated_at": datetime.utcnow()
+                            "updated_at": datetime.now(timezone.utc)
                         }
                     }
                 )
@@ -116,9 +128,17 @@ async def migrate_featured_order():
 
 async def main():
     """Run migration."""
-    result = await migrate_featured_order()
-    logger.info(f"Migration result: {result}")
-    return result
+    from app.core.database import connect_to_mongo, close_mongo_connection
+
+    try:
+        # Initialize MongoDB connection
+        await connect_to_mongo()
+        result = await migrate_featured_order()
+        logger.info(f"Migration result: {result}")
+        return result
+    finally:
+        # Always close connection
+        await close_mongo_connection()
 
 
 if __name__ == "__main__":
