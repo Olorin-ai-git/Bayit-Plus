@@ -1,9 +1,11 @@
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { FileText, AlertCircle, AlertTriangle, Info, Archive, XCircle, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Info, Archive, XCircle, CheckCircle2, RefreshCw, Terminal } from 'lucide-react';
 import { GlassModal, GlassButton, GlassCard, GlassBadge } from '@bayit/shared/ui';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
-import { AuditReportDetail, LibrarianConfig } from '@/services/librarianService';
+import { AuditReportDetail, LibrarianConfig, LogEntry, reapplyAuditFixes } from '@/services/librarianService';
+import logger from '@/utils/logger';
 
 interface ReportDetailModalProps {
   visible: boolean;
@@ -11,7 +13,7 @@ interface ReportDetailModalProps {
   report: AuditReportDetail | null;
   config: LibrarianConfig | null;
   onClose: () => void;
-  onViewLogs: (auditId: string) => void;
+  onReapplySuccess?: (fixAuditId: string) => void;
 }
 
 // Utility Functions
@@ -57,23 +59,74 @@ const hasInsights = (insights: string[] | null | undefined): boolean => {
   return Array.isArray(insights) && insights.length > 0;
 };
 
+const getLogLevelColor = (level: LogEntry['level']): string => {
+  switch (level) {
+    case 'error': return colors.error.DEFAULT;
+    case 'warn': return '#fb923c';
+    case 'success': return colors.success.DEFAULT;
+    case 'info': return colors.info.DEFAULT;
+    case 'debug': return colors.textMuted;
+    case 'trace': return '#6b7280';
+    default: return colors.text;
+  }
+};
+
+const formatLogTime = (timestamp: string): string => {
+  try {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('en-US', { hour12: false });
+  } catch {
+    return timestamp;
+  }
+};
+
 export const ReportDetailModal = ({
   visible,
   loading,
   report,
   config,
   onClose,
-  onViewLogs,
+  onReapplySuccess,
 }: ReportDetailModalProps) => {
   const { t } = useTranslation();
+  const [reapplying, setReapplying] = useState(false);
+  const [reapplyError, setReapplyError] = useState<string | null>(null);
+
+  const canReapplyFixes = report &&
+    ['completed', 'partial', 'failed'].includes(report.status) &&
+    (report.summary?.issues_found > 0 || report.summary?.issues_fixed < report.summary?.issues_found);
+
+  const handleReapplyFixes = async () => {
+    if (!report) return;
+
+    setReapplying(true);
+    setReapplyError(null);
+
+    try {
+      const result = await reapplyAuditFixes(report.audit_id, { dry_run: false });
+      logger.info('Reapply fixes started', { fixAuditId: result.fix_audit_id });
+      onClose();
+      if (onReapplySuccess) {
+        onReapplySuccess(result.fix_audit_id);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to reapply fixes';
+      setReapplyError(errorMessage);
+      logger.error('Failed to reapply fixes', { error: errorMessage });
+    } finally {
+      setReapplying(false);
+    }
+  };
 
   return (
     <GlassModal
       visible={visible}
+      size="xl"
       title={t('admin.librarian.reports.detailModal.title', {
         id: report?.audit_id.substring(0, config?.ui.id_truncate_length || 8) || '...'
       })}
       onClose={onClose}
+      buttons={[]}
     >
       {loading ? (
         <View style={styles.loadingContainer}>
@@ -82,21 +135,31 @@ export const ReportDetailModal = ({
         </View>
       ) : report ? (
         <>
-          {/* Action Bar */}
-          <View style={styles.actionBar}>
-            <GlassButton
-              title={t('admin.librarian.reports.viewLogs')}
-              variant="secondary"
-              icon={<FileText size={16} color={colors.text} />}
-              onPress={() => {
-                onClose();
-                onViewLogs(report.audit_id);
-              }}
-              style={styles.actionButton}
-            />
-          </View>
+          {/* Compact Action Bar */}
+          {canReapplyFixes && (
+            <View style={styles.actionBar}>
+              <GlassButton
+                title={reapplying
+                  ? t('admin.librarian.reports.reapplying', 'Reapplying...')
+                  : t('admin.librarian.reports.reapplyFixes', 'Reapply Fixes')
+                }
+                variant="primary"
+                size="sm"
+                icon={<RefreshCw size={14} color={colors.text} />}
+                onPress={handleReapplyFixes}
+                disabled={reapplying}
+                style={styles.smallButton}
+              />
+              {reapplyError && (
+                <View style={styles.errorBanner}>
+                  <AlertCircle size={14} color={colors.error.DEFAULT} />
+                  <Text style={styles.errorText}>{reapplyError}</Text>
+                </View>
+              )}
+            </View>
+          )}
 
-          <ScrollView style={{ maxHeight: config?.ui.modal_max_height || 600 }}>
+          <View style={styles.contentContainer}>
             {/* 1. Status Header Card */}
             <GlassCard style={styles.statusHeaderCard}>
               <GlassBadge
@@ -273,7 +336,36 @@ export const ReportDetailModal = ({
                 ))}
               </GlassCard>
             )}
-          </ScrollView>
+
+            {/* 5. Execution Logs Section */}
+            {report.execution_logs && report.execution_logs.length > 0 && (
+              <GlassCard style={styles.logsCard}>
+                <View style={styles.logsHeader}>
+                  <Terminal size={18} color={colors.primary.DEFAULT} />
+                  <Text style={styles.cardTitle}>
+                    {t('admin.librarian.logs.executionLog', 'Execution Log')}
+                  </Text>
+                  <GlassBadge variant="default" size="sm">
+                    {report.execution_logs.length}
+                  </GlassBadge>
+                </View>
+                <View style={styles.logsContainer}>
+                  {report.execution_logs.map((log, index) => (
+                    <View key={log.id || index} style={styles.logEntry}>
+                      <Text style={styles.logTimestamp}>{formatLogTime(log.timestamp)}</Text>
+                      <Text style={[styles.logLevel, { color: getLogLevelColor(log.level) }]}>
+                        [{log.level.toUpperCase()}]
+                      </Text>
+                      <Text style={styles.logMessage}>{log.message}</Text>
+                      {log.itemName && (
+                        <Text style={styles.logItemName}> - {log.itemName}</Text>
+                      )}
+                    </View>
+                  ))}
+                </View>
+              </GlassCard>
+            )}
+          </View>
         </>
       ) : null}
     </GlassModal>
@@ -292,14 +384,32 @@ const styles = StyleSheet.create({
     fontSize: fontSize.base,
     color: colors.textMuted,
   },
-  actionBar: {
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
-    alignItems: 'flex-end',
+  contentContainer: {
+    gap: spacing.md,
   },
-  actionButton: {
-    alignSelf: 'flex-end',
+  actionBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    gap: spacing.sm,
+  },
+  smallButton: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+  },
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    padding: spacing.sm,
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderRadius: borderRadius.md,
+  },
+  errorText: {
+    fontSize: fontSize.sm,
+    color: colors.error.DEFAULT,
   },
   card: {
     marginBottom: spacing.md,
@@ -525,5 +635,65 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     lineHeight: 20,
     color: colors.text,
+  },
+
+  // Execution Logs
+  logsCard: {
+    marginBottom: spacing.md,
+    padding: spacing.md,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    borderColor: colors.glassBorder,
+    borderWidth: 1,
+  },
+  logsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+    paddingBottom: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.glassBorder,
+  },
+  logsContainer: {
+    maxHeight: 400,
+    overflow: 'scroll',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: borderRadius.md,
+    padding: spacing.sm,
+  },
+  logEntry: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+    paddingVertical: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  logTimestamp: {
+    fontSize: 11,
+    fontFamily: 'monospace',
+    color: colors.textMuted,
+    marginRight: spacing.sm,
+    minWidth: 70,
+  },
+  logLevel: {
+    fontSize: 11,
+    fontFamily: 'monospace',
+    fontWeight: '600',
+    marginRight: spacing.sm,
+    minWidth: 60,
+  },
+  logMessage: {
+    flex: 1,
+    fontSize: 12,
+    fontFamily: 'monospace',
+    color: colors.text,
+    lineHeight: 18,
+  },
+  logItemName: {
+    fontSize: 11,
+    fontFamily: 'monospace',
+    color: colors.primary.DEFAULT,
+    fontStyle: 'italic',
   },
 });

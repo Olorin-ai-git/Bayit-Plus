@@ -418,3 +418,48 @@ export const executeVoiceCommand = async (
 
   return response.json();
 };
+
+// Reapply fixes from a completed audit
+export interface ReapplyFixesRequest {
+  dry_run?: boolean;
+  fix_types?: string[];
+}
+
+export interface ReapplyFixesResponse {
+  fix_audit_id: string;
+  source_audit_id: string;
+  status: string;
+  message: string;
+  stats?: Record<string, unknown>;
+}
+
+export const reapplyAuditFixes = async (
+  auditId: string,
+  options: ReapplyFixesRequest = {}
+): Promise<ReapplyFixesResponse> => {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/librarian/audits/${auditId}/reapply-fixes`,
+    {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({
+        dry_run: options.dry_run ?? false,
+        fix_types: options.fix_types ?? [
+          'titles',
+          'metadata',
+          'posters',
+          'subtitles',
+          'misclassifications',
+          'broken_streams',
+        ],
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || 'Failed to reapply fixes');
+  }
+
+  return response.json();
+};

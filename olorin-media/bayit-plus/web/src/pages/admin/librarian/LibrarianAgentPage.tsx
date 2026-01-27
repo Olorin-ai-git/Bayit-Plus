@@ -475,9 +475,19 @@ const LibrarianAgentPage = () => {
         report={selectedReport}
         config={config}
         onClose={() => setDetailModalVisible(false)}
-        onViewLogs={(auditId) => {
-          setDetailModalVisible(false);
-          getAuditReportDetails(auditId).then(details => setLivePanelReport(details));
+        onReapplySuccess={async (fixAuditId) => {
+          // Show success message and load the fix audit in live panel
+          setSuccessMessage(t('admin.librarian.audit.reapplyStarted', 'Fix reapplication started. Check the live panel for progress.'));
+          setSuccessModalOpen(true);
+          // Load fix audit details immediately to show in live panel
+          try {
+            const details = await getAuditReportDetails(fixAuditId);
+            setLivePanelReport(details);
+          } catch (error) {
+            logger.error('Failed to load fix audit details:', error);
+          }
+          // Refresh reports list after a delay
+          setTimeout(() => loadData(), 2000);
         }}
       />
 

@@ -90,7 +90,9 @@ async def execute_tool(
             )
 
         elif tool_name == "flag_for_manual_review":
-            return await execute_flag_for_manual_review(**tool_input)
+            return await execute_flag_for_manual_review(
+                **tool_input, audit_id=audit_id
+            )
 
         elif tool_name == "delete_broken_content":
             return await execute_delete_broken_content(

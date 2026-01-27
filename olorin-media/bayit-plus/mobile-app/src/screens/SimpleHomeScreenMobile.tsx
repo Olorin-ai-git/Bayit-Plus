@@ -19,7 +19,14 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { Home, Tv, Film, Radio, Mic, Play, ChevronRight, ChevronLeft, Clock, Star } from 'lucide-react-native';
 import { liveService, contentService, Channel, ContentItem } from '../services/api';
-import { demoFeatured, demoChannels, FeaturedItem } from '../services/demoData';
+
+// Extended content type for featured items
+interface FeaturedItem extends ContentItem {
+  backdrop?: string;
+  featured_type?: 'hero' | 'spotlight' | 'pick';
+  seasons?: number;
+  episodes?: number;
+}
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = (SCREEN_WIDTH - 48) / 2;
@@ -315,23 +322,65 @@ function LiveChannelRow({ channels, loading }: { channels: Channel[]; loading: b
 export function HomeScreenMobile() {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [channels, setChannels] = useState<Channel[]>(demoChannels);
-  const [featuredContent, setFeaturedContent] = useState<ContentItem[]>(demoFeatured.items);
-  const [heroItems] = useState<FeaturedItem[]>(demoFeatured.hero);
+  const [channels, setChannels] = useState<Channel[]>([]);
+  const [featuredContent, setFeaturedContent] = useState<FeaturedItem[]>([]);
+  const [heroItems, setHeroItems] = useState<FeaturedItem[]>([]);
 
   const loadData = async () => {
     try {
       const [channelsData, contentData] = await Promise.all([
         liveService.getChannels().catch(() => ({ channels: [] })),
-        contentService.getFeatured().catch(() => ({ items: [] })),
+        contentService.getFeatured().catch(() => ({ hero: null, spotlight: [], categories: [] })),
       ]);
 
-      // Use API data if available, otherwise keep demo data
+      // Use real API data - parse the actual response structure
       const apiChannels = channelsData.channels || [];
-      const apiContent = contentData.items || [];
 
-      if (apiChannels.length > 0) setChannels(apiChannels);
-      if (apiContent.length > 0) setFeaturedContent(apiContent);
+      // API returns: { hero, spotlight, categories }
+      const heroItem = contentData.hero;
+      const spotlightItems = (contentData.spotlight || []) as FeaturedItem[];
+      const categories = contentData.categories || [];
+
+      // Build hero carousel from hero + spotlight items (deduplicate by ID)
+      const heroContent: FeaturedItem[] = [];
+      const seenIds = new Set<string>();
+
+      if (heroItem && heroItem.id) {
+        seenIds.add(heroItem.id);
+        heroContent.push({
+          ...heroItem,
+          poster: heroItem.thumbnail,
+          backdrop: heroItem.backdrop,
+          type: heroItem.is_series ? 'series' : 'movie',
+        } as FeaturedItem);
+      }
+      spotlightItems.slice(0, 5).forEach((item: any) => {
+        if (item.id && !seenIds.has(item.id)) {
+          seenIds.add(item.id);
+          heroContent.push({
+            ...item,
+            poster: item.thumbnail,
+            backdrop: item.backdrop,
+            type: item.is_series ? 'series' : 'movie',
+          } as FeaturedItem);
+        }
+      });
+
+      // Flatten categories for featured content row
+      const allFeatured: FeaturedItem[] = [];
+      categories.forEach((cat: any) => {
+        (cat.items || []).slice(0, 5).forEach((item: any) => {
+          allFeatured.push({
+            ...item,
+            poster: item.thumbnail,
+            type: item.is_series ? 'series' : 'movie',
+          } as FeaturedItem);
+        });
+      });
+
+      setChannels(apiChannels);
+      setFeaturedContent(allFeatured);
+      setHeroItems(heroContent.slice(0, 5));
     } finally {
       setLoading(false);
     }

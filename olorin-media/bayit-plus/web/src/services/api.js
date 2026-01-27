@@ -53,6 +53,14 @@ api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
+  } else {
+    // DEBUG: Log when token is missing for session endpoints
+    if (config.url?.includes('playback/session')) {
+      apiLogger.warn('No auth token found for playback session request', {
+        url: config.url,
+        tokenExists: !!token,
+      })
+    }
   }
 
   // Add correlation ID - use existing or generate new one
@@ -65,6 +73,7 @@ api.interceptors.request.use((config) => {
 
   apiLogger.debug(`Request: ${config.method?.toUpperCase()} ${config.url}`, {
     correlationId,
+    hasAuthHeader: !!config.headers.Authorization,
   })
 
   return config

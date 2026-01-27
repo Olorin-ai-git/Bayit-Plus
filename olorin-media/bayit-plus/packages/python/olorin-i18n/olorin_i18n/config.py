@@ -3,54 +3,49 @@
 from pathlib import Path
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
+from pydantic_settings import BaseSettings
 
 from .types import ConfigurationError, LanguageCode, SUPPORTED_LANGUAGES
 
 
-class I18nConfig(BaseModel):
+class I18nConfig(BaseSettings):
     """Configuration for internationalization service.
 
-    This model is designed to be integrated into Olorin's configuration system
-    using Pydantic settings and environment variables.
+    This model reads from environment variables with I18N_ prefix.
+    Can also be integrated into Olorin's configuration system.
     """
 
     default_language: LanguageCode = Field(
         default="he",
         description="Default language for the system (fallback if user language not available)",
-        json_schema_extra={"env": "I18N_DEFAULT_LANGUAGE"},
     )
 
     fallback_language: LanguageCode = Field(
         default="he",
         description="Fallback language if translation key not found",
-        json_schema_extra={"env": "I18N_FALLBACK_LANGUAGE"},
     )
 
     locales_path: Optional[Path] = Field(
         default=None,
         description="Path to locales directory containing translation JSON files. "
         "If None, uses shared/i18n/locales from repository root",
-        json_schema_extra={"env": "I18N_LOCALES_PATH"},
     )
 
     cache_enabled: bool = Field(
         default=True,
         description="Enable caching of loaded translation files",
-        json_schema_extra={"env": "I18N_CACHE_ENABLED"},
     )
 
     cache_ttl_seconds: int = Field(
         default=3600,
         description="Time-to-live for cache entries in seconds",
-        json_schema_extra={"env": "I18N_CACHE_TTL_SECONDS"},
         ge=0,
     )
 
     track_missing_keys: bool = Field(
         default=False,
         description="Track and log missing translation keys for debugging",
-        json_schema_extra={"env": "I18N_TRACK_MISSING_KEYS"},
     )
 
     supported_languages: list[LanguageCode] = Field(
@@ -59,8 +54,9 @@ class I18nConfig(BaseModel):
     )
 
     class Config:
-        """Pydantic model configuration."""
+        """Pydantic settings configuration."""
 
+        env_prefix = "I18N_"
         validate_assignment = True
         use_enum_values = True
 

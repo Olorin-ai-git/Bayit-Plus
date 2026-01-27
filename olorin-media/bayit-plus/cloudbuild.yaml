@@ -95,6 +95,9 @@ steps:
       - '--set-env-vars=CAST_ENABLE_AIRPLAY=true'
       - '--set-env-vars=CAST_ENABLE_CHROMECAST=true'
 
+      # i18n Configuration (locales path in container)
+      - '--set-env-vars=I18N_LOCALES_PATH=/app/packages/ui/shared-i18n/locales'
+
 images:
   - 'gcr.io/$PROJECT_ID/bayit-backend:$BUILD_ID'
   - 'gcr.io/$PROJECT_ID/bayit-backend:latest'

@@ -11,12 +11,48 @@ tvos-app/
 tizen/
 webos/
 ios/
+cli/
+partner-portal/
+playwright-report/
+
+# Packages - exclude frontend UI packages, keep backend Python dependencies
+# KEEP: bayit-translation, bayit-voice-pipeline, olorin-core, olorin-shared (Python deps)
+# KEEP: packages/python/ (olorin-i18n Python package)
+# KEEP: packages/ui/shared-i18n/ (locale JSON files for i18n)
+# EXCLUDE: firebase-config and all other UI packages
+
+# Exclude firebase-config (not needed for backend)
+packages/firebase-config/
+
+# Exclude UI packages except shared-i18n (has locale JSON files)
+packages/ui/design-tokens/
+packages/ui/design-tokens.local/
+packages/ui/glass-components/
+packages/ui/shared-hooks/
+packages/ui/shared-icons/
+packages/ui/shared-services/
+packages/ui/shared-stores/
+packages/ui/dist/
+packages/ui/node_modules/
+packages/ui/*.tar.gz
+packages/ui/*.backup.*
+packages/ui/.DS_Store
+packages/ui/MIGRATION.md
 
 # Root node_modules
 node_modules/
 
-# Shared (if not needed by backend)
+# Shared (exclude large directories, keep i18n for backend)
 shared/node_modules/
+shared/assets/
+shared/models/
+shared/components/
+shared/hooks/
+shared/services/
+shared/stores/
+shared/styles/
+shared/utils/
+# Keep shared/i18n/ for backend localization
 
 # Test results
 test-results/

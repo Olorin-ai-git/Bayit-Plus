@@ -751,6 +751,25 @@ PLATFORM_TOOLS: Dict[str, List[Dict]] = {
                 },
                 "required": ["source_path"]
             }
+        },
+        {
+            "name": "reapply_fixes",
+            "description": "Reapply failed fixes from a previous audit without using LLM (no API credits consumed). Calls executor functions directly for items that failed in previous audits.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "audit_id": {
+                        "type": "string",
+                        "description": "Specific audit ID to reapply from (uses most recent if not provided)"
+                    },
+                    "dry_run": {
+                        "type": "boolean",
+                        "description": "If true, preview what would be fixed without making changes",
+                        "default": False
+                    }
+                },
+                "required": []
+            }
         }
     ],
     "fraud": [

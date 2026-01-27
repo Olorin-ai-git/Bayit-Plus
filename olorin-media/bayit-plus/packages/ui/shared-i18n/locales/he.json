@@ -1801,6 +1801,9 @@
         "clearAll": "נקה הכל",
         "confirmClearAll": "האם אתה בטוח שברצונך לנקות את כל דוחות הביקורת? פעולה זו לא ניתנת לביטול.",
         "clearedSuccessfully": "כל דוחות הביקורת נוקו בהצלחה",
+        "reapplyFixes": "החל תיקונים מחדש",
+        "reapplying": "מחיל תיקונים...",
+        "reapplyError": "החלת התיקונים נכשלה",
         "viewLogs": "הצג לוגים",
         "viewDetails": "הצג פרטים",
         "columns": {
@@ -1894,7 +1897,8 @@
         "interjectSuccess": "ההודעה נשלחה לסוכן AI בהצלחה",
         "pauseSuccess": "הביקורת הושהתה בהצלחה",
         "resumeSuccess": "הביקורת חודשה בהצלחה",
-        "cancelSuccess": "הביקורת בוטלה בהצלחה"
+        "cancelSuccess": "הביקורת בוטלה בהצלחה",
+        "reapplyStarted": "החלת התיקונים החלה. בדוק את הפאנל החי להתקדמות."
       },
       "progress": {
         "batch": "אצווה {{current}} מתוך {{total}}",

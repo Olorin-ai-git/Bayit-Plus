@@ -365,9 +365,16 @@ async def execute_search_external_subtitles(
 
 
 async def execute_download_external_subtitle(
-    content_id: str, language: str, audit_id: str
+    content_id: str, language: str, audit_id: str, **kwargs
 ) -> Dict[str, Any]:
-    """Download and save subtitle from external source."""
+    """Download and save subtitle from external source.
+
+    Args:
+        content_id: The content ID to download subtitles for.
+        language: The language code (e.g., "en", "he", "es").
+        audit_id: The audit ID for logging.
+        **kwargs: Additional arguments (ignored for resilience).
+    """
     from app.services.external_subtitle_service import ExternalSubtitleService
 
     try:

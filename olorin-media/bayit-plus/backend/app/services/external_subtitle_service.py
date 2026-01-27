@@ -100,14 +100,18 @@ class ExternalSubtitleService:
             )
             return None
 
-        # Extract TV series episode info from metadata if available
-        metadata = content.metadata or {}
-        season_number = metadata.get("season_number") or metadata.get("season")
-        episode_number = metadata.get("episode_number") or metadata.get("episode")
-        parent_imdb_id = metadata.get("series_imdb_id") or metadata.get(
-            "parent_imdb_id"
-        )
-        is_tv_series = metadata.get("tmdb_type") == "tv" or season_number is not None
+        # Extract TV series episode info from Content model fields
+        season_number = content.season
+        episode_number = content.episode
+        # For TV episodes, parent IMDB ID would be stored in series container
+        # We use content's IMDB ID directly, or look up series if linked
+        parent_imdb_id = None
+        if content.series_id:
+            from app.models.content import Content as ContentModel
+            series = await ContentModel.get(content.series_id)
+            if series:
+                parent_imdb_id = series.imdb_id
+        is_tv_series = content.is_series or content.content_type == "episode" or season_number is not None
 
         # Determine search strategy
         if is_tv_series and parent_imdb_id and season_number and episode_number:
@@ -464,13 +468,15 @@ class ExternalSubtitleService:
 
         # Search OpenSubtitles
         if "opensubtitles" in sources:
-            # Extract TV series info
-            metadata = content.metadata or {}
-            season_number = metadata.get("season_number") or metadata.get("season")
-            episode_number = metadata.get("episode_number") or metadata.get("episode")
-            parent_imdb_id = metadata.get("series_imdb_id") or metadata.get(
-                "parent_imdb_id"
-            )
+            # Extract TV series info from Content model fields
+            season_number = content.season
+            episode_number = content.episode
+            # Look up parent IMDB ID from series if linked
+            parent_imdb_id = None
+            if content.series_id:
+                series = await Content.get(content.series_id)
+                if series:
+                    parent_imdb_id = series.imdb_id
 
             if content.imdb_id or parent_imdb_id or content.title:
                 results = await self.opensubtitles.search_subtitles(

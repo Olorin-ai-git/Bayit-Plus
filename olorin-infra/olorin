@@ -346,7 +346,7 @@ start_interactive_mode() {
                 ;;
 
             status)
-                if [ ${#args[@]} -gt 0 ] && is_known_platform "${args[0]}"; then
+                if [ ${#args[@]+"${#args[@]}"} -gt 0 ] && is_known_platform "${args[0]}"; then
                     # Status for specific platform
                     local platform="${args[0]}"
                     log_info "Checking $platform platform status..."
@@ -355,7 +355,7 @@ start_interactive_mode() {
                     platform_cli=$(get_platform_cli "$platform")
 
                     if [ -f "$platform_cli" ]; then
-                        bash "$platform_cli" status "${args[@]:1}" || log_error "Command failed with exit code $?"
+                        bash "$platform_cli" status "${args[@]:1+"${args[@]:1}"}" || log_error "Command failed with exit code $?"
                     else
                         log_error "Platform CLI not found: $platform_cli"
                     fi
@@ -391,7 +391,7 @@ start_interactive_mode() {
                 if [ ! -f "$script_finder" ]; then
                     log_error "Script discovery tool not found"
                 else
-                    bash "$script_finder" "${args[@]}" || log_error "Command failed with exit code $?"
+                    bash "$script_finder" "${args[@]+"${args[@]}"}" || log_error "Command failed with exit code $?"
                 fi
                 ;;
 
@@ -400,7 +400,7 @@ start_interactive_mode() {
                 local git_wrapper="$PROJECT_ROOT/scripts/git/olorin-git.sh"
 
                 if [ -f "$git_wrapper" ]; then
-                    bash "$git_wrapper" "${args[@]}" || log_error "Command failed with exit code $?"
+                    bash "$git_wrapper" "${args[@]+"${args[@]}"}" || log_error "Command failed with exit code $?"
                 else
                     log_warning "Git wrapper not yet implemented"
                     log_info "Use git operations scripts directly:"
@@ -430,7 +430,7 @@ start_interactive_mode() {
 
             start)
                 # Start platform
-                if [ ${#args[@]} -eq 0 ]; then
+                if [ ${#args[@]+"${#args[@]}"} -eq 0 ]; then
                     log_error "Platform required for start command"
                     log_info "Usage: start <platform>"
                     log_info "Available platforms: bayit, fraud, cvplus, portals, radio, stationai"
@@ -445,7 +445,7 @@ start_interactive_mode() {
                         platform_cli=$(get_platform_cli "$platform")
 
                         if [ -f "$platform_cli" ]; then
-                            bash "$platform_cli" start "${args[@]:1}" || log_error "Command failed with exit code $?"
+                            bash "$platform_cli" start "${args[@]:1+"${args[@]:1}"}" || log_error "Command failed with exit code $?"
                         else
                             log_error "Platform CLI not found: $platform_cli"
                         fi
@@ -455,14 +455,14 @@ start_interactive_mode() {
 
             stop)
                 # Stop platform(s)
-                if [ ${#args[@]} -gt 0 ] && is_known_platform "${args[0]}"; then
+                if [ ${#args[@]+"${#args[@]}"} -gt 0 ] && is_known_platform "${args[0]}"; then
                     # Stop specific platform
                     local platform="${args[0]}"
                     local platform_cli
                     platform_cli=$(get_platform_cli "$platform")
 
                     if [ -f "$platform_cli" ]; then
-                        bash "$platform_cli" stop "${args[@]:1}" || log_error "Command failed with exit code $?"
+                        bash "$platform_cli" stop "${args[@]:1+"${args[@]:1}"}" || log_error "Command failed with exit code $?"
                     else
                         log_error "Platform CLI not found: $platform_cli"
                     fi
@@ -488,7 +488,7 @@ start_interactive_mode() {
                     log_error "Platform CLI not found: $platform_cli"
                     log_info "This platform may not have a CLI yet"
                 else
-                    bash "$platform_cli" "${args[@]}" || log_error "Command failed with exit code $?"
+                    bash "$platform_cli" "${args[@]+"${args[@]}"}" || log_error "Command failed with exit code $?"
                 fi
                 ;;
 
