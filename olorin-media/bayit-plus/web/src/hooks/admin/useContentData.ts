@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { adminContentService, adminPodcastsService, adminRadioStationsService } from '@/services/adminApi'
+import { adminAudiobookService } from '@/services/adminAudiobookService'
 import { useNotifications } from '@olorin/glass-ui/hooks'
 import { useTranslation } from 'react-i18next'
 import logger from '@/utils/logger'
@@ -20,6 +21,9 @@ interface ContentItem {
   avg_rating?: number
   available_subtitles?: string[]
   review_issue_type?: string
+  content_type?: 'movie' | 'series' | 'podcast' | 'radio' | 'audiobook'
+  author?: string  // For audiobooks
+  narrator?: string  // For audiobooks
 }
 
 interface Episode {
@@ -37,7 +41,7 @@ interface Episode {
 interface Filters {
   search: string
   is_published?: boolean
-  content_type: 'all' | 'series' | 'movies' | 'podcasts' | 'radio' | ''
+  content_type: 'all' | 'series' | 'movies' | 'podcasts' | 'radio' | 'audiobooks' | ''
 }
 
 export function useContentData() {
@@ -73,20 +77,40 @@ export function useContentData() {
     setIsLoading(true)
     setError(null)
     try {
-      if (filters.content_type === 'podcasts' || filters.content_type === 'radio') {
-        console.log('[useContentData] Loading podcasts/radio content')
-        const fetchFn = filters.content_type === 'podcasts'
-          ? adminPodcastsService.getPodcasts
-          : adminRadioStationsService.getAll
+      if (filters.content_type === 'podcasts' || filters.content_type === 'radio' || filters.content_type === 'audiobooks') {
+        console.log('[useContentData] Loading podcasts/radio/audiobooks content')
 
-        const response = await fetchFn({
-          page: pagination.page,
-          page_size: pagination.pageSize,
-          search: filters.search,
-        })
+        let response
+        if (filters.content_type === 'audiobooks') {
+          response = await adminAudiobookService.getAudiobooksList({
+            page: pagination.page,
+            page_size: pagination.pageSize,
+            search_query: filters.search,
+            is_published: filters.is_published,
+          })
+        } else {
+          const fetchFn = filters.content_type === 'podcasts'
+            ? adminPodcastsService.getPodcasts
+            : adminRadioStationsService.getAll
 
-        console.log('[useContentData] Podcasts/Radio loaded:', response.items.length, 'items')
-        setItems(response.items)
+          response = await fetchFn({
+            page: pagination.page,
+            page_size: pagination.pageSize,
+            search: filters.search,
+          })
+        }
+
+        console.log('[useContentData] Podcasts/Radio/Audiobooks loaded:', response.items.length, 'items')
+
+        // Add content_type to each item for proper labeling
+        const itemsWithType = response.items.map(item => ({
+          ...item,
+          content_type: filters.content_type === 'podcasts' ? 'podcast'
+                        : filters.content_type === 'radio' ? 'radio'
+                        : 'audiobook'
+        }))
+
+        setItems(itemsWithType)
         setPagination(prev => ({ ...prev, total: response.total }))
       } else {
         const apiFilters = {
@@ -108,7 +132,13 @@ export function useContentData() {
         console.log('[useContentData] First 3 items:', response.items.slice(0, 3).map(item => ({ id: item.id, title: item.title })))
         console.log('[useContentData] Response object:', response)
 
-        setItems(response.items)
+        // Add content_type to each item for proper labeling
+        const itemsWithType = response.items.map(item => ({
+          ...item,
+          content_type: item.is_series ? 'series' : 'movie'
+        }))
+
+        setItems(itemsWithType)
         setPagination(prev => ({ ...prev, total: response.total }))
 
         console.log('[useContentData] State updated - items.length should now be:', response.items.length)

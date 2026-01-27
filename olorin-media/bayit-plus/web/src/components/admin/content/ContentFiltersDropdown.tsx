@@ -7,7 +7,7 @@ import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens'
 interface ContentFilters {
   search: string
   is_published?: boolean
-  content_type: 'all' | 'series' | 'movies' | 'podcasts' | 'radio' | ''
+  content_type: 'all' | 'series' | 'movies' | 'podcasts' | 'radio' | 'audiobooks' | ''
 }
 
 interface ContentFiltersDropdownProps {
@@ -39,6 +39,7 @@ export default function ContentFiltersDropdown({
     { value: 'movies', label: t('admin.content.filters.movies') },
     { value: 'podcasts', label: t('admin.content.filters.podcasts') },
     { value: 'radio', label: t('admin.content.filters.radioStations') },
+    { value: 'audiobooks', label: t('admin.content.filters.audiobooks', 'Audiobooks') },
   ]
 
   const statusOptions = [
