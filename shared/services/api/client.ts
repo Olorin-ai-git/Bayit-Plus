@@ -126,10 +126,25 @@ const getCsrfToken = (): string | null => {
 };
 
 /**
- * Validate request URL to prevent SSRF and open redirect attacks
+ * Validate request URL to prevent SSRF and open redirect attacks.
+ * For web production builds using relative URLs, validation is simplified
+ * since requests go through same-origin Firebase Hosting rewrites.
  */
 const validateRequestUrl = (url: string): boolean => {
   try {
+    // For web production with relative base URL, requests are same-origin
+    // Firebase Hosting rewrites handle routing to Cloud Run
+    const isRelativeBaseUrl = API_BASE_URL.startsWith("/");
+    if (isRelativeBaseUrl) {
+      // Only allow relative paths (no absolute URLs that could redirect elsewhere)
+      if (url.startsWith("http://") || url.startsWith("https://")) {
+        apiLogger.warn(`Absolute URL blocked with relative base: ${url}`);
+        return false;
+      }
+      return true;
+    }
+
+    // For absolute base URLs, perform full validation
     const parsedUrl = new URL(url, API_BASE_URL);
 
     // Only allow HTTPS in production
