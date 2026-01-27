@@ -19,11 +19,8 @@ class AppDelegate: RCTAppDelegate {
   }
 
   override func bundleURL() -> URL? {
-#if DEBUG
-    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
-#else
+    // Always use bundled JavaScript for now
     return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-#endif
   }
 
   // Disable new architecture to use classic bridge for native modules
