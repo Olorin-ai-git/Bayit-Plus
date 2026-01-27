@@ -11,7 +11,7 @@ import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { GlassResizablePanel } from '@bayit/shared/ui';
 import { Gamepad2 } from 'lucide-react';
 import logger from '@/utils/logger';
-import axios from 'axios';
+import api from '@/services/api';
 
 // Chess components
 import ChessBoard from '../components/chess/ChessBoard';
@@ -71,26 +71,24 @@ export default function ChessPage() {
         setInviteStatus(t('chess.sendingInvite', { name: navigationState.inviteFriend }));
 
         try {
-          const response = await axios.post('/api/v1/chess/invite', {
+          const response = await api.post('/chess/invite', {
             friend_name: navigationState.inviteFriend,
             color: 'white',
-          }, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
+          }) as { success: boolean; friend: { name: string }; game_code: string };
 
-          if (response.data.success) {
+          if (response.success) {
             setInviteStatus(t('chess.inviteSent', {
-              name: response.data.friend.name,
-              code: response.data.game_code
+              name: response.friend.name,
+              code: response.game_code
             }));
 
             // Connect to the game
-            await joinGame(response.data.game_code);
+            await joinGame(response.game_code);
           } else {
             setInviteStatus(t('chess.inviteFailed'));
           }
         } catch (err: any) {
-          const errorMessage = err.response?.data?.detail || t('chess.inviteFailed');
+          const errorMessage = err?.detail || t('chess.inviteFailed');
           setInviteStatus(errorMessage);
           logger.error('Failed to send invite', 'ChessPage', err);
         }

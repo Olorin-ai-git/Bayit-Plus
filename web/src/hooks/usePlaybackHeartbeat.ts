@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useRef } from 'react';
-import axios from 'axios';
+import api from '@/services/api';
 
 interface UsePlaybackHeartbeatOptions {
   sessionId: string | null;
@@ -48,14 +48,10 @@ export const usePlaybackHeartbeat = (options: UsePlaybackHeartbeatOptions) => {
 
 async function sendHeartbeat(sessionId: string, onError?: (error: Error) => void) {
   try {
-    await axios.post('/api/v1/playback/session/heartbeat', {
+    await api.post('/playback/session/heartbeat', {
       session_id: sessionId,
     });
-
-    console.debug('Playback heartbeat sent:', sessionId);
   } catch (error) {
-    console.warn('Failed to send playback heartbeat:', error);
-
     if (onError) {
       onError(error as Error);
     }

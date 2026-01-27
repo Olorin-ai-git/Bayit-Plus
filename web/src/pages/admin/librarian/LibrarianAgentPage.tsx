@@ -36,6 +36,7 @@ const LibrarianAgentPage = () => {
   const [openSubtitlesEnabled, setOpenSubtitlesEnabled] = useState(true);
   const [classifyOnly, setClassifyOnly] = useState(true);
   const [purgeDuplicates, setPurgeDuplicates] = useState(true);
+  const [forceUpdates, setForceUpdates] = useState(false); // Skip items with existing data by default
 
   // Live panel state
   const [livePanelReport, setLivePanelReport] = useState<AuditReportDetail | null>(null);
@@ -89,6 +90,7 @@ const LibrarianAgentPage = () => {
     openSubtitlesEnabled,
     classifyOnly,
     purgeDuplicates,
+    forceUpdates,
   };
 
   // Audit control hook
@@ -385,6 +387,8 @@ const LibrarianAgentPage = () => {
         setClassifyOnly={setClassifyOnly}
         purgeDuplicates={purgeDuplicates}
         setPurgeDuplicates={setPurgeDuplicates}
+        forceUpdates={forceUpdates}
+        setForceUpdates={setForceUpdates}
         triggering={triggering}
         isAuditRunning={isAuditRunning}
         pendingAuditType={pendingAuditType}

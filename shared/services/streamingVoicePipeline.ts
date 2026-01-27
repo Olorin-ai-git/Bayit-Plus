@@ -588,13 +588,38 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
 
   /**
    * Request microphone permission
+   * Returns false if microphone is not supported, not allowed by policy, or permission denied
    */
   async requestPermission(): Promise<boolean> {
+    // Check if navigator.permissions API is available for checking policy
+    if (typeof navigator !== 'undefined' && navigator.permissions) {
+      try {
+        const permissionStatus = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+        if (permissionStatus.state === 'denied') {
+          return false;
+        }
+      } catch {
+        // Some browsers don't support querying microphone permission
+        // Continue to try getUserMedia
+      }
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach((track) => track.stop());
       return true;
-    } catch {
+    } catch (error: any) {
+      // Handle specific error types
+      if (error?.name === 'NotAllowedError' ||
+          error?.name === 'SecurityError' ||
+          error?.message?.includes('Permissions policy')) {
+        // Microphone not allowed by permissions policy or user denied
+        return false;
+      }
+      // Log unexpected errors for debugging (but don't throw)
+      if (typeof console !== 'undefined') {
+        console.debug('[VoicePipeline] Microphone permission request failed:', error?.message || error);
+      }
       return false;
     }
   }

@@ -12,6 +12,8 @@ export const apiAuthService = {
   register: (userData: { email: string; name: string; password: string }) =>
     api.post('/auth/register', userData),
   me: () => api.get('/auth/me'),
+  refreshToken: (refreshToken: string) =>
+    api.post('/auth/refresh', { refresh_token: refreshToken }),
   getGoogleAuthUrl: async () => {
     const redirectUri = Platform.OS === 'web' && typeof window !== 'undefined'
       ? `${window.location.origin}/auth/google/callback`

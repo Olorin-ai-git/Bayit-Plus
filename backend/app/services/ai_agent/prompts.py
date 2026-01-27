@@ -385,6 +385,7 @@ def build_task_specific_initial_prompt(
     dry_run: bool,
     max_iterations: int = 0,  # Kept for backward compatibility, not used in prompt
     budget_limit_usd: float = 0.0,  # Kept for backward compatibility, not used in prompt
+    force_updates: bool = False,
 ) -> str:
     """Build the initial prompt for task-specific (focused) audits with additive capabilities."""
     capability_prompt = build_combined_capability_prompt(enabled_capabilities)
@@ -395,10 +396,29 @@ def build_task_specific_initial_prompt(
         else "LIVE - You can make real changes"
     )
 
+    # Force updates instruction
+    force_updates_instruction = ""
+    if not force_updates:
+        force_updates_instruction = """
+**SKIP EXISTING DATA MODE (force_updates=OFF):**
+- DO NOT call TMDB API for items that ALREADY have: poster_url, tmdb_id, description
+- DO NOT call OpenSubtitles for items that already have ALL required subtitle languages
+- ONLY process items with MISSING data (null/empty fields)
+- This SAVES API calls and reduces cost - check existing data FIRST before calling APIs
+- Use `get_content_details` to check what data exists BEFORE calling fix_missing_* tools
+"""
+    else:
+        force_updates_instruction = """
+**FORCE UPDATES MODE (force_updates=ON):**
+- Re-fetch metadata from TMDB even if item already has data
+- Re-download subtitles even if they exist
+- This is useful for refreshing outdated or incorrect data
+"""
+
     return f"""{BASE_PROMPT_HEADER.format(language_instruction=language_instruction)}
 
 {capability_prompt}
-
+{force_updates_instruction}
 {BASE_PROMPT_PROCESSING}
 
 **Available Tools:** Use ONLY the tools needed for the enabled capabilities above. Ignore irrelevant tools.
@@ -415,6 +435,7 @@ def build_comprehensive_initial_prompt(
     dry_run: bool,
     max_iterations: int = 0,  # Kept for backward compatibility, not used in prompt
     budget_limit_usd: float = 0.0,  # Kept for backward compatibility, not used in prompt
+    force_updates: bool = False,
 ) -> str:
     """Build the initial prompt for comprehensive audits."""
     mode_text = (
@@ -423,12 +444,24 @@ def build_comprehensive_initial_prompt(
         else "LIVE - You can make real changes"
     )
 
+    # Force updates instruction for comprehensive mode
+    force_updates_text = ""
+    if not force_updates:
+        force_updates_text = """
+**SKIP EXISTING DATA MODE:**
+- DO NOT call TMDB API for items that ALREADY have: poster_url, tmdb_id, description
+- DO NOT call OpenSubtitles for items that already have ALL required subtitle languages
+- ONLY process items with MISSING data - check existing data FIRST
+- This SAVES API calls and reduces cost
+"""
+
     return f"""You are an autonomous AI Librarian for Bayit+, an Israeli streaming platform.
 
 {language_instruction}
 
 {audit_specific_instruction}
 {filter_instructions}
+{force_updates_text}
 **Your Mission:** Conduct a comprehensive audit of the content library and fix issues autonomously.
 
 **TOP PRIORITY - Images & Metadata:**

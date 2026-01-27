@@ -34,7 +34,15 @@ export function useHLSPlayer({
       hls.attachMedia(video)
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         onReady()
-        if (autoPlay) video.play()
+        if (autoPlay) {
+          // Try to play with sound first, if blocked by autoplay policy, play muted
+          video.play().catch(() => {
+            video.muted = true
+            video.play().catch((e) => {
+              logger.warn('Autoplay blocked even when muted', 'useHLSPlayer', e)
+            })
+          })
+        }
       })
       hls.on(Hls.Events.ERROR, (event, data) => {
         if (data.fatal) {
@@ -45,13 +53,27 @@ export function useHLSPlayer({
       video.src = streamUrl
       video.addEventListener('loadedmetadata', () => {
         onReady()
-        if (autoPlay) video.play()
+        if (autoPlay) {
+          video.play().catch(() => {
+            video.muted = true
+            video.play().catch((e) => {
+              logger.warn('Autoplay blocked even when muted', 'useHLSPlayer', e)
+            })
+          })
+        }
       })
     } else {
       video.src = streamUrl
       video.addEventListener('loadeddata', () => {
         onReady()
-        if (autoPlay) video.play()
+        if (autoPlay) {
+          video.play().catch(() => {
+            video.muted = true
+            video.play().catch((e) => {
+              logger.warn('Autoplay blocked even when muted', 'useHLSPlayer', e)
+            })
+          })
+        }
       })
     }
 

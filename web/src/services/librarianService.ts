@@ -88,6 +88,8 @@ export interface TriggerAuditRequest {
   opensubtitles_enabled?: boolean; // Acquire subtitles
   classify_only?: boolean;        // Verify classification
   remove_duplicates?: boolean;    // Remove duplicate content
+  // If false, skip items that already have metadata/posters/subtitles (saves API calls)
+  force_updates?: boolean;
 }
 
 export interface TriggerAuditResponse {

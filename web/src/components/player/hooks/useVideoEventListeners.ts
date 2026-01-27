@@ -6,6 +6,7 @@ interface UseVideoEventListenersOptions {
   onPlay: () => void
   onPause: () => void
   onEnded?: () => void
+  onVolumeChange?: (volume: number, muted: boolean) => void
 }
 
 export function useVideoEventListeners({
@@ -14,6 +15,7 @@ export function useVideoEventListeners({
   onPlay,
   onPause,
   onEnded,
+  onVolumeChange,
 }: UseVideoEventListenersOptions) {
   useEffect(() => {
     const video = videoRef.current
@@ -29,17 +31,29 @@ export function useVideoEventListeners({
       onPause()
       if (onEnded) onEnded()
     }
+    const handleVolumeChange = () => {
+      if (onVolumeChange) {
+        onVolumeChange(video.volume, video.muted)
+      }
+    }
 
     video.addEventListener('timeupdate', handleTimeUpdate)
     video.addEventListener('play', handlePlay)
     video.addEventListener('pause', handlePause)
     video.addEventListener('ended', handleEnded)
+    video.addEventListener('volumechange', handleVolumeChange)
+
+    // Sync initial volume state when video element is ready
+    if (onVolumeChange) {
+      onVolumeChange(video.volume, video.muted)
+    }
 
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate)
       video.removeEventListener('play', handlePlay)
       video.removeEventListener('pause', handlePause)
       video.removeEventListener('ended', handleEnded)
+      video.removeEventListener('volumechange', handleVolumeChange)
     }
-  }, [videoRef, onTimeUpdate, onPlay, onPause, onEnded])
+  }, [videoRef, onTimeUpdate, onPlay, onPause, onEnded, onVolumeChange])
 }

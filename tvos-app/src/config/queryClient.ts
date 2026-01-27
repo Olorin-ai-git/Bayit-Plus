@@ -61,6 +61,7 @@ export const queryKeys = {
     all: ['content'] as const,
     featured: () => [...queryKeys.content.all, 'featured'] as const,
     categories: () => [...queryKeys.content.all, 'categories'] as const,
+    trending: () => [...queryKeys.content.all, 'trending'] as const,
     search: (query: string) =>
       [...queryKeys.content.all, 'search', query] as const,
     detail: (id: string) => [...queryKeys.content.all, 'detail', id] as const,

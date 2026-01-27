@@ -121,7 +121,7 @@ export const JudaismScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
         {/* Header */}
         <View style={styles.headerRow}>
           <View style={styles.iconContainer}>
-            <BookOpen size={48} color="#3b82f6" />
+            <BookOpen size={48} color="#A855F7" />
           </View>
           <Text style={styles.title}>Torah & Judaism</Text>
           <View style={styles.starBadge}>
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(59,130,246,0.2)',
+    backgroundColor: 'rgba(168,85,247,0.2)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -237,8 +237,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   filterSelected: {
-    backgroundColor: '#3b82f6',
-    borderColor: '#3b82f6',
+    backgroundColor: '#A855F7',
+    borderColor: '#A855F7',
   },
   filterText: {
     fontSize: config.tv.minButtonTextSizePt,

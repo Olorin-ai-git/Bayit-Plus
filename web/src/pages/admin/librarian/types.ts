@@ -27,6 +27,8 @@ export interface AuditConfigState {
   openSubtitlesEnabled: boolean;
   classifyOnly: boolean;
   purgeDuplicates: boolean;
+  // If false, skip items that already have metadata/posters/subtitles (saves API calls)
+  forceUpdates: boolean;
 }
 
 export interface VoiceState {

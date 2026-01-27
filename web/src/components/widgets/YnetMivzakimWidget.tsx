@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import { RefreshCw, ExternalLink, AlertCircle } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import axios from 'axios';
+import api from '@/services/api';
 import logger from '@/utils/logger';
 
 // Refresh interval: 2 minutes
@@ -51,12 +51,8 @@ export function YnetMivzakimWidget({
   const fetchNews = useCallback(async () => {
     try {
       setError(null);
-      // Use axios with configured base URL (set via webpack at build time)
-      const apiUrl = import.meta.env.VITE_API_URL || '/api/v1';
-      const response = await axios.get(`${apiUrl}/news/mivzakim`, {
-        params: { limit: maxItems }
-      });
-      setNews(response.data.items || []);
+      const data = await api.get(`/news/mivzakim?limit=${maxItems}`) as { items: NewsItem[] };
+      setNews(data.items || []);
       setLastUpdate(new Date());
     } catch (err) {
       logger.error('Failed to fetch Ynet mivzakim', { error: err, maxItems, component: 'YnetMivzakimWidget' });

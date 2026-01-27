@@ -22,7 +22,7 @@ const getApiBaseUrl = () => {
   }
 
   if (!__DEV__) {
-    return 'https://api.bayit.tv/api/v1';
+    return 'https://bayit.tv/api/v1';
   }
 
   // In development, tvOS simulators use localhost

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import axios from 'axios';
+import api from '@/services/api';
 
 
 interface PlayerStats {
@@ -89,11 +89,11 @@ export const useStatsStore = create<StatsStore>((set) => ({
   fetchMyStats: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get('/api/v1/stats/me');
-      set({ myStats: response.data, loading: false });
+      const stats = await api.get('/stats/me') as PlayerStats;
+      set({ myStats: stats, loading: false });
     } catch (error: any) {
       set({
-        error: error.response?.data?.detail || 'Failed to fetch stats',
+        error: error?.detail || 'Failed to fetch stats',
         loading: false
       });
     }
@@ -102,11 +102,11 @@ export const useStatsStore = create<StatsStore>((set) => ({
   fetchPlayerStats: async (userId: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get(`/api/v1/stats/user/${userId}`);
-      set({ viewedPlayerStats: response.data, loading: false });
+      const stats = await api.get(`/stats/user/${userId}`) as PlayerStats;
+      set({ viewedPlayerStats: stats, loading: false });
     } catch (error: any) {
       set({
-        error: error.response?.data?.detail || 'Failed to fetch player stats',
+        error: error?.detail || 'Failed to fetch player stats',
         loading: false
       });
     }
@@ -115,11 +115,11 @@ export const useStatsStore = create<StatsStore>((set) => ({
   fetchMatchHistory: async (limit = 50) => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get(`/api/v1/stats/history?limit=${limit}`);
-      set({ matchHistory: response.data.games, loading: false });
+      const data = await api.get(`/stats/history?limit=${limit}`) as { games: GameResult[] };
+      set({ matchHistory: data.games, loading: false });
     } catch (error: any) {
       set({
-        error: error.response?.data?.detail || 'Failed to fetch match history',
+        error: error?.detail || 'Failed to fetch match history',
         loading: false
       });
     }
@@ -128,11 +128,11 @@ export const useStatsStore = create<StatsStore>((set) => ({
   fetchLeaderboard: async (limit = 100) => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get(`/api/v1/stats/leaderboard?limit=${limit}`);
-      set({ leaderboard: response.data.leaderboard, loading: false });
+      const data = await api.get(`/stats/leaderboard?limit=${limit}`) as { leaderboard: LeaderboardEntry[] };
+      set({ leaderboard: data.leaderboard, loading: false });
     } catch (error: any) {
       set({
-        error: error.response?.data?.detail || 'Failed to fetch leaderboard',
+        error: error?.detail || 'Failed to fetch leaderboard',
         loading: false
       });
     }
@@ -141,11 +141,11 @@ export const useStatsStore = create<StatsStore>((set) => ({
   fetchHeadToHead: async (opponentId: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get(`/api/v1/stats/head-to-head/${opponentId}`);
-      set({ headToHead: response.data, loading: false });
+      const stats = await api.get(`/stats/head-to-head/${opponentId}`) as HeadToHeadStats;
+      set({ headToHead: stats, loading: false });
     } catch (error: any) {
       set({
-        error: error.response?.data?.detail || 'Failed to fetch head-to-head stats',
+        error: error?.detail || 'Failed to fetch head-to-head stats',
         loading: false
       });
     }

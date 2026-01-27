@@ -91,12 +91,17 @@ export function useVideoPlayer({
     setState((prev) => ({ ...prev, isPlaying: false }))
   }, [])
 
+  const handleVolumeChange = useCallback((volume: number, muted: boolean) => {
+    setState((prev) => ({ ...prev, volume, isMuted: muted }))
+  }, [])
+
   useVideoEventListeners({
     videoRef,
     onTimeUpdate: handleTimeUpdate,
     onPlay: handlePlay,
     onPause: handlePause,
     onEnded,
+    onVolumeChange: handleVolumeChange,
   })
 
   useProgressReporting({

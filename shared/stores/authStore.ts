@@ -31,6 +31,7 @@ interface RegisterData {
 interface AuthState {
   user: User | null;
   token: string | null;
+  refreshToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -46,6 +47,7 @@ interface AuthState {
   logout: () => void;
   setUser: (user: User | null) => void;
   clearError: () => void;
+  refreshAccessToken: () => Promise<boolean>;
   // Passkey session actions
   setPasskeySession: (token: string, expiresAt: string) => void;
   clearPasskeySession: () => void;
@@ -70,6 +72,7 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       user: null,
       token: null,
+      refreshToken: null,
       isAuthenticated: false,
       isLoading: false,
       error: null,
@@ -85,6 +88,7 @@ export const useAuthStore = create<AuthState>()(
           set({
             user: response.user,
             token: response.access_token,
+            refreshToken: response.refresh_token || null,
             isAuthenticated: true,
             isLoading: false,
           });
@@ -104,6 +108,7 @@ export const useAuthStore = create<AuthState>()(
           set({
             user: response.user,
             token: response.access_token,
+            refreshToken: response.refresh_token || null,
             isAuthenticated: true,
             isLoading: false,
           });
@@ -147,6 +152,7 @@ export const useAuthStore = create<AuthState>()(
           set({
             user: response.user,
             token: response.access_token,
+            refreshToken: response.refresh_token || null,
             isAuthenticated: true,
             isLoading: false,
           });
@@ -164,6 +170,7 @@ export const useAuthStore = create<AuthState>()(
         set({
           user: null,
           token: null,
+          refreshToken: null,
           isAuthenticated: false,
           error: null,
           passkeySessionToken: null,
@@ -174,6 +181,35 @@ export const useAuthStore = create<AuthState>()(
       setUser: (user) => set({ user, isAuthenticated: !!user }),
 
       clearError: () => set({ error: null }),
+
+      // Refresh access token using refresh token
+      refreshAccessToken: async () => {
+        const { refreshToken, logout } = get();
+
+        if (!refreshToken) {
+          console.warn('[AuthStore] No refresh token available');
+          return false;
+        }
+
+        try {
+          const response: any = await authService.refreshToken(refreshToken);
+
+          // Update state with new tokens
+          set({
+            token: response.access_token,
+            refreshToken: response.refresh_token || refreshToken,
+            user: response.user || get().user,
+            isAuthenticated: true,
+          });
+
+          return true;
+        } catch (error) {
+          console.error('[AuthStore] Failed to refresh token', error);
+          // Refresh failed - log out user
+          logout();
+          return false;
+        }
+      },
 
       // Passkey session actions
       setPasskeySession: (token: string, expiresAt: string) => {
@@ -295,6 +331,7 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         user: state.user,
         token: state.token,
+        refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
         passkeySessionToken: state.passkeySessionToken,
         passkeySessionExpires: state.passkeySessionExpires,
