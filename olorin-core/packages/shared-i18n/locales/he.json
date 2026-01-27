@@ -1497,13 +1497,27 @@
     },
     "featured": {
       "title": "תוכן מובחר",
-      "subtitle": "נהל את סדר הקרוסלה על ידי גרירת פריטים",
+      "subtitle": "נהל תוכן מובחר לקרוסלות בעמוד הבית",
       "empty": "אין תוכן מובחר",
-      "emptyHint": "הוסף תוכן למובחר מספריית התוכן",
+      "emptyHint": "פריטים מובחרים יופיעו בקרוסלות שלהם בעמוד הבית",
       "count": "{{count}} פריטים",
       "confirmUnfeature": "להסיר מהמובחר?",
       "remove": "הסר",
-      "unsavedChanges": "יש לך שינויים שלא נשמרו"
+      "unsavedChanges": "יש לך שינויים שלא נשמרו",
+      "section": {
+        "title": "{{name}}",
+        "itemCount": "פריט {{count}}",
+        "itemCount_plural": "{{count}} פריטים",
+        "empty": "אין פריטים מובחרים",
+        "emptyHint": "פריטים מובחרים יופיעו בקרוסלה {{name}} בעמוד הבית"
+      },
+      "saveButton": "שמור {{count}} סעיף",
+      "saveButton_plural": "שמור {{count}} סעיפים",
+      "saving": "שומר...",
+      "saveSuccess": "תוכן מובחר עודכן בהצלחה",
+      "saveFailed": "נכשל שמירת תוכן מובחר",
+      "removeConfirm": "הסר מ-{{section}}?",
+      "removeSuccess": "הוסר מ-{{section}}"
     },
     "recordings": {
       "title": "ניהול הקלטות",

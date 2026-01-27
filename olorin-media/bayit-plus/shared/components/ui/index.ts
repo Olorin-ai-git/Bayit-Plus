@@ -26,7 +26,7 @@ export { GlassBreadcrumbs } from './GlassBreadcrumbs';
 export { AnalogClock } from './AnalogClock';
 export { GlassAvatar } from './GlassAvatar';
 export { GlassStatCard } from './GlassStatCard';
-export { GlassLiveChannelCard } from './GlassLiveChannelCard';
+// export { GlassLiveChannelCard } from './GlassLiveChannelCard'; // Native-only component with React Native dependencies
 export { GlassResizablePanel } from './GlassResizablePanel';
 export { GlassSplitterHandle } from './GlassSplitterHandle';
 export { GlassTooltip } from './GlassTooltip';

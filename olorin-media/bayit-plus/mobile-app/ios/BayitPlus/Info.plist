@@ -22,6 +22,17 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>tv.bayit.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>bayitplus</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -73,16 +84,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>bayitplus</string>
-			</array>
-			<key>CFBundleURLName</key>
-			<string>tv.bayit.app</string>
-		</dict>
-	</array>
 </dict>
 </plist>

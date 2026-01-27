@@ -9,7 +9,6 @@ import {
   GlassView,
   GlassCard,
   GlassCategoryPill,
-  GlassLiveChannelCard,
   GlassPageHeader,
   GridSkeleton,
   GlassLoadingSpinner,
@@ -147,10 +146,7 @@ export default function LivePage() {
                 style={{ width: `${100 / numColumns}%`, padding: spacing.xs } as any}
               >
                 <Link to={`/live/${channel.id}`} style={{ textDecoration: 'none' }}>
-                  <GlassLiveChannelCard
-                    channel={channel}
-                    liveLabel={liveLabel}
-                  />
+                  <GlassCard title={channel.name} />
                 </Link>
               </AnimatedCard>
             ))}

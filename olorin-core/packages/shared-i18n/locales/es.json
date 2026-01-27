@@ -1852,13 +1852,27 @@
     },
     "featured": {
       "title": "Contenido Destacado",
-      "subtitle": "Administrar el orden del carrusel arrastrando elementos",
+      "subtitle": "Administrar contenido destacado para carruseles de página de inicio",
       "empty": "Sin contenido destacado",
-      "emptyHint": "Agregar contenido a destacado desde la Biblioteca de Contenido",
+      "emptyHint": "Los elementos destacados aparecerán en sus respectivos carruseles en la página de inicio",
       "count": "{{count}} elementos",
       "confirmUnfeature": "¿Quitar de destacado?",
       "remove": "Quitar",
-      "unsavedChanges": "Tienes cambios sin guardar"
+      "unsavedChanges": "Tienes cambios sin guardar",
+      "section": {
+        "title": "{{name}}",
+        "itemCount": "{{count}} elemento",
+        "itemCount_plural": "{{count}} elementos",
+        "empty": "Sin elementos destacados",
+        "emptyHint": "Los elementos destacados aparecerán en el carrusel {{name}} en la página de inicio"
+      },
+      "saveButton": "Guardar {{count}} Sección",
+      "saveButton_plural": "Guardar {{count}} Secciones",
+      "saving": "Guardando...",
+      "saveSuccess": "Contenido destacado actualizado correctamente",
+      "saveFailed": "Error al guardar contenido destacado",
+      "removeConfirm": "¿Quitar de {{section}}?",
+      "removeSuccess": "Removido de {{section}}"
     },
     "recordings": {
       "title": "Gestión de Grabaciones",

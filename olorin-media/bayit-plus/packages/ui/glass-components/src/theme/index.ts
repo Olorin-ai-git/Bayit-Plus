@@ -6,7 +6,6 @@
  */
 
 import { Platform, Animated } from 'react-native';
-import type { WithSpringConfig } from 'react-native-reanimated';
 
 /**
  * TV Focus Constants

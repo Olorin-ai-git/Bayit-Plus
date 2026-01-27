@@ -508,3 +508,91 @@ async def merge_content(
     except Exception as e:
         logger.error(f"Error merging content: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/batch/featured-order")
+async def batch_save_featured_order(
+    data: dict,
+    request: Request,
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
+):
+    """Batch save featured item ordering for multiple sections."""
+    sections_data = data.get("sections", [])
+
+    if not sections_data:
+        raise HTTPException(status_code=400, detail="No sections provided")
+
+    updated_count = 0
+    sections_updated = []
+    errors = []
+
+    for section_data in sections_data:
+        section_id = section_data.get("section_id")
+        items = section_data.get("items", [])
+
+        if not section_id:
+            errors.append("Section ID missing")
+            continue
+
+        try:
+            # Verify section exists
+            section = await ContentSection.get(section_id)
+            if not section:
+                errors.append(f"Section {section_id} not found")
+                continue
+
+            # Update each content item
+            for item_data in items:
+                content_id = item_data.get("content_id")
+                order = item_data.get("order")
+
+                if not content_id or order is None:
+                    errors.append(f"Invalid item data in section {section_id}")
+                    continue
+
+                try:
+                    content = await Content.get(content_id)
+                    if not content:
+                        errors.append(f"Content {content_id} not found")
+                        continue
+
+                    # Update featured_order dictionary
+                    featured_order = content.featured_order or {}
+                    featured_order[section_id] = order
+                    content.featured_order = featured_order
+                    content.is_featured = True
+                    content.updated_at = datetime.utcnow()
+
+                    await content.save()
+                    updated_count += 1
+
+                except Exception as e:
+                    logger.error(f"Failed to update content {content_id}: {e}")
+                    errors.append(f"Failed to update {content_id}: {str(e)}")
+
+            sections_updated.append(section_data.get("slug", section_id))
+
+        except Exception as e:
+            logger.error(f"Error processing section {section_id}: {e}")
+            errors.append(f"Section {section_id} error: {str(e)}")
+
+    # Log audit
+    await log_audit(
+        str(current_user.id),
+        AuditAction.CONTENT_UPDATED,
+        "featured_order",
+        "batch",
+        {
+            "sections": len(sections_data),
+            "items_updated": updated_count,
+            "sections_updated": sections_updated,
+        },
+        request,
+    )
+
+    return {
+        "success": len(errors) == 0,
+        "updated_count": updated_count,
+        "sections_updated": sections_updated,
+        "errors": errors,
+    }

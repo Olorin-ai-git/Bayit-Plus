@@ -1619,13 +1619,27 @@
     },
     "featured": {
       "title": "Featured Content",
-      "subtitle": "Manage carousel order by dragging items",
+      "subtitle": "Manage featured content for homepage carousels",
       "empty": "No featured content",
-      "emptyHint": "Add content to featured from the Content Library",
+      "emptyHint": "Featured items will appear in their respective carousels on the homepage",
       "count": "{{count}} items",
       "confirmUnfeature": "Remove from featured?",
       "remove": "Remove",
-      "unsavedChanges": "You have unsaved changes"
+      "unsavedChanges": "You have unsaved changes",
+      "section": {
+        "title": "{{name}}",
+        "itemCount": "{{count}} item",
+        "itemCount_plural": "{{count}} items",
+        "empty": "No featured items",
+        "emptyHint": "Featured items will appear in the {{name}} carousel on the homepage"
+      },
+      "saveButton": "Save {{count}} Section",
+      "saveButton_plural": "Save {{count}} Sections",
+      "saving": "Saving...",
+      "saveSuccess": "Featured content updated successfully",
+      "saveFailed": "Failed to save featured content",
+      "removeConfirm": "Remove from {{section}}?",
+      "removeSuccess": "Removed from {{section}}"
     },
     "recordings": {
       "title": "Recordings Management",

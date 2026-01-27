@@ -1,13 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 
-export default class App extends React.Component {
-  render() {
-    return (
-      <View style={{ flex: 1, backgroundColor: '#1a1a2e', justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ color: '#fff', fontSize: 32, fontWeight: 'bold' }}>BayitPlus</Text>
-        <Text style={{ color: '#4a9eff', fontSize: 18, marginTop: 16 }}>Mobile App</Text>
-      </View>
-    );
-  }
+export default function App() {
+  return (
+    <View style={{ flex: 1, backgroundColor: '#FF0000', justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ color: '#FFFF00', fontSize: 40, fontWeight: 'bold' }}>BAYITPLUS</Text>
+      <Text style={{ color: '#00FF00', fontSize: 20, marginTop: 20 }}>App Running</Text>
+    </View>
+  );
 }
