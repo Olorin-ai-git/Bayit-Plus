@@ -8,7 +8,14 @@ endpoints to eliminate duplication and provide a single source of truth.
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+from app.api.routes.audiobook_security import (
+    validate_audio_quality,
+    validate_audio_url,
+    validate_drm_key_id,
+    validate_isbn,
+)
 
 
 # ============ REQUEST SCHEMAS ============
@@ -42,6 +49,34 @@ class AudiobookCreateRequest(BaseModel):
     visibility_mode: str = "public"
     is_published: bool = False
 
+    @field_validator("stream_url", mode="after")
+    @classmethod
+    def validate_stream_url_field(cls, v: str) -> str:
+        """Validate stream URL to prevent SSRF attacks."""
+        validate_audio_url(v)
+        return v
+
+    @field_validator("drm_key_id", mode="after")
+    @classmethod
+    def validate_drm_key_id_field(cls, v: Optional[str]) -> Optional[str]:
+        """Validate DRM Key ID to prevent injection attacks."""
+        validate_drm_key_id(v)
+        return v
+
+    @field_validator("audio_quality", mode="after")
+    @classmethod
+    def validate_audio_quality_field(cls, v: Optional[str]) -> Optional[str]:
+        """Validate audio quality value."""
+        validate_audio_quality(v)
+        return v
+
+    @field_validator("isbn", mode="after")
+    @classmethod
+    def validate_isbn_field(cls, v: Optional[str]) -> Optional[str]:
+        """Validate ISBN format."""
+        validate_isbn(v)
+        return v
+
 
 class AudiobookUpdateRequest(BaseModel):
     """Request model for updating an audiobook."""
@@ -57,6 +92,7 @@ class AudiobookUpdateRequest(BaseModel):
     stream_url: Optional[str] = None
     stream_type: Optional[str] = None
     is_drm_protected: Optional[bool] = None
+    drm_key_id: Optional[str] = None
     audio_quality: Optional[str] = None
     isbn: Optional[str] = None
     book_edition: Optional[str] = None
@@ -68,6 +104,35 @@ class AudiobookUpdateRequest(BaseModel):
     visibility_mode: Optional[str] = None
     section_ids: Optional[List[str]] = None
     primary_section_id: Optional[str] = None
+
+    @field_validator("stream_url", mode="after")
+    @classmethod
+    def validate_stream_url_field(cls, v: Optional[str]) -> Optional[str]:
+        """Validate stream URL to prevent SSRF attacks."""
+        if v is not None:
+            validate_audio_url(v)
+        return v
+
+    @field_validator("drm_key_id", mode="after")
+    @classmethod
+    def validate_drm_key_id_field(cls, v: Optional[str]) -> Optional[str]:
+        """Validate DRM Key ID to prevent injection attacks."""
+        validate_drm_key_id(v)
+        return v
+
+    @field_validator("audio_quality", mode="after")
+    @classmethod
+    def validate_audio_quality_field(cls, v: Optional[str]) -> Optional[str]:
+        """Validate audio quality value."""
+        validate_audio_quality(v)
+        return v
+
+    @field_validator("isbn", mode="after")
+    @classmethod
+    def validate_isbn_field(cls, v: Optional[str]) -> Optional[str]:
+        """Validate ISBN format."""
+        validate_isbn(v)
+        return v
 
 
 # ============ RESPONSE SCHEMAS ============

@@ -105,3 +105,63 @@ export interface DownloadAdd {
   content_type: string;
   quality?: string;
 }
+
+// ============ AUDIOBOOK TYPES ============
+// Complete audiobook types defined in web/src/types/audiobook.ts
+// These are exported here for cross-platform access (web, mobile, tvOS)
+
+export type AudioQuality = '8-bit' | '16-bit' | '24-bit' | '32-bit' | 'high-fidelity' | 'standard' | 'premium' | 'lossless'
+export type SubscriptionTier = 'free' | 'basic' | 'premium' | 'family'
+export type VisibilityMode = 'public' | 'private' | 'restricted'
+
+export interface Audiobook {
+  id: string
+  title: string
+  author?: string
+  narrator?: string
+  description?: string
+  duration?: string // Format: "HH:MM:SS"
+  year?: number
+  rating?: number
+  thumbnail?: string
+  backdrop?: string
+  audio_quality?: AudioQuality
+  isbn?: string
+  book_edition?: string
+  publisher_name?: string
+  view_count: number
+  avg_rating: number
+  is_featured: boolean
+  requires_subscription: SubscriptionTier
+  content_format: 'audiobook'
+  created_at: string
+  updated_at: string
+}
+
+export interface AudiobookAdmin extends Audiobook {
+  stream_url: string
+  stream_type: 'hls' | 'dash' | 'rtmp' | 'rtmps'
+  is_drm_protected: boolean
+  drm_key_id?: string
+  is_published: boolean
+  visibility_mode: VisibilityMode
+  section_ids: string[]
+  primary_section_id?: string
+  genre_ids: string[]
+  audience_id?: string
+  topic_tags: string[]
+}
+
+export interface AudiobookFilters {
+  page?: number
+  page_size?: number
+  author?: string
+  narrator?: string
+  audio_quality?: AudioQuality
+  requires_subscription?: SubscriptionTier
+  is_published?: boolean
+  search_query?: string
+  genre_ids?: string[]
+  sort_by?: 'title' | 'newest' | 'views' | 'rating'
+  sort_order?: 'asc' | 'desc'
+}

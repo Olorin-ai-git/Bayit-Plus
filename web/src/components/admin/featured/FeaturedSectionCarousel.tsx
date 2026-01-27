@@ -1,17 +1,20 @@
 /**
- * FeaturedSectionCarousel - Display featured section items as a carousel
- * Admin version with drag-to-reorder and add/remove controls
+ * FeaturedSectionCarousel - Display featured section items as a 3D carousel
+ * Features:
+ * - Netflix-style 3D perspective with center enlargement
+ * - Drag to rotate functionality
+ * - Smooth spring animations
+ * - Admin controls for add/remove
  */
 
-import { useRef } from 'react'
-import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native'
+import { useState, useCallback } from 'react'
+import { View, Text, StyleSheet, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react'
-import { GlassView, GlassButton } from '@bayit/shared/ui'
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { GlassView, GlassButton, GlassCarousel3D } from '@bayit/shared/ui'
 import { Content } from '@/services/adminApi'
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
-import { useDirection } from '@/hooks/useDirection'
-import FeaturedItemCard from './FeaturedItemCard'
+import CarouselPosterCard from './CarouselPosterCard'
 
 interface FeaturedSectionCarouselProps {
   sectionId: string
@@ -33,28 +36,17 @@ export default function FeaturedSectionCarousel({
   isRTL,
 }: FeaturedSectionCarouselProps) {
   const { t } = useTranslation()
-  const scrollRef = useRef<ScrollView>(null)
+  const [activeIndex, setActiveIndex] = useState(0)
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const scrollAmount = 600
-      const actualDirection = isRTL ? (direction === 'left' ? 'right' : 'left') : direction
-      // @ts-ignore - Web-specific scrollTo API
-      scrollRef.current.scrollTo?.({
-        x: actualDirection === 'right' ? scrollAmount : -scrollAmount,
-        animated: true,
-      })
-    }
-  }
-
-  const ScrollChevronLeft = isRTL ? ChevronRight : ChevronLeft
-  const ScrollChevronRight = isRTL ? ChevronLeft : ChevronRight
+  const handleIndexChange = useCallback((index: number) => {
+    setActiveIndex(index)
+  }, [])
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={[styles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        <View style={styles.titleSection}>
+        <View style={[styles.titleSection, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <Text style={[styles.title, { textAlign: isRTL ? 'right' : 'left' }]}>
             {sectionSlug}
           </Text>
@@ -78,56 +70,90 @@ export default function FeaturedSectionCarousel({
           <Text style={styles.emptySubtext}>{t('admin.featured.selectContentToAdd')}</Text>
         </View>
       ) : (
-        <View style={styles.carouselContainer}>
-          {/* Left Scroll Button */}
+        <View style={styles.carouselWrapper}>
+          {/* Navigation Arrows */}
           <Pressable
-            onPress={() => scroll('left')}
-            style={[
-              styles.scrollButton,
-              isRTL ? styles.scrollButtonRight : styles.scrollButtonLeft,
-            ]}
+            onPress={() => {
+              const newIndex = Math.max(0, activeIndex - 1)
+              setActiveIndex(newIndex)
+            }}
+            style={[styles.navButton, isRTL ? styles.navButtonRight : styles.navButtonLeft]}
+            disabled={activeIndex === 0}
           >
-            <GlassView style={styles.scrollButtonInner}>
-              <ScrollChevronLeft size={24} color={colors.text} />
+            <GlassView style={[styles.navButtonInner, activeIndex === 0 && styles.navButtonDisabled]}>
+              {isRTL ? (
+                <ChevronRight size={28} color={colors.text} />
+              ) : (
+                <ChevronLeft size={28} color={colors.text} />
+              )}
             </GlassView>
           </Pressable>
 
-          {/* Right Scroll Button */}
           <Pressable
-            onPress={() => scroll('right')}
-            style={[
-              styles.scrollButton,
-              isRTL ? styles.scrollButtonLeft : styles.scrollButtonRight,
-            ]}
+            onPress={() => {
+              const newIndex = Math.min(items.length - 1, activeIndex + 1)
+              setActiveIndex(newIndex)
+            }}
+            style={[styles.navButton, isRTL ? styles.navButtonLeft : styles.navButtonRight]}
+            disabled={activeIndex === items.length - 1}
           >
-            <GlassView style={styles.scrollButtonInner}>
-              <ScrollChevronRight size={24} color={colors.text} />
+            <GlassView
+              style={[
+                styles.navButtonInner,
+                activeIndex === items.length - 1 && styles.navButtonDisabled,
+              ]}
+            >
+              {isRTL ? (
+                <ChevronLeft size={28} color={colors.text} />
+              ) : (
+                <ChevronRight size={28} color={colors.text} />
+              )}
             </GlassView>
           </Pressable>
 
-          {/* Items Carousel */}
-          <ScrollView
-            ref={scrollRef}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={[
-              styles.scrollContent,
-              { flexDirection: isRTL ? 'row-reverse' : 'row' },
-            ]}
+          {/* 3D Carousel */}
+          <GlassCarousel3D
+            itemWidth={180}
+            itemHeight={270}
+            perspective={1200}
+            rotationFactor={25}
+            scaleFactor={0.12}
+            gap={24}
+            isRTL={isRTL}
+            activeIndex={activeIndex}
+            onIndexChange={handleIndexChange}
+            showPagination={true}
+            onSwipeUpRemove={(index) => {
+              const item = items[index]
+              if (item) {
+                onRemove(item.id)
+              }
+            }}
           >
             {items.map((item, index) => (
-              <View key={item.id} style={styles.cardWrapper}>
-                <FeaturedItemCard
-                  item={item}
-                  index={index}
-                  isDragging={false}
-                  onRemove={() => onRemove(item.id)}
-                  isRTL={isRTL}
-                  showOrderNumber={true}
-                />
-              </View>
+              <CarouselPosterCard
+                key={item.id}
+                item={item}
+                index={index}
+                onRemove={() => onRemove(item.id)}
+                isRTL={isRTL}
+              />
             ))}
-          </ScrollView>
+          </GlassCarousel3D>
+
+          {/* Active Item Info */}
+          {items[activeIndex] && (
+            <View style={styles.activeInfo}>
+              <Text style={[styles.activeTitle, { textAlign: 'center' }]}>
+                {items[activeIndex].title}
+              </Text>
+              {items[activeIndex].description && (
+                <Text style={styles.activeDescription} numberOfLines={2}>
+                  {items[activeIndex].description}
+                </Text>
+              )}
+            </View>
+          )}
         </View>
       )}
     </View>
@@ -136,8 +162,8 @@ export default function FeaturedSectionCarousel({
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing.md,
-    paddingVertical: spacing.md,
+    gap: spacing.lg,
+    paddingVertical: spacing.lg,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -145,7 +171,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.lg,
     gap: spacing.md,
   },
   titleSection: {
@@ -154,77 +180,91 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   title: {
-    fontSize: fontSize.lg,
-    fontWeight: '600',
+    fontSize: fontSize.xl,
+    fontWeight: '700',
     color: colors.text,
     textTransform: 'capitalize',
   },
   badge: {
     backgroundColor: colors.primary.DEFAULT + '30',
     paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
+    paddingVertical: 4,
     borderRadius: borderRadius.full,
   },
   badgeText: {
-    fontSize: fontSize.xs,
+    fontSize: fontSize.sm,
     color: colors.primary.DEFAULT,
     fontWeight: '600',
   },
   addButton: {
-    minWidth: 140,
+    minWidth: 160,
   },
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing.xl,
+    paddingVertical: spacing.xxl,
     gap: spacing.sm,
   },
   emptyText: {
-    fontSize: fontSize.base,
+    fontSize: fontSize.lg,
     fontWeight: '600',
     color: colors.text,
     textAlign: 'center',
   },
   emptySubtext: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize.base,
     color: colors.textSecondary,
     textAlign: 'center',
   },
-  carouselContainer: {
+  carouselWrapper: {
     position: 'relative',
-    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xl,
+    alignItems: 'center',
   },
-  scrollButton: {
+  navButton: {
     position: 'absolute',
     top: '50%',
-    zIndex: 10,
+    zIndex: 20,
     // @ts-ignore - Web transform
-    transform: [{ translateY: -32 }],
-    opacity: 0,
-    // @ts-ignore - Web hover
-    ':hover': {
-      opacity: 1,
-    },
+    transform: [{ translateY: -40 }],
   },
-  scrollButtonLeft: {
-    left: 0,
+  navButtonLeft: {
+    left: spacing.lg,
   },
-  scrollButtonRight: {
-    right: 0,
+  navButtonRight: {
+    right: spacing.lg,
   },
-  scrollButtonInner: {
-    width: 40,
-    height: 64,
+  navButtonInner: {
+    width: 56,
+    height: 80,
     borderRadius: borderRadius.lg,
     justifyContent: 'center',
     alignItems: 'center',
+    // @ts-ignore - Web-specific
+    backdropFilter: 'blur(12px)',
+    cursor: 'pointer',
   },
-  scrollContent: {
-    gap: spacing.md,
-    paddingVertical: spacing.md,
+  navButtonDisabled: {
+    opacity: 0.3,
+    // @ts-ignore - Web-specific
+    cursor: 'not-allowed',
   },
-  cardWrapper: {
-    width: 200,
-    flexShrink: 0,
+  activeInfo: {
+    marginTop: spacing.xl,
+    paddingHorizontal: spacing.xxl,
+    alignItems: 'center',
+    gap: spacing.sm,
+    maxWidth: 600,
+  },
+  activeTitle: {
+    fontSize: fontSize.xl,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  activeDescription: {
+    fontSize: fontSize.base,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 24,
   },
 })

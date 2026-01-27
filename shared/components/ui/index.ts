@@ -40,6 +40,9 @@ export { GlassParticleLayer } from './GlassParticleLayer';
 export { GlassReorderableList } from './GlassReorderableList';
 export { GlassSectionItem } from './GlassSectionItem';
 
+// Carousel Components
+export { GlassCarousel3D } from './GlassCarousel3D';
+
 // Page and Loading Components
 export { GlassPageHeader } from './GlassPageHeader';
 export type { PageType } from './GlassPageHeader';
