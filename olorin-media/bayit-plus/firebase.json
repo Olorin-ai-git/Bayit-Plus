@@ -7,14 +7,14 @@
       {
         "source": "/api/**",
         "run": {
-          "serviceId": "bayit-plus-backend",
+          "serviceId": "bayit-backend-production",
           "region": "us-east1"
         }
       },
       {
         "source": "/uploads/**",
         "run": {
-          "serviceId": "bayit-plus-backend",
+          "serviceId": "bayit-backend-production",
           "region": "us-east1"
         }
       },
