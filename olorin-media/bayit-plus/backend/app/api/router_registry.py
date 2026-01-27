@@ -42,7 +42,8 @@ def register_all_routers(app: FastAPI) -> None:
                                 admin_podcast_episodes, admin_podcasts,
                                 admin_radio_stations, admin_taxonomy,
                                 admin_uploads, admin_widgets,
-                                admin_youngsters_content, audiobooks, auth, chapters, chat,
+                                admin_youngsters_content, audiobooks, audible_integration,
+                                auth, chapters, chat,
                                 chess, children, content, content_taxonomy,
                                 cultures, device_pairing, devices,
                                 direct_messages, downloads, epg,
@@ -166,6 +167,11 @@ def register_all_routers(app: FastAPI) -> None:
         playback_session.router,
         prefix=f"{prefix}/playback/session",
         tags=["playback", "session"],
+    )
+    app.include_router(
+        audible_integration.router,
+        prefix=prefix,
+        tags=["audible-integration"],
     )
     logger.debug("Registered user routes")
 

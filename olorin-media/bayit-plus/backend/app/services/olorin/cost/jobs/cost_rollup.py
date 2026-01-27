@@ -27,12 +27,12 @@ async def cost_rollup_job() -> None:
 
     while True:
         try:
-            logger.info("Starting hourly cost aggregation")
+            logger.debug("Starting hourly cost aggregation")
 
             # Aggregate costs for the previous hour
             cost_breakdown = await aggregation_service.aggregate_hourly_costs()
 
-            logger.info(
+            logger.debug(
                 "Hourly cost aggregation completed",
                 extra={
                     "period_start": cost_breakdown.period_start.isoformat(),
@@ -42,7 +42,7 @@ async def cost_rollup_job() -> None:
             )
 
         except asyncio.CancelledError:
-            logger.info("Cost rollup job cancelled")
+            logger.debug("Cost rollup job cancelled")
             break
 
         except Exception as e:
@@ -81,16 +81,16 @@ async def monthly_cost_rollup_job() -> None:
                 await asyncio.sleep(days_until_next_month * 24 * 3600)
                 continue
 
-            logger.info("Starting monthly cost aggregation")
+            logger.debug("Starting monthly cost aggregation")
 
             # Aggregate previous month's costs
             # TODO: Query daily cost breakdowns and aggregate to monthly
             # TODO: Store in CostBreakdown with period_type='monthly'
 
-            logger.info("Monthly cost aggregation completed")
+            logger.debug("Monthly cost aggregation completed")
 
         except asyncio.CancelledError:
-            logger.info("Monthly cost rollup job cancelled")
+            logger.debug("Monthly cost rollup job cancelled")
             break
 
         except Exception as e:

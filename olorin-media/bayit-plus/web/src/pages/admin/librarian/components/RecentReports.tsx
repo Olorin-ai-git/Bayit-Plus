@@ -134,18 +134,26 @@ export const RecentReports = ({
     {
       key: 'status',
       label: t('admin.librarian.reports.columns.status', 'Status'),
-      width: 100,
-      render: (value: string) => (
-        <GlassBadge
-          variant={
-            value === 'completed' ? 'success' :
-            value === 'failed' ? 'danger' :
-            value === 'in_progress' ? 'warning' : 'default'
-          }
-          size="sm"
-        >
-          {t(`admin.librarian.status.${value}`, value)}
-        </GlassBadge>
+      width: 140,
+      render: (value: string, row: AuditReport) => (
+        <View style={styles.statusCell}>
+          <GlassBadge
+            variant={
+              value === 'completed' ? 'success' :
+              value === 'failed' ? 'danger' :
+              value === 'partial' ? 'warning' :
+              value === 'in_progress' ? 'info' : 'default'
+            }
+            size="sm"
+          >
+            {t(`admin.librarian.status.${value}`, value)}
+          </GlassBadge>
+          {(value === 'failed' || value === 'partial') && row.summary?.agent_summary && (
+            <Text style={styles.statusErrorHint} numberOfLines={1}>
+              {row.summary.agent_summary.substring(0, 40)}...
+            </Text>
+          )}
+        </View>
       ),
     },
     {
@@ -232,5 +240,13 @@ const styles = StyleSheet.create({
   badgeRow: {
     gap: spacing.xs,
     flexWrap: 'wrap',
+  },
+  statusCell: {
+    gap: spacing.xs,
+  },
+  statusErrorHint: {
+    fontSize: 10,
+    color: colors.textMuted,
+    marginTop: 2,
   },
 });

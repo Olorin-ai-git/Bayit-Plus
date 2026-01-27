@@ -32,7 +32,7 @@ class GCPBillingProvider(CostProvider):
         Falls back to config value on failure.
         """
         if not self._enabled:
-            logger.info("GCP Billing API disabled, using config fallback")
+            logger.debug("GCP Billing API disabled, using config fallback")
             return self._get_fallback_cost()
 
         try:

@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   Animated,
   ActivityIndicator,
+  ImageBackground,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './ui/GlassView';
@@ -22,6 +23,9 @@ import { cultureService } from '../services/api';
 import { useCultureStore } from '../contexts/CultureContext';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
+
+// Masada background image for What's Hot section
+const MasadaBackground = require('../assets/images/Scenery/Masada.png');
 
 interface CultureTrendingTopic {
   id: string;
@@ -242,55 +246,63 @@ export const CultureTrendingRow: React.FC<CultureTrendingRowProps> = ({
   }
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row' }]}>
-        <Text style={styles.headerEmoji}>{getCultureFlag()}</Text>
-        <Text style={[
-          styles.headerTitle,
-          { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }
-        ]}>
-          {t('cultureTrending.whatsHotIn', { location: getCultureLabel() })}
-        </Text>
-        <Text style={styles.headerEmoji}>🔥</Text>
-      </View>
-
-      {/* Overall Mood */}
-      {data.overall_mood && (
-        <Text style={[styles.overallMood, { textAlign: isRTL ? 'right' : 'left' }]}>
-          {getLocalizedText(data.overall_mood, data.overall_mood_localized)}
-        </Text>
-      )}
-
-      {/* Topics ScrollView */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[styles.topicsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
-      >
-        {data.topics.map((topic, index) => (
-          <TopicCard
-            key={topic.id || index}
-            topic={topic}
-            title={getLocalizedText(topic.title, topic.title_localized)}
-            summary={topic.summary ? getLocalizedText(topic.summary, topic.summary_localized) : undefined}
-            isFocused={focusedIndex === index}
-            onFocus={() => setFocusedIndex(index)}
-            onBlur={() => setFocusedIndex(-1)}
-            onPress={() => onTopicPress?.(topic)}
-            isRTL={isRTL}
-          />
-        ))}
-      </ScrollView>
-
-      {/* Sources */}
-      {showSources && data.sources?.length > 0 && (
-        <View style={[styles.sourcesContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <Text style={styles.sourcesLabel}>{t('cultureTrending.sources')}: </Text>
-          <Text style={styles.sourcesText}>{data.sources.join(', ')}</Text>
+    <ImageBackground
+      source={MasadaBackground}
+      style={styles.backgroundContainer}
+      imageStyle={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay} />
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={[styles.header, isRTL ? { flexDirection: 'row-reverse' } : { flexDirection: 'row' }]}>
+          <Text style={styles.headerEmoji}>{getCultureFlag()}</Text>
+          <Text style={[
+            styles.headerTitle,
+            { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }
+          ]}>
+            {t('cultureTrending.whatsHotIn', { location: getCultureLabel() })}
+          </Text>
+          <Text style={styles.headerEmoji}>🔥</Text>
         </View>
-      )}
-    </View>
+
+        {/* Overall Mood */}
+        {data.overall_mood && (
+          <Text style={[styles.overallMood, { textAlign: isRTL ? 'right' : 'left' }]}>
+            {getLocalizedText(data.overall_mood, data.overall_mood_localized)}
+          </Text>
+        )}
+
+        {/* Topics ScrollView */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={[styles.topicsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+        >
+          {data.topics.map((topic, index) => (
+            <TopicCard
+              key={topic.id || index}
+              topic={topic}
+              title={getLocalizedText(topic.title, topic.title_localized)}
+              summary={topic.summary ? getLocalizedText(topic.summary, topic.summary_localized) : undefined}
+              isFocused={focusedIndex === index}
+              onFocus={() => setFocusedIndex(index)}
+              onBlur={() => setFocusedIndex(-1)}
+              onPress={() => onTopicPress?.(topic)}
+              isRTL={isRTL}
+            />
+          ))}
+        </ScrollView>
+
+        {/* Sources */}
+        {showSources && data.topics?.length > 0 && (
+          <View style={[styles.sourcesContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <Text style={styles.sourcesLabel}>{t('cultureTrending.sources')}: </Text>
+            <Text style={styles.sourcesText}>{Array.from(new Set(data.topics.map(topic => topic.source).filter(Boolean))).join(', ')}</Text>
+          </View>
+        )}
+      </View>
+    </ImageBackground>
   );
 };
 
@@ -395,8 +407,30 @@ const TopicCard: React.FC<TopicCardProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
+  backgroundContainer: {
     marginVertical: spacing.md,
+    marginHorizontal: spacing.md,
+    borderRadius: borderRadius.xl,
+    overflow: 'hidden',
+    minHeight: 300,
+  },
+  backgroundImage: {
+    opacity: 1,
+    borderRadius: borderRadius.xl,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: borderRadius.xl,
+  },
+  container: {
+    position: 'relative',
+    zIndex: 10,
+    paddingVertical: spacing.lg,
   },
   header: {
     flexDirection: 'row',
@@ -444,8 +478,9 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     borderRadius: borderRadius.lg,
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: 'rgba(168, 85, 247, 0.2)',
     marginRight: spacing.md,
+    backgroundColor: 'rgba(107, 33, 168, 0.15)',
   },
   topicCardFocused: {
     borderColor: '#a855f7',

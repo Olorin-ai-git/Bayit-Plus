@@ -66,6 +66,35 @@ async def run_ai_agent_audit(
 
     start_time = datetime.utcnow()
 
+    # Validate ANTHROPIC_API_KEY is configured
+    if not settings.ANTHROPIC_API_KEY:
+        logger.error("ANTHROPIC_API_KEY is not configured - cannot run AI agent audit")
+        # Create a minimal report with clear error message
+        error_report = AuditReport(
+            audit_date=start_time,
+            audit_type=audit_type,
+            status="failed",
+            execution_time_seconds=0,
+            summary={
+                "total_items": 0,
+                "healthy_items": 0,
+                "issues_found": 0,
+                "issues_fixed": 0,
+                "manual_review_needed": 0,
+                "agent_summary": "ANTHROPIC_API_KEY is not configured. Please set the API key in environment variables or retrieve it from GCP Secret Manager.",
+                "error": "missing_api_key",
+            },
+            content_results={
+                "agent_mode": True,
+                "iterations": 0,
+                "tool_uses": 0,
+                "total_cost_usd": 0.0,
+                "error": "ANTHROPIC_API_KEY not configured",
+            },
+        )
+        await error_report.insert()
+        return error_report
+
     # Clear the content title cache for fresh lookups
     clear_title_cache()
 
@@ -114,6 +143,7 @@ async def run_ai_agent_audit(
     iteration = 0
     audit_complete = False
     completion_summary = None
+    loop_error = None  # Track any errors that caused loop to break
 
     while iteration < max_iterations and not audit_complete:
         iteration += 1
@@ -203,7 +233,15 @@ Please acknowledge this interjection and adjust your approach accordingly.
                 break
 
         except Exception as e:
-            logger.error(f"Error in agent loop iteration {iteration}: {str(e)}")
+            loop_error = str(e)
+            logger.error(f"Error in agent loop iteration {iteration}: {loop_error}")
+            # Log the error to the audit report for visibility
+            await log_to_database(
+                audit_report,
+                "error",
+                f"API call failed: {loop_error}",
+                "AI Agent",
+            )
             break
 
     # Finalize audit report
@@ -219,6 +257,7 @@ Please acknowledge this interjection and adjust your approach accordingly.
         tool_uses=tool_uses,
         total_cost=total_cost,
         end_time=end_time,
+        loop_error=loop_error,
     )
 
     logger.info("=" * 80)
@@ -561,6 +600,7 @@ async def _finalize_audit_report(
     tool_uses: List[Dict[str, Any]],
     total_cost: float,
     end_time: datetime,
+    loop_error: Optional[str] = None,
 ):
     """Finalize and save the audit report."""
     # Extract summary from completion if available
@@ -589,24 +629,50 @@ async def _finalize_audit_report(
             "health_score": completion_summary.get("health_score", 0),
         }
     else:
+        # Determine the reason for incompletion
+        if loop_error:
+            # Check for common error patterns
+            if "authentication" in loop_error.lower() or "api key" in loop_error.lower():
+                agent_summary = f"API authentication failed: {loop_error}. Check ANTHROPIC_API_KEY configuration."
+            elif "credit balance" in loop_error.lower() or "purchase credits" in loop_error.lower():
+                agent_summary = "Anthropic API credit balance is too low. Please add credits at https://console.anthropic.com/settings/plans"
+            elif "rate limit" in loop_error.lower():
+                agent_summary = f"API rate limit exceeded: {loop_error}"
+            else:
+                agent_summary = f"Audit failed with error: {loop_error}"
+        elif iteration >= 50 and len(tool_uses) == 0:
+            agent_summary = "Audit incomplete - Claude API call may have failed. Check server logs."
+        else:
+            agent_summary = "Audit incomplete - reached iteration or budget limit"
+
         summary = {
             "total_items": 0,
             "healthy_items": 0,
             "issues_found": 0,
             "issues_fixed": 0,
             "manual_review_needed": 0,
-            "agent_summary": "Audit incomplete - reached iteration or budget limit",
+            "agent_summary": agent_summary,
+            "error": loop_error,
         }
+
+    # Determine status - if there was an error, mark as failed
+    if loop_error:
+        status = "failed"
+    elif audit_complete:
+        status = "completed"
+    else:
+        status = "partial"
 
     # Update the existing audit report
     audit_report.execution_time_seconds = execution_time
-    audit_report.status = "completed" if audit_complete else "partial"
+    audit_report.status = status
     audit_report.summary = summary
     audit_report.content_results = {
         "agent_mode": True,
         "iterations": iteration,
         "tool_uses": len(tool_uses),
         "total_cost_usd": round(total_cost, 4),
+        "error": loop_error,
     }
     audit_report.ai_insights = (
         completion_summary.get("recommendations", []) if completion_summary else []

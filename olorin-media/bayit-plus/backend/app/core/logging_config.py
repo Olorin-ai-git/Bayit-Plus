@@ -39,5 +39,8 @@ def setup_logging(level: str = "INFO"):
     logging.getLogger("anthropic").setLevel(logging.INFO)
     logging.getLogger("pymongo.connection").setLevel(logging.WARNING)
 
+    # Suppress uvicorn HTTP access logs (move to DEBUG level)
+    logging.getLogger("uvicorn.access").setLevel(logging.DEBUG)
+
     # Return configured root logger
     return logging.getLogger()

@@ -10,6 +10,7 @@ const projectRoot = __dirname;
 const workspaceRoot = path.resolve(__dirname, '..');
 const rootNodeModules = path.resolve(workspaceRoot, 'node_modules');
 const packagesRoot = path.resolve(workspaceRoot, 'packages/ui');
+const sharedRoot = path.resolve(workspaceRoot, 'shared');
 
 const defaultConfig = getDefaultConfig(__dirname);
 
@@ -20,7 +21,7 @@ const localPackages = ['react', 'react-dom', 'scheduler'];
 
 const config = {
   projectRoot: __dirname,
-  watchFolders: [projectRoot, rootNodeModules, packagesRoot],
+  watchFolders: [projectRoot, rootNodeModules, packagesRoot, sharedRoot],
   resolver: {
     unstable_enableSymlinks: true,
     nodeModulesPaths: [
@@ -61,14 +62,35 @@ const config = {
       '@tanstack/query-core': path.resolve(rootNodeModules, '@tanstack/query-core'),
       'zustand': path.resolve(rootNodeModules, 'zustand'),
 
+      // Lucide icons for React Native
+      'lucide-react-native': path.resolve(rootNodeModules, 'lucide-react-native'),
+      'react-native-svg': path.resolve(rootNodeModules, 'react-native-svg'),
+
       // @olorin packages from packages/ui (using root of each package, not src/)
       '@olorin/design-tokens': path.resolve(packagesRoot, 'design-tokens'),
       '@olorin/shared-i18n': path.resolve(packagesRoot, 'shared-i18n'),
       '@olorin/shared-i18n/native': path.resolve(packagesRoot, 'shared-i18n/native.ts'),
       '@olorin/shared-hooks': path.resolve(packagesRoot, 'shared-hooks'),
       '@olorin/shared-icons': path.resolve(packagesRoot, 'shared-icons'),
+      '@olorin/shared-icons/native': path.resolve(packagesRoot, 'shared-icons/src/native'),
       '@olorin/shared-services': path.resolve(packagesRoot, 'shared-services'),
       '@olorin/shared-stores': path.resolve(packagesRoot, 'shared-stores'),
+
+      // Glass UI components for React Native
+      '@olorin/glass-ui': path.resolve(packagesRoot, 'glass-components/src/native'),
+      '@olorin/glass-ui/native': path.resolve(packagesRoot, 'glass-components/src/native'),
+      '@olorin/glass-ui/theme': path.resolve(packagesRoot, 'glass-components/src/theme'),
+      '@olorin/glass-components': path.resolve(packagesRoot, 'glass-components/src/native'),
+
+      // @bayit shared packages (from /shared directory)
+      '@bayit/shared-screens': path.resolve(sharedRoot, 'screens'),
+      '@bayit/shared-components': path.resolve(sharedRoot, 'components'),
+      '@bayit/shared-services': path.resolve(sharedRoot, 'services'),
+      '@bayit/shared-hooks': path.resolve(sharedRoot, 'hooks'),
+      '@bayit/shared-utils': path.resolve(sharedRoot, 'utils'),
+      '@bayit/shared-theme': path.resolve(sharedRoot, 'theme'),
+      '@bayit/shared-config': path.resolve(sharedRoot, 'config'),
+      '@bayit/shared-contexts': path.resolve(sharedRoot, 'contexts'),
     },
     // Force resolution of React packages from local node_modules regardless of where the import originates
     resolveRequest: (context, moduleName, platform) => {
