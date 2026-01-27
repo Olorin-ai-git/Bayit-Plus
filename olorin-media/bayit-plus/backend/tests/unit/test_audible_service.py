@@ -15,6 +15,9 @@ from app.services.audible_service import (
     AudibleOAuthToken,
     AudibleAPIError,
 )
+from app.services.audible_token_crypto import AudibleTokenCrypto
+from app.services.audible_oauth_helpers import generate_pkce_pair, generate_state_token
+from app.services.audible_state_manager import store_state_token, validate_state_token
 
 
 @pytest.fixture
@@ -347,3 +350,229 @@ class TestServiceCleanup:
         # Destructor should be called when object is deleted
         del service
         # If no exception is raised, cleanup worked
+
+
+class TestPKCEGeneration:
+    """Tests for PKCE code generation."""
+
+    def test_generate_pkce_pair(self):
+        """Test PKCE pair generation."""
+        code_verifier, code_challenge = generate_pkce_pair()
+
+        # Verify format
+        assert isinstance(code_verifier, str)
+        assert isinstance(code_challenge, str)
+        assert len(code_verifier) > 40  # Min 43 characters
+        assert len(code_challenge) > 40  # Base64 encoded SHA256
+        assert "=" not in code_verifier  # Should be unpadded base64
+        assert "=" not in code_challenge  # Should be unpadded base64
+
+    def test_generate_state_token(self):
+        """Test state token generation."""
+        state = generate_state_token()
+
+        assert isinstance(state, str)
+        assert len(state) > 30  # URL-safe random string
+        assert state.isalnum() or "-" in state or "_" in state  # URL-safe characters
+
+
+class TestTokenEncryption:
+    """Tests for token encryption and decryption."""
+
+    @pytest.fixture
+    def crypto_with_key(self):
+        """Create crypto instance with test encryption key."""
+        with patch("app.core.config.settings") as mock_settings:
+            from cryptography.fernet import Fernet
+            # Generate a test key
+            test_key = Fernet.generate_key()
+            mock_settings.AUDIBLE_TOKEN_ENCRYPTION_KEY = test_key.decode()
+            crypto = AudibleTokenCrypto()
+            yield crypto
+
+    @pytest.fixture
+    def crypto_without_key(self):
+        """Create crypto instance without encryption key."""
+        with patch("app.core.config.settings") as mock_settings:
+            mock_settings.AUDIBLE_TOKEN_ENCRYPTION_KEY = ""
+            crypto = AudibleTokenCrypto()
+            yield crypto
+
+    def test_encrypt_token(self, crypto_with_key):
+        """Test token encryption."""
+        plaintext_token = "test_access_token_12345"
+        encrypted = crypto_with_key.encrypt_token(plaintext_token)
+
+        assert encrypted != plaintext_token
+        assert isinstance(encrypted, str)
+        # Fernet encrypted data starts with "gAAAAAA"
+        assert encrypted.startswith("gAAAAAA")
+
+    def test_decrypt_token(self, crypto_with_key):
+        """Test token decryption."""
+        plaintext_token = "test_access_token_12345"
+        encrypted = crypto_with_key.encrypt_token(plaintext_token)
+        decrypted = crypto_with_key.decrypt_token(encrypted)
+
+        assert decrypted == plaintext_token
+
+    def test_encrypt_empty_token(self, crypto_with_key):
+        """Test encrypting empty token returns as-is."""
+        result = crypto_with_key.encrypt_token("")
+        assert result == ""
+
+    def test_decrypt_empty_token(self, crypto_with_key):
+        """Test decrypting empty token returns as-is."""
+        result = crypto_with_key.decrypt_token("")
+        assert result == ""
+
+    def test_plaintext_fallback(self, crypto_without_key):
+        """Test that crypto returns plaintext when key not configured."""
+        plaintext_token = "test_access_token_12345"
+        encrypted = crypto_without_key.encrypt_token(plaintext_token)
+        assert encrypted == plaintext_token
+
+        decrypted = crypto_without_key.decrypt_token(plaintext_token)
+        assert decrypted == plaintext_token
+
+    def test_decrypt_invalid_ciphertext(self, crypto_with_key):
+        """Test decrypting invalid ciphertext returns as-is (fallback)."""
+        invalid_ciphertext = "not_a_valid_fernet_string"
+        result = crypto_with_key.decrypt_token(invalid_ciphertext)
+        # Should return the invalid input as fallback
+        assert result == invalid_ciphertext
+
+
+class TestStateTokenManagement:
+    """Tests for OAuth state token management."""
+
+    def test_store_and_validate_state_token(self):
+        """Test storing and validating state tokens."""
+        state = "test_state_token_123"
+        user_id = "user_456"
+        code_verifier = "test_verifier_xyz"
+        code_challenge = "test_challenge_abc"
+
+        # Store the state token
+        store_state_token(state, user_id, code_verifier, code_challenge)
+
+        # Validate and retrieve
+        retrieved_verifier, retrieved_challenge = validate_state_token(state, user_id)
+
+        assert retrieved_verifier == code_verifier
+        assert retrieved_challenge == code_challenge
+
+    def test_state_token_one_time_use(self):
+        """Test that state tokens can only be used once."""
+        state = "one_time_state_token"
+        user_id = "user_789"
+        code_verifier = "verifier"
+        code_challenge = "challenge"
+
+        store_state_token(state, user_id, code_verifier, code_challenge)
+
+        # First validation succeeds
+        validate_state_token(state, user_id)
+
+        # Second validation fails
+        with pytest.raises(ValueError, match="Invalid state token"):
+            validate_state_token(state, user_id)
+
+    def test_invalid_state_token(self):
+        """Test validation of invalid state tokens."""
+        with pytest.raises(ValueError, match="Invalid state token"):
+            validate_state_token("invalid_state", "user_id")
+
+    def test_state_token_user_mismatch(self):
+        """Test that state tokens are user-specific."""
+        state = "state_mismatch"
+        store_state_token(state, "user_1", "verifier", "challenge")
+
+        with pytest.raises(ValueError, match="does not match user"):
+            validate_state_token(state, "user_2")
+
+    def test_cleanup_expired_states(self):
+        """Test cleanup of expired state tokens."""
+        from app.services.audible_state_manager import cleanup_expired_states, _STATE_STORE
+        from datetime import datetime, timedelta
+
+        # Clear the state store
+        _STATE_STORE.clear()
+
+        # Store an expired token (manually set creation time to past)
+        state = "expired_state"
+        user_id = "user_id"
+        verifier = "verifier"
+        challenge = "challenge"
+        _STATE_STORE[state] = (user_id, datetime.utcnow() - timedelta(minutes=20), verifier, challenge)
+
+        # Cleanup should remove expired tokens
+        cleanup_expired_states()
+        assert state not in _STATE_STORE
+
+    def test_pkce_with_state_token(self):
+        """Test PKCE generation and storage with state token."""
+        # Generate PKCE
+        code_verifier, code_challenge = generate_pkce_pair()
+        state = generate_state_token()
+        user_id = "user_with_pkce"
+
+        # Store together
+        store_state_token(state, user_id, code_verifier, code_challenge)
+
+        # Validate and retrieve
+        retrieved_verifier, retrieved_challenge = validate_state_token(state, user_id)
+
+        assert retrieved_verifier == code_verifier
+        assert retrieved_challenge == code_challenge
+        assert len(retrieved_verifier) > 40
+        assert len(retrieved_challenge) > 40
+
+
+class TestOAuthURLWithPKCE:
+    """Tests for OAuth URL generation with PKCE support."""
+
+    @pytest.mark.asyncio
+    async def test_get_oauth_url_with_pkce(self, audible_service):
+        """Test generating OAuth URL with PKCE code challenge."""
+        state = "state_with_pkce"
+        code_challenge = "test_code_challenge_s256"
+
+        url = await audible_service.get_oauth_url(state, code_challenge)
+
+        assert f"state={state}" in url
+        assert f"code_challenge={code_challenge}" in url
+        assert "code_challenge_method=S256" in url
+
+    @pytest.mark.asyncio
+    async def test_get_oauth_url_without_pkce(self, audible_service):
+        """Test generating OAuth URL without PKCE (backward compatibility)."""
+        state = "state_no_pkce"
+
+        url = await audible_service.get_oauth_url(state)
+
+        assert f"state={state}" in url
+        assert "code_challenge" not in url
+
+    @pytest.mark.asyncio
+    async def test_exchange_code_with_pkce(self, audible_service):
+        """Test code exchange with PKCE code verifier."""
+        mock_response = AsyncMock()
+        mock_response.json.return_value = {
+            "access_token": "access_with_pkce",
+            "refresh_token": "refresh_with_pkce",
+            "expires_in": 3600,
+            "user_id": "user_pkce",
+        }
+        audible_service.http_client.post.return_value = mock_response
+
+        # Exchange with code_verifier
+        token = await audible_service.exchange_code_for_token(
+            "auth_code", code_verifier="test_code_verifier"
+        )
+
+        assert token.access_token == "access_with_pkce"
+
+        # Verify code_verifier was included in request
+        call_args = audible_service.http_client.post.call_args
+        assert "code_verifier" in str(call_args)

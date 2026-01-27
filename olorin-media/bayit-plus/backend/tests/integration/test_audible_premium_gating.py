@@ -5,14 +5,19 @@ requirements and properly handle missing configuration.
 """
 
 import pytest
+from datetime import datetime, timedelta
 from fastapi import status
+from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock, patch, MagicMock
+from beanie import PydanticObjectId
 
 from app.api.dependencies.premium_features import (
     require_premium_or_family,
     require_audible_configured,
 )
 from app.models.user import User
+from app.models.user_audible_account import UserAudibleAccount
+from app.services.audible_service import AudibleAudiobook, AudibleAPIError
 
 
 @pytest.fixture
@@ -128,183 +133,356 @@ class TestAudibleEndpointGating:
     """Integration tests for Audible API endpoints with gating."""
 
     @pytest.mark.asyncio
-    async def test_oauth_authorize_requires_premium(self):
+    async def test_oauth_authorize_requires_premium(self, client, basic_tier_user):
         """Test that OAuth authorize endpoint requires premium subscription."""
-        # This would be a full integration test with a test client
-        # In a real scenario, you would use TestClient from fastapi.testclient
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=basic_tier_user):
+            response = client.post(
+                "/api/v1/user/audible/oauth/authorize",
+                json={"redirect_uri": "http://localhost:3000/callback"},
+            )
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+            assert response.json()["detail"] == "audible_requires_premium"
 
     @pytest.mark.asyncio
-    async def test_oauth_authorize_requires_configured(self):
+    async def test_oauth_authorize_requires_configured(self, client, premium_tier_user):
         """Test that OAuth authorize endpoint requires configuration."""
-        # This would be a full integration test with a test client
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=premium_tier_user):
+            with patch("app.core.config.settings") as mock_settings:
+                mock_settings.is_audible_configured = False
+                response = client.post(
+                    "/api/v1/user/audible/oauth/authorize",
+                    json={"redirect_uri": "http://localhost:3000/callback"},
+                )
+                assert response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE
+                assert response.json()["detail"] == "audible_integration_not_configured"
 
     @pytest.mark.asyncio
-    async def test_library_sync_requires_premium(self):
+    async def test_library_sync_requires_premium(self, client, basic_tier_user):
         """Test that library sync endpoint requires premium subscription."""
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=basic_tier_user):
+            response = client.post("/api/v1/user/audible/library/sync")
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+            assert response.json()["detail"] == "audible_requires_premium"
 
     @pytest.mark.asyncio
-    async def test_get_library_requires_premium(self):
+    async def test_get_library_requires_premium(self, client, basic_tier_user):
         """Test that get library endpoint requires premium subscription."""
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=basic_tier_user):
+            response = client.get("/api/v1/user/audible/library")
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+            assert response.json()["detail"] == "audible_requires_premium"
 
     @pytest.mark.asyncio
-    async def test_search_catalog_requires_premium(self):
+    async def test_search_catalog_requires_premium(self, client, basic_tier_user):
         """Test that search endpoint requires premium subscription."""
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=basic_tier_user):
+            response = client.get("/api/v1/user/audible/search?q=test")
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+            assert response.json()["detail"] == "audible_requires_premium"
 
 
 class TestAudibleErrorHandling:
     """Tests for error handling in Audible endpoints."""
 
     @pytest.mark.asyncio
-    async def test_api_error_returns_503(self):
+    async def test_api_error_returns_503(self, client, premium_tier_user):
         """Test that API errors return 503 Service Unavailable."""
-        # When AudibleService raises AudibleAPIError,
-        # endpoints should return 503
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=premium_tier_user):
+            with patch("app.services.audible_service.audible_service.search_catalog") as mock_search:
+                mock_search.side_effect = AudibleAPIError("API connection failed")
+                response = client.get("/api/v1/user/audible/search?q=test")
+                assert response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE
+                assert response.json()["detail"] == "audible_service_unavailable"
 
     @pytest.mark.asyncio
-    async def test_missing_audible_account_returns_400(self):
+    async def test_missing_audible_account_returns_400(self, client, premium_tier_user):
         """Test that missing Audible account returns 400."""
-        # When user hasn't connected Audible account,
-        # endpoints should return 400
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=premium_tier_user):
+            with patch("app.models.user_audible_account.UserAudibleAccount.find_one", return_value=None):
+                response = client.post("/api/v1/user/audible/library/sync")
+                assert response.status_code == status.HTTP_400_BAD_REQUEST
+                assert "not connected" in response.json()["detail"].lower()
 
     @pytest.mark.asyncio
-    async def test_invalid_asin_returns_404(self):
+    async def test_invalid_asin_returns_404(self, client, premium_tier_user):
         """Test that invalid ASIN returns 404."""
-        # When audiobook ASIN doesn't exist,
-        # detail endpoint should return 404
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=premium_tier_user):
+            with patch("app.services.audible_service.audible_service.get_audiobook_details", return_value=None):
+                response = client.get("/api/v1/user/audible/invalid-asin/details")
+                assert response.status_code == status.HTTP_404_NOT_FOUND
+                assert response.json()["detail"] == "audiobook_not_found"
 
 
 class TestAudibleAuthorizationFlow:
     """Tests for OAuth authorization flow with gating."""
 
     @pytest.mark.asyncio
-    async def test_premium_user_can_start_oauth(self):
+    async def test_premium_user_can_start_oauth(self, client, premium_tier_user):
         """Test that premium user can initiate OAuth flow."""
-        # Premium user requests OAuth URL
-        # Should receive authorization URL
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=premium_tier_user):
+            with patch("app.core.config.settings") as mock_settings:
+                mock_settings.is_audible_configured = True
+                mock_settings.AUDIBLE_AUTH_URL = "https://auth.audible.com"
+                mock_settings.AUDIBLE_REDIRECT_URI = "http://localhost:8000/callback"
+                mock_settings.AUDIBLE_CLIENT_ID = "test_client"
+
+                with patch("app.services.audible_oauth_helpers.generate_pkce_pair") as mock_pkce:
+                    with patch("app.services.audible_oauth_helpers.generate_state_token") as mock_state:
+                        with patch("app.services.audible_state_manager.store_state_token"):
+                            mock_pkce.return_value = ("verifier123", "challenge123")
+                            mock_state.return_value = "state456"
+
+                            response = client.post(
+                                "/api/v1/user/audible/oauth/authorize",
+                                json={"redirect_uri": "http://localhost:3000/callback"},
+                            )
+                            assert response.status_code == status.HTTP_200_OK
+                            data = response.json()
+                            assert "auth_url" in data
+                            assert data["state"] == "state456"
+                            assert data["code_challenge"] == "challenge123"
 
     @pytest.mark.asyncio
-    async def test_premium_user_can_exchange_code(self):
+    async def test_premium_user_can_exchange_code(self, client, premium_tier_user):
         """Test that premium user can exchange OAuth code."""
-        # Premium user provides authorization code
-        # Should store tokens and return connection status
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=premium_tier_user):
+            with patch("app.core.config.settings") as mock_settings:
+                mock_settings.is_audible_configured = True
+
+                with patch("app.services.audible_state_manager.validate_state_token") as mock_validate:
+                    with patch("app.services.audible_service.audible_service.exchange_code_for_token") as mock_exchange:
+                        with patch("app.models.user_audible_account.UserAudibleAccount.find_one", return_value=None):
+                            with patch("app.models.user_audible_account.UserAudibleAccount") as mock_account:
+                                mock_validate.return_value = ("verifier", "challenge")
+                                mock_exchange.return_value = MagicMock(
+                                    user_id="audible_user_123",
+                                    access_token="access_token",
+                                    refresh_token="refresh_token",
+                                    expires_at=datetime.utcnow() + timedelta(hours=1),
+                                )
+                                mock_account_instance = AsyncMock()
+                                mock_account.return_value = mock_account_instance
+
+                                response = client.post(
+                                    "/api/v1/user/audible/oauth/callback",
+                                    json={"code": "auth_code", "state": "state_token"},
+                                )
+                                assert response.status_code == status.HTTP_200_OK
+                                data = response.json()
+                                assert data["status"] == "connected"
+                                assert data["audible_user_id"] == "audible_user_123"
 
     @pytest.mark.asyncio
-    async def test_premium_user_can_disconnect(self):
+    async def test_premium_user_can_disconnect(self, client, premium_tier_user):
         """Test that premium user can disconnect account."""
-        # Premium user disconnects Audible account
-        # Should remove stored tokens
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=premium_tier_user):
+            with patch("app.models.user_audible_account.UserAudibleAccount.find_one") as mock_find:
+                mock_account = AsyncMock()
+                mock_account.delete = AsyncMock()
+                mock_find.return_value = mock_account
+
+                response = client.post("/api/v1/user/audible/disconnect")
+                assert response.status_code == status.HTTP_200_OK
+                data = response.json()
+                assert data["status"] == "disconnected"
+                mock_account.delete.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_basic_user_blocked_from_oauth(self):
+    async def test_basic_user_blocked_from_oauth(self, client, basic_tier_user):
         """Test that basic tier user cannot start OAuth."""
-        # Basic tier user requests OAuth URL
-        # Should receive 403 Forbidden
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=basic_tier_user):
+            response = client.post(
+                "/api/v1/user/audible/oauth/authorize",
+                json={"redirect_uri": "http://localhost:3000/callback"},
+            )
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+            assert response.json()["detail"] == "audible_requires_premium"
 
 
 class TestAudibleLibrarySyncGating:
     """Tests for library sync with proper gating."""
 
     @pytest.mark.asyncio
-    async def test_premium_user_can_sync_library(self):
+    async def test_premium_user_can_sync_library(self, client, premium_tier_user):
         """Test that premium user can sync Audible library."""
-        # Premium user syncs library
-        # Should fetch from Audible API
-        # Should return sync status
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=premium_tier_user):
+            with patch("app.models.user_audible_account.UserAudibleAccount.find_one") as mock_find:
+                mock_account = AsyncMock()
+                mock_account.expires_at = datetime.utcnow() + timedelta(hours=1)
+                mock_account.access_token = "valid_token"
+                mock_find.return_value = mock_account
+
+                with patch("app.services.audible_service.audible_service.get_user_library") as mock_lib:
+                    mock_lib.return_value = [
+                        AudibleAudiobook(
+                            asin="B001",
+                            title="Book 1",
+                            author="Author 1",
+                            is_owned=True,
+                        ),
+                    ]
+
+                    response = client.post("/api/v1/user/audible/library/sync")
+                    assert response.status_code == status.HTTP_200_OK
+                    data = response.json()
+                    assert data["status"] == "synced"
+                    assert data["audiobooks_count"] == 1
 
     @pytest.mark.asyncio
-    async def test_premium_user_can_view_library(self):
+    async def test_premium_user_can_view_library(self, client, premium_tier_user):
         """Test that premium user can view synced library."""
-        # Premium user views library
-        # Should return list of audiobooks
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=premium_tier_user):
+            with patch("app.models.user_audible_account.UserAudibleAccount.find_one") as mock_find:
+                mock_account = AsyncMock()
+                mock_account.expires_at = datetime.utcnow() + timedelta(hours=1)
+                mock_account.access_token = "valid_token"
+                mock_find.return_value = mock_account
+
+                with patch("app.services.audible_service.audible_service.get_user_library") as mock_lib:
+                    mock_lib.return_value = [
+                        AudibleAudiobook(
+                            asin="B001",
+                            title="Book 1",
+                            author="Author 1",
+                            is_owned=True,
+                        ),
+                    ]
+
+                    response = client.get("/api/v1/user/audible/library")
+                    assert response.status_code == status.HTTP_200_OK
+                    data = response.json()
+                    assert len(data) == 1
+                    assert data[0]["asin"] == "B001"
 
     @pytest.mark.asyncio
-    async def test_basic_user_blocked_from_sync(self):
+    async def test_basic_user_blocked_from_sync(self, client, basic_tier_user):
         """Test that basic tier user cannot sync."""
-        # Basic tier user attempts sync
-        # Should receive 403 Forbidden
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=basic_tier_user):
+            response = client.post("/api/v1/user/audible/library/sync")
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+            assert response.json()["detail"] == "audible_requires_premium"
 
     @pytest.mark.asyncio
-    async def test_basic_user_blocked_from_viewing_library(self):
+    async def test_basic_user_blocked_from_viewing_library(self, client, basic_tier_user):
         """Test that basic tier user cannot view library."""
-        # Basic tier user attempts to view library
-        # Should receive 403 Forbidden
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=basic_tier_user):
+            response = client.get("/api/v1/user/audible/library")
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+            assert response.json()["detail"] == "audible_requires_premium"
 
 
 class TestAudibleSearchGating:
     """Tests for catalog search with proper gating."""
 
     @pytest.mark.asyncio
-    async def test_premium_user_can_search(self):
+    async def test_premium_user_can_search(self, client, premium_tier_user):
         """Test that premium user can search Audible catalog."""
-        # Premium user searches catalog
-        # Should return search results
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=premium_tier_user):
+            with patch("app.core.config.settings") as mock_settings:
+                mock_settings.is_audible_configured = True
+
+                with patch("app.services.audible_service.audible_service.search_catalog") as mock_search:
+                    mock_search.return_value = [
+                        AudibleAudiobook(
+                            asin="B001",
+                            title="Matching Book",
+                            author="Author 1",
+                            is_owned=False,
+                        ),
+                    ]
+
+                    response = client.get("/api/v1/user/audible/search?q=test")
+                    assert response.status_code == status.HTTP_200_OK
+                    data = response.json()
+                    assert len(data) == 1
+                    assert data[0]["title"] == "Matching Book"
 
     @pytest.mark.asyncio
-    async def test_premium_user_can_get_details(self):
+    async def test_premium_user_can_get_details(self, client, premium_tier_user):
         """Test that premium user can get audiobook details."""
-        # Premium user requests audiobook details
-        # Should return detailed information
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=premium_tier_user):
+            with patch("app.services.audible_service.audible_service.get_audiobook_details") as mock_details:
+                mock_details.return_value = AudibleAudiobook(
+                    asin="B001",
+                    title="Detailed Book",
+                    author="Author 1",
+                    is_owned=False,
+                )
+
+                response = client.get("/api/v1/user/audible/B001/details")
+                assert response.status_code == status.HTTP_200_OK
+                data = response.json()
+                assert data["asin"] == "B001"
+                assert data["title"] == "Detailed Book"
 
     @pytest.mark.asyncio
-    async def test_basic_user_blocked_from_search(self):
+    async def test_basic_user_blocked_from_search(self, client, basic_tier_user):
         """Test that basic tier user cannot search."""
-        # Basic tier user attempts search
-        # Should receive 403 Forbidden
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=basic_tier_user):
+            response = client.get("/api/v1/user/audible/search?q=test")
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+            assert response.json()["detail"] == "audible_requires_premium"
 
     @pytest.mark.asyncio
-    async def test_basic_user_blocked_from_details(self):
+    async def test_basic_user_blocked_from_details(self, client, basic_tier_user):
         """Test that basic tier user cannot get details."""
-        # Basic tier user requests details
-        # Should receive 403 Forbidden
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=basic_tier_user):
+            response = client.get("/api/v1/user/audible/B001/details")
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+            assert response.json()["detail"] == "audible_requires_premium"
 
 
 class TestAudibleConnectionStatus:
     """Tests for checking Audible connection status with proper gating."""
 
     @pytest.mark.asyncio
-    async def test_premium_user_can_check_status(self):
+    async def test_premium_user_can_check_status(self, client, premium_tier_user):
         """Test that premium user can check connection status."""
-        # Premium user checks status
-        # Should return connection state
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=premium_tier_user):
+            with patch("app.models.user_audible_account.UserAudibleAccount.find_one") as mock_find:
+                mock_account = AsyncMock()
+                mock_account.audible_user_id = "audible_123"
+                mock_account.synced_at = datetime.utcnow()
+                mock_account.last_sync_error = None
+                mock_find.return_value = mock_account
+
+                response = client.get("/api/v1/user/audible/connected")
+                assert response.status_code == status.HTTP_200_OK
+                data = response.json()
+                assert data["connected"] is True
+                assert data["audible_user_id"] == "audible_123"
 
     @pytest.mark.asyncio
-    async def test_basic_user_blocked_from_checking_status(self):
+    async def test_basic_user_blocked_from_checking_status(self, client, basic_tier_user):
         """Test that basic tier user cannot check status."""
-        # Basic tier user attempts to check status
-        # Should receive 403 Forbidden
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=basic_tier_user):
+            response = client.get("/api/v1/user/audible/connected")
+            assert response.status_code == status.HTTP_403_FORBIDDEN
+            assert response.json()["detail"] == "audible_requires_premium"
 
     @pytest.mark.asyncio
-    async def test_unconnected_account_returns_false(self):
+    async def test_unconnected_account_returns_false(self, client, premium_tier_user):
         """Test that unconnected account returns connected=false."""
-        # Premium user who hasn't connected Audible
-        # Should receive connected=false
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=premium_tier_user):
+            with patch("app.models.user_audible_account.UserAudibleAccount.find_one", return_value=None):
+                response = client.get("/api/v1/user/audible/connected")
+                assert response.status_code == status.HTTP_200_OK
+                data = response.json()
+                assert data["connected"] is False
 
     @pytest.mark.asyncio
-    async def test_connected_account_returns_true(self):
+    async def test_connected_account_returns_true(self, client, premium_tier_user):
         """Test that connected account returns connected=true."""
-        # Premium user with connected Audible account
-        # Should receive connected=true with metadata
-        pass
+        with patch("app.core.security.get_current_active_user", return_value=premium_tier_user):
+            with patch("app.models.user_audible_account.UserAudibleAccount.find_one") as mock_find:
+                mock_account = AsyncMock()
+                mock_account.audible_user_id = "audible_user_123"
+                mock_account.synced_at = datetime.utcnow()
+                mock_account.last_sync_error = None
+                mock_find.return_value = mock_account
+
+                response = client.get("/api/v1/user/audible/connected")
+                assert response.status_code == status.HTTP_200_OK
+                data = response.json()
+                assert data["connected"] is True
+                assert data["audible_user_id"] == "audible_user_123"
