@@ -15,6 +15,7 @@ interface FeaturedAudiobook {
   description?: string;
   view_count: number;
   avg_rating: number;
+  is_featured?: boolean;
 }
 
 export function useFeaturedAudiobooksCarousel() {
@@ -28,14 +29,18 @@ export function useFeaturedAudiobooksCarousel() {
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch('/api/v1/audiobooks?is_featured=true&limit=10');
+        // Fetch audiobooks - backend sorts by is_featured DESC, so featured appear first
+        const response = await fetch('/api/v1/audiobooks?page=1&page_size=10');
 
         if (!response.ok) {
           throw new Error('Failed to fetch featured audiobooks');
         }
 
         const data = await response.json();
-        setAudiobooks(data.audiobooks || []);
+        // Filter to only featured audiobooks for carousel, or use top 10 if none featured
+        const items = data.items || [];
+        const featured = items.filter((item: FeaturedAudiobook) => item.is_featured);
+        setAudiobooks(featured.length > 0 ? featured : items.slice(0, 10));
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch audiobooks');
         setAudiobooks([]);
