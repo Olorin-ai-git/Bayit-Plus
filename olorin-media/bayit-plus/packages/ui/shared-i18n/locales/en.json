@@ -2126,6 +2126,7 @@
         "vod": "Video on Demand",
         "podcast": "Podcast",
         "radio": "Radio",
+        "audiobook": "Audiobook",
         "iframe": "Iframe"
       },
       "status": {

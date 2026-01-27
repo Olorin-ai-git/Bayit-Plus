@@ -146,7 +146,11 @@ export default function LivePage() {
                 style={{ width: `${100 / numColumns}%`, padding: spacing.xs } as any}
               >
                 <Link to={`/live/${channel.id}`} style={{ textDecoration: 'none' }}>
-                  <GlassCard title={channel.name} />
+                  <GlassCard
+                    title={channel.name}
+                    imageUrl={channel.thumbnail || channel.logo}
+                    subtitle={channel.currentShow}
+                  />
                 </Link>
               </AnimatedCard>
             ))}

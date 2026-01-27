@@ -2417,7 +2417,10 @@
         "live": "En vivo",
         "liveChannel": "Canal en Vivo",
         "vod": "Video bajo Demanda",
-        "podcast": "Pódcast"
+        "podcast": "Pódcast",
+        "radio": "Radio",
+        "audiobook": "Audiolibro",
+        "iframe": "Iframe"
       },
       "editWidget": "Editar Widget",
       "emptyMessage": "No se encontraron widgets. Crea uno para comenzar.",
