@@ -136,7 +136,7 @@ async def execute_delete_broken_content(
 
 
 async def execute_flag_for_manual_review(
-    content_id: str, audit_id: str, reason: str
+    content_id: str, audit_id: str, reason: str, **kwargs
 ) -> Dict[str, Any]:
     """
     Flag content for manual review.
@@ -145,6 +145,7 @@ async def execute_flag_for_manual_review(
         content_id: The content ID to flag
         audit_id: The audit ID for logging
         reason: Reason for flagging
+        **kwargs: Additional arguments (ignored for resilience)
 
     Returns:
         Dict with success status

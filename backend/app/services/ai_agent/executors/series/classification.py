@@ -105,9 +105,16 @@ async def execute_find_misclassified_episodes(
 
 
 async def execute_fix_misclassified_series(
-    content_id: str, audit_id: str, dry_run: bool = False
+    content_id: str, audit_id: str, dry_run: bool = False, **kwargs
 ) -> Dict[str, Any]:
-    """Fix misclassified series (should be episode)."""
+    """Fix misclassified series (should be episode).
+
+    Args:
+        content_id: The content ID to fix
+        audit_id: The audit ID for logging
+        dry_run: If True, simulate the operation
+        **kwargs: Additional arguments (ignored for resilience)
+    """
     dry_run_result = handle_dry_run(
         dry_run, "fix misclassified content {content_id}", content_id=content_id
     )

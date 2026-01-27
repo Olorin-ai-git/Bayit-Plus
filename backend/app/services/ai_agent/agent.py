@@ -16,6 +16,7 @@ from beanie import PydanticObjectId
 from app.core.config import settings
 from app.models.librarian import AuditReport
 from app.services.ai_agent.dispatcher import execute_tool
+from app.services.ai_agent.issue_tracker import track_fix_result, track_issues_found
 from app.services.ai_agent.logger import clear_title_cache, log_to_database
 from app.services.ai_agent.prompts import (AUDIT_INSTRUCTIONS,
                                            LANGUAGE_INSTRUCTIONS,
@@ -500,6 +501,11 @@ async def _process_response_blocks(
 
             # Execute tool
             result = await execute_tool(tool_name, tool_input, audit_id, dry_run)
+
+            # Track issues and fix results for reapply functionality
+            # Note: These modify audit_report in-place; final save happens in _finalize_audit_report
+            await track_issues_found(audit_report, tool_name, result)
+            await track_fix_result(audit_report, tool_name, tool_input, result)
 
             # Extract item info from result if not already set
             if not item_name and isinstance(result, dict):

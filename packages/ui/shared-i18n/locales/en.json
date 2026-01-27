@@ -1932,6 +1932,9 @@
         "clearAll": "Clear All",
         "confirmClearAll": "Are you sure you want to clear all audit reports? This action cannot be undone.",
         "clearedSuccessfully": "All audit reports cleared successfully",
+        "reapplyFixes": "Reapply Fixes",
+        "reapplying": "Reapplying...",
+        "reapplyError": "Failed to reapply fixes",
         "viewLogs": "View Logs",
         "viewDetails": "View Details",
         "columns": {
@@ -2019,7 +2022,8 @@
         "interjectSuccess": "Message sent to AI agent successfully",
         "pauseSuccess": "Audit paused successfully",
         "resumeSuccess": "Audit resumed successfully",
-        "cancelSuccess": "Audit cancelled successfully"
+        "cancelSuccess": "Audit cancelled successfully",
+        "reapplyStarted": "Fix reapplication started. Check the live panel for progress."
       },
       "progress": {
         "batch": "Batch {{current}} of {{total}}",

@@ -61,7 +61,11 @@ async def execute_find_duplicate_episodes(
 
 
 async def execute_resolve_duplicate_episodes(
-    episode_ids: List[str], keep_id: str, audit_id: str, dry_run: bool = False
+    episode_ids: List[str] = None,
+    keep_id: str = None,
+    audit_id: str = None,
+    dry_run: bool = False,
+    **kwargs
 ) -> Dict[str, Any]:
     """
     Resolve duplicate episodes by keeping one and deleting others.
@@ -71,10 +75,18 @@ async def execute_resolve_duplicate_episodes(
         keep_id: The ID of the episode to keep.
         audit_id: The audit ID for logging actions.
         dry_run: If True, simulate the operation without making changes.
+        **kwargs: Additional arguments (ignored for resilience).
 
     Returns:
         Dictionary with success status, kept ID, and list of deleted IDs.
     """
+    # Validate required parameters
+    if not episode_ids:
+        return {"success": False, "error": "episode_ids is required"}
+    if not keep_id:
+        return {"success": False, "error": "keep_id is required"}
+    if not audit_id:
+        return {"success": False, "error": "audit_id is required"}
     dry_run_result = handle_dry_run(
         dry_run,
         "keep episode {keep_id}, delete {delete_count} duplicates",

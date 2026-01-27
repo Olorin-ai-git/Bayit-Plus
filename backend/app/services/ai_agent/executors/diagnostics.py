@@ -127,12 +127,23 @@ async def execute_find_duplicates(detection_type: str = "all") -> Dict[str, Any]
 
 
 async def execute_resolve_duplicates(
-    content_ids: List[str],
-    keep_id: str,
+    content_ids: List[str] = None,
+    keep_id: str = None,
     action: str = "unpublish",
     audit_id: str = None,
+    **kwargs
 ) -> Dict[str, Any]:
-    """Resolve a group of duplicate content items."""
+    """Resolve a group of duplicate content items.
+
+    Args:
+        content_ids: List of duplicate content IDs.
+        keep_id: The ID of the content to keep.
+        action: Action to take on duplicates ("unpublish" or "delete").
+        audit_id: The audit ID for logging.
+        **kwargs: Additional arguments (ignored for resilience).
+    """
+    if not content_ids or not keep_id:
+        return {"success": False, "error": "content_ids and keep_id are required"}
     from app.services.duplicate_detection_service import \
         get_duplicate_detection_service
 

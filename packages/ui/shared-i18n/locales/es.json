@@ -2100,6 +2100,9 @@
         "emptyMessage": "Aún no hay informes de auditoría",
         "totalReports": "{{count}} informe(s)",
         "clearAll": "Limpiar Todo",
+        "reapplyFixes": "Reaplicar Correcciones",
+        "reapplying": "Reaplicando...",
+        "reapplyError": "Error al reaplicar correcciones",
         "viewLogs": "Ver Registros",
         "viewDetails": "Ver Detalles",
         "columns": {
@@ -2184,7 +2187,8 @@
         "interjectSuccess": "Mensaje enviado al agente AI exitosamente",
         "pauseSuccess": "Auditoría pausada exitosamente",
         "resumeSuccess": "Auditoría reanudada exitosamente",
-        "cancelSuccess": "Auditoría cancelada exitosamente"
+        "cancelSuccess": "Auditoría cancelada exitosamente",
+        "reapplyStarted": "Reaplicación de correcciones iniciada. Consulta el panel en vivo para ver el progreso."
       },
       "progress": {
         "batch": "Lote {{current}} de {{total}}",

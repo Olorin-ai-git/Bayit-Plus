@@ -17,7 +17,7 @@ export const Config = {
   // Backend API URLs
   API_URLS: {
     // Production API (Firebase Hosting -> Cloud Run)
-    production: "https://api.bayit.tv/api/v1",
+    production: "https://bayit.tv/api/v1",
 
     // Development - Local backend
     // For physical iPhone: Set IOS_DEV_API_URL environment variable with your Mac's IP
@@ -36,12 +36,15 @@ export const Config = {
  * Get the API base URL based on current environment and platform
  */
 export const getApiBaseUrl = (): string => {
-  // Production mode
-  if (!__DEV__) {
+  // Always use production API for real content
+  // Change USE_LOCAL_DEV to true only when testing with local backend
+  const USE_LOCAL_DEV = false;
+
+  if (!USE_LOCAL_DEV || !__DEV__) {
     return Config.API_URLS.production;
   }
 
-  // Development mode - platform specific
+  // Development mode - platform specific (only when USE_LOCAL_DEV is true)
   if (Platform.OS === "android") {
     return Config.API_URLS.development.android;
   }

@@ -5,7 +5,17 @@
 
 import React from 'react';
 import { Text, Pressable, View, StyleSheet, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home, Tv, Film, Radio, Mic, User } from 'lucide-react-native';
+
+// Design tokens - purple theme
+const COLORS = {
+  primary: '#9333ea',
+  primaryBg: 'rgba(126, 34, 206, 0.2)',
+  inactive: 'rgba(255, 255, 255, 0.5)',
+  background: 'rgba(10, 10, 10, 0.95)',
+  border: 'rgba(126, 34, 206, 0.2)',
+};
 
 interface TabBarProps {
   state: any;
@@ -26,16 +36,17 @@ const TAB_ICONS: Record<string, React.FC<any>> = {
 // Tab labels for display
 const TAB_LABELS: Record<string, string> = {
   Home: 'Home',
-  LiveTV: 'Live TV',
+  LiveTV: 'Live',
   VOD: 'VOD',
   Radio: 'Radio',
-  Podcasts: 'Podcasts',
+  Podcasts: 'Pods',
   Profile: 'Profile',
 };
 
 export default function TabBar(props: TabBarProps) {
-  const { state, descriptors, navigation } = props;
-  const bottomPadding = Platform.OS === 'ios' ? 34 : 0;
+  const { state, navigation } = props;
+  const insets = useSafeAreaInsets();
+  const bottomPadding = Math.max(insets.bottom, 8);
 
   return (
     <View style={[styles.tabBarContainer, { paddingBottom: bottomPadding }]}>
@@ -43,7 +54,7 @@ export default function TabBar(props: TabBarProps) {
         const isFocused = state.index === index;
         const IconComponent = TAB_ICONS[route.name] || Home;
         const label = TAB_LABELS[route.name] || route.name;
-        const iconColor = isFocused ? '#4a9eff' : '#999';
+        const iconColor = isFocused ? COLORS.primary : COLORS.inactive;
 
         const onPress = () => {
           const event = navigation.emit({
@@ -66,28 +77,21 @@ export default function TabBar(props: TabBarProps) {
             accessibilityLabel={label}
             style={[
               styles.tab,
-              {
-                backgroundColor: isFocused
-                  ? 'rgba(74, 158, 255, 0.2)'
-                  : 'transparent',
-              },
+              isFocused && styles.tabFocused,
             ]}
           >
-            <View style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }}>
-              <IconComponent
-                size={22}
-                color={iconColor}
-                strokeWidth={2}
-              />
-            </View>
+            <IconComponent
+              size={20}
+              color={iconColor}
+              strokeWidth={isFocused ? 2.5 : 2}
+            />
             <Text
               style={[
                 styles.tabLabel,
-                {
-                  color: iconColor,
-                  fontWeight: isFocused ? 'bold' : 'normal',
-                },
+                { color: iconColor },
+                isFocused && styles.tabLabelFocused,
               ]}
+              numberOfLines={1}
             >
               {label}
             </Text>
@@ -101,23 +105,30 @@ export default function TabBar(props: TabBarProps) {
 const styles = StyleSheet.create({
   tabBarContainer: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(13, 13, 26, 0.95)',
+    backgroundColor: COLORS.background,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-    height: 60,
-    paddingHorizontal: 5,
+    borderTopColor: COLORS.border,
+    paddingTop: 6,
+    paddingHorizontal: 4,
   },
   tab: {
     flex: 1,
+    minHeight: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingVertical: 6,
+    borderRadius: 10,
     marginHorizontal: 2,
-    gap: 4,
+  },
+  tabFocused: {
+    backgroundColor: COLORS.primaryBg,
   },
   tabLabel: {
     fontSize: 10,
+    marginTop: 2,
     textAlign: 'center',
+  },
+  tabLabelFocused: {
+    fontWeight: '600',
   },
 });

@@ -844,6 +844,62 @@ async def execute_bayit_tool(
     elif tool_name in ["localize_content", "backup_database", "restore_database", "find_duplicates", "upload_series", "upload_movies"]:
         return f"Tool '{tool_name}' is not yet implemented. Please use the execute_bash_script tool to run the corresponding script manually."
 
+    elif tool_name == "reapply_fixes":
+        import subprocess
+        from pathlib import Path
+
+        audit_id = tool_input.get("audit_id")
+        is_dry_run = tool_input.get("dry_run", False)
+
+        script_path = Path(__file__).parent.parent.parent.parent / "scripts" / "backend" / "reapply_fixes.sh"
+
+        if not script_path.exists():
+            return f"Script not found: {script_path}"
+
+        subprocess.run(["chmod", "+x", str(script_path)], check=False)
+
+        cmd = [str(script_path)]
+        if is_dry_run or dry_run:
+            cmd.append("--dry-run")
+        if audit_id:
+            cmd.extend(["--audit-id", audit_id])
+
+        if is_dry_run or dry_run:
+            return (
+                f"[DRY RUN] Would reapply fixes:\n"
+                f"Audit ID: {audit_id if audit_id else '(most recent)'}\n"
+                f"Command: {' '.join(cmd)}\n\n"
+                f"This will NOT use the LLM - it calls executor functions directly.\n"
+                f"To execute, set dry_run=false"
+            )
+
+        try:
+            logger.info(f"Executing reapply fixes: {' '.join(cmd)}")
+
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=600,  # 10 minutes max
+                cwd=script_path.parent
+            )
+
+            output = []
+            if result.stdout:
+                output.append(result.stdout)
+            if result.stderr:
+                output.append(result.stderr)
+
+            if result.returncode == 0:
+                return f"✓ Reapply fixes complete:\n\n" + "\n".join(output)
+            else:
+                return f"✖ Reapply fixes failed with exit code {result.returncode}:\n\n" + "\n".join(output)
+
+        except subprocess.TimeoutExpired:
+            return f"Reapply fixes timed out after 10 minutes"
+        except Exception as e:
+            return f"Error reapplying fixes: {str(e)}"
+
     else:
         raise ValueError(f"Unknown Bayit+ tool: {tool_name}")
 

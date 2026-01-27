@@ -31,11 +31,15 @@ export interface ModalButton {
   style?: 'default' | 'cancel' | 'destructive';
 }
 
+export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
+
 export interface GlassModalProps {
   /** Modal visibility */
   visible: boolean;
   /** Modal type for icon and color */
   type?: ModalType;
+  /** Modal size - controls max height and width */
+  size?: ModalSize;
   /** Modal title */
   title?: string;
   /** Modal message */
@@ -53,6 +57,28 @@ export interface GlassModalProps {
   /** Test ID for testing */
   testID?: string;
 }
+
+const getMaxHeightForSize = (size: ModalSize): number => {
+  const heights: Record<ModalSize, number> = {
+    sm: 300,
+    md: 500,
+    lg: 700,
+    xl: 850,
+    full: 950,
+  };
+  return heights[size];
+};
+
+const getMaxWidthForSize = (size: ModalSize): number | string => {
+  const widths: Record<ModalSize, number | string> = {
+    sm: 400,
+    md: 500,
+    lg: 700,
+    xl: 900,
+    full: '95%',
+  };
+  return widths[size];
+};
 
 const getIconForType = (type: ModalType): string => {
   const icons: Record<ModalType, string> = {
@@ -82,6 +108,7 @@ const getColorForType = (type: ModalType): string => {
 export const GlassModal: React.FC<GlassModalProps> = ({
   visible,
   type = 'info',
+  size = 'md',
   title,
   message,
   children,
@@ -94,6 +121,8 @@ export const GlassModal: React.FC<GlassModalProps> = ({
   const modalColor = getColorForType(type);
   const icon = getIconForType(type);
   const hasCustomContent = !!children;
+  const maxHeight = getMaxHeightForSize(size);
+  const maxWidth = getMaxWidthForSize(size);
 
   // Detect RTL from I18nManager or document direction (web)
   const isRTL =
@@ -190,9 +219,10 @@ export const GlassModal: React.FC<GlassModalProps> = ({
             </View>
           )}
           <ScrollView
-            className="max-h-[500px] w-full"
+            className="w-full"
+            style={{ maxHeight }}
             contentContainerStyle={{ padding: spacing.xl, width: '100%' }}
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
             keyboardShouldPersistTaps="handled"
           >
             {children}
@@ -278,13 +308,14 @@ export const GlassModal: React.FC<GlassModalProps> = ({
 
   // Platform-specific glass implementation
   const renderGlassContainer = () => {
+    const containerMaxWidth = hasCustomContent ? maxWidth : 440;
+
     if (Platform.OS === 'web') {
       return (
         <View
-          className={`w-full overflow-hidden border border-white/8 ${
-            hasCustomContent ? 'max-w-[600px]' : 'max-w-[440px]'
-          }`}
+          className="w-full overflow-hidden border border-white/8"
           style={{
+            maxWidth: containerMaxWidth,
             borderRadius: borderRadius.xl + 4,
             // @ts-expect-error Web-specific CSS properties
             backdropFilter: 'blur(24px) saturate(180%)',
@@ -301,10 +332,8 @@ export const GlassModal: React.FC<GlassModalProps> = ({
     return (
       <LinearGradient
         colors={['rgba(30, 30, 50, 0.95)', 'rgba(20, 20, 40, 0.98)']}
-        className={`w-full overflow-hidden border border-white/8 ${
-          hasCustomContent ? 'max-w-[600px]' : 'max-w-[440px]'
-        }`}
-        style={{ borderRadius: borderRadius.xl + 4 }}
+        className="w-full overflow-hidden border border-white/8"
+        style={{ maxWidth: containerMaxWidth, borderRadius: borderRadius.xl + 4 }}
       >
         <View className="h-[3px] w-full" style={{ backgroundColor: modalColor }} />
         {renderContent()}

@@ -29,6 +29,7 @@ class TriggerAuditRequest(BaseModel):
     opensubtitles_enabled: bool = False
     classify_only: bool = False
     remove_duplicates: bool = False
+    reapply_first: bool = True  # First try to reapply fixes from most recent audit (no LLM needed)
 
 
 class TriggerAuditResponse(BaseModel):
@@ -163,3 +164,27 @@ class ResolveDuplicatesRequest(BaseModel):
     action: str = "unpublish"
     reason: str = ""
     dry_run: bool = False
+
+
+class ReapplyFixesRequest(BaseModel):
+    """Request model for reapplying fixes from a completed audit."""
+
+    dry_run: bool = False
+    fix_types: List[str] = [
+        "titles",
+        "metadata",
+        "posters",
+        "subtitles",
+        "misclassifications",
+        "broken_streams",
+    ]
+
+
+class ReapplyFixesResponse(BaseModel):
+    """Response model for reapply fixes endpoint."""
+
+    fix_audit_id: str
+    source_audit_id: str
+    status: str
+    message: str
+    stats: Optional[dict] = None

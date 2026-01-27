@@ -41,7 +41,7 @@ export { GlassPlaceholder, type GlassPlaceholderProps } from './components/Glass
 export { GlassTabs, type GlassTabsProps, type Tab as GlassTabItem, type TabVariant } from './components/GlassTabs';
 
 // Feedback components
-export { GlassModal, type GlassModalProps, type ModalType } from './components/GlassModal';
+export { GlassModal, type GlassModalProps, type ModalType, type ModalSize } from './components/GlassModal';
 export { GlassTooltip, type GlassTooltipProps } from './components/GlassTooltip';
 export { GlassProgressBar, type GlassProgressBarProps, type ProgressSize, type ProgressVariant } from './components/GlassProgressBar';
 

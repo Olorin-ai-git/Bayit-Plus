@@ -61,17 +61,19 @@ export const GlassCard: React.FC<GlassCardProps> = ({
     <>
       {/* Image - only render when used as full card */}
       {isFullCard && (
-        imageUrl ? (
-          <Image
-            source={{ uri: imageUrl }}
-            style={[styles.image, { width, height: height * 0.65 }]}
-            resizeMode="cover"
-          />
-        ) : (
-          <View style={[styles.imagePlaceholder, { width, height: height * 0.65 }]}>
-            <Text style={styles.placeholderIcon}>🎬</Text>
-          </View>
-        )
+        <View style={[{ width, height: height * 0.65 }, { justifyContent: 'center', alignItems: 'center' }]}>
+          {imageUrl ? (
+            <Image
+              source={{ uri: imageUrl }}
+              style={[styles.image, { width: '100%', height: '100%' }]}
+              resizeMode="contain"
+            />
+          ) : (
+            <View style={[styles.imagePlaceholder, { width: '100%', height: '100%' }]}>
+              <Text style={styles.placeholderIcon}>🎬</Text>
+            </View>
+          )}
+        </View>
       )}
 
       {/* Badge */}
@@ -157,6 +159,7 @@ const styles = StyleSheet.create({
   image: {
     borderTopLeftRadius: borderRadius.lg,
     borderTopRightRadius: borderRadius.lg,
+    backgroundColor: colors.backgroundLighter,
   },
   imagePlaceholder: {
     backgroundColor: colors.backgroundLighter,
