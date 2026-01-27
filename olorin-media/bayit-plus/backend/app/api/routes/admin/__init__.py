@@ -12,6 +12,7 @@ from .auth import has_permission, log_audit, require_admin
 from .billing import router as billing_router
 from .campaigns import router as campaigns_router
 # Import all routers
+from .cost_dashboard import router as cost_dashboard_router
 from .dashboard import router as dashboard_router
 from .live_quota_analytics import router as live_quota_analytics_router
 from .live_quotas import router as live_quotas_router
@@ -31,6 +32,7 @@ router = APIRouter()
 
 # Include all sub-routers
 router.include_router(dashboard_router, tags=["admin-dashboard"])
+router.include_router(cost_dashboard_router, tags=["admin-costs"])
 router.include_router(users_router, tags=["admin-users"])
 router.include_router(campaigns_router, tags=["admin-campaigns"])
 router.include_router(billing_router, tags=["admin-billing"])

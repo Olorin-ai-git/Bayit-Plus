@@ -309,6 +309,118 @@ class MeteringConfig(BaseSettings):
         env_prefix = "METERING_"
 
 
+class InfrastructureConfig(BaseSettings):
+    """Infrastructure cost configuration (fallback when APIs unavailable)."""
+
+    gcp_monthly: float = Field(
+        default=2000.0,
+        ge=0.0,
+        description="Monthly GCP cost estimate (fallback)",
+    )
+    mongodb_monthly: float = Field(
+        default=500.0,
+        ge=0.0,
+        description="Monthly MongoDB Atlas cost estimate (fallback)",
+    )
+    firebase_monthly: float = Field(
+        default=300.0,
+        ge=0.0,
+        description="Monthly Firebase services cost",
+    )
+    sentry_monthly: float = Field(
+        default=100.0,
+        ge=0.0,
+        description="Monthly Sentry error tracking cost",
+    )
+    cdn_monthly: float = Field(
+        default=200.0,
+        ge=0.0,
+        description="Monthly CDN and load balancer cost",
+    )
+
+    class Config:
+        env_prefix = "INFRA_"
+
+
+class ThirdPartyCostConfig(BaseSettings):
+    """Third-party API cost configuration."""
+
+    stripe_transaction_fee_pct: float = Field(
+        default=2.9,
+        ge=0.0,
+        le=100.0,
+        description="Stripe transaction fee percentage",
+    )
+    stripe_transaction_fee_fixed: float = Field(
+        default=0.30,
+        ge=0.0,
+        description="Stripe fixed transaction fee in USD",
+    )
+    elevenlabs_overage_per_1k_chars: float = Field(
+        default=0.05,
+        ge=0.0,
+        description="ElevenLabs overage cost per 1000 characters",
+    )
+    tmdb_cost_per_request: float = Field(
+        default=0.0,
+        ge=0.0,
+        description="TMDB API cost per request (usually free tier)",
+    )
+    twilio_sms_cost: float = Field(
+        default=0.0075,
+        ge=0.0,
+        description="Twilio SMS cost per message",
+    )
+    sendgrid_monthly: float = Field(
+        default=0.0,
+        ge=0.0,
+        description="SendGrid monthly email service cost",
+    )
+
+    class Config:
+        env_prefix = "THIRDPARTY_"
+
+
+class CostAggregationConfig(BaseSettings):
+    """Cost aggregation job configuration."""
+
+    interval_minutes: int = Field(
+        default=60,
+        ge=1,
+        le=1440,
+        description="Cost aggregation interval in minutes (hourly = 60)",
+    )
+    hot_data_retention_days: int = Field(
+        default=90,
+        ge=1,
+        le=365,
+        description="Days to retain hourly data in hot storage (MongoDB)",
+    )
+    warm_data_retention_days: int = Field(
+        default=365,
+        ge=1,
+        le=1825,
+        description="Days to retain data in warm storage before archival",
+    )
+    archive_to_gcs_enabled: bool = Field(
+        default=True,
+        description="Enable archival of old data to GCS",
+    )
+    gcs_bucket_name: str = Field(
+        default="bayit-cost-archives",
+        description="GCS bucket for cost data archives",
+    )
+    cache_ttl_seconds: int = Field(
+        default=300,
+        ge=60,
+        le=3600,
+        description="Cost dashboard query cache TTL in seconds",
+    )
+
+    class Config:
+        env_prefix = "COST_"
+
+
 class ResilienceConfig(BaseSettings):
     """Circuit breaker and retry configuration for external services."""
 
@@ -473,6 +585,18 @@ class OlorinSettings(BaseSettings):
     metering: MeteringConfig = Field(
         default_factory=MeteringConfig,
         description="Cost and metering configuration",
+    )
+    infrastructure: InfrastructureConfig = Field(
+        default_factory=InfrastructureConfig,
+        description="Infrastructure cost configuration",
+    )
+    thirdparty: ThirdPartyCostConfig = Field(
+        default_factory=ThirdPartyCostConfig,
+        description="Third-party API cost configuration",
+    )
+    cost_aggregation: CostAggregationConfig = Field(
+        default_factory=CostAggregationConfig,
+        description="Cost aggregation job configuration",
     )
     resilience: ResilienceConfig = Field(
         default_factory=ResilienceConfig,

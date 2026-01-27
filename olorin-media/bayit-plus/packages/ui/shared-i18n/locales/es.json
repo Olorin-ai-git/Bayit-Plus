@@ -1828,6 +1828,7 @@
       "users": "Usuarios",
       "campaigns": "Campañas",
       "billing": "Facturación",
+      "costDashboard": "Panel de Costos",
       "billingOverview": "Resumen",
       "transactions": "Transacciones",
       "refunds": "Reembolsos",
@@ -1860,7 +1861,15 @@
       "count": "{{count}} elementos",
       "confirmUnfeature": "¿Quitar de destacado?",
       "remove": "Quitar",
-      "unsavedChanges": "Tienes cambios sin guardar"
+      "unsavedChanges": "Tienes cambios sin guardar",
+      "addContent": "Agregar Contenido",
+      "addContentToSection": "Agregar Contenido a {{section}}",
+      "selectContentToAdd": "Selecciona contenido para agregar",
+      "addSelected": "Agregar Seleccionados ({{count}})",
+      "noContentAvailable": "No hay contenido disponible",
+      "contentAdded": "Se agregaron {{count}} elementos",
+      "failedToAdd": "Error al agregar contenido",
+      "publishedOnly": "Publicado"
     },
     "recordings": {
       "title": "Gestión de Grabaciones",

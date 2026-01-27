@@ -770,6 +770,24 @@
         "moderator": "Moderatore",
         "user": "Utente"
       }
+    },
+    "featured": {
+      "title": "Contenuti in Evidenza",
+      "subtitle": "Gestisci l'ordine del carousel trascinando gli elementi",
+      "empty": "Nessun contenuto in evidenza",
+      "emptyHint": "Aggiungi contenuti in evidenza dalla Libreria dei Contenuti",
+      "count": "{{count}} elementi",
+      "confirmUnfeature": "Rimuovere da in evidenza?",
+      "remove": "Rimuovi",
+      "unsavedChanges": "Hai modifiche non salvate",
+      "addContent": "Aggiungi Contenuto",
+      "addContentToSection": "Aggiungi Contenuto a {{section}}",
+      "selectContentToAdd": "Seleziona il contenuto da aggiungere",
+      "addSelected": "Aggiungi Selezionati ({{count}})",
+      "noContentAvailable": "Nessun contenuto disponibile",
+      "contentAdded": "Aggiunti {{count}} elementi",
+      "failedToAdd": "Errore nell'aggiunta del contenuto",
+      "publishedOnly": "Pubblicato"
     }
   },
   "cultures": {

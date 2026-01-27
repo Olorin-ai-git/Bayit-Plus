@@ -1,11 +1,12 @@
-import { View, Text, StyleSheet, ScrollView, useMemo, useState, useCallback } from 'react-native'
+import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import { useMemo, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Star, AlertCircle, RefreshCw, Save } from 'lucide-react'
 import { GlassButton, GlassPageHeader } from '@bayit/shared/ui'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { useDirection } from '@/hooks/useDirection'
 import { useFeaturedData } from '@/hooks/admin/useFeaturedData'
-import FeaturedSectionsList from '@/components/admin/featured/FeaturedSectionsList'
+import FeaturedSectionCarousel from '@/components/admin/featured/FeaturedSectionCarousel'
 import AddContentModal from '@/components/admin/featured/AddContentModal'
 import AdminLoadingState from '@/components/admin/shared/AdminLoadingState'
 import AdminEmptyState from '@/components/admin/shared/AdminEmptyState'
@@ -129,13 +130,20 @@ export default function FeaturedManagementPage() {
             isRTL={isRTL}
           />
         ) : (
-          <FeaturedSectionsList
-            sections={sections}
-            onReorder={handleReorder}
-            onRemove={handleRemoveFromSection}
-            onAddContent={handleOpenAddModal}
-            isRTL={isRTL}
-          />
+          <ScrollView style={styles.sectionsContainer}>
+            {sections.map((section) => (
+              <FeaturedSectionCarousel
+                key={section.section_id}
+                sectionId={section.section_id}
+                sectionSlug={section.slug}
+                items={section.items}
+                onReorder={(fromIdx, toIdx) => handleReorder(section.section_id, fromIdx, toIdx)}
+                onRemove={(contentId) => handleRemoveFromSection(section.section_id, contentId)}
+                onAddContent={() => handleOpenAddModal(section.section_id)}
+                isRTL={isRTL}
+              />
+            ))}
+          </ScrollView>
         )}
 
         {/* Add Content Modal */}
@@ -160,6 +168,9 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing.lg,
+  },
+  sectionsContainer: {
+    flex: 1,
   },
   headerActions: {
     flexDirection: 'row',

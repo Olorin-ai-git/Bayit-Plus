@@ -1,6 +1,7 @@
 /**
  * AddContentModal - Add content items to featured sections
  * Modal for searching, filtering, and selecting content to add to featured sections
+ * Matches Glass design system and admin content page styling
  */
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
@@ -11,17 +12,16 @@ import {
   ScrollView,
   ActivityIndicator,
   Pressable,
+  Image,
 } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Search, Plus, X } from 'lucide-react'
+import { Search, Plus, Film } from 'lucide-react'
 import { GlassModal, GlassButton, GlassInput, GlassCheckbox } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
 import { useSelection } from '@/hooks/admin/useSelection'
 import { adminContentService, Content } from '@/services/adminApi'
 import logger from '@/utils/logger'
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
 
 interface AddContentModalProps {
   visible: boolean
@@ -231,9 +231,15 @@ export default function AddContentModal({
           </View>
         ) : filteredItems.length === 0 ? (
           <View style={styles.emptyContainer}>
+            <View style={styles.emptyIconContainer}>
+              <Film size={48} color={colors.textSecondary} />
+            </View>
             <Text style={styles.emptyText}>
               {searchQuery ? t('common.noResults') : t('admin.featured.noContentAvailable')}
             </Text>
+            {!searchQuery && (
+              <Text style={styles.emptySubtext}>{t('admin.featured.selectContentToAdd')}</Text>
+            )}
           </View>
         ) : (
           <ScrollView style={styles.contentList} contentContainerStyle={styles.contentGrid}>
@@ -253,15 +259,10 @@ export default function AddContentModal({
                   />
                 </View>
                 {item.thumbnail ? (
-                  <img
-                    src={item.thumbnail}
-                    alt={item.title}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      borderRadius: borderRadius.md,
-                    }}
+                  <Image
+                    source={{ uri: item.thumbnail }}
+                    style={styles.thumbnailImage}
+                    resizeMode="cover"
                   />
                 ) : (
                   <View style={styles.thumbnailPlaceholder}>
@@ -391,21 +392,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     minHeight: 300,
+    paddingVertical: spacing.xl,
   },
   loadingText: {
     fontSize: fontSize.sm,
     color: colors.textSecondary,
+    fontWeight: '500',
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingVertical: spacing.xl,
+    gap: spacing.md,
     minHeight: 300,
+  },
+  emptyIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: colors.primary.DEFAULT + '20',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.sm,
   },
   emptyText: {
     fontSize: fontSize.base,
+    fontWeight: '600',
+    color: colors.text,
+    textAlign: 'center',
+  },
+  emptySubtext: {
+    fontSize: fontSize.sm,
     color: colors.textSecondary,
     textAlign: 'center',
+    marginTop: spacing.xs,
   },
   contentList: {
     flex: 1,
@@ -437,9 +458,16 @@ const styles = StyleSheet.create({
     top: spacing.sm,
     right: spacing.sm,
     zIndex: 10,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: borderRadius.sm,
-    padding: spacing.xs,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    borderRadius: borderRadius.md,
+    padding: spacing.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  thumbnailImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: borderRadius.md,
   },
   thumbnailPlaceholder: {
     width: '100%',
@@ -468,7 +496,8 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     gap: spacing.md,
-    paddingTop: spacing.md,
+    paddingTop: spacing.lg,
+    marginTop: spacing.md,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
   },

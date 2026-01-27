@@ -120,6 +120,7 @@ const FeaturedManagementPage = lazy(() => import('./pages/admin/FeaturedManageme
 const UserLiveQuotaPage = lazy(() => import('./pages/admin/UserLiveQuotaPage'))
 const LiveUsageAnalyticsPage = lazy(() => import('./pages/admin/LiveUsageAnalyticsPage'))
 const TranslationDashboardPage = lazy(() => import('./pages/admin/TranslationDashboardPage'))
+const CostDashboardPage = lazy(() => import('./pages/admin/CostDashboardPage'))
 
 // Auth hydration guard wrapper
 const AppContent = () => {
@@ -166,6 +167,7 @@ const AppContent = () => {
         <Route path="campaigns/new" element={<CampaignEditPage />} />
         <Route path="campaigns/:campaignId" element={<CampaignEditPage />} />
         <Route path="subscriptions" element={<SubscriptionsListPage />} />
+        <Route path="costs" element={<CostDashboardPage />} />
         <Route path="billing" element={<BillingOverviewPage />} />
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="refunds" element={<RefundsPage />} />

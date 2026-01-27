@@ -351,6 +351,8 @@ class UnifiedSearchService:
                         {"title_en": {"$regex": f"^{escaped_query}", "$options": "i"}},
                         {"cast": {"$regex": escaped_query, "$options": "i"}},
                         {"director": {"$regex": escaped_query, "$options": "i"}},
+                        {"author": {"$regex": escaped_query, "$options": "i"}},
+                        {"narrator": {"$regex": escaped_query, "$options": "i"}},
                     ],
                 }
             )
@@ -490,6 +492,8 @@ class UnifiedSearchService:
             "genres": content.genres or [content.genre] if content.genre else [],
             "cast": content.cast,
             "director": content.director,
+            "author": content.author,
+            "narrator": content.narrator,
             "content_type": content.content_type,
             "is_series": content.is_series,
             "requires_subscription": content.requires_subscription,

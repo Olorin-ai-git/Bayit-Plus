@@ -340,17 +340,30 @@ async def get_featured_by_sections(
         .to_list()
     )
 
-    sections_data = []
+    # Group sections by slug to deduplicate (one carousel per slug)
+    sections_by_slug: dict[str, list] = {}
     for section in sections:
-        section_id = str(section.id)
+        if section.slug not in sections_by_slug:
+            sections_by_slug[section.slug] = []
+        sections_by_slug[section.slug].append(section)
 
-        # Fetch featured items for this section, ordered by featured_order
+    sections_data = []
+    for slug, slug_sections in sections_by_slug.items():
+        # Use first section's metadata, collect all section IDs for querying
+        primary_section = slug_sections[0]
+        all_section_ids = [str(s.id) for s in slug_sections]
+
+        # Build query to match featured content from ANY of these section IDs
+        or_conditions = [
+            {f"featured_order.{sid}": {"$exists": True}} for sid in all_section_ids
+        ]
+
         pipeline = [
             {
                 "$match": {
                     "is_featured": True,
                     "is_published": True,
-                    f"featured_order.{section_id}": {"$exists": True},
+                    "$or": or_conditions,
                 }
             },
             {
@@ -365,37 +378,57 @@ async def get_featured_by_sections(
                     "featured_order": 1,
                 }
             },
-            {"$sort": {f"featured_order.{section_id}": 1}},
-            {"$limit": 50},
+            {"$limit": 100},
         ]
 
         collection = Content.get_settings().pymongo_collection
         cursor = collection.aggregate(pipeline)
         items = await cursor.to_list(length=None)
 
-        section_items = [
-            {
-                "id": str(item["_id"]),
-                "title": item.get("title"),
-                "thumbnail": item.get("thumbnail"),
-                "year": item.get("year"),
-                "content_format": item.get("content_format"),
-                "is_series": item.get("is_series", False),
-                "duration": item.get("duration"),
-                "featured_order": item.get("featured_order", {}).get(section_id, 999),
-            }
-            for item in items
-        ]
+        # Deduplicate items and get best order from any section
+        seen_ids = set()
+        section_items = []
+        for item in items:
+            item_id = str(item["_id"])
+            if item_id in seen_ids:
+                continue
+            seen_ids.add(item_id)
+
+            # Get the lowest order from any of the section IDs
+            featured_order = item.get("featured_order", {})
+            best_order = min(
+                (featured_order.get(sid, 999) for sid in all_section_ids),
+                default=999,
+            )
+
+            section_items.append(
+                {
+                    "id": item_id,
+                    "title": item.get("title"),
+                    "thumbnail": item.get("thumbnail"),
+                    "year": item.get("year"),
+                    "content_format": item.get("content_format"),
+                    "is_series": item.get("is_series", False),
+                    "duration": item.get("duration"),
+                    "featured_order": best_order,
+                }
+            )
+
+        # Sort by featured_order
+        section_items.sort(key=lambda x: x["featured_order"])
 
         sections_data.append(
             {
-                "section_id": section_id,
-                "slug": section.slug,
-                "name_key": section.name_key,
-                "order": section.order,
+                "section_id": str(primary_section.id),
+                "slug": slug,
+                "name_key": primary_section.name_key,
+                "order": primary_section.order,
                 "item_count": len(section_items),
                 "items": section_items,
             }
         )
+
+    # Sort sections by order
+    sections_data.sort(key=lambda x: x["order"])
 
     return {"sections": sections_data}

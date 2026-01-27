@@ -12,6 +12,7 @@ from app.core.config import settings
 from app.models.admin import (AuditLog, Campaign, EmailCampaign,
                               PushNotification, Refund, SubscriptionPlan,
                               SystemSettings, Transaction)
+from app.models.cost_breakdown import CostBreakdown, UserCostBreakdown
 from app.models.chapters import VideoChapters
 from app.models.chat_translation import ChatTranslationCacheDoc
 from app.models.chess import ChessChatMessage, ChessGame
@@ -156,6 +157,9 @@ async def connect_to_mongo():
         PushNotification,
         SystemSettings,
         SubscriptionPlan,
+        # Cost tracking models
+        CostBreakdown,
+        UserCostBreakdown,
         # Security audit log
         SecurityAuditLog,
         # Widget models

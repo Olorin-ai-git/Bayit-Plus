@@ -693,6 +693,24 @@
         "moderator": "मॉडरेटर",
         "user": "उपयोगकर्ता"
       }
+    },
+    "featured": {
+      "title": "विशेष सामग्री",
+      "subtitle": "आइटम को ड्रैग करके कैरोसेल ऑर्डर प्रबंधित करें",
+      "empty": "कोई विशेष सामग्री नहीं",
+      "emptyHint": "कंटेंट लाइब्रेरी से विशेष सामग्री जोड़ें",
+      "count": "{{count}} आइटम",
+      "confirmUnfeature": "विशेष से हटाएं?",
+      "remove": "हटाएं",
+      "unsavedChanges": "आपके पास असहेजे गए परिवर्तन हैं",
+      "addContent": "सामग्री जोड़ें",
+      "addContentToSection": "{{section}} में सामग्री जोड़ें",
+      "selectContentToAdd": "जोड़ने के लिए सामग्री चुनें",
+      "addSelected": "चयनित जोड़ें ({{count}})",
+      "noContentAvailable": "कोई सामग्री उपलब्ध नहीं",
+      "contentAdded": "{{count}} आइटम जोड़े गए",
+      "failedToAdd": "सामग्री जोड़ना विफल",
+      "publishedOnly": "प्रकाशित"
     }
   },
   "cultureClock": {

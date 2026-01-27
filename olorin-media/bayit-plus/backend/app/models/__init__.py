@@ -1,6 +1,8 @@
 from app.models.content import (Content, ContentBase, ContentCreate,
                                 ContentResponse, EPGEntry, LiveChannel,
                                 Podcast, PodcastEpisode, RadioStation)
+from app.models.cost_breakdown import (CostBreakdown, CostMetrics, CostTotals,
+                                       RevenueBreakdown, UserCostBreakdown)
 from app.models.content_taxonomy import ContentSection
 from app.models.jerusalem_content import (JerusalemContentAggregatedResponse,
                                           JerusalemContentCategory,
