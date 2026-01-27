@@ -350,7 +350,7 @@ async def get_featured_by_sections(
                 "$match": {
                     "is_featured": True,
                     "is_published": True,
-                    "featured_order": {section_id: {"$exists": True}},
+                    f"featured_order.{section_id}": {"$exists": True},
                 }
             },
             {
@@ -362,7 +362,7 @@ async def get_featured_by_sections(
                     "content_format": 1,
                     "is_series": 1,
                     "duration": 1,
-                    "featured_order": {section_id: 1},
+                    "featured_order": 1,
                 }
             },
             {"$sort": {f"featured_order.{section_id}": 1}},
