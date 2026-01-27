@@ -7,6 +7,8 @@ import React from 'react'
 import { View, Text, Image, Pressable } from 'react-native'
 import { z } from 'zod'
 import { platformClass } from '@/utils/platformClass'
+import { NativeIcon } from '@olorin/shared-icons/native'
+import { colors } from '@olorin/design-tokens'
 
 /**
  * Zod schema for RecordingThumbnail props
@@ -40,7 +42,7 @@ export const RecordingThumbnail: React.FC<RecordingThumbnailProps> = ({
           'w-full h-[200px] bg-neutral-800 justify-center items-center',
           'w-full h-[200px] bg-neutral-800 justify-center items-center'
         )}>
-          <Text className={platformClass('text-5xl', 'text-5xl')}>🎬</Text>
+          <NativeIcon name="vod" size="xl" color={colors.textMuted} />
         </View>
       )}
       <View className={platformClass(

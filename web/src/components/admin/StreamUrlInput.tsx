@@ -3,6 +3,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, CheckCircle, Copy } from 'lucide-react';
 import { GlassView, GlassInput } from '@bayit/shared/ui';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 
@@ -95,10 +96,10 @@ export function StreamUrlInput({
 
   const getStreamTypeIcon = (type: string) => {
     switch (type) {
-      case 'hls': return '📺';
-      case 'dash': return '🎬';
-      case 'audio': return '🎵';
-      default: return '📡';
+      case 'hls': return 'live';
+      case 'dash': return 'vod';
+      case 'audio': return 'radio';
+      default: return 'live';
     }
   };
 
@@ -142,7 +143,11 @@ export function StreamUrlInput({
                   intensity={streamType === type ? 'high' : 'low'}
                   borderColor={streamType === type ? colors.primary : undefined}
                 >
-                  <Text style={styles.typeIcon}>{getStreamTypeIcon(type)}</Text>
+                  <NativeIcon
+                    name={getStreamTypeIcon(type)}
+                    size="sm"
+                    color={streamType === type ? colors.primary : colors.textMuted}
+                  />
                   <Text style={[
                     styles.typeText,
                     { color: streamType === type ? colors.primary : colors.textMuted },

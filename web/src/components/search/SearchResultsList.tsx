@@ -8,6 +8,7 @@
 import React, { memo, useCallback } from 'react';
 import { View, Text, Image, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
@@ -45,7 +46,7 @@ export const SearchResultsList = memo(function SearchResultsList({
           <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
         ) : (
           <View style={styles.placeholderThumbnail}>
-            <Text style={styles.placeholderIcon}>🎬</Text>
+            <NativeIcon name="vod" size="lg" color={colors.textMuted} />
           </View>
         )}
       </View>
@@ -65,7 +66,12 @@ export const SearchResultsList = memo(function SearchResultsList({
             <Text style={styles.metadataText}>{item.category_name}</Text>
           )}
           {item.year && <Text style={styles.metadataText}>{item.year}</Text>}
-          {item.rating && <Text style={styles.metadataText}>⭐ {item.rating}</Text>}
+          {item.rating && (
+            <View style={styles.ratingContainer}>
+              <NativeIcon name="star" size="xs" color={colors.warning} />
+              <Text style={styles.metadataText}>{item.rating}</Text>
+            </View>
+          )}
           {item.duration && <Text style={styles.metadataText}>{item.duration}</Text>}
         </View>
       </View>
@@ -163,6 +169,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 12,
+    alignItems: 'center',
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    gap: 4,
+    alignItems: 'center',
   },
   metadataText: {
     fontSize: 12,

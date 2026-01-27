@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native'
 import { ChevronRight, AlertCircle, CheckCircle, X, ChevronLeft } from 'lucide-react'
+import { NativeIcon } from '@olorin/shared-icons/native'
 import { GlassView, GlassButton, GlassCheckbox } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import type { FreeContentSources } from '../../types/content'
@@ -40,10 +41,10 @@ export function FreeContentImportWizard({ isOpen, onClose, onSuccess }: FreeCont
   const [progress, setProgress] = useState(0)
 
   const sourceTypes = [
-    { id: 'vod', label: 'Movies & VOD', description: 'Import classic films from archive.org', icon: '🎬' },
-    { id: 'live_tv', label: 'Live TV Channels', description: 'Import test streams from Apple BipBop', icon: '📺' },
-    { id: 'radio', label: 'Radio Stations', description: 'Import public radio streams', icon: '📻' },
-    { id: 'podcasts', label: 'Podcasts', description: 'Import public podcast feeds', icon: '🎙️' },
+    { id: 'vod', label: 'Movies & VOD', description: 'Import classic films from archive.org', icon: 'vod' },
+    { id: 'live_tv', label: 'Live TV Channels', description: 'Import test streams from Apple BipBop', icon: 'live' },
+    { id: 'radio', label: 'Radio Stations', description: 'Import public radio streams', icon: 'radio' },
+    { id: 'podcasts', label: 'Podcasts', description: 'Import public podcast feeds', icon: 'podcasts' },
   ]
 
   useEffect(() => {
@@ -200,7 +201,7 @@ export function FreeContentImportWizard({ isOpen, onClose, onSuccess }: FreeCont
                     style={styles.typeCard}
                   >
                     <View style={styles.typeCardHeader}>
-                      <Text style={styles.typeIcon}>{type.icon}</Text>
+                      <NativeIcon name={type.icon} size="lg" color={colors.primary} />
                       <ChevronRight size={20} color={colors.textMuted} />
                     </View>
                     <Text style={styles.typeLabel}>{type.label}</Text>

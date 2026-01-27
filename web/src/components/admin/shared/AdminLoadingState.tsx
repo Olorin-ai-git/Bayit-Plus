@@ -1,5 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native'
-import { GlassLoadingSpinner } from '@bayit/shared/ui'
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
 import { colors, spacing, fontSize } from '@olorin/design-tokens'
 
 interface AdminLoadingStateProps {
@@ -8,17 +7,17 @@ interface AdminLoadingStateProps {
 }
 
 export default function AdminLoadingState({
-  message,
+  message = 'Loading...',
   isRTL = false,
 }: AdminLoadingStateProps) {
   return (
     <View style={styles.container}>
-      <GlassLoadingSpinner size="large" />
-      {message && (
-        <Text style={[styles.message, { textAlign: isRTL ? 'right' : 'left' }]}>
-          {message}
-        </Text>
-      )}
+      <View style={styles.loadingSpinner}>
+        <ActivityIndicator size="small" color={colors.primary} />
+      </View>
+      <Text style={[styles.loadingText, { textAlign: isRTL ? 'right' : 'left' }]}>
+        {message}
+      </Text>
     </View>
   )
 }
@@ -30,9 +29,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: spacing.xl,
   },
-  message: {
-    fontSize: fontSize.md,
-    color: colors.text.secondary,
-    marginTop: spacing.lg,
+  loadingSpinner: {
+    marginBottom: spacing.md,
+  },
+  loadingText: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
   },
 })

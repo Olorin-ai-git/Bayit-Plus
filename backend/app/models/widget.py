@@ -34,6 +34,7 @@ class WidgetContentType(str, Enum):
     RADIO = "radio"  # Radio station
     LIVE = "live"  # Generic live content
     CUSTOM = "custom"  # Custom React component
+    AUDIOBOOK = "audiobook"  # Audiobook content
 
 
 class WidgetPosition(BaseModel):
@@ -58,6 +59,9 @@ class WidgetContent(BaseModel):
     podcast_id: Optional[str] = None
     content_id: Optional[str] = None  # Generic content ID for VOD
     station_id: Optional[str] = None
+
+    # For AUDIOBOOK type
+    audiobook_id: Optional[str] = None
 
     # For IFRAME type
     iframe_url: Optional[str] = None
