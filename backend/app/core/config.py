@@ -228,6 +228,50 @@ class Settings(BaseSettings):
             and self.AUDIBLE_REDIRECT_URI
         )
 
+    # Audible API Configuration (advanced - hardcoded URLs are safe, no env override needed)
+    AUDIBLE_API_BASE_URL: str = Field(
+        default="https://api.audible.com",
+        description="Base URL for Audible API (stable, rarely changes)"
+    )
+    AUDIBLE_AUTH_URL: str = Field(
+        default="https://www.audible.com/auth/oauth2",
+        description="Base URL for Audible OAuth (stable, rarely changes)"
+    )
+
+    # Audible HTTP Client Configuration
+    AUDIBLE_HTTP_TIMEOUT_SECONDS: int = Field(
+        default=30,
+        description="HTTP request timeout in seconds"
+    )
+    AUDIBLE_HTTP_CONNECT_TIMEOUT_SECONDS: int = Field(
+        default=10,
+        description="HTTP connection timeout in seconds"
+    )
+    AUDIBLE_HTTP_MAX_CONNECTIONS: int = Field(
+        default=5,
+        description="Maximum concurrent connections to Audible API"
+    )
+    AUDIBLE_HTTP_KEEPALIVE_CONNECTIONS: int = Field(
+        default=2,
+        description="Maximum keepalive connections to Audible API"
+    )
+
+    # Token Encryption Configuration
+    AUDIBLE_TOKEN_ENCRYPTION_KEY: str = Field(
+        default="",
+        description="Fernet encryption key for Audible tokens (base64-encoded, generated via cryptography.fernet.Fernet.generate_key())"
+    )
+
+    # Rate Limiting Configuration for Audible OAuth
+    AUDIBLE_RATE_LIMIT_PER_MINUTE: int = Field(
+        default=10,
+        description="Maximum OAuth callback attempts per minute per IP"
+    )
+    AUDIBLE_RATE_LIMIT_STORAGE: str = Field(
+        default="memory",
+        description="Rate limit storage backend: 'memory' or 'redis'"
+    )
+
     # ElevenLabs (speech-to-text and text-to-speech)
     ELEVENLABS_API_KEY: str = ""
     ELEVENLABS_WEBHOOK_SECRET: str = ""

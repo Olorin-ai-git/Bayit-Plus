@@ -11,7 +11,6 @@ in environment variables or secret manager. If not configured, endpoints
 return HTTP 503 Service Unavailable.
 """
 
-import secrets
 from datetime import datetime, timedelta
 from typing import List, Optional
 
@@ -24,6 +23,8 @@ from app.core.security import get_current_active_user
 from app.models.user import User
 from app.models.user_audible_account import UserAudibleAccount
 from app.services.audible_service import audible_service, AudibleAudiobook, AudibleAPIError
+from app.services.audible_oauth_helpers import generate_pkce_pair, generate_state_token
+from app.services.audible_state_manager import store_state_token, validate_state_token
 from app.api.dependencies.premium_features import (
     require_premium_or_family,
     require_audible_configured,
@@ -42,6 +43,14 @@ class AudibleOAuthCallback(BaseModel):
     """Audible OAuth callback with authorization code"""
     code: str
     state: str
+
+
+class AudibleOAuthUrlResponse(BaseModel):
+    """Response containing OAuth authorization URL and PKCE/state details"""
+    auth_url: str
+    state: str
+    code_challenge: str
+    code_challenge_method: str = "S256"
 
 
 class AudibleAudiobookResponse(BaseModel):
@@ -69,7 +78,7 @@ class AudibleConnectionResponse(BaseModel):
 router = APIRouter(prefix="/user/audible", tags=["audible_integration"])
 
 
-@router.post("/oauth/authorize")
+@router.post("/oauth/authorize", response_model=AudibleOAuthUrlResponse)
 async def get_audible_oauth_url(
     request: Request,
     req: AudibleOAuthRequest,
@@ -77,24 +86,50 @@ async def get_audible_oauth_url(
     _: bool = Depends(require_audible_configured),
 ):
     """
-    Generate Audible OAuth authorization URL.
+    Generate Audible OAuth authorization URL with PKCE support.
 
     **Premium Feature**: Requires Premium or Family subscription.
 
     Returns URL for user to authorize Bayit+ to access their Audible library.
+    Uses PKCE (Proof Key for Code Exchange) for enhanced security.
 
     Raises:
         HTTPException: 403 if user is not premium/family tier
         HTTPException: 503 if Audible integration is not configured
     """
-    state = secrets.token_urlsafe(32)  # CSRF protection token
+    try:
+        # Generate PKCE pair for authorization code flow
+        code_verifier, code_challenge = generate_pkce_pair()
 
-    oauth_url = await audible_service.get_oauth_url(state)
+        # Generate CSRF protection state token
+        state = generate_state_token()
 
-    return {
-        "auth_url": oauth_url,
-        "state": state,
-    }
+        # Store state token with PKCE pair for validation on callback
+        store_state_token(state, current_user.id, code_verifier, code_challenge)
+
+        # Get OAuth URL with PKCE code_challenge
+        oauth_url = await audible_service.get_oauth_url(state, code_challenge)
+
+        logger.info("Generated Audible OAuth authorization URL", extra={
+            "user_id": current_user.id,
+            "state": state[:10],
+        })
+
+        return AudibleOAuthUrlResponse(
+            auth_url=oauth_url,
+            state=state,
+            code_challenge=code_challenge,
+            code_challenge_method="S256",
+        )
+
+    except Exception as e:
+        logger.error(f"Failed to generate OAuth URL: {str(e)}", extra={
+            "user_id": current_user.id,
+        })
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="failed_to_generate_oauth_url",
+        )
 
 
 @router.post("/oauth/callback")
@@ -105,21 +140,36 @@ async def handle_audible_oauth_callback(
     _: bool = Depends(require_audible_configured),
 ):
     """
-    Handle Audible OAuth callback.
+    Handle Audible OAuth callback with PKCE validation.
 
     **Premium Feature**: Requires Premium or Family subscription.
 
-    Exchanges authorization code for access/refresh tokens.
+    Validates CSRF state token and exchanges authorization code for tokens.
     Stores encrypted tokens in database for future API calls.
 
     Raises:
         HTTPException: 403 if user is not premium/family tier
         HTTPException: 503 if Audible integration is not configured
-        HTTPException: 400 if token exchange fails
+        HTTPException: 400 if CSRF state validation fails or token exchange fails
     """
     user_id = current_user.id
+
     try:
-        token = await audible_service.exchange_code_for_token(callback.code)
+        # Validate CSRF state token and retrieve PKCE code_verifier
+        try:
+            code_verifier, code_challenge = validate_state_token(callback.state, user_id)
+        except ValueError as e:
+            logger.warning(f"CSRF state validation failed: {str(e)}", extra={
+                "user_id": user_id,
+                "state": callback.state[:10] if callback.state else None,
+            })
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="invalid_state_parameter",
+            )
+
+        # Exchange authorization code for tokens using PKCE
+        token = await audible_service.exchange_code_for_token(callback.code, code_verifier)
 
         existing = await UserAudibleAccount.find_one(
             UserAudibleAccount.user_id == user_id
@@ -130,6 +180,7 @@ async def handle_audible_oauth_callback(
             existing.access_token = token.access_token
             existing.refresh_token = token.refresh_token
             existing.expires_at = token.expires_at
+            existing.state_token = None  # Clear used state token
             existing.synced_at = datetime.utcnow()
             existing.last_sync_error = None
             await existing.save()
@@ -140,8 +191,14 @@ async def handle_audible_oauth_callback(
                 access_token=token.access_token,
                 refresh_token=token.refresh_token,
                 expires_at=token.expires_at,
+                state_token=None,
             )
             await audible_account.insert()
+
+        logger.info("Audible account connected", extra={
+            "user_id": user_id,
+            "audible_user_id": token.user_id,
+        })
 
         return {
             "status": "connected",
@@ -149,20 +206,25 @@ async def handle_audible_oauth_callback(
             "synced_at": datetime.utcnow().isoformat(),
         }
 
+    except HTTPException:
+        raise
     except AudibleAPIError as e:
-        logger.error(f"Audible API error during callback: {str(e)}", extra={
+        logger.error(f"Audible API error during callback", extra={
             "user_id": user_id,
-            "endpoint": "oauth/callback"
+            "endpoint": "oauth/callback",
+            "error_code": getattr(e, "code", "unknown"),
         })
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="audible_service_unavailable",
         )
     except Exception as e:
-        logger.error(f"Unexpected error during Audible callback: {str(e)}")
+        logger.error(f"Unexpected error during OAuth callback: {type(e).__name__}", extra={
+            "user_id": user_id,
+        })
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="audible_callback_failed",
+            detail="audible_oauth_failed",
         )
 
 
@@ -261,10 +323,12 @@ async def sync_audible_library(
             account.expires_at = token.expires_at
             await account.save()
         except AudibleAPIError as e:
-            error_msg = f"Token refresh failed: {str(e)}"
-            account.last_sync_error = error_msg
+            account.last_sync_error = "Token refresh failed"
             await account.save()
-            logger.error(error_msg, extra={"user_id": user_id})
+            logger.error("Token refresh failed during sync", extra={
+                "user_id": user_id,
+                "error_type": type(e).__name__,
+            })
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="audible_service_unavailable",
@@ -291,10 +355,12 @@ async def sync_audible_library(
         }
 
     except AudibleAPIError as e:
-        error_msg = f"Sync failed: {str(e)}"
-        account.last_sync_error = error_msg
+        account.last_sync_error = "Sync failed"
         await account.save()
-        logger.error(error_msg, extra={"user_id": user_id})
+        logger.error("Library sync failed", extra={
+            "user_id": user_id,
+            "error_type": type(e).__name__,
+        })
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="audible_service_unavailable",
@@ -336,7 +402,10 @@ async def get_audible_library(
                 account.expires_at = token.expires_at
                 await account.save()
             except AudibleAPIError as e:
-                logger.error(f"Token refresh failed: {str(e)}", extra={"user_id": user_id})
+                logger.error("Token refresh failed when fetching library", extra={
+                    "user_id": user_id,
+                    "error_type": type(e).__name__,
+                })
                 raise HTTPException(
                     status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                     detail="audible_service_unavailable",
@@ -393,9 +462,10 @@ async def search_audible_catalog(
         ]
 
     except AudibleAPIError as e:
-        logger.error(f"Search failed: {str(e)}", extra={
+        logger.error("Audible catalog search failed", extra={
             "query": q,
-            "user_id": current_user.id
+            "user_id": current_user.id,
+            "error_type": type(e).__name__,
         })
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -429,9 +499,10 @@ async def get_audible_audiobook_details(
         return AudibleAudiobookResponse(**audiobook.dict())
 
     except AudibleAPIError as e:
-        logger.error(f"Failed to fetch details: {str(e)}", extra={
+        logger.error("Failed to fetch audiobook details", extra={
             "asin": asin,
-            "user_id": current_user.id
+            "user_id": current_user.id,
+            "error_type": type(e).__name__,
         })
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -470,7 +541,12 @@ async def get_audible_play_url(
         }
 
     except Exception as e:
+        logger.error("Failed to generate play URL", extra={
+            "asin": asin,
+            "user_id": current_user.id,
+            "error_type": type(e).__name__,
+        })
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to generate play URL: {str(e)}",
+            detail="failed_to_generate_play_url",
         )

@@ -83,6 +83,7 @@ from app.services.mcp_content_discovery import ContentDiscoveryQueue
 from app.models.migration import MigrationRecord, RollbackData
 # NLP models
 from app.models.nlp_session import NLPConversationSession
+from app.models.user_audible_account import UserAudibleAccount
 
 
 class Database:
@@ -241,6 +242,8 @@ async def connect_to_mongo():
         RollbackData,
         # NLP conversation session models
         NLPConversationSession,
+        # Audible OAuth integration models
+        UserAudibleAccount,
     ]
 
     # Conditionally add Olorin models based on database separation setting
