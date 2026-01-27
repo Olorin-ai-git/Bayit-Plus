@@ -82,8 +82,8 @@ export default function AudiobookFormModal({ audiobook, visible, onClose, onSave
           </ScrollView>
 
           <View style={styles.footer}>
-            <GlassButton variant="secondary" onPress={onClose}>{t('common.cancel', 'Cancel')}</GlassButton>
-            <GlassButton variant="primary" onPress={handleSave} disabled={isLoading}>{isLoading ? t('common.saving', 'Saving...') : t('common.save', 'Save')}</GlassButton>
+            <GlassButton variant="secondary" title={t('common.cancel', 'Cancel')} onPress={onClose} />
+            <GlassButton variant="primary" title={isLoading ? t('common.saving', 'Saving...') : t('common.save', 'Save')} onPress={handleSave} disabled={isLoading} />
           </View>
         </View>
       </View>
@@ -92,8 +92,8 @@ export default function AudiobookFormModal({ audiobook, visible, onClose, onSave
 }
 
 const styles = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: spacing.lg },
-  modal: { backgroundColor: colors.background, borderRadius: borderRadius.lg, width: '100%', maxWidth: 600, maxHeight: '90%', flexDirection: 'column' },
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', padding: spacing.lg },
+  modal: { backgroundColor: 'rgba(15, 15, 25, 0.98)', borderRadius: borderRadius.lg, width: '100%', maxWidth: 600, maxHeight: '90%', flexDirection: 'column', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.1)' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: spacing.lg, borderBottomWidth: 1, borderBottomColor: `${colors.border}33` },
   title: { fontSize: 18, fontWeight: '600', color: colors.text },
   errorBanner: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, marginHorizontal: spacing.lg, marginTop: spacing.md, backgroundColor: 'rgba(239,68,68,0.1)', borderRadius: borderRadius.md, borderWidth: 1, borderColor: 'rgba(239,68,68,0.3)' },
