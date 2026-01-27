@@ -275,6 +275,15 @@ class User(Document):
                     else None
                 ),
             }
+        elif self.is_admin_user():
+            # Admin users get full access without explicit subscription
+            subscription = {
+                "id": None,
+                "plan": "admin",
+                "status": "active",
+                "start_date": None,
+                "end_date": None,
+            }
         return UserResponse(
             id=str(self.id),
             email=self.email,
@@ -304,6 +313,15 @@ class User(Document):
                     if self.subscription_end_date
                     else None
                 ),
+            }
+        elif self.is_admin_user():
+            # Admin users get full access without explicit subscription
+            subscription = {
+                "id": None,
+                "plan": "admin",
+                "status": "active",
+                "start_date": None,
+                "end_date": None,
             }
         return UserAdminResponse(
             id=str(self.id),
