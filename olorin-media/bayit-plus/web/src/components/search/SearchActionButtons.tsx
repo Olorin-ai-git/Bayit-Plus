@@ -9,6 +9,7 @@ import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import { VoiceSearchButton } from '../../../../shared/components/VoiceSearchButton';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 // Platform-specific touch target sizes
@@ -72,7 +73,7 @@ export function SearchActionButtons({
           accessibilityLabel={t('search.controls.llmSearch')}
           accessibilityHint={t('search.controls.hints.llmSearch')}
         >
-          <Text style={styles.buttonIcon}>✨</Text>
+          <NativeIcon name="star" size="sm" color={colors.warning} />
         </GlassButton>
       )}
 
@@ -91,7 +92,7 @@ export function SearchActionButtons({
           accessibilityLabel={t('search.controls.filters')}
           accessibilityHint={t('search.controls.hints.filters')}
         >
-          <Text style={styles.buttonIcon}>⚙️</Text>
+          <NativeIcon name="settings" size="sm" color={colors.textMuted} />
         </GlassButton>
       )}
     </View>

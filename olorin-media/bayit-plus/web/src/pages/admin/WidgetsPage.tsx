@@ -8,7 +8,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Plus, Edit, Trash2, X, AlertCircle, Eye, EyeOff, Tv, Globe, Film, Podcast, Radio } from 'lucide-react';
+import { Plus, Edit, Trash2, X, AlertCircle, Eye, EyeOff, Tv, Globe, Film, Podcast, Radio, Headphones } from 'lucide-react';
 import { GlassButton, GlassCard, GlassPageHeader } from '@bayit/shared/ui';
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web';
@@ -159,6 +159,7 @@ export default function WidgetsPage() {
           vod: { icon: <Film size={14} color={colors.info} />, label: t('admin.widgets.contentTypes.vod') },
           podcast: { icon: <Podcast size={14} color={colors.success} />, label: t('admin.widgets.contentTypes.podcast') },
           radio: { icon: <Radio size={14} color={colors.warning} />, label: t('admin.widgets.contentTypes.radio') },
+          audiobook: { icon: <Headphones size={14} color="#f97316" />, label: t('admin.widgets.contentTypes.audiobook') },
           iframe: { icon: <Globe size={14} color={colors.secondary} />, label: t('admin.widgets.contentTypes.iframe') },
         };
 

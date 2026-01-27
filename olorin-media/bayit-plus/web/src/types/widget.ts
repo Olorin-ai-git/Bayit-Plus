@@ -7,7 +7,7 @@
 
 export type WidgetType = 'system' | 'personal';
 
-export type WidgetContentType = 'live_channel' | 'iframe' | 'podcast' | 'vod' | 'radio' | 'live' | 'custom';
+export type WidgetContentType = 'live_channel' | 'iframe' | 'podcast' | 'vod' | 'radio' | 'live' | 'custom' | 'audiobook';
 
 export interface WidgetPosition {
   x: number;
@@ -23,6 +23,7 @@ export interface WidgetContent {
   podcast_id?: string | null;
   content_id?: string | null;
   station_id?: string | null;
+  audiobook_id?: string | null;
   iframe_url?: string | null;
   iframe_title?: string | null;
   component_name?: string | null;  // For custom React components
@@ -156,6 +157,7 @@ export function formDataToCreateRequest(data: WidgetFormData): WidgetCreateReque
       podcast_id: data.content_type === 'podcast' ? data.content_id : null,
       content_id: data.content_type === 'vod' ? data.content_id : null,
       station_id: data.content_type === 'radio' ? data.content_id : null,
+      audiobook_id: data.content_type === 'audiobook' ? data.content_id : null,
       iframe_url: data.content_type === 'iframe' ? data.iframe_url : null,
       iframe_title: data.content_type === 'iframe' ? data.iframe_title : null,
     },

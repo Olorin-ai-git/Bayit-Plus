@@ -1,6 +1,8 @@
 import React from 'react'
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native'
 import { Clock, Info } from 'lucide-react'
+import { NativeIcon } from '@olorin/shared-icons/native'
+import { colors } from '@olorin/design-tokens'
 import { EPGProgram } from '@/services/epgApi'
 import { DateTime } from 'luxon'
 
@@ -48,7 +50,7 @@ const EPGProgramCard: React.FC<EPGProgramCardProps> = ({
         />
       ) : (
         <View style={styles.thumbnailPlaceholder}>
-          <Text style={styles.thumbnailEmoji}>📺</Text>
+          <NativeIcon name="live" size="lg" color={colors.textMuted} />
         </View>
       )}
 

@@ -11,6 +11,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
 interface SearchEmptyStateProps {
@@ -39,7 +40,7 @@ export function SearchEmptyState({
   if (error) {
     return (
       <View style={styles.container}>
-        <Text style={styles.icon}>⚠️</Text>
+        <NativeIcon name="alert" size="lg" color={colors.error} />
         <Text style={styles.title}>{t('search.errors.somethingWrong')}</Text>
         <Text style={styles.message}>{error}</Text>
         {onRetry && (
@@ -60,7 +61,7 @@ export function SearchEmptyState({
   if (query) {
     return (
       <View style={styles.container}>
-        <Text style={styles.icon}>🔍</Text>
+        <NativeIcon name="search" size="lg" color={colors.textMuted} />
         <Text style={styles.title}>{t('search.empty.noResults')}</Text>
         <Text style={styles.message}>
           {t('search.empty.noResultsMessage', { query })}
@@ -91,7 +92,7 @@ export function SearchEmptyState({
   // No query yet (should show SearchSuggestionsPanel instead)
   return (
     <View style={styles.container}>
-      <Text style={styles.icon}>🎬</Text>
+      <NativeIcon name="vod" size="lg" color={colors.textMuted} />
       <Text style={styles.title}>{t('search.empty.startSearching')}</Text>
       <Text style={styles.message}>
         {t('search.empty.startSearchingMessage')}
