@@ -7,7 +7,7 @@ export default defineConfig([
       'native/index': 'src/native/index.ts',
     },
     format: ['cjs', 'esm'],
-    dts: true,
+    dts: false,
     clean: true,
     sourcemap: true,
     splitting: false,

@@ -50,7 +50,9 @@
       "@olorin/shared-services": ["../packages/ui/shared-services/src"],
       "@olorin/shared-services/*": ["../packages/ui/shared-services/src/*"],
       "@olorin/shared-stores": ["../packages/ui/shared-stores/src"],
-      "@olorin/shared-stores/*": ["../packages/ui/shared-stores/src/*"]
+      "@olorin/shared-stores/*": ["../packages/ui/shared-stores/src/*"],
+      "@olorin/glass-ui": ["../packages/ui/glass-components/dist"],
+      "@olorin/glass-ui/*": ["../packages/ui/glass-components/dist/*"]
     }
   },
   "include": ["src/**/*"],

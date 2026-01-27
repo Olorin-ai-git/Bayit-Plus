@@ -18,7 +18,7 @@ import {
 } from '@bayit/shared';
 import { useCultureStore } from '@bayit/shared-contexts/CultureContext';
 import {
-  GlassLiveChannelCard,
+  GlassCard,
   GlassCheckbox,
   GlassPageHeader,
   HeroCarouselSkeleton,
@@ -401,11 +401,9 @@ export default function HomePage() {
                 isRTL={isRTL}
                 style={styles.liveCardWrapper}
               >
-                <GlassLiveChannelCard
-                  channel={channel}
-                  liveLabel={t('common.live')}
-                  onPress={() => navigate(`/live/${channel.id}`)}
-                />
+                <Pressable onPress={() => navigate(`/live/${channel.id}`)}>
+                  <GlassCard title={channel.name} />
+                </Pressable>
               </AnimatedCard>
             ))}
           </ScrollView>

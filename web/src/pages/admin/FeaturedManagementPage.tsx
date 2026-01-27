@@ -1,12 +1,11 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Star, AlertCircle, RefreshCw, Save } from 'lucide-react'
-import { GlassReorderableList, GlassButton, GlassPageHeader } from '@bayit/shared/ui'
+import { GlassButton, GlassPageHeader } from '@bayit/shared/ui'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { useDirection } from '@/hooks/useDirection'
 import { useFeaturedData } from '@/hooks/admin/useFeaturedData'
-import FeaturedItemCard from '@/components/admin/featured/FeaturedItemCard'
-import FeaturedFilters from '@/components/admin/featured/FeaturedFilters'
+import FeaturedSectionsList from '@/components/admin/featured/FeaturedSectionsList'
 import AdminLoadingState from '@/components/admin/shared/AdminLoadingState'
 import AdminEmptyState from '@/components/admin/shared/AdminEmptyState'
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
@@ -16,22 +15,23 @@ export default function FeaturedManagementPage() {
   const { isRTL } = useDirection()
 
   const {
-    filteredItems,
+    sections,
     isLoading,
     isSaving,
     error,
-    filterType,
-    hasChanges,
-    setFilterType,
+    hasAnyChanges,
+    changedSectionCount,
     setError,
     handleReorder,
-    handleSaveOrder,
-    handleRemoveFromFeatured,
+    handleRemoveFromSection,
+    handleSaveAllSections,
     refresh,
   } = useFeaturedData()
 
   const pageConfig = ADMIN_PAGE_CONFIG.featured
   const IconComponent = pageConfig.icon
+
+  const totalItems = sections.reduce((sum, s) => sum + s.items.length, 0)
 
   return (
     <ScrollView style={styles.container}>
@@ -43,7 +43,7 @@ export default function FeaturedManagementPage() {
           icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
           iconColor={pageConfig.iconColor}
           iconBackgroundColor={pageConfig.iconBackgroundColor}
-          badge={filteredItems.length}
+          badge={totalItems}
           isRTL={isRTL}
           action={
             <View style={[styles.headerActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -54,10 +54,10 @@ export default function FeaturedManagementPage() {
                 icon={<RefreshCw size={20} />}
                 disabled={isLoading}
               />
-              {hasChanges && (
+              {hasAnyChanges && (
                 <GlassButton
-                  title={t('common.save')}
-                  onPress={handleSaveOrder}
+                  title={t('admin.featured.saveButton', { count: changedSectionCount })}
+                  onPress={handleSaveAllSections}
                   variant="primary"
                   icon={<Save size={18} />}
                   loading={isSaving}
@@ -68,20 +68,12 @@ export default function FeaturedManagementPage() {
         />
 
         {/* Unsaved Changes Warning */}
-        {hasChanges && (
+        {hasAnyChanges && (
           <View style={styles.warningBanner}>
             <AlertCircle size={18} color={colors.warning.DEFAULT} />
             <Text style={styles.warningText}>{t('admin.featured.unsavedChanges')}</Text>
           </View>
         )}
-
-        {/* Filters */}
-        <FeaturedFilters
-          filterType={filterType}
-          itemCount={filteredItems.length}
-          onFilterChange={setFilterType}
-          isRTL={isRTL}
-        />
 
         {/* Error Message */}
         {error && (
@@ -100,7 +92,7 @@ export default function FeaturedManagementPage() {
         {/* Content List */}
         {isLoading ? (
           <AdminLoadingState message={t('common.loading')} isRTL={isRTL} />
-        ) : filteredItems.length === 0 ? (
+        ) : sections.length === 0 || totalItems === 0 ? (
           <AdminEmptyState
             icon={<Star size={48} color={colors.textSecondary} />}
             title={t('admin.featured.empty')}
@@ -108,20 +100,11 @@ export default function FeaturedManagementPage() {
             isRTL={isRTL}
           />
         ) : (
-          <GlassReorderableList
-            items={filteredItems}
+          <FeaturedSectionsList
+            sections={sections}
             onReorder={handleReorder}
-            renderItem={(item, index, isDragging) => (
-              <FeaturedItemCard
-                item={item}
-                index={index}
-                isDragging={isDragging}
-                onRemove={handleRemoveFromFeatured}
-                isRTL={isRTL}
-              />
-            )}
-            keyExtractor={(item) => item.id}
-            style={styles.list}
+            onRemove={handleRemoveFromSection}
+            isRTL={isRTL}
           />
         )}
       </View>
@@ -170,8 +153,5 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: fontSize.sm,
     color: colors.error.DEFAULT,
-  },
-  list: {
-    gap: spacing.md,
   },
 })

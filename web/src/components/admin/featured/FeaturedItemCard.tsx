@@ -11,6 +11,7 @@ interface FeaturedItemCardProps {
   isDragging: boolean
   onRemove: (item: Content) => void
   isRTL: boolean
+  showOrderNumber?: boolean
 }
 
 export default function FeaturedItemCard({
@@ -19,6 +20,7 @@ export default function FeaturedItemCard({
   isDragging,
   onRemove,
   isRTL,
+  showOrderNumber = true,
 }: FeaturedItemCardProps) {
   const { t } = useTranslation()
 

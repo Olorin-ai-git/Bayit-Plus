@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.models.admin import Permission
 from app.models.content import Content
+from app.models.content_taxonomy import ContentSection
 from app.models.subtitles import SubtitleTrackDoc
 from app.models.user import User
 
@@ -322,3 +323,79 @@ async def get_series_episodes(
             for ep in episodes
         ],
     }
+
+
+@router.get("/featured-by-sections")
+async def get_featured_by_sections(
+    current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
+):
+    """Get featured content grouped by sections for admin management."""
+    # Get all active homepage sections
+    sections = await (
+        ContentSection.find(
+            ContentSection.is_active == True,
+            ContentSection.show_on_homepage == True,
+        )
+        .sort("+order")
+        .to_list()
+    )
+
+    sections_data = []
+    for section in sections:
+        section_id = str(section.id)
+
+        # Fetch featured items for this section, ordered by featured_order
+        pipeline = [
+            {
+                "$match": {
+                    "is_featured": True,
+                    "is_published": True,
+                    "featured_order": {section_id: {"$exists": True}},
+                }
+            },
+            {
+                "$project": {
+                    "_id": 1,
+                    "title": 1,
+                    "thumbnail": 1,
+                    "year": 1,
+                    "content_format": 1,
+                    "is_series": 1,
+                    "duration": 1,
+                    "featured_order": {section_id: 1},
+                }
+            },
+            {"$sort": {f"featured_order.{section_id}": 1}},
+            {"$limit": 50},
+        ]
+
+        collection = Content.get_settings().pymongo_collection
+        cursor = collection.aggregate(pipeline)
+        items = await cursor.to_list(length=None)
+
+        section_items = [
+            {
+                "id": str(item["_id"]),
+                "title": item.get("title"),
+                "thumbnail": item.get("thumbnail"),
+                "year": item.get("year"),
+                "content_format": item.get("content_format"),
+                "is_series": item.get("is_series", False),
+                "duration": item.get("duration"),
+                "featured_order": item.get("featured_order", {}).get(section_id, 999),
+            }
+            for item in items
+        ]
+
+        sections_data.append(
+            {
+                "section_id": section_id,
+                "slug": section.slug,
+                "name_key": section.name_key,
+                "order": section.order,
+                "item_count": len(section_items),
+                "items": section_items,
+            }
+        )
+
+    return {"sections": sections_data}

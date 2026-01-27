@@ -154,6 +154,7 @@ class Content(Document):
     # Visibility
     is_published: bool = True
     is_featured: bool = False
+    featured_order: Dict[str, int] = Field(default_factory=dict)  # {section_id: order}
     requires_subscription: str = "basic"  # basic, premium, family, none
     # Content access visibility mode:
     # - "public": Visible to all users (default)
@@ -253,6 +254,8 @@ class Content(Document):
             ("genre_ids", "is_published"),
             # Core indexes
             "is_featured",
+            "featured_order",
+            ("is_featured", "featured_order"),
             "is_published",
             "is_series",
             "series_id",
