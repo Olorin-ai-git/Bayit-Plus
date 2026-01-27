@@ -55,18 +55,18 @@ export const STATUS_COLORS: Record<string, string> = {
   // General statuses
   active: colors.success.DEFAULT,
   inactive: colors.textMuted,
-  pending: colors.warning,
+  pending: colors.warning.DEFAULT,
 
   // Campaign statuses
   draft: colors.textMuted,
-  scheduled: colors.warning,
+  scheduled: colors.warning.DEFAULT,
   ended: colors.error.DEFAULT,
-  paused: colors.secondary,
+  paused: colors.secondary.DEFAULT,
 
   // Transaction statuses
   completed: colors.success.DEFAULT,
   failed: colors.error.DEFAULT,
-  refunded: colors.warning,
+  refunded: colors.warning.DEFAULT,
 
   // Refund statuses
   approved: colors.success.DEFAULT,
@@ -74,7 +74,7 @@ export const STATUS_COLORS: Record<string, string> = {
   rejected: colors.error.DEFAULT,
 
   // Marketing statuses
-  sending: colors.warning,
+  sending: colors.warning.DEFAULT,
   sent: colors.success.DEFAULT,
 };
 
@@ -97,10 +97,10 @@ export const ROLE_LABELS: Record<string, string> = {
 
 export const ROLE_COLORS: Record<string, string> = {
   super_admin: colors.error.DEFAULT,
-  admin: colors.warning,
+  admin: colors.warning.DEFAULT,
   content_manager: colors.primary.DEFAULT,
   billing_admin: colors.success.DEFAULT,
-  support: colors.secondary,
+  support: colors.secondary.DEFAULT,
   user: colors.textMuted,
 };
 
@@ -118,7 +118,7 @@ export const getRoleColor = (role: string): string => {
 
 export const PLAN_COLORS: Record<string, string> = {
   free: colors.textMuted,
-  basic: colors.secondary,
+  basic: colors.secondary.DEFAULT,
   premium: colors.primary.DEFAULT,
   family: colors.success.DEFAULT,
 };
@@ -207,8 +207,8 @@ export const ADMIN_PAGE_CONFIG: Record<string, AdminPageConfig> = {
   },
   'marketing-dashboard': {
     icon: TrendingUp,
-    iconColor: colors.secondary,
-    iconBackgroundColor: `${colors.secondary}26`,
+    iconColor: colors.secondary.DEFAULT,
+    iconBackgroundColor: `${colors.secondary.DEFAULT}26`,
     category: 'marketing',
   },
 
@@ -233,8 +233,8 @@ export const ADMIN_PAGE_CONFIG: Record<string, AdminPageConfig> = {
   },
   featured: {
     icon: Star,
-    iconColor: colors.warning,
-    iconBackgroundColor: `${colors.warning}26`,
+    iconColor: colors.warning.DEFAULT,
+    iconBackgroundColor: `${colors.warning.DEFAULT}26`,
     category: 'content',
   },
   'live-channels': {
@@ -283,14 +283,14 @@ export const ADMIN_PAGE_CONFIG: Record<string, AdminPageConfig> = {
   },
   plans: {
     icon: Layers,
-    iconColor: colors.warning,
-    iconBackgroundColor: `${colors.warning}26`,
+    iconColor: colors.warning.DEFAULT,
+    iconBackgroundColor: `${colors.warning.DEFAULT}26`,
     category: 'users',
   },
   recordings: {
     icon: Video,
-    iconColor: colors.secondary,
-    iconBackgroundColor: `${colors.secondary}26`,
+    iconColor: colors.secondary.DEFAULT,
+    iconBackgroundColor: `${colors.secondary.DEFAULT}26`,
     category: 'users',
   },
 
@@ -303,8 +303,8 @@ export const ADMIN_PAGE_CONFIG: Record<string, AdminPageConfig> = {
   },
   refunds: {
     icon: RefreshCcw,
-    iconColor: colors.warning,
-    iconBackgroundColor: `${colors.warning}26`,
+    iconColor: colors.warning.DEFAULT,
+    iconBackgroundColor: `${colors.warning.DEFAULT}26`,
     category: 'financial',
   },
   'audit-logs': {
@@ -317,26 +317,26 @@ export const ADMIN_PAGE_CONFIG: Record<string, AdminPageConfig> = {
   // Marketing & Communications (4 pages)
   notifications: {
     icon: Bell,
-    iconColor: colors.secondary,
-    iconBackgroundColor: `${colors.secondary}26`,
+    iconColor: colors.secondary.DEFAULT,
+    iconBackgroundColor: `${colors.secondary.DEFAULT}26`,
     category: 'marketing',
   },
   'email-campaigns': {
     icon: Mail,
-    iconColor: colors.secondary,
-    iconBackgroundColor: `${colors.secondary}26`,
+    iconColor: colors.secondary.DEFAULT,
+    iconBackgroundColor: `${colors.secondary.DEFAULT}26`,
     category: 'marketing',
   },
   campaigns: {
     icon: Megaphone,
-    iconColor: colors.secondary,
-    iconBackgroundColor: `${colors.secondary}26`,
+    iconColor: colors.secondary.DEFAULT,
+    iconBackgroundColor: `${colors.secondary.DEFAULT}26`,
     category: 'marketing',
   },
   'campaign-edit': {
     icon: Edit3,
-    iconColor: colors.secondary,
-    iconBackgroundColor: `${colors.secondary}26`,
+    iconColor: colors.secondary.DEFAULT,
+    iconBackgroundColor: `${colors.secondary.DEFAULT}26`,
     category: 'marketing',
   },
 

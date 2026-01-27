@@ -1,12 +1,9 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import axios from 'axios'
 import { useNotifications } from '@olorin/glass-ui/hooks'
 import { adminContentService, Content } from '@/services/adminApi'
-import { useAuthStore } from '@/stores/authStore'
+import api from '@/services/api'
 import logger from '@/utils/logger'
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
 
 interface SectionFeaturedState {
   section_id: string
@@ -30,7 +27,6 @@ interface FeaturedSection {
 export function useFeaturedData() {
   const { t } = useTranslation()
   const notifications = useNotifications()
-  const token = useAuthStore((state) => state.token)
 
   const [sections, setSections] = useState<SectionFeaturedState[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -41,11 +37,8 @@ export function useFeaturedData() {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/featured-by-sections`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      })
+      const data = await api.get('/admin/featured-by-sections') as { sections: FeaturedSection[] }
 
-      const data = response.data
       const sectionStates = (data.sections || []).map((section: FeaturedSection) => ({
         section_id: section.section_id,
         slug: section.slug,
@@ -58,19 +51,14 @@ export function useFeaturedData() {
 
       setSections(sectionStates)
       logger.info('Featured content loaded', { sections: sectionStates.length })
-    } catch (err: unknown) {
-      let msg = 'Failed to load featured content'
-      if (axios.isAxiosError(err)) {
-        msg = err.response?.data?.detail || err.message || msg
-      } else if (err instanceof Error) {
-        msg = err.message
-      }
+    } catch (err: any) {
+      const msg = err?.detail || err?.message || 'Failed to load featured content'
       logger.error('Failed to load featured content', { error: err })
       setError(msg)
     } finally {
       setIsLoading(false)
     }
-  }, [token])
+  }, [])
 
   useEffect(() => {
     loadFeaturedContent()
@@ -120,10 +108,7 @@ export function useFeaturedData() {
 
         // Fetch full content objects for new items
         const contentPromises = contentIds.map(async (id) => {
-          const response = await axios.get(`${API_BASE_URL}/admin/content/${id}`, {
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-          })
-          return response.data
+          return api.get(`/admin/content/${id}`) as Promise<Content>
         })
 
         const newContentItems: Content[] = await Promise.all(contentPromises)
@@ -161,30 +146,23 @@ export function useFeaturedData() {
         }
 
         // API CALL
-        await axios.post(`${API_BASE_URL}/admin/batch/featured-order`, payload, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        })
+        await api.post('/admin/batch/featured-order', payload)
 
         logger.info('Content added to section', { sectionId, count: contentIds.length })
 
         // Refresh from backend to ensure consistency
         await loadFeaturedContent()
-      } catch (err: unknown) {
+      } catch (err: any) {
         // ROLLBACK optimistic update
         await loadFeaturedContent()
 
-        let msg = 'Failed to add content to section'
-        if (axios.isAxiosError(err)) {
-          msg = err.response?.data?.detail || err.message || msg
-        } else if (err instanceof Error) {
-          msg = err.message
-        }
+        const msg = err?.detail || err?.message || 'Failed to add content to section'
         logger.error('Failed to add content', { error: err })
         setError(msg)
         throw err
       }
     },
-    [sections, token, loadFeaturedContent]
+    [sections, loadFeaturedContent]
   )
 
   const handleSaveAllSections = useCallback(async () => {
@@ -208,9 +186,7 @@ export function useFeaturedData() {
         })),
       }
 
-      const response = await axios.post(`${API_BASE_URL}/admin/batch/featured-order`, payload, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      })
+      await api.post('/admin/batch/featured-order', payload)
 
       setSections(prevSections =>
         prevSections.map(section => ({
@@ -221,19 +197,14 @@ export function useFeaturedData() {
       )
 
       logger.info('Featured order saved', { sections: changedSections.length })
-    } catch (err: unknown) {
-      let msg = 'Failed to save featured order'
-      if (axios.isAxiosError(err)) {
-        msg = err.response?.data?.detail || err.message || msg
-      } else if (err instanceof Error) {
-        msg = err.message
-      }
+    } catch (err: any) {
+      const msg = err?.detail || err?.message || 'Failed to save featured order'
       logger.error('Failed to save featured order', { error: err })
       setError(msg)
     } finally {
       setIsSaving(false)
     }
-  }, [sections, token])
+  }, [sections])
 
   const hasAnyChanges = useMemo(() => sections.some(s => s.hasChanges), [sections])
   const changedSectionCount = useMemo(() => sections.filter(s => s.hasChanges).length, [sections])

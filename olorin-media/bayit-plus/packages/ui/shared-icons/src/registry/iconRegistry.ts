@@ -66,6 +66,13 @@ export const ICON_REGISTRY: Record<string, IconDefinition> = {
     description: 'Podcasts',
     usage: ['navbar', 'sidebar', 'main_nav'],
   },
+  audiobooks: {
+    name: 'audiobooks',
+    lucideName: 'Headphones',
+    category: 'navigation',
+    description: 'Audiobooks',
+    usage: ['navbar', 'sidebar', 'main_nav'],
+  },
   epg: {
     name: 'epg',
     lucideName: 'Calendar',

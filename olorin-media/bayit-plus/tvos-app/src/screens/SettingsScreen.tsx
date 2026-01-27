@@ -9,7 +9,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet, Switch } from 'react';
+import { View, Text, Pressable, ScrollView, StyleSheet, Switch } from 'react-native';
 import { Settings, Mic, Monitor, User, Info } from 'lucide-react-native';
 import { TVHeader } from '../components/TVHeader';
 import { useMultiWindowStore } from '../stores/multiWindowStore';

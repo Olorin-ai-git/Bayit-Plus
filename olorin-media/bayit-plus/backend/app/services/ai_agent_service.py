@@ -17,6 +17,8 @@ The actual implementation is split across the ai_agent package:
 from app.services.ai_agent import (  # Main entry point; Tool dispatcher; Tools; Logging
     TOOLS, clear_title_cache, execute_tool, get_language_name,
     log_comprehensive_summary, log_to_database, run_ai_agent_audit)
+from app.services.ai_agent.tool_filter import (  # Tool filtering by capability
+    get_allowed_tool_names, get_tools_for_capabilities)
 # Re-export executor functions for backwards compatibility
 from app.services.ai_agent.executors import (  # Content; Metadata; Stream; Storage; Subtitles; Notifications; Podcasts; Diagnostics
     execute_batch_download_subtitles, execute_calculate_storage_costs,
@@ -43,6 +45,9 @@ __all__ = [
     # Tools
     "TOOLS",
     "get_language_name",
+    # Tool filtering
+    "get_tools_for_capabilities",
+    "get_allowed_tool_names",
     # Logging
     "log_to_database",
     "clear_title_cache",

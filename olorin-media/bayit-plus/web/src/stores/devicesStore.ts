@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import axios from 'axios';
+import api from '@/services/api';
+import logger from '@/utils/logger';
 
 interface Device {
   device_id: string;
@@ -42,11 +43,11 @@ export const useDevicesStore = create<DevicesStore>((set, get) => ({
   loadDevices: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get('/api/v1/devices');
-      set({ devices: response.data.devices, loading: false });
+      const response = await api.get('/devices') as { devices: Device[] };
+      set({ devices: response.devices, loading: false });
     } catch (error: any) {
       set({
-        error: error.response?.data?.detail || 'Failed to load devices',
+        error: error?.detail || 'Failed to load devices',
         loading: false
       });
     }
@@ -54,7 +55,7 @@ export const useDevicesStore = create<DevicesStore>((set, get) => ({
 
   registerDevice: async (deviceInfo) => {
     try {
-      const response = await axios.post('/api/v1/devices/register', deviceInfo);
+      const device = await api.post('/devices/register', deviceInfo) as Device;
 
       // Optimistically update local state
       const existingIndex = get().devices.findIndex(
@@ -64,14 +65,14 @@ export const useDevicesStore = create<DevicesStore>((set, get) => ({
       if (existingIndex !== -1) {
         // Update existing device
         const updatedDevices = [...get().devices];
-        updatedDevices[existingIndex] = response.data;
+        updatedDevices[existingIndex] = device;
         set({ devices: updatedDevices });
       } else {
         // Add new device
-        set({ devices: [...get().devices, response.data] });
+        set({ devices: [...get().devices, device] });
       }
     } catch (error: any) {
-      set({ error: error.response?.data?.detail || 'Failed to register device' });
+      set({ error: error?.detail || 'Failed to register device' });
       throw error;
     }
   },
@@ -79,7 +80,7 @@ export const useDevicesStore = create<DevicesStore>((set, get) => ({
   disconnectDevice: async (deviceId: string) => {
     set({ disconnecting: deviceId, error: null });
     try {
-      const response = await axios.delete(`/api/v1/devices/${deviceId}`);
+      const result = await api.delete(`/devices/${deviceId}`) as { success: boolean; terminated_sessions: number };
 
       // Optimistically remove device from local state
       set({
@@ -88,12 +89,12 @@ export const useDevicesStore = create<DevicesStore>((set, get) => ({
       });
 
       return {
-        success: response.data.success,
-        terminated_sessions: response.data.terminated_sessions
+        success: result.success,
+        terminated_sessions: result.terminated_sessions
       };
     } catch (error: any) {
       set({
-        error: error.response?.data?.detail || 'Failed to disconnect device',
+        error: error?.detail || 'Failed to disconnect device',
         disconnecting: null
       });
       throw error;
@@ -102,7 +103,7 @@ export const useDevicesStore = create<DevicesStore>((set, get) => ({
 
   updateHeartbeat: async (deviceId: string) => {
     try {
-      await axios.post('/api/v1/devices/heartbeat', { device_id: deviceId });
+      await api.post('/devices/heartbeat', { device_id: deviceId });
 
       // Optimistically update last_active for this device
       const updatedDevices = get().devices.map((d) => {
@@ -114,7 +115,7 @@ export const useDevicesStore = create<DevicesStore>((set, get) => ({
       set({ devices: updatedDevices });
     } catch (error: any) {
       // Heartbeat failures are not critical, just log
-      console.warn('Failed to update device heartbeat:', error);
+      logger.warn('Failed to update device heartbeat', 'DevicesStore', error);
     }
   },
 }));

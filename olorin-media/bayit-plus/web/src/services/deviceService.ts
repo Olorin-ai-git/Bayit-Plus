@@ -3,7 +3,7 @@
  * API client for device management endpoints
  */
 
-import axios from 'axios';
+import api from '@/services/api';
 
 interface DeviceInfo {
   device_id: string;
@@ -39,37 +39,34 @@ interface DisconnectResponse {
 }
 
 class DeviceService {
-  private readonly baseUrl = '/api/v1/devices';
+  private readonly baseUrl = '/devices';
 
   /**
    * Get all registered devices for the current user
    */
   async listDevices(): Promise<DeviceListResponse> {
-    const response = await axios.get<DeviceListResponse>(this.baseUrl);
-    return response.data;
+    return api.get(this.baseUrl) as Promise<DeviceListResponse>;
   }
 
   /**
    * Register or update a device
    */
   async registerDevice(deviceInfo: DeviceInfo): Promise<Device> {
-    const response = await axios.post<Device>(`${this.baseUrl}/register`, deviceInfo);
-    return response.data;
+    return api.post(`${this.baseUrl}/register`, deviceInfo) as Promise<Device>;
   }
 
   /**
    * Unregister a device and terminate its active sessions
    */
   async unregisterDevice(deviceId: string): Promise<DisconnectResponse> {
-    const response = await axios.delete<DisconnectResponse>(`${this.baseUrl}/${deviceId}`);
-    return response.data;
+    return api.delete(`${this.baseUrl}/${deviceId}`) as Promise<DisconnectResponse>;
   }
 
   /**
    * Update device activity heartbeat
    */
   async updateHeartbeat(deviceId: string): Promise<void> {
-    await axios.post(`${this.baseUrl}/heartbeat`, { device_id: deviceId });
+    await api.post(`${this.baseUrl}/heartbeat`, { device_id: deviceId });
   }
 
   /**

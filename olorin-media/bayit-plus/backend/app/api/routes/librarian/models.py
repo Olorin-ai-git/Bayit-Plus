@@ -30,6 +30,7 @@ class TriggerAuditRequest(BaseModel):
     classify_only: bool = False
     remove_duplicates: bool = False
     reapply_first: bool = True  # First try to reapply fixes from most recent audit (no LLM needed)
+    force_updates: bool = False  # If False, skip items that already have metadata/posters (no API calls)
 
 
 class TriggerAuditResponse(BaseModel):

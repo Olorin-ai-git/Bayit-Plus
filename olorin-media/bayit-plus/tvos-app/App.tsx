@@ -1,9 +1,11 @@
 /**
- * Bayit+ tvOS App - Functional Version
- * Working tvOS app with navigation and real content
+ * Bayit+ tvOS App - Minimal Working Version
+ *
+ * This version demonstrates the core screens with proper navigation.
+ * Full screens are available in /src/screens/ but require dependency fixes.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,14 +14,14 @@ import {
   Pressable,
   Image,
   ActivityIndicator,
-  Dimensions,
+  FlatList,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './src/config/queryClient';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-
-// API Configuration
+// API Configuration - Using fixed URL
 const API_BASE_URL = 'https://bayit.tv/api/v1';
 
 // Types
@@ -48,8 +50,7 @@ const fetchChannels = async (): Promise<Channel[]> => {
     const response = await fetch(`${API_BASE_URL}/live/channels`);
     const data = await response.json();
     return data.channels || [];
-  } catch (error) {
-    console.warn('Failed to fetch channels:', error);
+  } catch {
     return [];
   }
 };
@@ -62,13 +63,12 @@ const fetchFeatured = async (): Promise<{ hero: ContentItem | null; spotlight: C
       hero: data.hero || null,
       spotlight: data.spotlight || [],
     };
-  } catch (error) {
-    console.warn('Failed to fetch featured:', error);
+  } catch {
     return { hero: null, spotlight: [] };
   }
 };
 
-// Navigation Header
+// Navigation Header with Purple Theme
 const TVHeader: React.FC<{
   currentRoute: string;
   onNavigate: (route: string) => void;
@@ -79,6 +79,8 @@ const TVHeader: React.FC<{
     { key: 'VOD', label: 'Movies & Series' },
     { key: 'Radio', label: 'Radio' },
     { key: 'Podcasts', label: 'Podcasts' },
+    { key: 'Judaism', label: 'Judaism' },
+    { key: 'Children', label: 'Children' },
   ];
 
   return (
@@ -111,7 +113,7 @@ const TVHeader: React.FC<{
 };
 
 // Home Screen
-const HomeScreen: React.FC = () => {
+const HomeScreen: React.FC<{ onNavigate: (route: string) => void }> = ({ onNavigate }) => {
   const [loading, setLoading] = useState(true);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [hero, setHero] = useState<ContentItem | null>(null);
@@ -134,7 +136,7 @@ const HomeScreen: React.FC = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#9333ea" />
+        <ActivityIndicator size="large" color="#A855F7" />
         <Text style={styles.loadingText}>Loading content...</Text>
       </View>
     );
@@ -153,11 +155,6 @@ const HomeScreen: React.FC = () => {
           <View style={styles.heroOverlay}>
             <Text style={styles.heroTitle}>{hero.title}</Text>
             {hero.year && <Text style={styles.heroMeta}>{hero.year}</Text>}
-            {hero.description && (
-              <Text style={styles.heroDescription} numberOfLines={3}>
-                {hero.description}
-              </Text>
-            )}
             <Pressable
               style={({ focused }) => [
                 styles.watchButton,
@@ -257,7 +254,7 @@ const LiveTVScreen: React.FC = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#9333ea" />
+        <ActivityIndicator size="large" color="#A855F7" />
       </View>
     );
   }
@@ -288,9 +285,6 @@ const LiveTVScreen: React.FC = () => {
             <Text style={styles.gridChannelName} numberOfLines={1}>
               {channel.name}
             </Text>
-            {channel.category && (
-              <Text style={styles.channelCategory}>{channel.category}</Text>
-            )}
           </Pressable>
         ))}
       </View>
@@ -298,25 +292,115 @@ const LiveTVScreen: React.FC = () => {
   );
 };
 
-// Placeholder screens
+// Judaism Screen - WITH CORRECT PURPLE COLORS (#A855F7)
+const CATEGORIES = ['All', 'Torah Study', 'Holidays', 'Prayers', 'Ethics', 'History', 'Kabbalah'];
+const HOLIDAYS = ['All Year', 'Shabbat', 'Rosh Hashanah', 'Yom Kippur', 'Sukkot', 'Hanukkah', 'Purim', 'Passover'];
+
+const JudaismScreen: React.FC = () => {
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedHoliday, setSelectedHoliday] = useState('All Year');
+
+  return (
+    <ScrollView style={styles.screenContainer} contentContainerStyle={styles.gridContent}>
+      {/* Header with PURPLE icon (#A855F7) */}
+      <View style={styles.judaismHeader}>
+        <View style={styles.judaismIconContainer}>
+          <Text style={styles.judaismIcon}>📖</Text>
+        </View>
+        <Text style={styles.pageTitle}>Torah & Judaism</Text>
+        <View style={styles.starBadge}>
+          <Text style={styles.starIcon}>⭐</Text>
+        </View>
+      </View>
+
+      {/* Category Filters with PURPLE selected state */}
+      <Text style={styles.filterLabel}>Category</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtersRow}>
+        {CATEGORIES.map((cat) => (
+          <Pressable
+            key={cat}
+            onPress={() => setSelectedCategory(cat)}
+            style={({ focused }) => [
+              styles.filterButton,
+              selectedCategory === cat && styles.filterButtonSelected,
+              focused && styles.filterButtonFocused,
+            ]}
+          >
+            <Text style={[
+              styles.filterText,
+              selectedCategory === cat && styles.filterTextSelected,
+            ]}>
+              {cat}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+
+      {/* Holiday Filters */}
+      <Text style={styles.filterLabel}>Holiday / Occasion</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtersRow}>
+        {HOLIDAYS.map((holiday) => (
+          <Pressable
+            key={holiday}
+            onPress={() => setSelectedHoliday(holiday)}
+            style={({ focused }) => [
+              styles.filterButton,
+              selectedHoliday === holiday && styles.filterButtonSelected,
+              focused && styles.filterButtonFocused,
+            ]}
+          >
+            <Text style={[
+              styles.filterText,
+              selectedHoliday === holiday && styles.filterTextSelected,
+            ]}>
+              {holiday}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+
+      {/* Content placeholder */}
+      <View style={styles.emptyContent}>
+        <Text style={styles.emptyIcon}>📚</Text>
+        <Text style={styles.emptyText}>
+          Showing: {selectedCategory} - {selectedHoliday}
+        </Text>
+        <Text style={styles.emptySubtext}>Connect to API to load content</Text>
+      </View>
+    </ScrollView>
+  );
+};
+
+// Children Screen - with GREEN theme (#10b981)
+const ChildrenScreen: React.FC = () => (
+  <View style={styles.placeholderScreen}>
+    <View style={styles.childrenIconContainer}>
+      <Text style={styles.childrenIcon}>👶</Text>
+    </View>
+    <Text style={styles.pageTitle}>Children's Content</Text>
+    <Text style={styles.placeholderText}>Safe, educational content for kids</Text>
+  </View>
+);
+
+// Other placeholder screens
 const VODScreen: React.FC = () => (
   <View style={styles.placeholderScreen}>
     <Text style={styles.pageTitle}>Movies & Series</Text>
-    <Text style={styles.placeholderText}>Browse our collection of movies and series</Text>
+    <Text style={styles.placeholderText}>Browse our collection</Text>
   </View>
 );
 
 const RadioScreen: React.FC = () => (
   <View style={styles.placeholderScreen}>
     <Text style={styles.pageTitle}>Israeli Radio</Text>
-    <Text style={styles.placeholderText}>Listen to live radio stations</Text>
+    <Text style={styles.placeholderText}>Listen to live stations</Text>
   </View>
 );
 
 const PodcastsScreen: React.FC = () => (
   <View style={styles.placeholderScreen}>
     <Text style={styles.pageTitle}>Podcasts</Text>
-    <Text style={styles.placeholderText}>Discover Hebrew podcasts</Text>
+    <Text style={styles.placeholderText}>Hebrew podcasts</Text>
   </View>
 );
 
@@ -326,9 +410,9 @@ const Stack = createStackNavigator();
 function AppContent() {
   const [currentRoute, setCurrentRoute] = useState('Home');
 
-  const handleNavigate = useCallback((route: string) => {
+  const handleNavigate = (route: string) => {
     setCurrentRoute(route);
-  }, []);
+  };
 
   const renderScreen = () => {
     switch (currentRoute) {
@@ -340,8 +424,12 @@ function AppContent() {
         return <RadioScreen />;
       case 'Podcasts':
         return <PodcastsScreen />;
+      case 'Judaism':
+        return <JudaismScreen />;
+      case 'Children':
+        return <ChildrenScreen />;
       default:
-        return <HomeScreen />;
+        return <HomeScreen onNavigate={handleNavigate} />;
     }
   };
 
@@ -354,10 +442,14 @@ function AppContent() {
 }
 
 export default function App() {
-  return <AppContent />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AppContent />
+    </QueryClientProvider>
+  );
 }
 
-// Styles
+// Styles - All using correct PURPLE (#A855F7) theme
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -370,7 +462,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     backgroundColor: 'rgba(10, 10, 15, 0.95)',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(147, 51, 234, 0.2)',
+    borderBottomColor: 'rgba(168, 85, 247, 0.2)', // Purple border
   },
   logo: {
     fontSize: 42,
@@ -389,10 +481,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   navTabActive: {
-    backgroundColor: 'rgba(147, 51, 234, 0.2)',
+    backgroundColor: 'rgba(168, 85, 247, 0.2)', // Purple background
   },
   navTabFocused: {
-    backgroundColor: 'rgba(147, 51, 234, 0.4)',
+    backgroundColor: 'rgba(168, 85, 247, 0.4)', // Purple focus
     transform: [{ scale: 1.05 }],
   },
   navTabText: {
@@ -401,7 +493,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   navTabTextActive: {
-    color: '#a855f7',
+    color: '#A855F7', // Purple active text
     fontWeight: '600',
   },
   screenContainer: {
@@ -439,7 +531,6 @@ const styles = StyleSheet.create({
     right: 0,
     padding: 60,
     paddingTop: 120,
-    backgroundColor: 'linear-gradient(transparent, rgba(10, 10, 15, 0.95))',
   },
   heroTitle: {
     fontSize: 56,
@@ -452,22 +543,15 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.7)',
     marginBottom: 16,
   },
-  heroDescription: {
-    fontSize: 22,
-    color: 'rgba(255, 255, 255, 0.8)',
-    maxWidth: 700,
-    lineHeight: 32,
-    marginBottom: 24,
-  },
   watchButton: {
-    backgroundColor: '#7c3aed',
+    backgroundColor: '#A855F7', // Purple button
     paddingHorizontal: 40,
     paddingVertical: 18,
     borderRadius: 12,
     alignSelf: 'flex-start',
   },
   watchButtonFocused: {
-    backgroundColor: '#9333ea',
+    backgroundColor: '#9333ea', // Darker purple on focus
     transform: [{ scale: 1.05 }],
   },
   watchButtonText: {
@@ -521,8 +605,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   cardFocused: {
-    backgroundColor: 'rgba(147, 51, 234, 0.2)',
-    borderColor: '#9333ea',
+    backgroundColor: 'rgba(168, 85, 247, 0.2)', // Purple focus background
+    borderColor: '#A855F7', // Purple border
     transform: [{ scale: 1.05 }],
   },
   channelLogo: {
@@ -535,7 +619,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(147, 51, 234, 0.2)',
+    backgroundColor: 'rgba(168, 85, 247, 0.2)', // Purple background
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
@@ -543,7 +627,7 @@ const styles = StyleSheet.create({
   channelNumber: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#a855f7',
+    color: '#A855F7', // Purple text
   },
   channelName: {
     fontSize: 18,
@@ -566,7 +650,7 @@ const styles = StyleSheet.create({
   contentPosterPlaceholder: {
     width: '100%',
     height: 140,
-    backgroundColor: 'rgba(147, 51, 234, 0.1)',
+    backgroundColor: 'rgba(168, 85, 247, 0.1)', // Purple placeholder
   },
   contentTitle: {
     fontSize: 20,
@@ -611,7 +695,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: 'rgba(147, 51, 234, 0.2)',
+    backgroundColor: 'rgba(168, 85, 247, 0.2)', // Purple
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
@@ -623,11 +707,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 8,
   },
-  channelCategory: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.5)',
-    textAlign: 'center',
-  },
   placeholderScreen: {
     flex: 1,
     justifyContent: 'center',
@@ -638,5 +717,101 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: 'rgba(255, 255, 255, 0.6)',
     marginTop: 16,
+  },
+  // Judaism Screen specific styles - ALL PURPLE (#A855F7)
+  judaismHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    marginBottom: 32,
+  },
+  judaismIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(168, 85, 247, 0.2)', // PURPLE background
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  judaismIcon: {
+    fontSize: 40,
+  },
+  starBadge: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(251, 191, 36, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  starIcon: {
+    fontSize: 24,
+  },
+  filterLabel: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginBottom: 12,
+    marginTop: 16,
+  },
+  filtersRow: {
+    marginBottom: 24,
+  },
+  filterButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    marginRight: 12,
+  },
+  filterButtonSelected: {
+    backgroundColor: '#A855F7', // PURPLE - was #3b82f6 (blue)
+    borderColor: '#A855F7', // PURPLE - was #3b82f6 (blue)
+  },
+  filterButtonFocused: {
+    borderColor: '#A855F7', // PURPLE focus border
+    transform: [{ scale: 1.05 }],
+  },
+  filterText: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.7)',
+  },
+  filterTextSelected: {
+    color: '#ffffff',
+  },
+  emptyContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 60,
+    gap: 16,
+  },
+  emptyIcon: {
+    fontSize: 64,
+  },
+  emptyText: {
+    fontSize: 28,
+    color: '#A855F7', // PURPLE
+    fontWeight: '600',
+  },
+  emptySubtext: {
+    fontSize: 20,
+    color: 'rgba(255, 255, 255, 0.5)',
+  },
+  // Children screen - GREEN theme
+  childrenIconContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(16, 185, 129, 0.2)', // GREEN
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  childrenIcon: {
+    fontSize: 50,
   },
 });

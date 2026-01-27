@@ -246,6 +246,7 @@ async def trigger_librarian_audit(
                 "opensubtitles_enabled": request.opensubtitles_enabled,
                 "classify_only": request.classify_only,
                 "remove_duplicates": request.remove_duplicates,
+                "force_updates": request.force_updates,
             },
         )
         await audit.save()
@@ -268,6 +269,7 @@ async def trigger_librarian_audit(
                     opensubtitles_enabled=request.opensubtitles_enabled,
                     classify_only=request.classify_only,
                     remove_duplicates=request.remove_duplicates,
+                    force_updates=request.force_updates,
                 )
             )
             audit_task_manager.register_task(audit_id, task)

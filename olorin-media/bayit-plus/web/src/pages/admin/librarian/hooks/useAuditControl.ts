@@ -103,6 +103,8 @@ export const useAuditControl = ({
         opensubtitles_enabled: auditConfig.openSubtitlesEnabled,
         classify_only: auditConfig.classifyOnly,
         remove_duplicates: auditConfig.purgeDuplicates,
+        // If false, skip items that already have data (saves API calls)
+        force_updates: auditConfig.forceUpdates,
       });
 
       setLivePanelExpanded(true);

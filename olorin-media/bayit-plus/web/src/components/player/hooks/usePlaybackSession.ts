@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import axios from 'axios';
+import api from '@/services/api';
 import { usePlaybackHeartbeat } from '@/hooks/usePlaybackHeartbeat';
 import { deviceService } from '@/services/deviceService';
 import { useAuthStore } from '@bayit/shared-stores/authStore';
@@ -53,6 +53,8 @@ export const usePlaybackSession = ({
   const [error, setError] = useState<ConcurrentStreamLimitError | null>(null);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const sessionCreatedRef = useRef(false);
+  const isCreatingRef = useRef(false);
+  const hasFailedRef = useRef(false);
 
   // Use heartbeat hook to maintain session liveness
   usePlaybackHeartbeat({
@@ -95,10 +97,12 @@ export const usePlaybackSession = ({
    * Create playback session with retry logic and automatic token refresh
    */
   const createSession = useCallback(async () => {
-    if (!enabled || !contentId || sessionCreatedRef.current || isCreatingSession) {
+    // Use refs for checks to avoid infinite loops from state changes
+    if (!enabled || !contentId || sessionCreatedRef.current || isCreatingRef.current || hasFailedRef.current) {
       return;
     }
 
+    isCreatingRef.current = true;
     setIsCreatingSession(true);
     setError(null);
 
@@ -111,6 +115,8 @@ export const usePlaybackSession = ({
       const refreshed = await useAuthStore.getState().refreshAccessToken();
       if (!refreshed) {
         sessionLogger.error('Token refresh failed before session creation');
+        isCreatingRef.current = false;
+        hasFailedRef.current = true;
         setIsCreatingSession(false);
         setError({
           code: 'TOKEN_REFRESH_FAILED',
@@ -125,27 +131,35 @@ export const usePlaybackSession = ({
         const deviceId = await deviceService.generateDeviceId();
         const deviceName = deviceService.getDeviceName();
 
-        const response = await axios.post<PlaybackSession>('/api/v1/playback/session/start', {
+        const response = await api.post('/playback/session/start', {
           device_id: deviceId,
           content_id: contentId,
           content_type: contentType,
           device_name: deviceName,
           ip_address: undefined, // Server will capture from request
-        });
+        }) as PlaybackSession;
 
-        setSessionId(response.data.session_id);
+        setSessionId(response.session_id);
         sessionCreatedRef.current = true;
-        sessionLogger.info('Playback session created', { sessionId: response.data.session_id });
+        isCreatingRef.current = false;
+        sessionLogger.info('Playback session created', { sessionId: response.session_id });
         setIsCreatingSession(false);
         return;
       } catch (err: any) {
         lastError = err;
 
+        // API interceptor returns error.response.data directly, so we check the structure
+        const isAuthError = typeof err?.detail === 'string' &&
+          (err.detail.includes('Not authenticated') ||
+           err.detail.includes('Could not validate') ||
+           err.detail.includes('Invalid') ||
+           err.detail.includes('expired'));
+        const isConcurrentLimitError = err?.detail?.code === 'CONCURRENT_STREAM_LIMIT_EXCEEDED';
+
         // Handle different error types
-        if (err.response?.status === 401) {
-          sessionLogger.warn(`Playback session 401 error (attempt ${attempt}/${maxRetries})`, {
-            status: err.response.status,
-            detail: err.response?.data?.detail,
+        if (isAuthError) {
+          sessionLogger.warn(`Playback session auth error (attempt ${attempt}/${maxRetries})`, {
+            detail: err?.detail,
             hasToken: !!useAuthStore.getState().token,
           });
 
@@ -163,6 +177,8 @@ export const usePlaybackSession = ({
               } else {
                 // Token refresh failed, token likely invalid
                 sessionLogger.error('Token refresh failed, cannot retry session creation');
+                isCreatingRef.current = false;
+                hasFailedRef.current = true;
                 setError({
                   code: 'AUTH_FAILED',
                   message: 'Authentication required for playback session',
@@ -172,6 +188,8 @@ export const usePlaybackSession = ({
               }
             } catch (refreshError) {
               sessionLogger.error('Error refreshing token', refreshError);
+              isCreatingRef.current = false;
+              hasFailedRef.current = true;
               setError({
                 code: 'AUTH_FAILED',
                 message: 'Authentication required for playback session',
@@ -180,46 +198,52 @@ export const usePlaybackSession = ({
               return;
             }
           } else {
-            // Max retries reached on 401 error
-            sessionLogger.error('Max retries exceeded: Authentication failed (401)');
+            // Max retries reached on auth error
+            sessionLogger.error('Max retries exceeded: Authentication failed');
+            hasFailedRef.current = true;
             setError({
               code: 'AUTH_FAILED',
               message: 'Authentication required for playback session',
             });
           }
-        } else if (err.response?.status === 403 && err.response?.data?.detail) {
+        } else if (isConcurrentLimitError) {
           // Concurrent stream limit - don't retry
-          const limitError = err.response.data.detail as ConcurrentStreamLimitError;
+          const limitError = err.detail as ConcurrentStreamLimitError;
+          hasFailedRef.current = true;
+          isCreatingRef.current = false;
           setError(limitError);
+          setIsCreatingSession(false);
 
           if (onLimitExceeded) {
             onLimitExceeded(limitError);
           }
 
           sessionLogger.warn('Concurrent stream limit exceeded', limitError);
+          return;
         } else if (attempt < maxRetries) {
           // Transient error - retry with exponential backoff
           const backoffMs = Math.pow(2, attempt) * 500;
           sessionLogger.warn(`Session creation failed (attempt ${attempt}/${maxRetries}), retrying in ${backoffMs}ms`, {
-            status: err.response?.status,
-            message: err.message,
-            detail: err.response?.data?.detail,
+            message: err?.message || err?.detail,
           });
           await sleep(backoffMs);
           continue;
         } else {
-          // Max retries reached on non-401 error
+          // Max retries reached on non-auth error
           sessionLogger.error('Max retries exceeded: Failed to create playback session', {
-            status: err.response?.status,
-            message: err.message,
-            detail: err.response?.data?.detail,
+            message: err?.message || err?.detail,
           });
         }
       }
     }
 
     // All retries exhausted
-    if (lastError && lastError.response?.status !== 401 && lastError.response?.status !== 403) {
+    hasFailedRef.current = true;
+    isCreatingRef.current = false;
+    const isAuthFailure = typeof lastError?.detail === 'string' &&
+      lastError.detail.includes('authenticated');
+    const isLimitFailure = lastError?.detail?.code === 'CONCURRENT_STREAM_LIMIT_EXCEEDED';
+    if (lastError && !isAuthFailure && !isLimitFailure) {
       sessionLogger.error('Failed to create playback session after multiple attempts');
       setError({
         code: 'SESSION_CREATION_FAILED',
@@ -228,7 +252,7 @@ export const usePlaybackSession = ({
     }
 
     setIsCreatingSession(false);
-  }, [enabled, contentId, contentType, isCreatingSession, onLimitExceeded]);
+  }, [enabled, contentId, contentType, onLimitExceeded]);
 
   /**
    * End playback session
@@ -239,7 +263,7 @@ export const usePlaybackSession = ({
     }
 
     try {
-      await axios.post('/api/v1/playback/session/end', {
+      await api.post('/playback/session/end', {
         session_id: sessionId,
       });
 
@@ -253,6 +277,16 @@ export const usePlaybackSession = ({
       sessionCreatedRef.current = false;
     }
   }, [sessionId]);
+
+  /**
+   * Reset refs when content changes to allow fresh session creation
+   */
+  useEffect(() => {
+    sessionCreatedRef.current = false;
+    isCreatingRef.current = false;
+    hasFailedRef.current = false;
+    setError(null);
+  }, [contentId]);
 
   /**
    * Create session when playback starts
@@ -270,7 +304,7 @@ export const usePlaybackSession = ({
     return () => {
       if (sessionId) {
         // End session on cleanup
-        axios.post('/api/v1/playback/session/end', {
+        api.post('/playback/session/end', {
           session_id: sessionId,
         }).catch((err) => {
           sessionLogger.warn('Failed to end session on cleanup', err);

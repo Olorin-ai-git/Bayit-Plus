@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import axios from 'axios';
-import { useAuthStore } from './authStore';
+import api from '@/services/api';
 
 
 interface Friend {
@@ -23,18 +22,6 @@ interface FriendRequest {
   message: string | null;
   sent_at: string;
 }
-
-
-// Helper function to get authorization headers
-const getAuthHeaders = () => {
-  const token = useAuthStore.getState().token;
-  if (!token) {
-    return {};
-  }
-  return {
-    'Authorization': `Bearer ${token}`
-  };
-};
 
 interface FriendsStore {
   friends: Friend[];
@@ -64,10 +51,10 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
   fetchFriends: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get('/api/v1/friends/list', { headers: getAuthHeaders() });
-      set({ friends: response.data.friends || [], loading: false });
+      const data = await api.get('/friends/list') as { friends: Friend[] };
+      set({ friends: data.friends || [], loading: false });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch friends';
+      const errorMessage = error?.detail || error?.message || 'Failed to fetch friends';
       set({ error: errorMessage, loading: false, friends: [] });
     }
   },
@@ -75,14 +62,14 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
   fetchRequests: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.get('/api/v1/friends/requests', { headers: getAuthHeaders() });
+      const data = await api.get('/friends/requests') as { incoming: FriendRequest[]; outgoing: FriendRequest[] };
       set({
-        incomingRequests: response.data.incoming || [],
-        outgoingRequests: response.data.outgoing || [],
+        incomingRequests: data.incoming || [],
+        outgoingRequests: data.outgoing || [],
         loading: false
       });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch requests';
+      const errorMessage = error?.detail || error?.message || 'Failed to fetch requests';
       set({ error: errorMessage, loading: false, incomingRequests: [], outgoingRequests: [] });
     }
   },
@@ -90,11 +77,11 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
   sendFriendRequest: async (receiverId: string, message?: string) => {
     set({ loading: true, error: null });
     try {
-      await axios.post('/api/v1/friends/request', { receiver_id: receiverId, message }, { headers: getAuthHeaders() });
+      await api.post('/friends/request', { receiver_id: receiverId, message });
       await get().fetchRequests();
       set({ loading: false });
     } catch (error: any) {
-      set({ error: error.response?.data?.detail || 'Failed to send request', loading: false });
+      set({ error: error?.detail || 'Failed to send request', loading: false });
       throw error;
     }
   },
@@ -102,50 +89,50 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
   acceptRequest: async (requestId: string) => {
     set({ loading: true, error: null });
     try {
-      await axios.post('/api/v1/friends/request/accept', { request_id: requestId }, { headers: getAuthHeaders() });
+      await api.post('/friends/request/accept', { request_id: requestId });
       await get().fetchFriends();
       await get().fetchRequests();
       set({ loading: false });
     } catch (error: any) {
-      set({ error: error.response?.data?.detail || 'Failed to accept request', loading: false });
+      set({ error: error?.detail || 'Failed to accept request', loading: false });
     }
   },
 
   rejectRequest: async (requestId: string) => {
     set({ loading: true, error: null });
     try {
-      await axios.post('/api/v1/friends/request/reject', { request_id: requestId }, { headers: getAuthHeaders() });
+      await api.post('/friends/request/reject', { request_id: requestId });
       await get().fetchRequests();
       set({ loading: false });
     } catch (error: any) {
-      set({ error: error.response?.data?.detail || 'Failed to reject request', loading: false });
+      set({ error: error?.detail || 'Failed to reject request', loading: false });
     }
   },
 
   cancelRequest: async (requestId: string) => {
     set({ loading: true, error: null });
     try {
-      await axios.post('/api/v1/friends/request/cancel', { request_id: requestId }, { headers: getAuthHeaders() });
+      await api.post('/friends/request/cancel', { request_id: requestId });
       await get().fetchRequests();
       set({ loading: false });
     } catch (error: any) {
-      set({ error: error.response?.data?.detail || 'Failed to cancel request', loading: false });
+      set({ error: error?.detail || 'Failed to cancel request', loading: false });
     }
   },
 
   removeFriend: async (friendId: string) => {
     set({ loading: true, error: null });
     try {
-      await axios.delete(`/api/v1/friends/${friendId}`, { headers: getAuthHeaders() });
+      await api.delete(`/friends/${friendId}`);
       await get().fetchFriends();
       set({ loading: false });
     } catch (error: any) {
-      set({ error: error.response?.data?.detail || 'Failed to remove friend', loading: false });
+      set({ error: error?.detail || 'Failed to remove friend', loading: false });
     }
   },
 
   searchUsers: async (query: string) => {
-    const response = await axios.post('/api/v1/friends/search', { query }, { headers: getAuthHeaders() });
-    return response.data.users;
+    const data = await api.post('/friends/search', { query }) as { users: any[] };
+    return data.users;
   },
 }));

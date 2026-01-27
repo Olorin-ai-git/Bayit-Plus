@@ -23,6 +23,8 @@ interface AuditConfigurationProps {
   setClassifyOnly: (value: boolean) => void;
   purgeDuplicates: boolean;
   setPurgeDuplicates: (value: boolean) => void;
+  forceUpdates: boolean;
+  setForceUpdates: (value: boolean) => void;
   triggering: boolean;
   isAuditRunning: boolean;
   pendingAuditType: string | null;
@@ -56,6 +58,8 @@ export const AuditConfiguration = ({
   setClassifyOnly,
   purgeDuplicates,
   setPurgeDuplicates,
+  forceUpdates,
+  setForceUpdates,
   triggering,
   isAuditRunning,
   pendingAuditType,
@@ -156,6 +160,15 @@ export const AuditConfiguration = ({
             value={dryRun}
             onValueChange={setDryRun}
             label={t('admin.librarian.quickActions.dryRun', 'Preview Mode')}
+            size="small"
+            isRTL={isRTL}
+          />
+        </View>
+        <View style={styles.toggleItem}>
+          <GlassToggle
+            value={forceUpdates}
+            onValueChange={setForceUpdates}
+            label={t('admin.librarian.quickActions.forceUpdates', 'Force Updates')}
             size="small"
             isRTL={isRTL}
           />

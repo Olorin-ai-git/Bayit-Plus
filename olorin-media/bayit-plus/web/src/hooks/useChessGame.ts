@@ -4,7 +4,7 @@
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuthStore } from '../stores/authStore';
-import axios from 'axios';
+import api from '@/services/api';
 import logger from '@/utils/logger';
 
 interface ChessPlayer {
@@ -199,24 +199,20 @@ export default function useChessGame() {
     }
 
     try {
-      const response = await axios.post('/api/v1/chess/create', {
+      const response = await api.post('/chess/create', {
         color,
         time_control: timeControl,
         game_mode: gameMode,
         bot_difficulty: botDifficulty
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      }) as { game: ChessGame };
 
-      const newGame = response.data.game;
+      const newGame = response.game;
       setGame(newGame);
       connectWebSocket(newGame.game_code);
 
       return newGame;
     } catch (err: any) {
-      const message = err.response?.data?.detail || 'Failed to create game';
+      const message = err?.detail || 'Failed to create game';
       setError(message);
       throw new Error(message);
     }
@@ -229,21 +225,17 @@ export default function useChessGame() {
     }
 
     try {
-      const response = await axios.post('/api/v1/chess/join', {
+      const response = await api.post('/chess/join', {
         game_code: gameCode
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      }) as { game: ChessGame };
 
-      const joinedGame = response.data.game;
+      const joinedGame = response.game;
       setGame(joinedGame);
       connectWebSocket(joinedGame.game_code);
 
       return joinedGame;
     } catch (err: any) {
-      const message = err.response?.data?.detail || 'Failed to join game';
+      const message = err?.detail || 'Failed to join game';
       setError(message);
       throw new Error(message);
     }

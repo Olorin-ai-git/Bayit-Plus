@@ -24,6 +24,7 @@ from app.services.ai_agent.prompts import (AUDIT_INSTRUCTIONS,
                                            build_task_specific_initial_prompt,
                                            get_enabled_capabilities)
 from app.services.ai_agent.summary_logger import log_comprehensive_summary
+from app.services.ai_agent.tool_filter import get_tools_for_capabilities
 from app.services.ai_agent.tools import TOOLS
 from app.services.audit_task_manager import audit_task_manager
 
@@ -46,6 +47,7 @@ async def run_ai_agent_audit(
     opensubtitles_enabled: bool = False,
     classify_only: bool = False,
     remove_duplicates: bool = False,
+    force_updates: bool = False,
     audit_id: Optional[str] = None,
 ) -> AuditReport:
     """
@@ -103,17 +105,45 @@ async def run_ai_agent_audit(
     audit_report = await _get_or_create_audit_report(audit_id, start_time, audit_type)
     audit_id = str(audit_report.id)
 
+    # Compute enabled capabilities ONCE at startup for tool filtering
+    enabled_capabilities = get_enabled_capabilities(
+        cyb_titles_only=cyb_titles_only,
+        tmdb_posters_only=tmdb_posters_only,
+        opensubtitles_enabled=opensubtitles_enabled,
+        classify_only=classify_only,
+        remove_duplicates=remove_duplicates,
+        validate_integrity=validate_integrity,
+    )
+
+    # Get filtered tools based on enabled capabilities
+    # This ensures the agent only sees tools relevant to its task
+    filtered_tools = get_tools_for_capabilities(enabled_capabilities)
+    logger.info(
+        f"Enabled capabilities: {enabled_capabilities}, "
+        f"Available tools: {len(filtered_tools)}/{len(TOOLS)}"
+    )
+
     # Log startup
     await _log_startup(
-        audit_report, audit_type, dry_run, max_iterations, budget_limit_usd
+        audit_report,
+        audit_type,
+        dry_run,
+        max_iterations,
+        budget_limit_usd,
+        enabled_capabilities=enabled_capabilities,
+        tools_count=len(filtered_tools),
+        total_tools=len(TOOLS),
     )
 
     logger.info("=" * 80)
     logger.info("Starting AI Agent Audit")
     logger.info(f"   Audit ID: {audit_id}")
     logger.info(f"   Mode: {'DRY RUN' if dry_run else 'LIVE'}")
+    logger.info(f"   Force updates: {force_updates}")
     logger.info(f"   Max iterations: {max_iterations}")
     logger.info(f"   Budget limit: ${budget_limit_usd}")
+    logger.info(f"   Enabled capabilities: {enabled_capabilities}")
+    logger.info(f"   Filtered tools: {len(filtered_tools)} of {len(TOOLS)} available")
     logger.info("=" * 80)
 
     # Initialize tracking
@@ -135,6 +165,7 @@ async def run_ai_agent_audit(
         opensubtitles_enabled=opensubtitles_enabled,
         classify_only=classify_only,
         remove_duplicates=remove_duplicates,
+        force_updates=force_updates,
     )
 
     # Add initial message to conversation
@@ -180,11 +211,11 @@ Please acknowledge this interjection and adjust your approach accordingly.
         logger.info(f"\nIteration {iteration}/{max_iterations}")
 
         try:
-            # Call Claude with tools
+            # Call Claude with filtered tools based on enabled capabilities
             response: Message = client.messages.create(
                 model="claude-sonnet-4-20250514",
                 max_tokens=4096,
-                tools=TOOLS,
+                tools=filtered_tools,
                 messages=conversation_history,
             )
 
@@ -320,6 +351,9 @@ async def _log_startup(
     dry_run: bool,
     max_iterations: int,
     budget_limit_usd: float,
+    enabled_capabilities: List[str] = None,
+    tools_count: int = 0,
+    total_tools: int = 0,
 ):
     """Log audit startup information."""
     await log_to_database(
@@ -334,6 +368,21 @@ async def _log_startup(
         f"Max iterations: {max_iterations}, Budget: ${budget_limit_usd}",
         "Librarian",
     )
+    if enabled_capabilities:
+        cap_list = ", ".join(enabled_capabilities) if enabled_capabilities else "comprehensive"
+        await log_to_database(
+            audit_report,
+            "info",
+            f"Enabled capabilities: {cap_list}",
+            "Librarian",
+        )
+    if tools_count > 0:
+        await log_to_database(
+            audit_report,
+            "info",
+            f"Available tools: {tools_count}/{total_tools} (filtered by capabilities)",
+            "Librarian",
+        )
 
     # Check TMDB configuration
     if not settings.TMDB_API_KEY:
@@ -361,6 +410,7 @@ def _build_initial_prompt(
     opensubtitles_enabled: bool,
     classify_only: bool,
     remove_duplicates: bool,
+    force_updates: bool = False,
 ) -> str:
     """
     Build the initial prompt based on audit configuration.
@@ -405,6 +455,7 @@ def _build_initial_prompt(
             dry_run=dry_run,
             max_iterations=max_iterations,
             budget_limit_usd=budget_limit_usd,
+            force_updates=force_updates,
         )
     else:
         # Comprehensive mode: check everything
@@ -418,6 +469,7 @@ def _build_initial_prompt(
             dry_run=dry_run,
             max_iterations=max_iterations,
             budget_limit_usd=budget_limit_usd,
+            force_updates=force_updates,
         )
 
 

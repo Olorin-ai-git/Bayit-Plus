@@ -13,9 +13,7 @@ import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassView, GlassInput, GlassPageHeader } from '@bayit/shared/ui'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import logger from '@/utils/logger'
-import axios from 'axios'
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
+import api from '@/services/api'
 
 interface AdminRecording {
   id: string
@@ -58,22 +56,15 @@ export default function RecordingsManagementPage() {
   const loadRecordings = async () => {
     try {
       setLoading(true)
-      const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
-      const token = authData?.state?.token
+      const params = new URLSearchParams()
+      params.append('page', String(page))
+      params.append('page_size', '20')
+      if (searchQuery) params.append('search', searchQuery)
 
-      const response = await axios.get(`${API_BASE_URL}/admin/recordings`, {
-        params: {
-          page,
-          page_size: 20,
-          search: searchQuery || undefined
-        },
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      const data = await api.get(`/admin/recordings?${params.toString()}`) as { items: AdminRecording[]; total_pages: number }
 
-      setRecordings(response.data.items)
-      setTotalPages(response.data.total_pages)
+      setRecordings(data.items)
+      setTotalPages(data.total_pages)
     } catch (error) {
       logger.error('Failed to load recordings', 'RecordingsManagementPage', error)
       notifications.showError(t('admin.recordings.loadFailed'))
@@ -84,16 +75,8 @@ export default function RecordingsManagementPage() {
 
   const loadStats = async () => {
     try {
-      const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
-      const token = authData?.state?.token
-
-      const response = await axios.get(`${API_BASE_URL}/admin/recordings/stats`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-
-      setStats(response.data)
+      const data = await api.get('/admin/recordings/stats') as RecordingStats
+      setStats(data)
     } catch (error) {
       logger.error('Failed to load stats', 'RecordingsManagementPage', error)
     }
@@ -109,14 +92,7 @@ export default function RecordingsManagementPage() {
         type: 'action',
         onPress: async () => {
           try {
-            const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
-            const token = authData?.state?.token
-
-            await axios.delete(`${API_BASE_URL}/admin/recordings/${recording.id}`, {
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            })
+            await api.delete(`/admin/recordings/${recording.id}`)
 
             notifications.showSuccess(t('admin.recordings.deleteSuccess'))
             await loadRecordings()
