@@ -3,6 +3,7 @@
  * Hook-based API for displaying notifications with i18n support
  */
 
+import { useCallback, useMemo } from 'react';
 import { useNotificationContext } from '../contexts/NotificationContext';
 import { useNotificationStore } from '../stores/notificationStore';
 import { sanitizeMessage } from '../utils/sanitization';
@@ -14,45 +15,52 @@ import type {
 export const useNotifications = () => {
   const store = useNotificationStore();
 
-  // i18n-aware notification methods
-  const showWithI18n = (options: I18nNotificationOptions & NotificationOptions) => {
-    // If using i18n keys, translation should be done by caller
-    // This hook just provides the interface
-    const message = options.message || '';
-    const title = options.title;
+  // i18n-aware notification methods (memoized to prevent infinite loops)
+  const showWithI18n = useCallback(
+    (options: I18nNotificationOptions & NotificationOptions) => {
+      // If using i18n keys, translation should be done by caller
+      // This hook just provides the interface
+      const message = options.message || '';
+      const title = options.title;
 
-    return store.add({
-      ...options,
-      message: sanitizeMessage(message),
-      title,
-    });
-  };
+      return store.add({
+        ...options,
+        message: sanitizeMessage(message),
+        title,
+      });
+    },
+    [store]
+  );
 
-  return {
-    // Basic methods
-    show: (options: NotificationOptions) => store.add(options),
-    showDebug: (message: string, title?: string) =>
-      store.add({ level: 'debug', message, title }),
-    showInfo: (message: string, title?: string) =>
-      store.add({ level: 'info', message, title }),
-    showWarning: (message: string, title?: string) =>
-      store.add({ level: 'warning', message, title }),
-    showSuccess: (message: string, title?: string) =>
-      store.add({ level: 'success', message, title }),
-    showError: (message: string, title?: string) =>
-      store.add({ level: 'error', message, title }),
+  // Memoize the returned object to prevent infinite loops caused by dependency array changes
+  return useMemo(
+    () => ({
+      // Basic methods
+      show: (options: NotificationOptions) => store.add(options),
+      showDebug: (message: string, title?: string) =>
+        store.add({ level: 'debug', message, title }),
+      showInfo: (message: string, title?: string) =>
+        store.add({ level: 'info', message, title }),
+      showWarning: (message: string, title?: string) =>
+        store.add({ level: 'warning', message, title }),
+      showSuccess: (message: string, title?: string) =>
+        store.add({ level: 'success', message, title }),
+      showError: (message: string, title?: string) =>
+        store.add({ level: 'error', message, title }),
 
-    // i18n method
-    showWithI18n,
+      // i18n method
+      showWithI18n,
 
-    // Management
-    dismiss: store.remove,
-    clear: store.clear,
-    clearByLevel: store.clearByLevel,
+      // Management
+      dismiss: store.remove,
+      clear: store.clear,
+      clearByLevel: store.clearByLevel,
 
-    // State access
-    notifications: store.notifications,
-  };
+      // State access
+      notifications: store.notifications,
+    }),
+    [store, showWithI18n]
+  );
 };
 
 /**

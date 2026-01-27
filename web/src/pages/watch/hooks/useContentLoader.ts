@@ -32,7 +32,7 @@ export function useContentLoader(
 
   useEffect(() => {
     loadContent();
-  }, [contentId, contentType]);
+  }, [contentId, contentType, addNotification]);
 
   const loadContent = async () => {
     setLoading(true);
