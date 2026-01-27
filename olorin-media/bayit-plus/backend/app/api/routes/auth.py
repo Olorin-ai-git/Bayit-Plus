@@ -437,6 +437,7 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
     google_id = google_user.get("id")
     email = google_user.get("email")
     name = google_user.get("name", email.split("@")[0])
+    picture = google_user.get("picture")  # Google profile picture URL
 
     # Check if user exists by google_id or email
     user = await User.find_one(User.google_id == google_id)
@@ -451,6 +452,9 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
             user.auth_provider = "google"
             user.email_verified = True  # Google pre-verified email
             user.email_verified_at = datetime.now(timezone.utc)
+            # Update avatar from Google if not already set
+            if picture and not user.avatar:
+                user.avatar = picture
             user.update_verification_status()
             await user.save()
         else:
@@ -461,6 +465,7 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
                 google_id=google_id,
                 auth_provider="google",
                 role="viewer",
+                avatar=picture,  # Save Google profile picture
                 email_verified=True,  # Google pre-verified
                 email_verified_at=datetime.now(timezone.utc),
                 phone_verified=False,
@@ -474,8 +479,11 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
             detail="Inactive user",
         )
 
-    # Update last login
+    # Update last login and avatar if needed
     user.last_login = datetime.now(timezone.utc)
+    # Update avatar from Google if not already set
+    if picture and not user.avatar:
+        user.avatar = picture
     await user.save()
 
     # ✅ Audit log: OAuth login
