@@ -13,7 +13,7 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'bayit-plus-backend'
+      - 'bayit-backend-production'
       - '--image=gcr.io/$PROJECT_ID/bayit-backend:$BUILD_ID'
       - '--region=${_REGION}'
       - '--platform=managed'
@@ -28,50 +28,48 @@ steps:
       # Startup optimization - CPU boost for faster cold start
       - '--cpu-boost'
 
-      # Clear LIBRARIAN_* secrets first (they were incorrectly set as secrets, now converting to env vars)
-      - '--clear-secrets=LIBRARIAN_DAILY_AUDIT_CRON,LIBRARIAN_DAILY_AUDIT_TIME,LIBRARIAN_DAILY_AUDIT_MODE,LIBRARIAN_DAILY_AUDIT_COST,LIBRARIAN_DAILY_AUDIT_STATUS,LIBRARIAN_DAILY_AUDIT_DESCRIPTION,LIBRARIAN_WEEKLY_AUDIT_CRON,LIBRARIAN_WEEKLY_AUDIT_TIME,LIBRARIAN_WEEKLY_AUDIT_MODE,LIBRARIAN_WEEKLY_AUDIT_COST,LIBRARIAN_WEEKLY_AUDIT_STATUS,LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION,LIBRARIAN_MAX_ITERATIONS,LIBRARIAN_DEFAULT_BUDGET_USD,LIBRARIAN_MIN_BUDGET_USD,LIBRARIAN_MAX_BUDGET_USD,LIBRARIAN_BUDGET_STEP_USD,LIBRARIAN_REPORTS_LIMIT,LIBRARIAN_ACTIONS_LIMIT,LIBRARIAN_ACTIVITY_PAGE_SIZE,LIBRARIAN_ID_TRUNCATE_LENGTH,LIBRARIAN_MODAL_MAX_HEIGHT'
-
-      # Environment Variables (Non-Sensitive)
-      - '--update-env-vars=ENVIRONMENT=production'
-      - '--update-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
-      - '--update-env-vars=LOG_LEVEL=INFO'
-      - '--update-env-vars=DEBUG=false'
+      # Environment Variables (Non-Sensitive) - use set-env-vars to replace all (avoids conflicts with secrets)
+      - '--set-env-vars=ENVIRONMENT=production'
+      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
+      - '--set-env-vars=LOG_LEVEL=INFO'
+      - '--set-env-vars=DEBUG=false'
+      - '--set-env-vars=MONGODB_DB_NAME=bayit_plus'
 
       # Librarian Daily Audit Configuration
-      - '--update-env-vars=LIBRARIAN_DAILY_AUDIT_CRON=0 2 * * *'
-      - '--update-env-vars=LIBRARIAN_DAILY_AUDIT_TIME=2:00 AM Israel Time'
-      - '--update-env-vars=LIBRARIAN_DAILY_AUDIT_MODE=Rule-based'
-      - '--update-env-vars=LIBRARIAN_DAILY_AUDIT_COST=~$0.01/day'
-      - '--update-env-vars=LIBRARIAN_DAILY_AUDIT_STATUS=ENABLED'
-      - '--update-env-vars=LIBRARIAN_DAILY_AUDIT_DESCRIPTION=Scans recent content and random 10% sample. Auto-fixes safe issues.'
+      - '--set-env-vars=LIBRARIAN_DAILY_AUDIT_CRON=0 2 * * *'
+      - '--set-env-vars=LIBRARIAN_DAILY_AUDIT_TIME=2:00 AM Israel Time'
+      - '--set-env-vars=LIBRARIAN_DAILY_AUDIT_MODE=Rule-based'
+      - '--set-env-vars=LIBRARIAN_DAILY_AUDIT_COST=~$0.01/day'
+      - '--set-env-vars=LIBRARIAN_DAILY_AUDIT_STATUS=ENABLED'
+      - '--set-env-vars=LIBRARIAN_DAILY_AUDIT_DESCRIPTION=Scans recent content and random 10% sample. Auto-fixes safe issues.'
 
       # Librarian Weekly Audit Configuration
-      - '--update-env-vars=LIBRARIAN_WEEKLY_AUDIT_CRON=0 3 * * 0'
-      - '--update-env-vars=LIBRARIAN_WEEKLY_AUDIT_TIME=Sundays 3:00 AM Israel Time'
-      - '--update-env-vars=LIBRARIAN_WEEKLY_AUDIT_MODE=AI Agent'
-      - '--update-env-vars=LIBRARIAN_WEEKLY_AUDIT_COST=~$0.50/week'
-      - '--update-env-vars=LIBRARIAN_WEEKLY_AUDIT_STATUS=ENABLED'
-      - '--update-env-vars=LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION=Claude decides what to check and fix. Sends email only for major issues.'
+      - '--set-env-vars=LIBRARIAN_WEEKLY_AUDIT_CRON=0 3 * * 0'
+      - '--set-env-vars=LIBRARIAN_WEEKLY_AUDIT_TIME=Sundays 3:00 AM Israel Time'
+      - '--set-env-vars=LIBRARIAN_WEEKLY_AUDIT_MODE=AI Agent'
+      - '--set-env-vars=LIBRARIAN_WEEKLY_AUDIT_COST=~$0.50/week'
+      - '--set-env-vars=LIBRARIAN_WEEKLY_AUDIT_STATUS=ENABLED'
+      - '--set-env-vars=LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION=Claude decides what to check and fix. Sends email only for major issues.'
 
       # Librarian Limits
-      - '--update-env-vars=LIBRARIAN_MAX_ITERATIONS=50'
-      - '--update-env-vars=LIBRARIAN_DEFAULT_BUDGET_USD=10.0'
-      - '--update-env-vars=LIBRARIAN_MIN_BUDGET_USD=0.1'
-      - '--update-env-vars=LIBRARIAN_MAX_BUDGET_USD=20.0'
-      - '--update-env-vars=LIBRARIAN_BUDGET_STEP_USD=0.5'
+      - '--set-env-vars=LIBRARIAN_MAX_ITERATIONS=50'
+      - '--set-env-vars=LIBRARIAN_DEFAULT_BUDGET_USD=10.0'
+      - '--set-env-vars=LIBRARIAN_MIN_BUDGET_USD=0.1'
+      - '--set-env-vars=LIBRARIAN_MAX_BUDGET_USD=20.0'
+      - '--set-env-vars=LIBRARIAN_BUDGET_STEP_USD=0.5'
 
       # Librarian Pagination
-      - '--update-env-vars=LIBRARIAN_REPORTS_LIMIT=10'
-      - '--update-env-vars=LIBRARIAN_ACTIONS_LIMIT=50'
-      - '--update-env-vars=LIBRARIAN_ACTIVITY_PAGE_SIZE=10'
+      - '--set-env-vars=LIBRARIAN_REPORTS_LIMIT=10'
+      - '--set-env-vars=LIBRARIAN_ACTIONS_LIMIT=50'
+      - '--set-env-vars=LIBRARIAN_ACTIVITY_PAGE_SIZE=10'
 
       # Librarian UI Settings
-      - '--update-env-vars=LIBRARIAN_ID_TRUNCATE_LENGTH=8'
-      - '--update-env-vars=LIBRARIAN_MODAL_MAX_HEIGHT=600'
+      - '--set-env-vars=LIBRARIAN_ID_TRUNCATE_LENGTH=8'
+      - '--set-env-vars=LIBRARIAN_MODAL_MAX_HEIGHT=600'
 
       # WebAuthn Configuration (Production Values)
-      - '--update-env-vars=WEBAUTHN_RP_ID=bayit.tv'
-      - '--update-env-vars=WEBAUTHN_RP_NAME=Bayit Plus'
+      - '--set-env-vars=WEBAUTHN_RP_ID=bayit.tv'
+      - '--set-env-vars=WEBAUTHN_RP_NAME=Bayit Plus'
 
       # Secrets from Google Secret Manager
       - '--update-secrets=WEBAUTHN_ORIGIN=bayit-webauthn-origin:latest'
@@ -89,8 +87,8 @@ steps:
       - '--update-secrets=CHROMECAST_RECEIVER_APP_ID=bayit-chromecast-receiver-id:latest'
 
       # Casting Feature Configuration
-      - '--update-env-vars=CAST_ENABLE_AIRPLAY=true'
-      - '--update-env-vars=CAST_ENABLE_CHROMECAST=true'
+      - '--set-env-vars=CAST_ENABLE_AIRPLAY=true'
+      - '--set-env-vars=CAST_ENABLE_CHROMECAST=true'
 
 images:
   - 'gcr.io/$PROJECT_ID/bayit-backend:$BUILD_ID'

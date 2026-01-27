@@ -11,7 +11,7 @@ echo ""
 # Configuration
 PROJECT_ID="bayit-plus"
 REGION="us-east1"
-SERVICE_NAME="bayit-plus-backend"
+SERVICE_NAME="bayit-backend-production"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 echo "📝 Configuration:"
