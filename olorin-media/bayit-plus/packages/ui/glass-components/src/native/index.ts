@@ -84,6 +84,10 @@ export { GlassTable, GlassTableCell, type GlassTableProps, type GlassTableColumn
 export { GlassAnalogClock, type GlassAnalogClockProps } from './components/GlassAnalogClock';
 export { GlassTVSwitch, type GlassTVSwitchProps } from './components/GlassTVSwitch';
 
+// Carousel components
+export { GlassCarousel3D, type GlassCarousel3DProps } from './components/GlassCarousel3D';
+export { GlassPosterCard, type GlassPosterCardProps } from './components/GlassPosterCard';
+
 // Re-export hooks
 export * from '../hooks/index';
 

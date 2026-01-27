@@ -59,11 +59,12 @@ export default function CategoriesPage() {
       {
         key: 'name',
         label: t('admin.content.columns.name', 'Name'),
+        width: 250,
         align: isRTL ? 'right' : 'left',
         render: (name: string, item: Category) => (
           <View>
-            <Text style={styles.nameText}>{name}</Text>
-            {item.name_en && <Text style={styles.nameSecondary}>{item.name_en}</Text>}
+            <Text style={styles.nameText} numberOfLines={1}>{name}</Text>
+            {item.name_en && <Text style={styles.nameSecondary} numberOfLines={1}>{item.name_en}</Text>}
           </View>
         ),
       },
