@@ -11,6 +11,7 @@ import {
   StyleProp,
 } from 'react-native';
 import { GlassView } from './GlassView';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 import { useTVFocus } from '../hooks/useTVFocus';
 
@@ -69,8 +70,8 @@ export const GlassCard: React.FC<GlassCardProps> = ({
               resizeMode="contain"
             />
           ) : (
-            <View style={[styles.imagePlaceholder, { width: '100%', height: '100%' }]}>
-              <Text style={styles.placeholderIcon}>🎬</Text>
+            <View style={[styles.imagePlaceholder, { width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' }]}>
+              <NativeIcon name="vod" size="lg" color={colors.textMuted} />
             </View>
           )}
         </View>
@@ -167,9 +168,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: borderRadius.lg,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 32,
   },
   textContainer: {
     padding: spacing.sm,
