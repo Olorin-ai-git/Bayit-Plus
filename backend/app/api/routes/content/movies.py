@@ -3,18 +3,38 @@ Movie-specific endpoints.
 """
 
 import logging
+import re
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.core.config import settings
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.content import Content
 from app.models.user import User
+from app.services.ffmpeg.realtime_transcode import needs_transcode_by_extension
 from app.services.tmdb_service import tmdb_service
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+# User-Agent patterns for native iOS/tvOS apps
+_NATIVE_APP_PATTERNS = [
+    r"Bayit\+/.*CFNetwork",
+    r"Darwin/",
+    r"AppleTV",
+    r"com\.bayit\.plus",
+]
+
+
+def _is_native_app(user_agent: str) -> bool:
+    """Check if request is from native iOS/tvOS app."""
+    if not user_agent:
+        return False
+    for pattern in _NATIVE_APP_PATTERNS:
+        if re.search(pattern, user_agent, re.IGNORECASE):
+            return True
+    return False
 
 
 @router.get("/movies")
@@ -93,6 +113,7 @@ async def debug_movie(movie_id: str):
 
 @router.get("/movie/{movie_id}")
 async def get_movie_details(
+    request: Request,
     movie_id: str,
     current_user: Optional[User] = Depends(get_optional_user),
 ):
@@ -112,6 +133,23 @@ async def get_movie_details(
         .to_list()
     )
 
+    # Determine stream URL based on platform
+    user_agent = request.headers.get("User-Agent", "")
+    is_native = _is_native_app(user_agent)
+    stream_url = movie.stream_url
+    use_transcode = False
+
+    # For web clients, check if transcoding is needed (fast extension-based check)
+    if not is_native and stream_url:
+        if needs_transcode_by_extension(stream_url):
+            use_transcode = True
+            stream_url = f"/api/proxy/transcode/{movie_id}"
+
+    # For transcoded streams, provide duration in seconds for proper slider
+    duration_hint = None
+    if use_transcode and movie.video_metadata:
+        duration_hint = movie.video_metadata.get("duration")
+
     return {
         "id": str(movie.id),
         "title": movie.title,
@@ -120,6 +158,7 @@ async def get_movie_details(
         "backdrop": movie.backdrop,
         "category": movie.category_name,
         "duration": movie.duration,
+        "duration_hint": duration_hint,
         "year": movie.year,
         "rating": movie.rating,
         "genre": movie.genre,
@@ -127,7 +166,8 @@ async def get_movie_details(
         "director": movie.director,
         "trailer_url": movie.trailer_url,
         "preview_url": movie.preview_url,
-        "stream_url": movie.stream_url,
+        "stream_url": stream_url,
+        "direct_url": movie.stream_url,  # Always provide direct URL
         "tmdb_id": movie.tmdb_id,
         "imdb_id": movie.imdb_id,
         "imdb_rating": movie.imdb_rating,
@@ -137,6 +177,7 @@ async def get_movie_details(
             movie.available_subtitle_languages
             and len(movie.available_subtitle_languages) > 0
         ),
+        "is_transcoded": use_transcode,
         "related": [
             {
                 "id": str(item.id),

@@ -75,8 +75,15 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
   const effectiveType = (currentPlaylistItem?.content_type as typeof type) || type;
 
   const contentLoaderResult = useContentLoader(contentId, effectiveType);
-  const { content, streamUrl: initialStreamUrl, related, loading, availableSubtitleLanguages } =
-    contentLoaderResult;
+  const {
+    content,
+    streamUrl: initialStreamUrl,
+    related,
+    loading,
+    availableSubtitleLanguages,
+    isTranscoded,
+    directUrl,
+  } = contentLoaderResult;
 
   const [streamUrl, setStreamUrl] = React.useState<string | null>(initialStreamUrl);
 
@@ -204,6 +211,9 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
             initialSeekTime={initialSeekTime}
             onEnded={handleContentEnded}
             onShowUpgrade={() => navigate('/subscribe')}
+            isTranscoded={isTranscoded}
+            contentDuration={content.duration_hint}
+            directUrl={directUrl}
           />
         )}
       </View>

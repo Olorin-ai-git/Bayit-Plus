@@ -29,6 +29,7 @@ from app.services.tmdb_service import TMDBService
 from .background import background_enricher
 from .content import content_creator
 from .gcs import gcs_uploader
+from .hls import hls_service
 from .lock import upload_lock_manager
 from .metadata import metadata_extractor
 from .transaction import UploadTransaction
@@ -247,6 +248,15 @@ class UploadService:
                 action_name="gcs_upload",
             )
 
+            # Stage 2.5: HLS conversion for video files (if enabled and needed)
+            if settings.HLS_CONVERSION_ENABLED and job.type == ContentType.MOVIE:
+                if hls_service.needs_conversion(job.filename):
+                    await transaction.execute_with_compensation(
+                        action=lambda: self._process_hls_conversion_stage(job),
+                        compensation=lambda: self._compensate_hls_conversion(job),
+                        action_name="hls_conversion",
+                    )
+
             # Stage 3: Create content entry in database with compensation
             await transaction.execute_with_compensation(
                 action=lambda: self._process_database_stage(job),
@@ -303,6 +313,21 @@ class UploadService:
                 return True
             except Exception as e:
                 logger.error(f"Failed to delete Content record {content_id}: {e}")
+                return False
+        return True  # Nothing to delete
+
+    async def _compensate_hls_conversion(self, job: UploadJob) -> bool:
+        """Compensation action: Delete HLS files from GCS."""
+        hls_path = job.metadata.get("hls_gcs_path")
+        if hls_path:
+            try:
+                logger.info(f"Compensating: Deleting HLS files at {hls_path}")
+                deleted = await gcs_uploader.delete_directory(hls_path)
+                if deleted:
+                    logger.info(f"Deleted HLS directory {hls_path}")
+                return True
+            except Exception as e:
+                logger.error(f"Failed to delete HLS directory {hls_path}: {e}")
                 return False
         return True  # Nothing to delete
 
@@ -426,6 +451,63 @@ class UploadService:
         job.stage_timings["gcs_upload"]["completed"] = datetime.utcnow().isoformat()
         job.stage_timings["gcs_upload"]["duration_seconds"] = round(gcs_duration, 2)
         await job.save()
+
+    async def _process_hls_conversion_stage(self, job: UploadJob):
+        """Convert video to HLS format with browser-compatible audio."""
+        job.stages["hls_conversion"] = "in_progress"
+        job.stage_timings["hls_conversion"] = {
+            "started": datetime.utcnow().isoformat()
+        }
+        job.progress = 75.0
+        await job.save()
+        await self._broadcast_queue_update()
+
+        logger.info(f"Starting HLS conversion for {job.filename}")
+
+        async def on_progress(message: str, progress: float):
+            job.metadata["hls_status"] = message
+            job.progress = 75.0 + (progress * 0.2)  # 75-95% range
+            await job.save()
+            await self._broadcast_queue_update()
+
+        hls_start_time = datetime.utcnow()
+
+        # Convert from source file (still available during upload pipeline)
+        content_title = job.metadata.get("title", Path(job.filename).stem)
+        content_type_str = "movies" if job.type == ContentType.MOVIE else "series"
+
+        hls_url = await hls_service.convert_and_upload(
+            source_path=job.source_path,
+            content_title=content_title,
+            content_type=content_type_str,
+            on_progress=on_progress,
+        )
+
+        hls_duration = (datetime.utcnow() - hls_start_time).total_seconds()
+
+        if not hls_url:
+            raise Exception("HLS conversion failed - no playlist URL returned")
+
+        # Store original URL and update destination to HLS
+        job.metadata["original_stream_url"] = job.destination_url
+        job.metadata["hls_gcs_path"] = f"{content_type_str}/{hls_service._sanitize_title(content_title)}/hls"
+        job.destination_url = hls_url  # Now points to M3U8 playlist
+
+        job.stages["hls_conversion"] = "completed"
+        job.stage_timings["hls_conversion"][
+            "completed"
+        ] = datetime.utcnow().isoformat()
+        job.stage_timings["hls_conversion"]["duration_seconds"] = round(
+            hls_duration, 2
+        )
+        job.progress = 95.0
+        await job.save()
+        await self._broadcast_queue_update()
+
+        logger.info(
+            f"HLS conversion completed for {job.filename}: {hls_url} "
+            f"(took {hls_duration:.1f}s)"
+        )
 
     async def _process_database_stage(self, job: UploadJob):
         """Create content entry in database."""

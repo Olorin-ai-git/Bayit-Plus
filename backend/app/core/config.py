@@ -291,6 +291,12 @@ class Settings(BaseSettings):
     )
     GCS_UPLOAD_RETRY_MAX_DELAY_SECONDS: float = 60.0  # Maximum delay between retries
 
+    # HLS Conversion Configuration
+    HLS_CONVERSION_ENABLED: bool = True  # Enable automatic HLS conversion for uploads
+    HLS_SEGMENT_DURATION: int = 10  # Duration of each HLS segment in seconds
+    HLS_CONVERSION_TIMEOUT: int = 7200  # Max time for conversion (2 hours)
+    HLS_TEMP_DIR: str = "/tmp/hls-conversion"  # Temp directory for HLS processing
+
     # CDN (optional, works with both S3 CloudFront and GCS Cloud CDN)
     CDN_BASE_URL: str = ""
 

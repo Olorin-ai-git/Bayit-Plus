@@ -19,7 +19,7 @@ interface WatchlistItem {
   subtitle_en?: string;
   subtitle_es?: string;
   thumbnail?: string;
-  type: 'movie' | 'series' | 'live' | 'podcast' | 'radio' | 'channel';
+  type: 'movie' | 'series' | 'live' | 'podcast' | 'radio' | 'channel' | 'audiobook';
   category?: string;
   is_kids_content?: boolean;
   year?: string;

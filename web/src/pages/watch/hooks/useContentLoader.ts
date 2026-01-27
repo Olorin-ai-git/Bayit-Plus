@@ -16,6 +16,8 @@ interface UseContentLoaderResult {
   related: any[];
   loading: boolean;
   availableSubtitleLanguages: string[];
+  isTranscoded: boolean;
+  directUrl: string | null;
 }
 
 export function useContentLoader(
@@ -29,6 +31,8 @@ export function useContentLoader(
   const [related, setRelated] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [availableSubtitleLanguages, setAvailableSubtitleLanguages] = useState<string[]>([]);
+  const [isTranscoded, setIsTranscoded] = useState(false);
+  const [directUrl, setDirectUrl] = useState<string | null>(null);
 
   useEffect(() => {
     loadContent();
@@ -94,8 +98,16 @@ export function useContentLoader(
         }
 
         const streamUrlValue = stream?.url || null;
-        logger.debug('Setting stream URL', 'useContentLoader', { streamUrlValue });
+        const isTranscodedValue = stream?.is_transcoded || false;
+        const directUrlValue = stream?.direct_url || null;
+        logger.debug('Setting stream URL', 'useContentLoader', {
+          streamUrlValue,
+          isTranscoded: isTranscodedValue,
+          directUrl: directUrlValue
+        });
         setStreamUrl(streamUrlValue);
+        setIsTranscoded(isTranscodedValue);
+        setDirectUrl(directUrlValue);
       } catch (error: any) {
         logger.error('Failed to load stream URL', 'useContentLoader', {
           error: error.message || error,
@@ -137,5 +149,7 @@ export function useContentLoader(
     related,
     loading,
     availableSubtitleLanguages,
+    isTranscoded,
+    directUrl,
   };
 }

@@ -35,6 +35,8 @@ from datetime import datetime, UTC
 import argparse
 import tempfile
 import shutil
+from dataclasses import dataclass
+from enum import Enum
 
 # Add backend directory to path
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -55,6 +57,186 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+class StructureType(Enum):
+    """Directory structure types supported by the upload script."""
+    TYPE_A_LEGACY_SEASONS = "legacy_seasons"  # SeriesName/Season N/filename
+    TYPE_B_FLAT = "flat"  # SeriesName/filename
+    TYPE_C_EPISODE_GROUPED = "episode_grouped"  # SeriesName/S##E##-Title/video
+    TYPE_D_MIXED = "mixed"  # Mixed structures detected
+
+
+@dataclass
+class DirectoryAnalysis:
+    """Analysis results of directory structure."""
+    structure_type: StructureType
+    confidence: str  # "high", "medium", "low"
+    series_boundaries: Dict[str, List[str]]  # {series_name: [file_paths]}
+    sample_files_analyzed: int
+    total_files: int
+    detection_notes: str
+
+
+class DirectoryStructureDetector:
+    """Detects and analyzes TV series directory structures."""
+
+    def __init__(self, source_dir: str):
+        self.source_dir = source_dir
+        self.sample_size = 10  # Analyze only first 10 files for O(1) performance
+
+    def analyze_directory_structure(self) -> DirectoryAnalysis:
+        """Analyze directory structure and detect type."""
+        video_extensions = {'.mp4', '.mkv', '.avi', '.mov', '.webm', '.m4v'}
+        all_files = []
+
+        for root, dirs, files in os.walk(self.source_dir):
+            for file in files:
+                if Path(file).suffix.lower() in video_extensions:
+                    full_path = os.path.join(root, file)
+                    all_files.append(full_path)
+
+        if not all_files:
+            return DirectoryAnalysis(
+                structure_type=StructureType.TYPE_D_MIXED,
+                confidence="low",
+                series_boundaries={},
+                sample_files_analyzed=0,
+                total_files=0,
+                detection_notes="No video files found in directory"
+            )
+
+        sample_files = all_files[:self.sample_size]
+        structure_type = self._classify_structure_type(sample_files)
+        series_boundaries = self._detect_series_boundaries(all_files, structure_type)
+        confidence = self._calculate_confidence(sample_files, structure_type)
+        notes = self._generate_detection_notes(structure_type, len(sample_files))
+
+        return DirectoryAnalysis(
+            structure_type=structure_type,
+            confidence=confidence,
+            series_boundaries=series_boundaries,
+            sample_files_analyzed=len(sample_files),
+            total_files=len(all_files),
+            detection_notes=notes
+        )
+
+    def _classify_structure_type(self, sample_files: List[str]) -> StructureType:
+        """Classify directory structure type based on file samples."""
+        structure_votes = {
+            StructureType.TYPE_A_LEGACY_SEASONS: 0,
+            StructureType.TYPE_B_FLAT: 0,
+            StructureType.TYPE_C_EPISODE_GROUPED: 0,
+        }
+
+        for file_path in sample_files:
+            rel_path = self._get_relative_path(file_path)
+            parts = rel_path.split(os.sep)
+
+            if len(parts) >= 3:
+                second_level = parts[1]
+                if self._is_season_directory(second_level):
+                    structure_votes[StructureType.TYPE_A_LEGACY_SEASONS] += 1
+                elif self._is_episode_grouped_directory(second_level):
+                    structure_votes[StructureType.TYPE_C_EPISODE_GROUPED] += 1
+                else:
+                    structure_votes[StructureType.TYPE_B_FLAT] += 1
+            elif len(parts) == 2:
+                structure_votes[StructureType.TYPE_B_FLAT] += 1
+
+        max_votes = max(structure_votes.values())
+        if max_votes == 0:
+            return StructureType.TYPE_D_MIXED
+
+        primary_type = [k for k, v in structure_votes.items() if v == max_votes][0]
+
+        mixed_types = sum(1 for v in structure_votes.values() if v > 0)
+        if mixed_types > 1:
+            logger.warning(f"Mixed structures detected; using {primary_type.value}")
+            return StructureType.TYPE_D_MIXED
+
+        return primary_type
+
+    def _detect_series_boundaries(self, all_files: List[str], structure_type: StructureType) -> Dict[str, List[str]]:
+        """Map series names to their episode files."""
+        series_map = {}
+
+        for file_path in all_files:
+            rel_path = self._get_relative_path(file_path)
+            parts = rel_path.split(os.sep)
+
+            if not parts:
+                continue
+
+            series_name = parts[0]
+
+            if series_name not in series_map:
+                series_map[series_name] = []
+
+            series_map[series_name].append(file_path)
+
+        return series_map
+
+    def _is_season_directory(self, dir_name: str) -> bool:
+        """Check if directory name matches season pattern."""
+        patterns = [
+            r'^[Ss]eason[\s\._]?\d+$',
+            r'^[Ss]\d+$',
+            r'^S\d{2}$',
+        ]
+        return any(re.match(pattern, dir_name) for pattern in patterns)
+
+    def _is_episode_grouped_directory(self, dir_name: str) -> bool:
+        """Check if directory name matches episode-grouped pattern."""
+        pattern = r'^[Ss]\d{2}[Ee]\d{2}'
+        return bool(re.match(pattern, dir_name))
+
+    def _get_relative_path(self, file_path: str) -> str:
+        """Get relative path from source directory."""
+        try:
+            path_obj = Path(file_path)
+            source_obj = Path(self.source_dir)
+            rel_path = path_obj.relative_to(source_obj)
+            return str(rel_path)
+        except ValueError:
+            return file_path
+
+    def _calculate_confidence(self, sample_files: List[str], structure_type: StructureType) -> str:
+        """Calculate detection confidence level."""
+        if structure_type == StructureType.TYPE_D_MIXED:
+            return "low"
+
+        consistent_matches = 0
+        for file_path in sample_files:
+            rel_path = self._get_relative_path(file_path)
+            parts = rel_path.split(os.sep)
+
+            if structure_type == StructureType.TYPE_A_LEGACY_SEASONS:
+                if len(parts) >= 3 and self._is_season_directory(parts[1]):
+                    consistent_matches += 1
+            elif structure_type == StructureType.TYPE_B_FLAT:
+                if len(parts) == 2:
+                    consistent_matches += 1
+            elif structure_type == StructureType.TYPE_C_EPISODE_GROUPED:
+                if len(parts) >= 3 and self._is_episode_grouped_directory(parts[1]):
+                    consistent_matches += 1
+
+        ratio = consistent_matches / len(sample_files) if sample_files else 0
+        if ratio >= 0.8:
+            return "high"
+        elif ratio >= 0.5:
+            return "medium"
+        return "low"
+
+    def _generate_detection_notes(self, structure_type: StructureType, sample_count: int) -> str:
+        """Generate human-readable detection notes."""
+        type_descriptions = {
+            StructureType.TYPE_A_LEGACY_SEASONS: "Legacy Season directories (SeriesName/Season N/files)",
+            StructureType.TYPE_B_FLAT: "Flat structure (SeriesName/episode_files)",
+            StructureType.TYPE_C_EPISODE_GROUPED: "Episode-grouped structure (SeriesName/S##E##-Title/files)",
+            StructureType.TYPE_D_MIXED: "Mixed structures detected; using legacy format",
+        }
+        return f"Detected: {type_descriptions.get(structure_type, 'Unknown')} (sampled {sample_count} files)"
 
 
 async def download_from_url(url: str, dest_dir: str) -> Optional[str]:
@@ -115,11 +297,10 @@ def extract_episode_info(filename: str) -> Tuple[Optional[int], Optional[int]]:
     return None, None
 
 
-def extract_series_metadata(path: str, series_dir: str) -> Dict:
+def extract_series_metadata(path: str, series_dir: str, structure_type: StructureType = StructureType.TYPE_A_LEGACY_SEASONS) -> Dict:
     """Extract series name, season, and episode from path structure."""
     path_obj = Path(path)
 
-    # Get relative path from series directory
     try:
         rel_path = path_obj.relative_to(series_dir)
         parts = rel_path.parts
@@ -131,49 +312,93 @@ def extract_series_metadata(path: str, series_dir: str) -> Dict:
         'season': None,
         'episode': None,
         'filename': path_obj.name,
+        'extraction_source': 'unknown',
     }
 
-    # Try to extract from directory structure
-    # Expected: SeriesName/Season N/filename
-    if len(parts) >= 3:
-        metadata['series_name'] = parts[0]
+    if len(parts) < 2:
+        return metadata
 
-        # Extract season from directory name
+    metadata['series_name'] = parts[0]
+
+    if structure_type == StructureType.TYPE_A_LEGACY_SEASONS:
+        metadata.update(_extract_type_a_metadata(parts, path_obj))
+    elif structure_type == StructureType.TYPE_B_FLAT:
+        metadata.update(_extract_type_b_metadata(path_obj))
+    elif structure_type == StructureType.TYPE_C_EPISODE_GROUPED:
+        metadata.update(_extract_type_c_metadata(parts, path_obj))
+    elif structure_type == StructureType.TYPE_D_MIXED:
+        metadata.update(_extract_type_a_metadata(parts, path_obj))
+
+    _clean_series_name(metadata)
+
+    return metadata
+
+
+def _extract_type_a_metadata(parts: Tuple, path_obj: Path) -> Dict:
+    """Extract metadata for Type A (Legacy Season) structure."""
+    extraction = {
+        'season': None,
+        'episode': None,
+        'extraction_source': 'type_a_legacy',
+    }
+
+    if len(parts) >= 3:
         season_dir = parts[1]
         season_match = re.search(r'[Ss]eason[\s\._]?(\d+)', season_dir)
         if season_match:
-            metadata['season'] = int(season_match.group(1))
+            extraction['season'] = int(season_match.group(1))
         else:
-            # Try "S01" format
             season_match = re.search(r'[Ss](\d+)', season_dir)
             if season_match:
-                metadata['season'] = int(season_match.group(1))
+                extraction['season'] = int(season_match.group(1))
 
-    # Extract from filename
     season_file, episode_file = extract_episode_info(path_obj.name)
-
-    # Use filename data if available, otherwise use directory data
     if season_file is not None:
-        metadata['season'] = season_file
+        extraction['season'] = season_file
     if episode_file is not None:
-        metadata['episode'] = episode_file
+        extraction['episode'] = episode_file
 
-    # If no series name from directory, try to extract from filename
-    if not metadata['series_name']:
-        # Remove season/episode markers and quality indicators
-        name = path_obj.stem
-        name = re.sub(r'[Ss]\d+[Ee]\d+.*$', '', name)
-        name = re.sub(r'\d+x\d+.*$', '', name)
-        name = name.replace('.', ' ').replace('_', ' ')
-        name = ' '.join(name.split()).strip()
-        metadata['series_name'] = name
+    return extraction
 
-    # Clean series name
+
+def _extract_type_b_metadata(path_obj: Path) -> Dict:
+    """Extract metadata for Type B (Flat) structure."""
+    extraction = {
+        'season': None,
+        'episode': None,
+        'extraction_source': 'type_b_flat',
+    }
+
+    season_file, episode_file = extract_episode_info(path_obj.name)
+    extraction['season'] = season_file
+    extraction['episode'] = episode_file
+
+    return extraction
+
+
+def _extract_type_c_metadata(parts: Tuple, path_obj: Path) -> Dict:
+    """Extract metadata for Type C (Episode-grouped) structure."""
+    extraction = {
+        'season': None,
+        'episode': None,
+        'extraction_source': 'type_c_episode_grouped',
+    }
+
+    if len(parts) >= 2:
+        episode_dir = parts[1]
+        match = re.match(r'[Ss](\d+)[Ee](\d+)', episode_dir)
+        if match:
+            extraction['season'] = int(match.group(1))
+            extraction['episode'] = int(match.group(2))
+
+    return extraction
+
+
+def _clean_series_name(metadata: Dict):
+    """Clean series name in metadata."""
     if metadata['series_name']:
         metadata['series_name'] = metadata['series_name'].replace('.', ' ').replace('_', ' ')
         metadata['series_name'] = ' '.join(metadata['series_name'].split()).strip()
-
-    return metadata
 
 
 async def get_tmdb_series_metadata(title: str, year: Optional[int] = None) -> Optional[Dict]:
@@ -411,6 +636,14 @@ async def upload_series(source_dir: str = None, source_url: str = None, dry_run:
     logger.info(f"Scanning directory: {source_dir}")
     logger.info(f"Dry run: {dry_run}")
 
+    # Detect directory structure
+    detector = DirectoryStructureDetector(source_dir)
+    analysis = detector.analyze_directory_structure()
+    logger.info(f"Structure detection: {analysis.detection_notes}")
+    logger.info(f"  Type: {analysis.structure_type.value}")
+    logger.info(f"  Confidence: {analysis.confidence}")
+    logger.info(f"  Total files analyzed: {analysis.total_files}")
+
     # Initialize database
     mongodb_url = os.environ.get('MONGODB_URI') or settings.MONGODB_URI
     if 'localhost' in mongodb_url:
@@ -464,7 +697,7 @@ async def upload_series(source_dir: str = None, source_url: str = None, dry_run:
     # Group by series
     series_episodes = {}
     for file_path in episode_files:
-        metadata = extract_series_metadata(file_path, source_dir)
+        metadata = extract_series_metadata(file_path, source_dir, analysis.structure_type)
         series_name = metadata['series_name']
 
         if not series_name:

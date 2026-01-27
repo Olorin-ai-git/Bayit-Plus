@@ -49,7 +49,8 @@ def register_all_routers(app: FastAPI) -> None:
                                 direct_messages, downloads, epg,
                                 family_controls, favorites, friends, health,
                                 history, jerusalem, judaism, librarian, live,
-                                live_dubbing, live_quota, news, nlp, notifications,
+                                live_dubbing, live_quota, media_proxy, news, nlp,
+                                notifications,
                                 onboarding, party, password_reset,
                                 playback_session, podcasts, profile_stats,
                                 profiles, radio, recordings, ritual, search,
@@ -131,6 +132,9 @@ def register_all_routers(app: FastAPI) -> None:
         tags=["subtitle-preferences"],
     )
     app.include_router(trending.router, prefix=f"{prefix}/trending", tags=["trending"])
+    app.include_router(
+        media_proxy.router, prefix="/api", tags=["media-proxy", "transcode"]
+    )
     logger.debug("Registered content routes")
 
     # ============================================

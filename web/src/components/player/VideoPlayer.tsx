@@ -40,6 +40,9 @@ export default function VideoPlayer({
   initialSeekTime,
   onShowUpgrade,
   isWidget = false,
+  isTranscoded = false,
+  contentDuration,
+  directUrl,
 }: VideoPlayerProps) {
   const { t, i18n } = useTranslation()
   const user = useAuthStore((s) => s.user)
@@ -61,6 +64,8 @@ export default function VideoPlayer({
     onProgress,
     onEnded,
     contentId,
+    isTranscoded,
+    contentDuration,
   })
 
   const {
