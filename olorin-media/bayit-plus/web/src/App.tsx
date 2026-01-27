@@ -65,6 +65,8 @@ const LivePage = lazy(() => import('./pages/LivePage'))
 const VODPage = lazy(() => import('./pages/VODPage'))
 const RadioPage = lazy(() => import('./pages/RadioPage'))
 const PodcastsPage = lazy(() => import('./pages/PodcastsPage'))
+const AudiobooksPage = lazy(() => import('./pages/audiobooks/AudiobooksPage'))
+const AudiobookDetailPage = lazy(() => import('./pages/audiobooks/AudiobookDetailPage'))
 const SearchPage = lazy(() => import('./pages/SearchPage'))
 const ProfilePage = lazy(() => import('./pages/ProfilePage'))
 const SubscribePage = lazy(() => import('./pages/SubscribePage'))
@@ -211,6 +213,8 @@ const AppContent = () => {
         <Route path="/radio/:stationId" element={<WatchPage type="radio" />} />
         <Route path="/podcasts" element={<PodcastsPage />} />
         <Route path="/podcasts/:showId" element={<WatchPage type="podcast" />} />
+        <Route path="/audiobooks" element={<AudiobooksPage />} />
+        <Route path="/audiobooks/:audiobookId" element={<AudiobookDetailPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/subscribe" element={<SubscribePage />} />

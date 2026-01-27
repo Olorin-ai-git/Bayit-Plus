@@ -162,6 +162,37 @@ async def _cleanup_upload_sessions_task() -> None:
         await asyncio.sleep(settings.UPLOAD_SESSION_CLEANUP_INTERVAL_SECONDS)
 
 
+async def _cleanup_failed_upload_jobs_task() -> None:
+    """Clean up failed upload jobs from the database (runs daily)."""
+    from app.models.upload import UploadJob, UploadStatus
+
+    # Wait for server to initialize
+    await asyncio.sleep(120)
+
+    # Run daily (24 hours = 86400 seconds)
+    cleanup_interval = 86400
+
+    while True:
+        try:
+            # Delete all failed upload jobs
+            result = await UploadJob.find(
+                UploadJob.status == UploadStatus.FAILED
+            ).delete()
+
+            deleted_count = result.deleted_count if result else 0
+
+            if deleted_count > 0:
+                logger.info(f"Daily cleanup: deleted {deleted_count} failed upload jobs")
+
+        except asyncio.CancelledError:
+            logger.info("Failed upload jobs cleanup task cancelled")
+            break
+        except Exception as e:
+            logger.error(f"Failed upload jobs cleanup error: {e}", exc_info=True)
+
+        await asyncio.sleep(cleanup_interval)
+
+
 async def _cleanup_stale_playback_sessions_task() -> None:
     """Clean up stale playback sessions (no heartbeat for 2+ minutes)."""
     from app.services.session_manager import session_manager
@@ -205,6 +236,11 @@ def start_background_tasks() -> None:
     task = asyncio.create_task(_cleanup_upload_sessions_task())
     _running_tasks.append(task)
     logger.info("Started upload session cleanup background task (every 1 hour)")
+
+    # Failed upload jobs cleanup (daily)
+    task = asyncio.create_task(_cleanup_failed_upload_jobs_task())
+    _running_tasks.append(task)
+    logger.info("Started failed upload jobs cleanup background task (daily)")
 
     # Podcast translation worker (if enabled)
     if settings.PODCAST_TRANSLATION_ENABLED:
