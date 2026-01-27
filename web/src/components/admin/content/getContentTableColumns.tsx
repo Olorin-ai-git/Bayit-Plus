@@ -23,6 +23,9 @@ interface ContentItem {
   episode_count?: number
   available_subtitles?: string[]
   is_published: boolean
+  content_type?: 'movie' | 'series' | 'podcast' | 'radio' | 'audiobook'
+  author?: string  // For audiobooks
+  narrator?: string  // For audiobooks
 }
 
 interface Episode {
@@ -65,13 +68,21 @@ export function getContentTableColumns(
       minWidth: 60,
       maxWidth: 120,
       resizable: false, // Don't allow resizing thumbnail column
-      render: (value, row) => (
-        <ThumbnailCell
-          uri={value}
-          type={(row as ContentItem).is_series ? 'series' : 'movie'}
-          size="medium"
-        />
-      ),
+      render: (value, row) => {
+        const content = row as ContentItem
+        const thumbnailType = content.content_type === 'series' ? 'series'
+                            : content.content_type === 'podcast' ? 'podcast'
+                            : content.content_type === 'radio' ? 'radio'
+                            : content.content_type === 'audiobook' ? 'audiobook'
+                            : 'movie'
+        return (
+          <ThumbnailCell
+            uri={value}
+            type={thumbnailType}
+            size="medium"
+          />
+        )
+      },
       renderChild: (value) => <ThumbnailCell uri={value} type="episode" size="small" />,
     },
     {
@@ -79,10 +90,23 @@ export function getContentTableColumns(
       label: t('admin.content.columns.title', 'Title'),
       render: (value, row) => {
         const content = row as ContentItem
+
+        // Determine content type label
+        let typeLabel = t('admin.content.type.movie', 'Movie')
+        if (content.content_type === 'series') {
+          typeLabel = t('admin.content.type.series', 'Series')
+        } else if (content.content_type === 'podcast') {
+          typeLabel = t('admin.content.type.podcast', 'Podcast')
+        } else if (content.content_type === 'radio') {
+          typeLabel = t('admin.content.type.radio', 'Radio')
+        } else if (content.content_type === 'audiobook') {
+          typeLabel = t('admin.content.type.audiobook', 'Audiobook')
+        }
+
         return (
           <TitleCell
             title={value}
-            subtitle={content.is_series ? t('admin.content.type.series', 'Series') : t('admin.content.type.movie', 'Movie')}
+            subtitle={typeLabel}
             badge={content.is_series && content.episode_count ? `${content.episode_count} episodes` : undefined}
             badgeColor="#a855f7"
           />
