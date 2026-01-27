@@ -28,8 +28,13 @@ const CLOUD_RUN_API_URL =
 
 // Get correct API URL based on platform
 const getApiBaseUrl = () => {
-  // Production builds always use the production API
+  // Production builds
   if (!__DEV__) {
+    // Web uses relative path (Firebase Hosting rewrites to Cloud Run)
+    if (Platform.OS === "web") {
+      return "/api/v1";
+    }
+    // Native apps use api.bayit.tv
     return "https://api.bayit.tv/api/v1";
   }
 
