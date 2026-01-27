@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, ScrollView, Platform, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface BreadcrumbItem {
   path: string;
@@ -59,9 +60,13 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
               disabled={isLast}
             >
               {isFirst && (
-                <Text style={[styles.homeIcon, isRTL ? styles.homeIconRTL : styles.homeIconLTR]}>
-                  🏠
-                </Text>
+                <View style={[styles.homeIcon, isRTL ? styles.homeIconRTL : styles.homeIconLTR]}>
+                  <NativeIcon
+                    name="home"
+                    size="sm"
+                    color={isLast ? colors.text : colors.textSecondary}
+                  />
+                </View>
               )}
               <Text
                 style={[
@@ -172,7 +177,8 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   homeIcon: {
-    fontSize: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   homeIconLTR: {
     marginRight: 6,

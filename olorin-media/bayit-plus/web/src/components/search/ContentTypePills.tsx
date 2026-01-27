@@ -8,6 +8,7 @@ import React from 'react';
 import { View, Text, ScrollView, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import type { ContentType } from './SearchControls';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
@@ -25,12 +26,12 @@ interface ContentTypePillsProps {
   onChange: (type: ContentType) => void;
 }
 
-const CONTENT_TYPES: { type: ContentType; label: string; emoji: string }[] = [
-  { type: 'all', label: 'all', emoji: '🎬' },
-  { type: 'vod', label: 'vod', emoji: '📺' },
-  { type: 'live', label: 'live', emoji: '📡' },
-  { type: 'radio', label: 'radio', emoji: '📻' },
-  { type: 'podcast', label: 'podcast', emoji: '🎙️' },
+const CONTENT_TYPES: { type: ContentType; label: string; icon: string }[] = [
+  { type: 'all', label: 'all', icon: 'vod' },
+  { type: 'vod', label: 'vod', icon: 'vod' },
+  { type: 'live', label: 'live', icon: 'live' },
+  { type: 'radio', label: 'radio', icon: 'radio' },
+  { type: 'podcast', label: 'podcast', icon: 'podcasts' },
 ];
 
 /**
@@ -46,7 +47,7 @@ export function ContentTypePills({ selected, onChange }: ContentTypePillsProps) 
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.container}
     >
-      {CONTENT_TYPES.map(({ type, label, emoji }) => {
+      {CONTENT_TYPES.map(({ type, label, icon }) => {
         const isSelected = selected === type;
         const isFocused = focusedType === type;
 
@@ -67,7 +68,11 @@ export function ContentTypePills({ selected, onChange }: ContentTypePillsProps) 
             accessibilityLabel={t(`search.controls.contentTypes.${label}`)}
             accessibilityState={{ selected: isSelected }}
           >
-            <Text style={styles.emoji}>{emoji}</Text>
+            <NativeIcon
+              name={icon}
+              size="sm"
+              color={isSelected ? colors.text : colors.textSecondary}
+            />
             <Text style={[styles.label, isSelected && styles.labelActive]}>
               {t(`search.controls.contentTypes.${label}`)}
             </Text>
@@ -104,9 +109,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.primary.DEFAULT,
     transform: [{ scale: 1.05 }],
-  },
-  emoji: {
-    fontSize: 16,
   },
   label: {
     fontSize: 14,

@@ -6,6 +6,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Check } from 'lucide-react';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { ContentTypesSectionProps, ContentOption, ContentType } from '../types';
@@ -19,9 +20,9 @@ export function ContentTypesSection({
   const { t } = useTranslation();
 
   const contentOptions: ContentOption[] = [
-    { id: 'news' as ContentType, label: t('settings.ritual.news'), icon: '📰' },
-    { id: 'radio' as ContentType, label: t('settings.ritual.radio'), icon: '📻' },
-    { id: 'vod' as ContentType, label: t('settings.ritual.videos'), icon: '🎬' },
+    { id: 'news' as ContentType, label: t('settings.ritual.news'), icon: 'info' },
+    { id: 'radio' as ContentType, label: t('settings.ritual.radio'), icon: 'radio' },
+    { id: 'vod' as ContentType, label: t('settings.ritual.videos'), icon: 'vod' },
   ];
 
   return (
@@ -43,7 +44,11 @@ export function ContentTypesSection({
                 isRTL && styles.rowReverse,
               ]}
             >
-              <Text style={styles.contentIcon}>{content.icon}</Text>
+              <NativeIcon
+                name={content.icon}
+                size="sm"
+                color={isSelected ? colors.primary : colors.textMuted}
+              />
               <Text style={[styles.contentLabel, isRTL && styles.textRight]}>
                 {content.label}
               </Text>
@@ -85,9 +90,6 @@ const styles = StyleSheet.create({
   },
   contentUnselected: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
-  },
-  contentIcon: {
-    fontSize: 20,
   },
   contentLabel: {
     flex: 1,

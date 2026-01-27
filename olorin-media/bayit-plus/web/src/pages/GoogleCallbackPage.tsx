@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@/stores/authStore';
-import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { GlassCard } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
@@ -138,14 +138,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   redirectText: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
   },
   spinner: {
     marginBottom: spacing.md,
   },
   connectingText: {
-    fontSize: 18,
-    color: colors.text,
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
   },
 });

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Sunrise, Check } from 'lucide-react'
+import { NativeIcon } from '@olorin/shared-icons/native'
 import { ritualService } from '@/services/api'
 import logger from '@/utils/logger'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -161,9 +162,9 @@ export default function RitualSettings() {
 
         <View style={styles.contentList}>
           {[
-            { id: 'news', label: t('settings.ritual.news'), icon: '📰' },
-            { id: 'radio', label: t('settings.ritual.radio'), icon: '📻' },
-            { id: 'vod', label: t('settings.ritual.videos'), icon: '🎬' },
+            { id: 'news', label: t('settings.ritual.news'), icon: 'info' },
+            { id: 'radio', label: t('settings.ritual.radio'), icon: 'radio' },
+            { id: 'vod', label: t('settings.ritual.videos'), icon: 'vod' },
           ].map((content) => {
             const isSelected = (preferences.morning_ritual_content || []).includes(content.id)
             return (
@@ -176,7 +177,11 @@ export default function RitualSettings() {
                   hovered && preferences.morning_ritual_enabled && styles.contentOptionHovered,
                 ]}
               >
-                <Text style={styles.contentIcon}>{content.icon}</Text>
+                <NativeIcon
+                  name={content.icon}
+                  size="sm"
+                  color={isSelected ? colors.primary : colors.textMuted}
+                />
                 <Text style={styles.contentLabel}>{content.label}</Text>
                 {isSelected && <Check size={18} color={colors.primary} />}
               </Pressable>
@@ -345,9 +350,6 @@ const styles = StyleSheet.create({
   },
   contentOptionHovered: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  contentIcon: {
-    fontSize: 20,
   },
   contentLabel: {
     flex: 1,

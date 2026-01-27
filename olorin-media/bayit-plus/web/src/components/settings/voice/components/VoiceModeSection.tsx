@@ -16,19 +16,19 @@ const VOICE_MODES: VoiceModeOption[] = [
     value: VoiceMode.VOICE_ONLY,
     labelKey: 'voiceMode.voiceOnly',
     descKey: 'voiceMode.voiceOnlyDesc',
-    icon: '🎙️'
+    icon: 'podcasts'
   },
   {
     value: VoiceMode.HYBRID,
     labelKey: 'voiceMode.hybrid',
     descKey: 'voiceMode.hybridDesc',
-    icon: '🎙️✨'
+    icon: 'podcasts'
   },
   {
     value: VoiceMode.CLASSIC,
     labelKey: 'voiceMode.classic',
     descKey: 'voiceMode.classicDesc',
-    icon: '📺'
+    icon: 'live'
   },
 ];
 

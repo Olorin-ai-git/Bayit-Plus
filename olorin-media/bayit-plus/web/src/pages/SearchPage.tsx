@@ -318,14 +318,7 @@ export default function SearchPage() {
           />
         </ScrollView>
 
-        {/* Voice Error Message */}
-        {voiceError && (
-          <Text style={styles.errorMessage}>
-            {voiceError}
-          </Text>
-        )}
-
-        {/* Trending Searches - Compact, right below filters */}
+        {/* Trending Searches - Positioned above search results area */}
         {query.trim().length === 0 && (
           <View style={styles.trendingSection}>
             <View style={styles.trendingHeader}>
@@ -346,6 +339,13 @@ export default function SearchPage() {
               ))}
             </View>
           </View>
+        )}
+
+        {/* Voice Error Message */}
+        {voiceError && (
+          <Text style={styles.errorMessage}>
+            {voiceError}
+          </Text>
         )}
 
         {/* Search Results Section - Always visible when query exists */}
@@ -461,9 +461,14 @@ const styles = StyleSheet.create({
   },
   filtersScroll: {
     marginBottom: spacing.sm,
+    flex: 0,
+    height: 'auto' as any,
+    maxHeight: 'max-content' as any,
   },
   filtersContent: {
     gap: spacing.sm,
+    paddingVertical: 0,
+    maxHeight: 'max-content' as any,
   },
   aiToggleContainer: {
     backgroundColor: 'rgba(139,92,246,0.08)',

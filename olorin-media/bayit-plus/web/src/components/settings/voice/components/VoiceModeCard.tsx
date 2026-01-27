@@ -5,6 +5,8 @@
 
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Check } from 'lucide-react';
+import { NativeIcon } from '@olorin/shared-icons/native';
+import { colors } from '@olorin/design-tokens';
 import { VoiceModeOption } from '../types';
 
 interface VoiceModeCardProps {
@@ -25,7 +27,11 @@ export function VoiceModeCard({ mode, isSelected, isRTL, onSelect, t }: VoiceMod
       ]}
     >
       <View style={[styles.content, isRTL && styles.rtlRow]}>
-        <Text style={styles.icon}>{mode.icon}</Text>
+        <NativeIcon
+          name={mode.icon}
+          size="lg"
+          color={isSelected ? colors.primary : colors.textSecondary}
+        />
         <View style={styles.textContainer}>
           <Text
             style={[styles.label, isSelected ? styles.selectedText : styles.defaultText]}
@@ -65,9 +71,6 @@ const styles = StyleSheet.create({
   selected: {
     backgroundColor: 'rgba(88, 28, 135, 0.3)',
     borderColor: 'rgba(168, 85, 247, 0.4)',
-  },
-  icon: {
-    fontSize: 28,
   },
   textContainer: {
     flex: 1,

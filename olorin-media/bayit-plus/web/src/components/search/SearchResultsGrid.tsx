@@ -10,6 +10,7 @@ import { View, Text, Image, FlatList, StyleSheet, Platform, ActivityIndicator } 
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface SearchResultsGridProps {
   /** Search results to display */
@@ -74,7 +75,7 @@ export const SearchResultsGrid = memo(function SearchResultsGrid({
           <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
         ) : (
           <View style={styles.placeholderThumbnail}>
-            <Text style={styles.placeholderIcon}>🎬</Text>
+            <NativeIcon name="vod" size="lg" color={colors.textMuted} />
           </View>
         )}
 
@@ -101,7 +102,12 @@ export const SearchResultsGrid = memo(function SearchResultsGrid({
       {/* Metadata */}
       <View style={styles.metadata}>
         {item.year && <Text style={styles.metadataText}>{item.year}</Text>}
-        {item.rating && <Text style={styles.metadataText}>⭐ {item.rating}</Text>}
+        {item.rating && (
+          <View style={styles.ratingContainer}>
+            <NativeIcon name="star" size="xs" color={colors.warning} />
+            <Text style={styles.metadataText}>{item.rating}</Text>
+          </View>
+        )}
       </View>
     </GlassButton>
     );
@@ -202,6 +208,12 @@ const styles = StyleSheet.create({
   metadata: {
     flexDirection: 'row',
     gap: 8,
+    alignItems: 'center',
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    gap: 4,
+    alignItems: 'center',
   },
   metadataText: {
     fontSize: 12,

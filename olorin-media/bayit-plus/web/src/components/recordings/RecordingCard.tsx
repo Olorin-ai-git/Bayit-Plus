@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { Play, Trash2, Calendar, HardDrive } from 'lucide-react'
 import { useNavigation } from '@react-navigation/native'
 import { GlassView } from '@bayit/shared/ui'
+import { NativeIcon } from '@olorin/shared-icons/native'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { Recording } from '@/services/recordingApi'
 import { useNotifications } from '@olorin/glass-ui/hooks'
@@ -66,7 +67,7 @@ export const RecordingCard: React.FC<RecordingCardProps> = ({
           />
         ) : (
           <View style={styles.imagePlaceholder}>
-            <Text style={styles.placeholderIcon}>🎬</Text>
+            <NativeIcon name="vod" size="lg" color={colors.textMuted} />
           </View>
         )}
         <View style={styles.durationBadge}>

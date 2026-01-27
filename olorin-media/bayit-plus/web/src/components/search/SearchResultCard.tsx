@@ -11,6 +11,7 @@ import { SearchCardBadges } from './SearchCardBadges';
 import { SearchCardMetadata } from './SearchCardMetadata';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface SearchResultCardProps {
   /** Search result data */
@@ -50,7 +51,7 @@ export const SearchResultCard = memo(function SearchResultCard({
           />
         ) : (
           <View style={styles.placeholderBackdrop}>
-            <Text style={styles.placeholderIcon}>🎬</Text>
+            <NativeIcon name="vod" size="xl" color={colors.textMuted} />
           </View>
         )}
         <View style={styles.backdropOverlay} />

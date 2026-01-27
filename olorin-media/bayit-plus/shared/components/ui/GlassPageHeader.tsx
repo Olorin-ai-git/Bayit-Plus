@@ -132,9 +132,9 @@ export function GlassPageHeader({
   // Determine icon name from page type or use custom icon
   const iconName = pageType ? PAGE_TYPE_TO_ICON[pageType] : null;
 
-  // Determine glass level
-  const effectiveGlassLevel =
-    glassLevel || (pageType ? PAGE_TYPE_GLASS_LEVEL[pageType] : 'medium');
+  // Determine glass level with fallback
+  const effectiveGlassLevel: GlassLevel =
+    glassLevel || (pageType ? PAGE_TYPE_GLASS_LEVEL[pageType] : undefined) || 'medium';
 
   // Get glass background styling
   const getGlassBackground = () => {
