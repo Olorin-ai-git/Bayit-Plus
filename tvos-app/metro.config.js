@@ -10,6 +10,10 @@ const workspaceNodeModules = path.resolve(workspaceRoot, 'node_modules');
 const packagesRoot = path.resolve(workspaceRoot, 'packages/ui');
 
 const shimsRoot = path.resolve(__dirname, 'src/shims');
+const localNodeModules = path.resolve(__dirname, 'node_modules');
+
+// Packages that MUST come from tvos-app's node_modules (React 19.2.0 compatible)
+const localPackages = ['react', 'scheduler'];
 
 /**
  * Metro configuration for tvOS app
@@ -31,6 +35,11 @@ const config = {
     sourceExts: ['js', 'json', 'ts', 'tsx'],
     extraNodeModules: {
       '@babel/runtime': path.resolve(workspaceNodeModules, '@babel/runtime'),
+      // Force React 19.2.0 from local node_modules (root has React 18.3.1)
+      'react': path.resolve(localNodeModules, 'react'),
+      'react/jsx-runtime': path.resolve(localNodeModules, 'react/jsx-runtime'),
+      'react/jsx-dev-runtime': path.resolve(localNodeModules, 'react/jsx-dev-runtime'),
+      'scheduler': path.resolve(localNodeModules, 'scheduler'),
       // @olorin packages from packages/ui
       '@olorin/design-tokens': path.resolve(packagesRoot, 'design-tokens/src'),
       '@olorin/shared-hooks': path.resolve(packagesRoot, 'shared-hooks/src'),
@@ -67,6 +76,19 @@ const config = {
     ],
     // Custom resolution for shared package subpaths and shims
     resolveRequest: (context, moduleName, platform) => {
+      // CRITICAL: Force React packages from local node_modules to avoid version conflicts
+      // Root has React 18.3.1, tvos-app needs React 19.2.0
+      for (const pkg of localPackages) {
+        if (moduleName === pkg || moduleName.startsWith(pkg + '/')) {
+          const localPath = path.resolve(localNodeModules, moduleName);
+          return context.resolveRequest(
+            { ...context, originModulePath: localPath },
+            moduleName,
+            platform
+          );
+        }
+      }
+
       // Handle @ path alias (TypeScript alias for src directory)
       if (moduleName.startsWith('@/')) {
         const relativePath = moduleName.replace('@/', '');

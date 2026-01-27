@@ -281,6 +281,13 @@ class AuditAction(str, Enum):
     PODCAST_EPISODE_CREATED = "podcast_episode_created"
     PODCAST_EPISODE_UPDATED = "podcast_episode_updated"
     PODCAST_EPISODE_DELETED = "podcast_episode_deleted"
+    AUDIOBOOK_CREATED = "audiobook_created"
+    AUDIOBOOK_UPDATED = "audiobook_updated"
+    AUDIOBOOK_DELETED = "audiobook_deleted"
+    AUDIOBOOK_PUBLISHED = "audiobook_published"
+    AUDIOBOOK_UNPUBLISHED = "audiobook_unpublished"
+    AUDIOBOOK_FEATURED = "audiobook_featured"
+    AUDIOBOOK_STREAM_STARTED = "audiobook_stream_started"
     CONTENT_IMPORTED = "content_imported"
     # Widget Management
     WIDGET_CREATED = "widget_created"

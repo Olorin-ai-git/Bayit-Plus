@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, useMemo, useState, useCallback } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Star, AlertCircle, RefreshCw, Save } from 'lucide-react'
 import { GlassButton, GlassPageHeader } from '@bayit/shared/ui'
@@ -6,6 +6,7 @@ import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { useDirection } from '@/hooks/useDirection'
 import { useFeaturedData } from '@/hooks/admin/useFeaturedData'
 import FeaturedSectionsList from '@/components/admin/featured/FeaturedSectionsList'
+import AddContentModal from '@/components/admin/featured/AddContentModal'
 import AdminLoadingState from '@/components/admin/shared/AdminLoadingState'
 import AdminEmptyState from '@/components/admin/shared/AdminEmptyState'
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
@@ -24,9 +25,37 @@ export default function FeaturedManagementPage() {
     setError,
     handleReorder,
     handleRemoveFromSection,
+    handleAddToSection,
     handleSaveAllSections,
     refresh,
   } = useFeaturedData()
+
+  const [addModalVisible, setAddModalVisible] = useState(false)
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null)
+
+  const selectedSection = useMemo(
+    () => sections.find((s) => s.section_id === selectedSectionId),
+    [sections, selectedSectionId]
+  )
+
+  const handleOpenAddModal = useCallback((sectionId: string) => {
+    setSelectedSectionId(sectionId)
+    setAddModalVisible(true)
+  }, [])
+
+  const handleCloseAddModal = useCallback(() => {
+    setAddModalVisible(false)
+    setSelectedSectionId(null)
+  }, [])
+
+  const handleAddContent = useCallback(
+    async (contentIds: string[]) => {
+      if (!selectedSectionId) return
+      await handleAddToSection(selectedSectionId, contentIds)
+      handleCloseAddModal()
+    },
+    [selectedSectionId, handleAddToSection, handleCloseAddModal]
+  )
 
   const pageConfig = ADMIN_PAGE_CONFIG.featured
   const IconComponent = pageConfig.icon
@@ -104,7 +133,20 @@ export default function FeaturedManagementPage() {
             sections={sections}
             onReorder={handleReorder}
             onRemove={handleRemoveFromSection}
+            onAddContent={handleOpenAddModal}
             isRTL={isRTL}
+          />
+        )}
+
+        {/* Add Content Modal */}
+        {addModalVisible && selectedSection && (
+          <AddContentModal
+            visible={addModalVisible}
+            sectionId={selectedSection.section_id}
+            sectionSlug={selectedSection.slug}
+            existingContentIds={selectedSection.items.map((i) => i.id)}
+            onClose={handleCloseAddModal}
+            onAdd={handleAddContent}
           />
         )}
       </View>

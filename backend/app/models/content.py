@@ -187,6 +187,14 @@ class Content(Document):
         default_factory=list
     )  # ["study-help", "career-prep", etc.]
 
+    # Audiobook-specific fields
+    narrator: Optional[str] = None  # Narrator/speaker name
+    author: Optional[str] = None  # Book author
+    audio_quality: Optional[str] = None  # e.g., "standard", "high-fidelity"
+    isbn: Optional[str] = None  # ISBN number for the book
+    book_edition: Optional[str] = None  # e.g., "1st edition", "revised edition"
+    publisher_name: Optional[str] = None  # Publishing house name
+
     # Manual review flags (set by AI agent for broken streams, integrity issues, etc.)
     needs_review: bool = False
     review_reason: Optional[str] = None
@@ -219,6 +227,8 @@ class Content(Document):
                     ("description_es", TEXT),
                     ("cast", TEXT),
                     ("director", TEXT),
+                    ("author", TEXT),
+                    ("narrator", TEXT),
                 ],
                 name="search_text_index",
                 weights={
@@ -230,6 +240,8 @@ class Content(Document):
                     "description_es": 5,
                     "cast": 3,
                     "director": 3,
+                    "author": 3,
+                    "narrator": 3,
                 },
             ),
             # Legacy category indexes (backward compatibility)
@@ -247,6 +259,10 @@ class Content(Document):
             ("primary_section_id", "is_published"),
             ("audience_id", "is_published"),
             ("content_format", "is_published"),
+            ("content_format", "is_published", "section_ids"),
+            ("content_format", "requires_subscription"),
+            ("author", "content_format"),
+            ("narrator", "content_format"),
             # Multi-field taxonomy queries
             ("section_ids", "audience_id", "is_published"),
             # Note: Cannot use ("section_ids", "genre_ids", "is_published") - MongoDB doesn't allow

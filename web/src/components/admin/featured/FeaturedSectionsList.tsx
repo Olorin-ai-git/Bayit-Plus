@@ -19,6 +19,7 @@ interface Props {
   sections: Section[]
   onReorder: (sectionId: string, fromIndex: number, toIndex: number) => void
   onRemove: (sectionId: string, contentId: string) => void
+  onAddContent: (sectionId: string) => void
   isRTL: boolean
   onExpand?: (sectionId: string) => void
 }
@@ -27,6 +28,7 @@ export default function FeaturedSectionsList({
   sections,
   onReorder,
   onRemove,
+  onAddContent,
   isRTL,
 }: Props) {
   const [expandedSectionId, setExpandedSectionId] = useState<string | null>(null)
@@ -86,6 +88,7 @@ export default function FeaturedSectionsList({
                   section={section}
                   onReorder={(fromIdx, toIdx) => onReorder(section.section_id, fromIdx, toIdx)}
                   onRemove={(contentId) => onRemove(section.section_id, contentId)}
+                  onAddContent={() => onAddContent(section.section_id)}
                   isRTL={isRTL}
                 />
               </View>
