@@ -15,11 +15,12 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Search, Tv, Radio, Podcast, Film } from 'lucide-react';
+import { Search, Tv, Radio, Podcast, Film, Headphones } from 'lucide-react';
 import { GlassModal, GlassInput } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import { liveService, radioService, podcastService } from '@/services/api';
+import { audiobookService } from '@/services/audiobookService';
 import logger from '@/utils/logger';
 import type { ContentItem } from './form/ContentSelectionSection';
 
@@ -29,7 +30,7 @@ interface ContentPickerModalProps {
   onSelect: (content: ContentItem) => void;
 }
 
-type ContentType = 'channels' | 'podcasts' | 'radio' | 'vod';
+type ContentType = 'channels' | 'podcasts' | 'radio' | 'vod' | 'audiobooks';
 
 interface LiveChannel {
   id: string;
@@ -49,6 +50,13 @@ interface RadioStation {
   logo?: string;
 }
 
+interface AudiobookItem {
+  id: string;
+  title: string;
+  thumbnail?: string;
+  author?: string;
+}
+
 export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
   visible,
   onClose,
@@ -63,6 +71,7 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
   const [channels, setChannels] = useState<LiveChannel[]>([]);
   const [podcasts, setPodcasts] = useState<Podcast[]>([]);
   const [radioStations, setRadioStations] = useState<RadioStation[]>([]);
+  const [audiobooks, setAudiobooks] = useState<AudiobookItem[]>([]);
 
   // Load content based on active tab
   useEffect(() => {
@@ -103,6 +112,22 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
           name: item.name,
           logo: item.logo || item.thumbnail,
         })));
+      } else if (activeTab === 'audiobooks') {
+        logger.info('Loading audiobooks...', 'ContentPickerModal');
+        const response = await audiobookService.getAudiobooks({ page_size: 100 });
+        logger.info(`Loaded ${response.items?.length || 0} audiobooks`, 'ContentPickerModal');
+
+        // Filter to only parent audiobooks (is_series=true, no series_id)
+        const parentAudiobooks = (response.items || []).filter((item: any) =>
+          item.is_series === true && !item.series_id
+        );
+
+        setAudiobooks(parentAudiobooks.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          thumbnail: item.thumbnail || item.poster_url,
+          author: item.author,
+        })));
       }
     } catch (err) {
       logger.error('Failed to load content', 'ContentPickerModal', err);
@@ -135,6 +160,13 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
         type: 'radio',
         thumbnail: item.logo,
       };
+    } else if (activeTab === 'audiobooks') {
+      contentItem = {
+        id: item.id,
+        title: item.title,
+        type: 'audiobook',
+        thumbnail: item.thumbnail,
+      };
     } else {
       contentItem = {
         id: item.id,
@@ -155,6 +187,10 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
   );
   const filteredRadio = radioStations.filter((station) =>
     station.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const filteredAudiobooks = audiobooks.filter((book) =>
+    book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (book.author && book.author.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const renderTabButton = (type: ContentType, icon: React.ReactNode, label: string) => {
@@ -184,6 +220,7 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
     if (activeTab === 'channels') items = filteredChannels;
     else if (activeTab === 'podcasts') items = filteredPodcasts;
     else if (activeTab === 'radio') items = filteredRadio;
+    else if (activeTab === 'audiobooks') items = filteredAudiobooks;
 
     if (items.length === 0) {
       return (
@@ -192,6 +229,7 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
             {activeTab === 'channels' && <Tv size={48} color={colors.textSecondary} />}
             {activeTab === 'podcasts' && <Podcast size={48} color={colors.textSecondary} />}
             {activeTab === 'radio' && <Radio size={48} color={colors.textSecondary} />}
+            {activeTab === 'audiobooks' && <Headphones size={48} color={colors.textSecondary} />}
           </View>
           <Text style={styles.emptyText}>
             {searchQuery
@@ -239,6 +277,7 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
                         {activeTab === 'podcasts' && <Podcast size={32} color={colors.primary} />}
                         {activeTab === 'radio' && <Radio size={32} color={colors.primary} />}
                         {activeTab === 'vod' && <Film size={32} color={colors.primary} />}
+                        {activeTab === 'audiobooks' && <Headphones size={32} color={colors.primary} />}
                       </View>
                     )}
                     <View style={[styles.thumbnailOverlay, hovered && styles.thumbnailOverlayHover]}>
@@ -292,6 +331,7 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
           {renderTabButton('channels', <Tv size={18} color={activeTab === 'channels' ? colors.text : colors.textSecondary} />, t('nav.liveChannels', 'Channels'))}
           {renderTabButton('podcasts', <Podcast size={18} color={activeTab === 'podcasts' ? colors.text : colors.textSecondary} />, t('nav.podcasts', 'Podcasts'))}
           {renderTabButton('radio', <Radio size={18} color={activeTab === 'radio' ? colors.text : colors.textSecondary} />, t('nav.radio', 'Radio'))}
+          {renderTabButton('audiobooks', <Headphones size={18} color={activeTab === 'audiobooks' ? colors.text : colors.textSecondary} />, t('nav.audiobooks', 'Audiobooks'))}
         </View>
 
         {/* Content List */}
