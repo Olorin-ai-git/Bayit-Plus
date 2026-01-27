@@ -175,6 +175,7 @@
     "epg": "TV गाइड",
     "radio": "रेडियो",
     "podcasts": "पॉडकास्ट",
+    "audiobooks": "Audiobooks",
     "flows": "फ्लो",
     "judaism": "यहूदी धर्म",
     "children": "बच्चे",
@@ -212,6 +213,7 @@
   "home": {
     "continueWatching": "देखना जारी रखें",
     "featuredContent": "फीचर्ड",
+    "audiobooks": "ऑडियोबुक्स",
     "liveTV": "लाइव TV",
     "allChannels": "सभी चैनल",
     "liveChannels": "लाइव चैनल",

@@ -214,6 +214,7 @@
     "epg": "节目指南",
     "radio": "广播",
     "podcasts": "播客",
+    "audiobooks": "Audiobooks",
     "flows": "流程",
     "judaism": "犹太教",
     "children": "儿童",
@@ -281,6 +282,7 @@
   "home": {
     "continueWatching": "继续观看",
     "featuredContent": "精选",
+    "audiobooks": "有声书",
     "liveTV": "直播电视",
     "allChannels": "所有频道",
     "liveChannels": "直播频道",

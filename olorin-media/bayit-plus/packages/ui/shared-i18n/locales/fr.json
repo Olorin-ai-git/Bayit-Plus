@@ -214,6 +214,7 @@
     "epg": "Guide TV",
     "radio": "Radio",
     "podcasts": "Podcasts",
+    "audiobooks": "Audiobooks",
     "flows": "Flux",
     "judaism": "Judaïsme",
     "children": "Enfants",
@@ -282,6 +283,7 @@
   "home": {
     "continueWatching": "Continuer à regarder",
     "featuredContent": "À la une",
+    "audiobooks": "Livres audio",
     "liveTV": "TV en direct",
     "allChannels": "Toutes les chaînes",
     "liveChannels": "Chaînes en direct",

@@ -123,6 +123,7 @@
     "epg": "TV வழிகாட்டி",
     "radio": "வானொலி",
     "podcasts": "பாட்காஸ்ட்கள்",
+    "audiobooks": "Audiobooks",
     "flows": "ஃப்ளோக்கள்",
     "judaism": "யூதமதம்",
     "children": "குழந்தைகள்",
@@ -156,6 +157,7 @@
   "home": {
     "continueWatching": "தொடர்ந்து பாருங்கள்",
     "featuredContent": "சிறப்பு",
+    "audiobooks": "ஆடியோ புத்தகங்கள்",
     "liveTV": "நேரலை TV",
     "allChannels": "அனைத்து சேனல்கள்",
     "liveChannels": "நேரலை சேனல்கள்",
