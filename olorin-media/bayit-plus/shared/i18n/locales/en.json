@@ -307,6 +307,8 @@
     "jerusalemConnection": "Jerusalem Connection",
     "telAvivConnection": "Tel Aviv Connection",
     "categories": "Categories",
+    "podcasts": "Podcasts",
+    "audiobooks": "Audiobooks",
     "carousel": {
       "fauda": {
         "title": "Fauda",
@@ -1909,10 +1911,15 @@
         "noSources": "No Sources Available",
         "noSourcesDescription": "No free content sources are currently available for {{type}}"
       },
+      "movies": "Movies",
+      "series": "Series",
+      "audiobooks": "Audiobooks",
+      "podcasts": "Podcasts",
       "filters": {
         "contentType": "Content Type",
         "series": "Series",
         "movies": "Movies",
+        "audiobooks": "Audiobooks",
         "podcasts": "Podcasts",
         "radioStations": "Radio Stations",
         "allStatus": "All Status"

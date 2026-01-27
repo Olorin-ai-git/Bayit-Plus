@@ -465,12 +465,20 @@ export default function HomePage() {
 
         if (filteredItems.length === 0) return null;
 
+        // Determine the see-all link based on category type
+        let seeAllLink = `/vod?category=${category.id}`;
+        if (category.name === 'podcasts') {
+          seeAllLink = '/podcasts';
+        } else if (category.name === 'audiobooks') {
+          seeAllLink = '/audiobooks';
+        }
+
         return (
           <ContentCarousel
             key={category.id}
-            title={getLocalizedName(category, i18n.language)}
+            title={t(category.name_key || `home.${category.name}`, { defaultValue: getLocalizedName(category, i18n.language) })}
             items={filteredItems}
-            seeAllLink={`/vod?category=${category.id}`}
+            seeAllLink={seeAllLink}
             style={styles.section}
           />
         );

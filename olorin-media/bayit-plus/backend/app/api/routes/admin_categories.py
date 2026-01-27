@@ -14,6 +14,7 @@ from app.models.admin import AuditAction, Permission
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection, SectionSubcategory
 from app.models.user import User
+from app.utils.i18n import get_multilingual_names
 
 from .admin_content_utils import has_permission, log_audit
 
@@ -98,12 +99,16 @@ async def get_categories(
     result_items = []
     for item in items:
         content_count = await Content.find({"section_ids": str(item.id)}).count()
+        # Resolve multilingual names from i18n
+        names = get_multilingual_names(
+            item.name_key, slug=item.slug, taxonomy_type="sections"
+        )
         result_items.append(
             {
                 "id": str(item.id),
+                "name": names["he"],
+                "name_en": names["en"],
                 "slug": item.slug,
-                "name_key": item.name_key,
-                "description_key": item.description_key,
                 "thumbnail": item.thumbnail,
                 "icon": item.icon,
                 "color": item.color,
@@ -165,11 +170,16 @@ async def get_category(
 
     content_count = await Content.find({"section_ids": str(section.id)}).count()
 
+    # Resolve multilingual names from i18n
+    names = get_multilingual_names(
+        section.name_key, slug=section.slug, taxonomy_type="sections"
+    )
+
     return {
         "id": str(section.id),
+        "name": names["he"],
+        "name_en": names["en"],
         "slug": section.slug,
-        "name_key": section.name_key,
-        "description_key": section.description_key,
         "thumbnail": section.thumbnail,
         "icon": section.icon,
         "color": section.color,

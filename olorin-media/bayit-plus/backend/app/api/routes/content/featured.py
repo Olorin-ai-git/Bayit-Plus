@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, Request
 
 from app.api.routes.content.utils import is_series_by_category
 from app.core.security import get_optional_user, get_passkey_session
-from app.models.content import Content
+from app.models.content import Content, Podcast
 from app.models.content_taxonomy import ContentSection
 from app.models.user import User
 
@@ -118,8 +118,47 @@ async def get_featured(
             .to_list()
         )
 
-    hero_content, featured_content, categories = await asyncio.gather(
-        get_hero(), get_featured_content(), get_categories()
+    async def get_podcasts():
+        """Get featured podcasts for homepage."""
+        return await Podcast.find(Podcast.is_active == True).sort("-order").limit(10).to_list()
+
+    async def get_audiobooks():
+        """Get featured audiobooks from Content collection."""
+        pipeline = [
+            {
+                "$match": {
+                    "$and": [
+                        {
+                            "content_format": "audiobook",
+                            "is_published": True,
+                            "is_quality_variant": {"$ne": True},
+                        },
+                        visibility_match,
+                    ]
+                }
+            },
+            {
+                "$project": {
+                    "_id": 1,
+                    "title": 1,
+                    "thumbnail": 1,
+                    "thumbnail_data": 1,
+                    "poster_url": 1,
+                    "duration": 1,
+                    "year": 1,
+                    "author": 1,
+                    "narrator": 1,
+                }
+            },
+            {"$sort": {"created_at": -1}},
+            {"$limit": 10},
+        ]
+        collection = Content.get_settings().pymongo_collection
+        cursor = collection.aggregate(pipeline)
+        return await cursor.to_list(length=None)
+
+    hero_content, featured_content, categories, podcasts, audiobooks = await asyncio.gather(
+        get_hero(), get_featured_content(), get_categories(), get_podcasts(), get_audiobooks()
     )
     logger.info(f"⏱️ Featured: Initial queries took {time.time() - start_time:.2f}s")
 
@@ -149,137 +188,235 @@ async def get_featured(
         )
 
     cat_query_start = time.time()
-    category_ids = [str(cat.id) for cat in categories]
-    # ContentSection uses name_key for i18n - use slug as fallback display name
-    category_info_map = {
-        str(cat.id): {
-            "name": cat.slug,  # Use slug as display name
-            "name_key": cat.name_key,  # i18n translation key
-            "name_en": cat.slug,  # Fallback to slug
-            "name_es": cat.slug,  # Fallback to slug
-        }
-        for cat in categories
-    }
+    # Separate special sections (podcasts, audiobooks) from regular content sections
+    special_slugs = {"podcasts", "audiobooks"}
 
-    pipeline = [
-        {
-            "$match": {
-                "$and": [
-                    {
-                        "category_id": {"$in": category_ids},
-                        "is_published": True,
-                        "is_quality_variant": {"$ne": True},
-                    },
-                    {
-                        "$or": [
-                            {"series_id": None},
-                            {"series_id": {"$exists": False}},
-                            {"series_id": ""},
+    # Group sections by slug to handle potential duplicates
+    sections_by_slug: dict = {}
+    for cat in categories:
+        if cat.slug not in sections_by_slug:
+            sections_by_slug[cat.slug] = []
+        sections_by_slug[cat.slug].append(cat)
+
+    # Build category data using featured_order (matching admin endpoint logic)
+    category_data = []
+    collection = Content.get_settings().pymongo_collection
+
+    for slug, slug_sections in sections_by_slug.items():
+        primary_section = slug_sections[0]
+        all_section_ids = [str(s.id) for s in slug_sections]
+
+        if slug == "podcasts":
+            # Podcasts from Podcast collection
+            podcast_items = [
+                {
+                    "id": str(podcast.id),
+                    "title": podcast.title,
+                    "thumbnail": podcast.cover,
+                    "category": "podcasts",
+                    "type": "podcast",
+                    "is_series": False,
+                    "author": podcast.author,
+                }
+                for podcast in podcasts
+            ] if podcasts else []
+            category_data.append({
+                "id": str(primary_section.id),
+                "name": slug,
+                "name_key": primary_section.name_key or "home.podcasts",
+                "name_en": "Podcasts",
+                "name_es": "Podcasts",
+                "items": podcast_items,
+            })
+        elif slug == "audiobooks":
+            # Audiobooks from Content collection
+            audiobook_items = [
+                {
+                    "id": str(item["_id"]),
+                    "title": item.get("title"),
+                    "thumbnail": item.get("thumbnail_data") or item.get("thumbnail") or item.get("poster_url"),
+                    "duration": item.get("duration"),
+                    "year": item.get("year"),
+                    "category": "audiobooks",
+                    "type": "audiobook",
+                    "is_series": False,
+                    "author": item.get("author"),
+                    "narrator": item.get("narrator"),
+                }
+                for item in audiobooks
+            ] if audiobooks else []
+            category_data.append({
+                "id": str(primary_section.id),
+                "name": slug,
+                "name_key": primary_section.name_key or "home.audiobooks",
+                "name_en": "Audiobooks",
+                "name_es": "Audiolibros",
+                "items": audiobook_items,
+            })
+        else:
+            # Regular content sections - query by featured_order (matching admin logic)
+            or_conditions = [
+                {f"featured_order.{sid}": {"$exists": True}} for sid in all_section_ids
+            ]
+
+            pipeline = [
+                {
+                    "$match": {
+                        "$and": [
+                            {
+                                "is_featured": True,
+                                "is_published": True,
+                                "is_quality_variant": {"$ne": True},
+                                "$or": or_conditions,
+                            },
+                            {
+                                "$or": [
+                                    {"series_id": None},
+                                    {"series_id": {"$exists": False}},
+                                    {"series_id": ""},
+                                ]
+                            },
+                            visibility_match,
                         ]
-                    },
-                    visibility_match,
-                ]
-            }
-        },
-        {
-            "$project": {
-                "_id": 1,
-                "title": 1,
-                "thumbnail": 1,
-                "thumbnail_data": 1,
-                "poster_url": 1,
-                "duration": 1,
-                "year": 1,
-                "category_id": 1,
-                "is_series": 1,
-                "total_episodes": 1,
-                "available_subtitle_languages": 1,
-            }
-        },
-        {"$sort": {"_id": -1}},
-        {
-            "$group": {
-                "_id": "$category_id",
-                "items": {
-                    "$push": {
-                        "_id": "$_id",
-                        "title": "$title",
-                        "thumbnail": "$thumbnail",
-                        "thumbnail_data": "$thumbnail_data",
-                        "poster_url": "$poster_url",
-                        "duration": "$duration",
-                        "year": "$year",
-                        "is_series": "$is_series",
-                        "total_episodes": "$total_episodes",
-                        "available_subtitle_languages": "$available_subtitle_languages",
                     }
                 },
-            }
-        },
-        {"$project": {"_id": 1, "items": {"$slice": ["$items", 10]}}},
-    ]
-    cursor = Content.get_settings().pymongo_collection.aggregate(pipeline)
-    grouped_content = await cursor.to_list(length=None)
+                {
+                    "$project": {
+                        "_id": 1,
+                        "title": 1,
+                        "thumbnail": 1,
+                        "thumbnail_data": 1,
+                        "poster_url": 1,
+                        "duration": 1,
+                        "year": 1,
+                        "is_series": 1,
+                        "total_episodes": 1,
+                        "available_subtitle_languages": 1,
+                        "featured_order": 1,
+                    }
+                },
+                {"$limit": 100},
+            ]
+
+            cursor = collection.aggregate(pipeline)
+            items = await cursor.to_list(length=None)
+
+            # Process items and get best order from any section
+            category_items = []
+            seen_ids = set()
+            for item in items:
+                item_id = str(item["_id"])
+                if item_id in seen_ids:
+                    continue
+                seen_ids.add(item_id)
+
+                # Get the lowest order from any of the section IDs
+                featured_order = item.get("featured_order", {})
+                best_order = min(
+                    (featured_order.get(sid, 999) for sid in all_section_ids),
+                    default=999,
+                )
+
+                is_series = item.get("is_series", False) or is_series_by_category(slug)
+                thumbnail = (
+                    item.get("thumbnail_data")
+                    or item.get("thumbnail")
+                    or item.get("poster_url")
+                )
+                subtitle_langs = item.get("available_subtitle_languages") or []
+
+                item_data = {
+                    "id": item_id,
+                    "title": item.get("title"),
+                    "thumbnail": thumbnail,
+                    "duration": item.get("duration"),
+                    "year": item.get("year"),
+                    "category": slug,
+                    "category_name_en": slug,
+                    "category_name_es": slug,
+                    "type": "series" if is_series else "movie",
+                    "is_series": is_series,
+                    "available_subtitle_languages": subtitle_langs,
+                    "has_subtitles": len(subtitle_langs) > 0,
+                    "_order": best_order,
+                }
+                if is_series:
+                    item_data["total_episodes"] = item.get("total_episodes") or 0
+
+                category_items.append(item_data)
+
+            # Sort by featured_order
+            category_items.sort(key=lambda x: x.get("_order", 999))
+
+            # Remove internal _order field and limit to 10 items
+            for item in category_items:
+                item.pop("_order", None)
+            category_items = category_items[:10]
+
+            category_data.append({
+                "id": str(primary_section.id),
+                "name": slug,
+                "name_key": primary_section.name_key,
+                "name_en": slug,
+                "name_es": slug,
+                "items": category_items,
+            })
+
     logger.info(
         f"⏱️ Featured: Category content query took {time.time() - cat_query_start:.2f}s"
     )
 
-    category_items_map = {}
-    for group in grouped_content:
-        cat_id = group["_id"]
-        cat_info = category_info_map.get(cat_id, {})
-        cat_name = cat_info.get("name", "")
-        category_items = []
-        for item in group["items"]:
-            is_series = item.get("is_series", False) or is_series_by_category(cat_name)
-            thumbnail = (
-                item.get("thumbnail_data")
-                or item.get("thumbnail")
-                or item.get("poster_url")
-            )
-            subtitle_langs = item.get("available_subtitle_languages") or []
-            item_data = {
+    # Track existing slugs to avoid duplicates
+    existing_slugs = {cat.slug for cat in categories}
+
+    # Add podcasts if not already in ContentSection
+    if "podcasts" not in existing_slugs and podcasts:
+        podcast_items = [
+            {
+                "id": str(podcast.id),
+                "title": podcast.title,
+                "thumbnail": podcast.cover,
+                "category": "podcasts",
+                "type": "podcast",
+                "is_series": False,
+                "author": podcast.author,
+            }
+            for podcast in podcasts
+        ]
+        category_data.append({
+            "id": "podcasts",
+            "name": "podcasts",
+            "name_key": "home.podcasts",
+            "name_en": "Podcasts",
+            "name_es": "Podcasts",
+            "items": podcast_items,
+        })
+
+    # Add audiobooks if not already in ContentSection
+    if "audiobooks" not in existing_slugs and audiobooks:
+        audiobook_items = [
+            {
                 "id": str(item["_id"]),
                 "title": item.get("title"),
-                "thumbnail": thumbnail,
+                "thumbnail": item.get("thumbnail_data") or item.get("thumbnail") or item.get("poster_url"),
                 "duration": item.get("duration"),
                 "year": item.get("year"),
-                "category": cat_name,
-                "category_name_en": cat_info.get("name_en"),
-                "category_name_es": cat_info.get("name_es"),
-                "type": "series" if is_series else "movie",
-                "is_series": is_series,
-                "available_subtitle_languages": subtitle_langs,
-                "has_subtitles": len(subtitle_langs) > 0,
+                "category": "audiobooks",
+                "type": "audiobook",
+                "is_series": False,
+                "author": item.get("author"),
+                "narrator": item.get("narrator"),
             }
-            if is_series:
-                item_data["total_episodes"] = item.get("total_episodes") or 0
-            category_items.append(item_data)
-
-        def availability_sort_key(item):
-            is_series = item.get("is_series", False)
-            total_episodes = item.get("total_episodes", 0) or 0
-            if not is_series:
-                return (0, 0)
-            elif total_episodes > 0:
-                return (1, -total_episodes)
-            else:
-                return (2, 0)
-
-        category_items.sort(key=availability_sort_key)
-        category_items_map[cat_id] = category_items
-
-    category_data = [
-        {
-            "id": str(cat.id),
-            "name": cat.slug,  # Use slug as display name
-            "name_key": cat.name_key,  # i18n translation key for frontend
-            "name_en": cat.slug,  # Fallback to slug
-            "name_es": cat.slug,  # Fallback to slug
-            "items": category_items_map.get(str(cat.id), []),
-        }
-        for cat in categories
-    ]
+            for item in audiobooks
+        ]
+        category_data.append({
+            "id": "audiobooks",
+            "name": "audiobooks",
+            "name_key": "home.audiobooks",
+            "name_en": "Audiobooks",
+            "name_es": "Audiolibros",
+            "items": audiobook_items,
+        })
 
     logger.info(f"⏱️ Featured: TOTAL took {time.time() - start_time:.2f}s")
 
