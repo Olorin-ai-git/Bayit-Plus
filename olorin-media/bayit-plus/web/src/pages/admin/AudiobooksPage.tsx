@@ -8,6 +8,7 @@ import { View, Text, ScrollView, StyleSheet, Image } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, Headphones } from 'lucide-react'
 import { GlassButton, GlassPageHeader } from '@bayit/shared/ui'
+import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { GlassTable } from '@bayit/shared/ui/web'
 import { adminAudiobookService } from '@/services/adminAudiobookService'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -25,6 +26,8 @@ interface Pagination { page: number; pageSize: number; total: number }
 export default function AdminAudiobooksPage() {
   const { t, i18n } = useTranslation()
   const { isRTL } = useDirection()
+  const pageConfig = ADMIN_PAGE_CONFIG['audiobooks']
+  const IconComponent = pageConfig?.icon || Headphones
   const notifications = useNotifications()
   const [audiobooks, setAudiobooks] = useState<Audiobook[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -133,6 +136,9 @@ export default function AdminAudiobooksPage() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ padding: spacing.lg }}>
       <GlassPageHeader
+        icon={<IconComponent size={24} color={pageConfig?.iconColor} strokeWidth={2} />}
+        iconColor={pageConfig?.iconColor}
+        iconBackgroundColor={pageConfig?.iconBackgroundColor}
         title={t('admin.titles.audiobooks', 'Audiobooks')}
         subtitle={t('admin.audiobooks.subtitle', 'Manage audiobook library')}
         badge={audiobooks.length}

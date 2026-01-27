@@ -91,6 +91,12 @@ steps:
       - '--update-secrets=GOOGLE_CLIENT_SECRET=bayit-google-client-secret:latest'
       - '--update-secrets=GOOGLE_REDIRECT_URI=bayit-google-redirect-uri:latest'
 
+      # Audible Integration Feature Flag
+      # Audible OAuth secrets are optional and handled separately by deploy_server.sh
+      # If Audible secrets exist in Secret Manager, they will be passed at deployment time
+      # Backend auto-detects if all credentials are present and enables/disables feature
+      - '--set-env-vars=AUDIBLE_INTEGRATION_ENABLED=true'
+
       # Casting Feature Configuration
       - '--set-env-vars=CAST_ENABLE_AIRPLAY=true'
       - '--set-env-vars=CAST_ENABLE_CHROMECAST=true'

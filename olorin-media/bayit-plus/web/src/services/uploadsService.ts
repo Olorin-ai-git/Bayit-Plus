@@ -408,6 +408,58 @@ export const uploadBrowserFiles = async (
 };
 
 /**
+ * Folder entry with relative path for batch folder uploads
+ */
+export interface FolderUploadEntry {
+  file: File;
+  relativePath: string;
+}
+
+/**
+ * Upload multiple files from a folder with relative path preservation
+ * @param entries - Array of file entries with relative paths
+ * @param contentType - The type of content for all files
+ * @param onFileProgress - Callback for individual file progress
+ * @param onFileComplete - Callback when a file completes
+ */
+export const uploadFolderFiles = async (
+  entries: FolderUploadEntry[],
+  contentType: string,
+  onFileProgress?: (fileIndex: number, progress: number) => void,
+  onFileComplete?: (fileIndex: number, job: UploadJob) => void
+): Promise<{ successful: UploadJob[]; failed: { entry: FolderUploadEntry; error: string }[] }> => {
+  const successful: UploadJob[] = [];
+  const failed: { entry: FolderUploadEntry; error: string }[] = [];
+
+  for (let i = 0; i < entries.length; i++) {
+    const entry = entries[i];
+    try {
+      const job = await uploadBrowserFile(
+        entry.file,
+        contentType,
+        (progress) => onFileProgress?.(i, progress)
+      );
+      successful.push(job);
+      onFileComplete?.(i, job);
+    } catch (error: any) {
+      let errorMessage = 'Upload failed';
+      if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error?.detail) {
+        errorMessage = typeof error.detail === 'string' ? error.detail : JSON.stringify(error.detail);
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (error && typeof error === 'object') {
+        errorMessage = JSON.stringify(error);
+      }
+      failed.push({ entry, error: errorMessage });
+    }
+  }
+
+  return { successful, failed };
+};
+
+/**
  * Resume an existing upload session by uploading missing chunks
  * @param file - The original file (user must re-select it)
  * @param session - The active session info from getActiveBrowserSessions

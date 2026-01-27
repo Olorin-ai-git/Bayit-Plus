@@ -249,6 +249,12 @@ export const ADMIN_PAGE_CONFIG: Record<string, AdminPageConfig> = {
     iconBackgroundColor: `${colors.primary.DEFAULT}26`,
     category: 'content',
   },
+  audiobooks: {
+    icon: Headphones,
+    iconColor: colors.secondary.DEFAULT,
+    iconBackgroundColor: `${colors.secondary.DEFAULT}26`,
+    category: 'content',
+  },
   'podcast-episodes': {
     icon: Headphones,
     iconColor: colors.primary.DEFAULT,

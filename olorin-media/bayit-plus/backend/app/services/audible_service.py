@@ -6,10 +6,13 @@ Allows users to link their Audible accounts and view their library within Bayit+
 """
 
 import logging
-from typing import Optional, List, Dict, Any
-from datetime import datetime
+from typing import Optional, List
+from datetime import datetime, timedelta
 
+import httpx
 from pydantic import BaseModel
+
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +38,11 @@ class AudibleOAuthToken(BaseModel):
     user_id: str
 
 
+class AudibleAPIError(Exception):
+    """Raised when Audible API calls fail."""
+    pass
+
+
 class AudibleService:
     """
     Integrates with Audible API for:
@@ -48,10 +56,23 @@ class AudibleService:
 
     def __init__(self):
         self.base_url = "https://api.audible.com"
-        # In production, use environment variables for these
-        self.client_id = None  # Set via config
-        self.client_secret = None  # Set via config
-        self.redirect_uri = None  # Set via config
+        self.auth_url = "https://www.audible.com/auth/oauth2"
+
+        # Load from configuration
+        self.client_id = settings.AUDIBLE_CLIENT_ID
+        self.client_secret = settings.AUDIBLE_CLIENT_SECRET
+        self.redirect_uri = settings.AUDIBLE_REDIRECT_URI
+
+        # Initialize HTTP client with timeout and connection pooling
+        # 30s total timeout, 10s per connection, 5 max connections
+        self.http_client = httpx.AsyncClient(
+            timeout=httpx.Timeout(30.0, connect=10.0),
+            limits=httpx.Limits(max_connections=5, max_keepalive_connections=2),
+            headers={
+                "User-Agent": "Bayit+ Audible Integration/1.0",
+                "Accept": "application/json",
+            }
+        )
 
     async def get_oauth_url(self, state: str) -> str:
         """
@@ -72,7 +93,7 @@ class AudibleService:
         }
 
         query_string = "&".join([f"{k}={v}" for k, v in params.items()])
-        oauth_url = f"https://www.audible.com/auth/oauth2/authorize?{query_string}"
+        oauth_url = f"{self.auth_url}/authorize?{query_string}"
 
         logger.info(
             "Generated Audible OAuth URL",
@@ -90,22 +111,42 @@ class AudibleService:
 
         Returns:
             AudibleOAuthToken with access and refresh tokens
+
+        Raises:
+            AudibleAPIError: If token exchange fails
         """
         logger.info(
             "Exchanging Audible auth code for token",
             extra={"code": code[:10] + "..."}
         )
 
-        # In production, make actual HTTP request to Audible API
-        # This is a mock implementation
-        token = AudibleOAuthToken(
-            access_token="mock_access_token",
-            refresh_token="mock_refresh_token",
-            expires_at=datetime.utcnow(),
-            user_id="audible_user_123",
-        )
+        try:
+            response = await self.http_client.post(
+                f"{self.auth_url}/token",
+                data={
+                    "grant_type": "authorization_code",
+                    "code": code,
+                    "client_id": self.client_id,
+                    "client_secret": self.client_secret,
+                    "redirect_uri": self.redirect_uri,
+                }
+            )
+            response.raise_for_status()
 
-        return token
+            data = response.json()
+            return AudibleOAuthToken(
+                access_token=data["access_token"],
+                refresh_token=data.get("refresh_token", ""),
+                expires_at=datetime.utcnow() + timedelta(seconds=data.get("expires_in", 3600)),
+                user_id=data.get("user_id", ""),
+            )
+
+        except httpx.HTTPError as e:
+            logger.error(
+                f"Audible token exchange failed: {str(e)}",
+                extra={"code": code[:10] + "..."}
+            )
+            raise AudibleAPIError(f"Failed to exchange code for token: {str(e)}")
 
     async def refresh_access_token(self, refresh_token: str) -> AudibleOAuthToken:
         """
@@ -116,21 +157,40 @@ class AudibleService:
 
         Returns:
             New AudibleOAuthToken with updated access token
+
+        Raises:
+            AudibleAPIError: If token refresh fails
         """
         logger.debug(
             "Refreshing Audible access token",
             extra={"refresh_token": refresh_token[:10] + "..."}
         )
 
-        # In production, make actual HTTP request to Audible API
-        token = AudibleOAuthToken(
-            access_token="mock_new_access_token",
-            refresh_token=refresh_token,  # Usually stays the same
-            expires_at=datetime.utcnow(),
-            user_id="audible_user_123",
-        )
+        try:
+            response = await self.http_client.post(
+                f"{self.auth_url}/token",
+                data={
+                    "grant_type": "refresh_token",
+                    "refresh_token": refresh_token,
+                    "client_id": self.client_id,
+                    "client_secret": self.client_secret,
+                }
+            )
+            response.raise_for_status()
 
-        return token
+            data = response.json()
+            return AudibleOAuthToken(
+                access_token=data["access_token"],
+                refresh_token=data.get("refresh_token", refresh_token),
+                expires_at=datetime.utcnow() + timedelta(seconds=data.get("expires_in", 3600)),
+                user_id=data.get("user_id", ""),
+            )
+
+        except httpx.HTTPError as e:
+            logger.error(
+                f"Audible token refresh failed: {str(e)}",
+            )
+            raise AudibleAPIError(f"Failed to refresh access token: {str(e)}")
 
     async def get_user_library(
         self,
@@ -143,46 +203,61 @@ class AudibleService:
 
         Args:
             access_token: Audible OAuth access token
-            limit: Number of items to fetch
+            limit: Number of items to fetch (max 100)
             offset: Pagination offset
 
         Returns:
             List of audiobooks in user's library
+
+        Raises:
+            AudibleAPIError: If library fetch fails
         """
         logger.debug(
             "Fetching Audible user library",
             extra={"limit": limit, "offset": offset}
         )
 
-        # In production, make actual HTTP request to Audible API
-        # GET https://api.audible.com/1.0/library
+        try:
+            response = await self.http_client.get(
+                f"{self.base_url}/1.0/library",
+                headers={"Authorization": f"Bearer {access_token}"},
+                params={
+                    "limit": min(limit, 100),
+                    "offset": offset,
+                    "sort": "date_added",
+                    "response_groups": "product_attrs,product_desc,reviews,series",
+                }
+            )
+            response.raise_for_status()
 
-        mock_library = [
-            AudibleAudiobook(
-                asin="B00ABC123",
-                title="The Great Gatsby",
-                author="F. Scott Fitzgerald",
-                narrator="Tim Seely",
-                image="https://example.audible.com/image.jpg",
-                description="A classic novel",
-                duration_minutes=540,
-                rating=4.5,
-                is_owned=True,
-            ),
-            AudibleAudiobook(
-                asin="B00ABC124",
-                title="1984",
-                author="George Orwell",
-                narrator="Simon Prebble",
-                image="https://example.audible.com/image2.jpg",
-                description="Dystopian novel",
-                duration_minutes=660,
-                rating=4.3,
-                is_owned=True,
-            ),
-        ]
+            data = response.json()
+            audiobooks = []
 
-        return mock_library
+            for item in data.get("items", []):
+                product = item.get("product", {})
+                narrators = product.get("narrators", [])
+
+                audiobooks.append(AudibleAudiobook(
+                    asin=product.get("asin", ""),
+                    title=product.get("title", ""),
+                    author=product.get("author_name", ""),
+                    narrator=narrators[0].get("name") if narrators else None,
+                    image=product.get("product_images", {}).get("500"),
+                    description=product.get("product_desc"),
+                    duration_minutes=int(product.get("runtime_length_ms", 0) / 60000),
+                    rating=product.get("rating"),
+                    is_owned=True,
+                ))
+
+            logger.info(
+                "Successfully fetched Audible library",
+                extra={"count": len(audiobooks), "limit": limit, "offset": offset}
+            )
+            return audiobooks
+
+        except httpx.HTTPError as e:
+            logger.error(f"Failed to fetch Audible library: {str(e)}")
+            raise AudibleAPIError(f"Failed to fetch library: {str(e)}")
 
     async def search_catalog(
         self,
@@ -194,34 +269,58 @@ class AudibleService:
 
         Args:
             query: Search query (title, author, narrator)
-            limit: Number of results
+            limit: Number of results (max 50)
 
         Returns:
             List of audiobooks matching search
+
+        Raises:
+            AudibleAPIError: If search fails
         """
         logger.info(
             "Searching Audible catalog",
             extra={"query": query, "limit": limit}
         )
 
-        # In production, make actual HTTP request to Audible API
-        # GET https://api.audible.com/1.0/catalog/search
+        try:
+            response = await self.http_client.get(
+                f"{self.base_url}/1.0/catalog/search",
+                headers={"Authorization": "Bearer GUEST"},  # Public search
+                params={
+                    "query": query,
+                    "num_results": min(limit, 50),
+                    "response_groups": "product_attrs,product_desc,reviews,series,product_images",
+                }
+            )
+            response.raise_for_status()
 
-        mock_results = [
-            AudibleAudiobook(
-                asin="B00XYZ001",
-                title=f"{query} - Sample Result 1",
-                author="Author Name",
-                narrator="Narrator Name",
-                image="https://example.audible.com/result1.jpg",
-                description="Audiobook description",
-                duration_minutes=480,
-                rating=4.2,
-                is_owned=False,
-            ),
-        ]
+            data = response.json()
+            audiobooks = []
 
-        return mock_results
+            for item in data.get("products", []):
+                narrators = item.get("narrators", [])
+
+                audiobooks.append(AudibleAudiobook(
+                    asin=item.get("asin", ""),
+                    title=item.get("title", ""),
+                    author=item.get("author_name", ""),
+                    narrator=narrators[0].get("name") if narrators else None,
+                    image=item.get("product_images", {}).get("500"),
+                    description=item.get("product_desc"),
+                    duration_minutes=int(item.get("runtime_length_ms", 0) / 60000),
+                    rating=item.get("rating"),
+                    is_owned=False,
+                ))
+
+            logger.info(
+                "Successfully searched Audible catalog",
+                extra={"query": query, "results": len(audiobooks)}
+            )
+            return audiobooks
+
+        except httpx.HTTPError as e:
+            logger.error(f"Audible catalog search failed: {str(e)}")
+            raise AudibleAPIError(f"Search failed: {str(e)}")
 
     async def get_audiobook_details(self, asin: str) -> Optional[AudibleAudiobook]:
         """
@@ -232,28 +331,47 @@ class AudibleService:
 
         Returns:
             Detailed audiobook information or None if not found
+
+        Raises:
+            AudibleAPIError: If detail fetch fails
         """
         logger.debug(
             "Fetching Audible audiobook details",
             extra={"asin": asin}
         )
 
-        # In production, make actual HTTP request to Audible API
-        # GET https://api.audible.com/1.0/catalog/{asin}
+        try:
+            response = await self.http_client.get(
+                f"{self.base_url}/1.0/catalog/{asin}",
+                headers={"Authorization": "Bearer GUEST"},
+                params={
+                    "response_groups": "product_attrs,product_desc,reviews,series,sample,product_images,rating",
+                }
+            )
+            response.raise_for_status()
 
-        audiobook = AudibleAudiobook(
-            asin=asin,
-            title="Audible Audiobook",
-            author="Author Name",
-            narrator="Narrator Name",
-            image="https://example.audible.com/image.jpg",
-            description="Detailed description",
-            duration_minutes=500,
-            rating=4.4,
-            is_owned=False,
-        )
+            product = response.json().get("product", {})
+            if not product:
+                logger.warning(f"Audiobook not found: {asin}")
+                return None
 
-        return audiobook
+            narrators = product.get("narrators", [])
+
+            return AudibleAudiobook(
+                asin=product.get("asin", ""),
+                title=product.get("title", ""),
+                author=product.get("author_name", ""),
+                narrator=narrators[0].get("name") if narrators else None,
+                image=product.get("product_images", {}).get("500"),
+                description=product.get("product_desc"),
+                duration_minutes=int(product.get("runtime_length_ms", 0) / 60000),
+                rating=product.get("rating"),
+                is_owned=False,
+            )
+
+        except httpx.HTTPError as e:
+            logger.error(f"Failed to fetch audiobook details: {str(e)}", extra={"asin": asin})
+            raise AudibleAPIError(f"Failed to fetch details: {str(e)}")
 
     def get_audible_app_url(self, asin: str) -> str:
         """
@@ -280,6 +398,18 @@ class AudibleService:
         )
 
         return web_url  # Return web URL; client determines iOS/Android/web
+
+    async def close(self) -> None:
+        """Close HTTP client connection."""
+        await self.http_client.aclose()
+
+    def __del__(self):
+        """Ensure HTTP client is closed on service destruction."""
+        import asyncio
+        try:
+            asyncio.run(self.close())
+        except RuntimeError:
+            pass  # Event loop may be closed already
 
 
 # Global service instance

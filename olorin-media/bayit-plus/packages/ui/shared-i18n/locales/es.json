@@ -1823,7 +1823,8 @@
       "content": "Biblioteca de Contenido",
       "liveChannels": "Canales en Vivo",
       "radioStations": "Estaciones de Radio",
-      "podcasts": "Pódcasts"
+      "podcasts": "Pódcasts",
+      "audiobooks": "Audiolibros"
     },
     "nav": {
       "dashboard": "Panel de Control",
@@ -1850,6 +1851,7 @@
       "liveChannels": "Canales en Vivo",
       "radioStations": "Estaciones de Radio",
       "podcasts": "Pódcasts",
+      "audiobooks": "Audiolibros",
       "widgets": "Widgets",
       "recordings": "Grabaciones",
       "uploads": "Cargas",
@@ -1946,6 +1948,7 @@
       "contentTypes": {
         "movie": "Películas",
         "series": "Series",
+        "podcast": "Pódcasts",
         "audiobook": "Audiolibros"
       },
       "errors": {
@@ -1971,7 +1974,24 @@
         "invalidFileType": "Tipo de archivo no válido. Solo se admiten archivos de video.",
         "filesCount": "{{count}} archivo(s) seleccionado(s)",
         "pendingRestore": "{{count}} archivo(s) pendiente(s) de sesión anterior",
-        "pendingRestoreHint": "Arrastra o selecciona los mismos archivos para restaurar la cola de carga"
+        "pendingRestoreHint": "Arrastra o selecciona los mismos archivos para restaurar la cola de carga",
+        "acceptedFormats": "Formatos aceptados",
+        "acceptedAudioFormats": "Formatos de audio aceptados",
+        "dragOrClick": "Arrastra y suelta archivos aquí, o haz clic para explorar",
+        "dropFiles": "Suelta los archivos aquí para cargar",
+        "maxSize": "Tamaño máximo",
+        "invalidFiles": "{{count}} archivo(s) rechazado(s)",
+        "uploadMode": "Modo de Carga",
+        "filesMode": "Archivos Individuales",
+        "folderMode": "Carpeta",
+        "dropFolder": "Suelta la carpeta aquí",
+        "folderPreview": "Contenido de la Carpeta",
+        "totalFiles": "{{count}} archivos",
+        "validFiles": "{{count}} archivos válidos",
+        "invalidFilesCount": "{{count}} archivos no válidos",
+        "proceedUpload": "Cargar {{count}} archivos válidos",
+        "folderTooLarge": "La carpeta contiene demasiados archivos (máx {{max}})",
+        "folderTooDeep": "Estructura de carpeta demasiado profunda (máx {{max}} niveles)"
       }
     },
     "librarian": {

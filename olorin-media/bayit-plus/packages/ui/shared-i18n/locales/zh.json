@@ -1863,6 +1863,7 @@
       "liveChannels": "直播频道",
       "radioStations": "电台",
       "podcasts": "播客",
+      "audiobooks": "有声书",
       "widgets": "小组件",
       "recordings": "录制",
       "uploads": "上传",
@@ -1924,6 +1925,7 @@
       "liveChannels": "直播频道",
       "radioStations": "电台",
       "podcasts": "播客",
+      "audiobooks": "有声书",
       "settings": "设置"
     },
     "users": {
@@ -1951,6 +1953,54 @@
       "contentAdded": "已添加 {{count}} 项",
       "failedToAdd": "添加内容失败",
       "publishedOnly": "已发布"
+    },
+    "uploads": {
+      "title": "上传管理",
+      "contentTypes": {
+        "movie": "电影",
+        "series": "剧集",
+        "podcast": "播客",
+        "audiobook": "有声书"
+      },
+      "manualUpload": {
+        "title": "手动上传",
+        "subtitle": "拖放文件或选择文件夹",
+        "dropHere": "将文件拖放到此处或点击浏览",
+        "dropHereActive": "放下文件以添加",
+        "selectFolder": "选择文件夹",
+        "supportedFormats": "支持视频文件 (mp4, mkv, avi, mov, webm)",
+        "selectedFiles": "已选文件",
+        "noFilesSelected": "未选择文件",
+        "clearAll": "清除全部",
+        "uploadSelected": "上传所选",
+        "selectContentType": "选择上传内容类型",
+        "uploadingFiles": "正在添加 {{count}} 个文件到队列...",
+        "uploadSuccess": "成功添加 {{count}} 个文件到队列",
+        "uploadFailed": "添加文件到队列失败",
+        "fileSize": "大小",
+        "removeFile": "移除",
+        "invalidFileType": "无效的文件类型。仅支持视频文件。",
+        "filesCount": "已选择 {{count}} 个文件",
+        "pendingRestore": "{{count}} 个文件来自上次会话",
+        "pendingRestoreHint": "拖放或选择相同的文件以恢复上传队列",
+        "acceptedFormats": "支持的格式",
+        "acceptedAudioFormats": "支持的音频格式",
+        "dragOrClick": "将文件拖放到此处，或点击浏览",
+        "dropFiles": "将文件拖放到此处上传",
+        "maxSize": "最大文件大小",
+        "invalidFiles": "{{count}} 个文件被拒绝",
+        "uploadMode": "上传模式",
+        "filesMode": "单个文件",
+        "folderMode": "文件夹",
+        "dropFolder": "将文件夹拖放到此处",
+        "folderPreview": "文件夹内容",
+        "totalFiles": "{{count}} 个文件",
+        "validFiles": "{{count}} 个有效文件",
+        "invalidFilesCount": "{{count}} 个无效文件",
+        "proceedUpload": "上传 {{count}} 个有效文件",
+        "folderTooLarge": "文件夹包含太多文件（最多 {{max}} 个）",
+        "folderTooDeep": "文件夹结构太深（最多 {{max}} 层）"
+      }
     }
   },
   "cultures": {

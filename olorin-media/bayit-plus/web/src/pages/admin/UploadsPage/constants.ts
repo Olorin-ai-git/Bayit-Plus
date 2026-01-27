@@ -11,7 +11,29 @@ import type { ContentType } from './types';
 
 export const ALLOWED_VIDEO_EXTENSIONS = ['.mp4', '.mkv', '.avi', '.mov', '.webm', '.m4v', '.wmv'];
 
+export const ALLOWED_AUDIO_EXTENSIONS = ['.mp3', '.m4a', '.flac', '.aac', '.wav', '.ogg'];
+
 export const MAX_FILE_SIZE = 10 * 1024 * 1024 * 1024; // 10GB
+
+/**
+ * Gets allowed file extensions based on content type
+ */
+export const getExtensionsForContentType = (contentType: ContentType): string[] => {
+  if (contentType === 'audiobook') {
+    return ALLOWED_AUDIO_EXTENSIONS;
+  }
+  return ALLOWED_VIDEO_EXTENSIONS;
+};
+
+/**
+ * Gets MIME type accept object for dropzone based on content type
+ */
+export const getMimeTypeForContentType = (contentType: ContentType): Record<string, string[]> => {
+  if (contentType === 'audiobook') {
+    return { 'audio/*': ALLOWED_AUDIO_EXTENSIONS };
+  }
+  return { 'video/*': ALLOWED_VIDEO_EXTENSIONS };
+};
 
 export const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks for chunked uploads
 
@@ -23,7 +45,16 @@ export const CONTENT_TYPE_OPTIONS: { value: ContentType; label: string }[] = [
   { value: 'movie', label: 'admin.uploads.contentTypes.movie' },
   { value: 'series', label: 'admin.uploads.contentTypes.series' },
   { value: 'podcast', label: 'admin.uploads.contentTypes.podcast' },
+  { value: 'audiobook', label: 'admin.uploads.contentTypes.audiobook' },
 ];
+
+// ========================================
+// FOLDER UPLOAD CONFIGURATION
+// ========================================
+
+export const MAX_FILES_IN_FOLDER = 500;
+
+export const MAX_FOLDER_DEPTH = 10;
 
 // ========================================
 // UPLOAD STAGES

@@ -1,9 +1,9 @@
 /**
  * GlassPageHeader Component
  *
- * Reusable glassmorphic page header with icon, title, and optional badge count
- * Supports all platforms (Web, iOS, tvOS) with consistent styling
- * Auto-selects emoji icons based on page type if custom icon not provided
+ * Reusable glassmorphic page header with unified icon system
+ * Uses icon registry from @olorin/shared-icons for consistent styling
+ * Supports all platforms (Web, iOS, tvOS) with glassmorphic styling
  *
  * @module GlassPageHeader
  */
@@ -11,6 +11,8 @@
 import React, { ReactNode } from 'react';
 import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
+import type { GlassLevel } from '@olorin/shared-icons';
 
 export type PageType =
   | 'home'
@@ -20,8 +22,9 @@ export type PageType =
   | 'vod'
   | 'radio'
   | 'podcasts'
+  | 'audiobooks'
   | 'judaism'
-  | 'kids'
+  | 'children'
   | 'widgets'
   | 'settings'
   | 'profile'
@@ -29,10 +32,12 @@ export type PageType =
   | 'watchlist'
   | 'downloads'
   | 'recordings'
-  | 'help'
+  | 'support'
   | 'friends'
   | 'games'
-  | 'ritual';
+  | 'discover'
+  | 'plans'
+  | 'admin';
 
 interface PageHeaderProps {
   title: string;
@@ -41,61 +46,75 @@ interface PageHeaderProps {
   icon?: ReactNode | string;
   badge?: string | number;
   iconColor?: string;
-  iconBackgroundColor?: string;
+  glassLevel?: GlassLevel;
   action?: ReactNode;
   style?: ViewStyle;
   titleStyle?: TextStyle;
   isRTL?: boolean;
 }
 
-const DEFAULT_PAGE_ICONS: Record<PageType, string> = {
-  home: '🏠',
-  search: '🔍',
-  live: '📺',
-  epg: '📋',
-  vod: '🎬',
-  radio: '📻',
-  podcasts: '🎙️',
-  judaism: '✡️',
-  kids: '👶',
-  widgets: '🧩',
-  settings: '⚙️',
-  profile: '👤',
-  favorites: '❤️',
-  watchlist: '📌',
-  downloads: '⬇️',
-  recordings: '⏺️',
-  help: '❓',
-  friends: '👫',
-  games: '♟️',
-  ritual: '🕎',
-};
-
-const DEFAULT_ICON_COLORS: Record<PageType, string> = {
-  home: colors.primary.DEFAULT,
-  search: colors.info.DEFAULT,
-  live: colors.error.DEFAULT,
-  epg: colors.warning.DEFAULT,
-  vod: colors.primary.DEFAULT,
-  radio: colors.secondary.DEFAULT,
-  podcasts: colors.success.DEFAULT,
-  judaism: '#1E40AF',
-  kids: '#EC4899',
-  widgets: colors.primary.DEFAULT,
-  settings: colors.textMuted,
-  profile: colors.info.DEFAULT,
-  favorites: '#EF4444',
-  watchlist: colors.warning.DEFAULT,
-  downloads: colors.success.DEFAULT,
-  recordings: colors.error.DEFAULT,
-  help: colors.info.DEFAULT,
-  friends: colors.success.DEFAULT,
-  games: colors.warning.DEFAULT,
-  ritual: '#1E40AF',
+/**
+ * Mapping from page type to icon registry name
+ * Each page type maps to a unified icon from the registry
+ */
+const PAGE_TYPE_TO_ICON: Record<PageType, string> = {
+  home: 'home',
+  search: 'search',
+  live: 'live',
+  epg: 'epg',
+  vod: 'vod',
+  radio: 'radio',
+  podcasts: 'podcasts',
+  audiobooks: 'audiobooks',
+  judaism: 'judaism',
+  children: 'children',
+  widgets: 'widgets',
+  settings: 'settings',
+  profile: 'profile',
+  favorites: 'favorites',
+  watchlist: 'watchlist',
+  downloads: 'downloads',
+  recordings: 'recordings',
+  support: 'support',
+  friends: 'friends',
+  games: 'games',
+  discover: 'discover',
+  plans: 'plans',
+  admin: 'admin',
 };
 
 /**
- * Renders a glassmorphic page header with icon, title, and optional badge
+ * Glass level configuration per page type
+ * Controls the intensity of the glassmorphic background
+ */
+const PAGE_TYPE_GLASS_LEVEL: Record<PageType, GlassLevel> = {
+  home: 'medium',
+  search: 'light',
+  live: 'medium',
+  epg: 'medium',
+  vod: 'medium',
+  radio: 'medium',
+  podcasts: 'medium',
+  audiobooks: 'medium',
+  judaism: 'medium',
+  children: 'medium',
+  widgets: 'light',
+  settings: 'light',
+  profile: 'light',
+  favorites: 'light',
+  watchlist: 'light',
+  downloads: 'light',
+  recordings: 'light',
+  support: 'light',
+  friends: 'light',
+  games: 'medium',
+  discover: 'medium',
+  plans: 'medium',
+  admin: 'medium',
+};
+
+/**
+ * Renders a glassmorphic page header with unified icon system
  */
 export function GlassPageHeader({
   title,
@@ -104,51 +123,104 @@ export function GlassPageHeader({
   icon,
   badge,
   iconColor,
-  iconBackgroundColor,
+  glassLevel,
   action,
   style,
   titleStyle,
   isRTL = false,
 }: PageHeaderProps) {
-  // Determine icon to display
-  const displayIcon = icon || (pageType ? DEFAULT_PAGE_ICONS[pageType] : null);
+  // Determine icon name from page type or use custom icon
+  const iconName = pageType ? PAGE_TYPE_TO_ICON[pageType] : null;
 
-  // Determine icon color
-  const finalIconColor =
-    iconColor || (pageType ? DEFAULT_ICON_COLORS[pageType] : colors.primary.DEFAULT);
+  // Determine glass level
+  const effectiveGlassLevel =
+    glassLevel || (pageType ? PAGE_TYPE_GLASS_LEVEL[pageType] : 'medium');
 
-  // Determine icon background color
-  const finalIconBgColor = iconBackgroundColor || `${finalIconColor}33`;
+  // Get glass background styling
+  const getGlassBackground = () => {
+    const glassLevels = {
+      light: {
+        backgroundColor: 'rgba(10, 10, 10, 0.5)',
+        borderColor: 'rgba(126, 34, 206, 0.15)',
+      },
+      medium: {
+        backgroundColor: 'rgba(10, 10, 10, 0.6)',
+        borderColor: 'rgba(126, 34, 206, 0.25)',
+      },
+      strong: {
+        backgroundColor: 'rgba(10, 10, 10, 0.85)',
+        borderColor: 'rgba(126, 34, 206, 0.7)',
+      },
+    };
+    return glassLevels[effectiveGlassLevel];
+  };
 
-  // Render icon (emoji or React component)
+  // Render icon using the unified icon system
   const renderIcon = () => {
-    if (!displayIcon) return null;
+    const glassStyle = getGlassBackground();
 
-    if (typeof displayIcon === 'string') {
-      // Emoji icon
+    // If custom icon provided (ReactNode or string), use it
+    if (icon && typeof icon !== 'string') {
       return (
         <View
           style={[
             styles.iconContainer,
-            { backgroundColor: finalIconBgColor },
+            {
+              backgroundColor: glassStyle.backgroundColor,
+              borderColor: glassStyle.borderColor,
+            },
           ]}
         >
-          <Text style={styles.emojiIcon}>{displayIcon}</Text>
+          {icon}
         </View>
       );
     }
 
-    // Custom React component icon
-    return (
-      <View
-        style={[
-          styles.iconContainer,
-          { backgroundColor: finalIconBgColor },
-        ]}
-      >
-        {displayIcon}
-      </View>
-    );
+    // If custom icon is a string, treat it as an icon name
+    if (typeof icon === 'string') {
+      return (
+        <View
+          style={[
+            styles.iconContainer,
+            {
+              backgroundColor: glassStyle.backgroundColor,
+              borderColor: glassStyle.borderColor,
+            },
+          ]}
+        >
+          <NativeIcon
+            name={icon}
+            size="lg"
+            color={iconColor}
+            variant="colored"
+          />
+        </View>
+      );
+    }
+
+    // Use page type icon
+    if (iconName) {
+      return (
+        <View
+          style={[
+            styles.iconContainer,
+            {
+              backgroundColor: glassStyle.backgroundColor,
+              borderColor: glassStyle.borderColor,
+            },
+          ]}
+        >
+          <NativeIcon
+            name={iconName}
+            size="lg"
+            color={iconColor}
+            variant="colored"
+          />
+        </View>
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -214,10 +286,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  emojiIcon: {
-    fontSize: 24,
   },
   titleContainer: {
     flex: 1,

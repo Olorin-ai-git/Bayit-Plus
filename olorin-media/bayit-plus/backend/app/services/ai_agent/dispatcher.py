@@ -7,8 +7,12 @@ Routes tool calls to the appropriate executor functions.
 import logging
 from typing import Any, Dict
 
-from app.services.ai_agent.executors import (  # Content; Metadata; Stream; Storage; Subtitles; Notifications; Podcasts; Diagnostics; Series Management; Integrity Tools
+from app.services.ai_agent.executors import (  # Content; Metadata; Stream; Storage; Subtitles; Notifications; Podcasts; Diagnostics; Series Management; Integrity Tools; Audiobooks
     execute_auto_link_episodes, execute_batch_download_subtitles,
+    execute_enrich_audiobook_metadata, execute_find_audiobooks_without_posters,
+    execute_find_multi_part_audiobooks, execute_link_audiobook_parts,
+    execute_organize_all_audiobooks, execute_sync_audiobook_posters,
+    execute_unify_multi_part_audiobooks, execute_verify_audiobook_streams,
     execute_calculate_storage_costs, execute_check_api_configuration,
     execute_check_storage_usage, execute_check_stream_url,
     execute_check_subtitle_quota, execute_clean_title, execute_cleanup_orphans,
@@ -206,6 +210,41 @@ async def execute_tool(
 
         elif tool_name == "organize_all_series":
             return await execute_organize_all_series(
+                **tool_input, audit_id=audit_id, dry_run=dry_run
+            )
+
+        # Audiobook Management Tools
+        elif tool_name == "find_multi_part_audiobooks":
+            return await execute_find_multi_part_audiobooks(**tool_input)
+
+        elif tool_name == "find_audiobooks_without_posters":
+            return await execute_find_audiobooks_without_posters(**tool_input)
+
+        elif tool_name == "unify_multi_part_audiobooks":
+            return await execute_unify_multi_part_audiobooks(
+                **tool_input, audit_id=audit_id, dry_run=dry_run
+            )
+
+        elif tool_name == "enrich_audiobook_metadata":
+            return await execute_enrich_audiobook_metadata(
+                **tool_input, audit_id=audit_id, dry_run=dry_run
+            )
+
+        elif tool_name == "verify_audiobook_streams":
+            return await execute_verify_audiobook_streams(**tool_input)
+
+        elif tool_name == "link_audiobook_parts":
+            return await execute_link_audiobook_parts(
+                **tool_input, audit_id=audit_id, dry_run=dry_run
+            )
+
+        elif tool_name == "sync_audiobook_posters":
+            return await execute_sync_audiobook_posters(
+                **tool_input, audit_id=audit_id, dry_run=dry_run
+            )
+
+        elif tool_name == "organize_all_audiobooks":
+            return await execute_organize_all_audiobooks(
                 **tool_input, audit_id=audit_id, dry_run=dry_run
             )
 

@@ -199,6 +199,35 @@ class Settings(BaseSettings):
         ""  # Required if using Google OAuth, no localhost defaults
     )
 
+    # Audible OAuth Integration (optional - enables audiobook syncing for premium users)
+    # Obtain credentials from https://developer.audible.com/
+    # Leave empty to disable the feature gracefully
+    AUDIBLE_CLIENT_ID: str = Field(
+        default="",
+        description="Audible OAuth Client ID (from developer.audible.com)"
+    )
+    AUDIBLE_CLIENT_SECRET: str = Field(
+        default="",
+        description="Audible OAuth Client Secret (from developer.audible.com)"
+    )
+    AUDIBLE_REDIRECT_URI: str = Field(
+        default="",
+        description="Audible OAuth Redirect URI (e.g., https://yourdomain.com/api/v1/user/audible/oauth/callback)"
+    )
+    AUDIBLE_INTEGRATION_ENABLED: bool = Field(
+        default=False,
+        description="Enable Audible integration (requires all three credentials to be set)"
+    )
+
+    @property
+    def is_audible_configured(self) -> bool:
+        """Check if all Audible OAuth credentials are present."""
+        return bool(
+            self.AUDIBLE_CLIENT_ID
+            and self.AUDIBLE_CLIENT_SECRET
+            and self.AUDIBLE_REDIRECT_URI
+        )
+
     # ElevenLabs (speech-to-text and text-to-speech)
     ELEVENLABS_API_KEY: str = ""
     ELEVENLABS_WEBHOOK_SECRET: str = ""

@@ -1,12 +1,14 @@
 /**
  * Audible Login Button Component
  *
- * Initiates OAuth flow to link user's Audible account.
+ * Premium Feature: Initiates OAuth flow to link user's Audible account.
+ * Only visible to Premium/Family tier users.
  * Allows access to their Audible library within Bayit+.
  */
 
 import { useState } from 'react';
 import { GlassButton, GlassSpinner } from '@bayit/glass';
+import { useAuth } from '@/hooks/useAuth';
 
 interface AudibleLoginButtonProps {
   onSuccess?: () => void;
@@ -19,8 +21,16 @@ export function AudibleLoginButton({
   onError,
   className = '',
 }: AudibleLoginButtonProps) {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+
+  // Hide Audible integration from basic tier users
+  // Premium feature: only Premium/Family subscribers can use
+  const isPremiumUser = user?.subscription_tier && ['premium', 'family'].includes(user.subscription_tier);
+  if (!isPremiumUser) {
+    return null;
+  }
 
   const handleAudibleLogin = async () => {
     setLoading(true);

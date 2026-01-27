@@ -65,6 +65,14 @@ OPTIONAL_FIELDS: list[FieldRequirement] = [
     FieldRequirement(
         "GOOGLE_REDIRECT_URI", "Google OAuth redirect URI", False, "oauth"
     ),
+    # Audible OAuth (Optional - for audiobook integration)
+    FieldRequirement("AUDIBLE_CLIENT_ID", "Audible OAuth client ID", False, "audible"),
+    FieldRequirement(
+        "AUDIBLE_CLIENT_SECRET", "Audible OAuth client secret", False, "audible"
+    ),
+    FieldRequirement(
+        "AUDIBLE_REDIRECT_URI", "Audible OAuth redirect URI", False, "audible"
+    ),
     # Storage (Optional - defaults to local)
     FieldRequirement("GCS_BUCKET_NAME", "GCS bucket name for media", False, "storage"),
     FieldRequirement(
@@ -330,6 +338,17 @@ def validate_olorin_config() -> None:
         raise ConfigValidationError(errors)
 
 
+def log_audible_configuration_status() -> None:
+    """Log Audible OAuth integration configuration status."""
+    if settings.is_audible_configured:
+        logger.info("✓ Audible OAuth integration is CONFIGURED and ENABLED")
+    else:
+        logger.warning(
+            "⚠ Audible OAuth integration is DISABLED - "
+            "to enable, configure: AUDIBLE_CLIENT_ID, AUDIBLE_CLIENT_SECRET, AUDIBLE_REDIRECT_URI"
+        )
+
+
 def validate_all_config() -> None:
     """
     Run all configuration validations.
@@ -345,6 +364,7 @@ def validate_all_config() -> None:
         validate_required_config()
         validate_security_config()
         validate_olorin_config()
+        log_audible_configuration_status()
         logger.info("Configuration validation passed")
     except ConfigValidationError:
         logger.error("Configuration validation FAILED")

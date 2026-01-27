@@ -9,7 +9,7 @@ import type { QueueJob, QueueStats } from '@/components/admin/GlassQueue';
 // UPLOAD TYPES
 // ========================================
 
-export type ContentType = 'movie' | 'series' | 'podcast';
+export type ContentType = 'movie' | 'series' | 'podcast' | 'audiobook';
 
 export type UploadStage =
   | 'browser_upload'

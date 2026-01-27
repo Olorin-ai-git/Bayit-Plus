@@ -1605,6 +1605,7 @@
       "liveChannels": "Live Channels",
       "radioStations": "Radio Stations",
       "podcasts": "Podcasts",
+      "audiobooks": "Audiobooks",
       "settings": "Settings"
     },
     "nav": {
@@ -1629,6 +1630,7 @@
       "liveChannels": "Live Channels",
       "radioStations": "Radio Stations",
       "podcasts": "Podcasts",
+      "audiobooks": "Audiobooks",
       "widgets": "Widgets",
       "recordings": "Recordings",
       "uploads": "Uploads",
@@ -1762,6 +1764,7 @@
       "contentTypes": {
         "movie": "Movies",
         "series": "Series",
+        "podcast": "Podcasts",
         "audiobook": "Audiobooks"
       },
       "errors": {
@@ -1787,7 +1790,25 @@
         "invalidFileType": "Invalid file type. Only video files are supported.",
         "filesCount": "{{count}} file(s) selected",
         "pendingRestore": "{{count}} file(s) pending from previous session",
-        "pendingRestoreHint": "Drop or select the same files to restore your upload queue"
+        "pendingRestoreHint": "Drop or select the same files to restore your upload queue",
+        "acceptedFormats": "Accepted formats",
+        "acceptedAudioFormats": "Accepted audio formats",
+        "dragOrClick": "Drag and drop files here, or click to browse",
+        "dropFiles": "Drop files here to upload",
+        "maxSize": "Max file size",
+        "invalidFiles": "{{count}} file(s) rejected",
+        "noFilesSelected": "No files selected",
+        "uploadMode": "Upload Mode",
+        "filesMode": "Individual Files",
+        "folderMode": "Folder",
+        "dropFolder": "Drop folder here",
+        "folderPreview": "Folder Contents",
+        "totalFiles": "{{count}} files",
+        "validFiles": "{{count}} valid files",
+        "invalidFilesCount": "{{count}} invalid files",
+        "proceedUpload": "Upload {{count}} valid files",
+        "folderTooLarge": "Folder contains too many files (max {{max}})",
+        "folderTooDeep": "Folder structure too deep (max {{max}} levels)"
       }
     },
     "librarian": {

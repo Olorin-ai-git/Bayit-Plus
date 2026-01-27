@@ -4,6 +4,14 @@ AI Agent Executors
 Tool execution functions organized by domain.
 """
 
+from .audiobooks import (execute_enrich_audiobook_metadata,
+                         execute_find_audiobooks_without_posters,
+                         execute_find_multi_part_audiobooks,
+                         execute_link_audiobook_parts,
+                         execute_organize_all_audiobooks,
+                         execute_sync_audiobook_posters,
+                         execute_unify_multi_part_audiobooks,
+                         execute_verify_audiobook_streams)
 from .content import (execute_get_categories, execute_get_content_details,
                       execute_list_content_items)
 from .diagnostics import (execute_check_api_configuration,
@@ -59,6 +67,15 @@ __all__ = [
     "execute_list_content_items",
     "execute_get_content_details",
     "execute_get_categories",
+    # Audiobooks
+    "execute_find_multi_part_audiobooks",
+    "execute_find_audiobooks_without_posters",
+    "execute_enrich_audiobook_metadata",
+    "execute_unify_multi_part_audiobooks",
+    "execute_link_audiobook_parts",
+    "execute_verify_audiobook_streams",
+    "execute_sync_audiobook_posters",
+    "execute_organize_all_audiobooks",
     # Metadata
     "execute_search_tmdb",
     "execute_fix_missing_poster",

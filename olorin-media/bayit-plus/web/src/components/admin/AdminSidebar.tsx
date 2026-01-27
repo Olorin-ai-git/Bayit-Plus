@@ -23,6 +23,7 @@ import {
   Upload,
   Clock,
   BarChart3,
+  Headphones,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -88,6 +89,7 @@ const NAV_ITEMS: NavItem[] = [
       { key: 'live-channels', labelKey: 'admin.nav.liveChannels', route: '/admin/live-channels' },
       { key: 'radio-stations', labelKey: 'admin.nav.radioStations', route: '/admin/radio-stations' },
       { key: 'podcasts', labelKey: 'admin.nav.podcasts', route: '/admin/podcasts' },
+      { key: 'audiobooks', labelKey: 'admin.nav.audiobooks', route: '/admin/audiobooks' },
       { key: 'translations', labelKey: 'admin.nav.translations', route: '/admin/translations' },
       { key: 'widgets', labelKey: 'admin.nav.widgets', route: '/admin/widgets' },
     ],
