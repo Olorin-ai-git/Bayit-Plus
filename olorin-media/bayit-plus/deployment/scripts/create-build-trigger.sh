@@ -46,7 +46,7 @@ gcloud builds triggers create github \
     --repo-name="Bayit-Plus" \
     --repo-owner="Olorin-ai-git" \
     --branch-pattern="^main$" \
-    --build-config="backend/cloudbuild.yaml" \
+    --build-config="cloudbuild.yaml" \
     --project="$PROJECT_ID" \
     --region="$REGION" \
     --substitutions="_REGION=$REGION,_MEMORY=2Gi,_CPU=2,_MAX_INSTANCES=10,_MIN_INSTANCES=0"
@@ -61,7 +61,7 @@ if [ $? -eq 0 ]; then
     echo ""
     echo "🎯 What happens now:"
     echo "  - Every push to 'main' branch triggers a build"
-    echo "  - Build uses backend/cloudbuild.yaml"
+    echo "  - Build uses cloudbuild.yaml (root)"
     echo "  - Deploys to Cloud Run automatically"
     echo "  - Takes ~5-10 minutes per deployment"
     echo ""
