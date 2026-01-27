@@ -32,6 +32,7 @@ import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/c
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
 import { getContentPosterUrl } from '@bayit/shared-utils/youtube';
 import logger from '@/utils/logger';
+import { useFeaturedAudiobooksCarousel } from '@/hooks/useFeaturedAudiobooksCarousel';
 
 declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
@@ -157,6 +158,10 @@ export default function HomePage() {
   const [syncing, setSyncing] = useState(false);
   const [showMorningRitual, setShowMorningRitual] = useState(false);
   const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false);
+
+  // Fetch featured audiobooks
+  const { audiobooks: featuredAudiobooks, isLoading: audiobooksLoading } =
+    useFeaturedAudiobooksCarousel();
 
   // Load content on mount - each section loads independently
   useEffect(() => {
@@ -435,6 +440,25 @@ export default function HomePage() {
             <TelAvivRow />
           </View>
         </>
+      )}
+
+      {/* Audiobooks Carousel - Featured audiobooks */}
+      {audiobooksLoading ? (
+        <SectionSkeleton />
+      ) : featuredAudiobooks.length > 0 && (
+        <ContentCarousel
+          title={t('home.audiobooks', { defaultValue: 'Audiobooks' })}
+          items={featuredAudiobooks.map((book) => ({
+            id: book.id,
+            title: book.title,
+            thumbnail: book.thumbnail,
+            backdrop: book.backdrop,
+            description: book.description,
+            type: 'audiobook',
+          }))}
+          seeAllLink="/audiobooks"
+          style={styles.section}
+        />
       )}
 
       {/* Content Filters - only visible when authenticated */}

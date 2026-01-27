@@ -123,6 +123,7 @@
     "epg": "TV গাইড",
     "radio": "রেডিও",
     "podcasts": "পডকাস্ট",
+    "audiobooks": "Audiobooks",
     "flows": "ফ্লো",
     "judaism": "ইহুদি ধর্ম",
     "children": "শিশু",
@@ -156,6 +157,7 @@
   "home": {
     "continueWatching": "দেখা চালিয়ে যান",
     "featuredContent": "ফিচার্ড",
+    "audiobooks": "অডিওবুক",
     "liveTV": "লাইভ TV",
     "allChannels": "সব চ্যানেল",
     "liveChannels": "লাইভ চ্যানেল",

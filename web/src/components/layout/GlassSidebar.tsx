@@ -57,6 +57,7 @@ const baseMenuSections: MenuSection[] = [
       { id: 'vod', icon: 'vod', labelKey: 'nav.vod', path: '/vod' },
       { id: 'radio', icon: 'radio', labelKey: 'nav.radio', path: '/radio' },
       { id: 'podcasts', icon: 'podcasts', labelKey: 'nav.podcasts', path: '/podcasts' },
+      { id: 'audiobooks', icon: 'audiobooks', labelKey: 'nav.audiobooks', path: '/audiobooks' },
     ],
   },
   {

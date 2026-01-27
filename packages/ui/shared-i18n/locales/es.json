@@ -213,6 +213,7 @@
     "epg": "Guía de TV",
     "radio": "Radio",
     "podcasts": "Podcasts",
+    "audiobooks": "Audiobooks",
     "flows": "Flujos",
     "judaism": "Judaísmo",
     "children": "Niños",
@@ -281,6 +282,7 @@
   "home": {
     "continueWatching": "Continuar Viendo",
     "featuredContent": "Destacados",
+    "audiobooks": "Audiolibros",
     "liveTV": "TV en Vivo",
     "allChannels": "Todos los Canales",
     "liveChannels": "Canales en Vivo",
