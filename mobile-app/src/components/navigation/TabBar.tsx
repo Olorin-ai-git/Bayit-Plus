@@ -1,16 +1,16 @@
 /**
  * TabBar Component for Mobile Navigation
- * Uses lucide-react-native for consistent icon rendering
+ * Uses unified icon registry from @olorin/shared-icons for consistent rendering
  */
 
 import React from 'react';
-import { Text, Pressable, View, StyleSheet, Platform } from 'react-native';
+import { Text, Pressable, View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Home, Tv, Film, Radio, Mic, User } from 'lucide-react-native';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 // Design tokens - purple theme
 const COLORS = {
-  primary: '#9333ea',
+  primary: '#7e22ce',
   primaryBg: 'rgba(126, 34, 206, 0.2)',
   inactive: 'rgba(255, 255, 255, 0.5)',
   background: 'rgba(10, 10, 10, 0.95)',
@@ -23,14 +23,14 @@ interface TabBarProps {
   navigation: any;
 }
 
-// Map route names to lucide icon components
-const TAB_ICONS: Record<string, React.FC<any>> = {
-  Home: Home,
-  LiveTV: Tv,
-  VOD: Film,
-  Radio: Radio,
-  Podcasts: Mic,
-  Profile: User,
+// Map route names to icon registry names
+const TAB_ICONS: Record<string, string> = {
+  Home: 'home',
+  LiveTV: 'live',
+  VOD: 'vod',
+  Radio: 'radio',
+  Podcasts: 'podcasts',
+  Profile: 'profile',
 };
 
 // Tab labels for display
@@ -52,7 +52,7 @@ export default function TabBar(props: TabBarProps) {
     <View style={[styles.tabBarContainer, { paddingBottom: bottomPadding }]}>
       {state.routes.map((route: any, index: number) => {
         const isFocused = state.index === index;
-        const IconComponent = TAB_ICONS[route.name] || Home;
+        const iconName = TAB_ICONS[route.name] || 'home';
         const label = TAB_LABELS[route.name] || route.name;
         const iconColor = isFocused ? COLORS.primary : COLORS.inactive;
 
@@ -80,10 +80,11 @@ export default function TabBar(props: TabBarProps) {
               isFocused && styles.tabFocused,
             ]}
           >
-            <IconComponent
-              size={20}
+            <NativeIcon
+              name={iconName}
+              size="sm"
               color={iconColor}
-              strokeWidth={isFocused ? 2.5 : 2}
+              variant={isFocused ? 'colored' : 'monochrome'}
             />
             <Text
               style={[

@@ -107,6 +107,27 @@ echo ""
 echo -e "${YELLOW}=== Content APIs ===${NC}"
 create_or_update_secret "bayit-tmdb-api-key" "${TMDB_API_KEY}"
 
+# Audible Integration (Optional)
+echo ""
+echo -e "${YELLOW}=== Audible Integration (Optional) ===${NC}"
+if [ -z "$AUDIBLE_CLIENT_ID" ]; then
+    echo -e "${YELLOW}⚠ AUDIBLE_CLIENT_ID not set - Audible integration will be disabled${NC}"
+else
+    create_or_update_secret "bayit-audible-client-id" "${AUDIBLE_CLIENT_ID}"
+fi
+
+if [ -z "$AUDIBLE_CLIENT_SECRET" ]; then
+    echo -e "${YELLOW}⚠ AUDIBLE_CLIENT_SECRET not set - Audible integration will be disabled${NC}"
+else
+    create_or_update_secret "bayit-audible-client-secret" "${AUDIBLE_CLIENT_SECRET}"
+fi
+
+if [ -z "$AUDIBLE_REDIRECT_URI" ]; then
+    echo -e "${YELLOW}⚠ AUDIBLE_REDIRECT_URI not set - Audible integration will be disabled${NC}"
+else
+    create_or_update_secret "bayit-audible-redirect-uri" "${AUDIBLE_REDIRECT_URI}"
+fi
+
 echo ""
 echo -e "${GREEN}============================================${NC}"
 echo -e "${GREEN}✓ All secrets created successfully!${NC}"
@@ -121,6 +142,9 @@ echo "   gcloud projects add-iam-policy-binding ${PROJECT_ID} \\"
 echo "     --member='serviceAccount:624470113582-compute@developer.gserviceaccount.com' \\"
 echo "     --role='roles/secretmanager.secretAccessor'"
 echo ""
-echo "3. Deploy to Cloud Run:"
+echo "3. Check Audible configuration status:"
+echo "   ./scripts/deployment/.gcloud-secrets.sh ${PROJECT_ID}"
+echo ""
+echo "4. Deploy to Cloud Run:"
 echo "   gcloud builds submit --config=cloudbuild.yaml"
 echo ""

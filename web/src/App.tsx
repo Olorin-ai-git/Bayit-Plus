@@ -112,6 +112,7 @@ const LiveChannelsPage = lazy(() => import('./pages/admin/LiveChannelsPage'))
 const RadioStationsPage = lazy(() => import('./pages/admin/RadioStationsPage'))
 const AdminPodcastsPage = lazy(() => import('./pages/admin/PodcastsPage'))
 const PodcastEpisodesPage = lazy(() => import('./pages/admin/PodcastEpisodesPage'))
+const AdminAudiobooksPage = lazy(() => import('./pages/admin/AudiobooksPage'))
 const WidgetsPage = lazy(() => import('./pages/admin/WidgetsPage'))
 const LibrarianAgentPage = lazy(() => import('./pages/admin/LibrarianAgentPage'))
 const RecordingsManagementPage = lazy(() => import('./pages/admin/RecordingsManagementPage'))
@@ -190,6 +191,7 @@ const AppContent = () => {
         <Route path="radio-stations" element={<RadioStationsPage />} />
         <Route path="podcasts" element={<AdminPodcastsPage />} />
         <Route path="podcasts/:podcastId/episodes" element={<PodcastEpisodesPage />} />
+        <Route path="audiobooks" element={<AdminAudiobooksPage />} />
         <Route path="translations" element={<TranslationDashboardPage />} />
         <Route path="widgets" element={<WidgetsPage />} />
         <Route path="recordings" element={<RecordingsManagementPage />} />

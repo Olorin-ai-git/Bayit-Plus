@@ -8,6 +8,7 @@
 
 import { useState, useCallback } from 'react';
 import type { FileUploadProgress, ContentType } from '../types';
+import type { FolderEntry } from '../types/folderTypes';
 import { createInitialStageState } from '../utils/stageHelpers';
 import { updateFileProgress as updateProgress, markFileComplete as markComplete, markFileFailed as markFailed } from './useManualUpload.helpers';
 import * as uploadsService from '@/services/uploadsService';
@@ -147,6 +148,62 @@ export const useManualUpload = () => {
   );
 
   /**
+   * Uploads files from a folder with relative paths preserved
+   */
+  const uploadFolderFiles = useCallback(
+    async (folderEntries: FolderEntry[], contentType: ContentType): Promise<boolean> => {
+      if (folderEntries.length === 0) {
+        notifications.showWarning(t('admin.uploads.manualUpload.noFilesSelected'));
+        return false;
+      }
+
+      setIsUploading(true);
+      setUploadResult(null);
+
+      try {
+        const result = await uploadsService.uploadFolderFiles(
+          folderEntries.map((e) => ({ file: e.file, relativePath: e.relativePath })),
+          contentType,
+          (fileIndex, progress) => {
+            updateFileProgress(fileIndex, progress);
+          },
+          (fileIndex, job) => {
+            markFileComplete(fileIndex, job.job_id);
+          }
+        );
+
+        setUploadResult({
+          successful: result.successful.length,
+          failed: result.failed.length,
+        });
+
+        if (result.successful.length > 0) {
+          notifications.showSuccess(
+            t('admin.uploads.manualUpload.uploadSuccess', { count: result.successful.length })
+          );
+        }
+
+        if (result.failed.length > 0) {
+          notifications.showError(
+            t('admin.uploads.manualUpload.uploadFailed', { count: result.failed.length })
+          );
+        }
+
+        return result.failed.length === 0;
+      } catch (err) {
+        logger.error('Failed to upload folder files', 'useManualUpload', err);
+        notifications.showError(
+          err instanceof Error ? err.message : t('admin.uploads.errors.uploadFailed')
+        );
+        return false;
+      } finally {
+        setIsUploading(false);
+      }
+    },
+    [updateFileProgress, markFileComplete, notifications, t]
+  );
+
+  /**
    * Cancels an active upload (if implemented in future)
    */
   const cancelUpload = useCallback(() => {
@@ -162,6 +219,7 @@ export const useManualUpload = () => {
     removeFile,
     clearFiles,
     uploadFiles,
+    uploadFolderFiles,
     cancelUpload,
   };
 };

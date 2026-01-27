@@ -39,13 +39,16 @@ async def init_browser_upload(
     Returns an upload_id to use for chunked uploads.
     """
     try:
-        # Validate file type
-        allowed_extensions = {".mp4", ".mkv", ".avi", ".mov", ".webm", ".m4v", ".wmv"}
+        # Validate file type based on content type
+        video_extensions = {".mp4", ".mkv", ".avi", ".mov", ".webm", ".m4v", ".wmv"}
+        audio_extensions = {".mp3", ".m4a", ".flac", ".aac", ".wav", ".ogg"}
+        allowed_extensions = audio_extensions if content_type == ContentType.AUDIOBOOK else video_extensions
         file_ext = Path(filename).suffix.lower()
+        format_label = "audio" if content_type == ContentType.AUDIOBOOK else "video"
         if file_ext not in allowed_extensions:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid file type: {file_ext}. Allowed: {', '.join(allowed_extensions)}",
+                detail=f"Invalid {format_label} file type: {file_ext}. Allowed: {', '.join(sorted(allowed_extensions))}",
             )
 
         # Check file size (max 10GB)

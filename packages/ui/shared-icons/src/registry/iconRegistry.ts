@@ -7,6 +7,15 @@
 export type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 export type IconCategory = 'navigation' | 'action' | 'status' | 'media' | 'ui' | 'admin';
 export type IconVariant = 'solid' | 'outline';
+export type GlassLevel = 'light' | 'medium' | 'strong';
+
+export interface IconStyling {
+  defaultColor?: string;
+  gradientColors?: [string, string];
+  backgroundColor?: string;
+  glassLevel?: GlassLevel;
+  borderColor?: string;
+}
 
 export interface IconDefinition {
   name: string;
@@ -14,6 +23,7 @@ export interface IconDefinition {
   category: IconCategory;
   description: string;
   usage?: string[];
+  styling?: IconStyling;
 }
 
 export interface IconSizeMap {
@@ -483,6 +493,29 @@ export function getIconSize(size: IconSize, context: string = 'default'): number
  */
 export function isValidIcon(iconName: string): boolean {
   return iconName in ICON_REGISTRY;
+}
+
+/**
+ * Get icon styling (color, glass level, etc.)
+ * Returns styling metadata for the icon if available
+ */
+export function getIconStyle(iconName: string): IconStyling | undefined {
+  const icon = ICON_REGISTRY[iconName];
+  return icon?.styling;
+}
+
+/**
+ * Get all icons with a specific styling property
+ */
+export function getIconsByGlassLevel(glassLevel: GlassLevel): IconDefinition[] {
+  return Object.values(ICON_REGISTRY).filter(icon => icon.styling?.glassLevel === glassLevel);
+}
+
+/**
+ * Get all icons with a specific color
+ */
+export function getIconsByColor(color: string): IconDefinition[] {
+  return Object.values(ICON_REGISTRY).filter(icon => icon.styling?.defaultColor === color);
 }
 
 export default ICON_REGISTRY;

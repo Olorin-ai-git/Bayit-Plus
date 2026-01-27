@@ -1,5 +1,14 @@
 import { defineConfig } from 'tsup';
 
+// External dependencies that should not be bundled
+const external = [
+  'react',
+  'react-native',
+  'lucide-react',
+  'lucide-react-native',
+  '@olorin/design-tokens',
+];
+
 export default defineConfig([
   {
     entry: {
@@ -9,6 +18,7 @@ export default defineConfig([
     dts: true,
     sourcemap: true,
     clean: true,
+    external,
   },
   {
     entry: {
@@ -17,6 +27,7 @@ export default defineConfig([
     format: ['cjs', 'esm'],
     dts: true,
     sourcemap: true,
+    external,
   },
   {
     entry: {
@@ -25,6 +36,7 @@ export default defineConfig([
     format: ['cjs', 'esm'],
     dts: true,
     sourcemap: true,
+    external,
   },
   {
     entry: {
@@ -33,5 +45,6 @@ export default defineConfig([
     format: ['cjs', 'esm'],
     dts: true,
     sourcemap: true,
+    external,
   },
 ]);

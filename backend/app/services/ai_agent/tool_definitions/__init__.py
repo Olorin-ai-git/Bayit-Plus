@@ -5,6 +5,7 @@ Claude tool use definitions organized by domain.
 """
 
 from .audit import AUDIT_TOOLS
+from .audiobooks import AUDIOBOOK_TOOLS
 from .content import CONTENT_TOOLS
 from .diagnostics import DIAGNOSTICS_TOOLS
 from .integrity import INTEGRITY_TOOLS
@@ -27,6 +28,7 @@ TOOLS = (
     + NOTIFICATION_TOOLS
     + PODCAST_TOOLS
     + SERIES_TOOLS
+    + AUDIOBOOK_TOOLS
     + INTEGRITY_TOOLS
     + AUDIT_TOOLS
     + TAXONOMY_TOOLS

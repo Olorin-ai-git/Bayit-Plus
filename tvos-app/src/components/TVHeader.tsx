@@ -14,11 +14,10 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { Home, Tv, Calendar, Film, Radio, Mic, Sparkles, BookOpen, Users, Disc3, Settings, Search } from 'lucide-react-native';
 import { useAuthStore, useChatbotStore, useVoiceSettingsStore } from '@bayit/shared-stores';
 import { VoiceSearchButton, LanguageSelector, AnimatedLogo, SoundwaveVisualizer } from '@bayit/shared';
 // import { ProfileDropdown } from '@bayit/shared/ProfileDropdown'; // TODO: Component not available yet
-import { ICON_REGISTRY } from '@olorin/shared-icons';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing } from '@olorin/design-tokens';
 import LinearGradient from 'react-native-linear-gradient';
 import { chatService } from '@bayit/shared-services';
@@ -29,16 +28,17 @@ import { TVVoiceResponseDisplay } from './voice/TVVoiceResponseDisplay';
 import { TVProactiveSuggestionBanner } from './voice/TVProactiveSuggestionBanner';
 
 // Navigation links - matching web app navigation with TV-specific additions
+// Maps to unified icon registry names
 const navLinkKeys = [
-  { route: 'Home', key: 'nav.home', icon: Home },
-  { route: 'LiveTV', key: 'nav.liveTV', icon: Tv },
-  { route: 'EPG', key: 'nav.epg', icon: Calendar },
-  { route: 'VOD', key: 'nav.vod', icon: Film },
-  { route: 'Radio', key: 'nav.radio', icon: Radio },
-  { route: 'Podcasts', key: 'nav.podcasts', icon: Mic },
-  { route: 'Flows', key: 'nav.flows', icon: Sparkles },
-  { route: 'Judaism', key: 'nav.judaism', icon: BookOpen },
-  { route: 'Children', key: 'nav.children', icon: Users },
+  { route: 'Home', key: 'nav.home', iconName: 'home' },
+  { route: 'LiveTV', key: 'nav.liveTV', iconName: 'live' },
+  { route: 'EPG', key: 'nav.epg', iconName: 'epg' },
+  { route: 'VOD', key: 'nav.vod', iconName: 'vod' },
+  { route: 'Radio', key: 'nav.radio', iconName: 'radio' },
+  { route: 'Podcasts', key: 'nav.podcasts', iconName: 'podcasts' },
+  { route: 'Flows', key: 'nav.flows', iconName: 'discover' },
+  { route: 'Judaism', key: 'nav.judaism', iconName: 'judaism' },
+  { route: 'Children', key: 'nav.children', iconName: 'children' },
 ];
 
 interface TVHeaderProps {
@@ -122,7 +122,6 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
       {navLinkKeys.map((link: any) => {
         const isActive = isNavActive(link.route);
         const isFocused = focusedNav === link.route;
-        const IconComponent = link.icon;
         const iconColor = isActive ? '#ffffff' : '#a0a0a0';
         return (
           <Pressable
@@ -136,10 +135,11 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
               isFocused ? 'border-purple-500 bg-purple-500/30 scale-105' : 'border-transparent'
             }`}
           >
-            <IconComponent
-              size={24}
+            <NativeIcon
+              name={link.iconName}
+              size="lg"
               color={iconColor}
-              strokeWidth={isFocused ? 2.5 : 2}
+              variant={isActive ? 'colored' : 'monochrome'}
             />
             <Text className={`text-xl font-medium ${
               isActive ? 'text-white font-semibold' : 'text-gray-400'
@@ -164,10 +164,11 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
           focusedAction === 'recordings' ? 'border-purple-500 bg-purple-500/30 scale-105' : 'border-transparent'
         }`}
       >
-        <Disc3
-          size={32}
+        <NativeIcon
+          name="recordings"
+          size="xl"
           color={focusedAction === 'recordings' ? '#ffffff' : '#a0a0a0'}
-          strokeWidth={2}
+          variant={focusedAction === 'recordings' ? 'colored' : 'monochrome'}
         />
       </Pressable>
 
@@ -180,10 +181,11 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
           focusedAction === 'settings' ? 'border-purple-500 bg-purple-500/30 scale-105' : 'border-transparent'
         }`}
       >
-        <Settings
-          size={32}
+        <NativeIcon
+          name="settings"
+          size="xl"
           color={focusedAction === 'settings' ? '#ffffff' : '#a0a0a0'}
-          strokeWidth={2}
+          variant={focusedAction === 'settings' ? 'colored' : 'monochrome'}
         />
       </Pressable>
 
@@ -219,10 +221,11 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
           focusedAction === 'search' ? 'border-purple-500 bg-purple-500/30 scale-105' : 'border-transparent'
         }`}
       >
-        <Search
-          size={32}
+        <NativeIcon
+          name="search"
+          size="xl"
           color={focusedAction === 'search' ? '#ffffff' : '#a0a0a0'}
-          strokeWidth={2}
+          variant={focusedAction === 'search' ? 'colored' : 'monochrome'}
         />
       </Pressable>
 
@@ -246,7 +249,12 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
           focusedAction === 'voice' ? 'border-purple-500 bg-purple-500/30 scale-105' : ''
         }`}
       >
-        <Text className="text-[32px]">🎙️</Text>
+        <NativeIcon
+          name="podcasts"
+          size="xl"
+          color={focusedAction === 'voice' ? '#ffffff' : '#a0a0a0'}
+          variant={focusedAction === 'voice' ? 'colored' : 'monochrome'}
+        />
       </Pressable>
     </View>
   );

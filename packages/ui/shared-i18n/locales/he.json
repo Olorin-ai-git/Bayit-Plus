@@ -1474,6 +1474,7 @@
       "liveChannels": "ערוצים חיים",
       "radioStations": "תחנות רדיו",
       "podcasts": "פודקאסטים",
+      "audiobooks": "ספרי שמע",
       "settings": "הגדרות"
     },
     "nav": {
@@ -1498,6 +1499,7 @@
       "liveChannels": "ערוצים חיים",
       "radioStations": "תחנות רדיו",
       "podcasts": "פודקאסטים",
+      "audiobooks": "ספרי שמע",
       "widgets": "ווידג'טים",
       "recordings": "הקלטות",
       "uploads": "העלאות",
@@ -1631,6 +1633,7 @@
       "contentTypes": {
         "movie": "סרטים",
         "series": "סדרות",
+        "podcast": "פודקאסטים",
         "audiobook": "ספרי אודיו"
       },
       "errors": {
@@ -1656,7 +1659,24 @@
         "invalidFileType": "סוג קובץ לא חוקי. רק קבצי וידאו נתמכים.",
         "filesCount": "{{count}} קבצים נבחרו",
         "pendingRestore": "{{count}} קבצים ממתינים מהפעלה קודמת",
-        "pendingRestoreHint": "גרור או בחר את אותם קבצים לשחזור תור ההעלאות"
+        "pendingRestoreHint": "גרור או בחר את אותם קבצים לשחזור תור ההעלאות",
+        "acceptedFormats": "פורמטים נתמכים",
+        "acceptedAudioFormats": "פורמטי אודיו נתמכים",
+        "dragOrClick": "גרור ושחרר קבצים כאן, או לחץ לעיון",
+        "dropFiles": "שחרר קבצים כאן להעלאה",
+        "maxSize": "גודל קובץ מקסימלי",
+        "invalidFiles": "{{count}} קבצים נדחו",
+        "uploadMode": "מצב העלאה",
+        "filesMode": "קבצים בודדים",
+        "folderMode": "תיקייה",
+        "dropFolder": "שחרר תיקייה כאן",
+        "folderPreview": "תוכן התיקייה",
+        "totalFiles": "{{count}} קבצים",
+        "validFiles": "{{count}} קבצים תקינים",
+        "invalidFilesCount": "{{count}} קבצים לא תקינים",
+        "proceedUpload": "העלה {{count}} קבצים תקינים",
+        "folderTooLarge": "התיקייה מכילה יותר מדי קבצים (מקסימום {{max}})",
+        "folderTooDeep": "מבנה התיקייה עמוק מדי (מקסימום {{max}} רמות)"
       }
     },
     "librarian": {
