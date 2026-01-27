@@ -4065,7 +4065,8 @@
       "music": "Music",
       "documentaries": "Documentaries",
       "podcasts": "Podcasts",
-      "live": "Live TV"
+      "live": "Live TV",
+      "audiobooks": "Audiobooks"
     },
     "subcategories": {
       "learning-hebrew": "Learning Hebrew",
