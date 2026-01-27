@@ -1,6 +1,7 @@
 /**
  * Audiobook Card Component
  * Displays individual audiobook in grid/list views
+ * Supports both native Bayit+ and Audible audiobooks
  */
 
 import { useState } from 'react'
@@ -9,6 +10,7 @@ import { Link } from 'react-router-dom'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassCard } from '@bayit/shared/ui'
 import type { Audiobook } from '@/types/audiobook'
+import { AudibleBadge } from './audiobook/AudibleBadge'
 
 const styles = StyleSheet.create({
   container: {
@@ -108,26 +110,33 @@ const styles = StyleSheet.create({
 })
 
 interface AudiobookCardProps {
-  audiobook: Audiobook
+  audiobook: Audiobook & { source?: string; asin?: string }
+  onAudiblePlay?: (asin: string) => void
 }
 
-export function AudiobookCard({ audiobook }: AudiobookCardProps) {
+export function AudiobookCard({ audiobook, onAudiblePlay }: AudiobookCardProps) {
   const [isHovered, setIsHovered] = useState(false)
 
+  const isAudible = audiobook.source === 'audible'
   const viewCountDisplay =
     audiobook.view_count > 1000
       ? `${(audiobook.view_count / 1000).toFixed(1)}K`
       : audiobook.view_count.toString()
 
-  return (
-    <View style={styles.container}>
-      <Link to={`/audiobooks/${audiobook.id}`} style={styles.linkContainer}>
-        <Pressable
-          onHoverIn={() => setIsHovered(true)}
-          onHoverOut={() => setIsHovered(false)}
-          style={isHovered ? styles.hovered : undefined}
-        >
-          <GlassCard style={styles.cardContent}>
+  const handlePress = () => {
+    if (isAudible && audiobook.asin && onAudiblePlay) {
+      onAudiblePlay(audiobook.asin)
+    }
+  }
+
+  const cardContent = (
+    <Pressable
+      onPress={handlePress}
+      onHoverIn={() => setIsHovered(true)}
+      onHoverOut={() => setIsHovered(false)}
+      style={isHovered ? styles.hovered : undefined}
+    >
+      <GlassCard style={styles.cardContent}>
             {/* Image */}
             <View style={styles.imageContainer}>
               {audiobook.thumbnail ? (
@@ -140,6 +149,8 @@ export function AudiobookCard({ audiobook }: AudiobookCardProps) {
                   <Text style={styles.placeholderText}>🎧</Text>
                 </View>
               )}
+              {/* Audible Badge */}
+              {isAudible && <AudibleBadge variant="compact" />}
             </View>
 
             {/* Title */}
@@ -176,8 +187,18 @@ export function AudiobookCard({ audiobook }: AudiobookCardProps) {
               </Text>
             )}
           </GlassCard>
-        </Pressable>
-      </Link>
+      </Pressable>
+    )
+
+  return (
+    <View style={styles.container}>
+      {isAudible ? (
+        cardContent
+      ) : (
+        <Link to={`/audiobooks/${audiobook.id}`} style={styles.linkContainer}>
+          {cardContent}
+        </Link>
+      )}
     </View>
   )
 }

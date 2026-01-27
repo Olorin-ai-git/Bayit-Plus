@@ -407,7 +407,10 @@ export default function HomePage() {
                 style={styles.liveCardWrapper}
               >
                 <Pressable onPress={() => navigate(`/live/${channel.id}`)}>
-                  <GlassCard title={channel.name} />
+                  <GlassCard
+                    title={channel.name}
+                    imageUrl={channel.thumbnail || channel.logo}
+                  />
                 </Pressable>
               </AnimatedCard>
             ))}

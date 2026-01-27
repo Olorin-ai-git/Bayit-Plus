@@ -254,5 +254,6 @@ if __name__ == "__main__":
     # Read PORT from environment variable (Cloud Run compatibility)
     # Falls back to 8000 for local development
     port = int(os.getenv("PORT", "8000"))
+    log_level = os.getenv("LOG_LEVEL", "info").lower()
 
-    uvicorn.run("app.main:app", host="0.0.0.0", port=port, reload=True)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=port, reload=True, log_level=log_level)

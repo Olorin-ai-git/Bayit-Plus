@@ -20,7 +20,7 @@ class TriggerAuditRequest(BaseModel):
     audit_type: str = "daily_incremental"
     dry_run: bool = False
     use_ai_agent: bool = False
-    max_iterations: int = 50
+    max_iterations: int = 999999  # Effectively unlimited - budget is the real constraint
     budget_limit_usd: float = 1.0
     last_24_hours_only: bool = False
     validate_integrity: bool = True

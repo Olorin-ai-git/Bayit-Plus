@@ -30,7 +30,7 @@ class MongoDBAtlasProvider(CostProvider):
         Falls back to config value on failure.
         """
         if not self._enabled or not self._org_id or not self._api_key:
-            logger.info("MongoDB Atlas API disabled, using config fallback")
+            logger.debug("MongoDB Atlas API disabled, using config fallback")
             return self._get_fallback_cost()
 
         try:

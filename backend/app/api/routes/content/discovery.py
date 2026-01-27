@@ -101,9 +101,8 @@ async def get_all_content(
 
     category_map = {
         str(cat.id): {
-            "name": cat.name,
-            "name_en": cat.name_en,
-            "name_es": cat.name_es,
+            "slug": cat.slug,
+            "name_key": cat.name_key,
         }
         for cat in categories
     }
@@ -131,8 +130,8 @@ async def get_all_content(
                 else None
             ),
             "category": item.category_name,
-            "category_name_en": cat_info.get("name_en"),
-            "category_name_es": cat_info.get("name_es"),
+            "category_slug": cat_info.get("slug"),
+            "category_name_key": cat_info.get("name_key"),
             "year": item.year,
             "duration": item.duration,
             "is_series": is_series,

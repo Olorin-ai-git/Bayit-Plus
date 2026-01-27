@@ -36,7 +36,6 @@ logger = logging.getLogger(__name__)
 @router.post("/internal/librarian/scheduled-audit", response_model=TriggerAuditResponse)
 async def trigger_scheduled_audit(
     request: TriggerAuditRequest,
-    background_tasks: BackgroundTasks,
     user_agent: Optional[str] = Header(None),
 ):
     """
@@ -50,17 +49,38 @@ async def trigger_scheduled_audit(
         )
 
     try:
+        # Create audit record first (same pattern as admin endpoint)
+        audit = AuditReport(
+            audit_date=datetime.utcnow(),
+            audit_type=request.audit_type if not request.use_ai_agent else "ai_agent",
+            status="in_progress",
+            execution_time_seconds=0,
+            metadata={
+                "dry_run": request.dry_run,
+                "use_ai_agent": request.use_ai_agent
+                or request.audit_type == "ai_agent",
+                "triggered_by": "cloud_scheduler",
+            },
+        )
+        await audit.save()
+        audit_id = audit.audit_id
+
         if request.use_ai_agent or request.audit_type == "ai_agent":
-            background_tasks.add_task(
-                run_ai_agent_audit,
-                audit_type="ai_agent",
-                dry_run=request.dry_run,
-                max_iterations=request.max_iterations,
-                budget_limit_usd=request.budget_limit_usd,
+            # Use asyncio.create_task for proper async execution
+            task = asyncio.create_task(
+                run_audit_with_tracking(
+                    audit_id=audit_id,
+                    audit_func=run_ai_agent_audit,
+                    audit_type="ai_agent",
+                    dry_run=request.dry_run,
+                    max_iterations=request.max_iterations,
+                    budget_limit_usd=request.budget_limit_usd,
+                )
             )
+            audit_task_manager.register_task(audit_id, task)
 
             return TriggerAuditResponse(
-                audit_id="running",
+                audit_id=audit_id,
                 status="started",
                 message=f"🤖 AI Agent audit started (autonomous mode, {'DRY RUN' if request.dry_run else 'LIVE'}). Claude will decide what to check and fix. Check back soon for results.",
             )
@@ -72,12 +92,18 @@ async def trigger_scheduled_audit(
                     detail=f"Invalid audit_type. Must be one of: {', '.join(valid_types + ['ai_agent'])}",
                 )
 
-            background_tasks.add_task(
-                run_daily_audit, audit_type=request.audit_type, dry_run=request.dry_run
+            task = asyncio.create_task(
+                run_audit_with_tracking(
+                    audit_id=audit_id,
+                    audit_func=run_daily_audit,
+                    audit_type=request.audit_type,
+                    dry_run=request.dry_run,
+                )
             )
+            audit_task_manager.register_task(audit_id, task)
 
             return TriggerAuditResponse(
-                audit_id="running",
+                audit_id=audit_id,
                 status="started",
                 message=f"Librarian audit started ({request.audit_type}, rule-based mode). Check back soon for results.",
             )

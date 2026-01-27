@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { FileText, AlertCircle, AlertTriangle, Info, Archive } from 'lucide-react';
+import { FileText, AlertCircle, AlertTriangle, Info, Archive, XCircle, CheckCircle2 } from 'lucide-react';
 import { GlassModal, GlassButton, GlassCard, GlassBadge } from '@bayit/shared/ui';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { AuditReportDetail, LibrarianConfig } from '@/services/librarianService';
@@ -121,6 +121,50 @@ export const ReportDetailModal = ({
                 </Text>
               )}
             </GlassCard>
+
+            {/* 1b. Agent Status Message (shows errors, warnings, or completion summary) */}
+            {report.summary?.agent_summary && (
+              <GlassCard style={[
+                styles.agentMessageCard,
+                report.status === 'failed' && styles.agentMessageCardError,
+                report.status === 'partial' && styles.agentMessageCardWarning,
+                report.status === 'completed' && styles.agentMessageCardSuccess,
+              ]}>
+                <View style={styles.agentMessageHeader}>
+                  {report.status === 'failed' ? (
+                    <XCircle size={20} color={colors.error.DEFAULT} />
+                  ) : report.status === 'partial' ? (
+                    <AlertTriangle size={20} color="#fb923c" />
+                  ) : (
+                    <CheckCircle2 size={20} color={colors.success.DEFAULT} />
+                  )}
+                  <Text style={[
+                    styles.agentMessageTitle,
+                    report.status === 'failed' && styles.agentMessageTitleError,
+                    report.status === 'partial' && styles.agentMessageTitleWarning,
+                  ]}>
+                    {report.status === 'failed'
+                      ? t('admin.librarian.reports.detailModal.auditFailed', 'Audit Failed')
+                      : report.status === 'partial'
+                      ? t('admin.librarian.reports.detailModal.auditIncomplete', 'Audit Incomplete')
+                      : t('admin.librarian.reports.detailModal.agentSummary', 'Agent Summary')}
+                  </Text>
+                </View>
+                <Text style={styles.agentMessageText}>
+                  {report.summary.agent_summary}
+                </Text>
+                {report.summary?.error && (
+                  <View style={styles.errorDetailBox}>
+                    <Text style={styles.errorDetailLabel}>
+                      {t('admin.librarian.reports.detailModal.errorDetails', 'Error Details')}:
+                    </Text>
+                    <Text style={styles.errorDetailText}>
+                      {report.summary.error}
+                    </Text>
+                  </View>
+                )}
+              </GlassCard>
+            )}
 
             {/* 2. Metrics Summary Card */}
             <GlassCard style={styles.card}>
@@ -276,6 +320,67 @@ const styles = StyleSheet.create({
     backgroundColor: colors.glassStrong,
     borderColor: colors.glassBorder,
     borderWidth: 1,
+  },
+
+  // Agent Message Card (for errors, warnings, completion summary)
+  agentMessageCard: {
+    marginBottom: spacing.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  agentMessageCardError: {
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderColor: colors.error.DEFAULT,
+  },
+  agentMessageCardWarning: {
+    backgroundColor: 'rgba(251, 146, 60, 0.15)',
+    borderColor: '#fb923c',
+  },
+  agentMessageCardSuccess: {
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    borderColor: colors.success.DEFAULT,
+  },
+  agentMessageHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+    gap: spacing.sm,
+  },
+  agentMessageTitle: {
+    fontSize: fontSize.base,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  agentMessageTitleError: {
+    color: colors.error.DEFAULT,
+  },
+  agentMessageTitleWarning: {
+    color: '#fb923c',
+  },
+  agentMessageText: {
+    fontSize: fontSize.sm,
+    lineHeight: 22,
+    color: colors.text,
+  },
+  errorDetailBox: {
+    marginTop: spacing.md,
+    padding: spacing.md,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: borderRadius.md,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.error.DEFAULT,
+  },
+  errorDetailLabel: {
+    fontSize: fontSize.xs,
+    fontWeight: '600',
+    color: colors.textMuted,
+    marginBottom: spacing.xs,
+  },
+  errorDetailText: {
+    fontSize: fontSize.xs,
+    fontFamily: 'monospace',
+    color: colors.error.DEFAULT,
   },
   statusBadge: {
     marginBottom: spacing.md,

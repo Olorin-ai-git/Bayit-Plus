@@ -42,6 +42,7 @@ from app.models.playback_session import (PlaybackSession, PlaybackSessionCreate,
                                          PlaybackSessionResponse)
 from app.models.user import (Device, TokenResponse, User, UserCreate,
                              UserLogin, UserResponse, UserUpdate)
+from app.models.user_audible_account import UserAudibleAccount
 from app.models.user_system_widget import (UserSystemWidget,
                                            UserSystemWidgetPositionUpdate,
                                            UserSystemWidgetPreferencesUpdate,
@@ -86,6 +87,8 @@ __all__ = [
     "UserSystemWidgetResponse",
     "UserSystemWidgetPositionUpdate",
     "UserSystemWidgetPreferencesUpdate",
+    # User Audible Account
+    "UserAudibleAccount",
     # Recording
     "RecordingSession",
     "Recording",

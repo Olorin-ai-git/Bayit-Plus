@@ -444,10 +444,6 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.md,
     borderRadius: borderRadius.xl,
     overflow: 'hidden',
-    backgroundColor: 'rgba(10, 10, 30, 0.4)',
-    // @ts-ignore - Web-specific CSS properties
-    backdropFilter: 'blur(12px)',
-    WebkitBackdropFilter: 'blur(12px)',
   },
   containerMobile: {
     marginVertical: spacing.sm,
@@ -463,7 +459,7 @@ const styles = StyleSheet.create({
     minHeight: 180,
   },
   backgroundImage: {
-    opacity: 0.6,
+    opacity: 1,
     borderRadius: borderRadius.xl,
   },
   backgroundImageMobile: {
@@ -475,11 +471,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(10, 10, 30, 0.5)',
+    backgroundColor: 'rgba(10, 10, 30, 0.1)',
     borderRadius: borderRadius.xl,
-    // @ts-ignore - Web-specific CSS properties
-    backdropFilter: 'blur(8px)',
-    WebkitBackdropFilter: 'blur(8px)',
   },
   content: {
     position: 'relative',

@@ -21,5 +21,8 @@ module.exports = {
     'react-native-safe-area-context': {
       root: path.resolve(__dirname, '../node_modules/react-native-safe-area-context'),
     },
+    'react-native-svg': {
+      root: path.resolve(__dirname, '../node_modules/react-native-svg'),
+    },
   },
 };

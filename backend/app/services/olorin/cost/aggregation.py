@@ -57,7 +57,7 @@ class CostAggregationService:
         period_end = now.replace(minute=0, second=0, microsecond=0)
         period_start = period_end - timedelta(hours=1)
 
-        logger.info(
+        logger.debug(
             "Starting hourly cost aggregation",
             extra={
                 "period_start": period_start.isoformat(),
@@ -118,7 +118,7 @@ class CostAggregationService:
         # Store to database (upsert for idempotency)
         await cost_breakdown.save()
 
-        logger.info(
+        logger.debug(
             "Hourly cost aggregation completed",
             extra={
                 "total_cost": str(totals.platform_cost),

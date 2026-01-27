@@ -452,7 +452,7 @@ const styles = StyleSheet.create({
     minHeight: 180,
   },
   backgroundImage: {
-    opacity: 0.6,
+    opacity: 1,
     borderRadius: borderRadius.xl,
   },
   backgroundImageMobile: {
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(10, 10, 30, 0.6)',
+    backgroundColor: 'rgba(10, 10, 30, 0.1)',
     borderRadius: borderRadius.xl,
   },
   content: {

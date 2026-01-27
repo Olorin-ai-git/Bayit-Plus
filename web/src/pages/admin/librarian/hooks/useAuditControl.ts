@@ -92,7 +92,7 @@ export const useAuditControl = ({
         audit_type: auditType,
         dry_run: auditConfig.dryRun,
         use_ai_agent: auditType === 'ai_agent',
-        max_iterations: config.audit_limits.max_iterations,
+        // No max_iterations limit - budget is the only constraint
         budget_limit_usd: auditConfig.budgetLimit,
         last_24_hours_only: auditConfig.last24HoursOnly,
         // Integrity validation is MANDATORY - always runs first (not user-configurable)

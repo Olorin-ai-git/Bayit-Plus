@@ -136,7 +136,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
             focusStyle,
             style,
           ]}
-          intensity="medium"
+          intensity="subtle"
         >
           {cardContent}
         </GlassView>
