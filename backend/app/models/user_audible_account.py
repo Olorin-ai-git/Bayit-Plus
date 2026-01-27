@@ -1,5 +1,5 @@
-from datetime import datetime
-
+from datetime import datetime, timezone
+from pymongo import IndexModel, ASCENDING, DESCENDING
 from beanie import Document
 from pydantic import Field, validator
 
@@ -36,14 +36,17 @@ class UserAudibleAccount(Document):
     @property
     def is_token_expired(self) -> bool:
         """Check if access token is expired."""
-        return datetime.utcnow() > self.expires_at
+        return datetime.now(timezone.utc) > self.expires_at
 
     class Settings:
         name = "user_audible_accounts"
         indexes = [
-            [("user_id", 1)],  # Unique index on user_id
+            IndexModel([("user_id", ASCENDING)], unique=True),
             "audible_user_id",
-            ("user_id", "audible_user_id"),
-            "synced_at",  # For cleanup jobs
-            ("synced_at", "last_sync_error"),  # For failed sync batch processing
+            IndexModel([("user_id", ASCENDING), ("audible_user_id", ASCENDING)]),
+            "synced_at",
+            "expires_at",
+            "sync_status",
+            IndexModel([("user_id", ASCENDING), ("is_active", ASCENDING)]),
+            IndexModel([("synced_at", ASCENDING), ("last_sync_error", ASCENDING)]),
         ]

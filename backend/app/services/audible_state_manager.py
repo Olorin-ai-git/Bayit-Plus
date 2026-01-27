@@ -4,7 +4,7 @@ Stores and validates CSRF protection state tokens to prevent state parameter att
 Uses in-memory storage (can be extended to Redis for distributed deployments).
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from app.core.logging_config import get_logger
@@ -26,7 +26,7 @@ def store_state_token(state: str, user_id: str, code_verifier: str, code_challen
         code_verifier: PKCE code verifier
         code_challenge: PKCE code challenge
     """
-    _STATE_STORE[state] = (user_id, datetime.utcnow(), code_verifier, code_challenge)
+    _STATE_STORE[state] = (user_id, datetime.now(timezone.utc), code_verifier, code_challenge)
     logger.debug("Stored OAuth state token", extra={"state": state[:10], "user_id": user_id})
 
 
@@ -50,7 +50,7 @@ def validate_state_token(state: str, user_id: str) -> Optional[tuple[str, str]]:
     stored_user_id, created_at, code_verifier, code_challenge = _STATE_STORE[state]
 
     # Check expiration
-    if datetime.utcnow() - created_at > timedelta(minutes=STATE_EXPIRATION_MINUTES):
+    if datetime.now(timezone.utc) - created_at > timedelta(minutes=STATE_EXPIRATION_MINUTES):
         logger.warning("Expired state token", extra={"state": state[:10]})
         _STATE_STORE.pop(state, None)
         raise ValueError("State token expired")
@@ -72,7 +72,7 @@ def validate_state_token(state: str, user_id: str) -> Optional[tuple[str, str]]:
 
 def cleanup_expired_states() -> None:
     """Remove expired state tokens from store."""
-    current_time = datetime.utcnow()
+    current_time = datetime.now(timezone.utc)
     expired = [
         state
         for state, (_, created_at, _, _) in _STATE_STORE.items()

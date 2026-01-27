@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import {
   GlassCard,
   GlassCategoryPill,
@@ -25,16 +26,16 @@ import { LoadingState } from '@bayit/shared/components/states';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
-const CATEGORY_ICONS: Record<string, string> = {
-  all: '✡️',
-  news: '📰',
-  calendar: '📅',
-  community: '🏛️',
-  shiurim: '📖',
-  tefila: '🕯️',
-  music: '🎵',
-  holidays: '🕎',
-  documentaries: '🎬',
+const CATEGORY_ICON_NAMES: Record<string, string> = {
+  all: 'judaism',
+  news: 'info',
+  calendar: 'epg',
+  community: 'discover',
+  shiurim: 'judaism',
+  tefila: 'info',
+  music: 'podcasts',
+  holidays: 'judaism',
+  documentaries: 'vod',
 };
 
 interface JudaismItem {
@@ -66,7 +67,7 @@ function JudaismCard({ item }: { item: JudaismItem }) {
   const [isHovered, setIsHovered] = useState(false);
   // Track which thumbnail quality we're trying: 0=maxres, 1=hqdefault, 2=failed
   const [thumbnailAttempt, setThumbnailAttempt] = useState(0);
-  const categoryIcon = CATEGORY_ICONS[item.category] || '✡️';
+  const categoryIconName = CATEGORY_ICON_NAMES[item.category] || 'judaism';
 
   const getLocalizedText = (field: 'title' | 'description' | 'rabbi') => {
     const lang = i18n.language;
@@ -127,7 +128,7 @@ function JudaismCard({ item }: { item: JudaismItem }) {
               />
             ) : (
               <View style={styles.thumbnailPlaceholder}>
-                <Text style={styles.categoryIconLarge}>{categoryIcon}</Text>
+                <NativeIcon name={categoryIconName} size="xl" color={colors.textMuted} />
               </View>
             )}
 
@@ -167,7 +168,7 @@ function JudaismCard({ item }: { item: JudaismItem }) {
                 backdropFilter: 'blur(8px)',
               }
             ]}>
-              <Text style={styles.categoryIconSmall}>{categoryIcon}</Text>
+              <NativeIcon name={categoryIconName} size="md" color={colors.primary} />
             </View>
           </View>
 
@@ -318,17 +319,23 @@ export default function JudaismPage() {
 
         {/* News Section */}
         <View>
-          <Text style={[styles.sectionTitle, { textAlign }]}>
-            📰 {t('judaism.categories.news', 'Jewish News')}
-          </Text>
+          <View style={[styles.sectionTitleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <NativeIcon name="info" size="md" color={colors.primary} />
+            <Text style={[styles.sectionTitle, { textAlign }]}>
+              {t('judaism.categories.news', 'Jewish News')}
+            </Text>
+          </View>
           <JewishNewsFeed limit={10} />
         </View>
 
         {/* Community Section */}
         <View>
-          <Text style={[styles.sectionTitle, { textAlign }]}>
-            🏛️ {t('judaism.categories.community', 'Community')}
-          </Text>
+          <View style={[styles.sectionTitleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <NativeIcon name="discover" size="md" color={colors.primary} />
+            <Text style={[styles.sectionTitle, { textAlign }]}>
+              {t('judaism.categories.community', 'Community')}
+            </Text>
+          </View>
           <CommunityDirectory />
         </View>
       </View>
@@ -358,7 +365,7 @@ export default function JudaismPage() {
               <GlassCategoryPill
                 key={category.id}
                 label={getCategoryName(category)}
-                emoji={CATEGORY_ICONS[category.id] || '✡️'}
+                icon={<NativeIcon name={CATEGORY_ICON_NAMES[category.id] || 'judaism'} size="sm" color={selectedCategory === category.id ? colors.primary : colors.textMuted} />}
                 isActive={selectedCategory === category.id}
                 onPress={() => setSelectedCategory(category.id)}
               />
@@ -565,6 +572,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: colors.text,
+    marginBottom: spacing.md,
+  },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
     marginBottom: spacing.md,
   },
   loadingContainer: {

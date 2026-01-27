@@ -6,6 +6,7 @@ import { useDirection } from '@/hooks/useDirection';
 import { Radio, Volume2, Play } from 'lucide-react';
 import { radioService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import {
   GlassCard,
   GlassView,
@@ -172,31 +173,31 @@ export default function RadioPage() {
       >
         <GlassCategoryPill
           label={t('radio.categories.all')}
-          emoji="📻"
+          icon={<NativeIcon name="radio" size="sm" color={selectedCategory === 'all' ? colors.primary : colors.textMuted} />}
           isActive={selectedCategory === 'all'}
           onPress={() => setSelectedCategory('all')}
         />
         <GlassCategoryPill
           label={t('radio.categories.music')}
-          emoji="🎵"
+          icon={<NativeIcon name="podcasts" size="sm" color={selectedCategory === 'music' ? colors.primary : colors.textMuted} />}
           isActive={selectedCategory === 'music'}
           onPress={() => setSelectedCategory('music')}
         />
         <GlassCategoryPill
           label={t('radio.categories.news')}
-          emoji="📰"
+          icon={<NativeIcon name="info" size="sm" color={selectedCategory === 'news' ? colors.primary : colors.textMuted} />}
           isActive={selectedCategory === 'news'}
           onPress={() => setSelectedCategory('news')}
         />
         <GlassCategoryPill
           label={t('radio.categories.talk')}
-          emoji="🎙️"
+          icon={<NativeIcon name="podcasts" size="sm" color={selectedCategory === 'talk' ? colors.primary : colors.textMuted} />}
           isActive={selectedCategory === 'talk'}
           onPress={() => setSelectedCategory('talk')}
         />
         <GlassCategoryPill
           label={t('radio.categories.jewish')}
-          emoji="✡️"
+          icon={<NativeIcon name="judaism" size="sm" color={selectedCategory === 'jewish' ? colors.primary : colors.textMuted} />}
           isActive={selectedCategory === 'jewish'}
           onPress={() => setSelectedCategory('jewish')}
         />
