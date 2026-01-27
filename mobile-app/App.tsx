@@ -3,6 +3,7 @@
  * Entry point with SafeAreaProvider required for navigation
  */
 
+import 'react-native-gesture-handler';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';

@@ -302,6 +302,8 @@
     "jerusalemConnection": "חיבור ירושלים",
     "telAvivConnection": "חיבור תל אביב",
     "categories": "קטגוריות",
+    "podcasts": "פודקאסטים",
+    "audiobooks": "ספרי אודיו",
     "carousel": {
       "fauda": {
         "title": "פאודה",
@@ -1724,10 +1726,15 @@
         "noSources": "אין מקורות זמינים",
         "noSourcesDescription": "אין מקורות תוכן חינמיים זמינים כרגע עבור {{type}}"
       },
+      "movies": "סרטים",
+      "series": "סדרות",
+      "audiobooks": "ספרי אודיו",
+      "podcasts": "פודקאסטים",
       "filters": {
         "contentType": "סוג תוכן",
         "series": "סדרות",
         "movies": "סרטים",
+        "audiobooks": "ספרי אודיו",
         "podcasts": "פודקאסטים",
         "radioStations": "תחנות רדיו",
         "allStatus": "כל הסטטוסים"

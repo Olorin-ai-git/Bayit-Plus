@@ -22,7 +22,7 @@ import {
   type ViewStyle,
   type StyleProp,
 } from 'react-native'
-import { colors, spacing, borderRadius } from '../../../theme'
+import { colors, spacing, borderRadius } from '../../theme'
 
 export interface GlassCarousel3DProps {
   /** Carousel items to render */

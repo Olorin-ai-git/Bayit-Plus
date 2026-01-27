@@ -1,14 +1,14 @@
 /**
  * App Content Component
- * Simplified version focusing on 6 main screens
+ * Using JS-based stack to avoid react-native-screens Fabric issues
  */
 
 import React from 'react';
 import { View, StatusBar, StyleSheet } from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import MainTabNavigator from '../navigation/MainTabNavigator';
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 export const AppContent: React.FC = () => {
   return (

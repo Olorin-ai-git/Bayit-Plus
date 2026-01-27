@@ -11,7 +11,7 @@
 
 import React from 'react'
 import { View, Text, Image, Pressable, StyleSheet, Platform } from 'react-native'
-import { colors, spacing, borderRadius, fontSize } from '../../../theme'
+import { colors, spacing, borderRadius, fontSize } from '../../theme'
 import { GlassView } from './GlassView'
 
 export interface GlassPosterCardProps {

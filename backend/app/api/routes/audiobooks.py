@@ -29,7 +29,7 @@ from app.api.routes.audiobook_utils import (
 router = APIRouter()
 
 
-@router.get("/audiobooks", response_model=AudiobookListResponse)
+@router.get("", response_model=AudiobookListResponse)
 async def get_audiobooks(
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=50, le=500),
@@ -56,7 +56,7 @@ async def get_audiobooks(
     )
 
 
-@router.get("/audiobooks/{audiobook_id}")
+@router.get("/{audiobook_id}")
 async def get_audiobook(
     audiobook_id: str,
     current_user: Optional[User] = Depends(get_current_active_user),
@@ -73,7 +73,7 @@ async def get_audiobook(
     return audiobook_to_response(audiobook)
 
 
-@router.post("/audiobooks/{audiobook_id}/stream", response_model=AudiobookStreamResponse)
+@router.post("/{audiobook_id}/stream", response_model=AudiobookStreamResponse)
 async def get_audiobook_stream(
     audiobook_id: str,
     current_user: User = Depends(get_current_admin_user),

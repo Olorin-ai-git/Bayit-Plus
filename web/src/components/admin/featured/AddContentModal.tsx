@@ -32,7 +32,18 @@ interface AddContentModalProps {
   onAdd: (contentIds: string[]) => Promise<void>
 }
 
-type FilterType = 'all' | 'movies' | 'series'
+type FilterType = 'all' | 'movies' | 'series' | 'audiobooks' | 'podcasts'
+
+// Map section slugs to content types
+const getSectionContentType = (slug: string): FilterType | null => {
+  const slugLower = slug.toLowerCase()
+  if (slugLower.includes('movie') || slugLower === 'films') return 'movies'
+  if (slugLower.includes('series') || slugLower.includes('show') || slugLower === 'tv') return 'series'
+  if (slugLower.includes('audiobook') || slugLower.includes('audio-book')) return 'audiobooks'
+  if (slugLower.includes('podcast')) return 'podcasts'
+  // Generic sections like 'trending', 'new-releases', 'featured' show all content
+  return null
+}
 
 export default function AddContentModal({
   visible,
@@ -46,8 +57,13 @@ export default function AddContentModal({
   const { isRTL } = useDirection()
   const { selectedIds, handleSelect, clearSelection } = useSelection()
 
+  // Determine if section is category-specific
+  const sectionContentType = useMemo(() => getSectionContentType(sectionSlug), [sectionSlug])
+  const isCategoryLocked = sectionContentType !== null
+
   const [searchQuery, setSearchQuery] = useState('')
-  const [filterType, setFilterType] = useState<FilterType>('all')
+  // Use section's content type if locked, otherwise allow user selection
+  const [filterType, setFilterType] = useState<FilterType>(sectionContentType || 'all')
   const [publishedOnly, setPublishedOnly] = useState(true)
   const [items, setItems] = useState<Content[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -59,13 +75,26 @@ export default function AddContentModal({
     setIsLoading(true)
     setError(null)
     try {
+      // Use locked content type if section is category-specific, otherwise use user selection
+      const effectiveFilter = isCategoryLocked ? sectionContentType : filterType
+
+      // Map filter type to API content_type parameter
+      const getContentTypeParam = (filter: FilterType | null): string | undefined => {
+        switch (filter) {
+          case 'movies': return 'movies'
+          case 'series': return 'series'
+          case 'audiobooks': return 'audiobook'
+          case 'podcasts': return 'podcast'
+          default: return undefined
+        }
+      }
+
       const apiFilters = {
         page: pagination.page,
         page_size: pagination.pageSize,
         search: searchQuery,
         is_published: publishedOnly,
-        content_type:
-          filterType === 'series' ? 'series' : filterType === 'movies' ? 'movies' : undefined,
+        content_type: getContentTypeParam(effectiveFilter),
       }
 
       const response = await adminContentService.getContentHierarchical(apiFilters)
@@ -90,7 +119,12 @@ export default function AddContentModal({
     } finally {
       setIsLoading(false)
     }
-  }, [pagination.page, pagination.pageSize, searchQuery, filterType, publishedOnly, existingContentIds])
+  }, [pagination.page, pagination.pageSize, searchQuery, filterType, publishedOnly, existingContentIds, isCategoryLocked, sectionContentType])
+
+  // Reset filter type when section changes
+  useEffect(() => {
+    setFilterType(sectionContentType || 'all')
+  }, [sectionContentType])
 
   useEffect(() => {
     if (visible) {
@@ -106,7 +140,7 @@ export default function AddContentModal({
       await onAdd(selectedIds)
       clearSelection()
       setSearchQuery('')
-      setFilterType('all')
+      setFilterType(sectionContentType || 'all')
       setPagination({ page: 1, pageSize: 20, total: 0 })
       setItems([])
       onClose()
@@ -116,17 +150,17 @@ export default function AddContentModal({
     } finally {
       setIsAdding(false)
     }
-  }, [selectedIds, onAdd, clearSelection, onClose])
+  }, [selectedIds, onAdd, clearSelection, onClose, sectionContentType])
 
   const handleClose = useCallback(() => {
     clearSelection()
     setSearchQuery('')
-    setFilterType('all')
+    setFilterType(sectionContentType || 'all')
     setError(null)
     setPagination({ page: 1, pageSize: 20, total: 0 })
     setItems([])
     onClose()
-  }, [clearSelection, onClose])
+  }, [clearSelection, onClose, sectionContentType])
 
   const filteredItems = useMemo(() => items, [items])
 
@@ -157,55 +191,46 @@ export default function AddContentModal({
           />
         </View>
 
-        {/* Filter Tabs */}
+        {/* Filter Tabs - Hidden when category is locked to section type */}
         <View style={[styles.filterTabs, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <Pressable
-            style={[
-              styles.filterButton,
-              filterType === 'all' && styles.filterButtonActive,
-              { marginEnd: isRTL ? undefined : spacing.xs, marginStart: isRTL ? spacing.xs : undefined },
-            ]}
-            onPress={() => {
-              setFilterType('all')
-              setPagination({ page: 1, pageSize: 20, total: 0 })
-            }}
-          >
-            <Text style={[styles.filterText, filterType === 'all' && styles.filterTextActive]}>
-              {t('common.all')}
-            </Text>
-          </Pressable>
-
-          <Pressable
-            style={[
-              styles.filterButton,
-              filterType === 'movies' && styles.filterButtonActive,
-              { marginHorizontal: spacing.xs },
-            ]}
-            onPress={() => {
-              setFilterType('movies')
-              setPagination({ page: 1, pageSize: 20, total: 0 })
-            }}
-          >
-            <Text style={[styles.filterText, filterType === 'movies' && styles.filterTextActive]}>
-              Movies
-            </Text>
-          </Pressable>
-
-          <Pressable
-            style={[
-              styles.filterButton,
-              filterType === 'series' && styles.filterButtonActive,
-              { marginStart: isRTL ? undefined : spacing.xs, marginEnd: isRTL ? spacing.xs : undefined },
-            ]}
-            onPress={() => {
-              setFilterType('series')
-              setPagination({ page: 1, pageSize: 20, total: 0 })
-            }}
-          >
-            <Text style={[styles.filterText, filterType === 'series' && styles.filterTextActive]}>
-              Series
-            </Text>
-          </Pressable>
+          {isCategoryLocked ? (
+            // Show locked category indicator
+            <View style={[styles.filterButton, styles.filterButtonActive, styles.categoryLocked]}>
+              <Text style={[styles.filterText, styles.filterTextActive]}>
+                {sectionContentType === 'movies' && t('admin.content.movies', { defaultValue: 'Movies' })}
+                {sectionContentType === 'series' && t('admin.content.series', { defaultValue: 'Series' })}
+                {sectionContentType === 'audiobooks' && t('admin.content.audiobooks', { defaultValue: 'Audiobooks' })}
+                {sectionContentType === 'podcasts' && t('admin.content.podcasts', { defaultValue: 'Podcasts' })}
+              </Text>
+            </View>
+          ) : (
+            // Show filter tabs for generic sections
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScrollView}>
+              <View style={[styles.filterButtonRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                {(['all', 'movies', 'series', 'audiobooks', 'podcasts'] as FilterType[]).map((type) => (
+                  <Pressable
+                    key={type}
+                    style={[
+                      styles.filterButton,
+                      filterType === type && styles.filterButtonActive,
+                    ]}
+                    onPress={() => {
+                      setFilterType(type)
+                      setPagination({ page: 1, pageSize: 20, total: 0 })
+                    }}
+                  >
+                    <Text style={[styles.filterText, filterType === type && styles.filterTextActive]}>
+                      {type === 'all' && t('common.all')}
+                      {type === 'movies' && t('admin.content.movies', { defaultValue: 'Movies' })}
+                      {type === 'series' && t('admin.content.series', { defaultValue: 'Series' })}
+                      {type === 'audiobooks' && t('admin.content.audiobooks', { defaultValue: 'Audiobooks' })}
+                      {type === 'podcasts' && t('admin.content.podcasts', { defaultValue: 'Podcasts' })}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </ScrollView>
+          )}
 
           <View style={{ flex: 1 }} />
 
@@ -243,19 +268,21 @@ export default function AddContentModal({
           </View>
         ) : (
           <ScrollView style={styles.contentList} contentContainerStyle={styles.contentGrid}>
-            {filteredItems.map((item) => (
+            {filteredItems.map((item) => {
+              const isSelected = selectedIds.includes(item.id)
+              return (
               <Pressable
                 key={item.id}
                 style={[
                   styles.contentCard,
-                  selectedIds.includes(item.id) && styles.contentCardSelected,
+                  isSelected && styles.contentCardSelected,
                 ]}
-                onPress={() => handleSelect(item.id, !selectedIds.includes(item.id))}
+                onPress={() => handleSelect(item.id, !isSelected)}
               >
-                <View style={styles.checkboxOverlay}>
+                <View style={styles.checkboxOverlay} pointerEvents="none">
                   <GlassCheckbox
-                    checked={selectedIds.includes(item.id)}
-                    onCheckedChange={(checked) => handleSelect(item.id, checked)}
+                    checked={isSelected}
+                    onCheckedChange={() => {}}
                   />
                 </View>
                 {item.thumbnail ? (
@@ -270,7 +297,7 @@ export default function AddContentModal({
                   </View>
                 )}
               </Pressable>
-            ))}
+            )})}
           </ScrollView>
         )}
 
@@ -353,6 +380,14 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     alignItems: 'center',
   },
+  filterScrollView: {
+    flexGrow: 0,
+    maxWidth: '70%',
+  },
+  filterButtonRow: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+  },
   filterButton: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -364,6 +399,10 @@ const styles = StyleSheet.create({
   filterButtonActive: {
     backgroundColor: colors.primary.DEFAULT,
     borderColor: colors.primary.DEFAULT,
+  },
+  categoryLocked: {
+    cursor: 'default' as any,
+    opacity: 0.9,
   },
   filterText: {
     fontSize: fontSize.sm,
@@ -458,11 +497,6 @@ const styles = StyleSheet.create({
     top: spacing.sm,
     right: spacing.sm,
     zIndex: 10,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    borderRadius: borderRadius.md,
-    padding: spacing.sm,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   thumbnailImage: {
     width: '100%',

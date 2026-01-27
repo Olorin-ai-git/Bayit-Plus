@@ -49,10 +49,12 @@ const config = {
       // Navigation
       '@react-navigation/native': path.resolve(rootNodeModules, '@react-navigation/native'),
       '@react-navigation/native-stack': path.resolve(rootNodeModules, '@react-navigation/native-stack'),
+      '@react-navigation/stack': path.resolve(rootNodeModules, '@react-navigation/stack'),
       '@react-navigation/bottom-tabs': path.resolve(rootNodeModules, '@react-navigation/bottom-tabs'),
       '@react-navigation/core': path.resolve(rootNodeModules, '@react-navigation/core'),
       '@react-navigation/elements': path.resolve(rootNodeModules, '@react-navigation/elements'),
       '@react-navigation/routers': path.resolve(rootNodeModules, '@react-navigation/routers'),
+      'react-native-gesture-handler': path.resolve(rootNodeModules, 'react-native-gesture-handler'),
 
       // State management
       '@tanstack/react-query': path.resolve(rootNodeModules, '@tanstack/react-query'),

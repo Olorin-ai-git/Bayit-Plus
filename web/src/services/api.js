@@ -223,7 +223,16 @@ const apiPodcastService = {
   getEpisodes: (showId, params) => api.get(`/podcasts/${showId}/episodes`, { params }),
   getEpisode: (showId, episodeId) => api.get(`/podcasts/${showId}/episodes/${episodeId}`),
   getCategories: () => api.get('/podcasts/categories'),
+  getFeatured: () => api.get('/podcasts', { params: { is_featured: true, page_size: 20 } }),
   syncPodcasts: () => api.post('/podcasts/sync'),
+}
+
+// Audiobook Service (API)
+const apiAudiobookService = {
+  getAudiobooks: (params) => api.get('/audiobooks', { params }),
+  getAudiobook: (audiobookId) => api.get(`/audiobooks/${audiobookId}`),
+  getFeatured: () => api.get('/audiobooks', { params: { is_featured: true, page_size: 20 } }),
+  getStream: (audiobookId) => api.post(`/audiobooks/${audiobookId}/stream`),
 }
 
 // Subscription Service (API)
@@ -556,6 +565,7 @@ export const contentService = isDemo ? demoContentService : apiContentService
 export const liveService = isDemo ? demoLiveService : apiLiveService
 export const radioService = isDemo ? demoRadioService : apiRadioService
 export const podcastService = isDemo ? demoPodcastService : apiPodcastService
+export const audiobookService = apiAudiobookService // No demo mode - requires real content
 export const subscriptionService = isDemo ? demoSubscriptionService : apiSubscriptionService
 export const watchlistService = isDemo ? demoWatchlistService : apiWatchlistService
 export const historyService = isDemo ? demoHistoryService : apiHistoryService

@@ -8,7 +8,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.models.admin import Permission
-from app.models.content import Content
+from app.models.content import Content, Podcast
 from app.models.content_taxonomy import ContentSection
 from app.models.subtitles import SubtitleTrackDoc
 from app.models.user import User
@@ -353,69 +353,110 @@ async def get_featured_by_sections(
         primary_section = slug_sections[0]
         all_section_ids = [str(s.id) for s in slug_sections]
 
-        # Build query to match featured content from ANY of these section IDs
-        or_conditions = [
-            {f"featured_order.{sid}": {"$exists": True}} for sid in all_section_ids
-        ]
-
-        pipeline = [
-            {
-                "$match": {
-                    "is_featured": True,
-                    "is_published": True,
-                    "$or": or_conditions,
-                }
-            },
-            {
-                "$project": {
-                    "_id": 1,
-                    "title": 1,
-                    "thumbnail": 1,
-                    "year": 1,
-                    "content_format": 1,
-                    "is_series": 1,
-                    "duration": 1,
-                    "featured_order": 1,
-                }
-            },
-            {"$limit": 100},
-        ]
-
-        collection = Content.get_settings().pymongo_collection
-        cursor = collection.aggregate(pipeline)
-        items = await cursor.to_list(length=None)
-
-        # Deduplicate items and get best order from any section
-        seen_ids = set()
         section_items = []
-        for item in items:
-            item_id = str(item["_id"])
-            if item_id in seen_ids:
-                continue
-            seen_ids.add(item_id)
 
-            # Get the lowest order from any of the section IDs
-            featured_order = item.get("featured_order", {})
-            best_order = min(
-                (featured_order.get(sid, 999) for sid in all_section_ids),
-                default=999,
-            )
-
-            section_items.append(
+        # Handle podcasts specially - they're in Podcast collection, not Content
+        if slug == "podcasts":
+            podcasts = await Podcast.find(Podcast.is_active == True).sort("-order").limit(100).to_list()
+            section_items = [
                 {
-                    "id": item_id,
+                    "id": str(podcast.id),
+                    "title": podcast.title,
+                    "thumbnail": podcast.cover,
+                    "year": None,
+                    "content_format": "podcast",
+                    "is_series": False,
+                    "duration": None,
+                    "featured_order": idx,
+                }
+                for idx, podcast in enumerate(podcasts)
+            ]
+        # Handle audiobooks specially - query by content_format
+        elif slug == "audiobooks":
+            audiobook_pipeline = [
+                {"$match": {"content_format": "audiobook", "is_published": True}},
+                {"$project": {"_id": 1, "title": 1, "thumbnail": 1, "year": 1, "duration": 1}},
+                {"$sort": {"created_at": -1}},
+                {"$limit": 100},
+            ]
+            collection = Content.get_settings().pymongo_collection
+            audiobooks = await collection.aggregate(audiobook_pipeline).to_list(length=None)
+            section_items = [
+                {
+                    "id": str(item["_id"]),
                     "title": item.get("title"),
                     "thumbnail": item.get("thumbnail"),
                     "year": item.get("year"),
-                    "content_format": item.get("content_format"),
-                    "is_series": item.get("is_series", False),
+                    "content_format": "audiobook",
+                    "is_series": False,
                     "duration": item.get("duration"),
-                    "featured_order": best_order,
+                    "featured_order": idx,
                 }
-            )
+                for idx, item in enumerate(audiobooks)
+            ]
+        else:
+            # Standard content sections - query by featured_order
+            or_conditions = [
+                {f"featured_order.{sid}": {"$exists": True}} for sid in all_section_ids
+            ]
 
-        # Sort by featured_order
-        section_items.sort(key=lambda x: x["featured_order"])
+            pipeline = [
+                {
+                    "$match": {
+                        "is_featured": True,
+                        "is_published": True,
+                        "$or": or_conditions,
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": 1,
+                        "title": 1,
+                        "thumbnail": 1,
+                        "year": 1,
+                        "content_format": 1,
+                        "is_series": 1,
+                        "duration": 1,
+                        "featured_order": 1,
+                    }
+                },
+                {"$limit": 100},
+            ]
+
+            collection = Content.get_settings().pymongo_collection
+            cursor = collection.aggregate(pipeline)
+            items = await cursor.to_list(length=None)
+
+            # Deduplicate items and get best order from any section
+            seen_ids = set()
+            for item in items:
+                item_id = str(item["_id"])
+                if item_id in seen_ids:
+                    continue
+                seen_ids.add(item_id)
+
+                # Get the lowest order from any of the section IDs
+                featured_order = item.get("featured_order", {})
+                best_order = min(
+                    (featured_order.get(sid, 999) for sid in all_section_ids),
+                    default=999,
+                )
+
+                section_items.append(
+                    {
+                        "id": item_id,
+                        "title": item.get("title"),
+                        "thumbnail": item.get("thumbnail"),
+                        "year": item.get("year"),
+                        "content_format": item.get("content_format"),
+                        "is_series": item.get("is_series", False),
+                        "duration": item.get("duration"),
+                        "featured_order": best_order,
+                    }
+                )
+
+            # Sort by featured_order
+            section_items.sort(key=lambda x: x["featured_order"])
 
         sections_data.append(
             {
@@ -430,5 +471,85 @@ async def get_featured_by_sections(
 
     # Sort sections by order
     sections_data.sort(key=lambda x: x["order"])
+
+    # Get existing section slugs to avoid duplicates
+    existing_slugs = {s["slug"] for s in sections_data}
+
+    # Add podcasts section if not already in ContentSection
+    if "podcasts" not in existing_slugs:
+        podcasts = await Podcast.find(Podcast.is_active == True).sort("-order").limit(100).to_list()
+        if podcasts:
+            podcast_items = [
+                {
+                    "id": str(podcast.id),
+                    "title": podcast.title,
+                    "thumbnail": podcast.cover,
+                    "year": None,
+                    "content_format": "podcast",
+                    "is_series": False,
+                    "duration": None,
+                    "featured_order": idx,
+                }
+                for idx, podcast in enumerate(podcasts)
+            ]
+            max_order = max((s["order"] for s in sections_data), default=0)
+            sections_data.append({
+                "section_id": "podcasts",
+                "slug": "podcasts",
+                "name_key": "home.podcasts",
+                "order": max_order + 1,
+                "item_count": len(podcast_items),
+                "items": podcast_items,
+            })
+
+    # Add audiobooks section if not already in ContentSection
+    if "audiobooks" not in existing_slugs:
+        audiobook_pipeline = [
+            {
+                "$match": {
+                    "content_format": "audiobook",
+                    "is_published": True,
+                }
+            },
+            {
+                "$project": {
+                    "_id": 1,
+                    "title": 1,
+                    "thumbnail": 1,
+                    "year": 1,
+                    "content_format": 1,
+                    "duration": 1,
+                    "author": 1,
+                    "narrator": 1,
+                }
+            },
+            {"$sort": {"created_at": -1}},
+            {"$limit": 100},
+        ]
+        collection = Content.get_settings().pymongo_collection
+        audiobooks = await collection.aggregate(audiobook_pipeline).to_list(length=None)
+        if audiobooks:
+            audiobook_items = [
+                {
+                    "id": str(item["_id"]),
+                    "title": item.get("title"),
+                    "thumbnail": item.get("thumbnail"),
+                    "year": item.get("year"),
+                    "content_format": "audiobook",
+                    "is_series": False,
+                    "duration": item.get("duration"),
+                    "featured_order": idx,
+                }
+                for idx, item in enumerate(audiobooks)
+            ]
+            max_order = max((s["order"] for s in sections_data), default=0)
+            sections_data.append({
+                "section_id": "audiobooks",
+                "slug": "audiobooks",
+                "name_key": "home.audiobooks",
+                "order": max_order + 1,
+                "item_count": len(audiobook_items),
+                "items": audiobook_items,
+            })
 
     return {"sections": sections_data}
