@@ -188,9 +188,14 @@ app = FastAPI(
 
 # Security middleware - input sanitization (innermost)
 from app.middleware.input_sanitization import InputSanitizationMiddleware
+from app.middleware.security_headers import SecurityHeadersMiddleware
 
 app.add_middleware(InputSanitizationMiddleware, enable_logging=True)
 logger.info("Input sanitization middleware enabled")
+
+# Security headers middleware - adds OWASP security headers to all responses
+app.add_middleware(SecurityHeadersMiddleware)
+logger.info("Security headers middleware enabled (CSP, HSTS, X-Frame-Options, etc.)")
 
 # CSRF protection middleware - conditionally enabled via settings
 if settings.CSRF_ENABLED:
