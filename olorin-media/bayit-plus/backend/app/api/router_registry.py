@@ -46,7 +46,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 auth, chapters, chat,
                                 chess, children, content, content_taxonomy,
                                 cultures, device_pairing, devices,
-                                direct_messages, downloads, epg,
+                                direct_messages, downloads, dubbing, epg,
                                 family_controls, favorites, friends, health,
                                 history, jerusalem, judaism, librarian, live,
                                 live_dubbing, live_quota, location, media_proxy, news, nlp,
@@ -325,6 +325,12 @@ def register_all_routers(app: FastAPI) -> None:
     # ============================================
     app.include_router(live_dubbing.router, prefix=prefix, tags=["live-dubbing"])
     logger.debug("Registered live dubbing routes")
+
+    # ============================================
+    # User Dubbing Routes (Chrome Extension B2C)
+    # ============================================
+    app.include_router(dubbing.router, prefix=f"{prefix}/dubbing", tags=["dubbing"])
+    logger.debug("Registered user dubbing routes (Chrome extension B2C)")
 
     # ============================================
     # Olorin.ai Platform Routes

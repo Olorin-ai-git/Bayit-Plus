@@ -1074,6 +1074,14 @@ class Settings(BaseSettings):
     LIVE_QUOTA_CHECK_RATE_LIMIT: int = 20  # Max quota checks per minute
 
     # ============================================
+    # CHROME EXTENSION B2C DUBBING CONFIGURATION
+    # ============================================
+    # User-facing dubbing for Chrome extension (not partner API)
+    # Free tier: 5 minutes/day, Premium: unlimited ($5/month)
+    FREE_TIER_MINUTES_PER_DAY: float = 5.0  # Free quota per day (Chrome extension)
+    PREMIUM_TIER_PRICE_USD: float = 5.00  # Monthly subscription price
+
+    # ============================================
     # URL MIGRATION CONFIGURATION (for script consolidation)
     # ============================================
     # Configuration for URL transformation scripts (bucket upgrades, S3→GCS migration)
