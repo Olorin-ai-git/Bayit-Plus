@@ -357,7 +357,9 @@ async def get_featured_by_sections(
 
         # Handle podcasts specially - they're in Podcast collection, not Content
         if slug == "podcasts":
-            podcasts = await Podcast.find(Podcast.is_active == True).sort("-order").limit(100).to_list()
+            podcasts = await Podcast.find(Podcast.is_active == True).find(
+                Podcast.is_featured == True
+            ).sort("-order").limit(100).to_list()
             section_items = [
                 {
                     "id": str(podcast.id),
@@ -477,7 +479,9 @@ async def get_featured_by_sections(
 
     # Add podcasts section if not already in ContentSection
     if "podcasts" not in existing_slugs:
-        podcasts = await Podcast.find(Podcast.is_active == True).sort("-order").limit(100).to_list()
+        podcasts = await Podcast.find(Podcast.is_active == True).find(
+            Podcast.is_featured == True
+        ).sort("-order").limit(100).to_list()
         if podcasts:
             podcast_items = [
                 {
