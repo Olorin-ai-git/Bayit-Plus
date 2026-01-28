@@ -427,6 +427,8 @@ EOF
     create_or_update_secret "opensubtitles-api-key" "OPENSUBTITLES_API_KEY"
     create_or_update_secret "picovoice-access-key" "PICOVOICE_ACCESS_KEY"
     create_or_update_secret "bayit-sentry-dsn" "SENTRY_DSN"
+    create_or_update_secret "podcast-translation-enabled" "PODCAST_TRANSLATION_ENABLED"
+    create_or_update_secret "podcast-translation-auto-start" "PODCAST_TRANSLATION_AUTO_START"
 
     # Google redirect URI - must come from environment variable
     # Read GOOGLE_REDIRECT_URI from .env file or environment

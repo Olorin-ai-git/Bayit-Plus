@@ -300,6 +300,7 @@
     "jerusalemConnection": "Conexión Jerusalén",
     "telAvivConnection": "Conexión Tel Aviv",
     "categories": "Categorías",
+    "nearYou": "Cerca de ti",
     "carousel": {
       "fauda": {
         "title": "Fauda",
@@ -902,11 +903,49 @@
     }
   },
   "empty": {
-    "noContent": "No hay contenido disponible",
+    "noContent": {
+      "title": "Sin contenido aún",
+      "description": "El contenido aparecerá aquí cuando esté disponible"
+    },
+    "noResults": {
+      "title": "No se encontraron resultados",
+      "description": "Prueba con diferentes palabras clave o filtros"
+    },
+    "noQuery": {
+      "title": "Comenzar a buscar",
+      "description": "Ingresa palabras clave para encontrar contenido"
+    },
+    "error": {
+      "title": "Algo salió mal",
+      "description": "No se pudo cargar el contenido. Por favor, inténtalo de nuevo."
+    },
+    "loading": {
+      "title": "Cargando...",
+      "description": "Por favor espera mientras cargamos tu contenido"
+    },
+    "noFavorites": {
+      "title": "Sin favoritos aún",
+      "description": "Agrega contenido a favoritos para verlo aquí"
+    },
+    "noDownloads": {
+      "title": "Sin descargas",
+      "description": "Descarga contenido para ver sin conexión"
+    },
+    "sectionEmpty": {
+      "title": "Sin elementos",
+      "description": "Esta sección está vacía"
+    },
+    "noData": {
+      "title": "Sin datos disponibles",
+      "description": "Los datos aparecerán aquí cuando estén disponibles"
+    },
+    "permissionDenied": {
+      "title": "Acceso denegado",
+      "description": "No tienes permiso para ver este contenido"
+    },
     "tryAnotherCategory": "Intenta seleccionar otra categoría",
     "noPodcasts": "No hay podcasts disponibles",
-    "tryLater": "Intenta de nuevo más tarde",
-    "noResults": "No se encontraron resultados"
+    "tryLater": "Intenta de nuevo más tarde"
   },
   "content": {
     "play": "Reproducir",

@@ -48,6 +48,13 @@ export const CONTENT_TYPE_CONFIG = {
     iconSize: { ios: 48, tvos: 96, web: 48 },
     aspectRatio: 1
   },
+  culture: {
+    icon: '📍', // Location/culture marker icon
+    label: 'Local Story',
+    ttsLabel: 'local cultural story',
+    iconSize: { ios: 48, tvos: 96, web: 48 },
+    aspectRatio: 16/9
+  },
 } as const;
 
 // Freeze to prevent runtime modification (security)

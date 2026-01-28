@@ -186,12 +186,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollContent: {
-    gap: spacing.md,
+    gap: spacing.sm,
     paddingBottom: spacing.md,
-    paddingHorizontal: spacing.md,
+    paddingLeft: spacing.xs,
+    paddingRight: spacing.md,
   },
   cardWrapper: {
-    width: isTV ? 280 : 220,
+    width: isTV ? 320 : 260,
     flexShrink: 0,
   },
 });

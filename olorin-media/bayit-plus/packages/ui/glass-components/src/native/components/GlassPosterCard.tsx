@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: colors.primary.DEFAULT,
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   },
   removeButtonPressed: {
     opacity: 1,
-    backgroundColor: colors.error.DEFAULT,
+    backgroundColor: colors.error,
   },
   removeIcon: {
     fontSize: 20,
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   posterPlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: colors.glass.bgMedium,
+    backgroundColor: colors.glassMedium,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -258,10 +258,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   seriesBadge: {
-    backgroundColor: colors.info.DEFAULT + '40',
+    backgroundColor: colors.info + '40',
   },
   movieBadge: {
-    backgroundColor: colors.success.DEFAULT + '40',
+    backgroundColor: colors.success + '40',
   },
   typeIcon: {
     fontSize: 10,

@@ -50,7 +50,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 extension_subscriptions,
                                 family_controls, favorites, friends, health,
                                 history, jerusalem, judaism, librarian, live,
-                                live_dubbing, live_quota, location, media_proxy, news, nlp,
+                                live_dubbing, live_quota, location, location_consent, media_proxy, news, nlp,
                                 notifications,
                                 onboarding, party, password_reset,
                                 playback_session, podcasts, profile_stats,
@@ -188,6 +188,8 @@ def register_all_routers(app: FastAPI) -> None:
     # ============================================
     app.include_router(location.router, prefix=prefix, tags=["location"])
     logger.debug("Registered location routes")
+    app.include_router(location_consent.router, prefix=prefix, tags=["location-consent"])
+    logger.debug("Registered location consent routes")
 
     # ============================================
     # Social Routes

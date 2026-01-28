@@ -301,6 +301,7 @@
     "jerusalemConnection": "Connexion Jérusalem",
     "telAvivConnection": "Connexion Tel Aviv",
     "categories": "Catégories",
+    "nearYou": "Près de chez vous",
     "carousel": {
       "fauda": {
         "title": "Fauda",
@@ -1049,5 +1050,47 @@
       "startUsing": "Commencer à Utiliser le Contrôle Vocal"
     },
     "skip": "Passer pour l'instant"
+  },
+  "empty": {
+    "noContent": {
+      "title": "Pas encore de contenu",
+      "description": "Le contenu apparaîtra ici lorsqu'il sera disponible"
+    },
+    "noResults": {
+      "title": "Aucun résultat trouvé",
+      "description": "Essayez différents mots-clés ou filtres"
+    },
+    "noQuery": {
+      "title": "Commencer à rechercher",
+      "description": "Entrez des mots-clés pour trouver du contenu"
+    },
+    "error": {
+      "title": "Quelque chose s'est mal passé",
+      "description": "Impossible de charger le contenu. Veuillez réessayer."
+    },
+    "loading": {
+      "title": "Chargement...",
+      "description": "Veuillez patienter pendant que nous chargeons votre contenu"
+    },
+    "noFavorites": {
+      "title": "Pas encore de favoris",
+      "description": "Ajoutez du contenu aux favoris pour le voir ici"
+    },
+    "noDownloads": {
+      "title": "Aucun téléchargement",
+      "description": "Téléchargez du contenu pour regarder hors ligne"
+    },
+    "sectionEmpty": {
+      "title": "Aucun élément",
+      "description": "Cette section est vide"
+    },
+    "noData": {
+      "title": "Aucune donnée disponible",
+      "description": "Les données apparaîtront ici lorsqu'elles seront disponibles"
+    },
+    "permissionDenied": {
+      "title": "Accès refusé",
+      "description": "Vous n'avez pas la permission de voir ce contenu"
+    }
   }
 }

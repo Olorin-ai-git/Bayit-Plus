@@ -111,6 +111,7 @@ export function GlassCarousel3D({
         }
       }
     }
+    return undefined
   }, [autoPlayInterval, currentIndex, itemCount])
 
   // Combined animated value for smooth transitions
@@ -351,13 +352,7 @@ const styles = StyleSheet.create({
     overflow: 'visible',
     alignItems: 'center',
     justifyContent: 'center',
-    // @ts-ignore - Web-specific
-    ...(Platform.OS === 'web' && {
-      cursor: 'grab',
-      userSelect: 'none',
-      touchAction: 'pan-y',
-    }),
-  },
+  } as ViewStyle,
   itemsWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -389,14 +384,10 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.glass.bgLight,
-    // @ts-ignore - Web transition
-    ...(Platform.OS === 'web' && {
-      transition: 'all 0.3s ease',
-    }),
-  },
+    backgroundColor: colors.glassLight,
+  } as ViewStyle,
   dotActive: {
-    backgroundColor: colors.primary.DEFAULT,
+    backgroundColor: colors.primary,
     width: 28,
   },
 })

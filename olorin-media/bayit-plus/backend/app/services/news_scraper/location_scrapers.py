@@ -174,3 +174,47 @@ async def scrape_judaism_news() -> List[HeadlineItem]:
         MAX_SEARCH_RESULTS,
         _categorize_jewish_content,
     )
+
+
+async def scrape_israeli_content_in_us_city(
+    city: str,
+    state: str,
+    max_results: int = MAX_SEARCH_RESULTS,
+) -> List[HeadlineItem]:
+    """
+    Scrape Israeli-related news and events for a specific US city.
+
+    Searches for:
+    - Israeli community news in the city
+    - Israeli cultural events
+    - Israeli business and tech news
+    - Jewish community events with Israeli connection
+
+    Returns empty list on error - never raises exceptions.
+    """
+    try:
+        # Validate inputs
+        if not city or not state:
+            logger.warning(f"Invalid city/state parameters: city={city}, state={state}")
+            return []
+
+        # Build location-specific queries with Israeli context
+        location_queries = [
+            f"Israeli community {city} {state}",
+            f"Israelis in {city}",
+            f"Israeli events {city}",
+            f"Israeli culture {city}",
+            f"Israeli restaurant {city}",
+            f"Israeli tech startup {city}",
+            f"Israeli business {city}",
+            f"Jewish Israeli {city}",
+        ]
+
+        logger.info(f"Scraping Israeli content for {city}, {state}")
+        results = await _search_with_fallback(location_queries, max_results)
+        logger.info(f"Found {len(results)} results for {city}, {state}")
+        return results
+
+    except Exception as e:
+        logger.error(f"Failed to scrape Israeli content for {city}, {state}: {e}")
+        return []  # Return empty list instead of raising

@@ -53,6 +53,7 @@ export const GlassErrorBanner = ({
         {message}
       </Text>
       <GlassButton
+        title=""
         variant="ghost"
         size="sm"
         onPress={onDismiss}

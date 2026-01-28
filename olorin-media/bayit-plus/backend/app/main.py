@@ -10,7 +10,11 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import ValidationError
+from pymongo.errors import PyMongoError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.api.router_registry import (register_all_routers,
                                      register_upload_serving)
@@ -99,17 +103,37 @@ async def lifespan(app: FastAPI):
     logger.info("Starting Bayit+ Backend Server...")
 
     # Validate configuration
-    _validate_configuration()
-    log_configuration_warnings()
+    try:
+        _validate_configuration()
+        log_configuration_warnings()
+    except Exception as e:
+        logger.error(f"Configuration validation failed: {e}", exc_info=True)
+        # Continue anyway - configuration warnings are non-fatal
 
-    # Connect to MongoDB
-    await connect_to_mongo()
+    # Connect to MongoDB (CRITICAL - will retry on failure)
+    try:
+        await connect_to_mongo()
+        logger.info("✅ MongoDB connection established")
+    except Exception as e:
+        logger.error(f"❌ MongoDB connection failed: {e}", exc_info=True)
+        logger.error("Server will start in DEGRADED mode - database operations will fail")
+        # Continue anyway - exception handlers will catch database errors in requests
 
     # Connect to Olorin database (Phase 2 - separate database if enabled)
-    await connect_to_olorin_mongo()
+    try:
+        await connect_to_olorin_mongo()
+        logger.info("✅ Olorin database connection established")
+    except Exception as e:
+        logger.warning(f"Olorin database connection failed: {e}")
+        # Non-fatal - main database is primary
 
     # Initialize Content metadata service for Olorin cross-database access
-    await content_metadata_service.initialize()
+    try:
+        await content_metadata_service.initialize()
+        logger.info("✅ Content metadata service initialized")
+    except Exception as e:
+        logger.warning(f"Content metadata service initialization failed: {e}")
+        # Non-fatal
 
     # Ensure upload directory exists
     upload_dir = Path(settings.UPLOAD_DIR)
@@ -183,6 +207,44 @@ app = FastAPI(
 )
 
 # ============================================
+# Exception Handlers (registered early to catch all errors)
+# ============================================
+from app.middleware.error_handlers import (
+    database_exception_handler,
+    global_exception_handler,
+    http_exception_handler,
+    rate_limit_exception_handler,
+    validation_exception_handler,
+)
+
+# Register exception handlers in order of specificity (most specific first)
+# HTTP exceptions (400-level errors)
+app.add_exception_handler(HTTPException, http_exception_handler)
+app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+
+# Validation errors (422 Unprocessable Entity)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(ValidationError, validation_exception_handler)
+
+# Database errors (503 Service Unavailable)
+app.add_exception_handler(PyMongoError, database_exception_handler)
+
+# Rate limiting errors (429 Too Many Requests) - if slowapi is installed
+try:
+    from slowapi.errors import RateLimitExceeded
+
+    app.add_exception_handler(RateLimitExceeded, rate_limit_exception_handler)
+    logger.info("Rate limit exception handler registered")
+except ImportError:
+    logger.debug("slowapi not installed - rate limit exception handler not registered")
+
+# Global catch-all for any unhandled exceptions (500 Internal Server Error)
+# This MUST be last to catch everything that wasn't caught above
+app.add_exception_handler(Exception, global_exception_handler)
+
+logger.info("✅ Global exception handlers registered - server will remain responsive on errors")
+
+# ============================================
 # Middleware (order matters - first added = innermost, last added = outermost)
 # ============================================
 
@@ -221,10 +283,7 @@ from app.core.rate_limiter import RATE_LIMITING_ENABLED, limiter
 
 if RATE_LIMITING_ENABLED:
     app.state.limiter = limiter
-    app.add_exception_handler(
-        exc_class_or_status_code=429,
-        handler=lambda request, exc: {"detail": "Rate limit exceeded", "status": 429},
-    )
+    # Rate limit exception handler already registered above
     logger.info("Global rate limiting middleware enabled (slowapi)")
 else:
     logger.warning("Rate limiting disabled - slowapi not installed")
