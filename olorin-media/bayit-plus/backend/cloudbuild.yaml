@@ -25,9 +25,7 @@ steps:
       - '--port=8080'
       - '--set-env-vars=ENVIRONMENT=production'
       - '--update-secrets=CSRF_ENABLED=csrf-enabled:latest,PODCAST_TRANSLATION_ENABLED=podcast-translation-enabled:latest,PODCAST_TRANSLATION_AUTO_START=podcast-translation-auto-start:latest'
-      - '--startup-probe-failure-threshold=3'
-      - '--startup-probe-period-seconds=240'
-      - '--startup-probe-timeout-seconds=240'
+      - '--startup-probe=failureThreshold=3,periodSeconds=240,timeoutSeconds=240,tcpSocket.port=8080'
 
 images:
   - 'gcr.io/$PROJECT_ID/bayit-backend:$BUILD_ID'
