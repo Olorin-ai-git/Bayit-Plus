@@ -202,6 +202,10 @@ const apiContentService = {
 
   // Preview endpoint
   getContentPreview: (contentId) => api.get(`/content/${contentId}/preview`),
+
+  // Location-based content endpoints
+  getIsraelisInCity: (city, state, params = {}) =>
+    api.get('/content/israelis-in-city', { params: { city, state, ...params } }),
 }
 
 // Live TV Service (API)

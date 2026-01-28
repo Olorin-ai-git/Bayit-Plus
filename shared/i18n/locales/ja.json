@@ -1753,7 +1753,14 @@
     "subtitle": "管理パネル",
     "dashboard": "ダッシュボード",
     "users": "ユーザー",
-    "content": "コンテンツ",
+    "content": {
+      "title": "コンテンツ",
+      "noEpisodes": "エピソードなし",
+      "type": {
+        "movie": "映画",
+        "series": "シリーズ"
+      }
+    },
     "analytics": "分析",
     "settings": "設定",
     "reports": "レポート",

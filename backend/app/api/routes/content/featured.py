@@ -96,6 +96,13 @@ async def get_featured(
                                 {"series_id": ""},
                             ]
                         },
+                        # Exclude series without episodes from homepage
+                        {
+                            "$or": [
+                                {"is_series": {"$ne": True}},
+                                {"total_episodes": {"$gt": 0}},
+                            ]
+                        },
                         visibility_match,
                     ]
                 }
@@ -274,6 +281,13 @@ async def get_featured(
                                     {"series_id": None},
                                     {"series_id": {"$exists": False}},
                                     {"series_id": ""},
+                                ]
+                            },
+                            # Exclude series without episodes from category carousels
+                            {
+                                "$or": [
+                                    {"is_series": {"$ne": True}},
+                                    {"total_episodes": {"$gt": 0}},
                                 ]
                             },
                             visibility_match,

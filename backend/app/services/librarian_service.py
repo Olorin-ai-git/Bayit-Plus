@@ -392,10 +392,10 @@ async def determine_audit_scope(
             older_query = {"is_published": True, "updated_at": {"$lt": time_threshold}}
             older_content = await Content.find(older_query).to_list(length=None)
 
-        if older_content:
-            sample_size = max(1, len(older_content) // 10)  # 10%
-            sampled = random.sample(older_content, min(sample_size, len(older_content)))
-            scope.content_ids.extend([str(c.id) for c in sampled])
+            if older_content:
+                sample_size = max(1, len(older_content) // 10)  # 10%
+                sampled = random.sample(older_content, min(sample_size, len(older_content)))
+                scope.content_ids.extend([str(c.id) for c in sampled])
 
         # Live channels (check all, they're few) - skip if focusing on specific filters
         if not (cyb_titles_only or tmdb_posters_only):

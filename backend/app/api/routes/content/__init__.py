@@ -24,6 +24,7 @@ from app.api.routes.content.categories import router as categories_router
 from app.api.routes.content.detail import router as detail_router
 from app.api.routes.content.discovery import router as discovery_router
 from app.api.routes.content.featured import router as featured_router
+from app.api.routes.content.location import router as location_router
 from app.api.routes.content.movies import router as movies_router
 from app.api.routes.content.series import router as series_router
 
@@ -32,6 +33,7 @@ router = APIRouter()
 
 # Include all sub-routers
 # Order matters - more specific routes first
+router.include_router(location_router)
 router.include_router(featured_router)
 router.include_router(categories_router)
 router.include_router(discovery_router)

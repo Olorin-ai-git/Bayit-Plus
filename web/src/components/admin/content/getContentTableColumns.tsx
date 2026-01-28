@@ -103,12 +103,21 @@ export function getContentTableColumns(
           typeLabel = t('admin.content.type.audiobook', 'Audiobook')
         }
 
+        // Show warning badge for series without episodes
+        const hasNoEpisodes = content.is_series && (!content.episode_count || content.episode_count === 0)
+        const episodeBadge = hasNoEpisodes
+          ? t('admin.content.noEpisodes', 'No Episodes')
+          : content.is_series && content.episode_count
+            ? `${content.episode_count} episodes`
+            : undefined
+        const badgeColor = hasNoEpisodes ? '#ef4444' : '#a855f7'  // Red for warning, purple for normal
+
         return (
           <TitleCell
             title={value}
             subtitle={typeLabel}
-            badge={content.is_series && content.episode_count ? `${content.episode_count} episodes` : undefined}
-            badgeColor="#a855f7"
+            badge={episodeBadge}
+            badgeColor={badgeColor}
           />
         )
       },

@@ -33,6 +33,7 @@ import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
 import { getContentPosterUrl } from '@bayit/shared-utils/youtube';
 import logger from '@/utils/logger';
 import { useFeaturedAudiobooksCarousel } from '@/hooks/useFeaturedAudiobooksCarousel';
+import { useUserGeolocation } from '@/hooks/useUserGeolocation';
 
 declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
@@ -163,6 +164,11 @@ export default function HomePage() {
   const { audiobooks: featuredAudiobooks, isLoading: audiobooksLoading } =
     useFeaturedAudiobooksCarousel();
 
+  // Location-based content
+  const { location, isDetecting: locationDetecting } = useUserGeolocation();
+  const [israelisInCityContent, setIsraelisInCityContent] = useState<ContentItem[]>([]);
+  const [israelisInCityLoading, setIsraelisInCityLoading] = useState(false);
+
   // Load content on mount - each section loads independently
   useEffect(() => {
     if (hasInitialized.current) return;
@@ -178,6 +184,13 @@ export default function HomePage() {
     // Fetch cultures for dynamic content
     fetchCultures();
   }, []);
+
+  // Load location-based content when location is detected
+  useEffect(() => {
+    if (location && !locationDetecting) {
+      loadIsraelisInCity();
+    }
+  }, [location, locationDetecting]);
 
   const checkMorningRitual = async () => {
     // Skip ritual check if not authenticated
@@ -254,6 +267,34 @@ export default function HomePage() {
       logger.error('Failed to load continue watching', 'HomePage', error);
     } finally {
       setContinueLoading(false);
+    }
+  };
+
+  // Load location-based Israeli content
+  const loadIsraelisInCity = async () => {
+    if (!location || !location.city || !location.state) {
+      logger.debug('Skipping location content - location not available', 'HomePage');
+      return;
+    }
+
+    try {
+      setIsraelisInCityLoading(true);
+      const response = await contentService.getIsraelisInCity(location.city, location.state);
+
+      if (response && response.content) {
+        // Combine all content types into a single array
+        const allContent = [
+          ...(response.content.news_articles || []),
+          ...(response.content.news_reels || []),
+          ...(response.content.community_events || []),
+        ];
+        setIsraelisInCityContent(allContent);
+        logger.info(`Loaded ${allContent.length} items for ${location.city}, ${location.state}`, 'HomePage');
+      }
+    } catch (error) {
+      logger.error('Failed to load location-based content', 'HomePage', error);
+    } finally {
+      setIsraelisInCityLoading(false);
     }
   };
 
@@ -460,6 +501,16 @@ export default function HomePage() {
             type: 'audiobook',
           }))}
           seeAllLink="/audiobooks"
+          style={styles.section}
+        />
+      )}
+
+      {/* Israelis in [City] - Location-based content */}
+      {location && !israelisInCityLoading && israelisInCityContent.length > 0 && (
+        <ContentCarousel
+          title={t('home.israelis_in_city', { city: location.city, state: location.state })}
+          items={israelisInCityContent}
+          seeAllLink={`/location/${location.state}/${location.city}`}
           style={styles.section}
         />
       )}

@@ -49,7 +49,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 direct_messages, downloads, epg,
                                 family_controls, favorites, friends, health,
                                 history, jerusalem, judaism, librarian, live,
-                                live_dubbing, live_quota, media_proxy, news, nlp,
+                                live_dubbing, live_quota, location, media_proxy, news, nlp,
                                 notifications,
                                 onboarding, party, password_reset,
                                 playback_session, podcasts, profile_stats,
@@ -178,6 +178,12 @@ def register_all_routers(app: FastAPI) -> None:
         tags=["audible-integration"],
     )
     logger.debug("Registered user routes")
+
+    # ============================================
+    # Location Routes
+    # ============================================
+    app.include_router(location.router, prefix=prefix, tags=["location"])
+    logger.debug("Registered location routes")
 
     # ============================================
     # Social Routes

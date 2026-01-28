@@ -758,6 +758,13 @@
       "users": "उपयोगकर्ता",
       "content": "सामग्री",
       "settings": "सेटिंग्स"
+    },
+    "content": {
+      "noEpisodes": "कोई एपिसोड नहीं",
+      "type": {
+        "movie": "फ़िल्म",
+        "series": "सीरीज़"
+      }
     }
   },
   "cultureClock": {

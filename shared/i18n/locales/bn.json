@@ -625,6 +625,13 @@
       "users": "ব্যবহারকারী",
       "content": "কন্টেন্ট",
       "settings": "সেটিংস"
+    },
+    "content": {
+      "noEpisodes": "কোন পর্ব নেই",
+      "type": {
+        "movie": "সিনেমা",
+        "series": "সিরিজ"
+      }
     }
   },
   "cultureClock": {

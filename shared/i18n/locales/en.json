@@ -311,6 +311,7 @@
     "categories": "Categories",
     "podcasts": "Podcasts",
     "audiobooks": "Audiobooks",
+    "israelis_in_city": "Israelis in {{city}}, {{state}}",
     "carousel": {
       "fauda": {
         "title": "Fauda",
@@ -1972,7 +1973,7 @@
       },
       "episodes_one": "episode",
       "episodes_other": "episodes",
-      "noEpisodes": "No episodes found",
+      "noEpisodes": "No Episodes",
       "type": {
         "series": "Series",
         "movie": "Movie"

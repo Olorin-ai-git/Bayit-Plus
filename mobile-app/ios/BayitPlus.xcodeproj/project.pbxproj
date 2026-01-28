@@ -284,7 +284,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = olorin.media.bayitplus;
+				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus;
 				PRODUCT_NAME = BayitPlus;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "BayitPlus/BayitPlus-Bridging-Header.h";
@@ -320,9 +320,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = olorin.media.bayitplus;
+				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus;
 				PRODUCT_NAME = BayitPlus;
-				PROVISIONING_PROFILE_SPECIFIER = "$(IOS_PROVISIONING_PROFILE)";
+				PROVISIONING_PROFILE_SPECIFIER = "Bayit Plus iOS App Store";
 				SWIFT_OBJC_BRIDGING_HEADER = "BayitPlus/BayitPlus-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
