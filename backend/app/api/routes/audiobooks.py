@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from app.core.security import (
     get_current_active_user,
     get_current_admin_user,
+    get_optional_user,
     verify_content_access,
 )
 from app.models.admin import AuditAction
@@ -35,7 +36,7 @@ router = APIRouter()
 async def get_audiobooks(
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=50, le=500),
-    current_user: Optional[User] = Depends(get_current_active_user),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Get featured and trending audiobooks with pagination.
 
@@ -72,7 +73,7 @@ async def get_audiobooks(
 @router.get("/{audiobook_id}")
 async def get_audiobook(
     audiobook_id: str,
-    current_user: Optional[User] = Depends(get_current_active_user),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Get single audiobook metadata."""
     audiobook = await Content.get(audiobook_id)
@@ -89,7 +90,7 @@ async def get_audiobook(
 @router.get("/{audiobook_id}/chapters", response_model=AudiobookWithChaptersResponse)
 async def get_audiobook_with_chapters(
     audiobook_id: str,
-    current_user: Optional[User] = Depends(get_current_active_user),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Get audiobook with its chapters for the player page.
 
