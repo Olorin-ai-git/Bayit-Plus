@@ -44,6 +44,7 @@ export { GlassTabs, type GlassTabsProps, type Tab as GlassTabItem, type TabVaria
 export { GlassModal, type GlassModalProps, type ModalType, type ModalSize } from './components/GlassModal';
 export { GlassTooltip, type GlassTooltipProps } from './components/GlassTooltip';
 export { GlassProgressBar, type GlassProgressBarProps, type ProgressSize, type ProgressVariant } from './components/GlassProgressBar';
+export { GlassErrorBanner, type GlassErrorBannerProps } from './components/GlassErrorBanner';
 
 // Notification components
 export { GlassToast, default as GlassToastComponent } from './components/GlassToast';
