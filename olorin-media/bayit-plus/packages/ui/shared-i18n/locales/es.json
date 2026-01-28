@@ -1438,7 +1438,15 @@
           "audioUrl": "URL de audio (requerido)",
           "publishedDate": "Fecha de publicación (YYYY-MM-DD)"
         }
-      }
+      },
+      "translate": "Traducir",
+      "translateEpisode": "Traducir episodio",
+      "translateAllEpisodes": "Traducir todos los episodios",
+      "translateAll": "Traducir todo",
+      "filterByStatus": "Filtrar por estado",
+      "editEpisode": "Editar episodio",
+      "deleteEpisode": "Eliminar episodio",
+      "newEpisode": "Nuevo episodio"
     },
     "users": {
       "subtitle": "Administrar usuarios y cuentas",
@@ -2453,6 +2461,14 @@
         "inactive": "Inactivo"
       },
       "subtitle": "Gestiona widgets de superposición flotante para transmisiones en vivo e incrustaciones"
+    },
+    "translation": {
+      "status": {
+        "pending": "Pendiente",
+        "processing": "Procesando",
+        "completed": "Completado",
+        "failed": "Fallido"
+      }
     }
   },
   "watchParty": {
@@ -3334,125 +3350,6 @@
       "startUsing": "Comenzar a Usar Control por Voz"
     },
     "skip": "Omitir por ahora"
-  },
-  "taxonomy": {
-    "title": "Clasificación de Contenido",
-    "sections": {
-      "title": "Secciones",
-      "description": "Categorías de navegación principal",
-      "movies": "Películas",
-      "series": "Series",
-      "kids": "Niños",
-      "judaism": "Judaísmo",
-      "documentaries": "Documentales",
-      "live": "En Vivo"
-    },
-    "formats": {
-      "title": "Formato",
-      "description": "Tipo estructural del contenido",
-      "movie": "Película",
-      "series": "Serie",
-      "documentary": "Documental",
-      "short": "Corto",
-      "clip": "Clip"
-    },
-    "genres": {
-      "title": "Géneros",
-      "description": "Estado de ánimo y estilo",
-      "drama": "Drama",
-      "comedy": "Comedia",
-      "action": "Acción",
-      "thriller": "Suspenso",
-      "animation": "Animación",
-      "musical": "Musical",
-      "romance": "Romance",
-      "horror": "Terror",
-      "sci-fi": "Ciencia Ficción",
-      "documentary": "Documental",
-      "family": "Familiar",
-      "adventure": "Aventura",
-      "fantasy": "Fantasía",
-      "crime": "Crimen",
-      "mystery": "Misterio",
-      "war": "Guerra",
-      "western": "Western",
-      "biography": "Biografía",
-      "history": "Historia",
-      "sport": "Deporte"
-    },
-    "audiences": {
-      "title": "Audiencia",
-      "description": "Adecuación por edad",
-      "general": "General",
-      "kids": "Niños",
-      "family": "Familiar",
-      "mature": "Adultos"
-    },
-    "topicTags": {
-      "title": "Temas",
-      "description": "Temas del contenido",
-      "jewish": "Judío",
-      "israeli": "Israelí",
-      "educational": "Educativo",
-      "historical": "Histórico",
-      "sports": "Deportes",
-      "nature": "Naturaleza",
-      "science": "Ciencia",
-      "music": "Música",
-      "art": "Arte",
-      "cooking": "Cocina",
-      "travel": "Viajes",
-      "technology": "Tecnología"
-    },
-    "subcategories": {
-      "title": "Subcategorías",
-      "kids": {
-        "cartoons": "Dibujos Animados",
-        "educational": "Educativo",
-        "music": "Música",
-        "hebrew-learning": "Aprender Hebreo",
-        "stories": "Cuentos",
-        "jewish": "Judío",
-        "learning-hebrew": "Aprender Hebreo",
-        "young-science": "Ciencia Joven",
-        "math-fun": "Matemáticas Divertidas",
-        "nature-animals": "Naturaleza y Animales",
-        "interactive": "Interactivo",
-        "hebrew-songs": "Canciones en Hebreo",
-        "nursery-rhymes": "Canciones de Cuna",
-        "kids-movies": "Películas para Niños",
-        "kids-series": "Series para Niños",
-        "jewish-holidays": "Fiestas Judías",
-        "torah-stories": "Historias de la Torá",
-        "bedtime-stories": "Cuentos para Dormir"
-      },
-      "ageGroups": {
-        "title": "Grupos de Edad",
-        "toddlers": "Bebés (0-3)",
-        "preschool": "Preescolar (3-5)",
-        "elementary": "Primaria (5-10)",
-        "preteen": "Preadolescentes (10-12)"
-      },
-      "judaism": {
-        "shiurim": "Clases de Torá",
-        "tefila": "Oración",
-        "jewish-music": "Música Judía",
-        "holidays": "Festividades",
-        "documentaries": "Documentales"
-      }
-    },
-    "admin": {
-      "selectSection": "Seleccionar Sección",
-      "selectSections": "Seleccionar Secciones",
-      "primarySection": "Sección Principal",
-      "selectFormat": "Seleccionar Formato",
-      "selectAudience": "Seleccionar Audiencia",
-      "selectGenres": "Seleccionar Géneros",
-      "selectTopics": "Seleccionar Temas",
-      "selectSubcategories": "Seleccionar Subcategorías",
-      "crossListing": "Publicación Cruzada",
-      "crossListingHint": "El contenido puede aparecer en múltiples secciones"
-    }
   },
   "taxonomy": {
     "sections": {

@@ -116,7 +116,6 @@
     "attach": "添付",
     "detach": "取り外し",
     "connect": "接続",
-    "disconnect": "切断",
     "sync": "同期",
     "backup": "バックアップ",
     "restore": "復元",
@@ -1060,7 +1059,7 @@
     "exitPictureInPicture": "ピクチャーインピクチャーを終了",
     "settings": "設定",
     "quality": "画質",
-    "speed": "再生速度",
+    "speed": "速度",
     "subtitles": "字幕",
     "audio": "音声",
     "off": "オフ",
@@ -1096,7 +1095,6 @@
     "startOver": "最初から",
     "restart": "最初から再生",
     "subtitlesOff": "オフ",
-    "speed": "速度",
     "cast": {
       "start": "テレビにキャストする",
       "connected": "{{device}}にキャスト中",
@@ -1683,7 +1681,14 @@
     "title": "管理者",
     "subtitle": "管理パネル",
     "dashboard": "ダッシュボード",
-    "users": "ユーザー",
+    "users": {
+      "roles": {
+        "superAdmin": "スーパー管理者",
+        "admin": "管理者",
+        "moderator": "モデレーター",
+        "user": "ユーザー"
+      }
+    },
     "content": "コンテンツ",
     "analytics": "分析",
     "settings": "設定",
@@ -1712,14 +1717,6 @@
     "webhooks": "Webhook",
     "developers": "開発者",
     "documentation": "ドキュメント",
-    "users": {
-      "roles": {
-        "superAdmin": "スーパー管理者",
-        "admin": "管理者",
-        "moderator": "モデレーター",
-        "user": "ユーザー"
-      }
-    },
     "featured": {
       "title": "注目コンテンツ",
       "subtitle": "アイテムをドラッグしてカルーセルの順序を管理",
@@ -1737,6 +1734,24 @@
       "contentAdded": "{{count}} アイテムが追加されました",
       "failedToAdd": "コンテンツの追加に失敗",
       "publishedOnly": "公開済み"
+    },
+    "translation": {
+      "status": {
+        "pending": "保留中",
+        "processing": "処理中",
+        "completed": "完了",
+        "failed": "失敗"
+      }
+    },
+    "podcasts": {
+      "translate": "翻訳",
+      "translateEpisode": "エピソードを翻訳",
+      "translateAllEpisodes": "すべてのエピソードを翻訳",
+      "translateAll": "すべて翻訳",
+      "filterByStatus": "ステータスで絞り込む",
+      "editEpisode": "エピソードを編集",
+      "deleteEpisode": "エピソードを削除",
+      "newEpisode": "新しいエピソード"
     }
   },
   "cultureClock": {

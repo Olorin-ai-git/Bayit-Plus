@@ -2002,6 +2002,24 @@
         "folderTooLarge": "文件夹包含太多文件（最多 {{max}} 个）",
         "folderTooDeep": "文件夹结构太深（最多 {{max}} 层）"
       }
+    },
+    "translation": {
+      "status": {
+        "pending": "待处理",
+        "processing": "处理中",
+        "completed": "已完成",
+        "failed": "失败"
+      }
+    },
+    "podcasts": {
+      "translate": "翻译",
+      "translateEpisode": "翻译剧集",
+      "translateAllEpisodes": "翻译所有剧集",
+      "translateAll": "全部翻译",
+      "filterByStatus": "按状态筛选",
+      "editEpisode": "编辑剧集",
+      "deleteEpisode": "删除剧集",
+      "newEpisode": "新剧集"
     }
   },
   "cultures": {

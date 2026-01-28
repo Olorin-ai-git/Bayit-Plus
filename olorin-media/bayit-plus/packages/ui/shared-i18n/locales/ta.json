@@ -579,6 +579,24 @@
       "contentAdded": "{{count}} உருப்படிகள் சேர்க்கப்பட்டுள்ளன",
       "failedToAdd": "உள்ளடக்கம் சேர்க்க தவறியது",
       "publishedOnly": "வெளியிடப்பட்டது"
+    },
+    "translation": {
+      "status": {
+        "pending": "நிலுவையில்",
+        "processing": "செயலாக்கம்",
+        "completed": "முடிந்தது",
+        "failed": "தோல்வி"
+      }
+    },
+    "podcasts": {
+      "translate": "மொழிபெயர்க்க",
+      "translateEpisode": "எப்பிசோடை மொழிபெயர்க்க",
+      "translateAllEpisodes": "அனைத்து எப்பிசோடுகளை மொழிபெயர்க்க",
+      "translateAll": "அனைத்தையும் மொழிபெயர்க்க",
+      "filterByStatus": "நிலை மூலம் வடிகட்ட",
+      "editEpisode": "எப்பிசோடை தொகு",
+      "deleteEpisode": "எப்பிசோடை நீக்கு",
+      "newEpisode": "புதிய எப்பிசோடு"
     }
   },
   "cultureClock": {

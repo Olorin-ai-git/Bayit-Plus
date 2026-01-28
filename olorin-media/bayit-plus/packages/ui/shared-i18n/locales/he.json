@@ -1391,6 +1391,14 @@
       "filterUser": "משתמש",
       "filterDateRange": "טווח תאריכים"
     },
+    "translation": {
+      "status": {
+        "pending": "תלויה",
+        "processing": "מעובדת",
+        "completed": "הושלמה",
+        "failed": "נכשלה"
+      }
+    },
     "stats": {
       "totalUsers": "סה״כ משתמשים",
       "activeUsers": "משתמשים פעילים",
@@ -2393,6 +2401,14 @@
       "episodesSubtitle": "ניהול פרקים",
       "emptyMessage": "לא נמצאו פודקאסטים",
       "noEpisodes": "לא נמצאו פרקים",
+      "translate": "תרגם",
+      "translateEpisode": "תרגם פרק",
+      "translateAllEpisodes": "תרגם את כל הפרקים",
+      "translateAll": "תרגם הכל",
+      "filterByStatus": "סנן לפי סטטוס",
+      "editEpisode": "ערוך פרק",
+      "deleteEpisode": "מחק פרק",
+      "newEpisode": "פרק חדש",
       "form": {
         "title": "שם הפודקאסט",
         "author": "כותב",

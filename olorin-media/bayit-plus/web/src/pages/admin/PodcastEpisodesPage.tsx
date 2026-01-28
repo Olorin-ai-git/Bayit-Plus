@@ -3,8 +3,7 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, ChevronLeft, Languages, RefreshCw } from 'lucide-react'
-import { GlassInput, GlassSelect, GlassButton, GlassPageHeader, GlassModal } from '@bayit/shared/ui'
-import { GlassErrorBanner } from '@olorin/glass-ui'
+import { GlassInput, GlassSelect, GlassButton, GlassPageHeader, GlassModal, GlassErrorBanner } from '@bayit/shared/ui'
 import { GlassTable } from '@bayit/shared/ui/web'
 import { adminPodcastsService, adminPodcastEpisodesService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -23,25 +22,19 @@ interface EditingEpisode extends Partial<PodcastEpisode> {
   id?: string
 }
 
-const TRANSLATION_STATUS_OPTIONS = [
-  { value: 'all', label: 'All' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'processing', label: 'Processing' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'failed', label: 'Failed' },
-]
-
 function TranslationStatusBadge({ status }: { status?: TranslationStatus }) {
-  const statusConfig: Record<string, { bg: string; color: string; label: string }> = {
-    pending: { bg: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b', label: 'Pending' },
-    processing: { bg: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6', label: 'Processing' },
-    completed: { bg: 'rgba(16, 185, 129, 0.2)', color: '#10b981', label: 'Completed' },
-    failed: { bg: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', label: 'Failed' },
+  const { t } = useTranslation()
+  const statusConfig: Record<string, { bg: string; color: string; labelKey: string }> = {
+    pending: { bg: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b', labelKey: 'admin.translation.status.pending' },
+    processing: { bg: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6', labelKey: 'admin.translation.status.processing' },
+    completed: { bg: 'rgba(16, 185, 129, 0.2)', color: '#10b981', labelKey: 'admin.translation.status.completed' },
+    failed: { bg: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', labelKey: 'admin.translation.status.failed' },
   }
   const config = statusConfig[status || 'pending'] || statusConfig.pending
+  const label = t(config.labelKey, { defaultValue: status?.charAt(0).toUpperCase() + status?.slice(1) || 'Pending' })
   return (
     <View style={[styles.badge, { backgroundColor: config.bg }]}>
-      <Text style={[styles.badgeText, { color: config.color }]}>{config.label}</Text>
+      <Text style={[styles.badgeText, { color: config.color }]}>{label}</Text>
     </View>
   )
 }
@@ -63,6 +56,14 @@ export default function PodcastEpisodesPage() {
   const [translating, setTranslating] = useState<string | null>(null)
   const [bulkTranslating, setBulkTranslating] = useState(false)
   const [statusFilter, setStatusFilter] = useState<string>('all')
+
+  const TRANSLATION_STATUS_OPTIONS = [
+    { value: 'all', label: t('admin.common.all', { defaultValue: 'All' }) },
+    { value: 'pending', label: t('admin.translation.status.pending', { defaultValue: 'Pending' }) },
+    { value: 'processing', label: t('admin.translation.status.processing', { defaultValue: 'Processing' }) },
+    { value: 'completed', label: t('admin.translation.status.completed', { defaultValue: 'Completed' }) },
+    { value: 'failed', label: t('admin.translation.status.failed', { defaultValue: 'Failed' }) },
+  ]
 
   const loadEpisodes = useCallback(async () => {
     if (!podcastId) return
@@ -226,6 +227,7 @@ export default function PodcastEpisodesPage() {
             size="sm"
             onPress={() => handleTranslate(item.id)}
             disabled={translating === item.id || status === 'processing'}
+            title={t('admin.podcasts.translate', { defaultValue: 'Translate' })}
             icon={translating === item.id ? <RefreshCw size={16} color={colors.primary} /> : <Languages size={16} color={colors.primary} />}
             style={styles.translateBtn}
             accessibilityLabel={t('admin.podcasts.translateEpisode', { defaultValue: 'Translate episode' })}

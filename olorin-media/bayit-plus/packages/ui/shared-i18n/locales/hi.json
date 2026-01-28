@@ -713,6 +713,24 @@
       "contentAdded": "{{count}} आइटम जोड़े गए",
       "failedToAdd": "सामग्री जोड़ना विफल",
       "publishedOnly": "प्रकाशित"
+    },
+    "translation": {
+      "status": {
+        "pending": "लंबित",
+        "processing": "प्रसंस्करण",
+        "completed": "पूर्ण",
+        "failed": "विफल"
+      }
+    },
+    "podcasts": {
+      "translate": "अनुवाद करें",
+      "translateEpisode": "एपिसोड का अनुवाद करें",
+      "translateAllEpisodes": "सभी एपिसोड का अनुवाद करें",
+      "translateAll": "सभी का अनुवाद करें",
+      "filterByStatus": "स्थिति के अनुसार फ़िल्टर करें",
+      "editEpisode": "एपिसोड संपादित करें",
+      "deleteEpisode": "एपिसोड हटाएं",
+      "newEpisode": "नया एपिसोड"
     }
   },
   "cultureClock": {
