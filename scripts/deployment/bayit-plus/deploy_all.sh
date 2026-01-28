@@ -443,17 +443,16 @@ main() {
 
             # Load environment variables from backend/.env
             if [[ -f "$REPO_ROOT/backend/.env" ]]; then
-                export $(grep "^WEBAUTHN_" "$REPO_ROOT/backend/.env" | xargs)
-
-                # Create/Update WebAuthn configuration secrets
-                print_info "Configuring WebAuthn secrets..."
-                create_or_update_secret "bayit-webauthn-rp-id" "WEBAUTHN_RP_ID"
-                create_or_update_secret "bayit-webauthn-rp-name" "WEBAUTHN_RP_NAME"
-                create_or_update_secret "bayit-webauthn-origin" "WEBAUTHN_ORIGIN"
-
-                print_success "Backend secrets prepared"
+                print_info "Backend .env found - secrets will be created during backend deployment"
+                # NOTE: Secret creation is handled by deploy_server.sh
+                # Commenting out to avoid function sourcing issues:
+                # export $(grep "^WEBAUTHN_" "$REPO_ROOT/backend/.env" | xargs)
+                # create_or_update_secret "bayit-webauthn-rp-id" "WEBAUTHN_RP_ID"
+                # create_or_update_secret "bayit-webauthn-rp-name" "WEBAUTHN_RP_NAME"
+                # create_or_update_secret "bayit-webauthn-origin" "WEBAUTHN_ORIGIN"
+                print_success "Backend secrets will be prepared during deployment"
             else
-                print_warning "backend/.env not found - skipping secret preparation"
+                print_warning "backend/.env not found - ensure secrets are configured in Google Cloud Secret Manager"
             fi
         else
             print_warning "deploy_server.sh not found - secrets will be created during backend deployment"
