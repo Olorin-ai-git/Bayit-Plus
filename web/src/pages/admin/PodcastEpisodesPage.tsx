@@ -225,6 +225,7 @@ export default function PodcastEpisodesPage() {
           <GlassButton
             variant="ghost"
             size="sm"
+            title=""
             onPress={() => handleTranslate(item.id)}
             disabled={translating === item.id || status === 'processing'}
             icon={translating === item.id ? <RefreshCw size={16} color={colors.primary} /> : <Languages size={16} color={colors.primary} />}
@@ -457,6 +458,8 @@ const styles = StyleSheet.create({
     minWidth: 44,
     minHeight: 44,
     borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   actionsCell: {
     flexDirection: 'row',
