@@ -227,7 +227,6 @@ export default function PodcastEpisodesPage() {
             size="sm"
             onPress={() => handleTranslate(item.id)}
             disabled={translating === item.id || status === 'processing'}
-            title={t('admin.podcasts.translate', { defaultValue: 'Translate' })}
             icon={translating === item.id ? <RefreshCw size={16} color={colors.primary} /> : <Languages size={16} color={colors.primary} />}
             style={styles.translateBtn}
             accessibilityLabel={t('admin.podcasts.translateEpisode', { defaultValue: 'Translate episode' })}
