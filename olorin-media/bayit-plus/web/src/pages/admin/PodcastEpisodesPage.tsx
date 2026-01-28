@@ -3,7 +3,8 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, ChevronLeft, Languages, RefreshCw } from 'lucide-react'
-import { GlassInput, GlassSelect, GlassButton, GlassPageHeader, GlassModal, GlassErrorBanner } from '@bayit/shared/ui'
+import { GlassInput, GlassSelect, GlassButton, GlassPageHeader, GlassModal } from '@bayit/shared/ui'
+import { GlassErrorBanner } from '@olorin/glass-ui'
 import { GlassTable } from '@bayit/shared/ui/web'
 import { adminPodcastsService, adminPodcastEpisodesService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -245,20 +246,16 @@ export default function PodcastEpisodesPage() {
             icon={<Edit size={18} color="#a855f7" />}
             style={styles.actionButton}
             accessibilityLabel={t('admin.podcasts.editEpisode', { defaultValue: 'Edit episode' })}
-          >
-            {t('admin.common.edit', { defaultValue: 'Edit' })}
-          </GlassButton>
+          />
           <GlassButton
             variant="ghost"
             size="sm"
             onPress={() => handleDelete(item.id)}
             disabled={isDeleting}
             icon={<Trash2 size={18} color="#ef4444" />}
-            style={styles.actionButton}
+            style={[styles.actionButton, isDeleting && styles.disabledButton]}
             accessibilityLabel={t('admin.podcasts.deleteEpisode', { defaultValue: 'Delete episode' })}
-          >
-            {t('common.delete', { defaultValue: 'Delete' })}
-          </GlassButton>
+          />
         </View>
       ),
     },
@@ -281,7 +278,7 @@ export default function PodcastEpisodesPage() {
 
       <GlassPageHeader
         title={podcastTitle}
-        subtitle={t('admin.podcastEpisodes.subtitle')}
+        subtitle={t('admin.podcastEpisodes.subtitle', { defaultValue: 'Manage podcast episodes and metadata' })}
         icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
         iconColor={pageConfig.iconColor}
         iconBackgroundColor={pageConfig.iconBackgroundColor}
@@ -441,7 +438,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     marginBottom: spacing.md,
   },
-  breadcrumbText: { color: colors.primary.DEFAULT, fontSize: 14 },
+  breadcrumbText: { color: colors.primary, fontSize: 14, fontWeight: '500' },
   headerActions: { gap: spacing.sm, alignItems: 'center' },
   filterRow: {
     flexDirection: 'row',
@@ -471,6 +468,9 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  disabledButton: {
+    opacity: 0.5,
   },
   badge: { paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: borderRadius.sm },
   badgeText: { fontSize: 12, fontWeight: '600' },
