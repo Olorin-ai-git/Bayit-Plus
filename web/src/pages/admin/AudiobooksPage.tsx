@@ -6,8 +6,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { View, Text, ScrollView, StyleSheet, Image } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Plus, Edit, Trash2, X, AlertCircle, Headphones } from 'lucide-react'
-import { GlassButton, GlassPageHeader } from '@bayit/shared/ui'
+import { Plus, Edit, Trash2, Headphones } from 'lucide-react'
+import { GlassButton, GlassPageHeader, GlassErrorBanner } from '@bayit/shared/ui'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { GlassTable } from '@bayit/shared/ui/web'
 import { adminAudiobookService } from '@/services/adminAudiobookService'
@@ -143,16 +143,23 @@ export default function AdminAudiobooksPage() {
         subtitle={t('admin.audiobooks.subtitle', 'Manage audiobook library')}
         badge={audiobooks.length}
         isRTL={isRTL}
-        action={<GlassButton variant="primary" onPress={() => openModal('form')} icon={<Plus size={18} color={colors.text} />}>{t('admin.actions.new', 'New')}</GlassButton>}
+        action={
+          <GlassButton
+            variant="primary"
+            onPress={() => openModal('form')}
+            icon={<Plus size={18} color={colors.text} />}
+            accessibilityLabel={t('admin.actions.newAudiobook', { defaultValue: 'Create new audiobook' })}
+          >
+            {t('admin.actions.new', 'New')}
+          </GlassButton>
+        }
       />
 
-      {error && (
-        <View style={[styles.errorContainer, { marginBottom: spacing.lg }]}>
-          <AlertCircle size={18} color="#ef4444" />
-          <Text style={styles.errorText}>{error}</Text>
-          <GlassButton variant="ghost" size="sm" onPress={() => setError(null)} icon={<X size={16} color="#ef4444" />} />
-        </View>
-      )}
+      <GlassErrorBanner
+        message={error}
+        onDismiss={() => setError(null)}
+        marginBottom={spacing.lg}
+      />
 
       <GlassTable columns={columns} data={audiobooks} loading={isLoading} pagination={pagination} onPageChange={(page) => setPagination(p => ({ ...p, page }))} emptyMessage={t('admin.audiobooks.emptyMessage', 'No audiobooks found')} isRTL={isRTL} />
 
@@ -178,6 +185,4 @@ const styles = StyleSheet.create({
   badgeTextActive: { color: '#22c55e' },
   badgeTextInactive: { color: '#9ca3af' },
   actions: { flexDirection: 'row', gap: spacing.xs },
-  errorContainer: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, backgroundColor: 'rgba(239,68,68,0.1)', borderRadius: borderRadius.md, borderWidth: 1, borderColor: 'rgba(239,68,68,0.3)' },
-  errorText: { flex: 1, fontSize: 14, color: '#ef4444' },
 })
