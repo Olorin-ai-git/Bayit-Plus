@@ -181,31 +181,49 @@ class RadioStationUpdateRequest(BaseModel):
 # Podcast Models
 class PodcastCreateRequest(BaseModel):
     title: str
+    title_en: Optional[str] = None
+    title_es: Optional[str] = None
     description: Optional[str] = None
+    description_en: Optional[str] = None
+    description_es: Optional[str] = None
     author: Optional[str] = None
+    author_en: Optional[str] = None
+    author_es: Optional[str] = None
     cover: Optional[str] = None
     category: Optional[str] = None
+    category_en: Optional[str] = None
+    category_es: Optional[str] = None
     culture_id: str = "israeli"  # Culture association (Global Cultures feature)
     rss_feed: Optional[str] = None
     website: Optional[str] = None
     episode_count: int = 0
     latest_episode_date: Optional[datetime] = None
     is_active: bool = True
+    is_featured: bool = False
     order: int = 0
 
 
 class PodcastUpdateRequest(BaseModel):
     title: Optional[str] = None
+    title_en: Optional[str] = None
+    title_es: Optional[str] = None
     description: Optional[str] = None
+    description_en: Optional[str] = None
+    description_es: Optional[str] = None
     author: Optional[str] = None
+    author_en: Optional[str] = None
+    author_es: Optional[str] = None
     cover: Optional[str] = None
     category: Optional[str] = None
+    category_en: Optional[str] = None
+    category_es: Optional[str] = None
     culture_id: Optional[str] = None  # Culture association (Global Cultures feature)
     rss_feed: Optional[str] = None
     website: Optional[str] = None
     episode_count: Optional[int] = None
     latest_episode_date: Optional[datetime] = None
     is_active: Optional[bool] = None
+    is_featured: Optional[bool] = None
     order: Optional[int] = None
 
 
