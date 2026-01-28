@@ -127,7 +127,9 @@ async def get_featured(
 
     async def get_podcasts():
         """Get featured podcasts for homepage."""
-        return await Podcast.find(Podcast.is_active == True).sort("-order").limit(10).to_list()
+        return await Podcast.find(
+            (Podcast.is_active == True) & (Podcast.is_featured == True)
+        ).sort("-order").limit(10).to_list()
 
     async def get_audiobooks():
         """Get featured audiobooks from Content collection."""
@@ -137,6 +139,7 @@ async def get_featured(
                     "$and": [
                         {
                             "content_format": "audiobook",
+                            "is_featured": True,
                             "is_published": True,
                             "is_quality_variant": {"$ne": True},
                         },
