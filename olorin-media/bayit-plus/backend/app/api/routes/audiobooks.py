@@ -41,11 +41,13 @@ async def get_audiobooks(
     """Get featured and trending audiobooks with pagination.
 
     Only returns parent audiobooks (those without series_id) to avoid
-    showing individual chapters as separate cards.
+    showing individual chapters as separate cards. Filters out audiobooks
+    with empty or missing titles (data quality check).
     """
     query = Content.find({
         "content_format": "audiobook",
         "is_published": True,
+        "title": {"$exists": True, "$ne": "", "$ne": None},  # Filter out empty titles
         "$or": [
             {"series_id": None},
             {"series_id": {"$exists": False}},

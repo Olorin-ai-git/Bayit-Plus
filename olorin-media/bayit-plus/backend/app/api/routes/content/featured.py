@@ -369,7 +369,8 @@ async def get_featured(
 
     cat_query_start = time.time()
     # Separate special sections (podcasts, audiobooks, location-based) from regular content sections
-    special_slugs = {"podcasts", "audiobooks", "near-you"}
+    # Note: "near-you" is dynamically generated below, not from database
+    special_slugs = {"podcasts", "audiobooks"}
 
     # Group sections by slug to handle potential duplicates
     sections_by_slug: dict = {}
@@ -433,46 +434,6 @@ async def get_featured(
                 "name_es": "Audiolibros",
                 "items": audiobook_items,
             })
-        elif slug == "near-you":
-            # Location-based content (articles and events near user's city)
-            if location_content and x_user_city and x_user_state:
-                location_items = []
-                for item in location_content:
-                    try:
-                        # Validate required fields
-                        if not item or not isinstance(item, dict):
-                            logger.warning(f"Invalid location content item: {item}")
-                            continue
-
-                        if not item.get("id") or not item.get("title"):
-                            logger.warning(f"Location item missing id or title: {item}")
-                            continue
-
-                        location_items.append({
-                            "id": item.get("id"),
-                            "title": item.get("title", "Untitled"),
-                            "thumbnail": item.get("thumbnail"),
-                            "description": item.get("description", "")[:200] if item.get("description") else None,
-                            "category": "near-you",
-                            "type": item.get("type", "article"),  # "article" or "event"
-                            "is_series": False,
-                            "city": x_user_city,
-                            "state": x_user_state,
-                            "source": "News" if item.get("type") == "article" else item.get("event_location", "Event"),
-                            "published_at": item.get("published_at") or item.get("event_date"),
-                            "url": None,  # Internal link, not external
-                        })
-                    except Exception as e:
-                        logger.error(f"Error processing location content item: {e}", exc_info=True)
-                        continue  # Skip this item, don't crash
-                category_data.append({
-                    "id": str(primary_section.id),
-                    "name": slug,
-                    "name_key": primary_section.name_key or "home.nearYou",
-                    "name_en": f"Near {x_user_city}, {x_user_state}",
-                    "name_es": f"Cerca de {x_user_city}, {x_user_state}",
-                    "items": location_items,
-                })
         else:
             # Regular content sections - query by featured_order (matching admin logic)
             or_conditions = [
@@ -729,11 +690,36 @@ async def get_featured(
             "id": "near-you",
             "name": "near-you",
             "name_key": "home.nearYou",
-            "name_en": f"Near {x_user_city}, {x_user_state}",
-            "name_es": f"Cerca de {x_user_city}, {x_user_state}",
+            "name_en": f"Israelis Near {x_user_city}, {x_user_state}",
+            "name_es": f"Israelíes Cerca de {x_user_city}, {x_user_state}",
             "items": location_items,
         })
         logger.info(f"Added {len(location_items)} location-based items for {x_user_city}, {x_user_state}")
+
+    # Sort categories by desired order
+    desired_order = [
+        "near-you",
+        "trending",  # What's hot in Israel
+        "jerusalem",
+        "tel-aviv",
+        "movies",
+        "israeli-movies",
+        "series",
+        "israeli-series",
+        "podcasts",
+        "audiobooks",
+    ]
+
+    def get_sort_priority(category: dict) -> int:
+        """Get sort priority for a category. Lower number = higher priority."""
+        name = category.get("name", "")
+        try:
+            return desired_order.index(name)
+        except ValueError:
+            # Categories not in the desired order list go to the end
+            return len(desired_order) + 100
+
+    category_data.sort(key=get_sort_priority)
 
     logger.info(f"⏱️ Featured: TOTAL took {time.time() - start_time:.2f}s")
 

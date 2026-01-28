@@ -16,6 +16,27 @@ interface LogEntry {
 
 const isDev = process.env.NODE_ENV === 'development';
 
+/**
+ * Serialize error objects to extract useful information
+ */
+const serializeError = (error: unknown): string => {
+  if (error instanceof Error) {
+    return JSON.stringify({
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    }, null, 2);
+  }
+  if (typeof error === 'object' && error !== null) {
+    try {
+      return JSON.stringify(error, null, 2);
+    } catch {
+      return String(error);
+    }
+  }
+  return String(error);
+};
+
 const formatLog = (entry: LogEntry): string => {
   const prefix = entry.context ? `[${entry.context}]` : '';
   return `${entry.timestamp} ${entry.level.toUpperCase()} ${prefix} ${entry.message}`;
@@ -57,14 +78,16 @@ export const logger = {
   debug: (message: string, context?: string, data?: unknown): void => {
     if (isDev) {
       const entry = createLogEntry('debug', message, context, data);
-      console.debug(formatLog(entry), data || '');
+      const serializedData = data ? serializeError(data) : '';
+      console.debug(formatLog(entry), serializedData);
     }
   },
 
   info: (message: string, context?: string, data?: unknown): void => {
     const entry = createLogEntry('info', message, context, data);
     if (isDev) {
-      console.info(formatLog(entry), data || '');
+      const serializedData = data ? serializeError(data) : '';
+      console.info(formatLog(entry), serializedData);
     }
     sendToMonitoring(entry);
   },
@@ -72,7 +95,8 @@ export const logger = {
   warn: (message: string, context?: string, data?: unknown): void => {
     const entry = createLogEntry('warn', message, context, data);
     if (isDev) {
-      console.warn(formatLog(entry), data || '');
+      const serializedData = data ? serializeError(data) : '';
+      console.warn(formatLog(entry), serializedData);
     }
     sendToMonitoring(entry);
   },
@@ -80,7 +104,8 @@ export const logger = {
   error: (message: string, context?: string, error?: unknown): void => {
     const entry = createLogEntry('error', message, context, error);
     if (isDev) {
-      console.error(formatLog(entry), error || '');
+      const serializedError = error ? serializeError(error) : '';
+      console.error(formatLog(entry), serializedError);
     }
     sendToMonitoring(entry);
   },

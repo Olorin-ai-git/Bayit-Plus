@@ -45,9 +45,9 @@ interface ContentCardProps {
 
 export default function ContentCard({ content, showProgress = false, showActions = true }: ContentCardProps) {
   // Early validation - prevent crashes from invalid content
-  if (!content || !content.id || !content.title) {
+  if (!content || !content.id || !content.title || content.title.trim() === '') {
     logger.error('Invalid content prop passed to ContentCard', 'ContentCard', { content });
-    return null; // Don't render anything for invalid content
+    return null; // Don't render anything for invalid content (missing ID, title, or empty title)
   }
 
   const { t, i18n } = useTranslation();
@@ -55,12 +55,17 @@ export default function ContentCard({ content, showProgress = false, showActions
   const [isHovered, setIsHovered] = useState(false);
   const { isUIInteractionEnabled } = useModeEnforcement();
 
-  // YouTube thumbnail fallback: maxresdefault (1280x720) isn't always available
-  // Fall back to hqdefault (480x360) which is always available
+  // Thumbnail error handling: YouTube fallback and CDN failures
   const [thumbnailError, setThumbnailError] = useState(false);
+  const [cdnFailure, setCdnFailure] = useState(false);
 
   const getThumbnailUrl = (): string | undefined => {
     if (!content.thumbnail) return undefined;
+
+    // If CDN failed or thumbnail is broken, return undefined to show placeholder
+    if (cdnFailure) {
+      return undefined;
+    }
 
     // If maxresdefault failed, use hqdefault
     if (thumbnailError && content.thumbnail.includes('maxresdefault')) {
@@ -90,9 +95,34 @@ export default function ContentCard({ content, showProgress = false, showActions
   };
 
   const handleThumbnailError = () => {
-    // Only retry once with fallback quality
-    if (!thumbnailError && content.thumbnail?.includes('maxresdefault')) {
-      setThumbnailError(true);
+    try {
+      const thumbnail = content.thumbnail;
+
+      // Check if it's a CDN failure (cdn.bayit.tv or connection issues)
+      if (thumbnail?.includes('cdn.bayit.tv')) {
+        logger.warn('CDN image failed to load, using placeholder', 'ContentCard', {
+          thumbnail,
+          contentId: content.id
+        });
+        setCdnFailure(true);
+        return;
+      }
+
+      // YouTube thumbnail fallback: retry with lower quality
+      if (!thumbnailError && thumbnail?.includes('maxresdefault')) {
+        setThumbnailError(true);
+        return;
+      }
+
+      // Any other error: mark as CDN failure to show placeholder
+      logger.warn('Image failed to load, using placeholder', 'ContentCard', {
+        thumbnail,
+        contentId: content.id
+      });
+      setCdnFailure(true);
+    } catch (error) {
+      logger.error('Error in handleThumbnailError', 'ContentCard', { error });
+      setCdnFailure(true);
     }
   };
 
