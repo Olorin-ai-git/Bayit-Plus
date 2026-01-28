@@ -42,9 +42,9 @@ export function SubscriptionPage({ onBack }: SubscriptionPageProps) {
 
       logger.info('Initiating Stripe checkout');
 
-      // Create Stripe checkout session
+      // Create Stripe checkout session (Chrome Extension-specific endpoint)
       const response = await fetch(
-        `${CONFIG.API.BASE_URL}/api/v1/subscriptions/create-checkout`,
+        `${CONFIG.API.BASE_URL}/api/v1/extension/subscriptions/checkout`,
         {
           method: 'POST',
           headers: {
@@ -53,11 +53,6 @@ export function SubscriptionPage({ onBack }: SubscriptionPageProps) {
               (m) => m.getToken()
             )}`,
           },
-          body: JSON.stringify({
-            price_id: 'price_premium', // Backend will use correct Stripe price ID
-            success_url: chrome.runtime.getURL('popup.html?checkout=success'),
-            cancel_url: chrome.runtime.getURL('popup.html?checkout=cancel'),
-          }),
         }
       );
 
@@ -164,7 +159,7 @@ export function SubscriptionPage({ onBack }: SubscriptionPageProps) {
       logger.info('Cancelling subscription');
 
       const response = await fetch(
-        `${CONFIG.API.BASE_URL}/api/v1/subscriptions/cancel`,
+        `${CONFIG.API.BASE_URL}/api/v1/extension/subscriptions/cancel`,
         {
           method: 'POST',
           headers: {
