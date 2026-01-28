@@ -16,6 +16,10 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 
 from app.core.config import settings
+from app.core.extension_rate_limiter import (
+    extension_rate_limiter,
+    get_client_identifier,
+)
 from app.core.security import get_current_active_user
 from app.models.user import User
 
@@ -45,14 +49,20 @@ class CheckoutSessionResponse(BaseModel):
 
 @router.get("/status", response_model=ExtensionSubscriptionResponse)
 async def get_subscription_status(
+    request: Request,
     current_user: User = Depends(get_current_active_user),
 ) -> ExtensionSubscriptionResponse:
     """
     Get current subscription status for Chrome extension.
 
+    Rate limit: 20 req/min per user
+
     Returns:
         ExtensionSubscriptionResponse: Current subscription tier and quota
     """
+    # Rate limiting
+    identifier = get_client_identifier(request, str(current_user.id))
+    extension_rate_limiter.check_rate_limit("subscription_status", identifier, limit=20)
     # Check if user has premium subscription
     if current_user.subscription_tier == "extension_premium":
         return ExtensionSubscriptionResponse(
@@ -81,6 +91,7 @@ async def get_subscription_status(
 
 @router.post("/checkout", response_model=CheckoutSessionResponse)
 async def create_checkout_session(
+    request: Request,
     current_user: User = Depends(get_current_active_user),
 ) -> CheckoutSessionResponse:
     """
@@ -88,12 +99,17 @@ async def create_checkout_session(
 
     This creates a $5/month recurring subscription for unlimited dubbing.
 
+    Rate limit: 10 req/min per user
+
     Returns:
         CheckoutSessionResponse: Checkout URL and session ID
 
     Raises:
         HTTPException: If user already has premium or Stripe configuration missing
     """
+    # Rate limiting
+    identifier = get_client_identifier(request, str(current_user.id))
+    extension_rate_limiter.check_rate_limit("checkout", identifier, limit=10)
     # Check if user already has premium
     if current_user.subscription_tier == "extension_premium":
         raise HTTPException(
@@ -166,6 +182,7 @@ async def create_checkout_session(
 
 @router.post("/cancel")
 async def cancel_subscription(
+    request: Request,
     current_user: User = Depends(get_current_active_user),
 ) -> dict:
     """
@@ -173,12 +190,17 @@ async def cancel_subscription(
 
     Subscription remains active until end of current billing period.
 
+    Rate limit: 10 req/min per user
+
     Returns:
         dict: Cancellation confirmation with end date
 
     Raises:
         HTTPException: If user doesn't have premium or cancellation fails
     """
+    # Rate limiting
+    identifier = get_client_identifier(request, str(current_user.id))
+    extension_rate_limiter.check_rate_limit("cancel", identifier, limit=10)
     if current_user.subscription_tier != "extension_premium":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
