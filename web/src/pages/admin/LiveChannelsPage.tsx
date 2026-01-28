@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { View, Text, Pressable, ScrollView, StyleSheet, Image } from 'react-native';
 import { useTranslation } from 'react-i18next'
-import { Plus, Edit, Trash2, X, AlertCircle, Globe, ChevronDown, ChevronUp, Radio } from 'lucide-react'
+import { Plus, Edit, Trash2, Globe, ChevronDown, ChevronUp, Radio } from 'lucide-react'
 import { adminLiveChannelsService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
-import { GlassButton, GlassInput, GlassView, GlassToggle, GlassSelect, GlassPageHeader } from '@bayit/shared/ui'
+import { GlassButton, GlassInput, GlassView, GlassToggle, GlassSelect, GlassPageHeader, GlassErrorBanner } from '@bayit/shared/ui'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web'
 import { useDirection } from '@/hooks/useDirection'
@@ -239,7 +239,8 @@ export default function LiveChannelsPage() {
         badge={items.length}
         isRTL={isRTL}
         action={
-          <Pressable
+          <GlassButton
+            variant="primary"
             onPress={() => {
               setEditingId('new')
               setEditData({
@@ -251,23 +252,19 @@ export default function LiveChannelsPage() {
               })
               setShowSubtitleSettings(false)
             }}
-            style={styles.addButton}
+            icon={<Plus size={18} color={colors.text} />}
+            accessibilityLabel={t('admin.actions.newChannel', { defaultValue: 'Create new channel' })}
           >
-            <Plus size={18} color={colors.text} />
-            <Text style={styles.addButtonText}>{t('admin.actions.new', { defaultValue: 'New' })}</Text>
-          </Pressable>
+            {t('admin.actions.new', { defaultValue: 'New' })}
+          </GlassButton>
         }
       />
 
-      {error && (
-        <View style={[styles.errorContainer, { marginBottom: spacing.lg }]}>
-          <AlertCircle size={18} color="#ef4444" />
-          <Text style={styles.errorText}>{error}</Text>
-          <Pressable onPress={() => setError(null)}>
-            <X size={18} color="#ef4444" />
-          </Pressable>
-        </View>
-      )}
+      <GlassErrorBanner
+        message={error}
+        onDismiss={() => setError(null)}
+        marginBottom={spacing.lg}
+      />
 
       {editingId && (
         <View style={styles.editForm}>
@@ -458,35 +455,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.text,
     fontWeight: '600',
-  },
-  addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.md,
-  },
-  addButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.md,
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
-  },
-  errorText: {
-    flex: 1,
-    fontSize: 14,
-    color: '#ef4444',
   },
   cellText: {
     fontSize: 13,
