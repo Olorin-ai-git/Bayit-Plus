@@ -291,6 +291,8 @@
     "israeliMovies": "Israeli Movies",
     "israeli-movies": "Israeli Movies",
     "israeli-series": "Israeli Series",
+    "israeliCities": "Israeli Cities",
+    "israeli-cities": "Israeli Cities",
     "action": "Action & Thriller",
     "comedy": "Comedy",
     "drama": "Drama",
@@ -301,6 +303,7 @@
     "jerusalemConnection": "Jerusalem Connection",
     "telAvivConnection": "Tel Aviv Connection",
     "categories": "Categories",
+    "nearYou": "Near You",
     "carousel": {
       "fauda": {
         "title": "Fauda",
@@ -983,11 +986,49 @@
     }
   },
   "empty": {
-    "noContent": "No content available",
+    "noContent": {
+      "title": "No content yet",
+      "description": "Content will appear here when available"
+    },
+    "noResults": {
+      "title": "No results found",
+      "description": "Try different keywords or filters"
+    },
+    "noQuery": {
+      "title": "Start searching",
+      "description": "Enter keywords to find content"
+    },
+    "error": {
+      "title": "Something went wrong",
+      "description": "Unable to load content. Please try again."
+    },
+    "loading": {
+      "title": "Loading...",
+      "description": "Please wait while we load your content"
+    },
+    "noFavorites": {
+      "title": "No favorites yet",
+      "description": "Add content to favorites to see it here"
+    },
+    "noDownloads": {
+      "title": "No downloads",
+      "description": "Download content to watch offline"
+    },
+    "sectionEmpty": {
+      "title": "No items",
+      "description": "This section is empty"
+    },
+    "noData": {
+      "title": "No data available",
+      "description": "Data will appear here when available"
+    },
+    "permissionDenied": {
+      "title": "Access denied",
+      "description": "You don't have permission to view this content"
+    },
     "tryAnotherCategory": "Try selecting another category",
     "noPodcasts": "No podcasts available",
-    "tryLater": "Try again later",
-    "noResults": "No results found"
+    "tryLater": "Try again later"
   },
   "content": {
     "play": "Play",
@@ -3474,7 +3515,8 @@
       "music": "Music",
       "documentaries": "Documentaries",
       "podcasts": "Podcasts",
-      "live": "Live TV"
+      "live": "Live TV",
+      "israeli-cities": "Israeli Cities"
     },
     "subcategories": {
       "learning-hebrew": "Learning Hebrew",
@@ -3742,6 +3784,35 @@
       "noAudiobooks": "No audiobooks found",
       "noFavorites": "You haven't added any audiobooks to your favorites yet",
       "trySearch": "Try searching for an audiobook by title, author, or narrator"
+    }
+  },
+  "location": {
+    "consentModal": {
+      "title": "Enable Location Services",
+      "description": "We'd like to show you content relevant to your area.\n\nWe will:\n• Detect your city and state\n• Show local Israeli community content\n• Cache your location for 24 hours\n\nWe will NOT:\n• Track your exact location\n• Share your location with third parties\n• Store your location permanently without consent\n\nYou can change this anytime in settings.",
+      "accept": "Allow Location Access",
+      "decline": "Not Now",
+      "privacyNote": "Your privacy is important. Location data is encrypted and never sold."
+    },
+    "permissionBanner": {
+      "title": "Discover Israeli Content Near You",
+      "description": "Enable location services to see Israeli community events, news, and stories from your area. Your privacy is protected - we only detect your city.",
+      "enable": "Enable Location",
+      "notNow": "Not Now",
+      "close": "Close"
+    },
+    "status": {
+      "detecting": "Detecting your location...",
+      "detected": "Location detected: {{city}}, {{state}}",
+      "denied": "Location access denied",
+      "unavailable": "Location services unavailable",
+      "error": "Failed to detect location"
+    },
+    "errors": {
+      "permissionDenied": "Location access denied. Please enable location in your browser settings.",
+      "timeout": "Location request timed out. Please try again.",
+      "unavailable": "Location services are not available in your browser.",
+      "failed": "Failed to get location. Please try again."
     }
   }
 }

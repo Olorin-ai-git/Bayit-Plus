@@ -30,6 +30,7 @@ export interface ContentCardMobileProps {
     duration?: number;
     has_subtitles?: boolean;
     available_subtitle_languages?: string[];
+    type?: 'live' | 'radio' | 'podcast' | 'vod' | 'movie' | 'series' | 'audiobook';
   };
 
   /** Callback when card is pressed */
@@ -52,7 +53,10 @@ export const ContentCardMobile: React.FC<ContentCardMobileProps> = ({
       tablet: (Dimensions.get('window').width - spacing.md * 5) / 4,
     });
 
-  const cardHeight = cardWidth * 1.4; // Balanced aspect ratio for mobile
+  // Dynamic aspect ratio based on content type
+  // Podcasts and audiobooks use square (1:1), other content uses portrait (1:1.5)
+  const aspectRatio = content.type === 'podcast' || content.type === 'audiobook' ? 1.0 : 1.5;
+  const cardHeight = cardWidth * aspectRatio;
 
   return (
     <Pressable
@@ -73,11 +77,11 @@ export const ContentCardMobile: React.FC<ContentCardMobileProps> = ({
             />
           ) : (
             <GlassPlaceholder
-              contentType="movie"
+              contentType={content.type || 'movie'}
               width={cardWidth}
               height={cardHeight}
               accessibilityRole="image"
-              accessibilityLabel={`${content.title} - Movie placeholder`}
+              accessibilityLabel={`${content.title} - Content placeholder`}
               contentTitle={content.title}
               contentReason="unavailable"
             />

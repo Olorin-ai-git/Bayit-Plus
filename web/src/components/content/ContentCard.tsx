@@ -19,7 +19,7 @@ interface Content {
   id: string;
   title: string;
   thumbnail?: string;
-  type?: 'live' | 'radio' | 'podcast' | 'vod' | 'movie' | 'series' | 'audiobook';
+  type?: 'live' | 'radio' | 'podcast' | 'vod' | 'movie' | 'series' | 'audiobook' | 'article' | 'event';
   is_series?: boolean;
   duration?: string;
   progress?: number;
@@ -31,6 +31,10 @@ interface Content {
   has_subtitles?: boolean;
   available_subtitle_languages?: string[];
   quality_tier?: string;
+  source?: string;
+  city?: string;
+  state?: string;
+  published_at?: string;
 }
 
 interface ContentCardProps {
@@ -40,6 +44,12 @@ interface ContentCardProps {
 }
 
 export default function ContentCard({ content, showProgress = false, showActions = true }: ContentCardProps) {
+  // Early validation - prevent crashes from invalid content
+  if (!content || !content.id || !content.title) {
+    logger.error('Invalid content prop passed to ContentCard', 'ContentCard', { content });
+    return null; // Don't render anything for invalid content
+  }
+
   const { t, i18n } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
   const [isHovered, setIsHovered] = useState(false);
@@ -60,6 +70,25 @@ export default function ContentCard({ content, showProgress = false, showActions
     return content.thumbnail;
   };
 
+  // Map article/event types to 'culture' for GlassPlaceholder with safe fallback
+  const getPlaceholderContentType = (): GlassContentType => {
+    try {
+      if (content.type === 'article' || content.type === 'event') {
+        return 'culture';
+      }
+      // Valid content types: movie, series, podcast, live, radio, vod, audiobook, culture
+      const validTypes = ['movie', 'series', 'podcast', 'live', 'radio', 'vod', 'audiobook', 'culture'];
+      if (content.type && validTypes.includes(content.type)) {
+        return content.type as GlassContentType;
+      }
+      // Safe default fallback
+      return 'vod';
+    } catch (error) {
+      logger.error('Error determining placeholder content type', 'ContentCard', { error, contentType: content.type });
+      return 'vod'; // Safe default
+    }
+  };
+
   const handleThumbnailError = () => {
     // Only retry once with fallback quality
     if (!thumbnailError && content.thumbnail?.includes('maxresdefault')) {
@@ -78,16 +107,34 @@ export default function ContentCard({ content, showProgress = false, showActions
   const [favoriteHovered, setFavoriteHovered] = useState(false);
   const [watchlistHovered, setWatchlistHovered] = useState(false);
 
-  // Determine link destination based on content type
-  const linkTo = content.type === 'live'
-    ? `/live/${content.id}`
-    : content.type === 'radio'
-    ? `/radio/${content.id}`
-    : content.type === 'podcast'
-    ? `/podcasts/${content.id}`
-    : content.type === 'series' || content.is_series
-    ? `/vod/series/${content.id}`
-    : `/vod/movie/${content.id}`;
+  // Determine link destination based on content type with safe defaults
+  const getLinkDestination = (): string => {
+    try {
+      if (content.type === 'live') return `/live/${content.id}`;
+      if (content.type === 'radio') return `/radio/${content.id}`;
+      if (content.type === 'podcast') return `/podcasts/${content.id}`;
+
+      // Articles/events link to location page
+      if (content.type === 'article' || content.type === 'event') {
+        if (content.state && content.city) {
+          return `/location/${content.state}/${content.city}`;
+        }
+        // Fallback to home if location data missing
+        logger.warn('Article/event missing location data', 'ContentCard', { contentId: content.id });
+        return '/';
+      }
+
+      if (content.type === 'series' || content.is_series) return `/vod/series/${content.id}`;
+
+      // Default to movie/VOD page
+      return `/vod/movie/${content.id}`;
+    } catch (error) {
+      logger.error('Error determining link destination', 'ContentCard', { error, contentType: content.type });
+      return '/'; // Safe fallback to home
+    }
+  };
+
+  const linkTo = getLinkDestination();
 
   const handleFavoriteToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -137,26 +184,61 @@ export default function ContentCard({ content, showProgress = false, showActions
         !isUIInteractionEnabled && { opacity: 0.6 },
       ]}>
           {/* Thumbnail */}
-          <View style={styles.thumbnailContainer}>
-            {getThumbnailUrl() ? (
-              <Image
-                source={{ uri: getThumbnailUrl() }}
-                style={styles.thumbnail}
-                resizeMode="contain"
-                onError={handleThumbnailError}
-              />
-            ) : (
-              <GlassPlaceholder
-                contentType={(content.type as GlassContentType) || 'vod'}
-                width={200}
-                height={300}
-                accessibilityRole="image"
-                accessibilityLabel={`${content.title} - Content placeholder`}
-                contentTitle={content.title}
-                contentReason="missing"
-                style={styles.thumbnailPlaceholder}
-              />
-            )}
+          <View style={[
+            styles.thumbnailContainer,
+            content.type === 'podcast' || content.type === 'audiobook'
+              ? styles.thumbnailSquare
+              : styles.thumbnailPortrait
+          ]}>
+            {(() => {
+              try {
+                const thumbnailUrl = getThumbnailUrl();
+                if (thumbnailUrl) {
+                  return (
+                    <Image
+                      source={{ uri: thumbnailUrl }}
+                      style={styles.thumbnail}
+                      resizeMode="cover"
+                      onError={handleThumbnailError}
+                    />
+                  );
+                }
+
+                // Render placeholder with error handling
+                try {
+                  return (
+                    <GlassPlaceholder
+                      contentType={getPlaceholderContentType()}
+                      width={200}
+                      height={300}
+                      accessibilityRole="image"
+                      accessibilityLabel={`${content.title || 'Content'} - Content placeholder`}
+                      contentTitle={content.title || 'Untitled'}
+                      contentReason="missing"
+                      style={styles.thumbnailPlaceholder}
+                    />
+                  );
+                } catch (placeholderError) {
+                  logger.error('GlassPlaceholder failed, using fallback', 'ContentCard', {
+                    error: placeholderError,
+                    contentType: content.type
+                  });
+                  // Simple fallback div
+                  return (
+                    <View style={[styles.thumbnail, styles.fallbackThumbnail]}>
+                      <Text style={styles.fallbackText}>📍</Text>
+                    </View>
+                  );
+                }
+              } catch (error) {
+                logger.error('Thumbnail rendering failed completely', 'ContentCard', { error });
+                return (
+                  <View style={[styles.thumbnail, styles.fallbackThumbnail]}>
+                    <Text style={styles.fallbackText}>?</Text>
+                  </View>
+                );
+              }
+            })()}
 
             {/* Action Buttons - Show on hover */}
             {showActions && isHovered && (
@@ -296,11 +378,26 @@ export default function ContentCard({ content, showProgress = false, showActions
               {content.title}
             </Text>
             <View style={[styles.meta, { flexDirection }]}>
-              {content.year && <Text style={styles.metaText}>{content.year}</Text>}
-              {content.year && localizedCategory && (
-                <Text style={styles.metaDivider}>|</Text>
+              {/* For articles/events, show source and location instead of year/category */}
+              {(content.type === 'article' || content.type === 'event') ? (
+                <>
+                  {content.source && <Text style={styles.metaText}>{content.source}</Text>}
+                  {content.source && (content.city || content.state) && (
+                    <Text style={styles.metaDivider}>|</Text>
+                  )}
+                  {content.city && content.state && (
+                    <Text style={styles.metaText}>{content.city}, {content.state}</Text>
+                  )}
+                </>
+              ) : (
+                <>
+                  {content.year && <Text style={styles.metaText}>{content.year}</Text>}
+                  {content.year && localizedCategory && (
+                    <Text style={styles.metaDivider}>|</Text>
+                  )}
+                  {localizedCategory && <Text style={styles.metaText}>{localizedCategory}</Text>}
+                </>
               )}
-              {localizedCategory && <Text style={styles.metaText}>{localizedCategory}</Text>}
             </View>
           </View>
         </GlassCard>
@@ -332,12 +429,17 @@ const styles = StyleSheet.create({
     boxShadow: `0 8px 32px rgba(107, 33, 168, 0.3)`,
   },
   thumbnailContainer: {
-    aspectRatio: 2 / 3, // Portrait aspect ratio for movie posters
     position: 'relative',
     borderTopLeftRadius: borderRadius.lg,
     borderTopRightRadius: borderRadius.lg,
     overflow: 'hidden',
     backgroundColor: colors.backgroundDark, // Background for letterboxing
+  },
+  thumbnailPortrait: {
+    aspectRatio: 2 / 3, // Portrait aspect ratio for movie/series posters
+  },
+  thumbnailSquare: {
+    aspectRatio: 1, // Square aspect ratio for podcasts and audiobooks
   },
   thumbnail: {
     width: '100%',
@@ -487,5 +589,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: spacing.sm,
     right: spacing.sm,
+  },
+  fallbackThumbnail: {
+    backgroundColor: colors.glass,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fallbackText: {
+    fontSize: 48,
+    color: colors.textMuted,
   },
 });

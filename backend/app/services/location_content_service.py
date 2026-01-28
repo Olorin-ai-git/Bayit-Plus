@@ -8,6 +8,7 @@ from app.core.config import settings
 from app.models.content import Content
 from app.models.jewish_community import CommunityEvent
 from app.services.location_constants import MAJOR_US_CITIES, CITY_COORDINATES
+from app.services.news_scraper.location_scrapers import scrape_israeli_content_in_us_city
 
 logger = logging.getLogger(__name__)
 
@@ -36,20 +37,80 @@ class LocationContentService:
         include_articles: bool = True,
         include_events: bool = True,
     ) -> dict:
-        """Get all Israeli-focused content for a specific city."""
-        city = city.strip()
-        state = state.upper().strip()
+        """Get all Israeli-focused content for a specific city. Never raises exceptions."""
+        try:
+            # Validate and sanitize inputs
+            if not city or not state:
+                logger.error(f"Invalid city/state: city={city}, state={state}")
+                return self._get_empty_result("Unknown", "XX")
 
-        latitude, longitude = self._get_city_coordinates(city, state)
+            city = city.strip()
+            state = state.upper().strip()
+
+            latitude, longitude = self._get_city_coordinates(city, state)
+            now = datetime.now(timezone.utc)
+
+            result = {
+                "location": {
+                    "city": city,
+                    "state": state,
+                    "county": county,
+                    "latitude": latitude,
+                    "longitude": longitude,
+                    "timestamp": now,
+                    "source": "lookup",
+                },
+                "content": {"news_articles": [], "community_events": []},
+                "total_items": 0,
+                "coverage": {"has_content": False, "nearest_major_city": None},
+                "updated_at": now,
+            }
+
+            # Fetch content with error handling - never let one failure crash the entire response
+            if include_articles:
+                try:
+                    result["content"]["news_articles"] = await self.fetch_news_articles(
+                        city, state, limit_per_type
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to fetch articles for {city}, {state}: {e}")
+                    result["content"]["news_articles"] = []
+
+            if include_events:
+                try:
+                    result["content"]["community_events"] = await self.fetch_community_events(
+                        city, state, limit_per_type
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to fetch events for {city}, {state}: {e}")
+                    result["content"]["community_events"] = []
+
+            total = (
+                len(result["content"]["news_articles"])
+                + len(result["content"]["community_events"])
+            )
+            result["total_items"] = total
+            result["coverage"]["has_content"] = total > 0
+
+            if not result["coverage"]["has_content"] and state in MAJOR_US_CITIES:
+                result["coverage"]["nearest_major_city"] = MAJOR_US_CITIES[state]["city"]
+
+            return result
+
+        except Exception as e:
+            logger.error(f"Critical error in get_israelis_in_city for {city}, {state}: {e}")
+            return self._get_empty_result(city, state)
+
+    def _get_empty_result(self, city: str, state: str) -> dict:
+        """Return empty result structure - used for error recovery."""
         now = datetime.now(timezone.utc)
-
-        result = {
+        return {
             "location": {
                 "city": city,
                 "state": state,
-                "county": county,
-                "latitude": latitude,
-                "longitude": longitude,
+                "county": None,
+                "latitude": 0.0,
+                "longitude": 0.0,
                 "timestamp": now,
                 "source": "lookup",
             },
@@ -59,66 +120,33 @@ class LocationContentService:
             "updated_at": now,
         }
 
-        if include_articles:
-            result["content"]["news_articles"] = await self.fetch_news_articles(
-                city, state, limit_per_type
-            )
-        if include_events:
-            result["content"]["community_events"] = await self.fetch_community_events(
-                city, state, limit_per_type
-            )
-
-        total = (
-            len(result["content"]["news_articles"])
-            + len(result["content"]["community_events"])
-        )
-        result["total_items"] = total
-        result["coverage"]["has_content"] = total > 0
-
-        if not result["coverage"]["has_content"] and state in MAJOR_US_CITIES:
-            result["coverage"]["nearest_major_city"] = MAJOR_US_CITIES[state]["city"]
-
-        return result
-
     async def fetch_news_articles(
         self, city: str, state: str, limit: int = 10
     ) -> list[dict[str, Any]]:
-        """Fetch news articles related to Israelis in a specific city."""
+        """Fetch news articles related to Israelis in a specific city using live web scraping."""
         try:
-            match = self._build_content_match(city, state, "articles")
-            pipeline = [
-                {"$match": match},
-                {"$sort": {"published_at": -1, "created_at": -1}},
-                {"$limit": limit},
-                {
-                    "$project": {
-                        "id": "$_id",
-                        "title": 1,
-                        "description": 1,
-                        "thumbnail": 1,
-                        "content_format": 1,
-                        "published_at": 1,
-                    }
-                },
-            ]
-            collection = Content.get_pymongo_collection()
-            results = await collection.aggregate(pipeline).to_list(length=limit)
+            logger.info(f"Scraping Israeli content for {city}, {state}")
+
+            # Use live web scraper to get Israeli-related news for this US city
+            headlines = await scrape_israeli_content_in_us_city(city, state, max_results=limit)
+
+            logger.info(f"Found {len(headlines)} Israeli-related headlines for {city}, {state}")
 
             return [
                 {
-                    "id": str(r.get("id")),
-                    "title": r.get("title", ""),
-                    "description": r.get("description", ""),
-                    "thumbnail": r.get("thumbnail"),
+                    "id": f"article-{idx}",
+                    "title": headline.title,
+                    "description": headline.summary,
+                    "thumbnail": headline.image_url,
                     "type": "article",
-                    "content_format": r.get("content_format", "article"),
+                    "content_format": "article",
                     "published_at": (
-                        r.get("published_at").isoformat()
-                        if r.get("published_at")
-                        else None
+                        headline.published_at.isoformat()
+                        if headline.published_at
+                        else datetime.now(timezone.utc).isoformat()
                     ),
                 }
-                for r in results
+                for idx, headline in enumerate(headlines)
             ]
         except Exception as e:
             logger.error(f"Error fetching news articles for {city}, {state}: {e}")

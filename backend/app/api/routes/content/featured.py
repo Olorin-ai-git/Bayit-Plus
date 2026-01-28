@@ -7,13 +7,15 @@ import logging
 import time
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Header
 
 from app.api.routes.content.utils import is_series_by_category
 from app.core.security import get_optional_user, get_passkey_session
 from app.models.content import Content, Podcast
 from app.models.content_taxonomy import ContentSection
 from app.models.user import User
+from app.services.culture_content_service import culture_content_service
+from app.services.location_content_service import LocationContentService
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -51,8 +53,15 @@ def build_visibility_match(has_passkey_access: bool) -> dict:
 async def get_featured(
     request: Request,
     current_user: Optional[User] = Depends(get_optional_user),
+    x_user_city: Optional[str] = Header(None, alias="X-User-City"),
+    x_user_state: Optional[str] = Header(None, alias="X-User-State"),
 ):
-    """Get featured content for homepage - OPTIMIZED for performance."""
+    """Get featured content for homepage - OPTIMIZED for performance.
+
+    Headers:
+        X-User-City: Optional detected city for location-based content
+        X-User-State: Optional detected state for location-based content
+    """
     start_time = time.time()
 
     # Check if user has passkey access for protected content
@@ -61,7 +70,10 @@ async def get_featured(
     visibility_match = build_visibility_match(has_passkey)
 
     async def get_hero():
-        # Hero must be featured, published, and pass visibility check
+        """Get hero content, with fallback to recently published if none marked as featured."""
+        collection = Content.get_settings().pymongo_collection
+
+        # Try to get explicitly featured content first
         pipeline = [
             {
                 "$match": {
@@ -74,12 +86,35 @@ async def get_featured(
             {"$project": {"thumbnail_data": 0, "backdrop_data": 0}},
             {"$limit": 1},
         ]
-        collection = Content.get_settings().pymongo_collection
         cursor = collection.aggregate(pipeline)
         results = await cursor.to_list(length=1)
+
+        # If no explicitly featured hero, fallback to most recent published
+        if not results:
+            logger.info("No explicitly featured hero found, using recently published fallback")
+            fallback_pipeline = [
+                {
+                    "$match": {
+                        "$and": [
+                            {"is_published": True},
+                            visibility_match,
+                        ]
+                    }
+                },
+                {"$sort": {"created_at": -1}},
+                {"$project": {"thumbnail_data": 0, "backdrop_data": 0}},
+                {"$limit": 1},
+            ]
+            cursor = collection.aggregate(fallback_pipeline)
+            results = await cursor.to_list(length=1)
+
         return results[0] if results else None
 
     async def get_featured_content():
+        """Get featured content, with fallback to recently published if none marked as featured."""
+        collection = Content.get_settings().pymongo_collection
+
+        # Try to get explicitly featured content first
         pipeline = [
             {
                 "$match": {
@@ -110,9 +145,45 @@ async def get_featured(
             {"$project": {"thumbnail_data": 0, "backdrop_data": 0}},
             {"$limit": 10},
         ]
-        collection = Content.get_settings().pymongo_collection
         cursor = collection.aggregate(pipeline)
-        return await cursor.to_list(length=None)
+        results = await cursor.to_list(length=None)
+
+        # If no explicitly featured content, fallback to recently published
+        if not results:
+            logger.info("No explicitly featured content found, using recently published fallback")
+            fallback_pipeline = [
+                {
+                    "$match": {
+                        "$and": [
+                            {
+                                "is_published": True,
+                                "is_quality_variant": {"$ne": True},
+                            },
+                            {
+                                "$or": [
+                                    {"series_id": None},
+                                    {"series_id": {"$exists": False}},
+                                    {"series_id": ""},
+                                ]
+                            },
+                            {
+                                "$or": [
+                                    {"is_series": {"$ne": True}},
+                                    {"total_episodes": {"$gt": 0}},
+                                ]
+                            },
+                            visibility_match,
+                        ]
+                    }
+                },
+                {"$sort": {"created_at": -1}},  # Sort by most recently added
+                {"$project": {"thumbnail_data": 0, "backdrop_data": 0}},
+                {"$limit": 10},
+            ]
+            cursor = collection.aggregate(fallback_pipeline)
+            results = await cursor.to_list(length=None)
+
+        return results
 
     async def get_categories():
         return (
@@ -126,13 +197,26 @@ async def get_featured(
         )
 
     async def get_podcasts():
-        """Get featured podcasts for homepage."""
-        return await Podcast.find(
-            (Podcast.is_active == True) & (Podcast.is_featured == True)
+        """Get featured podcasts for homepage, with fallback to recently created."""
+        # Try featured podcasts first
+        podcasts = await Podcast.find(
+            Podcast.is_active == True, Podcast.is_featured == True
         ).sort("-order").limit(10).to_list()
 
+        # Fallback to recently created active podcasts if no featured ones
+        if not podcasts:
+            logger.info("No explicitly featured podcasts, using recently created fallback")
+            podcasts = await Podcast.find(
+                Podcast.is_active == True
+            ).sort("-created_at").limit(10).to_list()
+
+        return podcasts
+
     async def get_audiobooks():
-        """Get featured audiobooks from Content collection."""
+        """Get featured audiobooks from Content collection, with fallback to recently published."""
+        collection = Content.get_settings().pymongo_collection
+
+        # Try featured audiobooks first
         pipeline = [
             {
                 "$match": {
@@ -163,12 +247,98 @@ async def get_featured(
             {"$sort": {"created_at": -1}},
             {"$limit": 10},
         ]
-        collection = Content.get_settings().pymongo_collection
         cursor = collection.aggregate(pipeline)
-        return await cursor.to_list(length=None)
+        audiobooks = await cursor.to_list(length=None)
 
-    hero_content, featured_content, categories, podcasts, audiobooks = await asyncio.gather(
-        get_hero(), get_featured_content(), get_categories(), get_podcasts(), get_audiobooks()
+        # Fallback to recently published audiobooks if no featured ones
+        if not audiobooks:
+            logger.info("No explicitly featured audiobooks, using recently published fallback")
+            fallback_pipeline = [
+                {
+                    "$match": {
+                        "$and": [
+                            {
+                                "content_format": "audiobook",
+                                "is_published": True,
+                                "is_quality_variant": {"$ne": True},
+                            },
+                            visibility_match,
+                        ]
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": 1,
+                        "title": 1,
+                        "thumbnail": 1,
+                        "thumbnail_data": 1,
+                        "poster_url": 1,
+                        "duration": 1,
+                        "year": 1,
+                        "author": 1,
+                        "narrator": 1,
+                    }
+                },
+                {"$sort": {"created_at": -1}},
+                {"$limit": 10},
+            ]
+            cursor = collection.aggregate(fallback_pipeline)
+            audiobooks = await cursor.to_list(length=None)
+
+        return audiobooks
+
+    async def get_location_content():
+        """Get location-specific content near user's detected location. Never crashes - returns empty list on error."""
+        # Early validation
+        if not x_user_city or not x_user_state:
+            logger.debug(f"Location headers incomplete - city: {x_user_city}, state: {x_user_state}")
+            return []
+
+        try:
+            logger.info(f"Fetching location-based content for: {x_user_city}, {x_user_state}")
+
+            # Use location content service for city-specific news and events
+            location_service = LocationContentService()
+            location_response = await location_service.get_israelis_in_city(
+                city=x_user_city,
+                state=x_user_state,
+                limit_per_type=10,
+                include_articles=True,
+                include_events=True,
+            )
+
+            # Safe navigation with fallbacks
+            if not location_response:
+                logger.warning(f"Empty location response for {x_user_city}, {x_user_state}")
+                return []
+
+            content = location_response.get("content")
+            if not content:
+                logger.warning(f"No content key in location response for {x_user_city}, {x_user_state}")
+                return []
+
+            articles = content.get("news_articles") or []
+            events = content.get("community_events") or []
+
+            # Validate articles and events are lists
+            if not isinstance(articles, list):
+                logger.error(f"Articles is not a list: {type(articles)}")
+                articles = []
+            if not isinstance(events, list):
+                logger.error(f"Events is not a list: {type(events)}")
+                events = []
+
+            all_items = articles + events
+            logger.info(f"Found {len(all_items)} location-based items ({len(articles)} articles, {len(events)} events)")
+
+            return all_items[:10]  # Limit to 10 items for homepage
+
+        except Exception as e:
+            logger.error(f"Critical error fetching location content for {x_user_city}, {x_user_state}: {e}", exc_info=True)
+            return []  # Always return empty list, never raise
+
+    hero_content, featured_content, categories, podcasts, audiobooks, location_content = await asyncio.gather(
+        get_hero(), get_featured_content(), get_categories(), get_podcasts(), get_audiobooks(), get_location_content()
     )
     logger.info(f"⏱️ Featured: Initial queries took {time.time() - start_time:.2f}s")
 
@@ -198,8 +368,8 @@ async def get_featured(
         )
 
     cat_query_start = time.time()
-    # Separate special sections (podcasts, audiobooks) from regular content sections
-    special_slugs = {"podcasts", "audiobooks"}
+    # Separate special sections (podcasts, audiobooks, location-based) from regular content sections
+    special_slugs = {"podcasts", "audiobooks", "near-you"}
 
     # Group sections by slug to handle potential duplicates
     sections_by_slug: dict = {}
@@ -263,12 +433,53 @@ async def get_featured(
                 "name_es": "Audiolibros",
                 "items": audiobook_items,
             })
+        elif slug == "near-you":
+            # Location-based content (articles and events near user's city)
+            if location_content and x_user_city and x_user_state:
+                location_items = []
+                for item in location_content:
+                    try:
+                        # Validate required fields
+                        if not item or not isinstance(item, dict):
+                            logger.warning(f"Invalid location content item: {item}")
+                            continue
+
+                        if not item.get("id") or not item.get("title"):
+                            logger.warning(f"Location item missing id or title: {item}")
+                            continue
+
+                        location_items.append({
+                            "id": item.get("id"),
+                            "title": item.get("title", "Untitled"),
+                            "thumbnail": item.get("thumbnail"),
+                            "description": item.get("description", "")[:200] if item.get("description") else None,
+                            "category": "near-you",
+                            "type": item.get("type", "article"),  # "article" or "event"
+                            "is_series": False,
+                            "city": x_user_city,
+                            "state": x_user_state,
+                            "source": "News" if item.get("type") == "article" else item.get("event_location", "Event"),
+                            "published_at": item.get("published_at") or item.get("event_date"),
+                            "url": None,  # Internal link, not external
+                        })
+                    except Exception as e:
+                        logger.error(f"Error processing location content item: {e}", exc_info=True)
+                        continue  # Skip this item, don't crash
+                category_data.append({
+                    "id": str(primary_section.id),
+                    "name": slug,
+                    "name_key": primary_section.name_key or "home.nearYou",
+                    "name_en": f"Near {x_user_city}, {x_user_state}",
+                    "name_es": f"Cerca de {x_user_city}, {x_user_state}",
+                    "items": location_items,
+                })
         else:
             # Regular content sections - query by featured_order (matching admin logic)
             or_conditions = [
                 {f"featured_order.{sid}": {"$exists": True}} for sid in all_section_ids
             ]
 
+            # Try to get explicitly featured content with featured_order first
             pipeline = [
                 {
                     "$match": {
@@ -317,6 +528,54 @@ async def get_featured(
 
             cursor = collection.aggregate(pipeline)
             items = await cursor.to_list(length=None)
+
+            # If no explicitly featured content for this section, use recently published fallback
+            if not items:
+                logger.info(f"No explicitly featured content for section '{slug}', using recently published fallback")
+                fallback_pipeline = [
+                    {
+                        "$match": {
+                            "$and": [
+                                {
+                                    "is_published": True,
+                                    "is_quality_variant": {"$ne": True},
+                                },
+                                {
+                                    "$or": [
+                                        {"series_id": None},
+                                        {"series_id": {"$exists": False}},
+                                        {"series_id": ""},
+                                    ]
+                                },
+                                {
+                                    "$or": [
+                                        {"is_series": {"$ne": True}},
+                                        {"total_episodes": {"$gt": 0}},
+                                    ]
+                                },
+                                visibility_match,
+                            ]
+                        }
+                    },
+                    {"$sort": {"created_at": -1}},
+                    {
+                        "$project": {
+                            "_id": 1,
+                            "title": 1,
+                            "thumbnail": 1,
+                            "thumbnail_data": 1,
+                            "poster_url": 1,
+                            "duration": 1,
+                            "year": 1,
+                            "is_series": 1,
+                            "total_episodes": 1,
+                            "available_subtitle_languages": 1,
+                        }
+                    },
+                    {"$limit": 10},
+                ]
+                cursor = collection.aggregate(fallback_pipeline)
+                items = await cursor.to_list(length=None)
 
             # Process items and get best order from any section
             category_items = []
@@ -434,6 +693,47 @@ async def get_featured(
             "name_es": "Audiolibros",
             "items": audiobook_items,
         })
+
+    # Add location-based content if user has location and content exists
+    if "near-you" not in existing_slugs and location_content and x_user_city and x_user_state:
+        location_items = []
+        for item in location_content:
+            try:
+                # Validate required fields
+                if not item or not isinstance(item, dict):
+                    logger.warning(f"Invalid location content item: {item}")
+                    continue
+
+                if not item.get("id") or not item.get("title"):
+                    logger.warning(f"Location item missing id or title: {item}")
+                    continue
+
+                location_items.append({
+                    "id": item.get("id"),
+                    "title": item.get("title", "Untitled"),
+                    "thumbnail": item.get("thumbnail"),
+                    "description": item.get("description", "")[:200] if item.get("description") else None,
+                    "category": "near-you",
+                    "type": item.get("type", "article"),  # "article" or "event"
+                    "is_series": False,
+                    "city": x_user_city,
+                    "state": x_user_state,
+                    "source": "News" if item.get("type") == "article" else item.get("event_location", "Event"),
+                    "published_at": item.get("published_at") or item.get("event_date"),
+                    "url": None,  # Internal link, not external
+                })
+            except Exception as e:
+                logger.error(f"Error processing location content item: {e}", exc_info=True)
+                continue  # Skip this item, don't crash
+        category_data.append({
+            "id": "near-you",
+            "name": "near-you",
+            "name_key": "home.nearYou",
+            "name_en": f"Near {x_user_city}, {x_user_state}",
+            "name_es": f"Cerca de {x_user_city}, {x_user_state}",
+            "items": location_items,
+        })
+        logger.info(f"Added {len(location_items)} location-based items for {x_user_city}, {x_user_state}")
 
     logger.info(f"⏱️ Featured: TOTAL took {time.time() - start_time:.2f}s")
 

@@ -6,6 +6,7 @@ import { VoiceListeningProvider } from '@bayit/shared-contexts'
 import { NotificationProvider } from '@olorin/glass-ui/contexts'
 import Layout from './components/layout/Layout'
 import FullscreenVideoOverlay from './components/player/FullscreenVideoOverlay'
+import LocationManager from './components/location/LocationManager'
 import { useAuthStore } from '@/stores/authStore'
 import { logger } from '@/utils/logger'
 import './styles/layout-fix.css'
@@ -279,6 +280,9 @@ function App() {
 
       {/* Fullscreen Video Player Overlay - can be triggered from anywhere */}
       <FullscreenVideoOverlay />
+
+      {/* Location Services - GDPR-compliant geolocation with consent modal */}
+      <LocationManager />
     </NotificationProvider>
   )
 }

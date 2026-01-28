@@ -315,12 +315,12 @@ export const GlassModal: React.FC<GlassModalProps> = ({
         <View
           className="w-full overflow-hidden border border-white/8"
           style={{
-            maxWidth: containerMaxWidth,
+            maxWidth: containerMaxWidth as number,
             borderRadius: borderRadius.xl + 4,
-            // @ts-expect-error Web-specific CSS properties
+            backgroundColor: 'rgba(20, 20, 35, 0.92)',
+            // @ts-expect-error - Web-specific CSS properties not in React Native types
             backdropFilter: 'blur(24px) saturate(180%)',
             WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-            backgroundColor: 'rgba(20, 20, 35, 0.92)',
           }}
         >
           <View className="h-[3px] w-full" style={{ backgroundColor: modalColor }} />
@@ -333,7 +333,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({
       <LinearGradient
         colors={['rgba(30, 30, 50, 0.95)', 'rgba(20, 20, 40, 0.98)']}
         className="w-full overflow-hidden border border-white/8"
-        style={{ maxWidth: containerMaxWidth, borderRadius: borderRadius.xl + 4 }}
+        style={{ maxWidth: containerMaxWidth as number, borderRadius: borderRadius.xl + 4 }}
       >
         <View className="h-[3px] w-full" style={{ backgroundColor: modalColor }} />
         {renderContent()}

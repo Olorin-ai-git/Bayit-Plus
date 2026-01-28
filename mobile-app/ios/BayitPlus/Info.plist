@@ -43,16 +43,7 @@
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<false/>
-		<key>NSAllowsLocalNetworking</key>
-		<false/>
 	</dict>
-	<key>NSBonjourServices</key>
-	<array>
-		<string>_http._tcp</string>
-		<string>_ws._tcp</string>
-	</array>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Bayit+ needs access to your local network to connect to the development server during testing.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Bayit+ uses your location to show local Israeli TV channels and radio stations available in your area, and to provide location-based content recommendations.</string>
 	<key>NSMicrophoneUsageDescription</key>

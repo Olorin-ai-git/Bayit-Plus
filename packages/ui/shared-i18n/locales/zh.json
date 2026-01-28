@@ -300,6 +300,7 @@
     "jerusalemConnection": "耶路撒冷连接",
     "telAvivConnection": "特拉维夫连接",
     "categories": "分类",
+    "nearYou": "您附近",
     "carousel": {
       "fauda": {
         "title": "法乌达",
@@ -922,11 +923,49 @@
     }
   },
   "empty": {
-    "noContent": "无可用内容",
+    "noContent": {
+      "title": "尚无内容",
+      "description": "内容可用时将显示在此处"
+    },
+    "noResults": {
+      "title": "未找到结果",
+      "description": "尝试不同的关键词或筛选条件"
+    },
+    "noQuery": {
+      "title": "开始搜索",
+      "description": "输入关键词以查找内容"
+    },
+    "error": {
+      "title": "出错了",
+      "description": "无法加载内容。请重试。"
+    },
+    "loading": {
+      "title": "加载中...",
+      "description": "请稍候，我们正在加载您的内容"
+    },
+    "noFavorites": {
+      "title": "尚无收藏",
+      "description": "将内容添加到收藏以在此处查看"
+    },
+    "noDownloads": {
+      "title": "无下载内容",
+      "description": "下载内容以离线观看"
+    },
+    "sectionEmpty": {
+      "title": "无项目",
+      "description": "此部分为空"
+    },
+    "noData": {
+      "title": "无可用数据",
+      "description": "数据可用时将显示在此处"
+    },
+    "permissionDenied": {
+      "title": "访问被拒绝",
+      "description": "您无权查看此内容"
+    },
     "tryAnotherCategory": "尝试选择其他分类",
     "noPodcasts": "无可用播客",
-    "tryLater": "请稍后重试",
-    "noResults": "未找到结果"
+    "tryLater": "请稍后重试"
   },
   "content": {
     "play": "播放",

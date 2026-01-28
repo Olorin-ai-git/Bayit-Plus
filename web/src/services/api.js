@@ -71,9 +71,26 @@ api.interceptors.request.use((config) => {
   }
   config.headers[CORRELATION_ID_HEADER] = correlationId
 
+  // Add user location headers if available (for location-based content)
+  try {
+    const cachedLocation = localStorage.getItem('bayit_user_location')
+    if (cachedLocation) {
+      const location = JSON.parse(cachedLocation)
+      if (location.city) {
+        config.headers['X-User-City'] = location.city
+      }
+      if (location.state) {
+        config.headers['X-User-State'] = location.state
+      }
+    }
+  } catch (err) {
+    // Silently ignore location header errors
+  }
+
   apiLogger.debug(`Request: ${config.method?.toUpperCase()} ${config.url}`, {
     correlationId,
     hasAuthHeader: !!config.headers.Authorization,
+    hasLocationHeader: !!config.headers['X-User-City'],
   })
 
   return config

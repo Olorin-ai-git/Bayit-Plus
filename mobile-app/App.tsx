@@ -1,6 +1,6 @@
 /**
  * Bayit+ iOS Mobile App
- * Entry point with SafeAreaProvider required for navigation
+ * Entry point with production error boundary for TestFlight/App Store
  */
 
 import 'react-native-gesture-handler';
@@ -11,18 +11,21 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './src/config/queryConfig';
 import { AppContent } from './src/components/AppContent';
+import { ProductionErrorBoundary } from './src/components/ProductionErrorBoundary';
 
 function App(): React.JSX.Element {
   return (
-    <SafeAreaProvider>
-      <View style={styles.container}>
-        <QueryClientProvider client={queryClient}>
-          <NavigationContainer>
-            <AppContent />
-          </NavigationContainer>
-        </QueryClientProvider>
-      </View>
-    </SafeAreaProvider>
+    <ProductionErrorBoundary>
+      <SafeAreaProvider>
+        <View style={styles.container}>
+          <QueryClientProvider client={queryClient}>
+            <NavigationContainer>
+              <AppContent />
+            </NavigationContainer>
+          </QueryClientProvider>
+        </View>
+      </SafeAreaProvider>
+    </ProductionErrorBoundary>
   );
 }
 

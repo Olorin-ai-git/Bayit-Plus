@@ -141,11 +141,14 @@ function isValidImageUrl(url: string): boolean {
   if (url.trim() === '') return false;
 
   // Check for placeholder patterns
+  // NOTE: "default" pattern must be more specific to avoid filtering legitimate
+  // TMDB/YouTube thumbnails (e.g., maxresdefault, hqdefault, sddefault)
   const placeholderPatterns = [
     /placeholder/i,
     /no-image/i,
     /noimage/i,
-    /default/i,
+    /default\.(jpg|png|gif|webp)$/i, // Only match "default.jpg" at end of URL, not "maxresdefault"
+    /\/default$/i, // Match "/default" at end of path
   ];
 
   for (const pattern of placeholderPatterns) {

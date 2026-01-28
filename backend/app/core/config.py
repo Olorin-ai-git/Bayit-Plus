@@ -336,6 +336,20 @@ class Settings(BaseSettings):
         description="Fernet key for encrypting location data at rest (base64-encoded)"
     )
 
+    @field_validator("GEONAMES_USERNAME")
+    @classmethod
+    def validate_geonames_username(cls, v: str) -> str:
+        """Validate GeoNames username is configured for production."""
+        import os
+        is_prod = os.getenv("ENVIRONMENT", "").lower() in ("production", "prod")
+
+        if is_prod and not v:
+            raise ValueError(
+                "GEONAMES_USERNAME must be configured in production for location features. "
+                "Obtain free account from https://www.geonames.org/login"
+            )
+        return v
+
     # Speech-to-Text Provider Selection
     # Options: "google" (Google Cloud), "whisper" (OpenAI Whisper), or "elevenlabs" (ElevenLabs Scribe v2)
     # ElevenLabs offers lowest latency (~150ms) with excellent Hebrew support

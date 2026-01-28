@@ -495,8 +495,10 @@ class Podcast(Document):
         indexes = [
             "category",
             "is_active",
+            "is_featured",
             "latest_episode_date",
             "culture_id",
+            ("is_active", "is_featured"),
             ("culture_id", "is_active"),
             ("culture_id", "category"),
         ]

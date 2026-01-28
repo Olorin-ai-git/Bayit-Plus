@@ -296,6 +296,7 @@
     "jerusalemConnection": "חיבור ירושלים",
     "telAvivConnection": "חיבור תל אביב",
     "categories": "קטגוריות",
+    "nearYou": "בקרבתך",
     "carousel": {
       "fauda": {
         "title": "פאודה",
@@ -989,11 +990,49 @@
     }
   },
   "empty": {
-    "noContent": "אין תוכן זמין",
+    "noContent": {
+      "title": "אין תוכן עדיין",
+      "description": "התוכן יופיע כאן כשיהיה זמין"
+    },
+    "noResults": {
+      "title": "לא נמצאו תוצאות",
+      "description": "נסה מילות חיפוש או פילטרים שונים"
+    },
+    "noQuery": {
+      "title": "התחל לחפש",
+      "description": "הזן מילות חיפוש כדי למצוא תוכן"
+    },
+    "error": {
+      "title": "משהו השתבש",
+      "description": "לא ניתן לטעון את התוכן. אנא נסה שנית."
+    },
+    "loading": {
+      "title": "טוען...",
+      "description": "אנא המתן בזמן שאנחנו טוענים את התוכן שלך"
+    },
+    "noFavorites": {
+      "title": "אין מועדפים עדיין",
+      "description": "הוסף תוכן למועדפים כדי לראות אותו כאן"
+    },
+    "noDownloads": {
+      "title": "אין הורדות",
+      "description": "הורד תוכן לצפייה לא מקוונת"
+    },
+    "sectionEmpty": {
+      "title": "אין פריטים",
+      "description": "הסעיף הזה ריק"
+    },
+    "noData": {
+      "title": "אין נתונים זמינים",
+      "description": "הנתונים יופיעו כאן כשיהיו זמינים"
+    },
+    "permissionDenied": {
+      "title": "הגישה נדחתה",
+      "description": "אין לך הרשאה לצפות בתוכן הזה"
+    },
     "tryAnotherCategory": "נסה לבחור קטגוריה אחרת",
     "noPodcasts": "אין פודקאסטים זמינים",
-    "tryLater": "נסה שוב מאוחר יותר",
-    "noResults": "לא נמצאו תוצאות"
+    "tryLater": "נסה שוב מאוחר יותר"
   },
   "content": {
     "play": "נגן",

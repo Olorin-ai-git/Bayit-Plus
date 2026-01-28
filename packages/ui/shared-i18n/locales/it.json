@@ -250,7 +250,8 @@
     "trendingInIsrael": "Di tendenza in Israele",
     "jerusalemConnection": "Connessione Gerusalemme",
     "telAvivConnection": "Connessione Tel Aviv",
-    "categories": "Categorie"
+    "categories": "Categorie",
+    "nearYou": "Vicino a te"
   },
   "search": {
     "title": "Cerca",
@@ -924,5 +925,47 @@
       "startUsing": "Inizia a Usare il Controllo Vocale"
     },
     "skip": "Salta per ora"
+  },
+  "empty": {
+    "noContent": {
+      "title": "Nessun contenuto ancora",
+      "description": "Il contenuto apparirà qui quando disponibile"
+    },
+    "noResults": {
+      "title": "Nessun risultato trovato",
+      "description": "Prova con parole chiave o filtri diversi"
+    },
+    "noQuery": {
+      "title": "Inizia a cercare",
+      "description": "Inserisci parole chiave per trovare contenuti"
+    },
+    "error": {
+      "title": "Qualcosa è andato storto",
+      "description": "Impossibile caricare il contenuto. Riprova."
+    },
+    "loading": {
+      "title": "Caricamento...",
+      "description": "Attendi mentre carichiamo il tuo contenuto"
+    },
+    "noFavorites": {
+      "title": "Nessun preferito ancora",
+      "description": "Aggiungi contenuti ai preferiti per vederli qui"
+    },
+    "noDownloads": {
+      "title": "Nessun download",
+      "description": "Scarica contenuti per guardare offline"
+    },
+    "sectionEmpty": {
+      "title": "Nessun elemento",
+      "description": "Questa sezione è vuota"
+    },
+    "noData": {
+      "title": "Nessun dato disponibile",
+      "description": "I dati appariranno qui quando disponibili"
+    },
+    "permissionDenied": {
+      "title": "Accesso negato",
+      "description": "Non hai il permesso di visualizzare questo contenuto"
+    }
   }
 }

@@ -270,11 +270,13 @@ async def connect_to_mongo():
         print("Olorin models excluded from main database (Phase 2 - separate database)")
 
     # Initialize Beanie with document models using centralized database
+    # Note: allow_index_dropping disabled to prevent errors on missing indexes
+    # Use dedicated migration scripts (rebuild_all_indexes.py) for index management
     database = get_mongodb_database()
     await init_beanie(
         database=database,
         document_models=document_models,
-        allow_index_dropping=True,
+        allow_index_dropping=False,
     )
     print(f"Connected to MongoDB via olorin-shared: {database.name}")
 

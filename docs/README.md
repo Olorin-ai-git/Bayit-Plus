@@ -20,6 +20,7 @@ Deployment guides and status:
 - Upload status tracking
 - Infrastructure configuration
 - **Automated Library Integrity Checks** (`/infrastructure/scheduled-jobs/library-integrity/`) - Cloud Run Job and Cloud Scheduler setup for weekly automated verification
+- **Location Feature Production Ready** (`LOCATION_FEATURE_PRODUCTION_READY.md`) - Production readiness report for location-based content feature with all security fixes and deployment guide - ✅ PRODUCTION READY - 2026-01-28 **NEW**
 
 ### `/testing/`
 Testing documentation and checklists:
@@ -40,6 +41,8 @@ Implementation notes and session reports:
 - Frontend/backend updates
 - Data migration notes
 - Session completion reports
+- **GlassEmptyState Migration Guide** (`GLASS_EMPTY_STATE_MIGRATION.md`) - Migration of 12+ empty state implementations to unified GlassEmptyState component - 2026-01-28 **NEW**
+- **Geolocation Permission UI** (`GEOLOCATION_UI_IMPLEMENTATION.md`) - GDPR-compliant browser geolocation permission UI with consent modal, permission banner, and backend integration - ✅ COMPLETE - 2026-01-28 **NEW**
 - **UI/UX Implementations**:
   - `MISSING_ASSETS_IMPLEMENTATION.md` - Complete technical specification for missing asset fixes
   - `MISSING_ASSETS_SUMMARY.md` - Executive summary of missing assets implementation

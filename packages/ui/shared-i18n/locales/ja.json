@@ -596,6 +596,7 @@
     "recordings": "録画",
     "channels": "チャンネル",
     "categories": "カテゴリー",
+    "nearYou": "あなたの近く",
     "discover": "発見",
     "browse": "ブラウズ",
     "library": "ライブラリ",
@@ -1803,5 +1804,47 @@
       "startUsing": "音声コントロールを使い始める"
     },
     "skip": "今はスキップ"
+  },
+  "empty": {
+    "noContent": {
+      "title": "まだコンテンツがありません",
+      "description": "コンテンツが利用可能になるとここに表示されます"
+    },
+    "noResults": {
+      "title": "結果が見つかりませんでした",
+      "description": "異なるキーワードやフィルターを試してください"
+    },
+    "noQuery": {
+      "title": "検索を開始",
+      "description": "コンテンツを検索するためにキーワードを入力してください"
+    },
+    "error": {
+      "title": "問題が発生しました",
+      "description": "コンテンツを読み込めません。もう一度お試しください。"
+    },
+    "loading": {
+      "title": "読み込み中...",
+      "description": "コンテンツを読み込んでいますのでお待ちください"
+    },
+    "noFavorites": {
+      "title": "まだお気に入りがありません",
+      "description": "ここに表示するにはお気に入りにコンテンツを追加してください"
+    },
+    "noDownloads": {
+      "title": "ダウンロードはありません",
+      "description": "オフラインで視聴するにはコンテンツをダウンロードしてください"
+    },
+    "sectionEmpty": {
+      "title": "アイテムがありません",
+      "description": "このセクションは空です"
+    },
+    "noData": {
+      "title": "利用可能なデータがありません",
+      "description": "データが利用可能になるとここに表示されます"
+    },
+    "permissionDenied": {
+      "title": "アクセスが拒否されました",
+      "description": "このコンテンツを表示する権限がありません"
+    }
   }
 }
