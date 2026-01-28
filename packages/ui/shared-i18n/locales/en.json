@@ -1521,6 +1521,14 @@
       "filterUser": "User",
       "filterDateRange": "Date range"
     },
+    "translation": {
+      "status": {
+        "pending": "Pending",
+        "processing": "Processing",
+        "completed": "Completed",
+        "failed": "Failed"
+      }
+    },
     "stats": {
       "totalUsers": "Total Users",
       "activeUsers": "Active Users",
@@ -2525,6 +2533,14 @@
       "episodesSubtitle": "Manage episodes",
       "emptyMessage": "No podcasts found",
       "noEpisodes": "No episodes found",
+      "translate": "Translate",
+      "translateEpisode": "Translate episode",
+      "translateAllEpisodes": "Translate all episodes",
+      "translateAll": "Translate All",
+      "filterByStatus": "Filter by Status",
+      "editEpisode": "Edit episode",
+      "deleteEpisode": "Delete episode",
+      "newEpisode": "New Episode",
       "form": {
         "title": "Podcast title",
         "author": "Author",

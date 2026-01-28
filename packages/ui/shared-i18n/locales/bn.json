@@ -580,6 +580,24 @@
       "contentAdded": "{{count}} আইটেম যোগ করা হয়েছে",
       "failedToAdd": "বিষয়বস্তু যোগ করতে ব্যর্থ",
       "publishedOnly": "প্রকাশিত"
+    },
+    "translation": {
+      "status": {
+        "pending": "পেন্ডিং",
+        "processing": "প্রক্রিয়াকরণ",
+        "completed": "সম্পূর্ণ",
+        "failed": "ব্যর্থ"
+      }
+    },
+    "podcasts": {
+      "translate": "অনুবাদ করুন",
+      "translateEpisode": "এপিসোড অনুবাদ করুন",
+      "translateAllEpisodes": "সমস্ত এপিসোড অনুবাদ করুন",
+      "translateAll": "সব অনুবাদ করুন",
+      "filterByStatus": "স্ট্যাটাস দ্বারা ফিল্টার করুন",
+      "editEpisode": "এপিসোড সম্পাদনা করুন",
+      "deleteEpisode": "এপিসোড মুছুন",
+      "newEpisode": "নতুন এপিসোড"
     }
   },
   "cultureClock": {

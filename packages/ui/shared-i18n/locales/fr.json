@@ -915,6 +915,24 @@
       "contentAdded": "{{count}} éléments ajoutés",
       "failedToAdd": "Erreur lors de l'ajout de contenu",
       "publishedOnly": "Publié"
+    },
+    "translation": {
+      "status": {
+        "pending": "En attente",
+        "processing": "En cours de traitement",
+        "completed": "Complétée",
+        "failed": "Échouée"
+      }
+    },
+    "podcasts": {
+      "translate": "Traduire",
+      "translateEpisode": "Traduire l'épisode",
+      "translateAllEpisodes": "Traduire tous les épisodes",
+      "translateAll": "Traduire tout",
+      "filterByStatus": "Filtrer par statut",
+      "editEpisode": "Modifier l'épisode",
+      "deleteEpisode": "Supprimer l'épisode",
+      "newEpisode": "Nouvel épisode"
     }
   },
   "cultures": {
