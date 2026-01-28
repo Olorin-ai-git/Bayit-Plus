@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { RefreshCw, Languages, AlertCircle, Clock, CheckCircle, XCircle } from 'lucide-react'
-import { GlassButton, GlassPageHeader } from '@bayit/shared/ui'
+import { RefreshCw, Languages, Clock, CheckCircle, XCircle } from 'lucide-react'
+import { GlassButton, GlassPageHeader, GlassErrorBanner } from '@bayit/shared/ui'
 import { GlassTable } from '@bayit/shared/ui/web'
 import { adminPodcastEpisodesService, FailedTranslationItem, TranslationStatusResponse } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -180,12 +180,11 @@ export default function TranslationDashboardPage() {
         }
       />
 
-      {error && (
-        <View style={styles.errorContainer}>
-          <AlertCircle size={18} color="#ef4444" />
-          <Text style={styles.errorText}>{error}</Text>
-        </View>
-      )}
+      <GlassErrorBanner
+        message={error}
+        onDismiss={() => setError(null)}
+        marginBottom={spacing.lg}
+      />
 
       {/* Stats Cards */}
       <View style={[styles.statsGrid, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -253,16 +252,6 @@ const styles = StyleSheet.create({
   pageTitle: { color: colors.text, fontSize: 24, fontWeight: 'bold' },
   subtitle: { color: colors.textSecondary, fontSize: 14, marginTop: spacing.xs },
   rotating: { transform: [{ rotate: '360deg' }] },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.lg,
-    gap: spacing.sm,
-  },
-  errorText: { flex: 1, color: '#ef4444', fontSize: 14 },
   statsGrid: {
     flexWrap: 'wrap',
     gap: spacing.md,

@@ -8,8 +8,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Plus, Edit, Trash2, X, AlertCircle, Eye, EyeOff, Tv, Globe, Film, Podcast, Radio, Headphones } from 'lucide-react';
-import { GlassButton, GlassCard, GlassPageHeader } from '@bayit/shared/ui';
+import { Plus, Edit, Trash2, Eye, EyeOff, Tv, Globe, Film, Podcast, Radio, Headphones } from 'lucide-react';
+import { GlassButton, GlassCard, GlassPageHeader, GlassErrorBanner } from '@bayit/shared/ui';
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web';
 import WidgetFormModal from '@/components/widgets/WidgetFormModal';
@@ -266,28 +266,22 @@ export default function WidgetsPage() {
           isRTL={isRTL}
           action={
             <GlassButton
-              title={t('admin.widgets.newWidget')}
+              title=""
               onPress={handleCreate}
               variant="primary"
               icon={<Plus size={18} color={colors.text} />}
-            />
+              accessibilityLabel={t('admin.widgets.newWidget', { defaultValue: 'Create new widget' })}
+            >
+              {t('admin.actions.new', { defaultValue: 'New' })}
+            </GlassButton>
           }
         />
 
-        {error && (
-          <GlassCard className="p-4 mb-6">
-            <View style={[
-              styles.errorContainer,
-              isRTL && styles.errorContainerRTL
-            ]}>
-              <AlertCircle size={18} color={colors.error} />
-              <Text className="flex-1 text-red-500 text-sm">{error}</Text>
-              <Pressable onPress={() => setError(null)}>
-                <X size={18} color={colors.error} />
-              </Pressable>
-            </View>
-          </GlassCard>
-        )}
+        <GlassErrorBanner
+          message={error}
+          onDismiss={() => setError(null)}
+          marginBottom={spacing.lg}
+        />
 
         {/* Widget Form Modal */}
         <WidgetFormModal
@@ -316,33 +310,6 @@ export default function WidgetsPage() {
 }
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 24,
-  },
-  headerContainerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#9ca3af',
-    marginTop: 4,
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  errorContainerRTL: {
-    flexDirection: 'row-reverse',
-  },
   statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',

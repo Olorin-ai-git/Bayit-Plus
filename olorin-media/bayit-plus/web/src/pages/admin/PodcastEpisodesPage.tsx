@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Plus, Edit, Trash2, X, AlertCircle, ChevronLeft, Languages, RefreshCw } from 'lucide-react'
-import { GlassInput, GlassSelect, GlassButton, GlassPageHeader } from '@bayit/shared/ui'
+import { Plus, Edit, Trash2, ChevronLeft, Languages, RefreshCw } from 'lucide-react'
+import { GlassInput, GlassSelect, GlassButton, GlassPageHeader, GlassErrorBanner } from '@bayit/shared/ui'
 import { GlassTable } from '@bayit/shared/ui/web'
 import { adminPodcastsService, adminPodcastEpisodesService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -315,19 +315,11 @@ export default function PodcastEpisodesPage() {
         }
       />
 
-      {error && (
-        <View style={styles.errorContainer}>
-          <AlertCircle size={18} color="#ef4444" />
-          <Text style={styles.errorText}>{error}</Text>
-          <GlassButton
-            variant="ghost"
-            size="sm"
-            onPress={() => setError(null)}
-            icon={<X size={18} color="#ef4444" />}
-            accessibilityLabel={t('common.dismissError', { defaultValue: 'Dismiss error' })}
-          />
-        </View>
-      )}
+      <GlassErrorBanner
+        message={error}
+        onDismiss={() => setError(null)}
+        marginBottom={spacing.lg}
+      />
 
       <View style={styles.filterRow}>
         <GlassSelect
@@ -442,16 +434,6 @@ const styles = StyleSheet.create({
   pageTitle: { color: colors.text, fontSize: 24, fontWeight: 'bold' },
   subtitle: { color: colors.textSecondary, fontSize: 14, marginTop: spacing.xs },
   btnDisabled: { opacity: 0.5 },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.lg,
-    gap: spacing.sm,
-  },
-  errorText: { flex: 1, color: '#ef4444', fontSize: 14 },
   filterRow: {
     flexDirection: 'row',
     marginBottom: spacing.md,

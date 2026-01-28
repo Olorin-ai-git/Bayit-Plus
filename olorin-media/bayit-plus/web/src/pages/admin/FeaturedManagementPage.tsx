@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import { useMemo, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Star, AlertCircle, RefreshCw, Save } from 'lucide-react'
-import { GlassButton, GlassPageHeader } from '@bayit/shared/ui'
+import { GlassButton, GlassPageHeader, GlassErrorBanner } from '@bayit/shared/ui'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { useDirection } from '@/hooks/useDirection'
 import { useFeaturedData } from '@/hooks/admin/useFeaturedData'
@@ -105,19 +105,11 @@ export default function FeaturedManagementPage() {
           </View>
         )}
 
-        {/* Error Message */}
-        {error && (
-          <View style={styles.errorContainer}>
-            <AlertCircle size={18} color={colors.error.DEFAULT} />
-            <Text style={[styles.errorText, { flex: 1 }]}>{error}</Text>
-            <GlassButton
-              title=""
-              onPress={() => setError(null)}
-              variant="ghost"
-              icon={<AlertCircle size={18} />}
-            />
-          </View>
-        )}
+        <GlassErrorBanner
+          message={error}
+          onDismiss={() => setError(null)}
+          marginBottom={spacing.lg}
+        />
 
         {/* Content List */}
         {isLoading ? (
@@ -193,18 +185,5 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.warning.DEFAULT,
     fontWeight: '500',
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.md,
-    backgroundColor: colors.error.DEFAULT + '20',
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.md,
-  },
-  errorText: {
-    fontSize: fontSize.sm,
-    color: colors.error.DEFAULT,
   },
 })

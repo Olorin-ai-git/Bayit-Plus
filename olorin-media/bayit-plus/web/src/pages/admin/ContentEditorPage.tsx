@@ -1,8 +1,8 @@
 import { View, Text, ScrollView, StyleSheet } from 'react-native'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, AlertCircle, Save, CheckCircle } from 'lucide-react'
-import { GlassView, GlassButton, GlassPageHeader } from '@bayit/shared/ui'
+import { ArrowLeft, Save, CheckCircle } from 'lucide-react'
+import { GlassView, GlassButton, GlassPageHeader, GlassErrorBanner } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
 import { useContentForm } from '@/hooks/admin/useContentForm'
@@ -42,10 +42,11 @@ export default function ContentEditorPage() {
           variant="ghost"
           icon={<ArrowLeft size={20} color={colors.primary} />}
         />
-        <View style={styles.errorBox}>
-          <AlertCircle size={20} color={colors.error.DEFAULT} />
-          <Text style={styles.errorText}>{error}</Text>
-        </View>
+        <GlassErrorBanner
+          message={error}
+          onDismiss={() => setError(null)}
+          marginBottom={spacing.lg}
+        />
       </ScrollView>
     )
   }
@@ -80,12 +81,11 @@ export default function ContentEditorPage() {
         }
       />
 
-      {error && !isLoading && (
-        <View style={styles.errorBox}>
-          <AlertCircle size={20} color={colors.error.DEFAULT} />
-          <Text style={styles.errorText}>{error}</Text>
-        </View>
-      )}
+      <GlassErrorBanner
+        message={!isLoading ? error : null}
+        onDismiss={() => setError(null)}
+        marginBottom={spacing.lg}
+      />
 
       {success && (
         <GlassView style={styles.successContainer} intensity="high">
@@ -164,22 +164,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: spacing.lg,
-  },
-  errorBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: colors.error.DEFAULT + '10',
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.error.DEFAULT,
-    marginBottom: spacing.lg,
-  },
-  errorText: {
-    flex: 1,
-    color: colors.error.DEFAULT,
-    fontSize: fontSize.sm,
   },
   successContainer: {
     flexDirection: 'row',
