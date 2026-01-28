@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { View, Text, ScrollView, StyleSheet, Image } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Plus, Edit, Trash2, AlertCircle, X, Folder } from 'lucide-react'
+import { Plus, Edit, Trash2, Folder } from 'lucide-react'
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
-import { GlassPageHeader, GlassButton } from '@bayit/shared/ui'
+import { GlassPageHeader, GlassButton, GlassErrorBanner } from '@bayit/shared/ui'
 import { GlassTable, GlassTableCell, type GlassTableColumn } from '@bayit/shared/ui/web'
 import { useDirection } from '@/hooks/useDirection'
 import { useCategoriesData } from '@/hooks/admin/useCategoriesData'
@@ -142,30 +142,23 @@ export default function CategoriesPage() {
         iconBackgroundColor={pageConfig.iconBackgroundColor}
         badge={items.length}
         isRTL={isRTL}
+        action={
+          <GlassButton
+            variant="primary"
+            onPress={handleNew}
+            icon={<Plus size={18} color={colors.text} />}
+            accessibilityLabel={t('admin.actions.newCategory', { defaultValue: 'Create new category' })}
+          >
+            {t('admin.actions.new', { defaultValue: 'New' })}
+          </GlassButton>
+        }
       />
 
-      <View style={[styles.actionsRow, { flexDirection }]}>
-        <GlassButton
-          title={t('admin.actions.new', 'New')}
-          onPress={handleNew}
-          variant="primary"
-          icon={<Plus size={18} />}
-        />
-      </View>
-
-      {error && (
-        <View style={[styles.errorContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <AlertCircle size={18} color={colors.error.DEFAULT} />
-          <Text style={styles.errorText}>{error}</Text>
-          <GlassButton
-            title=""
-            onPress={() => setError(null)}
-            variant="ghost"
-            icon={<X size={18} />}
-            style={styles.dismissButton}
-          />
-        </View>
-      )}
+      <GlassErrorBanner
+        message={error}
+        onDismiss={() => setError(null)}
+        marginBottom={spacing.lg}
+      />
 
       <CategoryEditForm
         editingId={editingId}
@@ -235,12 +228,6 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontWeight: '600',
   },
-  actionsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
   actionsCell: {
     flexDirection: 'row',
     gap: spacing.xs,
@@ -256,26 +243,6 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.5,
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
-    backgroundColor: colors.error.DEFAULT + '10',
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.error.DEFAULT + '30',
-    marginBottom: spacing.lg,
-  },
-  errorText: {
-    flex: 1,
-    color: colors.error.DEFAULT,
-    fontSize: fontSize.sm,
-  },
-  dismissButton: {
-    minWidth: 36,
-    minHeight: 36,
   },
   cellText: {
     fontSize: fontSize.sm,
