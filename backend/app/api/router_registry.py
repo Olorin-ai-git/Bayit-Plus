@@ -47,6 +47,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 chess, children, content, content_taxonomy,
                                 cultures, device_pairing, devices,
                                 direct_messages, downloads, dubbing, epg,
+                                extension_subscriptions,
                                 family_controls, favorites, friends, health,
                                 history, jerusalem, judaism, librarian, live,
                                 live_dubbing, live_quota, location, media_proxy, news, nlp,
@@ -142,6 +143,9 @@ def register_all_routers(app: FastAPI) -> None:
     # ============================================
     app.include_router(
         subscriptions.router, prefix=f"{prefix}/subscriptions", tags=["subscriptions"]
+    )
+    app.include_router(
+        extension_subscriptions.router, prefix=prefix, tags=["extension-subscriptions"]
     )
     app.include_router(
         watchlist.router, prefix=f"{prefix}/watchlist", tags=["watchlist"]
