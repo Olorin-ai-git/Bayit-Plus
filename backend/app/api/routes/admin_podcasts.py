@@ -41,6 +41,7 @@ def _podcast_dict(p, available_languages: list = None):
             p.latest_episode_date.isoformat() if p.latest_episode_date else None
         ),
         "is_active": p.is_active,
+        "is_featured": p.is_featured,
         "order": p.order,
         "created_at": p.created_at.isoformat(),
         "updated_at": p.updated_at.isoformat(),
@@ -74,11 +75,18 @@ async def _get_podcast_languages(podcast_id: str) -> list:
                 }
             }
         },
-        {"$unwind": "$langs"},
+        {"$unwind": {"path": "$langs", "preserveNullAndEmptyArrays": True}},
         {"$group": {"_id": None, "languages": {"$addToSet": "$langs"}}},
     ]
-    result = await PodcastEpisode.aggregate(pipeline).to_list(length=None)
-    return sorted(result[0]["languages"]) if result else []
+    # Use Motor collection directly to avoid Beanie aggregation cursor issues
+    collection = PodcastEpisode.get_pymongo_collection()
+    cursor = collection.aggregate(pipeline)
+    result = await cursor.to_list(length=None)
+    # Filter out null/empty values from languages array
+    if result and result[0].get("languages"):
+        languages = [lang for lang in result[0]["languages"] if lang]
+        return sorted(languages)
+    return []
 
 
 async def _batch_get_podcast_languages(podcast_ids: list) -> dict:
@@ -114,7 +122,10 @@ async def _batch_get_podcast_languages(podcast_ids: list) -> dict:
         {"$group": {"_id": "$podcast_id", "languages": {"$addToSet": "$langs"}}},
     ]
     try:
-        results = await PodcastEpisode.aggregate(pipeline).to_list(length=None)
+        # Use Motor collection directly to avoid Beanie aggregation cursor issues
+        collection = PodcastEpisode.get_pymongo_collection()
+        cursor = collection.aggregate(pipeline)
+        results = await cursor.to_list(length=None)
         return {
             r["_id"]: sorted([lang for lang in r["languages"] if lang]) for r in results
         }
@@ -217,6 +228,7 @@ async def create_podcast(
         episode_count=data.episode_count,
         latest_episode_date=data.latest_episode_date,
         is_active=data.is_active,
+        is_featured=data.is_featured,
         order=data.order,
     )
     await podcast.insert()
@@ -302,6 +314,9 @@ async def update_podcast(
     if data.is_active is not None:
         changes["is_active"] = {"old": podcast.is_active, "new": data.is_active}
         podcast.is_active = data.is_active
+    if data.is_featured is not None:
+        changes["is_featured"] = {"old": podcast.is_featured, "new": data.is_featured}
+        podcast.is_featured = data.is_featured
     if data.order is not None:
         changes["order"] = {"old": podcast.order, "new": data.order}
         podcast.order = data.order

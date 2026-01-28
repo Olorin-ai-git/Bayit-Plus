@@ -19,6 +19,8 @@ export { TVSwitch } from './TVSwitch';
 // UI components
 export { GlassModal } from './GlassModal';
 export { GlassAlert, GlassAlertProvider, GlassAlertRoot, useGlassAlert } from './GlassAlert';
+export { GlassErrorBanner } from './GlassErrorBanner';
+export type { GlassErrorBannerProps } from './GlassErrorBanner';
 export { GlassBadge } from './GlassBadge';
 export { GlassTabs } from './GlassTabs';
 export { GlassCategoryPill } from './GlassCategoryPill';

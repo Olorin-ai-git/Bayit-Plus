@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { View, Text, Pressable, ScrollView, StyleSheet, Image } from 'react-native';
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Plus, Edit, Trash2, X, AlertCircle, Music } from 'lucide-react'
+import { Plus, Edit, Trash2, X, AlertCircle, Music, Star, Upload } from 'lucide-react'
 import { GlassInput, GlassButton, GlassCheckbox, GlassPageHeader, GlassModal } from '@bayit/shared/ui'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web'
@@ -35,7 +35,9 @@ export default function PodcastsPage() {
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 })
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editData, setEditData] = useState<EditingPodcast>({})
-  const [deleting, setDeleting] = useState<string | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [isUploadingCover, setIsUploadingCover] = useState(false)
 
   const loadPodcasts = useCallback(async () => {
     setIsLoading(true)
@@ -82,30 +84,75 @@ export default function PodcastsPage() {
     }
   }
 
-  const handleDelete = (id: string) => {
-    notifications.show({
-      level: 'warning',
-      message: t('admin.content.confirmDelete'),
-      dismissable: true,
-      action: {
-        label: t('common.delete', 'Delete'),
-        type: 'action',
-        onPress: async () => {
-          try {
-            setDeleting(id)
-            await adminPodcastsService.deletePodcast(id)
-            setItems(items.filter((item) => item.id !== id))
-          } catch (err) {
-            const msg = err instanceof Error ? err.message : 'Failed to delete podcast'
-            logger.error(msg, 'PodcastsPage', err)
-            setError(msg)
-          } finally {
-            setDeleting(null)
-          }
+  const handleDelete = useCallback((id: string) => {
+    setDeleteConfirmId(id)
+  }, [])
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!deleteConfirmId) return
+    try {
+      setIsDeleting(true)
+      await adminPodcastsService.deletePodcast(deleteConfirmId)
+      setItems((prevItems) => prevItems.filter((item) => item.id !== deleteConfirmId))
+      setDeleteConfirmId(null)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to delete podcast'
+      logger.error(msg, 'PodcastsPage', err)
+      setError(msg)
+    } finally {
+      setIsDeleting(false)
+    }
+  }, [deleteConfirmId])
+
+  const handleToggleFeatured = useCallback(async (id: string) => {
+    try {
+      const podcast = items.find((item) => item.id === id)
+      if (!podcast) return
+
+      await adminPodcastsService.updatePodcast(id, { is_featured: !podcast.is_featured })
+      setItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === id ? { ...item, is_featured: !item.is_featured } : item
+        )
+      )
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to toggle featured status'
+      logger.error(msg, 'PodcastsPage', err)
+      setError(msg)
+    }
+  }, [items])
+
+  const handleUploadCover = useCallback(async (file: File) => {
+    try {
+      setIsUploadingCover(true)
+      const formData = new FormData()
+      formData.append('file', file)
+
+      // Upload to the uploads endpoint
+      const response = await fetch('/api/admin/uploads/image?image_type=covers', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token') || ''}`,
         },
-      },
-    })
-  }
+      })
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`)
+      }
+
+      const data = await response.json()
+      if (data.url) {
+        setEditData({ ...editData, cover: data.url })
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to upload cover'
+      logger.error(msg, 'PodcastsPage', err)
+      setError(msg)
+    } finally {
+      setIsUploadingCover(false)
+    }
+  }, [editData])
 
   const columns = useMemo(() => [
     {
@@ -194,9 +241,22 @@ export default function PodcastsPage() {
     {
       key: 'actions',
       label: '',
-      width: 220,
+      width: 280,
       render: (_: any, item: Podcast) => (
         <View style={[styles.actionsCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <Pressable
+            onPress={() => handleToggleFeatured(item.id)}
+            style={[styles.actionButton, item.is_featured ? styles.featuredActive : styles.featuredInactive]}
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel={t('admin.podcasts.toggleFeatured', { defaultValue: 'Toggle featured' })}
+          >
+            <Star
+              size={18}
+              color={item.is_featured ? '#f59e0b' : '#6b7280'}
+              fill={item.is_featured ? '#f59e0b' : 'transparent'}
+            />
+          </Pressable>
           <Link to={`/admin/podcasts/${item.id}/episodes`} style={{ textDecoration: 'none' }}>
             <GlassButton
               variant="ghost"
@@ -222,9 +282,9 @@ export default function PodcastsPage() {
             variant="ghost"
             size="sm"
             onPress={() => handleDelete(item.id)}
-            disabled={deleting === item.id}
+            disabled={isDeleting}
             icon={<Trash2 size={18} color="#f87171" />}
-            style={[styles.actionButton, deleting === item.id && styles.disabledButton]}
+            style={styles.actionButton}
             accessibilityLabel={t('admin.podcasts.deletePodcast', { defaultValue: 'Delete podcast' })}
           >
             {t('common.delete', { defaultValue: 'Delete' })}
@@ -232,7 +292,7 @@ export default function PodcastsPage() {
         </View>
       ),
     },
-  ], [t, i18n.language, isRTL, deleting, handleEdit, handleDelete])
+  ], [t, i18n.language, isRTL, handleEdit, handleDelete, isDeleting, handleToggleFeatured])
 
   const pageConfig = ADMIN_PAGE_CONFIG.podcasts;
   const IconComponent = pageConfig.icon;
@@ -295,6 +355,44 @@ export default function PodcastsPage() {
         ]}
       >
         <ScrollView style={styles.modalContent}>
+          <View style={styles.coverSection}>
+            <Text style={styles.sectionLabel}>{t('admin.podcasts.form.cover', 'Podcast Cover')}</Text>
+            {editData.cover && (
+              <Image
+                source={{ uri: editData.cover }}
+                style={styles.coverPreview}
+                resizeMode="cover"
+              />
+            )}
+            <View style={styles.coverButtonsRow}>
+              <GlassButton
+                variant="secondary"
+                size="sm"
+                icon={<Upload size={16} color="#60a5fa" />}
+                onPress={() => {
+                  const input = document.createElement('input')
+                  input.type = 'file'
+                  input.accept = 'image/*'
+                  input.onchange = (e: any) => {
+                    const file = e.target.files?.[0]
+                    if (file) handleUploadCover(file)
+                  }
+                  input.click()
+                }}
+                disabled={isUploadingCover}
+                style={{ flex: 1 }}
+              >
+                {isUploadingCover ? t('admin.common.uploading', 'Uploading...') : t('admin.podcasts.form.uploadCover', 'Upload')}
+              </GlassButton>
+            </View>
+            <GlassInput
+              label={t('admin.podcasts.form.coverUrl', 'Cover URL')}
+              containerStyle={styles.input}
+              placeholder="Or paste image URL"
+              value={editData.cover || ''}
+              onChangeText={(value) => setEditData({ ...editData, cover: value })}
+            />
+          </View>
           <GlassInput
             label={t('admin.podcasts.form.title', 'Podcast title')}
             containerStyle={styles.input}
@@ -345,8 +443,37 @@ export default function PodcastsPage() {
               onChange={(checked) => setEditData({ ...editData, is_active: checked })}
             />
           </View>
+          <View style={styles.checkboxRow}>
+            <GlassCheckbox
+              label={t('admin.common.featured', { defaultValue: 'Featured' })}
+              checked={editData.is_featured || false}
+              onChange={(checked) => setEditData({ ...editData, is_featured: checked })}
+            />
+          </View>
         </ScrollView>
       </GlassModal>
+
+      <GlassModal
+        visible={deleteConfirmId !== null}
+        type="error"
+        title={t('admin.common.deleteConfirmTitle', { defaultValue: 'Delete Podcast' })}
+        message={t('admin.common.deleteConfirmMessage', { defaultValue: 'Are you sure you want to delete this podcast? This action cannot be undone.' })}
+        onClose={() => setDeleteConfirmId(null)}
+        dismissable={!isDeleting}
+        loading={isDeleting}
+        buttons={[
+          {
+            text: t('admin.common.cancel', { defaultValue: 'Cancel' }),
+            style: 'cancel',
+            onPress: () => setDeleteConfirmId(null),
+          },
+          {
+            text: t('common.delete', { defaultValue: 'Delete' }),
+            style: 'destructive',
+            onPress: handleConfirmDelete,
+          },
+        ]}
+      />
 
       <GlassTable
         columns={columns}
@@ -415,7 +542,31 @@ const styles = StyleSheet.create({
     color: '#ef4444',
   },
   modalContent: {
-    maxHeight: 400,
+    maxHeight: 500,
+  },
+  coverSection: {
+    marginBottom: spacing.lg,
+    paddingBottom: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  sectionLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  coverPreview: {
+    width: '100%',
+    height: 150,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    marginBottom: spacing.md,
+  },
+  coverButtonsRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
   },
   input: {
     marginBottom: spacing.md,
@@ -482,8 +633,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  disabledButton: {
-    opacity: 0.5,
+  featuredActive: {
+    backgroundColor: 'rgba(245, 158, 11, 0.5)',
+  },
+  featuredInactive: {
+    backgroundColor: 'rgba(107, 114, 128, 0.25)',
   },
   languagesCell: {
     position: 'relative',
