@@ -24,5 +24,8 @@ module.exports = {
     'react-native-svg': {
       root: path.resolve(__dirname, '../node_modules/react-native-svg'),
     },
+    'lucide-react-native': {
+      root: path.resolve(__dirname, '../node_modules/lucide-react-native'),
+    },
   },
 };
