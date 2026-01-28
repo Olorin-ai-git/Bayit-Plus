@@ -3,10 +3,12 @@
  *
  * Manages AudioWorklet for audio processing
  * Handles audio capture, resampling, PCM encoding
+ * Integrates performance monitoring for CPU profiling
  */
 
 import { createLogger } from '@/lib/logger';
 import { CONFIG } from '@/config/constants';
+import { PerformanceMonitor } from '@/lib/performance-monitor';
 
 const logger = createLogger('AudioWorkletNode');
 
@@ -15,6 +17,11 @@ export class AudioWorkletManager {
   private workletNode: AudioWorkletNode | null = null;
   private sourceNode: MediaStreamAudioSourceNode | null = null;
   private onAudioDataCallback: ((pcmData: Int16Array) => void) | null = null;
+  private performanceMonitor: PerformanceMonitor;
+
+  constructor() {
+    this.performanceMonitor = new PerformanceMonitor();
+  }
 
   /**
    * Initialize AudioWorklet with media stream
@@ -27,6 +34,9 @@ export class AudioWorkletManager {
       });
 
       this.onAudioDataCallback = onAudioData;
+
+      // Mark start of capture-to-encode latency
+      this.performanceMonitor.markStart('captureToEncode');
 
       // Create audio context with target sample rate
       this.audioContext = new AudioContext({
@@ -52,7 +62,16 @@ export class AudioWorkletManager {
       // Listen for PCM data from worklet
       this.workletNode.port.onmessage = (event: MessageEvent) => {
         if (event.data.type === 'audio') {
+          // Track AudioWorklet call for CPU profiling
+          this.performanceMonitor.trackAudioWorkletCall();
+
+          // Measure capture-to-encode latency
+          const captureToEncode = this.performanceMonitor.markEnd('captureToEncode');
+
           this.handleAudioData(event.data.data);
+
+          // Restart latency measurement for next cycle
+          this.performanceMonitor.markStart('captureToEncode');
         }
       };
 
@@ -83,6 +102,9 @@ export class AudioWorkletManager {
     try {
       logger.info('Stopping AudioWorklet');
 
+      // Log performance summary before stopping
+      this.performanceMonitor.logSummary();
+
       if (this.sourceNode) {
         this.sourceNode.disconnect();
         this.sourceNode = null;
@@ -100,6 +122,9 @@ export class AudioWorkletManager {
 
       this.onAudioDataCallback = null;
 
+      // Reset performance metrics
+      this.performanceMonitor.reset();
+
       logger.info('AudioWorklet stopped successfully');
     } catch (error) {
       logger.error('Failed to stop AudioWorklet', { error: String(error) });
@@ -112,5 +137,19 @@ export class AudioWorkletManager {
    */
   isActive(): boolean {
     return this.audioContext !== null && this.audioContext.state === 'running';
+  }
+
+  /**
+   * Get performance report
+   */
+  getPerformanceReport() {
+    return this.performanceMonitor.getReport();
+  }
+
+  /**
+   * Measure CPU usage
+   */
+  measureCPU() {
+    return this.performanceMonitor.measureCPU();
   }
 }

@@ -3,19 +3,29 @@
  *
  * Plays dubbed audio received from backend
  * Handles base64 decoding, AudioBuffer creation, and playback
+ * Uses jitter buffer for network variability
  */
 
 import { createLogger } from '@/lib/logger';
+import { AudioBufferManager } from './audio-buffer-manager';
+import { PerformanceMonitor } from '@/lib/performance-monitor';
 
 const logger = createLogger('AudioPlayer');
 
 export class AudioPlayer {
   private audioContext: AudioContext | null = null;
   private gainNode: GainNode | null = null;
-  private audioQueue: AudioBuffer[] = [];
+  private bufferManager: AudioBufferManager;
+  private performanceMonitor: PerformanceMonitor;
   private isPlaying = false;
   private currentSource: AudioBufferSourceNode | null = null;
   private volume = 1.0;
+  private bufferCheckInterval: NodeJS.Timeout | null = null;
+
+  constructor() {
+    this.bufferManager = new AudioBufferManager();
+    this.performanceMonitor = new PerformanceMonitor();
+  }
 
   /**
    * Initialize audio player
@@ -32,11 +42,39 @@ export class AudioPlayer {
       this.gainNode.connect(this.audioContext.destination);
       this.gainNode.gain.value = this.volume;
 
+      // Start buffer check interval
+      this.startBufferMonitoring();
+
       logger.info('Audio player initialized successfully');
     } catch (error) {
       logger.error('Failed to initialize audio player', { error: String(error) });
       throw error;
     }
+  }
+
+  /**
+   * Start monitoring buffer and trigger playback when ready
+   */
+  private startBufferMonitoring(): void {
+    this.bufferCheckInterval = setInterval(() => {
+      // Measure memory periodically
+      this.performanceMonitor.measureMemory();
+      this.performanceMonitor.trackMainThreadCall();
+
+      // Check if buffer is ready to play
+      if (!this.isPlaying && this.bufferManager.isReadyToPlay()) {
+        this.playNext();
+      }
+
+      // Log buffer stats
+      if (this.bufferManager.isCurrentlyBuffering()) {
+        const stats = this.bufferManager.getStats();
+        logger.debug('Buffering audio', {
+          queueSize: stats.queueSize,
+          bufferedDuration: stats.bufferedDuration.toFixed(2),
+        });
+      }
+    }, 100); // Check every 100ms
   }
 
   /**
@@ -49,6 +87,9 @@ export class AudioPlayer {
     }
 
     try {
+      // Mark start of receive-to-play latency
+      this.performanceMonitor.markStart('receiveToPlay');
+
       // Decode base64 to ArrayBuffer
       const binaryString = atob(base64Audio);
       const bytes = new Uint8Array(binaryString.length);
@@ -59,13 +100,10 @@ export class AudioPlayer {
       // Decode audio data to AudioBuffer
       const audioBuffer = await this.audioContext.decodeAudioData(bytes.buffer);
 
-      // Add to queue
-      this.audioQueue.push(audioBuffer);
+      // Add to buffer manager (handles jitter buffer)
+      this.bufferManager.addBuffer(audioBuffer);
 
-      // Start playing if not already playing
-      if (!this.isPlaying) {
-        this.playNext();
-      }
+      // Buffer monitoring will trigger playback when ready
     } catch (error) {
       logger.error('Failed to play base64 audio', { error: String(error) });
     }
@@ -81,13 +119,13 @@ export class AudioPlayer {
     }
 
     try {
-      // Add to queue
-      this.audioQueue.push(audioBuffer);
+      // Mark start of receive-to-play latency
+      this.performanceMonitor.markStart('receiveToPlay');
 
-      // Start playing if not already playing
-      if (!this.isPlaying) {
-        this.playNext();
-      }
+      // Add to buffer manager (handles jitter buffer)
+      this.bufferManager.addBuffer(audioBuffer);
+
+      // Buffer monitoring will trigger playback when ready
     } catch (error) {
       logger.error('Failed to play audio buffer', { error: String(error) });
     }
@@ -101,17 +139,24 @@ export class AudioPlayer {
       return;
     }
 
-    // Check if queue has audio
-    if (this.audioQueue.length === 0) {
+    // Check if buffer is ready
+    if (!this.bufferManager.isReadyToPlay()) {
       this.isPlaying = false;
-      logger.debug('Audio queue empty, stopping playback');
+      return;
+    }
+
+    // Get next audio buffer from buffer manager
+    const audioBuffer = this.bufferManager.getNextBuffer();
+    if (!audioBuffer) {
+      this.isPlaying = false;
+      logger.debug('Audio buffer empty, stopping playback');
       return;
     }
 
     this.isPlaying = true;
 
-    // Get next audio buffer
-    const audioBuffer = this.audioQueue.shift()!;
+    // Record receive-to-play latency
+    const receiveToPlay = this.performanceMonitor.markEnd('receiveToPlay');
 
     // Create source node
     const source = this.audioContext.createBufferSource();
@@ -128,9 +173,18 @@ export class AudioPlayer {
     source.start(0);
     this.currentSource = source;
 
+    // Record latency metrics (simplified - full pipeline would include capture/encode times)
+    this.performanceMonitor.recordLatency({
+      captureToEncode: 0, // Would be measured in AudioWorklet
+      encodeToSend: 0, // Would be measured in WebSocket send
+      receiveToPlay,
+      endToEnd: receiveToPlay, // Simplified for now
+    });
+
     logger.debug('Playing audio', {
       duration: audioBuffer.duration,
-      queueSize: this.audioQueue.length,
+      queueSize: this.bufferManager.getQueueSize(),
+      receiveToPlayLatency: receiveToPlay.toFixed(2),
     });
   }
 
@@ -167,8 +221,11 @@ export class AudioPlayer {
       this.currentSource = null;
     }
 
-    this.audioQueue = [];
+    this.bufferManager.clear();
     this.isPlaying = false;
+
+    // Log performance summary before stopping
+    this.performanceMonitor.logSummary();
 
     logger.info('Audio playback stopped');
   }
@@ -197,7 +254,14 @@ export class AudioPlayer {
    * Get queue size
    */
   getQueueSize(): number {
-    return this.audioQueue.length;
+    return this.bufferManager.getQueueSize();
+  }
+
+  /**
+   * Get buffered duration
+   */
+  getBufferedDuration(): number {
+    return this.bufferManager.getBufferedDuration();
   }
 
   /**
@@ -208,21 +272,49 @@ export class AudioPlayer {
   }
 
   /**
+   * Check if buffering
+   */
+  isBuffering(): boolean {
+    return this.bufferManager.isCurrentlyBuffering();
+  }
+
+  /**
+   * Get performance report
+   */
+  getPerformanceReport() {
+    return this.performanceMonitor.getReport();
+  }
+
+  /**
    * Cleanup and dispose
    */
   async dispose(): Promise<void> {
     try {
       this.stop();
 
+      // Stop buffer monitoring
+      if (this.bufferCheckInterval) {
+        clearInterval(this.bufferCheckInterval);
+        this.bufferCheckInterval = null;
+      }
+
+      // Disconnect gain node
       if (this.gainNode) {
         this.gainNode.disconnect();
         this.gainNode = null;
       }
 
+      // Close audio context
       if (this.audioContext && this.audioContext.state !== 'closed') {
         await this.audioContext.close();
         this.audioContext = null;
       }
+
+      // Clear buffers
+      this.bufferManager.clear();
+
+      // Reset performance metrics
+      this.performanceMonitor.reset();
 
       logger.info('Audio player disposed');
     } catch (error) {
