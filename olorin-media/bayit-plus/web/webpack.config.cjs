@@ -66,6 +66,9 @@ module.exports = (env, argv) => {
         '@olorin/glass-ui': path.resolve(packagesPath, 'glass-components/dist/native/index.mjs'),
         '@olorin/shared-hooks': path.resolve(packagesPath, 'shared-hooks'),
         '@olorin/shared-i18n': path.resolve(packagesPath, 'shared-i18n'),
+        '@olorin/shared-icons/web': path.resolve(packagesPath, 'shared-icons/dist/web/index.mjs'),
+        '@olorin/shared-icons/native': path.resolve(packagesPath, 'shared-icons/dist/native/index.mjs'),
+        '@olorin/shared-icons': path.resolve(packagesPath, 'shared-icons/dist/web/index.mjs'),
         '@olorin/shared-services': path.resolve(packagesPath, 'shared-services'),
         '@olorin/shared-stores': path.resolve(packagesPath, 'shared-stores'),
         // React Native Web
