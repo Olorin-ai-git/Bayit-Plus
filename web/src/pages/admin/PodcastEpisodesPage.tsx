@@ -3,12 +3,12 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, ChevronLeft, Languages, RefreshCw } from 'lucide-react'
-import { GlassInput, GlassSelect, GlassButton, GlassPageHeader, GlassErrorBanner } from '@bayit/shared/ui'
+import { GlassInput, GlassSelect, GlassButton, GlassPageHeader, GlassModal } from '@bayit/shared/ui'
+import { GlassErrorBanner } from '@olorin/glass-ui'
 import { GlassTable } from '@bayit/shared/ui/web'
 import { adminPodcastsService, adminPodcastEpisodesService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
-import { useNotifications } from '@olorin/glass-ui/hooks'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import logger from '@/utils/logger'
 import type { PodcastEpisode, PaginatedResponse, TranslationStatus } from '@/types/content'
@@ -51,7 +51,6 @@ export default function PodcastEpisodesPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { isRTL, textAlign, flexDirection } = useDirection()
-  const notifications = useNotifications()
   const [podcastTitle, setPodcastTitle] = useState('')
   const [items, setItems] = useState<PodcastEpisode[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -59,7 +58,8 @@ export default function PodcastEpisodesPage() {
   const [pagination, setPagination] = useState<Pagination>({ page: 1, pageSize: 20, total: 0 })
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editData, setEditData] = useState<EditingEpisode>({})
-  const [deleting, setDeleting] = useState<string | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [translating, setTranslating] = useState<string | null>(null)
   const [bulkTranslating, setBulkTranslating] = useState(false)
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -138,30 +138,25 @@ export default function PodcastEpisodesPage() {
     }
   }
 
-  const handleDelete = (id: string) => {
-    notifications.show({
-      level: 'warning',
-      message: t('admin.content.confirmDelete'),
-      dismissable: true,
-      action: {
-        label: t('common.delete', 'Delete'),
-        type: 'action',
-        onPress: async () => {
-          try {
-            setDeleting(id)
-            await adminPodcastEpisodesService.deleteEpisode(podcastId!, id)
-            setItems(items.filter((item) => item.id !== id))
-          } catch (err) {
-            const msg = err instanceof Error ? err.message : 'Failed to delete episode'
-            logger.error(msg, 'PodcastEpisodesPage', err)
-            setError(msg)
-          } finally {
-            setDeleting(null)
-          }
-        },
-      },
-    })
-  }
+  const handleDelete = useCallback((id: string) => {
+    setDeleteConfirmId(id)
+  }, [])
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!deleteConfirmId) return
+    try {
+      setIsDeleting(true)
+      await adminPodcastEpisodesService.deleteEpisode(podcastId!, deleteConfirmId)
+      setItems((prevItems) => prevItems.filter((item) => item.id !== deleteConfirmId))
+      setDeleteConfirmId(null)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to delete episode'
+      logger.error(msg, 'PodcastEpisodesPage', err)
+      setError(msg)
+    } finally {
+      setIsDeleting(false)
+    }
+  }, [deleteConfirmId, podcastId])
 
   const handleTranslate = async (episodeId: string) => {
     try {
@@ -241,26 +236,30 @@ export default function PodcastEpisodesPage() {
     {
       key: 'actions',
       label: '',
-      width: 100,
+      width: 180,
       render: (_: unknown, item: PodcastEpisode) => (
         <View style={[styles.actionsCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <GlassButton
             variant="ghost"
             size="sm"
             onPress={() => handleEdit(item)}
-            icon={<Edit size={16} color="#a855f7" />}
+            icon={<Edit size={18} color="#a855f7" />}
             style={styles.actionButton}
             accessibilityLabel={t('admin.podcasts.editEpisode', { defaultValue: 'Edit episode' })}
-          />
+          >
+            {t('admin.common.edit', { defaultValue: 'Edit' })}
+          </GlassButton>
           <GlassButton
             variant="ghost"
             size="sm"
             onPress={() => handleDelete(item.id)}
-            disabled={deleting === item.id}
-            icon={<Trash2 size={16} color="#ef4444" />}
+            disabled={isDeleting}
+            icon={<Trash2 size={18} color="#ef4444" />}
             style={styles.actionButton}
             accessibilityLabel={t('admin.podcasts.deleteEpisode', { defaultValue: 'Delete episode' })}
-          />
+          >
+            {t('common.delete', { defaultValue: 'Delete' })}
+          </GlassButton>
         </View>
       ),
     },
@@ -334,11 +333,25 @@ export default function PodcastEpisodesPage() {
         />
       </View>
 
-      {editingId && (
-        <View style={styles.editForm}>
-          <Text style={styles.formTitle}>
-            {editingId === 'new' ? t('admin.podcasts.newEpisode', 'New Episode') : t('admin.podcasts.editEpisode', 'Edit Episode')}
-          </Text>
+      <GlassModal
+        visible={editingId !== null}
+        title={editingId === 'new' ? t('admin.podcasts.newEpisode', 'New Episode') : t('admin.podcasts.editEpisode', 'Edit Episode')}
+        onClose={() => setEditingId(null)}
+        dismissable={false}
+        buttons={[
+          {
+            text: t('admin.common.cancel', { defaultValue: 'Cancel' }),
+            style: 'cancel',
+            onPress: () => setEditingId(null),
+          },
+          {
+            text: t('admin.common.save', { defaultValue: 'Save' }),
+            style: 'default',
+            onPress: handleSaveEdit,
+          },
+        ]}
+      >
+        <ScrollView style={styles.modalContent}>
           <GlassInput
             label={t('admin.podcasts.episodes.form.title', 'Episode title')}
             containerStyle={styles.input}
@@ -383,24 +396,30 @@ export default function PodcastEpisodesPage() {
             value={editData.published_at ? editData.published_at.split('T')[0] : ''}
             onChangeText={(value) => setEditData({ ...editData, published_at: value ? `${value}T00:00:00Z` : undefined })}
           />
-          <View style={styles.formActions}>
-            <GlassButton
-              variant="secondary"
-              onPress={() => setEditingId(null)}
-              accessibilityLabel={t('admin.common.cancel')}
-            >
-              {t('admin.common.cancel')}
-            </GlassButton>
-            <GlassButton
-              variant="primary"
-              onPress={handleSaveEdit}
-              accessibilityLabel={t('admin.common.saveEpisode', { defaultValue: 'Save episode' })}
-            >
-              {t('admin.common.save')}
-            </GlassButton>
-          </View>
-        </View>
-      )}
+        </ScrollView>
+      </GlassModal>
+
+      <GlassModal
+        visible={deleteConfirmId !== null}
+        type="error"
+        title={t('admin.common.deleteConfirmTitle', { defaultValue: 'Delete Episode' })}
+        message={t('admin.common.deleteEpisodeMessage', { defaultValue: 'Are you sure you want to delete this episode? This action cannot be undone.' })}
+        onClose={() => setDeleteConfirmId(null)}
+        dismissable={!isDeleting}
+        loading={isDeleting}
+        buttons={[
+          {
+            text: t('admin.common.cancel', { defaultValue: 'Cancel' }),
+            style: 'cancel',
+            onPress: () => setDeleteConfirmId(null),
+          },
+          {
+            text: t('common.delete', { defaultValue: 'Delete' }),
+            style: 'destructive',
+            onPress: handleConfirmDelete,
+          },
+        ]}
+      />
 
       <GlassTable
         columns={columns}
@@ -424,44 +443,35 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   breadcrumbText: { color: colors.primary.DEFAULT, fontSize: 14 },
-  header: {
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.lg,
-    gap: spacing.md,
-  },
   headerActions: { gap: spacing.sm, alignItems: 'center' },
-  pageTitle: { color: colors.text, fontSize: 24, fontWeight: 'bold' },
-  subtitle: { color: colors.textSecondary, fontSize: 14, marginTop: spacing.xs },
-  btnDisabled: { opacity: 0.5 },
   filterRow: {
     flexDirection: 'row',
     marginBottom: spacing.md,
     gap: spacing.md,
   },
   filterSelect: { width: 200 },
-  editForm: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.lg,
+  modalContent: {
+    maxHeight: 500,
   },
-  formTitle: { color: colors.text, fontSize: 18, fontWeight: 'bold', marginBottom: spacing.md },
   input: { marginBottom: spacing.md },
-  formActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm, marginTop: spacing.md },
   cellText: { color: colors.text, fontSize: 14 },
-  descText: { color: colors.textSecondary },
   translationCell: { alignItems: 'center', gap: spacing.xs },
   translateBtn: {
     minWidth: 44,
     minHeight: 44,
     borderRadius: borderRadius.md,
   },
-  actionsCell: { gap: spacing.xs },
+  actionsCell: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+    alignItems: 'center',
+  },
   actionButton: {
     minWidth: 44,
     minHeight: 44,
-    borderRadius: borderRadius.md,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   badge: { paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: borderRadius.sm },
   badgeText: { fontSize: 12, fontWeight: '600' },
