@@ -558,6 +558,9 @@ class Settings(BaseSettings):
     PODCAST_TRANSLATION_ENABLED: bool = Field(
         default=False, description="Enable automatic podcast translation"
     )
+    PODCAST_TRANSLATION_AUTO_START: bool = Field(
+        default=False, description="Auto-start translation worker on server startup"
+    )
     PODCAST_TRANSLATION_POLL_INTERVAL: int = Field(
         default=300,
         description="Interval in seconds to check for untranslated episodes",

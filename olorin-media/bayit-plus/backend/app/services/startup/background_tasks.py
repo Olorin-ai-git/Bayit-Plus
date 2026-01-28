@@ -242,8 +242,8 @@ def start_background_tasks() -> None:
     _running_tasks.append(task)
     logger.info("Started failed upload jobs cleanup background task (daily)")
 
-    # Podcast translation worker (if enabled)
-    if settings.PODCAST_TRANSLATION_ENABLED:
+    # Podcast translation worker (if enabled and auto-start is enabled)
+    if settings.PODCAST_TRANSLATION_ENABLED and settings.PODCAST_TRANSLATION_AUTO_START:
         global _translation_worker
         _translation_worker = PodcastTranslationWorker()
         task = asyncio.create_task(_translation_worker.start())
@@ -253,6 +253,8 @@ def start_background_tasks() -> None:
             f"Started podcast translation worker with "
             f"{settings.PODCAST_TRANSLATION_MAX_CONCURRENT} concurrent workers"
         )
+    elif settings.PODCAST_TRANSLATION_ENABLED:
+        logger.info("Podcast translation enabled but auto-start disabled - worker will not start on startup")
 
     # Live feature session monitor (always runs)
     from app.services.session_monitor import get_session_monitor
