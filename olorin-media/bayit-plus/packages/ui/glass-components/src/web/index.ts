@@ -15,6 +15,9 @@
  * See packages/ui/MIGRATION.md for migration status.
  */
 
+// Re-export all native components (web-compatible via React Native Web)
+export * from '../native/index';
+
 // Re-export hooks (web-compatible)
 export { useGlassTheme } from '../hooks/useGlassTheme';
 
