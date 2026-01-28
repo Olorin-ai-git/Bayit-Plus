@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Play, X } from 'lucide-react';
 import { GlassView, GlassCard } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { watchlistService } from '@/services/api';
 import { useDirection } from '@/hooks/useDirection';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
@@ -30,6 +31,18 @@ interface WatchlistItem {
   progress?: number;
 }
 
+const getTypeIconName = (type: string): string => {
+  switch (type) {
+    case 'movie': return 'vod';
+    case 'series': return 'vod';
+    case 'podcast': return 'podcasts';
+    case 'radio': return 'radio';
+    case 'live':
+    case 'channel': return 'live';
+    default: return 'discover';
+  }
+};
+
 const WatchlistCard: React.FC<{
   item: WatchlistItem;
   onPress: () => void;
@@ -51,7 +64,7 @@ const WatchlistCard: React.FC<{
           <Image source={{ uri: item.thumbnail }} style={styles.cardImage} />
         ) : (
           <View style={styles.cardImagePlaceholder}>
-            <Text style={styles.placeholderIcon}>📋</Text>
+            <NativeIcon name="discover" size="xl" color={colors.textMuted} />
           </View>
         )}
 
@@ -62,13 +75,7 @@ const WatchlistCard: React.FC<{
         )}
 
         <View style={[styles.typeBadge, isRTL ? { left: 8 } : { right: 8 }]}>
-          <Text style={styles.typeBadgeText}>
-            {item.type === 'movie' ? '🎬' :
-             item.type === 'series' ? '📺' :
-             item.type === 'podcast' ? '🎙️' :
-             item.type === 'radio' ? '📻' :
-             item.type === 'live' || item.type === 'channel' ? '📡' : '🎬'}
-          </Text>
+          <NativeIcon name={getTypeIconName(item.type)} size="sm" color={colors.background} />
         </View>
 
         <View style={styles.cardContent}>

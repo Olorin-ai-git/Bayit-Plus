@@ -6,6 +6,7 @@
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Play } from 'lucide-react';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors } from '@olorin/design-tokens';
 import { SubtitleFlags } from '@bayit/shared/components';
 import type { Episode } from '../types/series.types';
@@ -45,7 +46,7 @@ export function EpisodeCard({
           />
         ) : (
           <View style={styles.placeholderContainer}>
-            <Text style={styles.placeholderIcon}>🎬</Text>
+            <NativeIcon name="vod" size="lg" color={colors.textMuted} />
           </View>
         )}
 

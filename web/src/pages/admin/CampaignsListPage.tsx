@@ -3,6 +3,7 @@ import { View, Text, Pressable, ActivityIndicator, ScrollView, StyleSheet } from
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Plus, Edit2, Trash2, PlayCircle, PauseCircle } from 'lucide-react';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { campaignsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { GlassCard, GlassButton, GlassInput, GlassModal, GlassPageHeader } from '@bayit/shared/ui';
@@ -43,10 +44,10 @@ const statusColors = {
 };
 
 const typeIcons = {
-  discount: '💰',
-  trial: '🎁',
-  referral: '👥',
-  promotional: '🎯',
+  discount: 'discover',
+  trial: 'discover',
+  referral: 'discover',
+  promotional: 'discover',
 };
 
 export default function CampaignsListPage() {
@@ -229,25 +230,25 @@ export default function CampaignsListPage() {
           <StatCard
             title={t('admin.campaigns.stats.total', 'Total')}
             value={stats.total.toString()}
-            icon="📊"
+            icon={<NativeIcon name="discover" size="md" color={colors.primary.DEFAULT} />}
             color="primary"
           />
           <StatCard
             title={t('admin.campaigns.stats.active', 'Active')}
             value={stats.active.toString()}
-            icon="✅"
+            icon={<NativeIcon name="info" size="md" color="#22C55E" />}
             color="success"
           />
           <StatCard
             title={t('admin.campaigns.stats.scheduled', 'Scheduled')}
             value={stats.scheduled.toString()}
-            icon="📅"
+            icon={<NativeIcon name="discover" size="md" color="#F59E0B" />}
             color="warning"
           />
           <StatCard
             title={t('admin.campaigns.stats.totalUsage', 'Total Usage')}
             value={stats.total_usage.toString()}
-            icon="📈"
+            icon={<NativeIcon name="discover" size="md" color="#8B5CF6" />}
             color="secondary"
           />
         </View>
@@ -352,9 +353,12 @@ export default function CampaignsListPage() {
                 <Text style={styles.campaignName}>{campaign.name}</Text>
               </View>
               <View style={styles.colType}>
-                <Text style={styles.typeText}>
-                  {typeIcons[campaign.type]} {t(`admin.campaigns.type.${campaign.type}`, campaign.type)}
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                  <NativeIcon name={typeIcons[campaign.type]} size="sm" color={colors.textMuted} />
+                  <Text style={styles.typeText}>
+                    {t(`admin.campaigns.type.${campaign.type}`, campaign.type)}
+                  </Text>
+                </View>
               </View>
               <Text style={[styles.discountText, styles.colDiscount]}>
                 {campaign.discount_percent ? `${campaign.discount_percent}%` :
@@ -468,9 +472,12 @@ export default function CampaignsListPage() {
             </View>
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>{t('admin.campaigns.columns.type', 'Type')}:</Text>
-              <Text style={styles.detailValue}>
-                {typeIcons[selectedCampaign.type]} {selectedCampaign.type}
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                <NativeIcon name={typeIcons[selectedCampaign.type]} size="sm" color={colors.text} />
+                <Text style={styles.detailValue}>
+                  {selectedCampaign.type}
+                </Text>
+              </View>
             </View>
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>{t('admin.campaigns.columns.status', 'Status')}:</Text>

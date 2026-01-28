@@ -6,15 +6,16 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { downloadsService } from '@/services/api';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassCard, GlassView, GlassPageHeader } from '@bayit/shared/ui';
 import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
 
-const TYPE_ICONS: Record<string, string> = {
-  movie: '🎬',
-  series: '📺',
-  episode: '📺',
-  podcast: '🎙️',
+const TYPE_ICON_NAMES: Record<string, string> = {
+  movie: 'vod',
+  series: 'vod',
+  episode: 'vod',
+  podcast: 'podcasts',
 };
 
 interface DownloadItem {
@@ -60,7 +61,7 @@ function DownloadCard({ item, onDelete, pausedText }: { item: DownloadItem; onDe
               <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} resizeMode="cover" />
             ) : (
               <View style={styles.placeholderContainer}>
-                <Text style={styles.placeholderIcon}>{TYPE_ICONS[item.type] || '⬇️'}</Text>
+                <NativeIcon name={TYPE_ICON_NAMES[item.type] || 'discover'} size="xl" color={colors.textMuted} />
               </View>
             )}
 
@@ -73,7 +74,7 @@ function DownloadCard({ item, onDelete, pausedText }: { item: DownloadItem; onDe
 
             {/* Type Badge */}
             <View style={styles.typeBadge}>
-              <Text style={styles.typeBadgeText}>{TYPE_ICONS[item.type]}</Text>
+              <NativeIcon name={TYPE_ICON_NAMES[item.type] || 'discover'} size="sm" color={colors.background} />
             </View>
 
             {/* Size Badge */}

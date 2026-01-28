@@ -5,6 +5,7 @@ import { Download, Filter } from 'lucide-react';
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web';
 import { auditLogsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassButton, GlassModal, GlassSelect, GlassPageHeader } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
@@ -43,15 +44,15 @@ const formatDate = (dateStr: string) => {
   });
 };
 
-const getActionIcon = (action: string) => {
-  if (action.includes('user')) return '👤';
-  if (action.includes('subscription')) return '📦';
-  if (action.includes('payment')) return '💰';
-  if (action.includes('settings')) return '⚙️';
-  if (action.includes('campaign')) return '🎯';
-  if (action.includes('content')) return '📺';
-  if (action.includes('login')) return '🔑';
-  return '📋';
+const getActionIconName = (action: string) => {
+  if (action.includes('user')) return 'discover';
+  if (action.includes('subscription')) return 'discover';
+  if (action.includes('payment')) return 'discover';
+  if (action.includes('settings')) return 'discover';
+  if (action.includes('campaign')) return 'discover';
+  if (action.includes('content')) return 'vod';
+  if (action.includes('login')) return 'discover';
+  return 'discover';
 };
 
 export default function AuditLogsPage() {
@@ -105,9 +106,10 @@ export default function AuditLogsPage() {
   const getActionBadge = (action: string) => {
     const type = action.split('.')[0];
     const style = actionColors[type] || { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280' };
+    const iconName = getActionIconName(action);
     return (
       <View style={[styles.badge, { backgroundColor: style.bg }]}>
-        <Text style={styles.badgeIcon}>{getActionIcon(action)}</Text>
+        <NativeIcon name={iconName} size="sm" color={style.text} />
         <Text style={[styles.badgeText, { color: style.text }]}>{action.replace('.', ' ').replace(/_/g, ' ')}</Text>
       </View>
     );

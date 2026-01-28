@@ -1,13 +1,19 @@
 // Release Configuration for BayitPlus iOS
 // Environment: Production
+//
+// IMPORTANT: Sensitive values are injected via environment variables during CI/CD build.
+// See .env.example for required variables.
+// Local development: Copy .env.example to .env and fill in values.
 
-// Sentry Configuration
-// Uses environment variable SENTRY_DSN_RELEASE if set, otherwise falls back to this value
-SENTRY_DSN = https:/$()/cf75c674a6980b83e7eed8ee5e227a2a@o4510740497367040.ingest.us.sentry.io/4510740503265280
+// Sentry Configuration (injected from environment)
+// CI/CD: Set SENTRY_DSN environment variable
+// Format: https://[key]@[org].ingest.sentry.io/[project]
+SENTRY_DSN = $(SENTRY_DSN:default=)
 SENTRY_ENVIRONMENT = production
 
-// API Configuration
-API_BASE_URL = https:/$()/api.bayitplus.com
+// API Configuration (injected from environment)
+// CI/CD: Set API_BASE_URL environment variable
+API_BASE_URL = $(API_BASE_URL:default=https:/$()/api.bayitplus.com)
 
 // Feature Flags
 ENABLE_DEBUG_LOGGING = NO

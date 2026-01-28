@@ -6,6 +6,7 @@ import { useDirection } from '@/hooks/useDirection';
 import { Podcast, Headphones, Clock, Search, X, RefreshCw } from 'lucide-react';
 import { podcastService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import {
   GlassView,
   GlassCard,
@@ -261,54 +262,54 @@ export default function PodcastsPage() {
       <View style={styles.categoriesContainer}>
         <GlassCategoryPill
           label={t('podcasts.categories.all')}
-          emoji="🎧"
+          icon={<NativeIcon name="podcasts" size="sm" color={selectedCategory === 'all' ? colors.primary : colors.textMuted} />}
           isActive={selectedCategory === 'all'}
           onPress={() => setSelectedCategory('all')}
         />
         {categories.map((category) => {
-          // Map common categories to emojis with enhanced variety
-          const emojiMap: Record<string, string> = {
-            'קומי': '😂',
-            'comedy': '😂',
-            'פסיכולוגיה': '🧠',
-            'psychology': '🧠',
-            'כללה': '📌',
-            'general': '📌',
-            'טכנולוגיה': '💻',
-            'technology': '💻',
-            'tech': '💻',
-            'חדשות ואקטואליה': '📰',
-            'news': '📰',
-            'היסטוריה': '📚',
-            'history': '📚',
-            'politics': '🏛️',
-            'business': '💼',
-            'entertainment': '🎭',
-            'sports': '⚽',
-            'jewish': '✡️',
-            'judaism': '✡️',
-            'educational': '🎓',
-            'science': '🔬',
-            'health': '🏥',
-            'fitness': '💪',
-            'arts': '🎨',
-            'music': '🎵',
-            'food': '🍽️',
-            'travel': '✈️',
-            'lifestyle': '🌟',
-            'relationships': '❤️',
-            'parenting': '👶',
-            'spirituality': '🙏',
+          // Map common categories to icon names
+          const iconNameMap: Record<string, string> = {
+            'קומי': 'discover',
+            'comedy': 'discover',
+            'פסיכולוגיה': 'info',
+            'psychology': 'info',
+            'כללה': 'podcasts',
+            'general': 'podcasts',
+            'טכנולוגיה': 'discover',
+            'technology': 'discover',
+            'tech': 'discover',
+            'חדשות ואקטואליה': 'info',
+            'news': 'info',
+            'היסטוריה': 'info',
+            'history': 'info',
+            'politics': 'discover',
+            'business': 'discover',
+            'entertainment': 'discover',
+            'sports': 'discover',
+            'jewish': 'judaism',
+            'judaism': 'judaism',
+            'educational': 'info',
+            'science': 'info',
+            'health': 'info',
+            'fitness': 'discover',
+            'arts': 'discover',
+            'music': 'podcasts',
+            'food': 'discover',
+            'travel': 'discover',
+            'lifestyle': 'discover',
+            'relationships': 'discover',
+            'parenting': 'info',
+            'spirituality': 'judaism',
           };
 
-          const emoji = emojiMap[category.id.toLowerCase()] || emojiMap[category.name?.toLowerCase()] || '🎙️';
+          const iconName = iconNameMap[category.id.toLowerCase()] || iconNameMap[category.name?.toLowerCase()] || 'podcasts';
           const label = t(`podcasts.categories.${category.id}`, category.name);
 
           return (
             <GlassCategoryPill
               key={category.id}
               label={label}
-              emoji={emoji}
+              icon={<NativeIcon name={iconName} size="sm" color={selectedCategory === category.id ? colors.primary : colors.textMuted} />}
               isActive={selectedCategory === category.id}
               onPress={() => setSelectedCategory(category.id)}
             />

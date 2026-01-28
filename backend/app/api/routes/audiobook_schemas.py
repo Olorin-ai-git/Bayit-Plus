@@ -208,3 +208,36 @@ class FeatureResponse(BaseModel):
     """Response for feature operation."""
     message: str
     audiobook_id: str
+
+
+class AudiobookChapterResponse(BaseModel):
+    """Chapter/part of a multi-part audiobook."""
+    id: str
+    title: str
+    chapter_number: int
+    duration: Optional[str] = None
+    progress: Optional[float] = None
+    thumbnail: Optional[str] = None
+
+
+class AudiobookWithChaptersResponse(BaseModel):
+    """Audiobook with its chapters for player page."""
+    id: str
+    title: str
+    author: Optional[str] = None
+    narrator: Optional[str] = None
+    description: Optional[str] = None
+    duration: Optional[str] = None
+    thumbnail: Optional[str] = None
+    backdrop: Optional[str] = None
+    year: Optional[int] = None
+    rating: Optional[float] = None
+    audio_quality: Optional[str] = None
+    isbn: Optional[str] = None
+    publisher_name: Optional[str] = None
+    view_count: int = 0
+    avg_rating: float = 0.0
+    is_featured: bool = False
+    requires_subscription: str = "basic"
+    chapters: List[AudiobookChapterResponse]
+    total_chapters: int

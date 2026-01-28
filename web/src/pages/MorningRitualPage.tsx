@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { ChevronLeft, ChevronRight, X, SkipForward } from 'lucide-react';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView, GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { ritualService } from '@/services/api';
@@ -112,7 +113,7 @@ export default function MorningRitualPage() {
     return (
       <View style={styles.container}>
         <View style={styles.loadingContainer}>
-          <Text style={styles.emojiLarge}>☀️</Text>
+          <NativeIcon name="home" size="xl" color={colors.primary.DEFAULT} />
           <ActivityIndicator color={colors.primary} size="large" />
           <Text style={styles.loadingText}>{t('ritual.preparingRitual')}</Text>
         </View>
@@ -126,27 +127,27 @@ export default function MorningRitualPage() {
 
       {showBrief && aiBrief && (
         <View style={styles.briefContainer}>
-          <Text style={styles.emojiXL}>☀️</Text>
+          <NativeIcon name="home" size="lg" color={colors.primary.DEFAULT} />
           <Text style={styles.briefGreeting}>{t('ritual.greeting')}</Text>
           <Text style={styles.briefUpdate}>{t('ritual.israelUpdate')}</Text>
           <Text style={styles.briefRecommendation}>{t('ritual.recommendation')}</Text>
 
           <View style={styles.briefInfoRow}>
             <View style={styles.briefInfoItem}>
-              <Text style={styles.emojiMedium}>🇮🇱</Text>
+              <NativeIcon name="discover" size="md" color={colors.info.DEFAULT} />
               <Text style={styles.briefInfoLabel}>{t('ritual.israelTime')}</Text>
               <Text style={styles.briefInfoValue}>{aiBrief.israel_context?.israel_time}</Text>
             </View>
 
             <View style={styles.briefInfoItem}>
-              <Text style={styles.emojiMedium}>📅</Text>
+              <NativeIcon name="discover" size="md" color={colors.info.DEFAULT} />
               <Text style={styles.briefInfoLabel}>{t('ritual.day')}</Text>
               <Text style={styles.briefInfoValue}>{aiBrief.israel_context?.day_name_he}</Text>
             </View>
 
             {aiBrief.israel_context?.is_shabbat && (
               <GlassView style={styles.shabbatBadge}>
-                <Text style={styles.emojiMedium}>🕯️</Text>
+                <NativeIcon name="discover" size="md" color="#fbbf24" />
                 <Text style={styles.shabbatText}>{t('clock.shabbatShalom')}</Text>
               </GlassView>
             )}
@@ -240,10 +241,13 @@ export default function MorningRitualPage() {
                   )}
                   <View style={styles.playlistItemContent}>
                     <Text style={styles.playlistItemTitle} numberOfLines={1}>{item.title}</Text>
-                    <Text style={styles.playlistItemType}>
-                      {item.type === 'live' ? `🔴 ${t('ritual.typeLive')}` :
-                       item.type === 'radio' ? `📻 ${t('ritual.typeRadio')}` : `🎬 ${t('ritual.typeVideo')}`}
-                    </Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                      <NativeIcon name={item.type === 'live' ? 'live' : item.type === 'radio' ? 'radio' : 'vod'} size="sm" color={colors.textMuted} />
+                      <Text style={styles.playlistItemType}>
+                        {item.type === 'live' ? t('ritual.typeLive') :
+                         item.type === 'radio' ? t('ritual.typeRadio') : t('ritual.typeVideo')}
+                      </Text>
+                    </View>
                   </View>
                   {index === currentIndex && <View style={styles.playlistIndicator} />}
                 </Pressable>
@@ -301,17 +305,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  emojiLarge: {
-    fontSize: 64,
-    marginBottom: spacing.lg,
-  },
-  emojiXL: {
-    fontSize: 96,
-    marginBottom: spacing.xl,
-  },
-  emojiMedium: {
-    fontSize: 32,
+    gap: spacing.lg,
   },
   loadingText: {
     fontSize: fontSize.lg,

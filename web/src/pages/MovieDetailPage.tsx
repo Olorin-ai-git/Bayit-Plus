@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, ScrollView, Image, Dimensions, StyleSheet } from 'react-native';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Play, Plus, Check, Share2, Star } from 'lucide-react';
+import { Play, Plus, Check, Share2, Star, Globe } from 'lucide-react';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import Hls from 'hls.js';
 import LinearGradient from 'react-native-linear-gradient';
 import { useDirection } from '@/hooks/useDirection';
@@ -377,9 +378,13 @@ export default function MovieDetailPage() {
                 {availableSubtitles.map((track) => {
                   const langInfo = getLanguageInfo(track.language);
                   return (
-                    <Text key={track.id} style={styles.subtitleFlag}>
-                      {langInfo?.flag || '🌐'}
-                    </Text>
+                    <View key={track.id} style={styles.subtitleFlag}>
+                      {langInfo?.flag ? (
+                        <Text>{langInfo.flag}</Text>
+                      ) : (
+                        <Globe size={18} color={colors.textMuted} />
+                      )}
+                    </View>
                   );
                 })}
               </View>

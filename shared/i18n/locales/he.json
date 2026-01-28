@@ -236,7 +236,8 @@
     "plans": "מסלולים",
     "admin": "ניהול",
     "games": "משחקים",
-    "friends": "חברים"
+    "friends": "חברים",
+    "privacy": "מדיניות פרטיות"
   },
   "epg": {
     "title": "מדריך תוכניות",
@@ -1140,6 +1141,18 @@
     "notFound": "התוכן לא נמצא",
     "availableSubtitles": "כתוביות זמינות",
     "subtitleSelected": "נבחר: {{language}}"
+  },
+  "audiobooks": {
+    "audiobook": "ספר שמע",
+    "chapter": "פרק",
+    "chapters": "פרקים",
+    "playChapter": "נגן פרק",
+    "noChapters": "אין פרקים זמינים",
+    "notFound": "הספר לא נמצא",
+    "author": "מחבר",
+    "narrator": "קריין",
+    "duration": "משך",
+    "isbn": "ISBN"
   },
   "breadcrumbs": {
     "series": "סדרה",
@@ -3158,6 +3171,7 @@
     },
     "copyright": "© {{year}} בית+. כל הזכויות שמורות.",
     "poweredBy": "מופעל על ידי",
+    "privacy": "מדיניות פרטיות",
     "sitemap": "מפת אתר",
     "accessibility": "נגישות",
     "navigation": "ניווט",
@@ -4205,6 +4219,61 @@
         "food": "🍴 אוכל ומסעדות",
         "tech": "💻 טכנולוגיה וחדשנות",
         "events": "📅 אירועים מקומיים"
+      }
+    },
+    "privacy": {
+      "lastUpdated": "עדכון אחרון: 27 בינואר 2026",
+      "intro": {
+        "title": "1. מבוא",
+        "content": "Olorin.ai LLC (\"אנחנו\", \"שלנו\" או \"החברה\") מחויבת להגנה על הפרטיות שלך. מדיניות פרטיות זו מסבירה כיצד אפליקציית המובייל שלנו, Bayit+ (\"האפליקציה\"), אוספת, משתמשת ומגנה על המידע שלך.",
+        "commitment": "בנינו את Bayit+ עם ארכיטקטורת \"פרטיות-קודם\". אנחנו לא מקליטים את הסלון שלך. הטכנולוגיה שלנו משתמשת בחיישנים של המכשיר שלך אך ורק כדי לסנכרן את שירות השמע שלנו עם הטלוויזיה שלך."
+      },
+      "collection": {
+        "title": "2. מידע שאנו אוספים וכיצד אנו משתמשים בו",
+        "camera": {
+          "title": "א. מצלמה ונתוני סנכרון ויזואלי",
+          "intro": "כדי לספק את השירות הליבה שלנו - סנכרון שמע מתורגם עם הטלוויזיה שלך - Bayit+ דורשת גישה למצלמה של המכשיר שלך.",
+          "data": "מידע שנאסף: כאשר אתה מפעיל \"מצב סנכרון\", האפליקציה מצלמת רצף קצר של פריימי וידאו (כ-3 שניות) ממסך הטלוויזיה שלך.",
+          "purpose": "מטרה: פריימים אלה מועברים לשרת הענן המאובטח שלנו אך ורק כדי לזהות את ערוץ הטלוויזיה הציבורי שאתה צופה בו ולחשב את השהיית השידור (עיכוב זמן).",
+          "retention": "שמירה: נתונים אלה הם זמניים. הפריימים מעובדים מיד בזיכרון ונמחקים לצמיתות מיד לאחר הקמת הסנכרון. אנחנו לא רואים, שומרים או מארכיבים תמונות של הבית או המשפחה שלך."
+        },
+        "audio": {
+          "title": "ב. נתוני אודיו (אם ישים)",
+          "intro": "אם אתה משתמש בתכונות הדורשות סנכרון אודיו, האפליקציה עשויה לבקש גישה למיקרופון.",
+          "data": "מידע שנאסף: דגימות אודיו קצרות של שידור הטלוויזיה.",
+          "purpose": "מטרה: להתאמת טביעת האצבע האודיו של השידור הציבורי למטרות סנכרון.",
+          "retention": "שמירה: כמו נתונים ויזואליים, דגימות האודיו מעובדות בזמן אמת ונמחקות מיד. אנחנו לא מאזינים או מקליטים שיחות משתמשים."
+        },
+        "usage": {
+          "title": "ג. נתוני שימוש וטכניים",
+          "content": "אנו עשויים לאסוף נתונים טכניים לא מזהים כדי לשפר את יציבות האפליקציה, כולל:",
+          "device": "סוג מכשיר וגרסת מערכת הפעלה.",
+          "crash": "יומני קריסה ומדדי ביצועים.",
+          "aggregate": "נתונים מצטברים על אילו ערוצים נצפים (למשל, \"50% מהמשתמשים צופים בערוץ 12\")."
+        }
+      },
+      "sharing": {
+        "title": "3. שיתוף נתונים וצדדים שלישיים",
+        "noSale": "Olorin.ai LLC לא מוכרת את הנתונים האישיים שלך. אנו משתפים פעולה עם ספקי שירות צד שלישי מהימנים כדי לספק את התשתית שלנו. ספקים אלה מורשים להשתמש בנתונים שלך רק ככל הנדרש כדי לספק לנו שירותים אלה:",
+        "cloud": "תשתית ענן: שירותי אירוח (למשל, AWS) לעיבוד בקשות סנכרון.",
+        "ai": "עיבוד AI: שירותים המשמשים ליצירת תרגומי טקסט ואודיו בזמן אמת מפידים של שידורים ציבוריים."
+      },
+      "retention": {
+        "title": "4. שמירת נתונים",
+        "sync": "נתוני סנכרון (תמונות/אודיו): 0 ימים. נמחקים מיד לאחר העיבוד.",
+        "account": "נתוני חשבון: נשמרים רק כל עוד החשבון שלך פעיל כדי לנהל את המנוי וההעדפות שלך."
+      },
+      "children": {
+        "title": "5. פרטיות ילדים",
+        "content": "בעוד שהתוכן שלנו מתאים לכל הגילאים, Olorin.ai LLC אינה אוספת במודע מידע מזהה אישי מילדים מתחת לגיל 13. אם אתה הורה ומאמין שילדך סיפק לנו מידע אישי, אנא צור איתנו קשר."
+      },
+      "rights": {
+        "title": "6. הזכויות שלך",
+        "content": "בהתאם למיקומך, ייתכן שיש לך זכות לבקש גישה, תיקון או מחיקה של הנתונים האישיים שלך. אתה יכול למחוק את חשבון Bayit+ שלך בכל עת בהגדרות האפליקציה."
+      },
+      "contact": {
+        "title": "7. צור קשר",
+        "intro": "אם יש לך שאלות כלשהן לגבי מדיניות פרטיות זו, אנא צור איתנו קשר בכתובת:"
       }
     }
   }

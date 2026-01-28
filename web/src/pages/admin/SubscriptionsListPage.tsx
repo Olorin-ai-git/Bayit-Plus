@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, Pressable, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Filter, X } from 'lucide-react';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { subscriptionsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { GlassCard, GlassButton, GlassInput, GlassModal, GlassPageHeader } from '@bayit/shared/ui';
@@ -225,25 +226,25 @@ export default function SubscriptionsListPage() {
           <StatCard
             title={t('admin.subscriptions.stats.total', 'Total')}
             value={stats.total.toString()}
-            icon="📊"
+            icon={<NativeIcon name="discover" size="md" color={colors.primary.DEFAULT} />}
             color="primary"
           />
           <StatCard
             title={t('admin.subscriptions.stats.active', 'Active')}
             value={stats.active.toString()}
-            icon="✅"
+            icon={<NativeIcon name="info" size="md" color="#22C55E" />}
             color="success"
           />
           <StatCard
             title={t('admin.subscriptions.stats.paused', 'Paused')}
             value={stats.paused.toString()}
-            icon="⏸"
+            icon={<NativeIcon name="discover" size="md" color="#F59E0B" />}
             color="warning"
           />
           <StatCard
             title={t('admin.subscriptions.stats.revenue', 'Monthly Revenue')}
             value={formatCurrency(stats.revenue_this_month)}
-            icon="💰"
+            icon={<NativeIcon name="discover" size="md" color="#8B5CF6" />}
             color="secondary"
           />
         </View>

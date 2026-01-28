@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { View, Text, Pressable, ScrollView, StyleSheet, Image } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react'
+import { NativeIcon } from '@olorin/shared-icons/native'
 import { GlassInput, GlassCheckbox, GlassPageHeader } from '@bayit/shared/ui'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web'
@@ -124,7 +125,7 @@ export default function RadioStationsPage() {
             <Image source={{ uri: logo }} style={styles.logo} resizeMode="cover" />
           ) : (
             <View style={styles.logoPlaceholder}>
-              <Text style={styles.logoPlaceholderText}>📻</Text>
+              <NativeIcon name="radio" size="md" color={colors.textMuted} />
             </View>
           )}
         </View>

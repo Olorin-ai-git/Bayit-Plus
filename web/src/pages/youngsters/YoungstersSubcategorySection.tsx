@@ -8,7 +8,9 @@ import { z } from 'zod';
 import { GlassCategoryPill } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import { platformClass } from '@/utils/platformClass';
-import { SUBCATEGORY_ICONS } from './constants';
+import { NativeIcon } from '@olorin/shared-icons/native';
+import { colors } from '@olorin/design-tokens';
+import { SUBCATEGORY_ICON_NAMES } from './constants';
 import { SubcategorySchema } from './types';
 
 const YoungstersSubcategorySectionPropsSchema = z.object({
@@ -38,15 +40,19 @@ export default function YoungstersSubcategorySection({
     <View className={platformClass(
       'flex-row flex-wrap gap-2 mb-4 px-2 py-2 bg-purple-500/5 rounded-lg'
     )}>
-      {subcategories.map((subcategory) => (
-        <GlassCategoryPill
-          key={subcategory.slug}
-          label={getLocalizedName(subcategory, i18n.language)}
-          emoji={SUBCATEGORY_ICONS[subcategory.slug] || '📁'}
-          isActive={selectedSubcategory === subcategory.slug}
-          onPress={() => onSubcategorySelect(subcategory.slug)}
-        />
-      ))}
+      {subcategories.map((subcategory) => {
+        const iconName = SUBCATEGORY_ICON_NAMES[subcategory.slug] || 'discover';
+        const isActive = selectedSubcategory === subcategory.slug;
+        return (
+          <GlassCategoryPill
+            key={subcategory.slug}
+            label={getLocalizedName(subcategory, i18n.language)}
+            icon={<NativeIcon name={iconName} size="sm" color={isActive ? colors.primary : colors.textMuted} />}
+            isActive={isActive}
+            onPress={() => onSubcategorySelect(subcategory.slug)}
+          />
+        );
+      })}
     </View>
   );
 }

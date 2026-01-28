@@ -8,6 +8,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Platform, NativeModules, NativeEventEmitter, TurboModuleRegistry } from 'react-native';
 import { VADSensitivity } from '@bayit/shared-services';
+import { logger } from '../utils/logger';
 
 // Try TurboModule first, fall back to NativeModules
 const turboModule = TurboModuleRegistry.get('AudioCaptureModule');
@@ -21,10 +22,10 @@ const logModuleStatus = () => {
   hasLoggedModuleStatus = true;
 
   if (AudioCaptureModule) {
-    console.log('[TV Voice] AudioCaptureModule: available');
+    logger.info('AudioCaptureModule: available', { module: 'TVVoice' });
   } else {
     // This is expected on simulator - real hardware testing needed
-    console.log('[TV Voice] AudioCaptureModule: not available (expected on simulator)');
+    logger.info('AudioCaptureModule: not available (expected on simulator)', { module: 'TVVoice' });
   }
 };
 
@@ -119,7 +120,7 @@ export function useTVConstantListening(options: UseTVConstantListeningOptions): 
       const audioFilePath = result.audioFilePath;
 
       if (!audioFilePath) {
-        console.log('[TV Voice] No audio captured');
+        logger.debug('No audio captured', { module: 'TVVoice' });
         // Restart listening
         await (AudioCaptureModule as any).startListening();
         setIsSendingToServer(false);
@@ -132,17 +133,17 @@ export function useTVConstantListening(options: UseTVConstantListeningOptions): 
 
       // Skip if audio is too short
       if (audioBlob.size < 16000) {
-        console.log('[TV Voice] Audio too short, skipping');
+        logger.debug('Audio too short, skipping', { module: 'TVVoice', size: audioBlob.size });
         await (AudioCaptureModule as any).startListening();
         setIsSendingToServer(false);
         return;
       }
 
-      console.log('[TV Voice] Sending audio for transcription...');
+      logger.info('Sending audio for transcription...', { module: 'TVVoice', size: audioBlob.size });
       const transcriptionResult = await transcribeAudio(audioBlob);
 
       if (transcriptionResult.text && transcriptionResult.text.trim()) {
-        console.log('[TV Voice] Transcript:', transcriptionResult.text);
+        logger.info('Transcript received', { module: 'TVVoice', text: transcriptionResult.text });
         onTranscriptRef.current?.(transcriptionResult.text.trim());
       }
 
@@ -150,7 +151,7 @@ export function useTVConstantListening(options: UseTVConstantListeningOptions): 
       await (AudioCaptureModule as any).startListening();
     } catch (err) {
       const transcriptionError = err instanceof Error ? err : new Error('Transcription failed');
-      console.error('[TV Voice] Transcription error:', transcriptionError);
+      logger.error('Transcription error', { module: 'TVVoice', error: transcriptionError });
       onErrorRef.current?.(transcriptionError);
 
       // Try to restart listening
@@ -179,7 +180,7 @@ export function useTVConstantListening(options: UseTVConstantListeningOptions): 
     if (isSpeech) {
       // Speech detected
       if (!speechDetectedRef.current) {
-        console.log('[TV Voice] Speech detected');
+        logger.debug('Speech detected', { module: 'TVVoice' });
         speechDetectedRef.current = true;
         setIsProcessing(true);
       }
@@ -194,7 +195,7 @@ export function useTVConstantListening(options: UseTVConstantListeningOptions): 
       // Silence after speech - start timer
       if (!silenceTimerRef.current) {
         silenceTimerRef.current = setTimeout(() => {
-          console.log('[TV Voice] Silence detected, sending to transcription');
+          logger.debug('Silence detected, sending to transcription', { module: 'TVVoice' });
           sendToTranscription();
           silenceTimerRef.current = null;
         }, silenceThresholdMs);
@@ -242,7 +243,7 @@ export function useTVConstantListening(options: UseTVConstantListeningOptions): 
 
       subscriptionsRef.current = [levelSubscription, errorSubscription];
 
-      console.log('[TV Voice] Event listeners set up');
+      logger.info('Event listeners set up', { module: 'TVVoice' });
 
       return () => {
         subscriptionsRef.current.forEach((sub) => sub?.remove?.());
@@ -253,7 +254,7 @@ export function useTVConstantListening(options: UseTVConstantListeningOptions): 
       };
     } catch (err) {
       const setupError = err instanceof Error ? err : new Error('Failed to set up audio capture');
-      console.error('[TV Voice] Setup error:', setupError);
+      logger.error('Setup error', { module: 'TVVoice', error: setupError });
       setError(setupError);
       onErrorRef.current?.(setupError);
     }
@@ -277,7 +278,7 @@ export function useTVConstantListening(options: UseTVConstantListeningOptions): 
       if (result.status === 'listening' || result.status === 'already_listening') {
         isListeningRef.current = true;
         setIsListening(true);
-        console.log('[TV Voice] Started listening');
+        logger.info('Started listening', { module: 'TVVoice' });
       }
     } catch (err: any) {
       const startError = new Error(err.message || 'Failed to start listening');
@@ -305,7 +306,7 @@ export function useTVConstantListening(options: UseTVConstantListeningOptions): 
 
     try {
       await (AudioCaptureModule as any).stopListening();
-      console.log('[TV Voice] Stopped listening');
+      logger.info('Stopped listening', { module: 'TVVoice' });
     } catch {
       // Ignore stop errors
     }

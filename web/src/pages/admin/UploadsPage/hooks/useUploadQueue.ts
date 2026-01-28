@@ -105,7 +105,7 @@ export const useUploadQueue = () => {
       const ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
-        logger.info('✅ Uploads WebSocket connected', 'useUploadQueue');
+        logger.info('[OK] Uploads WebSocket connected', 'useUploadQueue');
         setConnected(true);
         setReconnecting(false);
         setReconnectAttempt(0);

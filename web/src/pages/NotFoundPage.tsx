@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { Home, Search, ArrowRight } from 'lucide-react';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing } from '@olorin/design-tokens';
 import { GlassCard, GlassView } from '@bayit/shared/ui';
 
@@ -25,7 +26,7 @@ export default function NotFoundPage() {
         {/* Glass card with message */}
         <GlassView style={styles.glassCard}>
           <View style={styles.iconCircle}>
-            <Text style={styles.emoji}>🏠</Text>
+            <NativeIcon name="home" size="xl" color={colors.primary.DEFAULT} />
           </View>
 
           <Text style={[styles.title, { textAlign }]}>{t('notFound.title')}</Text>

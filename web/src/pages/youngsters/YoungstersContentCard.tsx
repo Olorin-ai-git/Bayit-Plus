@@ -24,7 +24,7 @@ type YoungstersContentCardProps = z.infer<typeof YoungstersContentCardPropsSchem
  */
 export default function YoungstersContentCard({ item }: YoungstersContentCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const categoryIcon = CATEGORY_ICONS[item.category || 'all'] || '🎯';
+  const categoryIcon = CATEGORY_ICONS[item.category || 'all'] || 'discover';
 
   return (
     <Link to={`/vod/${item.id}`} style={{ textDecoration: 'none', flex: 1 }}>

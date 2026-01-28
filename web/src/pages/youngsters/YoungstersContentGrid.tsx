@@ -5,6 +5,7 @@
 import { View, Text, FlatList, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
+import { Target } from 'lucide-react';
 import { GlassCard } from '@bayit/shared/ui';
 import { platformClass } from '@/utils/platformClass';
 import YoungstersContentCard from './YoungstersContentCard';
@@ -43,7 +44,9 @@ export default function YoungstersContentGrid({
     return (
       <View className={platformClass('flex-1 justify-center items-center py-20')}>
         <GlassCard className={platformClass('p-6 items-center bg-purple-500/10')}>
-          <Text className={platformClass('text-6xl mb-4')}>🎯</Text>
+          <View className={platformClass('mb-4')}>
+            <Target size={64} color="#a855f7" />
+          </View>
           <Text className={platformClass('text-xl font-semibold text-purple-500 mb-2')}>
             {t('youngsters.noContent')}
           </Text>

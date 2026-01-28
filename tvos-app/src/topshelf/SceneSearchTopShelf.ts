@@ -5,6 +5,8 @@
  * Enables quick access to previously found scenes
  */
 
+import { logger } from '../utils/logger';
+
 export interface TopShelfSceneItem {
   id: string
   title: string
@@ -38,10 +40,10 @@ export async function addToTopShelfHistory(item: TopShelfSceneItem): Promise<voi
     // Implementation would save to AsyncStorage
     // and trigger Top Shelf content update
     if (__DEV__) {
-      console.log('[TopShelf] Added scene search result:', item.title)
+      logger.debug('Added scene search result', { module: 'TopShelf', title: item.title })
     }
   } catch (error) {
-    console.error('[TopShelf] Failed to add scene search result:', error)
+    logger.error('Failed to add scene search result', { module: 'TopShelf', error })
   }
 }
 
@@ -56,10 +58,10 @@ export async function updateTopShelf(): Promise<void> {
     // Update Top Shelf content provider
     // This would integrate with native tvOS TopShelf API
     if (__DEV__) {
-      console.log(`[TopShelf] Updated with ${recentSearches.length} scene searches`)
+      logger.debug('Updated Top Shelf', { module: 'TopShelf', sceneSearchCount: recentSearches.length })
     }
   } catch (error) {
-    console.error('[TopShelf] Failed to update Top Shelf:', error)
+    logger.error('Failed to update Top Shelf', { module: 'TopShelf', error })
   }
 }
 
@@ -70,9 +72,9 @@ export async function clearTopShelf(): Promise<void> {
   try {
     // Clear from AsyncStorage and update Top Shelf
     if (__DEV__) {
-      console.log('[TopShelf] Cleared scene search history')
+      logger.debug('Cleared scene search history', { module: 'TopShelf' })
     }
   } catch (error) {
-    console.error('[TopShelf] Failed to clear Top Shelf:', error)
+    logger.error('Failed to clear Top Shelf', { module: 'TopShelf', error })
   }
 }

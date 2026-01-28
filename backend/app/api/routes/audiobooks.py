@@ -18,8 +18,10 @@ from app.models.content import Content
 from app.models.user import User
 from app.api.routes.admin_content_utils import log_audit
 from app.api.routes.audiobook_schemas import (
+    AudiobookChapterResponse,
     AudiobookListResponse,
     AudiobookStreamResponse,
+    AudiobookWithChaptersResponse,
 )
 from app.api.routes.audiobook_utils import (
     audiobook_to_response,
@@ -35,8 +37,19 @@ async def get_audiobooks(
     page_size: int = Query(default=50, le=500),
     current_user: Optional[User] = Depends(get_current_active_user),
 ):
-    """Get featured and trending audiobooks with pagination."""
-    query = Content.find({"content_format": "audiobook", "is_published": True})
+    """Get featured and trending audiobooks with pagination.
+
+    Only returns parent audiobooks (those without series_id) to avoid
+    showing individual chapters as separate cards.
+    """
+    query = Content.find({
+        "content_format": "audiobook",
+        "is_published": True,
+        "$or": [
+            {"series_id": None},
+            {"series_id": {"$exists": False}},
+        ],
+    })
 
     if not current_user or not current_user.is_admin_user():
         query = query.find({"visibility_mode": {"$in": ["public", "passkey_protected"]}})
@@ -71,6 +84,76 @@ async def get_audiobook(
 
     await verify_content_access(audiobook, current_user, action="view")
     return audiobook_to_response(audiobook)
+
+
+@router.get("/{audiobook_id}/chapters", response_model=AudiobookWithChaptersResponse)
+async def get_audiobook_with_chapters(
+    audiobook_id: str,
+    current_user: Optional[User] = Depends(get_current_active_user),
+):
+    """Get audiobook with its chapters for the player page.
+
+    Returns parent audiobook metadata along with a list of chapters
+    (parts) sorted by episode/chapter number.
+    """
+    audiobook = await Content.get(audiobook_id)
+    if not audiobook or audiobook.content_format != "audiobook":
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Audiobook not found",
+        )
+
+    await verify_content_access(audiobook, current_user, action="view")
+
+    # Fetch chapters (items with series_id pointing to this audiobook)
+    chapters_query = Content.find({
+        "content_format": "audiobook",
+        "series_id": str(audiobook.id),
+        "is_published": True,
+    })
+
+    if not current_user or not current_user.is_admin_user():
+        chapters_query = chapters_query.find({
+            "visibility_mode": {"$in": ["public", "passkey_protected"]}
+        })
+
+    # Sort by episode (chapter number)
+    chapters = await chapters_query.sort([("episode", 1)]).to_list()
+
+    # Map chapters to response format
+    chapter_responses = [
+        AudiobookChapterResponse(
+            id=str(chapter.id),
+            title=chapter.title or f"Chapter {idx + 1}",
+            chapter_number=chapter.episode or idx + 1,
+            duration=chapter.duration,
+            progress=None,  # Can be enriched with user progress later
+            thumbnail=chapter.thumbnail,
+        )
+        for idx, chapter in enumerate(chapters)
+    ]
+
+    return AudiobookWithChaptersResponse(
+        id=str(audiobook.id),
+        title=audiobook.title,
+        author=audiobook.author,
+        narrator=audiobook.narrator,
+        description=audiobook.description,
+        duration=audiobook.duration,
+        thumbnail=audiobook.thumbnail,
+        backdrop=audiobook.backdrop,
+        year=audiobook.year,
+        rating=audiobook.rating,
+        audio_quality=audiobook.audio_quality,
+        isbn=audiobook.isbn,
+        publisher_name=audiobook.publisher_name,
+        view_count=audiobook.view_count or 0,
+        avg_rating=audiobook.avg_rating or 0.0,
+        is_featured=audiobook.is_featured or False,
+        requires_subscription=audiobook.requires_subscription or "basic",
+        chapters=chapter_responses,
+        total_chapters=len(chapter_responses),
+    )
 
 
 @router.post("/{audiobook_id}/stream", response_model=AudiobookStreamResponse)

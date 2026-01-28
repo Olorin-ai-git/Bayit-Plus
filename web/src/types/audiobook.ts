@@ -29,6 +29,8 @@ export type {
   AudiobookUpdateRequest,
   AudiobookListResponse,
   AudiobookStreamResponse,
+  AudiobookChapter,
+  AudiobookWithChapters,
   AudioQuality,
   SubscriptionTier,
   VisibilityMode,

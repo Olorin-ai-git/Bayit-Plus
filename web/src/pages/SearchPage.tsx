@@ -10,6 +10,7 @@ import { View, Text, StyleSheet, ScrollView, Pressable, useWindowDimensions } fr
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Search, Mic, X, TrendingUp, Clock, Sparkles } from 'lucide-react';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import {
   GlassInput,
   GlassButton,
@@ -370,7 +371,7 @@ export default function SearchPage() {
             ) : results.length === 0 ? (
               // No Results
               <GlassCard style={styles.emptyCard}>
-                <Text style={styles.emptyIcon}>🔍</Text>
+                <NativeIcon name="search" size="xl" color={colors.textMuted} />
                 <Text style={styles.emptyTitle}>
                   {t('search.noResults', 'No results found')}
                 </Text>
@@ -556,10 +557,6 @@ const styles = StyleSheet.create({
     padding: spacing['4xl'],
     minHeight: 400,
     justifyContent: 'center',
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: spacing.xl,
   },
   emptyTitle: {
     fontSize: fontSize['2xl'],

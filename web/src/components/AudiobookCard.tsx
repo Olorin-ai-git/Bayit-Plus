@@ -17,6 +17,8 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: spacing.sm,
     marginVertical: spacing.sm,
+    minWidth: 160,
+    maxWidth: 200,
   },
   linkContainer: {
     textDecoration: 'none',
@@ -31,8 +33,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderTopLeftRadius: borderRadius.lg,
     borderTopRightRadius: borderRadius.lg,
-    height: 180,
+    height: 240,
     width: '100%',
+    backgroundColor: colors.border,
   },
   image: {
     width: '100%',
@@ -46,6 +49,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     paddingHorizontal: spacing.md,
     lineHeight: 20,
+    minHeight: 40,
   },
   author: {
     fontSize: 12,
@@ -53,6 +57,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
     paddingHorizontal: spacing.md,
     lineHeight: 16,
+    minHeight: 16,
   },
   narrator: {
     fontSize: 11,

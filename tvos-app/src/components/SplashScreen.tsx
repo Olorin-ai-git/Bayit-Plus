@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import Video, { OnLoadData, OnProgressData } from 'react-native-video';
 import { useTranslation } from 'react-i18next';
+import { logger } from '../utils/logger';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -68,7 +69,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   useEffect(() => {
     const fallbackTimeout = setTimeout(() => {
       if (!videoEnded) {
-        console.log('[Splash] Fallback timeout triggered');
+        logger.info('Fallback timeout triggered', { module: 'SplashScreen' });
         handleComplete();
       }
     }, 10000);
@@ -77,24 +78,24 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   }, [handleComplete, videoEnded]);
 
   const onVideoLoad = (data: OnLoadData) => {
-    console.log('[Splash] Video loaded, duration:', data.duration);
+    logger.info('Video loaded', { module: 'SplashScreen', duration: data.duration });
     setVideoLoaded(true);
   };
 
   const onVideoEnd = () => {
-    console.log('[Splash] Video ended');
+    logger.info('Video ended', { module: 'SplashScreen' });
     setVideoEnded(true);
   };
 
   const onVideoError = (error: any) => {
-    console.warn('[Splash] Video error:', error);
+    logger.warn('Video error', { module: 'SplashScreen', error });
     // Complete immediately on error
     handleComplete();
   };
 
   // Allow skip on press
   const handleSkip = () => {
-    console.log('[Splash] Skipped by user');
+    logger.info('Skipped by user', { module: 'SplashScreen' });
     handleComplete();
   };
 

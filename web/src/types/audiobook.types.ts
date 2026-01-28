@@ -140,3 +140,42 @@ export interface AudiobookFeatureResponse {
   audiobook_id: string
   is_featured: boolean
 }
+
+// ============ CHAPTER TYPES ============
+
+/**
+ * Chapter/part of a multi-part audiobook
+ */
+export interface AudiobookChapter {
+  id: string
+  title: string
+  chapter_number: number
+  duration?: string
+  progress?: number
+  thumbnail?: string
+}
+
+/**
+ * Audiobook with chapters for player page
+ */
+export interface AudiobookWithChapters {
+  id: string
+  title: string
+  author?: string
+  narrator?: string
+  description?: string
+  duration?: string
+  thumbnail?: string
+  backdrop?: string
+  year?: number
+  rating?: number
+  audio_quality?: AudioQuality
+  isbn?: string
+  publisher_name?: string
+  view_count: number
+  avg_rating: number
+  is_featured: boolean
+  requires_subscription: SubscriptionTier
+  chapters: AudiobookChapter[]
+  total_chapters: number
+}

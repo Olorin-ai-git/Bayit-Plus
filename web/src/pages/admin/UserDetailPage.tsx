@@ -3,6 +3,7 @@ import { View, Text, ScrollView, ActivityIndicator, Pressable, StyleSheet } from
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight, Mail, Key, Ban, UserCheck, Edit2, Trash2, Clock } from 'lucide-react';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { usersService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassCard, GlassButton, GlassModal, GlassInput, GlassToggle, GlassView, GlassPageHeader } from '@bayit/shared/ui';
@@ -223,7 +224,7 @@ export default function UserDetailPage() {
   if (error || !user) {
     return (
       <GlassView style={styles.errorContainer}>
-        <Text style={styles.errorIcon}>⚠️</Text>
+        <NativeIcon name="discover" size="xl" color={colors.error.DEFAULT} />
         <Text className="flex-1 text-red-500 text-sm">{error || t('admin.users.notFound', { defaultValue: 'User not found' })}</Text>
         <GlassButton title={t('common.back')} onPress={() => navigate('/admin/users')} variant="primary" />
       </GlassView>

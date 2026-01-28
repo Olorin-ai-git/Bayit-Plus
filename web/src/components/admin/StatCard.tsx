@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
@@ -11,7 +12,7 @@ interface StatCardProps {
   title: string;
   value: string | number;
   subtitle?: string;
-  icon?: string;
+  icon?: string | ReactNode;
   trend?: Trend;
   color?: 'primary' | 'secondary' | 'success' | 'warning' | 'error';
   to?: string;
@@ -41,7 +42,11 @@ export default function StatCard({
       <View style={styles.header}>
         {icon && (
           <View style={[styles.iconContainer, { backgroundColor: colorStyle.bg }]}>
-            <Text style={styles.icon}>{icon}</Text>
+            {typeof icon === 'string' ? (
+              <Text style={styles.icon}>{icon}</Text>
+            ) : (
+              icon
+            )}
           </View>
         )}
         <View style={styles.titleContainer}>

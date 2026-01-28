@@ -9,6 +9,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useDirection } from '@/hooks/useDirection'
 import { ArrowLeft, Heart, Share2 } from 'lucide-react'
+import { NativeIcon } from '@olorin/shared-icons/native'
 import audiobookService from '@/services/audiobookService'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassView, GlassButton } from '@bayit/shared/ui'
@@ -95,7 +96,7 @@ export default function AudiobookDetailPage() {
             <Image source={{ uri: audiobook.thumbnail }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, styles.placeholder]}>
-              <Text style={styles.placeholderText}>🎧</Text>
+              <NativeIcon name="podcasts" size="xl" color={colors.textMuted} />
             </View>
           )}
         </View>

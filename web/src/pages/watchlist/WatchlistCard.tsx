@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, Pressable, Image, StyleSheet } from 'react-native';
 import { Play, X } from 'lucide-react';
 import { useDirection } from '@/hooks/useDirection';
+import { colors } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { z } from 'zod';
 
 /**
@@ -39,15 +41,15 @@ const WatchlistCardPropsSchema = z.object({
 type WatchlistItem = z.infer<typeof WatchlistItemSchema>;
 type WatchlistCardProps = z.infer<typeof WatchlistCardPropsSchema>;
 
-const getTypeEmoji = (type: WatchlistItem['type']): string => {
+const getTypeIconName = (type: WatchlistItem['type']): string => {
   switch (type) {
-    case 'movie': return '🎬';
-    case 'series': return '📺';
-    case 'podcast': return '🎙️';
-    case 'radio': return '📻';
+    case 'movie': return 'vod';
+    case 'series': return 'vod';
+    case 'podcast': return 'podcasts';
+    case 'radio': return 'radio';
     case 'live':
-    case 'channel': return '📡';
-    default: return '🎬';
+    case 'channel': return 'live';
+    default: return 'discover';
   }
 };
 
@@ -102,7 +104,7 @@ export const WatchlistCard: React.FC<WatchlistCardProps> = ({
           className="absolute top-2 bg-black/70 rounded-xl px-2 py-1"
           style={[isRTL ? styles.badgeLeft : styles.badgeRight]}
         >
-          <Text className="text-[14px]">{getTypeEmoji(item.type)}</Text>
+          <NativeIcon name={getTypeIconName(item.type)} size="sm" color={colors.background} />
         </View>
 
         {/* Card content */}
