@@ -62,7 +62,7 @@
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Bayit+ uses speech recognition to understand your voice commands for hands-free content control.</string>
 	<key>NSPrivacyPolicyURL</key>
-	<string>https://bayitplus.com/privacy</string>
+	<string>https://bayit.tv/policy</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>SENTRY_DSN</key>

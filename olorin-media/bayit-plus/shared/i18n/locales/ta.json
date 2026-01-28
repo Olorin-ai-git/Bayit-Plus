@@ -624,6 +624,13 @@
       "users": "பயனர்கள்",
       "content": "உள்ளடக்கம்",
       "settings": "அமைப்புகள்"
+    },
+    "content": {
+      "noEpisodes": "எபிசோட்கள் இல்லை",
+      "type": {
+        "movie": "திரைப்படம்",
+        "series": "தொடர்"
+      }
     }
   },
   "cultureClock": {

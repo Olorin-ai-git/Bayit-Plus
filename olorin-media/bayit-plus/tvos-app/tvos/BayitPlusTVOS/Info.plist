@@ -40,7 +40,7 @@
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Bayit+ uses speech recognition to understand your voice commands and help you find content.</string>
 	<key>NSPrivacyPolicyURL</key>
-	<string>https://bayitplus.com/privacy</string>
+	<string>https://bayit.tv/policy</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

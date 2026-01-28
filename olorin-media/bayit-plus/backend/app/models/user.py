@@ -222,6 +222,9 @@ class User(Document):
             "culture_id": "israeli",  # Default for backward compatibility
             "show_culture_clock": True,  # Show clock for selected culture's timezone
             "culture_cities_enabled": True,  # Show city rows for selected culture
+            # Location detection settings
+            "detected_location": None,  # { city, state, county, latitude, longitude, timestamp, source }
+            "location_permission": "prompt",  # granted, denied, prompt
         }
     )
 

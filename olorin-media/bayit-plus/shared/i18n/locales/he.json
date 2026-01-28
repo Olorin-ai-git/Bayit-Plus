@@ -306,6 +306,7 @@
     "categories": "קטגוריות",
     "podcasts": "פודקאסטים",
     "audiobooks": "ספרי אודיו",
+    "israelis_in_city": "ישראלים ב{{city}}, {{state}}",
     "carousel": {
       "fauda": {
         "title": "פאודה",
@@ -1785,7 +1786,7 @@
       },
       "episodes_one": "פרק",
       "episodes_other": "פרקים",
-      "noEpisodes": "לא נמצאו פרקים",
+      "noEpisodes": "אין פרקים",
       "type": {
         "series": "סדרה",
         "movie": "סרט"

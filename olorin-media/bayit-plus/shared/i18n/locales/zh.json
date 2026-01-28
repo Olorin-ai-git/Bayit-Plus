@@ -2021,9 +2021,10 @@
         "draft": "Draft"
       },
       "type": {
-        "movie": "Movie",
-        "series": "Series"
+        "movie": "电影",
+        "series": "剧集"
       },
+      "noEpisodes": "无剧集",
       "merge": {
         "mergeSuccess": "Series merged successfully"
       },

@@ -1264,6 +1264,7 @@
         "movie": "Película",
         "series": "Serie"
       },
+      "noEpisodes": "Sin Episodios",
       "merge": {
         "mergeSuccess": "Serie fusionada exitosamente"
       },

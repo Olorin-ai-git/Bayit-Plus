@@ -931,6 +931,13 @@
       "users": "Utilisateurs",
       "revenue": "Revenus",
       "subscriptions": "Abonnements"
+    },
+    "content": {
+      "noEpisodes": "Aucun Épisode",
+      "type": {
+        "movie": "Film",
+        "series": "Série"
+      }
     }
   },
   "cultures": {

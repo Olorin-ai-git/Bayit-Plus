@@ -64,9 +64,11 @@ async def list_all_series(
 
     # Defensive filtering: Exclude episodes even if data is malformed
     # Parent series should NEVER have season/episode numbers
+    # Also exclude series with no episodes from user-facing endpoints
     filters = {
         "is_published": True,
         "is_series": True,
+        "total_episodes": {"$gt": 0},  # Hide series without episodes
         "$or": [
             {"series_id": None},
             {"series_id": {"$exists": False}},

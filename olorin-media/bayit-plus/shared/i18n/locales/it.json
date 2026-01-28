@@ -806,6 +806,13 @@
     "dashboard": {
       "title": "Dashboard",
       "subtitle": "Panoramica del sistema"
+    },
+    "content": {
+      "noEpisodes": "Nessun Episodio",
+      "type": {
+        "movie": "Film",
+        "series": "Serie"
+      }
     }
   },
   "cultures": {

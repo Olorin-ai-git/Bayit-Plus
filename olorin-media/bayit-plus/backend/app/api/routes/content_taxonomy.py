@@ -385,17 +385,20 @@ async def browse_content(
     """
     skip = (page - 1) * limit
 
-    # Build MongoDB filter
-    content_filter = {
-        "is_published": True,
-        # Exclude episodes (series_id set) and quality variants
-        "$or": [
-            {"series_id": None},
-            {"series_id": {"$exists": False}},
-            {"series_id": ""},
-        ],
-        "is_quality_variant": {"$ne": True},
-    }
+    # Build MongoDB filter using $and to properly combine multiple $or clauses
+    # Base conditions that always apply
+    and_conditions = [
+        {"is_published": True},
+        {"is_quality_variant": {"$ne": True}},
+        # Exclude episodes (items with series_id set)
+        {
+            "$or": [
+                {"series_id": None},
+                {"series_id": {"$exists": False}},
+                {"series_id": ""},
+            ]
+        },
+    ]
 
     # Resolve section slug to ID if provided
     section_id = None
@@ -404,18 +407,22 @@ async def browse_content(
         section_obj = await ContentSection.find_one(ContentSection.slug == section)
         if section_obj:
             section_id = str(section_obj.id)
-            # Use $in for section_ids array OR fallback to legacy category_id
-            content_filter["$or"] = [
+            # Build section filter with legacy fallback
+            section_or = [
                 {"section_ids": section_id},
                 {"primary_section_id": section_id},
             ]
 
             # If no new taxonomy data exists, try legacy mapping
-            # This enables gradual migration
             legacy_category_map = _get_legacy_category_mapping()
             if section in legacy_category_map:
                 legacy_slugs = legacy_category_map[section]
-                content_filter["$or"].append({"category_name": {"$in": legacy_slugs}})
+                section_or.append({"category_name": {"$in": legacy_slugs}})
+
+            and_conditions.append({"$or": section_or})
+
+    # Build the content_filter from and_conditions
+    content_filter = {"$and": and_conditions}
 
     # Resolve subcategory
     if subcategory and section_id:
@@ -454,17 +461,16 @@ async def browse_content(
 
     # Apply content format filter
     if content_format:
-        # Try new field first, fallback to legacy
-        content_filter["$or"] = content_filter.get("$or", [])
-        content_filter["$or"].extend(
-            [
-                {"content_format": content_format},
-                {"content_type": content_format},
-            ]
-        )
+        format_or = [
+            {"content_format": content_format},
+            {"content_type": content_format},
+        ]
         # Handle series format specially
         if content_format == "series":
-            content_filter["$or"].append({"is_series": True})
+            format_or.append({"is_series": True})
+            # Hide series without episodes from user-facing browse
+            content_filter["total_episodes"] = {"$gt": 0}
+        and_conditions.append({"$or": format_or})
 
     # Determine sort
     sort_direction = -1 if sort_order == "desc" else 1
@@ -571,18 +577,7 @@ async def get_section_content(
     section_id = str(section.id)
     skip = (page - 1) * limit
 
-    # Build filter with both new and legacy support
-    content_filter = {
-        "is_published": True,
-        "$or": [
-            {"series_id": None},
-            {"series_id": {"$exists": False}},
-            {"series_id": ""},
-        ],
-        "is_quality_variant": {"$ne": True},
-    }
-
-    # Add section filter with legacy fallback
+    # Build section filter with legacy fallback
     section_filters = [
         {"section_ids": section_id},
         {"primary_section_id": section_id},
@@ -593,7 +588,27 @@ async def get_section_content(
     if section_slug in legacy_map:
         section_filters.append({"category_name": {"$in": legacy_map[section_slug]}})
 
-    content_filter["$or"] = section_filters
+    # Build filter - use $and to combine episode exclusion with section matching
+    content_filter = {
+        "is_published": True,
+        "is_quality_variant": {"$ne": True},
+        "$and": [
+            # Exclude episodes (items with series_id set)
+            {
+                "$or": [
+                    {"series_id": None},
+                    {"series_id": {"$exists": False}},
+                    {"series_id": ""},
+                ]
+            },
+            # Match section by section_ids, primary_section_id, or legacy category
+            {"$or": section_filters},
+        ],
+    }
+
+    # Exclude series without episodes from user-facing section browsing
+    if section_slug == "series":
+        content_filter["total_episodes"] = {"$gt": 0}
 
     # Add subcategory filter if provided
     if subcategory:
