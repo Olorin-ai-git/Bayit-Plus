@@ -199,7 +199,12 @@ export default function PodcastEpisodesPage() {
     {
       key: 'title',
       label: t('admin.content.columns.title', { defaultValue: 'Title' }),
-      render: (title: string) => <Text style={styles.cellText}>{title}</Text>,
+      align: 'center',
+      render: (title: string, item: PodcastEpisode) => (
+        <Text style={styles.cellText}>
+          {item.episode_number} | {title}
+        </Text>
+      ),
     },
     {
       key: 'duration',
@@ -228,7 +233,7 @@ export default function PodcastEpisodesPage() {
             title=""
             onPress={() => handleTranslate(item.id)}
             disabled={translating === item.id || status === 'processing'}
-            icon={translating === item.id ? <RefreshCw size={16} color={colors.primary} /> : <Languages size={16} color={colors.primary} />}
+            icon={translating === item.id ? <RefreshCw size={16} color={colors.primary} /> : <Plus size={16} color={colors.primary} />}
             style={styles.translateBtn}
             accessibilityLabel={t('admin.podcasts.translateEpisode', { defaultValue: 'Translate episode' })}
           />
