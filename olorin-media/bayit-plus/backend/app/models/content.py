@@ -484,6 +484,7 @@ class Podcast(Document):
     latest_episode_date: Optional[datetime] = None
 
     is_active: bool = True
+    is_featured: bool = False
     order: int = 0
 
     created_at: datetime = Field(default_factory=datetime.utcnow)

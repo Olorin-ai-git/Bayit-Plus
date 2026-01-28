@@ -260,6 +260,7 @@ export interface Podcast {
   episode_count: number
   latest_episode_date?: string
   is_active: boolean
+  is_featured: boolean
   order: number
   created_at: string
   updated_at: string
@@ -284,6 +285,7 @@ export interface PodcastCreateInput {
   episode_count?: number
   latest_episode_date?: string
   is_active?: boolean
+  is_featured?: boolean
   order?: number
 }
 
@@ -306,6 +308,7 @@ export interface PodcastUpdateInput {
   episode_count?: number
   latest_episode_date?: string
   is_active?: boolean
+  is_featured?: boolean
   order?: number
 }
 
