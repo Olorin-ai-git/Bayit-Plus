@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { View, Text, Pressable, Image, ActivityIndicator, ScrollView, StyleSheet } from 'react-native'
+import { Sun, Calendar, Flame, Radio, Film } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ritualService } from '../../services/api'
 import logger from '@/utils/logger'
 import { GlassView, GlassButton } from '@bayit/shared/ui'
+import { colors } from '@olorin/design-tokens'
 
 interface PlaylistItem {
   id: string
@@ -34,6 +36,36 @@ interface AIBrief {
 interface MorningRitualProps {
   onComplete?: () => void
   onSkip?: () => void
+}
+
+/**
+ * Get content type label with icon
+ */
+function getContentTypeLabel(type: string, t: any): React.ReactNode {
+  const iconProps = { size: 12, style: { marginRight: 4 } };
+  switch (type) {
+    case 'live':
+      return (
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Flame {...iconProps} color="#ef4444" />
+          <Text className="text-[11px] text-gray-500">{t('ritual.typeLive')}</Text>
+        </View>
+      );
+    case 'radio':
+      return (
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Radio {...iconProps} color={colors.primary.DEFAULT} />
+          <Text className="text-[11px] text-gray-500">{t('ritual.typeRadio')}</Text>
+        </View>
+      );
+    default:
+      return (
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Film {...iconProps} color={colors.primary.DEFAULT} />
+          <Text className="text-[11px] text-gray-500">{t('ritual.typeVideo')}</Text>
+        </View>
+      );
+  }
 }
 
 /**
@@ -118,7 +150,7 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
     return (
       <View className="flex-1 bg-[#0a0a0f]">
         <View className="flex-1 items-center justify-center gap-4">
-          <Text className="text-[64px] mb-4">☀️</Text>
+          <Sun size={64} color={colors.primary.DEFAULT} className="mb-4" />
           <ActivityIndicator size="large" color="#A855F7" />
           <Text className="text-lg text-white mt-4">{t('ritual.preparingRitual')}</Text>
         </View>
@@ -137,7 +169,7 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
       {showBrief && aiBrief && (
         <View className="absolute top-0 left-0 right-0 bottom-0 items-center justify-center bg-black/80 z-[100]">
           <GlassView className="max-w-[500px] p-8 items-center" intensity="high">
-            <Text className="text-[64px] mb-4">☀️</Text>
+            <Sun size={64} color={colors.primary.DEFAULT} className="mb-4" />
             <Text className="text-[28px] font-bold text-white text-center mb-4">{t('ritual.greeting')}</Text>
             <Text className="text-base text-gray-400 text-center mb-2">{t('ritual.israelUpdate')}</Text>
             <Text className="text-sm text-gray-500 text-center mb-6">{t('ritual.recommendation')}</Text>
@@ -149,13 +181,13 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
                 <Text className="text-base font-semibold text-white">{aiBrief.israel_context?.israel_time}</Text>
               </View>
               <View className="items-center gap-1">
-                <Text className="text-2xl">📅</Text>
+                <Calendar size={28} color={colors.primary.DEFAULT} />
                 <Text className="text-xs text-gray-500">{t('ritual.day')}</Text>
                 <Text className="text-base font-semibold text-white">{aiBrief.israel_context?.day_name_he}</Text>
               </View>
               {aiBrief.israel_context?.is_shabbat && (
                 <View className="items-center gap-1 bg-amber-500/10 px-4 py-2 rounded-xl">
-                  <Text className="text-2xl">🕯️</Text>
+                  <Flame size={28} color="#f59e0b" />
                   <Text className="text-base font-semibold text-amber-500">{t('clock.shabbatShalom')}</Text>
                 </View>
               )}
@@ -177,7 +209,10 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
           {/* Header */}
           <View className="flex-row justify-between items-center mb-6">
             <View className="flex-row items-center gap-4">
-              <Text className="text-2xl font-bold text-white">☀️ {t('ritual.title')}</Text>
+              <View className="flex-row items-center gap-2">
+                <Sun size={28} color={colors.primary.DEFAULT} />
+                <Text className="text-2xl font-bold text-white">{t('ritual.title')}</Text>
+              </View>
               <Text className="text-sm text-gray-500">{ritualData?.local_time}</Text>
             </View>
             <View className="flex-row gap-2">
@@ -270,10 +305,7 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
                     <Text className="text-sm font-medium text-white max-w-[120px]" numberOfLines={1}>
                       {item.title}
                     </Text>
-                    <Text className="text-[11px] text-gray-500">
-                      {item.type === 'live' ? `🔴 ${t('ritual.typeLive')}` :
-                       item.type === 'radio' ? `📻 ${t('ritual.typeRadio')}` : `🎬 ${t('ritual.typeVideo')}`}
-                    </Text>
+                    {getContentTypeLabel(item.type, t)}
                   </View>
                   {index === currentIndex && <View className="w-2 h-2 rounded-full bg-purple-500 ml-2" />}
                 </Pressable>

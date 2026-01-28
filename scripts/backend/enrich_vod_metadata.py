@@ -209,18 +209,28 @@ async def main(dry_run: bool = False, limit: int = None):
     try:
         await connect_db()
 
-        # Query all content
+        # Query all content (excluding audiobooks and podcasts)
         logger.info("🔍 Scanning VOD library...")
 
         all_content = await Content.find_all().to_list()
         logger.info(f"📊 Total content items: {len(all_content)}")
 
-        # Filter content that needs enrichment
+        # Filter content that needs enrichment (exclude audiobooks and podcasts)
         needs_update = []
+        excluded_count = 0
         for content in all_content:
+            # Skip audiobooks and podcasts
+            content_type = getattr(content, "content_type", None)
+            if content_type and content_type.lower() in ("audiobook", "podcast"):
+                excluded_count += 1
+                continue
+
             needs, missing = needs_enrichment(content)
             if needs:
                 needs_update.append((content, missing))
+
+        if excluded_count > 0:
+            logger.info(f"⏭️  Excluded {excluded_count} audiobooks/podcasts from enrichment")
 
         logger.info(f"📋 Content needing enrichment: {len(needs_update)}")
 

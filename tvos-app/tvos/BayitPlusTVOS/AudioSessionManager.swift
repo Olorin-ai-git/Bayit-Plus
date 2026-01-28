@@ -22,14 +22,18 @@ import MediaPlayer
 import React
 
 @objc(AudioSessionManager)
-class AudioSessionManager: NSObject, RCTBridgeModule {
+class AudioSessionManager: RCTEventEmitter {
 
-    static func moduleName() -> String! {
+    override static func moduleName() -> String! {
         return "AudioSessionManager"
     }
 
-    static func requiresMainQueueSetup() -> Bool {
+    override static func requiresMainQueueSetup() -> Bool {
         return true
+    }
+
+    override func supportedEvents() -> [String]! {
+        return ["onAudioInterruption"]
     }
 
     // MARK: - Audio Session Configuration
@@ -46,7 +50,7 @@ class AudioSessionManager: NSObject, RCTBridgeModule {
                 try audioSession.setCategory(
                     .playback,
                     mode: .moviePlayback,
-                    options: [.allowAirPlay, .allowBluetooth]
+                    options: [.allowAirPlay]
                 )
 
             case "voice":
@@ -62,7 +66,7 @@ class AudioSessionManager: NSObject, RCTBridgeModule {
                 try audioSession.setCategory(
                     .playAndRecord,
                     mode: .spokenAudio,
-                    options: [.duckOthers, .allowBluetooth]
+                    options: [.duckOthers]
                 )
 
             case "tts":
@@ -119,7 +123,9 @@ class AudioSessionManager: NSObject, RCTBridgeModule {
                 case "duckOthers":
                     optionsEnum.insert(.duckOthers)
                 case "allowBluetooth":
-                    optionsEnum.insert(.allowBluetooth)
+                    if #available(tvOS 17.0, *) {
+                        optionsEnum.insert(.allowBluetooth)
+                    }
                 case "allowAirPlay":
                     optionsEnum.insert(.allowAirPlay)
                 default:

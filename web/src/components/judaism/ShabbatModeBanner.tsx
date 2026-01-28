@@ -128,8 +128,8 @@ export function ShabbatModeBanner({
           <div className="flex items-center gap-3">
             {/* Animated candles */}
             <div className="flex gap-1">
-              <span className="text-2xl animate-pulse">🕯️</span>
-              <span className="text-2xl animate-pulse" style={{ animationDelay: '0.5s' }}>🕯️</span>
+              <Flame size={24} color="#f59e0b" className="animate-pulse" />
+              <Flame size={24} color="#f59e0b" className="animate-pulse" style={{ animationDelay: '0.5s' }} />
             </div>
 
             <div>

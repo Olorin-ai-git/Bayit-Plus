@@ -1,73 +1,58 @@
-"""
-Location service endpoints for geolocation and reverse geocoding.
-
-Endpoints:
-- POST /location/reverse-geocode: Convert coordinates to city/state
-- POST /users/preferences/location: Save user's location preferences
-"""
-
+"""Location endpoints for reverse geocoding coordinates to city/state."""
 import logging
-from typing import Optional
-
-from fastapi import APIRouter, Query
-
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from app.core.rate_limiter import limiter
+from app.models.location_schemas import ReverseGeocodeResponse
 from app.services.location_service import LocationService
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get("/location/reverse-geocode")
+def get_location_service() -> LocationService:
+    """Dependency injection for LocationService."""
+    return LocationService()
+
+
+@router.get("/location/reverse-geocode", response_model=ReverseGeocodeResponse)
+@limiter.limit("30/minute")
 async def reverse_geocode(
+    request: Request,
     latitude: float = Query(..., description="Geographic latitude"),
     longitude: float = Query(..., description="Geographic longitude"),
-):
-    """
-    Convert geographic coordinates to city/state/county.
-
-    Uses reverse geocoding (GeoNames API) to convert coordinates to location data.
-    Results are cached for 24 hours for efficiency.
-
-    Query Parameters:
-        latitude: Geographic latitude (required)
-        longitude: Geographic longitude (required)
-
-    Returns:
-        {
-            "city": string,
-            "state": string,
-            "county": string or null,
-            "latitude": float,
-            "longitude": float,
-            "source": "geonames" or "cache"
-        }
-    """
+    service: LocationService = Depends(get_location_service),
+) -> ReverseGeocodeResponse:
+    """Convert coordinates to city/state/county using reverse geocoding."""
     try:
-        service = LocationService()
         location = await service.reverse_geocode(latitude, longitude)
-
         if location:
-            logger.info(f"Reverse geocode: ({latitude}, {longitude}) -> {location.city}, {location.state}")
-            return location.to_dict()
-
-        logger.warning(
-            f"No location found for coordinates: ({latitude}, {longitude})"
+            logger.info(
+                "Reverse geocode successful",
+                extra={
+                    "latitude": latitude,
+                    "longitude": longitude,
+                    "city": location.city,
+                    "state": location.state,
+                },
+            )
+            return ReverseGeocodeResponse(
+                city=location.city,
+                state=location.state,
+                county=location.county,
+                latitude=location.latitude,
+                longitude=location.longitude,
+                timestamp=location.timestamp,
+                source=location.source,
+            )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Could not determine location for coordinates",
         )
-        return {
-            "error": "Location not found",
-            "message": f"Could not determine location for coordinates ({latitude}, {longitude})",
-        }
-
-    except ValueError as e:
-        logger.error(f"Validation error in reverse_geocode: {e}")
-        return {
-            "error": "Validation error",
-            "message": str(e),
-        }
-
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Error in reverse_geocode: {e}", exc_info=True)
-        return {
-            "error": "Internal server error",
-            "message": "Failed to reverse geocode coordinates",
-        }
+        logger.error("Reverse geocoding failed", extra={"error": str(e)})
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to reverse geocode coordinates",
+        )

@@ -11,13 +11,26 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Pressable, Image, StyleSheet, Animated } from 'react-native';
 import { config } from '../config/appConfig';
+import { getContentPosterUrl, extractYouTubeVideoId, getYouTubeThumbnailUrl } from '@bayit/shared-utils/youtube';
+import { formatContentMetadata, formatDuration } from '@bayit/shared-utils/metadataFormatters';
+import { GlassBadgeTV } from './GlassBadgeTV';
 
 export interface ContentCardProps {
   id: string;
   title: string;
   subtitle?: string;
   thumbnail?: string;
+  backdrop?: string;
+  poster_url?: string;
+  stream_url?: string;
   type?: string;
+  year?: number;
+  duration?: string | number;
+  rating?: string | number;
+  imdb_rating?: number;
+  available_subtitle_languages?: string[];
+  created_at?: string;
+  published_at?: string;
   focused: boolean;
   hasTVPreferredFocus?: boolean;
   onPress: () => void;
@@ -28,13 +41,61 @@ export const ContentCard: React.FC<ContentCardProps> = ({
   title,
   subtitle,
   thumbnail,
+  backdrop,
+  poster_url,
+  stream_url,
   type,
+  year,
+  duration,
+  rating,
+  imdb_rating,
+  available_subtitle_languages,
+  created_at,
+  published_at,
   focused,
   hasTVPreferredFocus = false,
   onPress,
 }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const borderAnim = useRef(new Animated.Value(0)).current;
+
+  // Implement robust image fallback chain
+  const imageUrl = getContentPosterUrl({ backdrop, thumbnail, poster_url, stream_url });
+
+  // Generate metadata subtitle if not provided
+  const metadataSubtitle = subtitle || formatContentMetadata({
+    year,
+    duration,
+    rating,
+    imdb_rating,
+  });
+
+  // Add subtitle language indicator
+  const subtitleCount = available_subtitle_languages?.length || 0;
+  const finalSubtitle = subtitleCount > 0
+    ? `${metadataSubtitle}${metadataSubtitle ? ' • ' : ''}🎬 ${subtitleCount} lang${subtitleCount === 1 ? '' : 's'}`
+    : metadataSubtitle;
+
+  // Determine if content is new (< 7 days old)
+  const isNew = () => {
+    const dateStr = created_at || published_at;
+    if (!dateStr) return false;
+
+    const contentDate = new Date(dateStr);
+    const now = new Date();
+    const daysDiff = (now.getTime() - contentDate.getTime()) / (1000 * 60 * 60 * 24);
+    return daysDiff < 7;
+  };
+
+  // Determine if rating is high (>= 8.0)
+  const isHighRating = () => {
+    const numericRating = typeof rating === 'number' ? rating : imdb_rating;
+    return numericRating ? numericRating >= 8.0 : false;
+  };
+
+  const showNewBadge = isNew();
+  const showRatingBadge = isHighRating();
+  const numericRating = typeof rating === 'number' ? rating : imdb_rating;
 
   // Animate focus effects
   useEffect(() => {
@@ -79,9 +140,9 @@ export const ContentCard: React.FC<ContentCardProps> = ({
       >
         {/* Thumbnail */}
         <View style={styles.thumbnailContainer}>
-          {thumbnail ? (
+          {imageUrl ? (
             <Image
-              source={{ uri: thumbnail }}
+              source={{ uri: imageUrl }}
               style={styles.thumbnail}
               resizeMode="cover"
               accessibilityIgnoresInvertColors
@@ -91,6 +152,14 @@ export const ContentCard: React.FC<ContentCardProps> = ({
               <View style={styles.placeholder} />
             </View>
           )}
+
+          {/* Badges overlay on thumbnail */}
+          <View style={styles.badgeContainer}>
+            {showNewBadge && <GlassBadgeTV variant="new" />}
+            {showRatingBadge && numericRating && (
+              <GlassBadgeTV variant="rating" value={numericRating.toFixed(1)} />
+            )}
+          </View>
         </View>
 
         {/* Content overlay */}
@@ -99,9 +168,9 @@ export const ContentCard: React.FC<ContentCardProps> = ({
             <Text style={styles.title} numberOfLines={2} ellipsizeMode="tail">
               {title}
             </Text>
-            {subtitle && (
-              <Text style={styles.subtitle} numberOfLines={1} ellipsizeMode="tail">
-                {subtitle}
+            {finalSubtitle && (
+              <Text style={styles.subtitle} numberOfLines={2} ellipsizeMode="tail">
+                {finalSubtitle}
               </Text>
             )}
           </View>
@@ -143,6 +212,13 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 12,
     backgroundColor: 'rgba(168,85,247,0.2)',
+  },
+  badgeContainer: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    flexDirection: 'row',
+    gap: 8,
   },
   contentOverlay: {
     flex: 1,

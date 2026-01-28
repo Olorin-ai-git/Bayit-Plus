@@ -225,6 +225,9 @@ class User(Document):
             # Location detection settings
             "detected_location": None,  # { city, state, county, latitude, longitude, timestamp, source }
             "location_permission": "prompt",  # granted, denied, prompt
+            "location_consent_given": False,  # GDPR: explicit user consent for location tracking
+            "location_consent_timestamp": None,  # When consent was given (ISO datetime)
+            "location_data_retention_days": 90,  # User's preference for how long to keep location data
         }
     )
 

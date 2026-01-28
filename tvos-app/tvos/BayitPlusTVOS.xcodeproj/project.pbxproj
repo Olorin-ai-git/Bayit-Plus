@@ -14,7 +14,7 @@
 		45BDFBDD62E343974C1AB406 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		4A1C738B6D5D633376C22637 /* TTSModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B2D2FE3D422406DA162D25E6 /* TTSModule.m */; };
 		501DAFA7672748C5DEF9901A /* AudioSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BE1EB1015260738EAADD070 /* AudioSessionManager.swift */; };
-		56E6425F69FA74250C66AF2A /* Speech.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4954C1E1E7B17D57F71CCC /* Speech.framework */; };
+		56E6425F69FA74250C66AF2A /* Speech.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4954C1E1E7B17D57F71CCC /* Speech.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		7E222CDEC5D47ECC13379C5C /* SpeechModule.m in Sources */ = {isa = PBXBuildFile; fileRef = E3682FB57777CB3EE91D65CE /* SpeechModule.m */; };
 		7EEF91AA013AD859F3C3BA18 /* TTSModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED37F5FD975919FA830DB86D /* TTSModule.swift */; };
@@ -59,7 +59,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C80B921A6F3F58F76C31292 /* libPods-BayitPlusTVOS.a in Frameworks */,
-				56E6425F69FA74250C66AF2A /* Speech.framework in Frameworks */,
 				42613BB406F006DAEF71A816 /* AVFoundation.framework in Frameworks */,
 				94CF192C7AF47A74BC3D146D /* MediaPlayer.framework in Frameworks */,
 				E81768068826264CF6F6FA65 /* TVServices.framework in Frameworks */,

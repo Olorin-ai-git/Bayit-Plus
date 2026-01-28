@@ -144,22 +144,17 @@ class SceneSearchIntentHandler: INExtension, INPlayMediaIntentHandling {
 
     private func parseMediaType(from mediaSearch: INMediaSearch) -> String {
         // Map INMediaItemType to our content types
-        if let mediaType = mediaSearch.mediaType {
-            switch mediaType {
-            case .tvShow, .tvShowEpisode:
-                return "series"
-            case .movie:
-                return "movie"
-            case .podcast, .podcastEpisode:
-                return "podcast"
-            case .music, .musicVideo, .radioStation:
-                return "radio"
-            default:
-                return "all"
-            }
+        let mediaType = mediaSearch.mediaType
+        switch mediaType {
+        case .tvShow, .tvShowEpisode:
+            return "series"
+        case .movie:
+            return "movie"
+        case .music, .musicVideo, .radioStation:
+            return "radio"
+        default:
+            return "all"
         }
-
-        return "all"
     }
 }
 

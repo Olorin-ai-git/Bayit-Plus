@@ -77,12 +77,12 @@ export function useSearchSuggestions(): UseSearchSuggestionsReturn {
 
         // Fallback categories when API fails
         const fallbackCategories: Category[] = [
-          { name: 'Movies', emoji: '🎬', filters: { content_types: ['vod'] } },
-          { name: 'Series', emoji: '📺', filters: { content_types: ['vod'] } },
-          { name: 'Kids', emoji: '👶', filters: { is_kids_content: true } },
-          { name: 'Comedy', emoji: '😂', filters: { genres: ['Comedy'] } },
-          { name: 'Drama', emoji: '🎭', filters: { genres: ['Drama'] } },
-          { name: 'Documentaries', emoji: '🎥', filters: { genres: ['Documentary'] } },
+          { name: 'Movies', emoji: 'Film', filters: { content_types: ['vod'] } },
+          { name: 'Series', emoji: 'Tv', filters: { content_types: ['vod'] } },
+          { name: 'Kids', emoji: 'Users', filters: { is_kids_content: true } },
+          { name: 'Comedy', emoji: 'Smile', filters: { genres: ['Comedy'] } },
+          { name: 'Drama', emoji: 'Theater', filters: { genres: ['Drama'] } },
+          { name: 'Documentaries', emoji: 'Binoculars', filters: { genres: ['Documentary'] } },
         ];
 
         // Fallback trending searches

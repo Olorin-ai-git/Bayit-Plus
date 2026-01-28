@@ -3,7 +3,7 @@ import { View, Text, Pressable, ScrollView, StyleSheet, Image } from 'react-nati
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, X, AlertCircle, Music } from 'lucide-react'
-import { GlassInput, GlassButton, GlassCheckbox, GlassPageHeader } from '@bayit/shared/ui'
+import { GlassInput, GlassButton, GlassCheckbox, GlassPageHeader, GlassModal } from '@bayit/shared/ui'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import { GlassTable, GlassTableCell } from '@bayit/shared/ui/web'
 import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags'
@@ -194,7 +194,7 @@ export default function PodcastsPage() {
     {
       key: 'actions',
       label: '',
-      width: 150,
+      width: 220,
       render: (_: any, item: Podcast) => (
         <View style={[styles.actionsCell, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <Link to={`/admin/podcasts/${item.id}/episodes`} style={{ textDecoration: 'none' }}>
@@ -204,7 +204,9 @@ export default function PodcastsPage() {
               icon={<Music size={18} color="#a78bfa" />}
               style={styles.actionButton}
               accessibilityLabel={t('admin.podcasts.viewEpisodes', { defaultValue: 'View episodes' })}
-            />
+            >
+              {t('admin.podcasts.viewEpisodes', { defaultValue: 'Episodes' })}
+            </GlassButton>
           </Link>
           <GlassButton
             variant="ghost"
@@ -213,7 +215,9 @@ export default function PodcastsPage() {
             icon={<Edit size={18} color="#60a5fa" />}
             style={styles.actionButton}
             accessibilityLabel={t('admin.podcasts.editPodcast', { defaultValue: 'Edit podcast' })}
-          />
+          >
+            {t('admin.common.edit', { defaultValue: 'Edit' })}
+          </GlassButton>
           <GlassButton
             variant="ghost"
             size="sm"
@@ -222,7 +226,9 @@ export default function PodcastsPage() {
             icon={<Trash2 size={18} color="#f87171" />}
             style={[styles.actionButton, deleting === item.id && styles.disabledButton]}
             accessibilityLabel={t('admin.podcasts.deletePodcast', { defaultValue: 'Delete podcast' })}
-          />
+          >
+            {t('common.delete', { defaultValue: 'Delete' })}
+          </GlassButton>
         </View>
       ),
     },
@@ -270,11 +276,25 @@ export default function PodcastsPage() {
         </View>
       )}
 
-      {editingId && (
-        <View style={styles.editForm}>
-          <Text style={styles.formTitle}>
-            {editingId === 'new' ? 'New Podcast' : 'Edit Podcast'}
-          </Text>
+      <GlassModal
+        visible={editingId !== null}
+        title={editingId === 'new' ? t('admin.podcasts.newTitle', { defaultValue: 'New Podcast' }) : t('admin.podcasts.editTitle', { defaultValue: 'Edit Podcast' })}
+        onClose={() => setEditingId(null)}
+        dismissable={false}
+        buttons={[
+          {
+            text: t('admin.common.cancel', { defaultValue: 'Cancel' }),
+            style: 'cancel',
+            onPress: () => setEditingId(null),
+          },
+          {
+            text: t('admin.common.save', { defaultValue: 'Save' }),
+            style: 'default',
+            onPress: handleSaveEdit,
+          },
+        ]}
+      >
+        <ScrollView style={styles.modalContent}>
           <GlassInput
             label={t('admin.podcasts.form.title', 'Podcast title')}
             containerStyle={styles.input}
@@ -320,29 +340,13 @@ export default function PodcastsPage() {
           />
           <View style={styles.checkboxRow}>
             <GlassCheckbox
-              label={t('admin.common.active')}
+              label={t('admin.common.active', { defaultValue: 'Active' })}
               checked={editData.is_active || false}
               onChange={(checked) => setEditData({ ...editData, is_active: checked })}
             />
           </View>
-          <View style={styles.formActions}>
-            <GlassButton
-              variant="secondary"
-              onPress={() => setEditingId(null)}
-              accessibilityLabel={t('admin.common.cancel')}
-            >
-              {t('admin.common.cancel')}
-            </GlassButton>
-            <GlassButton
-              variant="primary"
-              onPress={handleSaveEdit}
-              accessibilityLabel={t('admin.common.savePodcast', { defaultValue: 'Save podcast' })}
-            >
-              {t('admin.common.save')}
-            </GlassButton>
-          </View>
-        </View>
-      )}
+        </ScrollView>
+      </GlassModal>
 
       <GlassTable
         columns={columns}
@@ -410,28 +414,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#ef4444',
   },
-  editForm: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
-  },
-  formTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
+  modalContent: {
+    maxHeight: 400,
   },
   input: {
     marginBottom: spacing.md,
   },
   checkboxRow: {
     marginBottom: spacing.lg,
-  },
-  formActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: spacing.sm,
   },
   itemTitle: {
     fontSize: 14,

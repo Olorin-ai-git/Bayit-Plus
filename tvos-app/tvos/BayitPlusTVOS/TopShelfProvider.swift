@@ -96,9 +96,9 @@ class TopShelfProvider: TVTopShelfContentProvider {
                 }
             }
 
-            // Set subtitle/summary
+            // Set title as display name (summary not available on TVTopShelfSectionedItem)
             if let subtitle = item.subtitle {
-                tvItem.summary = subtitle
+                tvItem.title = "\(item.title) - \(subtitle)"
             }
 
             // Set play action with deep link

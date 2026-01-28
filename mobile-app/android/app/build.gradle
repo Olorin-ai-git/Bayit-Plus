@@ -41,16 +41,46 @@ dependencies {
     implementation "com.facebook.react:react-native:+"
     implementation "com.facebook.react:react-android:+"
 
-    // Google Cast SDK for Chromecast
-    // Version 21.4.0 is latest stable (as of 2026-01)
+    // ExoPlayer for video/audio playback (HLS, DASH, dual audio)
+    implementation "com.google.android.exoplayer:exoplayer:2.20.2"
+    implementation "com.google.android.exoplayer:exoplayer-hls:2.20.2"
+    implementation "com.google.android.exoplayer:exoplayer-dash:2.20.2"
+
+    // Google Play Services
     implementation "com.google.android.gms:play-services-cast-framework:21.4.0"
+    implementation "com.google.android.gms:play-services-mlkit-speech-recognition:16.3.1"
 
     // React Native Google Cast (peer dependency)
     implementation project(":react-native-google-cast")
 
-    // Support libraries
+    // AndroidX Core Libraries
     implementation "androidx.appcompat:appcompat:1.6.1"
     implementation "androidx.multidex:multidex:2.0.1"
+    implementation "androidx.core:core:1.12.0"
+
+    // Biometric Authentication
+    implementation "androidx.biometric:biometric:1.2.0"
+
+    // Encrypted Secure Storage
+    implementation "androidx.security:security-crypto:1.1.0-alpha06"
+
+    // Kotlin Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0"
+
+    // Background Task Scheduling
+    implementation "androidx.work:work-runtime-ktx:2.9.1"
+
+    // Glance for Widgets (API 31+)
+    implementation "androidx.glance:glance-appwidget:1.1.0"
+
+    // Testing
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:5.1.0"
+    testImplementation "org.mockito:mockito-inline:5.2.0"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
+    androidTestImplementation "androidx.test:runner:1.5.2"
 }
 
 // Apply Google Services plugin if using Firebase
