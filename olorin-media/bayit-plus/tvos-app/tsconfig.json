@@ -18,6 +18,8 @@
       "@bayit/shared-shims": ["../shared/shims"],
       "@bayit/shared-assets": ["../shared/assets"],
       "@bayit/shared-assets/*": ["../shared/assets/*"],
+      "@bayit/shared-utils": ["../shared/utils"],
+      "@bayit/shared-utils/*": ["../shared/utils/*"],
       "@olorin/glass-ui": ["../packages/ui/glass-components/dist"],
       "@olorin/glass-ui/*": ["../packages/ui/glass-components/dist/*"]
     }
