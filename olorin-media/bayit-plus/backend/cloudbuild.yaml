@@ -24,7 +24,7 @@ steps:
       - '--max-instances=${_MAX_INSTANCES}'
       - '--port=8080'
       - '--set-env-vars=ENVIRONMENT=production'
-      - '--update-secrets=CSRF_ENABLED=csrf-enabled:latest'
+      - '--update-secrets=CSRF_ENABLED=csrf-enabled:latest,PODCAST_TRANSLATION_ENABLED=podcast-translation-enabled:latest,PODCAST_TRANSLATION_AUTO_START=podcast-translation-auto-start:latest'
 
 images:
   - 'gcr.io/$PROJECT_ID/bayit-backend:$BUILD_ID'
