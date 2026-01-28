@@ -10,7 +10,8 @@
     "tv-app",
     "mobile-app",
     "tvos-app",
-    "partner-portal"
+    "partner-portal",
+    "chrome-extension"
   ],
   "scripts": {
     "olorin": "./scripts/olorin.sh",
@@ -63,6 +64,7 @@
     "changeset:version": "changeset version",
     "changeset:publish": "turbo run build --filter='./packages/**' && changeset publish",
     "prepare": "echo 'Husky disabled - configure later if needed' || true",
+    "postinstall": "patch-package",
     "legacy:build:all": "npm run build:web && npm run build:tv",
     "legacy:build:web": "cd web && npm run build",
     "legacy:build:tv": "cd tv-app && npm run build:web",
@@ -85,6 +87,8 @@
     "husky": "^9.0.0",
     "i18next": "^25.8.0",
     "lint-staged": "^15.0.0",
+    "patch-package": "^8.0.1",
+    "postinstall-postinstall": "^2.1.0",
     "prettier": "^3.2.0",
     "react-i18next": "^16.5.3",
     "syncpack": "^12.0.0",

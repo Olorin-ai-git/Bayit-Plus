@@ -18,8 +18,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\""
   },
   "dependencies": {
-    "@bayit/glass": "workspace:*",
-    "@bayit/shared-i18n": "workspace:*",
+    "@olorin/glass-ui": "*",
+    "@olorin/shared-i18n": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^16.5.3",
@@ -49,7 +49,7 @@
     "tailwindcss": "^3.4.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.8",
-    "vite-plugin-web-extension": "^3.3.0",
+    "vite-plugin-web-extension": "^4.5.0",
     "vitest": "^1.0.4"
   }
 }

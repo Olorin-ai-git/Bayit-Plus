@@ -15,8 +15,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'extension'),
-      '@bayit/glass': resolve(__dirname, '../packages/glass/src'),
-      '@bayit/shared-i18n': resolve(__dirname, '../packages/shared-i18n/src'),
+      '@olorin/glass-ui': resolve(__dirname, '../packages/ui/glass-components/src'),
+      '@olorin/shared-i18n': resolve(__dirname, '../packages/ui/shared-i18n/src'),
     },
   },
   build: {
