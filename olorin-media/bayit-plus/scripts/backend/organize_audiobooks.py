@@ -21,11 +21,12 @@ Usage:
     poetry run python scripts/backend/organize_audiobooks.py [options]
 
 Options:
-    --dry-run       Preview changes without applying them
-    --verbose       Show detailed output
-    --limit N       Limit processing to N audiobooks
-    --fix           Auto-fix issues where possible
-    --report FILE   Save report to file (default: stdout)
+    --dry-run           Preview changes without applying them
+    --verbose           Show detailed output
+    --limit N           Limit processing to N audiobooks
+    --fix               Auto-fix issues where possible
+    --remove-broken     Remove audiobooks with broken (404) stream URLs
+    --report FILE       Save report to file (default: stdout)
 """
 
 import argparse
@@ -98,12 +99,14 @@ class AudiobookOrganizer:
             "titles_cleaned": 0,
             "streams_verified": 0,
             "streams_broken": 0,
+            "streams_removed": 0,
             "metadata_enriched": 0,
             "issues_found": 0,
             "issues_fixed": 0,
             "errors": 0,
         }
         self.issues: list[dict[str, Any]] = []
+        self.broken_audiobooks: list[dict[str, Any]] = []
         self.report_lines: list[str] = []
 
     def log(self, message: str, level: str = "info"):
@@ -879,6 +882,13 @@ class AudiobookOrganizer:
             else:
                 self.stats["streams_broken"] += 1
                 result["issues"].extend(stream_result["issues"])
+                # Track 404 errors for potential removal
+                if "404" in str(stream_result["issues"]):
+                    self.broken_audiobooks.append({
+                        "id": audiobook.get("_id"),
+                        "title": title,
+                        "stream_url": stream_url,
+                    })
 
         # Enrich metadata
         updates = await self.enrich_audiobook_metadata(audiobook, fix)
@@ -890,8 +900,28 @@ class AudiobookOrganizer:
 
         return result
 
+    async def remove_broken_audiobooks(self):
+        """Remove audiobooks with broken (404) stream URLs."""
+        if not self.broken_audiobooks:
+            self.log("\n   No broken audiobooks to remove.")
+            return
+
+        self.log(f"\n   Removing {len(self.broken_audiobooks)} broken audiobooks...")
+
+        for item in self.broken_audiobooks:
+            if self.dry_run:
+                self.log(f"      Would remove: {item['title']}")
+                continue
+
+            result = await self.db.content.delete_one({"_id": item["id"]})
+            if result.deleted_count > 0:
+                self.stats["streams_removed"] += 1
+                self.log(f"      ✅ Removed: {item['title']}")
+            else:
+                self.log(f"      ❌ Failed to remove: {item['title']}", "warning")
+
     async def organize_all_audiobooks(
-        self, limit: Optional[int] = None, fix: bool = False
+        self, limit: Optional[int] = None, fix: bool = False, remove_broken: bool = False
     ):
         """Main method to organize all audiobooks."""
         self.log("=" * 80)
@@ -968,6 +998,13 @@ class AudiobookOrganizer:
                                     "title": part.get("title"),
                                     "issues": stream_result["issues"],
                                 })
+                                # Track 404 errors for potential removal
+                                if "404" in str(stream_result["issues"]):
+                                    self.broken_audiobooks.append({
+                                        "id": part["_id"],
+                                        "title": part.get("title"),
+                                        "stream_url": stream_url,
+                                    })
 
                 except Exception as e:
                     self.stats["errors"] += 1
@@ -995,6 +1032,13 @@ class AudiobookOrganizer:
 
                 await asyncio.sleep(0.3)
 
+        # Remove broken audiobooks if requested
+        if remove_broken and self.broken_audiobooks:
+            self.log("\n" + "-" * 60)
+            self.log("REMOVING BROKEN AUDIOBOOKS")
+            self.log("-" * 60)
+            await self.remove_broken_audiobooks()
+
         # Generate report
         self.generate_report()
 
@@ -1020,6 +1064,7 @@ class AudiobookOrganizer:
         self.log(f"   Titles cleaned:              {self.stats['titles_cleaned']}")
         self.log(f"   Streams verified (OK):       {self.stats['streams_verified']}")
         self.log(f"   Streams broken:              {self.stats['streams_broken']}")
+        self.log(f"   Streams removed:             {self.stats['streams_removed']}")
         self.log(f"   Metadata enriched:           {self.stats['metadata_enriched']}")
         self.log(f"   Total issues found:          {self.stats['issues_found']}")
         self.log(f"   Issues fixed:                {self.stats['issues_fixed']}")
@@ -1091,6 +1136,11 @@ async def main():
     parser.add_argument(
         "--fix", action="store_true", help="Auto-fix issues where possible"
     )
+    parser.add_argument(
+        "--remove-broken",
+        action="store_true",
+        help="Remove audiobooks with broken (404) stream URLs",
+    )
     parser.add_argument("--report", type=str, help="Save report to file")
 
     args = parser.parse_args()
@@ -1109,7 +1159,9 @@ async def main():
         organizer = AudiobookOrganizer(
             db, dry_run=args.dry_run, verbose=args.verbose
         )
-        await organizer.organize_all_audiobooks(limit=args.limit, fix=args.fix)
+        await organizer.organize_all_audiobooks(
+            limit=args.limit, fix=args.fix, remove_broken=args.remove_broken
+        )
 
         if args.report:
             report_content = "\n".join(organizer.report_lines)

@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { GlassCard, GlassSpinner } from '@bayit/glass';
+import { AlertCircle } from 'lucide-react';
 
 export function AudibleCallbackPage() {
   const navigate = useNavigate();
@@ -56,7 +57,9 @@ export function AudibleCallbackPage() {
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-black to-gray-900">
         <GlassCard className="p-8 max-w-md">
           <div className="text-center">
-            <div className="text-red-500 text-5xl mb-4">⚠️</div>
+            <div className="flex justify-center mb-4">
+              <AlertCircle className="w-16 h-16 text-red-500" />
+            </div>
             <h1 className="text-2xl font-bold text-white mb-4">Connection Failed</h1>
             <p className="text-gray-300 mb-6">{error}</p>
             <button

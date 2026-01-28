@@ -35,6 +35,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<false/>
 	<key>NSAppTransportSecurity</key>
@@ -52,13 +54,15 @@
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Bayit+ needs access to your local network to connect to the development server during testing.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Bayit Plus needs access</string>
+	<string>Bayit+ uses your location to show local Israeli TV channels and radio stations available in your area, and to provide location-based content recommendations.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Bayit+ needs microphone access for voice commands and "Hey Bayit" wake word detection.</string>
 	<key>NSSiriUsageDescription</key>
 	<string>Bayit+ integrates with Siri to enable voice commands like "Play Channel 13 on Bayit Plus" and "Resume watching on Bayit Plus".</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Bayit+ uses speech recognition to understand your voice commands for hands-free content control.</string>
+	<key>NSPrivacyPolicyURL</key>
+	<string>https://bayitplus.com/privacy</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>SENTRY_DSN</key>

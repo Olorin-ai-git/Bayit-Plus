@@ -22,6 +22,7 @@
 
 import { API_BASE_URL } from '../config/appConfig';
 import { useAuthStore } from '@olorin/shared-stores';
+import { logger } from '../utils/logger';
 
 // Type definitions
 export interface TTSSynthesizeRequest {
@@ -130,7 +131,7 @@ class BackendProxyService {
 
       return await response.blob();
     } catch (error) {
-      console.error('[backendProxyService] TTS synthesis error:', error);
+      logger.error('TTS synthesis error', { module: 'backendProxyService', error });
       throw error;
     }
   }
@@ -153,7 +154,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      console.error('[backendProxyService] Failed to get TTS voices:', error);
+      logger.error('Failed to get TTS voices', { module: 'backendProxyService', error });
       throw error;
     }
   }
@@ -173,7 +174,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      console.error('[backendProxyService] TTS health check error:', error);
+      logger.error('TTS health check error', { module: 'backendProxyService', error });
       throw error;
     }
   }
@@ -217,7 +218,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      console.error('[backendProxyService] Wake word detection error:', error);
+      logger.error('Wake word detection error', { module: 'backendProxyService', error });
       throw error;
     }
   }
@@ -240,7 +241,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      console.error('[backendProxyService] Failed to get wake word models:', error);
+      logger.error('Failed to get wake word models', { module: 'backendProxyService', error });
       throw error;
     }
   }
@@ -260,7 +261,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      console.error('[backendProxyService] Wake word health check error:', error);
+      logger.error('Wake word health check error', { module: 'backendProxyService', error });
       throw error;
     }
   }
@@ -295,7 +296,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      console.error('[backendProxyService] Analytics tracking error:', error);
+      logger.error('Analytics tracking error', { module: 'backendProxyService', error });
       throw error;
     }
   }
@@ -334,7 +335,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      console.error('[backendProxyService] Batch analytics tracking error:', error);
+      logger.error('Batch analytics tracking error', { module: 'backendProxyService', error });
       throw error;
     }
   }
@@ -354,7 +355,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      console.error('[backendProxyService] Analytics health check error:', error);
+      logger.error('Analytics health check error', { module: 'backendProxyService', error });
       throw error;
     }
   }
@@ -390,7 +391,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      console.error('[backendProxyService] Voice command processing error:', error);
+      logger.error('Voice command processing error', { module: 'backendProxyService', error });
       throw error;
     }
   }
@@ -423,7 +424,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      console.error('[backendProxyService] Failed to get voice suggestions:', error);
+      logger.error('Failed to get voice suggestions', { module: 'backendProxyService', error });
       throw error;
     }
   }
@@ -443,7 +444,7 @@ class BackendProxyService {
 
       return await response.json();
     } catch (error) {
-      console.error('[backendProxyService] Voice health check error:', error);
+      logger.error('Voice health check error', { module: 'backendProxyService', error });
       throw error;
     }
   }

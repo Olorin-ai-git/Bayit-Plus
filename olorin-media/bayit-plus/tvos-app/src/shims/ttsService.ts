@@ -5,6 +5,7 @@
  */
 
 import { EventEmitter } from 'eventemitter3';
+import { logger } from '../utils/logger';
 
 export interface TTSQueueItem {
   id: string;
@@ -25,46 +26,46 @@ export interface TTSConfig {
 }
 
 class TTSServiceShim extends EventEmitter {
-  private isEnabled = false;
+  private _isEnabled = false;
 
   constructor() {
     super();
-    console.log('[TTS] tvOS shim initialized - TTS disabled on this platform');
+    logger.debug('tvOS shim initialized - TTS disabled on this platform', { module: 'TTS' });
   }
 
   async speak(text: string, options?: Partial<TTSQueueItem>): Promise<void> {
-    console.log('[TTS] speak() called on tvOS (no-op):', text.substring(0, 50));
+    logger.debug('speak() called on tvOS (no-op)', { module: 'TTS', textPreview: text.substring(0, 50) });
     // No-op on tvOS
     options?.onComplete?.();
   }
 
   async queueSpeak(text: string, options?: Partial<TTSQueueItem>): Promise<void> {
-    console.log('[TTS] queueSpeak() called on tvOS (no-op)');
+    logger.debug('queueSpeak() called on tvOS (no-op)', { module: 'TTS' });
     options?.onComplete?.();
   }
 
   stop(): void {
-    console.log('[TTS] stop() called on tvOS (no-op)');
+    logger.debug('stop() called on tvOS (no-op)', { module: 'TTS' });
   }
 
   pause(): void {
-    console.log('[TTS] pause() called on tvOS (no-op)');
+    logger.debug('pause() called on tvOS (no-op)', { module: 'TTS' });
   }
 
   resume(): void {
-    console.log('[TTS] resume() called on tvOS (no-op)');
+    logger.debug('resume() called on tvOS (no-op)', { module: 'TTS' });
   }
 
   clearQueue(): void {
-    console.log('[TTS] clearQueue() called on tvOS (no-op)');
+    logger.debug('clearQueue() called on tvOS (no-op)', { module: 'TTS' });
   }
 
   setLanguage(language: 'he' | 'en' | 'es'): void {
-    console.log('[TTS] setLanguage() called on tvOS:', language);
+    logger.debug('setLanguage() called on tvOS', { module: 'TTS', language });
   }
 
   setVoice(voiceId: string): void {
-    console.log('[TTS] setVoice() called on tvOS:', voiceId);
+    logger.debug('setVoice() called on tvOS', { module: 'TTS', voiceId });
   }
 
   getConfig(): TTSConfig {
@@ -78,7 +79,7 @@ class TTSServiceShim extends EventEmitter {
   }
 
   updateConfig(config: Partial<TTSConfig>): void {
-    console.log('[TTS] updateConfig() called on tvOS:', config);
+    logger.debug('updateConfig() called on tvOS', { module: 'TTS', config });
   }
 
   isPlayingAudio(): boolean {
@@ -90,17 +91,17 @@ class TTSServiceShim extends EventEmitter {
   }
 
   enable(): void {
-    this.isEnabled = true;
-    console.log('[TTS] enabled on tvOS (but remains no-op)');
+    this._isEnabled = true;
+    logger.debug('enabled on tvOS (but remains no-op)', { module: 'TTS' });
   }
 
   disable(): void {
-    this.isEnabled = false;
-    console.log('[TTS] disabled on tvOS');
+    this._isEnabled = false;
+    logger.debug('disabled on tvOS', { module: 'TTS' });
   }
 
   isEnabled(): boolean {
-    return this.isEnabled;
+    return this._isEnabled;
   }
 }
 

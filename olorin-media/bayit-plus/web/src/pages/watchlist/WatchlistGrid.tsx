@@ -3,6 +3,8 @@ import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassCard } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
+import { colors } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { WatchlistCard } from './WatchlistCard';
 import { z } from 'zod';
 
@@ -49,7 +51,9 @@ const EmptyState: React.FC = () => {
   return (
     <View className="flex-1 justify-center items-center py-[60px]">
       <GlassCard className="p-12 items-center">
-        <Text className="text-[64px] mb-4">📋</Text>
+        <View className="mb-4">
+          <NativeIcon name="discover" size="xl" color={colors.textMuted} />
+        </View>
         <Text className="text-[20px] font-semibold text-white mb-2" style={[isRTL ? styles.textRight : styles.textLeft]}>
           {t('watchlist.empty')}
         </Text>

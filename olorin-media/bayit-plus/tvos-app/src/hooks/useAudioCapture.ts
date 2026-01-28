@@ -7,6 +7,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { NativeEventEmitter, Platform, TurboModuleRegistry } from 'react-native';
+import { logger } from '../utils/logger';
 
 // Get the TurboModule
 const AudioCaptureModule = TurboModuleRegistry.get('AudioCaptureModule');
@@ -53,7 +54,7 @@ export function useAudioCapture(options: UseAudioCaptureOptions = {}): UseAudioC
   // Set up event listeners
   useEffect(() => {
     if (!isSupported || !AudioCaptureModule) {
-      console.log('[AudioCapture] Module not available');
+      logger.debug('Module not available', { module: 'AudioCapture' });
       return;
     }
 
@@ -103,7 +104,7 @@ export function useAudioCapture(options: UseAudioCaptureOptions = {}): UseAudioC
         errorSubscription,
       ];
 
-      console.log('[AudioCapture] Event listeners set up successfully');
+      logger.info('Event listeners set up successfully', { module: 'AudioCapture' });
 
       // Check if already listening
       (AudioCaptureModule as any).isCurrentlyListening()
@@ -120,7 +121,7 @@ export function useAudioCapture(options: UseAudioCaptureOptions = {}): UseAudioC
         subscriptionsRef.current = [];
       };
     } catch (err) {
-      console.error('[AudioCapture] Failed to set up event listeners:', err);
+      logger.error('Failed to set up event listeners', { module: 'AudioCapture', error: err });
       const setupError = err instanceof Error ? err : new Error('Failed to set up audio capture');
       setError(setupError);
       onError?.(setupError);
@@ -141,7 +142,7 @@ export function useAudioCapture(options: UseAudioCaptureOptions = {}): UseAudioC
 
       if (result.status === 'listening' || result.status === 'already_listening') {
         setIsListening(true);
-        console.log('[AudioCapture] Started listening');
+        logger.info('Started listening', { module: 'AudioCapture' });
       }
     } catch (err: any) {
       const captureError = new Error(err.message || 'Failed to start listening');
@@ -164,7 +165,7 @@ export function useAudioCapture(options: UseAudioCaptureOptions = {}): UseAudioC
       setIsListening(false);
       setAudioLevel({ average: 0, peak: 0 });
 
-      console.log('[AudioCapture] Stopped listening');
+      logger.info('Stopped listening', { module: 'AudioCapture' });
       return result.audioFilePath || null;
     } catch (err: any) {
       const captureError = new Error(err.message || 'Failed to stop listening');
@@ -203,7 +204,7 @@ export function useAudioCapture(options: UseAudioCaptureOptions = {}): UseAudioC
     try {
       await (AudioCaptureModule as any).clearBuffer();
     } catch (err: any) {
-      console.warn('[AudioCapture] Failed to clear buffer:', err.message);
+      logger.warn('Failed to clear buffer', { module: 'AudioCapture', error: err.message });
     }
   }, [isSupported]);
 

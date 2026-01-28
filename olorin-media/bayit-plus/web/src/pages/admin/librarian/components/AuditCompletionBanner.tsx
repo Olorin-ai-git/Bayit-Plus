@@ -24,11 +24,11 @@ export const AuditCompletionBanner = ({ report }: AuditCompletionBannerProps) =>
   const getStatusIcon = () => {
     switch (report.status) {
       case 'completed':
-        return '✓ ';
+        return '[✓] ';
       case 'failed':
-        return '✗ ';
+        return '[✗] ';
       default:
-        return '⚠ ';
+        return '[!] ';
     }
   };
 

@@ -66,7 +66,7 @@ const VODPage = lazy(() => import('./pages/VODPage'))
 const RadioPage = lazy(() => import('./pages/RadioPage'))
 const PodcastsPage = lazy(() => import('./pages/PodcastsPage'))
 const AudiobooksPage = lazy(() => import('./pages/audiobooks/AudiobooksPage'))
-const AudiobookDetailPage = lazy(() => import('./pages/audiobooks/AudiobookDetailPage'))
+const AudiobookPlayerPage = lazy(() => import('./pages/audiobooks/AudiobookPlayerPage'))
 const SearchPage = lazy(() => import('./pages/SearchPage'))
 const ProfilePage = lazy(() => import('./pages/ProfilePage'))
 const SubscribePage = lazy(() => import('./pages/SubscribePage'))
@@ -84,6 +84,7 @@ const TVLoginPage = lazy(() => import('./pages/TVLoginPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const HelpPage = lazy(() => import('./pages/HelpPage'))
 const SupportPage = lazy(() => import('./pages/SupportPage'))
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 const UserWidgetsPage = lazy(() => import('./pages/UserWidgetsPage'))
 const EPGPage = lazy(() => import('./pages/EPGPage'))
 const ChessPage = lazy(() => import('./pages/ChessPage'))
@@ -214,7 +215,7 @@ const AppContent = () => {
         <Route path="/podcasts" element={<PodcastsPage />} />
         <Route path="/podcasts/:showId" element={<WatchPage type="podcast" />} />
         <Route path="/audiobooks" element={<AudiobooksPage />} />
-        <Route path="/audiobooks/:audiobookId" element={<AudiobookDetailPage />} />
+        <Route path="/audiobooks/:audiobookId" element={<AudiobookPlayerPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/subscribe" element={<SubscribePage />} />
@@ -230,6 +231,7 @@ const AppContent = () => {
         <Route path="/morning-ritual" element={<MorningRitualPage />} />
         <Route path="/widgets" element={<UserWidgetsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

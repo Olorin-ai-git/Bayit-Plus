@@ -7,6 +7,7 @@
  */
 
 import { Linking } from 'react-native'
+import { logger } from '../utils/logger'
 
 export interface SceneSearchIntentParams {
   query: string
@@ -48,7 +49,7 @@ export async function handleSceneSearchIntent(params: SceneSearchIntentParams): 
       await Linking.openURL(url)
     }
   } catch (error) {
-    console.error('Failed to handle scene search intent:', error)
+    logger.error('Failed to handle scene search intent', { module: 'SceneSearchIntent', error })
   }
 }
 
@@ -59,6 +60,6 @@ export async function handleSceneSearchIntent(params: SceneSearchIntentParams): 
 export function registerSceneSearchShortcuts(): void {
   // Register with iOS/tvOS Shortcuts system
   if (__DEV__) {
-    console.log('[SceneSearch] Siri shortcuts registered for tvOS')
+    logger.debug('Siri shortcuts registered for tvOS', { module: 'SceneSearchIntent' })
   }
 }

@@ -177,6 +177,10 @@ export default function Footer() {
                 </View>
               </View>
               <View style={styles.rightBottomSection}>
+                <Link to="/privacy" style={styles.link}>
+                  <Text style={styles.linkText}>{t('footer.privacy', 'Privacy Policy')}</Text>
+                </Link>
+                <View style={styles.separator} />
                 <Link to="/sitemap" style={styles.link}>
                   <Text style={styles.linkText}>{t('footer.sitemap', 'Sitemap')}</Text>
                 </Link>

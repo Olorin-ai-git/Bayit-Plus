@@ -1,4 +1,6 @@
 {
   "name": "BayitPlusTVOS",
-  "displayName": "Bayit+ TV"
+  "displayName": "Bayit+ TV",
+  "version": "1.0.0",
+  "description": "Bayit+ tvOS App - Israeli Content Streaming for Apple TV with Voice-First Interface"
 }

@@ -12,6 +12,7 @@ import type {
   AudiobookSearchSuggestion,
   AudiobookSearchResponse,
   AudiobookFeaturedSection,
+  AudiobookWithChapters,
 } from '../types/audiobook'
 
 const CACHE_TTL_FEATURED = 5 * 60 * 1000 // 5 minutes
@@ -80,6 +81,20 @@ export const audiobookService = {
     if (cached) return cached
 
     const data = await api.get<Audiobook>(`/audiobooks/${id}`)
+    setCacheEntry(cacheKey, data, CACHE_TTL_LIST)
+    return data
+  },
+
+  /**
+   * Get audiobook with chapters for player page
+   * Returns audiobook metadata plus list of chapters/parts
+   */
+  getAudiobookWithChapters: async (id: string): Promise<AudiobookWithChapters> => {
+    const cacheKey = `audiobook:chapters:${id}`
+    const cached = getCacheEntry<AudiobookWithChapters>(cacheKey)
+    if (cached) return cached
+
+    const data = await api.get<AudiobookWithChapters>(`/audiobooks/${id}/chapters`)
     setCacheEntry(cacheKey, data, CACHE_TTL_LIST)
     return data
   },

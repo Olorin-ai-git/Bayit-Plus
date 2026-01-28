@@ -3,6 +3,7 @@ import { View, Text, ScrollView, ActivityIndicator, Pressable, StyleSheet } from
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Mail, Bell, Users, TrendingUp } from 'lucide-react';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import StatCard from '@/components/admin/StatCard';
 import { marketingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -80,7 +81,7 @@ export default function MarketingDashboardPage() {
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorIcon}>⚠️</Text>
+        <NativeIcon name="discover" size="xl" color={colors.error.DEFAULT} />
         <Text className="flex-1 text-red-500 text-sm">{error}</Text>
         <GlassButton title={t('common.retry')} onPress={loadData} variant="primary" />
       </View>
@@ -132,20 +133,20 @@ export default function MarketingDashboardPage() {
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.marketing.emailMetrics')}</Text>
         <View style={styles.statsGrid}>
-          <StatCard title={t('admin.marketingDashboard.sent', { defaultValue: 'Sent' })} value={metrics.emailsSent.toLocaleString()} icon="📧" color="primary" to="/admin/emails" />
-          <StatCard title={t('admin.marketingDashboard.emailOpenRate')} value={`${metrics.emailOpenRate}%`} icon="📬" color="success" />
-          <StatCard title={t('admin.marketingDashboard.clickRate', { defaultValue: 'Click Rate' })} value={`${metrics.emailClickRate}%`} icon="🖱️" color="secondary" />
-          <StatCard title={t('admin.marketingDashboard.unsubscribeRate', { defaultValue: 'Unsubscribe Rate' })} value={`${metrics.unsubscribeRate}%`} icon="🚫" color={metrics.unsubscribeRate > 2 ? 'error' : 'success'} />
+          <StatCard title={t('admin.marketingDashboard.sent', { defaultValue: 'Sent' })} value={metrics.emailsSent.toLocaleString()} icon={<NativeIcon name="discover" size="md" color={colors.primary.DEFAULT} />} color="primary" to="/admin/emails" />
+          <StatCard title={t('admin.marketingDashboard.emailOpenRate')} value={`${metrics.emailOpenRate}%`} icon={<NativeIcon name="discover" size="md" color="#22C55E" />} color="success" />
+          <StatCard title={t('admin.marketingDashboard.clickRate', { defaultValue: 'Click Rate' })} value={`${metrics.emailClickRate}%`} icon={<NativeIcon name="discover" size="md" color="#8B5CF6" />} color="secondary" />
+          <StatCard title={t('admin.marketingDashboard.unsubscribeRate', { defaultValue: 'Unsubscribe Rate' })} value={`${metrics.unsubscribeRate}%`} icon={<NativeIcon name="discover" size="md" color={metrics.unsubscribeRate > 2 ? '#EF4444' : '#22C55E'} />} color={metrics.unsubscribeRate > 2 ? 'error' : 'success'} />
         </View>
       </View>
 
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.marketing.pushMetrics')}</Text>
         <View style={styles.statsGrid}>
-          <StatCard title={t('admin.marketingDashboard.sent', { defaultValue: 'Sent' })} value={metrics.pushSent.toLocaleString()} icon="🔔" color="warning" to="/admin/push" />
-          <StatCard title={t('admin.marketingDashboard.openRate', { defaultValue: 'Open Rate' })} value={`${metrics.pushOpenRate}%`} icon="👆" color="success" />
-          <StatCard title={t('admin.marketingDashboard.activeSegments')} value={metrics.activeSegments.toString()} icon="👥" color="primary" />
-          <StatCard title={t('admin.marketingDashboard.conversionRate', { defaultValue: 'Conversion Rate' })} value={`${metrics.conversionRate}%`} icon="🎯" color="success" />
+          <StatCard title={t('admin.marketingDashboard.sent', { defaultValue: 'Sent' })} value={metrics.pushSent.toLocaleString()} icon={<NativeIcon name="discover" size="md" color="#F59E0B" />} color="warning" to="/admin/push" />
+          <StatCard title={t('admin.marketingDashboard.openRate', { defaultValue: 'Open Rate' })} value={`${metrics.pushOpenRate}%`} icon={<NativeIcon name="discover" size="md" color="#22C55E" />} color="success" />
+          <StatCard title={t('admin.marketingDashboard.activeSegments')} value={metrics.activeSegments.toString()} icon={<NativeIcon name="discover" size="md" color={colors.primary.DEFAULT} />} color="primary" />
+          <StatCard title={t('admin.marketingDashboard.conversionRate', { defaultValue: 'Conversion Rate' })} value={`${metrics.conversionRate}%`} icon={<NativeIcon name="discover" size="md" color="#22C55E" />} color="success" />
         </View>
       </View>
 

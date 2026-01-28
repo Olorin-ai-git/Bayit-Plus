@@ -7,6 +7,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors, spacing, fontSize } from '@olorin/design-tokens';
 import { CheckCircle, XCircle, Loader } from 'lucide-react';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import type { UploadStageState } from '../../types';
 import { UPLOAD_STAGE_ICONS } from '../../constants';
 import { useTranslation } from 'react-i18next';
@@ -58,10 +59,10 @@ export const UploadStageIndicator: React.FC<UploadStageIndicatorProps> = ({
       return <Loader size={compact ? 16 : 20} color={color} className="animate-spin" />;
     }
 
-    // Pending - show stage emoji
+    // Pending - show stage icon
     const stageIconKey = stageKey.replace(/([A-Z])/g, '_$1').toLowerCase();
-    const icon = UPLOAD_STAGE_ICONS[stageIconKey] || '⭘';
-    return <Text style={[styles.emoji, { opacity: 0.4 }]}>{icon}</Text>;
+    const iconName = UPLOAD_STAGE_ICONS[stageIconKey] || 'discover';
+    return <NativeIcon name={iconName} size={compact ? 'sm' : 'md'} color={color} />;
   };
 
   return (
@@ -124,9 +125,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
-  },
-  emoji: {
-    fontSize: fontSize.md,
   },
   stageLabel: {
     fontSize: fontSize.xs,

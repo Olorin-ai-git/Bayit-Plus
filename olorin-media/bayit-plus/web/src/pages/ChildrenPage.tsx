@@ -6,6 +6,7 @@ import { Play, Clock, Baby, Lock } from 'lucide-react';
 import { useProfileStore } from '@/stores/profileStore';
 import { childrenService } from '../services/api';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import {
   GlassCard,
   GlassButton,
@@ -21,36 +22,36 @@ import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
-const CATEGORY_ICONS: Record<string, string> = {
-  all: '🌈',
-  cartoons: '🎬',
-  educational: '📚',
-  music: '🎵',
-  hebrew: 'א',
-  stories: '📖',
-  jewish: '✡️',
+const CATEGORY_ICON_NAMES: Record<string, string> = {
+  all: 'discover',
+  cartoons: 'vod',
+  educational: 'info',
+  music: 'podcasts',
+  hebrew: 'info',
+  stories: 'info',
+  jewish: 'judaism',
 };
 
-const SUBCATEGORY_ICONS: Record<string, string> = {
-  'learning-hebrew': 'א',
-  'young-science': '🔬',
-  'math-fun': '🔢',
-  'nature-animals': '🦁',
-  'interactive': '🎮',
-  'hebrew-songs': '🎶',
-  'nursery-rhymes': '👶',
-  'kids-movies': '🎬',
-  'kids-series': '📺',
-  'jewish-holidays': '🕎',
-  'torah-stories': '📜',
-  'bedtime-stories': '🌙',
+const SUBCATEGORY_ICON_NAMES: Record<string, string> = {
+  'learning-hebrew': 'info',
+  'young-science': 'info',
+  'math-fun': 'info',
+  'nature-animals': 'discover',
+  'interactive': 'discover',
+  'hebrew-songs': 'podcasts',
+  'nursery-rhymes': 'info',
+  'kids-movies': 'vod',
+  'kids-series': 'vod',
+  'jewish-holidays': 'judaism',
+  'torah-stories': 'judaism',
+  'bedtime-stories': 'discover',
 };
 
-const AGE_GROUP_ICONS: Record<string, string> = {
-  toddlers: '👶',
-  preschool: '🧒',
-  elementary: '👧',
-  preteen: '🧑',
+const AGE_GROUP_ICON_NAMES: Record<string, string> = {
+  toddlers: 'discover',
+  preschool: 'discover',
+  elementary: 'discover',
+  preteen: 'discover',
 };
 
 interface KidsContentItem {
@@ -93,7 +94,7 @@ interface AgeGroup {
 
 function KidsContentCard({ item }: { item: KidsContentItem }) {
   const [isHovered, setIsHovered] = useState(false);
-  const categoryIcon = CATEGORY_ICONS[item.category || 'all'] || '🌈';
+  const categoryIconName = CATEGORY_ICON_NAMES[item.category || 'all'] || 'discover';
 
   return (
     <Link to={`/vod/${item.id}`} style={{ textDecoration: 'none', flex: 1 }}>
@@ -110,12 +111,12 @@ function KidsContentCard({ item }: { item: KidsContentItem }) {
                 type="generic"
                 aspectRatio="16:9"
                 size="medium"
-                icon={<Text style={styles.categoryIconLarge}>{categoryIcon}</Text>}
+                icon={<NativeIcon name={categoryIconName} size="xl" color={colors.textMuted} />}
                 label={item.category || 'Kids'}
               />
             )}
             <View style={styles.categoryBadge}>
-              <Text style={styles.categoryBadgeText}>{categoryIcon}</Text>
+              <NativeIcon name={categoryIconName} size="sm" color="#713f12" />
             </View>
             {item.age_rating !== undefined && (
               <View style={styles.ageRatingBadge}>
@@ -367,18 +368,22 @@ export default function ChildrenPage() {
         {/* Main Categories */}
         {categories.length > 0 && (
           <View style={styles.categoriesContainer}>
-            {categories.map((category) => (
-              <GlassCategoryPill
-                key={category.id}
-                label={getLocalizedName(category, i18n.language)}
-                emoji={CATEGORY_ICONS[category.id] || '🌈'}
-                isActive={selectedCategory === category.id && !selectedSubcategory && !selectedAgeGroup}
-                onPress={() => handleCategorySelect(category.id)}
-              />
-            ))}
+            {categories.map((category) => {
+              const iconName = CATEGORY_ICON_NAMES[category.id] || 'discover';
+              const isActive = selectedCategory === category.id && !selectedSubcategory && !selectedAgeGroup;
+              return (
+                <GlassCategoryPill
+                  key={category.id}
+                  label={getLocalizedName(category, i18n.language)}
+                  icon={<NativeIcon name={iconName} size="sm" color={isActive ? colors.primary : colors.textMuted} />}
+                  isActive={isActive}
+                  onPress={() => handleCategorySelect(category.id)}
+                />
+              );
+            })}
             <GlassCategoryPill
               label={t('taxonomy.subcategories.title')}
-              emoji="📂"
+              icon={<NativeIcon name="discover" size="sm" color={showSubcategories ? colors.primary : colors.textMuted} />}
               isActive={showSubcategories}
               onPress={() => setShowSubcategories(!showSubcategories)}
             />
@@ -388,15 +393,19 @@ export default function ChildrenPage() {
         {/* Subcategories (expandable) */}
         {showSubcategories && filteredSubcategories.length > 0 && (
           <View style={styles.subcategoriesContainer}>
-            {filteredSubcategories.map((subcategory) => (
-              <GlassCategoryPill
-                key={subcategory.slug}
-                label={getLocalizedName(subcategory, i18n.language)}
-                emoji={SUBCATEGORY_ICONS[subcategory.slug] || '📁'}
-                isActive={selectedSubcategory === subcategory.slug}
-                onPress={() => handleSubcategorySelect(subcategory.slug)}
-              />
-            ))}
+            {filteredSubcategories.map((subcategory) => {
+              const iconName = SUBCATEGORY_ICON_NAMES[subcategory.slug] || 'discover';
+              const isActive = selectedSubcategory === subcategory.slug;
+              return (
+                <GlassCategoryPill
+                  key={subcategory.slug}
+                  label={getLocalizedName(subcategory, i18n.language)}
+                  icon={<NativeIcon name={iconName} size="sm" color={isActive ? colors.primary : colors.textMuted} />}
+                  isActive={isActive}
+                  onPress={() => handleSubcategorySelect(subcategory.slug)}
+                />
+              );
+            })}
           </View>
         )}
 
@@ -405,24 +414,28 @@ export default function ChildrenPage() {
           <View style={styles.ageGroupSection}>
             <Text style={styles.ageGroupTitle}>{t('taxonomy.subcategories.ageGroups.title')}</Text>
             <View style={styles.ageGroupsContainer}>
-              {ageGroups.map((group) => (
-                <Pressable
-                  key={group.slug}
-                  style={[
-                    styles.ageGroupButton,
-                    selectedAgeGroup === group.slug && styles.ageGroupButtonActive
-                  ]}
-                  onPress={() => handleAgeGroupSelect(selectedAgeGroup === group.slug ? '' : group.slug)}
-                >
-                  <Text style={styles.ageGroupIcon}>{AGE_GROUP_ICONS[group.slug] || '👤'}</Text>
-                  <Text style={[
-                    styles.ageGroupText,
-                    selectedAgeGroup === group.slug && styles.ageGroupTextActive
-                  ]}>
-                    {getLocalizedName(group, i18n.language)}
-                  </Text>
-                </Pressable>
-              ))}
+              {ageGroups.map((group) => {
+                const isActive = selectedAgeGroup === group.slug;
+                const iconName = AGE_GROUP_ICON_NAMES[group.slug] || 'discover';
+                return (
+                  <Pressable
+                    key={group.slug}
+                    style={[
+                      styles.ageGroupButton,
+                      isActive && styles.ageGroupButtonActive
+                    ]}
+                    onPress={() => handleAgeGroupSelect(isActive ? '' : group.slug)}
+                  >
+                    <NativeIcon name={iconName} size="sm" color={isActive ? '#facc15' : colors.textMuted} />
+                    <Text style={[
+                      styles.ageGroupText,
+                      isActive && styles.ageGroupTextActive
+                    ]}>
+                      {getLocalizedName(group, i18n.language)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
             </View>
           </View>
         )}
@@ -448,7 +461,7 @@ export default function ChildrenPage() {
           />
         ) : (
           <EmptyState
-            icon={<Text style={styles.emptyIcon}>🌈</Text>}
+            icon={<NativeIcon name="discover" size="xl" color="#facc15" />}
             title={t('children.noContent')}
             description={t('children.tryAnotherCategory')}
             titleColor="#facc15"

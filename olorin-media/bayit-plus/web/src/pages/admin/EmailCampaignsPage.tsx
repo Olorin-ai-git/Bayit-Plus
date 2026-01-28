@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, Pressable, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Plus, Send, Eye, Mail } from 'lucide-react';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { marketingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { GlassCard, GlassButton, GlassInput, GlassModal, GlassPageHeader } from '@bayit/shared/ui';
@@ -190,25 +191,25 @@ export default function EmailCampaignsPage() {
           <StatCard
             title={t('admin.emailCampaigns.stats.total', 'Total')}
             value={stats.total.toString()}
-            icon="📊"
+            icon={<NativeIcon name="discover" size="md" color={colors.primary.DEFAULT} />}
             color="primary"
           />
           <StatCard
             title={t('admin.emailCampaigns.stats.sent', 'Sent')}
             value={stats.sent.toString()}
-            icon="✅"
+            icon={<NativeIcon name="info" size="md" color="#22C55E" />}
             color="success"
           />
           <StatCard
             title={t('admin.emailCampaigns.stats.recipients', 'Recipients')}
             value={stats.total_recipients.toLocaleString()}
-            icon="👥"
+            icon={<NativeIcon name="discover" size="md" color="#8B5CF6" />}
             color="secondary"
           />
           <StatCard
             title={t('admin.emailCampaigns.stats.openRate', 'Open Rate')}
             value={`${stats.open_rate}%`}
-            icon="📧"
+            icon={<NativeIcon name="discover" size="md" color="#F59E0B" />}
             color="warning"
           />
         </View>
@@ -316,10 +317,10 @@ export default function EmailCampaignsPage() {
                 {campaign.sent_count && campaign.sent_count > 0 ? (
                   <>
                     <Text style={styles.metricText}>
-                      📧 {calculateRate(campaign.opened_count || 0, campaign.sent_count)}
+                      {t('admin.emailCampaigns.opened', 'Opened')}: {calculateRate(campaign.opened_count || 0, campaign.sent_count)}
                     </Text>
                     <Text style={styles.metricText}>
-                      🔗 {calculateRate(campaign.clicked_count || 0, campaign.sent_count)}
+                      {t('admin.emailCampaigns.clicked', 'Clicked')}: {calculateRate(campaign.clicked_count || 0, campaign.sent_count)}
                     </Text>
                   </>
                 ) : (

@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, Image, TextInput, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Play, Clock, Users, Lock, TrendingUp, Newspaper } from 'lucide-react';
+import { Play, Clock, Users, Lock, TrendingUp, Newspaper, Target } from 'lucide-react';
 import { useProfileStore } from '@/stores/profileStore';
 import { youngstersService } from '../services/api';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassCard, GlassButton, GlassCategoryPill, GlassModal } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import { useDirection } from '@/hooks/useDirection';
@@ -13,47 +14,47 @@ import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
-const CATEGORY_ICONS: Record<string, string> = {
-  all: '🎯',
-  trending: '🔥',
-  news: '📰',
-  culture: '🎭',
-  educational: '📚',
-  music: '🎵',
-  entertainment: '🎬',
-  sports: '⚽',
-  tech: '💻',
-  judaism: '✡️',
+const CATEGORY_ICON_NAMES: Record<string, string> = {
+  all: 'discover',
+  trending: 'discover',
+  news: 'info',
+  culture: 'discover',
+  educational: 'info',
+  music: 'podcasts',
+  entertainment: 'vod',
+  sports: 'discover',
+  tech: 'discover',
+  judaism: 'judaism',
 };
 
-const SUBCATEGORY_ICONS: Record<string, string> = {
-  'tiktok-trends': '📱',
-  'viral-videos': '🔥',
-  'memes': '😂',
-  'israel-news': '🇮🇱',
-  'world-news': '🌍',
-  'science-news': '🔬',
-  'sports-news': '⚽',
-  'music-culture': '🎵',
-  'film-culture': '🎬',
-  'art-culture': '🎨',
-  'food-culture': '🍕',
-  'study-help': '📖',
-  'career-prep': '💼',
-  'life-skills': '🛠️',
-  'teen-movies': '🍿',
-  'teen-series': '📺',
-  'gaming': '🎮',
-  'coding': '💻',
-  'gadgets': '📱',
-  'bar-bat-mitzvah': '🎉',
-  'teen-torah': '📜',
-  'jewish-history': '🕎',
+const SUBCATEGORY_ICON_NAMES: Record<string, string> = {
+  'tiktok-trends': 'discover',
+  'viral-videos': 'discover',
+  'memes': 'discover',
+  'israel-news': 'info',
+  'world-news': 'info',
+  'science-news': 'info',
+  'sports-news': 'discover',
+  'music-culture': 'podcasts',
+  'film-culture': 'vod',
+  'art-culture': 'discover',
+  'food-culture': 'discover',
+  'study-help': 'info',
+  'career-prep': 'discover',
+  'life-skills': 'discover',
+  'teen-movies': 'vod',
+  'teen-series': 'vod',
+  'gaming': 'discover',
+  'coding': 'discover',
+  'gadgets': 'discover',
+  'bar-bat-mitzvah': 'discover',
+  'teen-torah': 'judaism',
+  'jewish-history': 'judaism',
 };
 
-const AGE_GROUP_ICONS: Record<string, string> = {
-  'middle-school': '🧑',
-  'high-school': '👨',
+const AGE_GROUP_ICON_NAMES: Record<string, string> = {
+  'middle-school': 'discover',
+  'high-school': 'discover',
 };
 
 interface YoungstersContentItem {
@@ -96,7 +97,7 @@ interface AgeGroup {
 
 function YoungstersContentCard({ item }: { item: YoungstersContentItem }) {
   const [isHovered, setIsHovered] = useState(false);
-  const categoryIcon = CATEGORY_ICONS[item.category || 'all'] || '🎯';
+  const categoryIconName = CATEGORY_ICON_NAMES[item.category || 'all'] || 'discover';
 
   return (
     <Link to={`/vod/${item.id}`} style={{ textDecoration: 'none', flex: 1 }}>
@@ -110,11 +111,11 @@ function YoungstersContentCard({ item }: { item: YoungstersContentItem }) {
               <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} resizeMode="cover" />
             ) : (
               <View style={styles.thumbnailPlaceholder}>
-                <Text style={styles.placeholderIcon}>{categoryIcon}</Text>
+                <NativeIcon name={categoryIconName} size="xl" color={colors.textMuted} />
               </View>
             )}
             <View style={styles.categoryBadge}>
-              <Text style={styles.categoryIcon}>{categoryIcon}</Text>
+              <NativeIcon name={categoryIconName} size="sm" color="#581c87" />
             </View>
             {item.age_rating !== undefined && (
               <View style={styles.ageBadge}>
@@ -368,30 +369,34 @@ export default function YoungstersPage() {
         {/* Main Categories */}
         {categories.length > 0 && (
           <View style={styles.categories}>
-            {categories.map((category) => (
-              <GlassCategoryPill
-                key={category.id}
-                label={getLocalizedName(category, i18n.language)}
-                emoji={CATEGORY_ICONS[category.id] || '🎯'}
-                isActive={selectedCategory === category.id && !selectedSubcategory && !selectedAgeGroup}
-                onPress={() => handleCategorySelect(category.id)}
-              />
-            ))}
+            {categories.map((category) => {
+              const iconName = CATEGORY_ICON_NAMES[category.id] || 'discover';
+              const isActive = selectedCategory === category.id && !selectedSubcategory && !selectedAgeGroup;
+              return (
+                <GlassCategoryPill
+                  key={category.id}
+                  label={getLocalizedName(category, i18n.language)}
+                  icon={<NativeIcon name={iconName} size="sm" color={isActive ? colors.primary : colors.textMuted} />}
+                  isActive={isActive}
+                  onPress={() => handleCategorySelect(category.id)}
+                />
+              );
+            })}
             <GlassCategoryPill
               label={t('taxonomy.subcategories.title')}
-              emoji="📂"
+              icon={<NativeIcon name="discover" size="sm" color={showSubcategories ? colors.primary : colors.textMuted} />}
               isActive={showSubcategories}
               onPress={() => setShowSubcategories(!showSubcategories)}
             />
             <GlassCategoryPill
               label={t('youngsters.trending')}
-              emoji="🔥"
+              icon={<NativeIcon name="discover" size="sm" color={showTrending ? colors.primary : colors.textMuted} />}
               isActive={showTrending}
               onPress={() => setShowTrending(!showTrending)}
             />
             <GlassCategoryPill
               label={t('youngsters.news')}
-              emoji="📰"
+              icon={<NativeIcon name="info" size="sm" color={showNews ? colors.primary : colors.textMuted} />}
               isActive={showNews}
               onPress={() => setShowNews(!showNews)}
             />
@@ -401,15 +406,19 @@ export default function YoungstersPage() {
         {/* Subcategories (expandable) */}
         {showSubcategories && filteredSubcategories.length > 0 && (
           <View style={styles.subcategories}>
-            {filteredSubcategories.map((subcategory) => (
-              <GlassCategoryPill
-                key={subcategory.slug}
-                label={getLocalizedName(subcategory, i18n.language)}
-                emoji={SUBCATEGORY_ICONS[subcategory.slug] || '📁'}
-                isActive={selectedSubcategory === subcategory.slug}
-                onPress={() => handleSubcategorySelect(subcategory.slug)}
-              />
-            ))}
+            {filteredSubcategories.map((subcategory) => {
+              const iconName = SUBCATEGORY_ICON_NAMES[subcategory.slug] || 'discover';
+              const isActive = selectedSubcategory === subcategory.slug;
+              return (
+                <GlassCategoryPill
+                  key={subcategory.slug}
+                  label={getLocalizedName(subcategory, i18n.language)}
+                  icon={<NativeIcon name={iconName} size="sm" color={isActive ? colors.primary : colors.textMuted} />}
+                  isActive={isActive}
+                  onPress={() => handleSubcategorySelect(subcategory.slug)}
+                />
+              );
+            })}
           </View>
         )}
 
@@ -418,24 +427,28 @@ export default function YoungstersPage() {
           <View style={styles.ageGroups}>
             <Text style={styles.filterLabel}>{t('taxonomy.subcategories.ageGroups.title')}</Text>
             <View style={styles.ageGroupPills}>
-              {ageGroups.map((group) => (
-                <Pressable
-                  key={group.slug}
-                  style={[
-                    styles.ageGroupPill,
-                    selectedAgeGroup === group.slug && styles.ageGroupPillActive
-                  ]}
-                  onPress={() => handleAgeGroupSelect(selectedAgeGroup === group.slug ? '' : group.slug)}
-                >
-                  <Text style={styles.ageGroupEmoji}>{AGE_GROUP_ICONS[group.slug] || '👤'}</Text>
-                  <Text style={[
-                    styles.ageGroupText,
-                    selectedAgeGroup === group.slug && styles.ageGroupTextActive
-                  ]}>
-                    {getLocalizedName(group, i18n.language)}
-                  </Text>
-                </Pressable>
-              ))}
+              {ageGroups.map((group) => {
+                const isActive = selectedAgeGroup === group.slug;
+                const iconName = AGE_GROUP_ICON_NAMES[group.slug] || 'discover';
+                return (
+                  <Pressable
+                    key={group.slug}
+                    style={[
+                      styles.ageGroupPill,
+                      isActive && styles.ageGroupPillActive
+                    ]}
+                    onPress={() => handleAgeGroupSelect(isActive ? '' : group.slug)}
+                  >
+                    <NativeIcon name={iconName} size="sm" color={isActive ? '#a855f7' : colors.textMuted} />
+                    <Text style={[
+                      styles.ageGroupText,
+                      isActive && styles.ageGroupTextActive
+                    ]}>
+                      {getLocalizedName(group, i18n.language)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
             </View>
           </View>
         )}
@@ -462,7 +475,7 @@ export default function YoungstersPage() {
           />
         ) : (
           <EmptyState
-            icon={<Text style={styles.emptyIcon}>🎯</Text>}
+            icon={<Target size={48} color="#a855f7" />}
             title={t('youngsters.noContent')}
             description={t('youngsters.tryAnotherCategory')}
             titleColor="#a855f7"
@@ -725,10 +738,6 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     alignItems: 'center',
     backgroundColor: 'rgba(168, 85, 247, 0.1)',
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: spacing.md,
   },
   emptyTitle: {
     fontSize: 20,

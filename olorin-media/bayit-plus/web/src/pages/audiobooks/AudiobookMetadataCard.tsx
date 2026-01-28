@@ -5,6 +5,7 @@
 
 import { View, Text, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { NativeIcon } from '@olorin/shared-icons/native'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassCard } from '@bayit/shared/ui'
 import type { Audiobook } from '@/types/audiobook'
@@ -60,7 +61,10 @@ export default function AudiobookMetadataCard({ audiobook }: AudiobookMetadataCa
       {audiobook.avg_rating > 0 && (
         <GlassCard style={styles.ratingContainer}>
           <Text style={styles.ratingLabel}>{t('audiobooks.averageRating', 'Average Rating')}</Text>
-          <Text style={styles.rating}>⭐ {audiobook.avg_rating.toFixed(1)} / 5.0</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+            <NativeIcon name="info" size="sm" color={colors.accent} />
+            <Text style={styles.rating}>{audiobook.avg_rating.toFixed(1)} / 5.0</Text>
+          </View>
         </GlassCard>
       )}
     </View>

@@ -6,6 +6,7 @@ import { RefreshCw, UserPlus, Tag, Mail, BarChart3 } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import { dashboardService } from '@/services/adminApi';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassCard, GlassButton, GlassPageHeader } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
@@ -41,17 +42,17 @@ const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
 };
 
-const getActivityIcon = (action: string) => {
+const getActivityIconName = (action: string) => {
   const lowerAction = action.toLowerCase();
-  if (lowerAction.includes('user')) return '👤';
-  if (lowerAction.includes('subscription')) return '📦';
-  if (lowerAction.includes('payment')) return '💰';
-  if (lowerAction.includes('campaign')) return '🎯';
-  if (lowerAction.includes('login')) return '🔑';
-  if (lowerAction.includes('widget')) return '📺';
-  if (lowerAction.includes('channel')) return '📡';
-  if (lowerAction.includes('content')) return '🎬';
-  return '📋';
+  if (lowerAction.includes('user')) return 'discover';
+  if (lowerAction.includes('subscription')) return 'discover';
+  if (lowerAction.includes('payment')) return 'discover';
+  if (lowerAction.includes('campaign')) return 'discover';
+  if (lowerAction.includes('login')) return 'discover';
+  if (lowerAction.includes('widget')) return 'discover';
+  if (lowerAction.includes('channel')) return 'live';
+  if (lowerAction.includes('content')) return 'vod';
+  return 'discover';
 };
 
 // Format activity details - handle nested objects
@@ -145,7 +146,7 @@ export default function AdminDashboardPage() {
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorEmoji}>⚠️</Text>
+        <NativeIcon name="discover" size="xl" color={colors.error.DEFAULT} />
         <Text style={styles.errorText}>{error}</Text>
         <GlassButton
           title={t('common.retry')}
@@ -198,28 +199,28 @@ export default function AdminDashboardPage() {
           <StatCard
             title={t('admin.stats.totalUsers')}
             value={formatNumber(stats.total_users)}
-            icon="👥"
+            icon={<NativeIcon name="discover" size="md" color={colors.primary.DEFAULT} />}
             color="primary"
             to="/admin/users"
           />
           <StatCard
             title={t('admin.stats.activeUsers')}
             value={formatNumber(stats.active_users)}
-            icon="✅"
+            icon={<NativeIcon name="info" size="md" color="#22C55E" />}
             color="success"
             trend={{ value: 12.5, isPositive: true }}
           />
           <StatCard
             title={t('admin.stats.newToday')}
             value={formatNumber(stats.new_users_today)}
-            icon="🆕"
+            icon={<NativeIcon name="discover" size="md" color="#8B5CF6" />}
             color="secondary"
             trend={{ value: 8.2, isPositive: true }}
           />
           <StatCard
             title={t('admin.stats.newThisWeek')}
             value={formatNumber(stats.new_users_this_week)}
-            icon="📈"
+            icon={<NativeIcon name="discover" size="md" color="#F59E0B" />}
             color="warning"
           />
         </View>
@@ -232,27 +233,27 @@ export default function AdminDashboardPage() {
           <StatCard
             title={t('admin.stats.totalRevenue')}
             value={formatCurrency(stats.total_revenue)}
-            icon="💰"
+            icon={<NativeIcon name="discover" size="md" color="#22C55E" />}
             color="success"
             to="/admin/billing"
           />
           <StatCard
             title={t('admin.stats.revenueToday')}
             value={formatCurrency(stats.revenue_today)}
-            icon="📊"
+            icon={<NativeIcon name="discover" size="md" color={colors.primary.DEFAULT} />}
             color="primary"
             trend={{ value: 15.3, isPositive: true }}
           />
           <StatCard
             title={t('admin.stats.revenueMonth')}
             value={formatCurrency(stats.revenue_this_month)}
-            icon="📅"
+            icon={<NativeIcon name="discover" size="md" color="#8B5CF6" />}
             color="secondary"
           />
           <StatCard
             title={t('admin.stats.arpu')}
             value={`$${stats.avg_revenue_per_user.toFixed(2)}`}
-            icon="💵"
+            icon={<NativeIcon name="discover" size="md" color="#F59E0B" />}
             color="warning"
           />
         </View>
@@ -265,14 +266,14 @@ export default function AdminDashboardPage() {
           <StatCard
             title={t('admin.stats.activeSubscriptions')}
             value={formatNumber(stats.active_subscriptions)}
-            icon="📦"
+            icon={<NativeIcon name="discover" size="md" color={colors.primary.DEFAULT} />}
             color="primary"
             to="/admin/subscriptions"
           />
           <StatCard
             title={t('admin.stats.churnRate')}
             value={`${stats.churn_rate}%`}
-            icon="📉"
+            icon={<NativeIcon name="discover" size="md" color={stats.churn_rate < 5 ? '#22C55E' : '#EF4444'} />}
             color={stats.churn_rate < 5 ? 'success' : 'error'}
             trend={{ value: 0.5, isPositive: stats.churn_rate < 5 }}
           />
@@ -289,7 +290,7 @@ export default function AdminDashboardPage() {
               recentActivity.map((activity) => (
                 <View key={activity.id} style={[styles.activityItem, { flexDirection }]}>
                   <View style={styles.activityIconContainer}>
-                    <Text style={styles.activityIcon}>{getActivityIcon(activity.action)}</Text>
+                    <NativeIcon name={getActivityIconName(activity.action)} size="md" color={colors.primary} />
                   </View>
                   <View style={styles.activityDetails}>
                     <Text style={[styles.activityAction, { textAlign }]}>

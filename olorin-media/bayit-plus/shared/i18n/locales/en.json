@@ -241,7 +241,8 @@
     "plans": "Plans",
     "admin": "Admin",
     "games": "Games",
-    "friends": "Friends"
+    "friends": "Friends",
+    "privacy": "Privacy Policy"
   },
   "epg": {
     "title": "TV Guide",
@@ -1142,6 +1143,18 @@
     "availableSubtitles": "Available Subtitles",
     "subtitleSelected": "Selected: {{language}}"
   },
+  "audiobooks": {
+    "audiobook": "Audiobook",
+    "chapter": "Chapter",
+    "chapters": "Chapters",
+    "playChapter": "Play Chapter",
+    "noChapters": "No chapters available",
+    "notFound": "Audiobook not found",
+    "author": "Author",
+    "narrator": "Narrator",
+    "duration": "Duration",
+    "isbn": "ISBN"
+  },
   "breadcrumbs": {
     "series": "Series",
     "movie": "Movie",
@@ -1511,6 +1524,7 @@
     },
     "copyright": "© {{year}} Bayit+. All rights reserved.",
     "poweredBy": "Powered by",
+    "privacy": "Privacy Policy",
     "sitemap": "Sitemap",
     "accessibility": "Accessibility",
     "navigation": "Navigation",
@@ -4276,6 +4290,61 @@
         "food": "🍴 Dining & Food Scene",
         "tech": "💻 Tech & Innovation",
         "events": "📅 Local Events"
+      }
+    },
+    "privacy": {
+      "lastUpdated": "Last Updated: January 27, 2026",
+      "intro": {
+        "title": "1. Introduction",
+        "content": "Olorin.ai LLC (\"we,\" \"our,\" or \"the Company\") is committed to protecting your privacy. This Privacy Policy explains how our mobile application, Bayit+ (the \"App\"), collects, uses, and safeguards your information.",
+        "commitment": "We built Bayit+ with a \"Privacy-First\" architecture. We do not record your living room. Our technology uses your device's sensors solely to synchronize our audio service with your television."
+      },
+      "collection": {
+        "title": "2. Information We Collect & How We Use It",
+        "camera": {
+          "title": "A. Camera & Visual Synchronization Data",
+          "intro": "To provide our core service—synchronizing translated audio with your TV—Bayit+ requires access to your device's Camera.",
+          "data": "Data Collected: When you activate \"Sync Mode,\" the App captures a short sequence of video frames (approximately 3 seconds) from your TV screen.",
+          "purpose": "Purpose: These frames are transmitted to our secure cloud server solely to identify the public TV channel you are watching and calculate the broadcast latency (time delay).",
+          "retention": "Retention: This data is ephemeral. The frames are processed instantly in memory and are permanently deleted immediately after the synchronization is established. We do not view, store, or archive images of your home or family."
+        },
+        "audio": {
+          "title": "B. Audio Data (If Applicable)",
+          "intro": "If you utilize features requiring audio synchronization, the App may request Microphone access.",
+          "data": "Data Collected: Brief audio samples of the TV broadcast.",
+          "purpose": "Purpose: To match the audio fingerprint of the public broadcast for synchronization purposes.",
+          "retention": "Retention: Like visual data, audio samples are processed in real-time and immediately deleted. We do not listen to or record user conversations."
+        },
+        "usage": {
+          "title": "C. Usage & Technical Data",
+          "content": "We may collect non-identifiable technical data to improve App stability, including:",
+          "device": "Device type and operating system version.",
+          "crash": "Crash logs and performance metrics.",
+          "aggregate": "Aggregate data on which channels are being watched (e.g., \"50% of users are watching Channel 12\")."
+        }
+      },
+      "sharing": {
+        "title": "3. Data Sharing and Third Parties",
+        "noSale": "Olorin.ai LLC does not sell your personal data. We partner with trusted third-party service providers to deliver our infrastructure. These providers are authorized to use your data only as necessary to provide these services to us:",
+        "cloud": "Cloud Infrastructure: Hosting services (e.g., AWS) to process synchronization requests.",
+        "ai": "AI Processing: Services used to generate real-time text and audio translations from public broadcast feeds."
+      },
+      "retention": {
+        "title": "4. Data Retention",
+        "sync": "Sync Data (Images/Audio): 0 days. Deleted immediately after processing.",
+        "account": "Account Data: Retained only as long as your account is active to manage your subscription and preferences."
+      },
+      "children": {
+        "title": "5. Children's Privacy",
+        "content": "While our content is suitable for all ages, Olorin.ai LLC does not knowingly collect personal identifiable information from children under the age of 13. If you are a parent and believe your child has provided us with personal information, please contact us."
+      },
+      "rights": {
+        "title": "6. Your Rights",
+        "content": "Depending on your location, you may have the right to request access to, correction of, or deletion of your personal data. You may delete your Bayit+ account at any time within the App settings."
+      },
+      "contact": {
+        "title": "7. Contact Us",
+        "intro": "If you have any questions about this Privacy Policy, please contact us at:"
       }
     }
   }

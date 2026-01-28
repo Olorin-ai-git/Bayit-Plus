@@ -14,6 +14,7 @@ import { Settings, Mic, Monitor, User, Info } from 'lucide-react-native';
 import { TVHeader } from '../components/TVHeader';
 import { useMultiWindowStore } from '../stores/multiWindowStore';
 import { config } from '../config/appConfig';
+import { logger } from '../utils/logger';
 
 interface SettingItem {
   id: string;
@@ -57,7 +58,7 @@ export const SettingsScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
   const { layoutMode, setLayoutMode } = useMultiWindowStore();
 
   const handleToggle = (itemId: string, value: boolean) => {
-    console.log(`Toggle ${itemId}: ${value}`);
+    logger.info('Setting toggled', { module: 'SettingsScreen', itemId, value });
   };
 
   const renderSettingItem = (item: SettingItem, sectionIndex: number, itemIndex: number) => {

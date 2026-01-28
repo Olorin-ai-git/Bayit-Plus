@@ -1,7 +1,8 @@
 import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassCategoryPill } from '@bayit/shared/ui';
-import { spacing } from '@olorin/design-tokens';
+import { spacing, colors } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { z } from 'zod';
 
 const CategorySchema = z.object({
@@ -18,39 +19,39 @@ const PodcastsPageFiltersPropsSchema = z.object({
 export type PodcastsPageFiltersProps = z.infer<typeof PodcastsPageFiltersPropsSchema>;
 export type Category = z.infer<typeof CategorySchema>;
 
-// Enhanced emoji mappings for categories (including Hebrew)
-const CATEGORY_EMOJI_MAP: Record<string, string> = {
-  'קומי': '😂',
-  'comedy': '😂',
-  'פסיכולוגיה': '🧠',
-  'psychology': '🧠',
-  'כללה': '📌',
-  'general': '📌',
-  'טכנולוגיה': '💻',
-  'technology': '💻',
-  'tech': '💻',
-  'חדשות ואקטואליה': '📰',
-  'news': '📰',
-  'היסטוריה': '📚',
-  'history': '📚',
-  'politics': '🏛️',
-  'business': '💼',
-  'entertainment': '🎭',
-  'sports': '⚽',
-  'jewish': '✡️',
-  'judaism': '✡️',
-  'educational': '🎓',
-  'science': '🔬',
-  'health': '🏥',
-  'fitness': '💪',
-  'arts': '🎨',
-  'music': '🎵',
-  'food': '🍽️',
-  'travel': '✈️',
-  'lifestyle': '🌟',
-  'relationships': '❤️',
-  'parenting': '👶',
-  'spirituality': '🙏',
+// Icon name mappings for categories (including Hebrew)
+const CATEGORY_ICON_NAME_MAP: Record<string, string> = {
+  'קומי': 'discover',
+  'comedy': 'discover',
+  'פסיכולוגיה': 'info',
+  'psychology': 'info',
+  'כללה': 'podcasts',
+  'general': 'podcasts',
+  'טכנולוגיה': 'discover',
+  'technology': 'discover',
+  'tech': 'discover',
+  'חדשות ואקטואליה': 'info',
+  'news': 'info',
+  'היסטוריה': 'info',
+  'history': 'info',
+  'politics': 'discover',
+  'business': 'discover',
+  'entertainment': 'discover',
+  'sports': 'discover',
+  'jewish': 'judaism',
+  'judaism': 'judaism',
+  'educational': 'info',
+  'science': 'info',
+  'health': 'info',
+  'fitness': 'discover',
+  'arts': 'discover',
+  'music': 'podcasts',
+  'food': 'discover',
+  'travel': 'discover',
+  'lifestyle': 'discover',
+  'relationships': 'discover',
+  'parenting': 'info',
+  'spirituality': 'judaism',
 };
 
 export default function PodcastsPageFilters({
@@ -65,22 +66,23 @@ export default function PodcastsPageFilters({
       {/* All Categories */}
       <GlassCategoryPill
         label={t('podcasts.categories.all')}
-        emoji="🎧"
+        icon={<NativeIcon name="podcasts" size="sm" color={selectedCategory === 'all' ? colors.primary : colors.textMuted} />}
         isActive={selectedCategory === 'all'}
         onPress={() => onCategoryChange('all')}
       />
 
       {/* Category Pills */}
       {categories.map((category) => {
-        const emoji = CATEGORY_EMOJI_MAP[category.id.toLowerCase()] || CATEGORY_EMOJI_MAP[category.name?.toLowerCase()] || '🎙️';
+        const iconName = CATEGORY_ICON_NAME_MAP[category.id.toLowerCase()] || CATEGORY_ICON_NAME_MAP[category.name?.toLowerCase()] || 'podcasts';
         const label = t(`podcasts.categories.${category.id}`, category.name);
+        const isActive = selectedCategory === category.id;
 
         return (
           <GlassCategoryPill
             key={category.id}
             label={label}
-            emoji={emoji}
-            isActive={selectedCategory === category.id}
+            icon={<NativeIcon name={iconName} size="sm" color={isActive ? colors.primary : colors.textMuted} />}
+            isActive={isActive}
             onPress={() => onCategoryChange(category.id)}
           />
         );

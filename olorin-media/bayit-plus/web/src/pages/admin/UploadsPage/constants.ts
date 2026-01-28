@@ -70,12 +70,12 @@ export const UPLOAD_STAGE_LABELS: Record<string, string> = {
 };
 
 export const UPLOAD_STAGE_ICONS: Record<string, string> = {
-  browser_upload: '📤',
-  hash_calculation: '🔢',
-  duplicate_check: '🔍',
-  metadata_extraction: '📄',
-  gcs_upload: '☁️',
-  database_insert: '💾',
+  browser_upload: 'discover',
+  hash_calculation: 'discover',
+  duplicate_check: 'search',
+  metadata_extraction: 'discover',
+  gcs_upload: 'discover',
+  database_insert: 'discover',
 };
 
 // ========================================

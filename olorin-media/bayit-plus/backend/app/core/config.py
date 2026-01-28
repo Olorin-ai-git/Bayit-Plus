@@ -200,15 +200,15 @@ class Settings(BaseSettings):
     )
 
     # Audible OAuth Integration (optional - enables audiobook syncing for premium users)
-    # Obtain credentials from https://developer.audible.com/
+    # Obtain credentials from https://developer.amazon.com/
     # Leave empty to disable the feature gracefully
     AUDIBLE_CLIENT_ID: str = Field(
         default="",
-        description="Audible OAuth Client ID (from developer.audible.com)"
+        description="Audible OAuth Client ID (from Amazon Developer Console)"
     )
     AUDIBLE_CLIENT_SECRET: str = Field(
         default="",
-        description="Audible OAuth Client Secret (from developer.audible.com)"
+        description="Audible OAuth Client Secret (from Amazon Developer Console)"
     )
     AUDIBLE_REDIRECT_URI: str = Field(
         default="",
@@ -216,7 +216,7 @@ class Settings(BaseSettings):
     )
     AUDIBLE_INTEGRATION_ENABLED: bool = Field(
         default=False,
-        description="Enable Audible integration (requires all three credentials to be set)"
+        description="Enable Audible integration (requires all three OAuth credentials to be set)"
     )
 
     @property

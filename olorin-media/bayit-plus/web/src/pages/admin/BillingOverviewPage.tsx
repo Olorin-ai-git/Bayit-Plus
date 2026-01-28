@@ -3,6 +3,7 @@ import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-nat
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, CreditCard, AlertCircle, DollarSign } from 'lucide-react';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import StatCard from '@/components/admin/StatCard';
 import { billingService, subscriptionsService } from '@/services/adminApi';
 import { colors, spacing, fontSize } from '@olorin/design-tokens';
@@ -85,7 +86,7 @@ export default function BillingOverviewPage() {
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorIcon}>⚠️</Text>
+        <NativeIcon name="discover" size="xl" color={colors.error.DEFAULT} />
         <Text style={styles.errorText}>{error}</Text>
         <GlassButton
           title={t('common.retry', 'Retry')}
@@ -128,25 +129,25 @@ export default function BillingOverviewPage() {
           <StatCard
             title={t('admin.billing.today', 'Today')}
             value={formatCurrency(overview.today)}
-            icon="💵"
+            icon={<NativeIcon name="discover" size="md" color="#22C55E" />}
             color="success"
           />
           <StatCard
             title={t('admin.billing.thisWeek', 'This Week')}
             value={formatCurrency(overview.this_week)}
-            icon="📅"
+            icon={<NativeIcon name="discover" size="md" color={colors.primary.DEFAULT} />}
             color="primary"
           />
           <StatCard
             title={t('admin.billing.thisMonth', 'This Month')}
             value={formatCurrency(overview.this_month)}
-            icon="📊"
+            icon={<NativeIcon name="discover" size="md" color="#8B5CF6" />}
             color="secondary"
           />
           <StatCard
             title={t('admin.billing.thisYear', 'This Year')}
             value={formatCurrency(overview.this_year)}
-            icon="📈"
+            icon={<NativeIcon name="discover" size="md" color="#F59E0B" />}
             color="warning"
           />
         </View>
@@ -160,27 +161,27 @@ export default function BillingOverviewPage() {
           <StatCard
             title={t('admin.billing.totalTransactions', 'Total Transactions')}
             value={overview.total_transactions?.toLocaleString() || '0'}
-            icon="💳"
+            icon={<NativeIcon name="discover" size="md" color={colors.primary.DEFAULT} />}
             color="primary"
             to="/admin/transactions"
           />
           <StatCard
             title={t('admin.billing.avgTransaction', 'Avg Transaction')}
             value={formatCurrency(overview.avg_transaction || 0)}
-            icon="📉"
+            icon={<NativeIcon name="discover" size="md" color="#8B5CF6" />}
             color="secondary"
           />
           <StatCard
             title={t('admin.billing.pendingRefunds', 'Pending Refunds')}
             value={overview.pending_refunds.toString()}
-            icon="⏳"
+            icon={<NativeIcon name="discover" size="md" color="#F59E0B" />}
             color={overview.pending_refunds > 0 ? 'warning' : 'success'}
             to="/admin/refunds"
           />
           <StatCard
             title={t('admin.billing.refundRate', 'Refund Rate')}
             value={`${overview.refund_rate || 0}%`}
-            icon="↩️"
+            icon={<NativeIcon name="discover" size="md" color={overview.refund_rate > 5 ? '#EF4444' : '#22C55E'} />}
             color={overview.refund_rate > 5 ? 'error' : 'success'}
           />
         </View>
@@ -195,19 +196,19 @@ export default function BillingOverviewPage() {
             <StatCard
               title={t('admin.billing.retentionRate', 'Retention Rate')}
               value={`${churnData.retention_rate}%`}
-              icon="🎯"
+              icon={<NativeIcon name="discover" size="md" color="#22C55E" />}
               color="success"
             />
             <StatCard
               title={t('admin.billing.churnRate', 'Churn Rate')}
               value={`${churnData.churn_rate}%`}
-              icon="📉"
+              icon={<NativeIcon name="discover" size="md" color={churnData.churn_rate > 5 ? '#EF4444' : '#22C55E'} />}
               color={churnData.churn_rate > 5 ? 'error' : 'success'}
             />
             <StatCard
               title={t('admin.billing.atRiskUsers', 'At Risk Users')}
               value={churnData.at_risk_users.toString()}
-              icon="⚠️"
+              icon={<NativeIcon name="discover" size="md" color="#F59E0B" />}
               color="warning"
             />
             <StatCard

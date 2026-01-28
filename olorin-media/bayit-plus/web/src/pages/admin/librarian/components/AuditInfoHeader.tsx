@@ -68,7 +68,7 @@ export const AuditInfoHeader = ({
               </Text>
               {isStale && (
                 <Text style={styles.staleWarning}>
-                  ⚠ {t('admin.librarian.logs.staleWarning', 'No new logs for {{seconds}}s - job may be processing or stuck', { seconds: timeSinceLastLog })}
+                  {t('admin.librarian.logs.warning', 'Warning')}: {t('admin.librarian.logs.staleWarning', 'No new logs for {{seconds}}s - job may be processing or stuck', { seconds: timeSinceLastLog })}
                 </Text>
               )}
               {lastPolledAt && report.status === 'in_progress' && (

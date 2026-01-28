@@ -23,12 +23,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Add backend directory to path
+backend_dir = Path(__file__).resolve().parent.parent.parent / "backend"
+sys.path.insert(0, str(backend_dir))
 
 from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).parent.parent / ".env")
+# Load .env from backend directory
+load_dotenv(backend_dir / ".env")
 
 import logging
 
@@ -65,6 +67,10 @@ class SeriesOrganizer:
             "series_updated": 0,
             "episodes_linked": 0,
             "episodes_enriched": 0,
+            "episodes_titles_cleaned": 0,
+            "orphans_detected": 0,
+            "orphans_relinked": 0,
+            "orphan_parents_created": 0,
             "tmdb_fetched": 0,
             "errors": 0,
         }
@@ -366,7 +372,314 @@ class SeriesOrganizer:
 
         logger.info(f"      ✅ Linked {len(episodes)} episodes")
 
-    async def organize_all_series(self):
+    def format_episode_title(
+        self, series_title: str, season: int, episode: int
+    ) -> str:
+        """Format episode title as: SeriesTitle-Season{N}-Episode{N}"""
+        return f"{series_title.strip()}-Season{season}-Episode{episode}"
+
+    def normalize_title_for_matching(self, title: str) -> str:
+        """Normalize title for matching (lowercase, remove special chars)."""
+        normalized = title.lower()
+        normalized = re.sub(r"[^\w\s]", "", normalized)
+        normalized = re.sub(r"\s+", " ", normalized).strip()
+        return normalized
+
+    async def detect_orphan_episodes(self) -> List[dict]:
+        """Detect episodes with invalid series_id (parent doesn't exist)."""
+        logger.info("🔍 Detecting orphan episodes...")
+
+        # Find all episodes (have series_id, season, episode set)
+        episodes = await self.db.content.find(
+            {
+                "series_id": {"$ne": None},
+                "season": {"$ne": None},
+                "episode": {"$ne": None},
+            }
+        ).to_list(None)
+
+        orphans = []
+        for ep in episodes:
+            series_id = ep.get("series_id")
+            if not series_id:
+                continue
+
+            # Check if parent exists
+            try:
+                parent = await self.db.content.find_one({"_id": ObjectId(series_id)})
+                if not parent:
+                    orphans.append(ep)
+            except Exception:
+                orphans.append(ep)
+
+        self.stats["orphans_detected"] = len(orphans)
+        logger.info(f"   Found {len(orphans)} orphan episodes")
+        return orphans
+
+    async def relink_orphan_episodes(self, orphans: List[dict]) -> int:
+        """Relink orphan episodes to correct series parents by title matching."""
+        if not orphans:
+            return 0
+
+        logger.info(f"🔗 Attempting to relink {len(orphans)} orphan episodes...")
+
+        # Build series parent lookup by normalized title
+        series_parents = await self.db.content.find(
+            {
+                "is_series": True,
+                "$or": [
+                    {"series_id": None},
+                    {"series_id": {"$exists": False}},
+                ],
+                "season": None,
+            }
+        ).to_list(None)
+
+        # Create lookup dict
+        series_lookup: Dict[str, dict] = {}
+        for parent in series_parents:
+            norm = self.normalize_title_for_matching(parent.get("title", ""))
+            if parent.get("season") is None and parent.get("episode") is None:
+                series_lookup[norm] = parent
+
+        relinked = 0
+        for ep in orphans:
+            title = ep.get("title", "")
+            series_name, _, _ = self.extract_series_info(title)
+            norm_name = self.normalize_title_for_matching(series_name)
+
+            if norm_name in series_lookup:
+                new_parent = series_lookup[norm_name]
+                await self.db.content.update_one(
+                    {"_id": ep["_id"]},
+                    {"$set": {"series_id": str(new_parent["_id"])}}
+                )
+                relinked += 1
+                logger.info(f"   ✅ Relinked: {title} -> {new_parent.get('title')}")
+
+        self.stats["orphans_relinked"] = relinked
+        logger.info(f"   Relinked {relinked} orphan episodes")
+        return relinked
+
+    async def create_parents_for_remaining_orphans(
+        self, orphans: List[dict]
+    ) -> int:
+        """Create parent series for orphans that couldn't be relinked."""
+        # Re-check which orphans still have invalid parents
+        still_orphaned = []
+        for ep in orphans:
+            series_id = ep.get("series_id")
+            try:
+                parent = await self.db.content.find_one({"_id": ObjectId(series_id)})
+                if not parent:
+                    still_orphaned.append(ep)
+            except Exception:
+                still_orphaned.append(ep)
+
+        if not still_orphaned:
+            return 0
+
+        logger.info(
+            f"📁 Creating parents for {len(still_orphaned)} remaining orphans..."
+        )
+
+        # Group by series name
+        orphan_groups: Dict[str, List[dict]] = defaultdict(list)
+        for ep in still_orphaned:
+            series_name, _, _ = self.extract_series_info(ep.get("title", ""))
+            if series_name:
+                orphan_groups[series_name].append(ep)
+
+        created = 0
+        for series_name, episodes in orphan_groups.items():
+            # Get sample episode
+            sample = episodes[0]
+            seasons = set(ep.get("season") for ep in episodes if ep.get("season"))
+
+            # Create parent
+            now = datetime.now(timezone.utc)
+            series_doc = {
+                "title": series_name,
+                "is_series": True,
+                "content_type": "series",
+                "season": None,
+                "episode": None,
+                "series_id": None,
+                "total_seasons": len(seasons) if seasons else 1,
+                "total_episodes": len(episodes),
+                "stream_url": sample.get("stream_url", ""),
+                "stream_type": sample.get("stream_type", "hls"),
+                "is_published": sample.get("is_published", True),
+                "category_id": sample.get("category_id"),
+                "section_ids": sample.get("section_ids", []),
+                "primary_section_id": sample.get("primary_section_id"),
+                "content_format": "series",
+                "thumbnail": sample.get("thumbnail"),
+                "backdrop": sample.get("backdrop"),
+                "created_at": now,
+                "updated_at": now,
+            }
+
+            result = await self.db.content.insert_one(series_doc)
+            parent_id = str(result.inserted_id)
+            created += 1
+
+            # Link episodes to new parent
+            for ep in episodes:
+                await self.db.content.update_one(
+                    {"_id": ep["_id"]},
+                    {"$set": {"series_id": parent_id}}
+                )
+
+            logger.info(
+                f"   ✅ Created '{series_name}' with {len(episodes)} episodes"
+            )
+
+        self.stats["orphan_parents_created"] = created
+        return created
+
+    async def clean_episode_titles(self) -> int:
+        """Clean all episode titles to format: SeriesTitle-Season{N}-Episode{N}"""
+        logger.info("🧹 Cleaning episode titles...")
+
+        # Find all episodes with valid parents
+        episodes = await self.db.content.find(
+            {
+                "series_id": {"$ne": None},
+                "season": {"$ne": None},
+                "episode": {"$ne": None},
+            }
+        ).to_list(None)
+
+        # Cache parents
+        parent_cache: Dict[str, dict] = {}
+        cleaned = 0
+
+        for ep in episodes:
+            series_id = ep.get("series_id")
+            if series_id not in parent_cache:
+                try:
+                    parent = await self.db.content.find_one(
+                        {"_id": ObjectId(series_id)}
+                    )
+                    parent_cache[series_id] = parent
+                except Exception:
+                    parent_cache[series_id] = None
+
+            parent = parent_cache.get(series_id)
+            if not parent:
+                continue
+
+            new_title = self.format_episode_title(
+                parent.get("title", ""),
+                ep.get("season"),
+                ep.get("episode"),
+            )
+
+            if ep.get("title") != new_title:
+                await self.db.content.update_one(
+                    {"_id": ep["_id"]},
+                    {"$set": {"title": new_title}}
+                )
+                cleaned += 1
+
+        self.stats["episodes_titles_cleaned"] = cleaned
+        logger.info(f"   Cleaned {cleaned} episode titles")
+        return cleaned
+
+    async def verify_integrity(self) -> Dict[str, Any]:
+        """Verify series/episode integrity and return report."""
+        logger.info("🔍 Verifying series integrity...")
+
+        report = {
+            "total_series_parents": 0,
+            "total_episodes": 0,
+            "orphan_episodes": 0,
+            "episodes_with_clean_titles": 0,
+            "episodes_with_dirty_titles": 0,
+            "series_without_episodes": [],
+            "issues": [],
+        }
+
+        # Count series parents
+        series_parents = await self.db.content.find(
+            {
+                "is_series": True,
+                "season": None,
+                "episode": None,
+            }
+        ).to_list(None)
+        report["total_series_parents"] = len(series_parents)
+
+        # Count episodes
+        episodes = await self.db.content.find(
+            {
+                "series_id": {"$ne": None},
+                "season": {"$ne": None},
+                "episode": {"$ne": None},
+            }
+        ).to_list(None)
+        report["total_episodes"] = len(episodes)
+
+        # Check for orphans and title format
+        parent_cache: Dict[str, dict] = {}
+        for ep in episodes:
+            series_id = ep.get("series_id")
+
+            # Check parent exists
+            if series_id not in parent_cache:
+                try:
+                    parent = await self.db.content.find_one(
+                        {"_id": ObjectId(series_id)}
+                    )
+                    parent_cache[series_id] = parent
+                except Exception:
+                    parent_cache[series_id] = None
+
+            parent = parent_cache.get(series_id)
+            if not parent:
+                report["orphan_episodes"] += 1
+                continue
+
+            # Check title format
+            expected_title = self.format_episode_title(
+                parent.get("title", ""),
+                ep.get("season"),
+                ep.get("episode"),
+            )
+            if ep.get("title") == expected_title:
+                report["episodes_with_clean_titles"] += 1
+            else:
+                report["episodes_with_dirty_titles"] += 1
+
+        # Check for series without episodes
+        for parent in series_parents:
+            parent_id = str(parent["_id"])
+            episode_count = await self.db.content.count_documents(
+                {"series_id": parent_id}
+            )
+            if episode_count == 0:
+                report["series_without_episodes"].append(parent.get("title"))
+
+        # Generate issues list
+        if report["orphan_episodes"] > 0:
+            report["issues"].append(
+                f"{report['orphan_episodes']} orphan episodes found"
+            )
+        if report["episodes_with_dirty_titles"] > 0:
+            report["issues"].append(
+                f"{report['episodes_with_dirty_titles']} episodes with non-standard titles"
+            )
+        if report["series_without_episodes"]:
+            report["issues"].append(
+                f"{len(report['series_without_episodes'])} series without episodes"
+            )
+
+        return report
+
+    async def organize_all_series(
+        self, fix_orphans: bool = True, clean_titles: bool = True
+    ):
         """Main method to organize all series."""
         logger.info("=" * 80)
         logger.info("SERIES ORGANIZATION SCRIPT")
@@ -375,71 +688,133 @@ class SeriesOrganizer:
         # Initialize TMDB
         await self.initialize_tmdb()
 
-        # Scan for series
-        series_groups = await self.scan_series()
+        # Step 1: Detect and fix orphan episodes
+        if fix_orphans:
+            logger.info("\n" + "=" * 80)
+            logger.info("PHASE 1: ORPHAN EPISODE DETECTION & REPAIR")
+            logger.info("=" * 80)
 
-        if not series_groups:
-            logger.info("No series found in database.")
-            return
+            orphans = await self.detect_orphan_episodes()
+            if orphans:
+                # Try to relink to existing parents
+                await self.relink_orphan_episodes(orphans)
+                # Create parents for remaining orphans
+                await self.create_parents_for_remaining_orphans(orphans)
 
-        # Process each series
+        # Step 2: Scan for unlinked series content
         logger.info("\n" + "=" * 80)
-        logger.info("PROCESSING SERIES")
+        logger.info("PHASE 2: SCANNING FOR UNLINKED SERIES")
         logger.info("=" * 80)
 
-        for series_name, episodes in sorted(
-            series_groups.items(), key=lambda x: -len(x[1])
-        ):
-            logger.info(f"\n📺 Processing: {series_name} ({len(episodes)} episodes)")
+        series_groups = await self.scan_series()
 
-            # Check if Hebrew
-            is_hebrew = self.is_hebrew(series_name)
-            if is_hebrew:
-                logger.info(f"   [HEBREW SERIES]")
+        if series_groups:
+            # Process each series
+            logger.info("\n" + "=" * 80)
+            logger.info("PHASE 3: PROCESSING SERIES")
+            logger.info("=" * 80)
 
-            # Get first air year from episodes
-            years = [ep.get("year") for ep in episodes if ep.get("year")]
-            year = min(years) if years else None
-
-            # Fetch TMDB data
-            tmdb_data = await self.fetch_tmdb_series_data(series_name, year)
-
-            # Find or create series parent
-            series_id = await self.find_or_create_series_parent(
-                series_name, episodes, tmdb_data
-            )
-
-            if series_id:
-                # Link episodes
-                await self.link_episodes_to_series(
-                    series_id, series_name, episodes, tmdb_data
+            for series_name, episodes in sorted(
+                series_groups.items(), key=lambda x: -len(x[1])
+            ):
+                logger.info(
+                    f"\n📺 Processing: {series_name} ({len(episodes)} episodes)"
                 )
-            else:
-                logger.error(f"   ❌ Failed to create series parent for '{series_name}'")
-                self.stats["errors"] += 1
 
-            # Rate limit TMDB calls
-            await asyncio.sleep(0.5)
+                # Check if Hebrew
+                is_hebrew = self.is_hebrew(series_name)
+                if is_hebrew:
+                    logger.info(f"   [HEBREW SERIES]")
+
+                # Get first air year from episodes
+                years = [ep.get("year") for ep in episodes if ep.get("year")]
+                year = min(years) if years else None
+
+                # Fetch TMDB data
+                tmdb_data = await self.fetch_tmdb_series_data(series_name, year)
+
+                # Find or create series parent
+                series_id = await self.find_or_create_series_parent(
+                    series_name, episodes, tmdb_data
+                )
+
+                if series_id:
+                    # Link episodes
+                    await self.link_episodes_to_series(
+                        series_id, series_name, episodes, tmdb_data
+                    )
+                else:
+                    logger.error(
+                        f"   ❌ Failed to create series parent for '{series_name}'"
+                    )
+                    self.stats["errors"] += 1
+
+                # Rate limit TMDB calls
+                await asyncio.sleep(0.5)
+        else:
+            logger.info("No unlinked series found.")
+
+        # Step 3: Clean episode titles
+        if clean_titles:
+            logger.info("\n" + "=" * 80)
+            logger.info("PHASE 4: CLEANING EPISODE TITLES")
+            logger.info("=" * 80)
+            await self.clean_episode_titles()
+
+        # Step 4: Final integrity verification
+        logger.info("\n" + "=" * 80)
+        logger.info("PHASE 5: INTEGRITY VERIFICATION")
+        logger.info("=" * 80)
+        report = await self.verify_integrity()
+        self.print_integrity_report(report)
 
         # Print summary
         self.print_summary()
+
+    def print_integrity_report(self, report: Dict[str, Any]):
+        """Print integrity verification report."""
+        logger.info(f"   Series parents:        {report['total_series_parents']}")
+        logger.info(f"   Total episodes:        {report['total_episodes']}")
+        logger.info(f"   Orphan episodes:       {report['orphan_episodes']}")
+        logger.info(f"   Clean titles:          {report['episodes_with_clean_titles']}")
+        logger.info(f"   Dirty titles:          {report['episodes_with_dirty_titles']}")
+
+        if report["series_without_episodes"]:
+            logger.warning(
+                f"   Series without episodes: {len(report['series_without_episodes'])}"
+            )
+
+        if report["issues"]:
+            logger.warning("\n   ⚠️ ISSUES FOUND:")
+            for issue in report["issues"]:
+                logger.warning(f"      - {issue}")
+        else:
+            logger.info("\n   ✅ ALL INTEGRITY CHECKS PASSED")
 
     def print_summary(self):
         """Print organization summary."""
         logger.info("\n" + "=" * 80)
         logger.info("ORGANIZATION SUMMARY")
         logger.info("=" * 80)
-        logger.info(f"Series found:      {self.stats['series_found']}")
-        logger.info(f"Series created:    {self.stats['series_created']}")
-        logger.info(f"Series updated:    {self.stats['series_updated']}")
-        logger.info(f"Episodes linked:   {self.stats['episodes_linked']}")
-        logger.info(f"Episodes enriched: {self.stats['episodes_enriched']}")
-        logger.info(f"TMDB data fetched: {self.stats['tmdb_fetched']}")
-        logger.info(f"Errors:            {self.stats['errors']}")
+        logger.info(f"Series found:           {self.stats['series_found']}")
+        logger.info(f"Series created:         {self.stats['series_created']}")
+        logger.info(f"Series updated:         {self.stats['series_updated']}")
+        logger.info(f"Episodes linked:        {self.stats['episodes_linked']}")
+        logger.info(f"Episodes enriched:      {self.stats['episodes_enriched']}")
+        logger.info(f"Titles cleaned:         {self.stats['episodes_titles_cleaned']}")
+        logger.info(f"Orphans detected:       {self.stats['orphans_detected']}")
+        logger.info(f"Orphans relinked:       {self.stats['orphans_relinked']}")
+        logger.info(f"Orphan parents created: {self.stats['orphan_parents_created']}")
+        logger.info(f"TMDB data fetched:      {self.stats['tmdb_fetched']}")
+        logger.info(f"Errors:                 {self.stats['errors']}")
         logger.info("=" * 80)
 
 
-async def main():
+async def main(
+    verify_only: bool = False,
+    fix_orphans: bool = True,
+    clean_titles: bool = True,
+):
     """Main entry point."""
     # Connect to MongoDB
     url = os.getenv("MONGODB_URI")
@@ -450,9 +825,27 @@ async def main():
 
     logger.info("📡 Connected to MongoDB")
 
+    organizer = SeriesOrganizer(db)
+
     try:
-        organizer = SeriesOrganizer(db)
-        await organizer.organize_all_series()
+        if verify_only:
+            # Only run integrity verification
+            logger.info("=" * 80)
+            logger.info("SERIES INTEGRITY VERIFICATION")
+            logger.info("=" * 80)
+            report = await organizer.verify_integrity()
+            organizer.print_integrity_report(report)
+
+            if report["issues"]:
+                logger.info("\n💡 Run without --verify to fix issues")
+                return 1
+            return 0
+        else:
+            await organizer.organize_all_series(
+                fix_orphans=fix_orphans,
+                clean_titles=clean_titles,
+            )
+            return 0
     finally:
         if organizer.tmdb_service:
             await organizer.tmdb_service.close()
@@ -461,4 +854,34 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Organize series content in the database"
+    )
+    parser.add_argument(
+        "--verify",
+        action="store_true",
+        help="Only verify integrity without making changes",
+    )
+    parser.add_argument(
+        "--no-fix-orphans",
+        action="store_true",
+        help="Skip orphan episode detection and repair",
+    )
+    parser.add_argument(
+        "--no-clean-titles",
+        action="store_true",
+        help="Skip episode title cleaning",
+    )
+
+    args = parser.parse_args()
+
+    exit_code = asyncio.run(
+        main(
+            verify_only=args.verify,
+            fix_orphans=not args.no_fix_orphans,
+            clean_titles=not args.no_clean_titles,
+        )
+    )
+    sys.exit(exit_code)
