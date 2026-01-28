@@ -475,7 +475,10 @@ export default function HomePage() {
         </View>
       )}
 
-      {/* Categories - loads independently */}
+      {/* Section Divider - Visual separation between Audiobooks and Series */}
+      <View style={styles.sectionDivider} />
+
+      {/* Series & Categories - loads independently */}
       {categoriesLoading ? (
         <>
           <SectionSkeleton />
@@ -586,6 +589,14 @@ const styles = StyleSheet.create({
   section: {
     marginTop: IS_TV_BUILD ? spacing.xl * 1.5 : spacing.xl,
     paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
+  },
+  // Section Divider
+  sectionDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    marginTop: IS_TV_BUILD ? spacing.xl * 2 : spacing.xl * 1.5,
+    marginBottom: IS_TV_BUILD ? spacing.xl * 2 : spacing.xl * 1.5,
+    marginHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
   },
   sectionHeader: {
     flexDirection: 'row',
