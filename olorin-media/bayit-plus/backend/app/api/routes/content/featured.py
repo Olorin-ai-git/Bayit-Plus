@@ -277,8 +277,8 @@ async def get_featured(
                                 "is_featured": True,
                                 "is_published": True,
                                 "is_quality_variant": {"$ne": True},
-                                "$or": or_conditions,
                             },
+                            {"$or": or_conditions},
                             {
                                 "$or": [
                                     {"series_id": None},
