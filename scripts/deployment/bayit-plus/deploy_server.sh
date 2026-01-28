@@ -13,7 +13,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Find repository root by looking for backend directory
 # Support both centralized scripts location and in-repo execution
-if [[ -d "backend" ]]; then
+# Check if REPO_ROOT is already set in environment (e.g., from deploy_all.sh)
+if [[ -n "${REPO_ROOT:-}" ]] && [[ -d "$REPO_ROOT/backend" ]]; then
+    echo "Using REPO_ROOT from environment: $REPO_ROOT"
+elif [[ -d "backend" ]]; then
     REPO_ROOT="$(pwd)"
 elif [[ -d "../../backend" ]]; then
     REPO_ROOT="$(cd ../.. && pwd)"

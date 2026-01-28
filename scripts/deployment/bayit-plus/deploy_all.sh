@@ -472,6 +472,7 @@ main() {
         export ENABLE_APIS=true
         export GCP_PROJECT_ID="$GCP_PROJECT_ID"
         export GCP_REGION="$GCP_REGION"
+        export REPO_ROOT="$REPO_ROOT"  # Ensure backend script uses same repo root
 
         # Run the backend deployment script
         if [[ -x "$SCRIPT_DIR/deploy_server.sh" ]]; then
