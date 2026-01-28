@@ -435,8 +435,11 @@ main() {
 
         # Source the secrets creation function from deploy_server.sh
         if [[ -f "$SCRIPT_DIR/deploy_server.sh" ]]; then
-            # Extract the create_or_update_secret function from deploy_server.sh
-            source <(grep -A 20 "create_or_update_secret()" "$SCRIPT_DIR/deploy_server.sh" | head -20)
+            # Set ENV_FILE variable required by create_or_update_secret function
+            ENV_FILE="$REPO_ROOT/backend/.env"
+
+            # Extract the create_or_update_secret function from deploy_server.sh (50 lines to capture entire function)
+            source <(grep -A 50 "create_or_update_secret()" "$SCRIPT_DIR/deploy_server.sh" | head -50)
 
             # Load environment variables from backend/.env
             if [[ -f "$REPO_ROOT/backend/.env" ]]; then
