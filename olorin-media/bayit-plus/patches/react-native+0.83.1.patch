@@ -1,0 +1,87 @@
+diff --git a/node_modules/react-native/.DS_Store b/node_modules/react-native/.DS_Store
+new file mode 100644
+index 0000000..87baa44
+Binary files /dev/null and b/node_modules/react-native/.DS_Store differ
+diff --git a/node_modules/react-native/Libraries/Utilities/Dimensions.js b/node_modules/react-native/Libraries/Utilities/Dimensions.js
+index 8ae066c..4f5206d 100644
+--- a/node_modules/react-native/Libraries/Utilities/Dimensions.js
++++ b/node_modules/react-native/Libraries/Utilities/Dimensions.js
+@@ -123,6 +123,32 @@ RCTDeviceEventEmitter.addListener(
+     Dimensions.set(update);
+   },
+ );
+-Dimensions.set(NativeDeviceInfo.getConstants().Dimensions);
++
++// Delayed initialization to avoid TurboModule timing issues in React Native 0.83.1
++try {
++  const deviceInfo = NativeDeviceInfo.getConstants();
++  Dimensions.set(deviceInfo.Dimensions);
++} catch (error) {
++  // Fallback: Initialize with safe defaults if DeviceInfo is not available yet
++  console.warn('DeviceInfo TurboModule not available during initialization, using default dimensions');
++  // Use require to avoid circular dependency
++  const Platform = require('./Platform').default;
++  const screenScale = Platform.OS === 'ios' ? 3 : 2;
++  const defaultDimensions = {
++    window: {width: 375, height: 667, scale: screenScale, fontScale: 1},
++    screen: {width: 375, height: 667, scale: screenScale, fontScale: 1},
++  };
++  Dimensions.set(defaultDimensions);
++
++  // Try to update with real dimensions after initialization
++  setTimeout(() => {
++    try {
++      const deviceInfo = NativeDeviceInfo.getConstants();
++      Dimensions.set(deviceInfo.Dimensions);
++    } catch (e) {
++      // Still not available, keep using defaults
++    }
++  }, 100);
++}
+ 
+ export default Dimensions;
+diff --git a/node_modules/react-native/ReactAndroid/.DS_Store b/node_modules/react-native/ReactAndroid/.DS_Store
+new file mode 100644
+index 0000000..0070f41
+Binary files /dev/null and b/node_modules/react-native/ReactAndroid/.DS_Store differ
+diff --git a/node_modules/react-native/ReactAndroid/src/.DS_Store b/node_modules/react-native/ReactAndroid/src/.DS_Store
+new file mode 100644
+index 0000000..2a89fb0
+Binary files /dev/null and b/node_modules/react-native/ReactAndroid/src/.DS_Store differ
+diff --git a/node_modules/react-native/ReactCommon/.DS_Store b/node_modules/react-native/ReactCommon/.DS_Store
+new file mode 100644
+index 0000000..7ac699f
+Binary files /dev/null and b/node_modules/react-native/ReactCommon/.DS_Store differ
+diff --git a/node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeDeviceInfo.js b/node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeDeviceInfo.js
+index 4ef344a..b33ee99 100644
+--- a/node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeDeviceInfo.js
++++ b/node_modules/react-native/src/private/specs_DEPRECATED/modules/NativeDeviceInfo.js
+@@ -44,13 +44,26 @@ export interface Spec extends TurboModule {
+   +getConstants: () => DeviceInfoConstants;
+ }
+ 
+-const NativeModule: Spec = TurboModuleRegistry.getEnforcing<Spec>('DeviceInfo');
++const NativeModule: ?Spec = TurboModuleRegistry.get<Spec>('DeviceInfo');
+ let constants: ?DeviceInfoConstants = null;
+ 
+ const NativeDeviceInfo = {
+   getConstants(): DeviceInfoConstants {
+     if (constants == null) {
+-      constants = NativeModule.getConstants();
++      if (NativeModule == null) {
++        // Fallback for when TurboModule is not available (React Native 0.83.1 bug)
++        // Use safe default dimensions to avoid circular dependency
++        console.warn('DeviceInfo TurboModule not available, using fallback dimensions');
++        constants = {
++          Dimensions: {
++            window: {width: 375, height: 667, scale: 2, fontScale: 1},
++            screen: {width: 375, height: 667, scale: 2, fontScale: 1},
++          },
++          isIPhoneX_deprecated: false,
++        };
++      } else {
++        constants = NativeModule.getConstants();
++      }
+     }
+     return constants;
+   },
