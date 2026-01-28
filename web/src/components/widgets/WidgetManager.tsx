@@ -45,7 +45,7 @@ export default function WidgetManager() {
       const response = await adminWidgetsService.getMyWidgets(location.pathname);
       setWidgets(response.items || []);
     } catch (err) {
-      logger.error('Failed to load widgets', { error: err, pathname: location.pathname, component: 'WidgetManager' });
+      logger.error('Failed to load widgets', 'WidgetManager', { error: err, pathname: location.pathname });
       setError('Failed to load widgets');
     } finally {
       setLoading(false);
@@ -107,46 +107,41 @@ export default function WidgetManager() {
                 episodeData = latestEpisode;
               }
             } catch (err) {
-              logger.error('Failed to fetch podcast episodes', { error: err, podcastId: widget.content.podcast_id });
+              logger.error('Failed to fetch podcast episodes', 'WidgetManager', { error: err, podcastId: widget.content.podcast_id });
             }
           }
           break;
 
         case 'radio':
           if (widget.content.station_id) {
-            logger.debug('Fetching radio stream', {
+            logger.debug('Fetching radio stream', 'WidgetManager', {
               stationId: widget.content.station_id,
-              component: 'WidgetManager'
             });
             try {
               const response = await radioService.getStreamUrl(widget.content.station_id);
               streamUrl = response?.url || response?.stream_url;
-              logger.debug('Radio stream URL retrieved successfully', {
+              logger.debug('Radio stream URL retrieved successfully', 'WidgetManager', {
                 stationId: widget.content.station_id,
-                component: 'WidgetManager'
               });
             } catch (streamError: any) {
               // Handle backend stream validation failure (503 Service Unavailable)
               const statusCode = streamError.status || streamError.response?.status;
               if (statusCode === 503) {
-                logger.warn('Radio stream unavailable (backend validation failed)', {
+                logger.warn('Radio stream unavailable (backend validation failed)', 'WidgetManager', {
                   stationId: widget.content.station_id,
                   statusCode,
                   detail: streamError.message || streamError.response?.data?.detail,
-                  component: 'WidgetManager'
                 });
                 // Don't set streamUrl - frontend will show error message to user
               } else if (statusCode === 404) {
-                logger.warn('Radio station not found', {
+                logger.warn('Radio station not found', 'WidgetManager', {
                   stationId: widget.content.station_id,
-                  component: 'WidgetManager'
                 });
               } else {
-                logger.error('Failed to fetch radio stream URL', {
+                logger.error('Failed to fetch radio stream URL', 'WidgetManager', {
                   stationId: widget.content.station_id,
                   statusCode,
                   error: streamError.message,
-                  component: 'WidgetManager'
                 });
               }
             }
@@ -180,11 +175,10 @@ export default function WidgetManager() {
         return result;
       }
     } catch (err) {
-      logger.error(`Failed to get stream URL`, {
+      logger.error('Failed to get stream URL', 'WidgetManager', {
         error: err,
         contentType: widget.content.content_type,
         widgetId: widget.id,
-        component: 'WidgetManager'
       });
     }
 
@@ -202,18 +196,18 @@ export default function WidgetManager() {
       position.x < 0 ||
       position.y < 0
     ) {
-      logger.warn('Invalid widget position values, skipping save', { widgetId, position, component: 'WidgetManager' });
+      logger.warn('Invalid widget position values, skipping save', 'WidgetManager', { widgetId, position });
       return;
     }
 
     // Validate width/height if provided
     if (position.width !== undefined && (!isFinite(position.width) || position.width <= 0)) {
-      logger.warn('Invalid widget width, skipping save', { widgetId, position, component: 'WidgetManager' });
+      logger.warn('Invalid widget width, skipping save', 'WidgetManager', { widgetId, position });
       return;
     }
 
     if (position.height !== undefined && (!isFinite(position.height) || position.height <= 0)) {
-      logger.warn('Invalid widget height, skipping save', { widgetId, position, component: 'WidgetManager' });
+      logger.warn('Invalid widget height, skipping save', 'WidgetManager', { widgetId, position });
       return;
     }
 
@@ -225,7 +219,7 @@ export default function WidgetManager() {
         height: position.height,
       });
     } catch (err) {
-      logger.error('Failed to save position', { error: err, widgetId, position, component: 'WidgetManager' });
+      logger.error('Failed to save position', 'WidgetManager', { error: err, widgetId, position });
     }
   }, []);
 
@@ -249,7 +243,7 @@ export default function WidgetManager() {
     try {
       await adminWidgetsService.closeWidget(widgetId);
     } catch (err) {
-      logger.error('Failed to close widget', { error: err, widgetId, component: 'WidgetManager' });
+      logger.error('Failed to close widget', 'WidgetManager', { error: err, widgetId });
     }
   }, [closeWidget]);
 
@@ -264,7 +258,7 @@ export default function WidgetManager() {
     try {
       await adminWidgetsService.toggleWidgetMinimize(widgetId, newIsMinimized);
     } catch (err) {
-      logger.error('Failed to toggle widget minimize', { error: err, widgetId, component: 'WidgetManager' });
+      logger.error('Failed to toggle widget minimize', 'WidgetManager', { error: err, widgetId });
       // Revert on error
       toggleMinimize(widgetId);
     }

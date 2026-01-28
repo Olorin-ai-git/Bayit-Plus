@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
-import { RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@/stores/authStore';
@@ -34,7 +33,6 @@ import { getContentPosterUrl } from '@bayit/shared-utils/youtube';
 import logger from '@/utils/logger';
 import { useFeaturedAudiobooksCarousel } from '@/hooks/useFeaturedAudiobooksCarousel';
 import { useUserGeolocation } from '@/hooks/useUserGeolocation';
-import IsraelisInCitySection from '@/components/home/IsraelisInCitySection';
 
 declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
@@ -333,22 +331,6 @@ export default function HomePage() {
 
       {/* Hero Carousel Section */}
       <View style={styles.carouselSection}>
-        {/* Refresh Button - Positioned in carousel section */}
-        <Pressable
-          onPress={syncContent}
-          disabled={syncing}
-          style={[styles.refreshButton, syncing && styles.refreshButtonDisabled]}
-        >
-          <RefreshCw
-            size={16}
-            color={colors.text}
-            style={syncing ? { transform: [{ rotate: '360deg' }] } : undefined}
-          />
-          <Text style={styles.refreshButtonText}>
-            {syncing ? t('common.syncing', 'Syncing...') : t('common.refresh', 'Refresh')}
-          </Text>
-        </Pressable>
-
         {carouselLoading ? (
           <HeroSkeleton />
         ) : (
@@ -423,59 +405,6 @@ export default function HomePage() {
         </View>
       )}
 
-      {/* Dynamic Culture Trending - shows trending topics for selected culture */}
-      <View style={styles.section}>
-        <CultureTrendingRow cultureId={currentCulture?.culture_id} />
-      </View>
-
-      {/* Dynamic Culture City Rows - shows cities based on selected culture */}
-      {cultureCities.map((city) => (
-        <View key={city.city_id} style={styles.section}>
-          <CultureCityRow
-            cityId={city.city_id}
-            cultureId={currentCulture?.culture_id}
-          />
-        </View>
-      ))}
-
-      {/* Fallback to hardcoded rows if no culture cities loaded yet */}
-      {cultureCities.length === 0 && !cultureLoading && (
-        <>
-          <View style={styles.section}>
-            <JerusalemRow />
-          </View>
-          <View style={styles.section}>
-            <TelAvivRow />
-          </View>
-        </>
-      )}
-
-      {/* Audiobooks Carousel - Featured audiobooks */}
-      {audiobooksLoading ? (
-        <SectionSkeleton />
-      ) : featuredAudiobooks.length > 0 && (
-        <ContentCarousel
-          title={t('home.audiobooks', { defaultValue: 'Audiobooks' })}
-          items={featuredAudiobooks.map((book) => ({
-            id: book.id,
-            title: book.title,
-            thumbnail: book.thumbnail,
-            backdrop: book.backdrop,
-            description: book.description,
-            type: 'audiobook',
-          }))}
-          seeAllLink="/audiobooks"
-          style={styles.section}
-        />
-      )}
-
-      {/* Israelis in [City] - Location-based content */}
-      <IsraelisInCitySection
-        location={location}
-        isDetecting={locationDetecting}
-        style={styles.section}
-      />
-
       {/* Content Filters - only visible when authenticated */}
       {useAuthStore.getState().isAuthenticated && (
         <View style={styles.filterSection}>
@@ -487,17 +416,68 @@ export default function HomePage() {
         </View>
       )}
 
-      {/* Section Divider - Visual separation between Audiobooks and Series */}
-      <View style={styles.sectionDivider} />
-
-      {/* Series & Categories - loads independently */}
+      {/* Sections in desired order: near-you, trending, Jerusalem, Tel Aviv, then all other categories */}
       {categoriesLoading ? (
         <>
           <SectionSkeleton />
           <SectionSkeleton />
           <SectionSkeleton />
+          <SectionSkeleton />
+          <SectionSkeleton />
         </>
-      ) : categories.map((category) => {
+      ) : (
+        <>
+          {/* 1. Near You (Israelis Near You) - from API */}
+          {categories.filter(cat => cat.name === 'near-you').map((category) => {
+            const filteredItems = showOnlyWithSubtitles
+              ? category.items.filter(item =>
+                  item.available_subtitle_languages &&
+                  item.available_subtitle_languages.length > 0
+                )
+              : category.items;
+
+            if (filteredItems.length === 0) return null;
+
+            return (
+              <ContentCarousel
+                key={category.id}
+                title={t(category.name_key || `home.${category.name}`, { defaultValue: getLocalizedName(category, i18n.language) })}
+                items={filteredItems}
+                seeAllLink={`/vod?category=${category.id}`}
+                style={styles.section}
+              />
+            );
+          })}
+
+          {/* 2. What's Hot in Israel (Trending) */}
+          <View style={styles.section}>
+            <CultureTrendingRow cultureId={currentCulture?.culture_id} />
+          </View>
+
+          {/* 3 & 4. Jerusalem and Tel Aviv */}
+          {cultureCities.length === 0 && !cultureLoading && (
+            <>
+              <View style={styles.section}>
+                <JerusalemRow />
+              </View>
+              <View style={styles.section}>
+                <TelAvivRow />
+              </View>
+            </>
+          )}
+
+          {/* Dynamic Culture City Rows if available */}
+          {cultureCities.map((city) => (
+            <View key={city.city_id} style={styles.section}>
+              <CultureCityRow
+                cityId={city.city_id}
+                cultureId={currentCulture?.culture_id}
+              />
+            </View>
+          ))}
+
+          {/* 5-8. Movies, Series, Podcasts, Audiobooks - from API in backend-specified order */}
+          {categories.filter(cat => cat.name !== 'near-you').map((category) => {
         const filteredItems = showOnlyWithSubtitles
           ? category.items.filter(item =>
               item.available_subtitle_languages &&
@@ -525,6 +505,8 @@ export default function HomePage() {
           />
         );
       })}
+        </>
+      )}
     </ScrollView>
   );
 }
@@ -545,8 +527,9 @@ const styles = StyleSheet.create({
   // Header Bar - Compact clocks
   headerBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing.lg,
     paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
     paddingTop: spacing.sm,
     paddingBottom: spacing.xs,
@@ -555,36 +538,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
   },
   clockLeft: {
-    alignItems: 'flex-start',
-    marginHorizontal: 10,
+    alignItems: 'center',
   },
   clockRight: {
-    alignItems: 'flex-end',
-    marginHorizontal: 10,
-  },
-  refreshButton: {
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    alignSelf: 'flex-end',
-    marginBottom: spacing.sm,
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-  },
-  refreshButtonDisabled: {
-    opacity: 0.5,
-    cursor: 'not-allowed',
-  },
-  refreshButtonText: {
-    color: colors.textSecondary,
-    fontSize: 12,
-    fontWeight: '500',
   },
   // Carousel Section
   carouselSection: {

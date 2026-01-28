@@ -39,8 +39,14 @@ export function useFeaturedAudiobooksCarousel() {
         const data = await response.json();
         // Filter to only featured audiobooks for carousel, or use top 10 if none featured
         const items = data.items || [];
-        const featured = items.filter((item: FeaturedAudiobook) => item.is_featured);
-        setAudiobooks(featured.length > 0 ? featured : items.slice(0, 10));
+
+        // Filter out audiobooks with empty or missing titles (data quality check)
+        const validItems = items.filter((item: FeaturedAudiobook) =>
+          item && item.id && item.title && item.title.trim() !== ''
+        );
+
+        const featured = validItems.filter((item: FeaturedAudiobook) => item.is_featured);
+        setAudiobooks(featured.length > 0 ? featured : validItems.slice(0, 10));
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch audiobooks');
         setAudiobooks([]);

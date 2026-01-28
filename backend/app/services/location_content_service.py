@@ -9,8 +9,12 @@ from app.models.content import Content
 from app.models.jewish_community import CommunityEvent
 from app.services.location_constants import MAJOR_US_CITIES, CITY_COORDINATES
 from app.services.news_scraper.location_scrapers import scrape_israeli_content_in_us_city
+from app.services.news_scraper.rss_parser import _fetch_og_image
 
 logger = logging.getLogger(__name__)
+
+# Fallback poster for articles without images
+FALLBACK_NEWS_POSTER = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=450&fit=crop"  # News/journalism themed image
 
 
 class LocationContentService:
@@ -137,7 +141,10 @@ class LocationContentService:
                     "id": f"article-{idx}",
                     "title": headline.title,
                     "description": headline.summary,
-                    "thumbnail": headline.image_url,
+                    "thumbnail": headline.image_url or FALLBACK_NEWS_POSTER,
+                    "source": headline.source,
+                    "city": city,
+                    "state": state,
                     "type": "article",
                     "content_format": "article",
                     "published_at": (
