@@ -39,6 +39,9 @@ try:
         "translation_single": "10/minute",  # Single episode translation trigger
         "translation_bulk": "5/hour",  # Bulk translation (expensive, queues many jobs)
         "translation_status": "30/minute",  # Translation status queries
+        # Location Services - Protection for geolocation and content discovery
+        "reverse_geocode": "30/minute",  # GeoNames API quota protection
+        "location_content": "60/minute",  # Content discovery queries
     }
 
     RATE_LIMITING_ENABLED = True

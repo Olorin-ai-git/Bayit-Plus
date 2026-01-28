@@ -1,7 +1,37 @@
 diff --git a/node_modules/react-native/.DS_Store b/node_modules/react-native/.DS_Store
 new file mode 100644
-index 0000000..87baa44
+index 0000000..43e7462
 Binary files /dev/null and b/node_modules/react-native/.DS_Store differ
+diff --git a/node_modules/react-native/Libraries/TurboModule/TurboModuleRegistry.js b/node_modules/react-native/Libraries/TurboModule/TurboModuleRegistry.js
+index 719603d..5f5226d 100644
+--- a/node_modules/react-native/Libraries/TurboModule/TurboModuleRegistry.js
++++ b/node_modules/react-native/Libraries/TurboModule/TurboModuleRegistry.js
+@@ -38,6 +38,25 @@ export function get<T: TurboModule>(name: string): ?T {
+ 
+ export function getEnforcing<T: TurboModule>(name: string): T {
+   const module = requireModule<T>(name);
++
++  // Special handling for DeviceInfo in React Native 0.83.1 due to TurboModule initialization timing bug
++  if (module == null && name === 'DeviceInfo') {
++    console.warn(
++      `TurboModuleRegistry: DeviceInfo TurboModule not available, using fallback. ` +
++      `This is a known React Native 0.83.1 bug with New Architecture.`
++    );
++    // Return a mock DeviceInfo module with default dimensions
++    return ({
++      getConstants: () => ({
++        Dimensions: {
++          window: {width: 375, height: 667, scale: 2, fontScale: 1},
++          screen: {width: 375, height: 667, scale: 2, fontScale: 1},
++        },
++        isIPhoneX_deprecated: false,
++      }),
++    }: any);
++  }
++
+   invariant(
+     module != null,
+     `TurboModuleRegistry.getEnforcing(...): '${name}' could not be found. ` +
 diff --git a/node_modules/react-native/Libraries/Utilities/Dimensions.js b/node_modules/react-native/Libraries/Utilities/Dimensions.js
 index 8ae066c..4f5206d 100644
 --- a/node_modules/react-native/Libraries/Utilities/Dimensions.js

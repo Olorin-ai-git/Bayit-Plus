@@ -83,14 +83,6 @@ function SystemWidgetCard({
     }
   };
 
-  const getIcon = (): string => {
-    if (widget.icon) return widget.icon;
-    if (widget.content?.content_type === 'live_channel') return '📺';
-    if (widget.content?.content_type === 'iframe') return '🌐';
-    if (widget.content?.content_type === 'podcast') return '🎙️';
-    if (widget.content?.content_type === 'radio') return '📻';
-    return '🎯';
-  };
 
   const handleAction = async () => {
     // If hidden, just show it (no API call needed, just update local state)
@@ -120,7 +112,7 @@ function SystemWidgetCard({
       <GlassCard style={[styles.cardInner, isHovered && styles.cardHovered]}>
         {/* Icon */}
         <View style={styles.iconContainer}>
-          <Text style={styles.iconText}>{getIcon()}</Text>
+          {getContentTypeIcon(widget.content?.content_type)}
         </View>
 
         {/* Content */}

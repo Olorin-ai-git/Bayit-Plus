@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0C80B921A6F3F58F76C31292 /* libPods-BayitPlus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-BayitPlus.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		22226C97B9F3474FB49E566A /* SpeechModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CFEE348EE864E639F34BF26 /* SpeechModule.swift */; };
 		22BF94F178D04029EA50E433 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		2D36641039514D6B81875A4C /* TTSModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EDB8FE62EB654CF88ADE331D /* TTSModule.m */; };
+		6BCF928B3F1FC6C5730A3409 /* libPods-BayitPlus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7173DD999B03A58BE3DABE4 /* libPods-BayitPlus.a */; };
 		710D8BA10C3F4E8287DF00F6 /* SpeechModule.m in Sources */ = {isa = PBXBuildFile; fileRef = CCC5298742D0449298AD731B /* SpeechModule.m */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
@@ -24,16 +24,16 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BayitPlus/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BayitPlus/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = BayitPlus/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		3B4392A12AC88292D35C810B /* Pods-BayitPlus.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BayitPlus.debug.xcconfig"; path = "Target Support Files/Pods-BayitPlus/Pods-BayitPlus.debug.xcconfig"; sourceTree = "<group>"; };
-		5709B34CF0A7D63546082F79 /* Pods-BayitPlus.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BayitPlus.release.xcconfig"; path = "Target Support Files/Pods-BayitPlus/Pods-BayitPlus.release.xcconfig"; sourceTree = "<group>"; };
 		578F1CE273784DB3818D227B /* BayitPlus-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BayitPlus-Bridging-Header.h"; sourceTree = "<group>"; };
 		5CCB7789D3D04AEE96C2FE1E /* SiriModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BayitPlus/SiriModule.swift; sourceTree = "<group>"; };
-		5DCACB8F33CDC322A6C60F78 /* libPods-BayitPlus.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BayitPlus.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		69EFC265A10950D8820016E1 /* Pods-BayitPlus.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BayitPlus.debug.xcconfig"; path = "Target Support Files/Pods-BayitPlus/Pods-BayitPlus.debug.xcconfig"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = BayitPlus/AppDelegate.swift; sourceTree = "<group>"; };
 		7A3618CA8B1242A1B0252F5E /* SiriModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BayitPlus/SiriModule.m; sourceTree = "<group>"; };
+		7F745840B3DBD656F7086B31 /* Pods-BayitPlus.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BayitPlus.release.xcconfig"; path = "Target Support Files/Pods-BayitPlus/Pods-BayitPlus.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = BayitPlus/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		853C29BA78FF4FEB99AD9090 /* TTSModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BayitPlus/TTSModule.swift; sourceTree = "<group>"; };
 		CCC5298742D0449298AD731B /* SpeechModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BayitPlus/SpeechModule.m; sourceTree = "<group>"; };
+		E7173DD999B03A58BE3DABE4 /* libPods-BayitPlus.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BayitPlus.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		EDB8FE62EB654CF88ADE331D /* TTSModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BayitPlus/TTSModule.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -43,7 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C80B921A6F3F58F76C31292 /* libPods-BayitPlus.a in Frameworks */,
+				6BCF928B3F1FC6C5730A3409 /* libPods-BayitPlus.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,7 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				5DCACB8F33CDC322A6C60F78 /* libPods-BayitPlus.a */,
+				E7173DD999B03A58BE3DABE4 /* libPods-BayitPlus.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -110,8 +110,8 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				3B4392A12AC88292D35C810B /* Pods-BayitPlus.debug.xcconfig */,
-				5709B34CF0A7D63546082F79 /* Pods-BayitPlus.release.xcconfig */,
+				69EFC265A10950D8820016E1 /* Pods-BayitPlus.debug.xcconfig */,
+				7F745840B3DBD656F7086B31 /* Pods-BayitPlus.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -123,12 +123,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "BayitPlus" */;
 			buildPhases = (
-				C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */,
+				D24FEFBC2D87CC9FCD1B9AAA /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
-				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
-				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
+				2ACFD5C4832141A26C822C73 /* [CP] Embed Pods Frameworks */,
+				1A383FA48AB64CE396612459 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -185,7 +185,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */ = {
+		1A383FA48AB64CE396612459 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BayitPlus/Pods-BayitPlus-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BayitPlus/Pods-BayitPlus-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BayitPlus/Pods-BayitPlus-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		2ACFD5C4832141A26C822C73 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -202,7 +219,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BayitPlus/Pods-BayitPlus-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
+		D24FEFBC2D87CC9FCD1B9AAA /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -222,23 +239,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E235C05ADACE081382539298 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BayitPlus/Pods-BayitPlus-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BayitPlus/Pods-BayitPlus-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BayitPlus/Pods-BayitPlus-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -261,7 +261,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B4392A12AC88292D35C810B /* Pods-BayitPlus.debug.xcconfig */;
+			baseConfigurationReference = 69EFC265A10950D8820016E1 /* Pods-BayitPlus.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphoneos*]" = AppIcon;
@@ -296,7 +296,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5709B34CF0A7D63546082F79 /* Pods-BayitPlus.release.xcconfig */;
+			baseConfigurationReference = 7F745840B3DBD656F7086B31 /* Pods-BayitPlus.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphoneos*]" = AppIcon;

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bayit+ Translator - Offscreen Document</title>
+  <style>
+    /* Offscreen document is not visible, minimal styling */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    #status {
+      padding: 20px;
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div id="status">
+    Bayit+ Translator Offscreen Document
+    <br>
+    Status: <span id="status-text">Initializing...</span>
+  </div>
+
+  <!-- Audio elements for debugging (not visible) -->
+  <audio id="debug-audio" style="display: none;"></audio>
+
+  <script type="module" src="offscreen/offscreen.js"></script>
+</body>
+</html>

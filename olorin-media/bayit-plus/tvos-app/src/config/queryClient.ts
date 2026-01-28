@@ -65,6 +65,8 @@ export const queryKeys = {
     search: (query: string) =>
       [...queryKeys.content.all, 'search', query] as const,
     detail: (id: string) => [...queryKeys.content.all, 'detail', id] as const,
+    location: (city: string, state: string) =>
+      [...queryKeys.content.all, 'location', city, state] as const,
   },
 
   // Live/EPG queries

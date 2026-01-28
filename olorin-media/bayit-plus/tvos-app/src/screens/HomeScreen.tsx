@@ -10,14 +10,19 @@
  */
 
 import React from 'react';
-import { View, ScrollView, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@bayit/shared-services';
 import { useAuthStore } from '@bayit/shared-stores';
 import { ContentShelf, ContentItem } from '../components/ContentShelf';
+import { HeroCarouselTV, HeroItem } from '../components/HeroCarouselTV';
+import { IsraelisInCityShelf } from '../components/IsraelisInCityShelf';
+import { HeroCarouselSkeleton } from '../components/skeletons/HeroCarouselSkeleton';
+import { ContentShelfSkeleton } from '../components/skeletons/ContentShelfSkeleton';
 import { TVHeader } from '../components/TVHeader';
 import { MultiWindowManager } from '../components/windows/MultiWindowManager';
 import { useVoiceTV } from '../hooks/useVoiceTV';
+import { useLocationTV } from '../hooks/useLocationTV';
 import { queryKeys } from '../config/queryClient';
 import { config } from '../config/appConfig';
 
@@ -28,6 +33,16 @@ interface HomeScreenProps {
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const { user } = useAuthStore();
   const { isListening } = useVoiceTV();
+  const { location, isDetecting } = useLocationTV();
+
+  // Fetch featured content for hero carousel
+  const { data: featuredData, isLoading: featuredLoading } = useQuery({
+    queryKey: queryKeys.content.featured(),
+    queryFn: async () => {
+      const response = await api.get('/content/featured');
+      return response.data;
+    },
+  });
 
   // Fetch trending content
   const { data: trendingData, isLoading: trendingLoading } = useQuery({
@@ -105,20 +120,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     }
   };
 
-  // Loading state
-  const isLoading = trendingLoading || channelsLoading || vodLoading;
+  const handleHeroSelect = (item: HeroItem) => {
+    // Navigate to player for featured content
+    navigation.navigate('Player', { contentId: item.id });
+  };
 
-  if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <TVHeader currentScreen="home" navigation={navigation} />
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#A855F7" />
-          <Text style={styles.loadingText}>Loading content...</Text>
-        </View>
-      </View>
-    );
-  }
+  // Loading state
+  const isLoading = featuredLoading || trendingLoading || channelsLoading || vodLoading;
 
   return (
     <View style={styles.container}>
@@ -129,6 +137,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* Hero Carousel - Featured Content */}
+        {featuredLoading ? (
+          <HeroCarouselSkeleton />
+        ) : (
+          featuredData?.spotlight &&
+          featuredData.spotlight.length > 0 && (
+            <HeroCarouselTV
+              items={featuredData.spotlight}
+              onItemSelect={handleHeroSelect}
+              testID="hero-carousel"
+            />
+          )
+        )}
+
         {/* Continue Watching (authenticated only) */}
         {user && continueWatchingData && continueWatchingData.length > 0 && (
           <ContentShelf
@@ -139,54 +161,90 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           />
         )}
 
+        {/* Location-based Content */}
+        <IsraelisInCityShelf
+          location={location}
+          isDetecting={isDetecting}
+          onItemSelect={handleItemSelect}
+        />
+
         {/* Trending Content */}
-        {trendingData && trendingData.length > 0 && (
-          <ContentShelf
-            title="Trending Now"
-            items={trendingData}
-            onItemSelect={handleItemSelect}
-            testID="trending-shelf"
-          />
+        {trendingLoading ? (
+          <ContentShelfSkeleton />
+        ) : (
+          trendingData &&
+          trendingData.length > 0 && (
+            <ContentShelf
+              title="Trending Now"
+              items={trendingData}
+              onItemSelect={handleItemSelect}
+              testID="trending-shelf"
+            />
+          )
         )}
 
         {/* Live TV Channels */}
-        {channelsData && channelsData.length > 0 && (
-          <ContentShelf
-            title="Live TV"
-            items={channelsData}
-            onItemSelect={handleItemSelect}
-            testID="live-tv-shelf"
-          />
+        {channelsLoading ? (
+          <ContentShelfSkeleton />
+        ) : (
+          channelsData &&
+          channelsData.length > 0 && (
+            <ContentShelf
+              title="Live TV"
+              items={channelsData}
+              onItemSelect={handleItemSelect}
+              onSeeAll={() => navigation.navigate('LiveTV')}
+              testID="live-tv-shelf"
+            />
+          )
         )}
 
         {/* VOD Content */}
-        {vodData && vodData.length > 0 && (
-          <ContentShelf
-            title="Movies & Series"
-            items={vodData}
-            onItemSelect={handleItemSelect}
-            testID="vod-shelf"
-          />
+        {vodLoading ? (
+          <ContentShelfSkeleton />
+        ) : (
+          vodData &&
+          vodData.length > 0 && (
+            <ContentShelf
+              title="Movies & Series"
+              items={vodData}
+              onItemSelect={handleItemSelect}
+              onSeeAll={() => navigation.navigate('VOD')}
+              testID="vod-shelf"
+            />
+          )
         )}
 
         {/* Radio Stations */}
-        {radioData && radioData.length > 0 && (
-          <ContentShelf
-            title="Radio Stations"
-            items={radioData}
-            onItemSelect={handleItemSelect}
-            testID="radio-shelf"
-          />
+        {radioLoading ? (
+          <ContentShelfSkeleton />
+        ) : (
+          radioData &&
+          radioData.length > 0 && (
+            <ContentShelf
+              title="Radio Stations"
+              items={radioData}
+              onItemSelect={handleItemSelect}
+              onSeeAll={() => navigation.navigate('Radio')}
+              testID="radio-shelf"
+            />
+          )
         )}
 
         {/* Podcasts */}
-        {podcastsData && podcastsData.length > 0 && (
-          <ContentShelf
-            title="Podcasts"
-            items={podcastsData}
-            onItemSelect={handleItemSelect}
-            testID="podcasts-shelf"
-          />
+        {podcastsLoading ? (
+          <ContentShelfSkeleton />
+        ) : (
+          podcastsData &&
+          podcastsData.length > 0 && (
+            <ContentShelf
+              title="Podcasts"
+              items={podcastsData}
+              onItemSelect={handleItemSelect}
+              onSeeAll={() => navigation.navigate('Podcasts')}
+              testID="podcasts-shelf"
+            />
+          )
         )}
       </ScrollView>
 
@@ -207,17 +265,5 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingTop: 24,
     paddingBottom: config.tv.safeZoneMarginPt,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 16,
-  },
-  loadingText: {
-    fontSize: config.tv.minBodyTextSizePt,
-    fontWeight: '400',
-    color: 'rgba(255,255,255,0.7)',
-    lineHeight: config.tv.minBodyTextSizePt * 1.2,
   },
 });

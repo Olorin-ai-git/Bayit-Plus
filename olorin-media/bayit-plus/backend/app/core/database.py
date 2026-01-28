@@ -48,6 +48,7 @@ from app.models.librarian import (AuditReport, ClassificationVerificationCache,
 from app.models.live_dubbing import LiveDubbingSession
 from app.models.live_feature_quota import (LiveFeatureQuota,
                                            LiveFeatureUsageSession)
+from app.models.location_cache import LocationCache
 from app.models.profile import Profile
 from app.models.realtime import ChatMessage, WatchParty
 from app.models.recording import (Recording, RecordingSchedule,
@@ -244,6 +245,8 @@ async def connect_to_mongo():
         NLPConversationSession,
         # Audible OAuth integration models
         UserAudibleAccount,
+        # Location cache model
+        LocationCache,
     ]
 
     # Conditionally add Olorin models based on database separation setting

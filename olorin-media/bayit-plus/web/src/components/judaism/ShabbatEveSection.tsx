@@ -161,16 +161,16 @@ export function ShabbatEveSection({
           <div className="flex items-start justify-between mb-5">
             {/* Left: Title with icons */}
             <div className="flex items-center gap-4">
-              <div className="flex items-end">
-                <span style={{ fontSize: 48, marginRight: -8 }}>🕯️</span>
-                <span style={{ fontSize: 48 }}>🕯️</span>
+              <div className="flex items-end gap-1">
+                <Flame size={48} color="#f59e0b" style={{ marginRight: -8 }} />
+                <Flame size={48} color="#f59e0b" />
               </div>
               <div>
                 <h2 className="text-3xl font-bold text-white">
                   {t('judaism.erevShabbat.title', 'Erev Shabbat')}
                 </h2>
                 <p className="text-amber-300 text-lg mt-1">
-                  {t('judaism.erevShabbat.shabbatShalom', 'Shabbat Shalom!')} 🍞
+                  {t('judaism.erevShabbat.shabbatShalom', 'Shabbat Shalom!')}
                 </p>
               </div>
             </div>

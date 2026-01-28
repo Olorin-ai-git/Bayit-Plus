@@ -9,19 +9,24 @@
  * - Integration with AudioCaptureModule for audio input
  *
  * Ported from iOS with tvOS-specific adaptations
+ * Speech framework is only available on device, not simulator
  */
 
 import Foundation
+#if canImport(Speech)
 import Speech
+#endif
 import AVFoundation
 import React
 
 @objc(SpeechModule)
 class SpeechModule: RCTEventEmitter {
 
+#if canImport(Speech)
   private var speechRecognizer: SFSpeechRecognizer?
   private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
   private var recognitionTask: SFSpeechRecognitionTask?
+#endif
   private let audioEngine = AVAudioEngine()
 
   // MARK: - RCTEventEmitter
@@ -37,12 +42,12 @@ class SpeechModule: RCTEventEmitter {
   // MARK: - Event Emitter Methods for TurboModule
 
   @objc
-  func addListener(_ eventName: String) {
+  override func addListener(_ eventName: String) {
     // Required for TurboModule event support
   }
 
   @objc
-  func removeListeners(_ count: Double) {
+  override func removeListeners(_ count: Double) {
     // Required for TurboModule event support
   }
 
@@ -50,9 +55,8 @@ class SpeechModule: RCTEventEmitter {
 
   @objc func requestPermissions(_ resolve: @escaping RCTPromiseResolveBlock,
                                 reject: @escaping RCTPromiseRejectBlock) {
-    // Request microphone permission (Siri Remote on tvOS)
+#if canImport(Speech)
     AVAudioSession.sharedInstance().requestRecordPermission { micGranted in
-      // Request speech recognition permission
       SFSpeechRecognizer.requestAuthorization { authStatus in
         DispatchQueue.main.async {
           let speechGranted = authStatus == .authorized
@@ -61,10 +65,14 @@ class SpeechModule: RCTEventEmitter {
         }
       }
     }
+#else
+    reject("UNAVAILABLE", "Speech recognition not available on this platform", nil)
+#endif
   }
 
   @objc func checkPermissions(_ resolve: @escaping RCTPromiseResolveBlock,
                              reject: @escaping RCTPromiseRejectBlock) {
+#if canImport(Speech)
     let micStatus = AVAudioSession.sharedInstance().recordPermission
     let speechStatus = SFSpeechRecognizer.authorizationStatus()
 
@@ -72,6 +80,9 @@ class SpeechModule: RCTEventEmitter {
       "microphone": micStatus == .granted,
       "speech": speechStatus == .authorized
     ])
+#else
+    resolve(["microphone": false, "speech": false])
+#endif
   }
 
   // MARK: - Recognition Methods
@@ -79,6 +90,7 @@ class SpeechModule: RCTEventEmitter {
   @objc func setLanguage(_ languageCode: String,
                         resolve: @escaping RCTPromiseResolveBlock,
                         reject: @escaping RCTPromiseRejectBlock) {
+#if canImport(Speech)
     let locale: Locale
 
     switch languageCode {
@@ -106,11 +118,14 @@ class SpeechModule: RCTEventEmitter {
              "Language \(languageCode) not supported on tvOS",
              nil)
     }
+#else
+    reject("UNAVAILABLE", "Speech recognition not available on this platform", nil)
+#endif
   }
 
   @objc func startListening(_ resolve: @escaping RCTPromiseResolveBlock,
                            reject: @escaping RCTPromiseRejectBlock) {
-    // Check permissions first
+#if canImport(Speech)
     guard AVAudioSession.sharedInstance().recordPermission == .granted else {
       reject("PERMISSION_DENIED", "Microphone permission not granted", nil)
       return
@@ -121,16 +136,13 @@ class SpeechModule: RCTEventEmitter {
       return
     }
 
-    // Stop any ongoing recognition
     if recognitionTask != nil {
       recognitionTask?.cancel()
       recognitionTask = nil
     }
 
-    // Configure audio session for tvOS
     let audioSession = AVAudioSession.sharedInstance()
     do {
-      // tvOS-specific audio session configuration
       try audioSession.setCategory(.record, mode: .measurement, options: [])
       try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
     } catch {
@@ -138,7 +150,6 @@ class SpeechModule: RCTEventEmitter {
       return
     }
 
-    // Create recognition request
     recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
     guard let recognitionRequest = recognitionRequest else {
       reject("RECOGNITION_ERROR", "Unable to create recognition request", nil)
@@ -147,7 +158,6 @@ class SpeechModule: RCTEventEmitter {
 
     recognitionRequest.shouldReportPartialResults = true
 
-    // Get recognizer (default to English if not set)
     if speechRecognizer == nil {
       speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
     }
@@ -157,13 +167,11 @@ class SpeechModule: RCTEventEmitter {
       return
     }
 
-    // Check availability
     guard speechRecognizer.isAvailable else {
       reject("RECOGNITION_ERROR", "Speech recognizer not available on tvOS", nil)
       return
     }
 
-    // Start recognition task
     recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { [weak self] result, error in
       guard let self = self else { return }
 
@@ -190,7 +198,6 @@ class SpeechModule: RCTEventEmitter {
       }
     }
 
-    // Configure audio engine
     let inputNode = audioEngine.inputNode
     let recordingFormat = inputNode.outputFormat(forBus: 0)
 
@@ -198,7 +205,6 @@ class SpeechModule: RCTEventEmitter {
       recognitionRequest.append(buffer)
     }
 
-    // Start audio engine
     audioEngine.prepare()
     do {
       try audioEngine.start()
@@ -206,6 +212,9 @@ class SpeechModule: RCTEventEmitter {
     } catch {
       reject("AUDIO_ENGINE_ERROR", "Failed to start audio engine: \(error)", nil)
     }
+#else
+    reject("UNAVAILABLE", "Speech recognition not available on this platform", nil)
+#endif
   }
 
   @objc func stopListening(_ resolve: @escaping RCTPromiseResolveBlock,
@@ -217,8 +226,10 @@ class SpeechModule: RCTEventEmitter {
   private func stopRecording() {
     audioEngine.stop()
     audioEngine.inputNode.removeTap(onBus: 0)
+#if canImport(Speech)
     recognitionRequest?.endAudio()
     recognitionTask?.cancel()
     recognitionTask = nil
+#endif
   }
 }

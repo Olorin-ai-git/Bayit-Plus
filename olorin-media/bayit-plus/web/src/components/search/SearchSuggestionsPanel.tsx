@@ -7,6 +7,7 @@
 
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { Film, Tv, Users, Smile, Binoculars, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import { sanitizeText, sanitizeCategory } from '../../utils/sanitize';
@@ -29,6 +30,27 @@ interface SearchSuggestionsPanelProps {
   onSearchSelect: (query: string) => void;
   /** Callback to clear recent searches */
   onClearRecent?: () => void;
+}
+
+/**
+ * Map icon names to lucide-react components
+ */
+function getIconComponent(iconName?: string): React.ReactNode {
+  const iconProps = { size: 20, color: colors.primary.DEFAULT };
+  const iconMap: Record<string, React.ReactNode> = {
+    'Film': <Film {...iconProps} />,
+    'Tv': <Tv {...iconProps} />,
+    'Users': <Users {...iconProps} />,
+    'Smile': <Smile {...iconProps} />,
+    'Binoculars': <Binoculars {...iconProps} />,
+    '🎬': <Film {...iconProps} />,
+    '📺': <Tv {...iconProps} />,
+    '👶': <Users {...iconProps} />,
+    '😂': <Smile {...iconProps} />,
+    '🎭': <Film {...iconProps} />,
+    '🎥': <Binoculars {...iconProps} />,
+  };
+  return iconMap[iconName || ''] || null;
 }
 
 /**
@@ -94,7 +116,7 @@ export function SearchSuggestionsPanel({
                 onPress={() => onSearchSelect(category.name)}
                 accessibilityLabel={`Browse ${category.name}`}
               >
-                <Text style={styles.categoryEmoji}>{category.emoji}</Text>
+                <View style={styles.categoryEmojiContainer}>{getIconComponent(category.emoji)}</View>
                 <Text style={styles.categoryName}>{category.name}</Text>
               </GlassButton>
             ))}
@@ -126,7 +148,7 @@ export function SearchSuggestionsPanel({
                 onPress={() => onSearchSelect(search)}
                 accessibilityLabel={`Search for ${search}`}
               >
-                <Text style={styles.recentIcon}>🕐</Text>
+                <Clock size={16} color={colors.textSecondary} />
                 <Text style={styles.recentText}>{search}</Text>
               </GlassButton>
             ))}
@@ -194,8 +216,9 @@ const styles = StyleSheet.create({
     gap: 8,
     minWidth: 120,
   },
-  categoryEmoji: {
-    fontSize: 24,
+  categoryEmojiContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   categoryName: {
     fontSize: 15,

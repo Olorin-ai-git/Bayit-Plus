@@ -290,6 +290,52 @@ class Settings(BaseSettings):
     # OpenAI (Whisper speech-to-text)
     OPENAI_API_KEY: str = ""
 
+    # GeoNames (Reverse geocoding for location-based features)
+    GEONAMES_USERNAME: str = Field(
+        default="",
+        description="GeoNames API username for reverse geocoding (required for location features)"
+    )
+    GEONAMES_API_BASE_URL: str = Field(
+        default="https://secure.geonames.org",
+        description="GeoNames API base URL"
+    )
+    GEONAMES_TIMEOUT_SECONDS: int = Field(
+        default=10,
+        description="GeoNames API request timeout in seconds"
+    )
+    LOCATION_CACHE_TTL_HOURS: int = Field(
+        default=24,
+        description="Location cache TTL in hours (cached for 24h by default)"
+    )
+    LOCATION_CACHE_COLLECTION: str = Field(
+        default="location_cache",
+        description="MongoDB collection name for location cache"
+    )
+    LOCATION_CONTENT_TOPIC_TAGS: list[str] = Field(
+        default=["israeli", "israel", "jewish_community"],
+        description="Topic tags to filter for Israeli-focused content"
+    )
+    LOCATION_CONTENT_EVENT_TYPES: list[str] = Field(
+        default=["community", "holiday", "shiur"],
+        description="Event types to filter for Israeli-focused community events"
+    )
+    LOCATION_CONTENT_ARTICLE_FORMATS: list[str] = Field(
+        default=["documentary", "news", "article"],
+        description="Content formats to include for news articles"
+    )
+    LOCATION_REVERSE_GEOCODE_RATE_LIMIT: int = Field(
+        default=30,
+        description="Max reverse geocode requests per minute per IP"
+    )
+    LOCATION_CONTENT_RATE_LIMIT: int = Field(
+        default=60,
+        description="Max location content requests per minute per IP"
+    )
+    LOCATION_ENCRYPTION_KEY: str = Field(
+        default="",
+        description="Fernet key for encrypting location data at rest (base64-encoded)"
+    )
+
     # Speech-to-Text Provider Selection
     # Options: "google" (Google Cloud), "whisper" (OpenAI Whisper), or "elevenlabs" (ElevenLabs Scribe v2)
     # ElevenLabs offers lowest latency (~150ms) with excellent Hebrew support

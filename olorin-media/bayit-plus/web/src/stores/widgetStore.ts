@@ -433,7 +433,7 @@ export const useWidgetStore = create<WidgetState>()(
             type: 'personal',
             title: item.name,
             description: `Voice-created widget for ${item.name}`,
-            icon: item.type === 'channel' ? '📺' : item.type === 'podcast' ? '🎙️' : item.type === 'radio' ? '📻' : '🎬',
+            icon: item.type === 'channel' ? 'live_channel' : item.type === 'podcast' ? 'podcast' : item.type === 'radio' ? 'radio' : 'vod',
             cover_url: item.thumbnail,
             content,
             position,

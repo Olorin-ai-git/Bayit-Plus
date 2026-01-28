@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
-import { Trash2, Eye, EyeOff, RotateCcw } from 'lucide-react';
+import { Trash2, Eye, EyeOff, RotateCcw, Tv, Film, Radio, Mic, Globe, Zap, Target } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -28,18 +28,34 @@ function getContentTypeLabel(contentType?: string): string {
   return labels[contentType || ''] || 'Widget';
 }
 
-function getWidgetIcon(widget: Widget): string {
-  if (widget.icon) return widget.icon;
-  const icons: Record<string, string> = {
-    live_channel: '📺',
-    live: '📺',
-    iframe: '🌐',
-    podcast: '🎙️',
-    radio: '📻',
-    vod: '🎬',
-    custom: '⚡',
+function getWidgetIcon(widget: Widget): React.ReactNode {
+  const iconProps = { size: 32, color: colors.primary.DEFAULT };
+
+  if (widget.icon && typeof widget.icon === 'string' && !widget.icon.match(/[\p{Emoji}]/gu)) {
+    // If icon is an icon name string (not emoji), return it
+    const iconMap: Record<string, React.ReactNode> = {
+      'live_channel': <Tv {...iconProps} />,
+      'live': <Tv {...iconProps} />,
+      'iframe': <Globe {...iconProps} />,
+      'podcast': <Mic {...iconProps} />,
+      'radio': <Radio {...iconProps} />,
+      'vod': <Film {...iconProps} />,
+      'custom': <Zap {...iconProps} />,
+    };
+    return iconMap[widget.icon] || <Target {...iconProps} />;
+  }
+
+  const contentType = widget.content?.content_type || '';
+  const iconMap: Record<string, React.ReactNode> = {
+    live_channel: <Tv {...iconProps} />,
+    live: <Tv {...iconProps} />,
+    iframe: <Globe {...iconProps} />,
+    podcast: <Mic {...iconProps} />,
+    radio: <Radio {...iconProps} />,
+    vod: <Film {...iconProps} />,
+    custom: <Zap {...iconProps} />,
   };
-  return icons[widget.content?.content_type || ''] || '🎯';
+  return iconMap[contentType] || <Target {...iconProps} />;
 }
 
 export default function WidgetCard({
@@ -83,7 +99,7 @@ export default function WidgetCard({
             </>
           ) : (
             <View style={styles.iconContainer}>
-              <Text style={styles.iconText}>{getWidgetIcon(widget)}</Text>
+              {getWidgetIcon(widget)}
             </View>
           )}
         </View>
@@ -213,9 +229,6 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  iconText: {
-    fontSize: 28,
   },
   contentContainer: {
     flex: 1,

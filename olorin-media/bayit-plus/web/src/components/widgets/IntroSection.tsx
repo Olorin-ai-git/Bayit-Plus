@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
+import { Film } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { colors, spacing } from '@olorin/design-tokens';
@@ -15,7 +16,7 @@ export function IntroSection({ onWatchVideo, onDismiss }: IntroSectionProps) {
     <View style={styles.introSection}>
       <GlassCard style={styles.introCard}>
         <View style={styles.introContent}>
-          <Text style={styles.introIcon}>🎬</Text>
+          <Film size={48} color={colors.primary.DEFAULT} />
           <View style={styles.introText}>
             <Text style={styles.introTitle}>
               {t('widgets.intro.title')}
@@ -54,9 +55,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     flexWrap: 'wrap',
-  },
-  introIcon: {
-    fontSize: 48,
   },
   introText: {
     flex: 1,

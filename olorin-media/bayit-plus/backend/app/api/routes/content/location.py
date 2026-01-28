@@ -1,120 +1,82 @@
-"""
-Location-based Israeli content endpoint for discovering content by US city.
-
-Endpoint: GET /api/v1/content/israelis-in-city
-Query params: city, state, [county], [limit_per_type]
-"""
-
+"""Location-based Israeli content endpoint for discovering content by US city."""
 import logging
-from typing import Optional
+from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
-from app.api.routes.content.utils import is_series_by_category
-from app.core.security import get_optional_user, get_passkey_session
-from app.models.user import User
+from app.core.rate_limiter import limiter
+from app.models.location_schemas import IsraelisInCityResponse, LocationCoverageInfo, LocationData
 from app.services.location_content_service import LocationContentService
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get("/israelis-in-city")
+def get_location_content_service() -> LocationContentService:
+    """Dependency injection for LocationContentService."""
+    return LocationContentService()
+
+
+@router.get("/israelis-in-city", response_model=IsraelisInCityResponse)
+@limiter.limit("60/minute")
 async def get_israelis_in_city(
     request: Request,
     city: str = Query(..., description="City name (e.g., 'New York')"),
     state: str = Query(..., description="Two-letter state code (e.g., 'NY')"),
-    county: Optional[str] = Query(None, description="County name (optional)"),
-    limit_per_type: int = Query(
-        10, ge=1, le=50, description="Max items per content type"
-    ),
+    county: str = Query(None, description="County name (optional)"),
+    limit_per_type: int = Query(10, ge=1, le=50, description="Max items per type"),
     include_articles: bool = Query(True, description="Include news articles"),
-    include_reels: bool = Query(True, description="Include news reels"),
     include_events: bool = Query(True, description="Include community events"),
-    current_user: Optional[User] = Depends(get_optional_user),
-):
-    """
-    Get Israeli-focused content for a specific US city.
-
-    Returns aggregated content (news articles, reels, community events) related
-    to the Israeli community in the specified city.
-
-    Query Parameters:
-        city: City name (required)
-        state: Two-letter state code (required, e.g., "NY", "CA")
-        county: County name (optional, for more precise filtering)
-        limit_per_type: Max items per content type (1-50, default 10)
-        include_articles: Include news articles (default true)
-        include_reels: Include news reels (default true)
-        include_events: Include community events (default true)
-
-    Returns:
-        {
-            "location": {
-                "city": string,
-                "state": string,
-                "county": string or null
-            },
-            "content": {
-                "news_articles": ContentItem[],
-                "news_reels": ContentItem[],
-                "community_events": EventItem[]
-            },
-            "total_items": integer,
-            "updated_at": datetime,
-            "coverage": {
-                "has_content": boolean,
-                "nearest_major_city": string or null,
-                "fallback_region": string or null
-            }
-        }
-    """
+    service: LocationContentService = Depends(get_location_content_service),
+) -> IsraelisInCityResponse:
+    """Get Israeli-focused content for a specific US city."""
+    city = city.strip()
+    state = state.upper().strip()
+    if not city or len(city) < 2:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="City must be at least 2 characters",
+        )
+    if not state or len(state) != 2:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="State must be a two-letter code",
+        )
     try:
-        # Validate input
-        city = city.strip()
-        state = state.upper().strip()
-
-        if not city or len(city) < 2:
-            return {
-                "error": "Invalid city name",
-                "message": "City must be at least 2 characters",
-            }
-
-        if not state or len(state) != 2:
-            return {
-                "error": "Invalid state code",
-                "message": "State must be a two-letter code (e.g., 'NY')",
-            }
-
-        # Fetch location-based content
-        service = LocationContentService()
         result = await service.get_israelis_in_city(
             city=city,
             state=state,
             county=county,
             limit_per_type=limit_per_type,
             include_articles=include_articles,
-            include_reels=include_reels,
             include_events=include_events,
         )
-
-        # Log successful query
         logger.info(
-            f"Location query: {city}, {state} - {result['total_items']} items found"
+            "Location content query successful",
+            extra={"city": city, "state": state, "total_items": result["total_items"]},
         )
-
-        return result
-
-    except ValueError as e:
-        logger.error(f"Validation error in location query: {e}")
-        return {
-            "error": "Validation error",
-            "message": str(e),
-        }
-
+        return IsraelisInCityResponse(
+            location=LocationData(
+                city=result["location"]["city"],
+                state=result["location"]["state"],
+                county=result["location"].get("county"),
+                latitude=result["location"]["latitude"],
+                longitude=result["location"]["longitude"],
+                timestamp=result["location"]["timestamp"],
+                source=result["location"]["source"],
+            ),
+            content=result["content"],
+            total_items=result["total_items"],
+            updated_at=result["updated_at"],
+            coverage=LocationCoverageInfo(
+                has_content=result["coverage"]["has_content"],
+                nearest_major_city=result["coverage"].get("nearest_major_city"),
+                fallback_region=result["coverage"].get("fallback_region"),
+            ),
+        )
     except Exception as e:
-        logger.error(f"Error in get_israelis_in_city: {e}", exc_info=True)
-        return {
-            "error": "Internal server error",
-            "message": "Failed to fetch location-based content",
-        }
+        logger.error("Location content query failed", extra={"error": str(e)})
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch location content",
+        )
