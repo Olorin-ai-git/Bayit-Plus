@@ -89,7 +89,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         )
 
         # Remove potentially sensitive headers
-        response.headers.pop("Server", None)  # Hide server information
-        response.headers.pop("X-Powered-By", None)  # Hide framework
+        if "Server" in response.headers:
+            del response.headers["Server"]
+        if "X-Powered-By" in response.headers:
+            del response.headers["X-Powered-By"]
 
         return response
