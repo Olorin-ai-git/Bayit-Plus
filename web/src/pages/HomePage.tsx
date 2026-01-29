@@ -414,27 +414,14 @@ export default function HomePage() {
         </>
       ) : (
         <>
-          {/* 1. Near You (Israelis Near You) - from API */}
-          {categories.filter(cat => cat.name === 'near-you').map((category) => {
-            if (category.items.length === 0) return null;
+          {/* Near You section is now handled by IsraelisInCitySection component (location-based scraper) */}
 
-            return (
-              <ContentCarousel
-                key={category.id}
-                title={t(category.name_key || `home.${category.name}`, { defaultValue: getLocalizedName(category, i18n.language) })}
-                items={category.items}
-                seeAllLink={`/vod?category=${category.id}`}
-                style={styles.section}
-              />
-            );
-          })}
-
-          {/* 2. What's Hot in Israel (Trending) */}
+          {/* 1. What's Hot in Israel (Trending) */}
           <View style={styles.section}>
             <CultureTrendingRow cultureId={currentCulture?.culture_id} />
           </View>
 
-          {/* 3 & 4. Jerusalem and Tel Aviv */}
+          {/* 2 & 3. Jerusalem and Tel Aviv */}
           {cultureCities.length === 0 && !cultureLoading && (
             <>
               <View style={styles.section}>
@@ -456,7 +443,7 @@ export default function HomePage() {
             </View>
           ))}
 
-          {/* 5-8. Movies, Series, Podcasts, Audiobooks - from API in backend-specified order */}
+          {/* 4-7. Movies, Series, Podcasts, Audiobooks - from API in backend-specified order */}
           {categories.filter(cat => cat.name !== 'near-you').map((category) => {
         if (category.items.length === 0) return null;
 

@@ -157,19 +157,66 @@ async def _fetch_video_from_article(url: str) -> Optional[str]:
         return None
 
 
+def _decode_google_news_url(google_url: str) -> Optional[str]:
+    """Decode actual article URL from Google News redirect URL.
+
+    Google News URLs look like: https://news.google.com/rss/articles/CBMi...
+    The actual article URL is base64-encoded in the path.
+    """
+    try:
+        import base64
+        if "news.google.com/rss/articles/" in google_url:
+            # Extract the encoded part after /articles/
+            parts = google_url.split("/articles/")
+            if len(parts) > 1:
+                encoded = parts[1].split("?")[0]  # Remove query params
+                # Google uses URL-safe base64 with CBM prefix
+                if encoded.startswith("CBM"):
+                    encoded = encoded[3:]  # Remove CBM prefix
+                    # Pad base64 string if needed
+                    padding = len(encoded) % 4
+                    if padding:
+                        encoded += "=" * (4 - padding)
+                    try:
+                        decoded = base64.urlsafe_b64decode(encoded).decode("utf-8")
+                        # Extract URL from decoded data (often has extra characters)
+                        if "http" in decoded:
+                            start = decoded.index("http")
+                            # Find end of URL (usually at first non-URL character)
+                            for end_char in ["\x08", "\n", "\r", " ", '"', "'"]:
+                                if end_char in decoded[start:]:
+                                    decoded = decoded[start:decoded.index(end_char, start)]
+                                    break
+                            else:
+                                decoded = decoded[start:]
+                            logger.info(f"Decoded Google News URL: {decoded[:80]}")
+                            return decoded
+                    except Exception as e:
+                        logger.debug(f"Failed to decode Google News URL: {e}")
+        return None
+    except Exception as e:
+        logger.debug(f"Error decoding Google News URL: {e}")
+        return None
+
 async def _fetch_og_image(url: str) -> Optional[str]:
     """Fetch Open Graph image from article URL as fallback.
 
-    For Google News URLs, follows the redirect to get the actual article URL first.
+    For Google News URLs, decodes the actual article URL first.
     """
     try:
-        async with httpx.AsyncClient(timeout=5, follow_redirects=True) as client:
-            # Follow redirects to get final URL (important for Google News)
+        # Try to decode Google News URLs first
+        actual_url = _decode_google_news_url(url)
+        if actual_url:
+            logger.info(f"Using decoded article URL instead of Google News redirect")
+            url = actual_url
+
+        async with httpx.AsyncClient(timeout=10, follow_redirects=True) as client:
+            # Follow redirects to get final URL
             response = await client.get(url, headers=RSS_HEADERS)
             if response.status_code != 200:
                 return None
 
-            # Log if we were redirected (helps debug Google News redirects)
+            # Log if we were redirected
             final_url = str(response.url)
             if final_url != url:
                 logger.info(f"Followed redirect: {url[:80]}... -> {final_url[:80]}...")
@@ -180,19 +227,33 @@ async def _fetch_og_image(url: str) -> Optional[str]:
             og_image = soup.find("meta", property="og:image")
             if og_image and og_image.get("content"):
                 img_url = og_image.get("content")
+                logger.info(f"Found OG image: {img_url[:80]}")
                 # Filter out generic images from OG too
                 if not _is_generic_image(img_url):
+                    logger.info(f"✓ Using OG image (not generic)")
                     return img_url
+                else:
+                    logger.warning(f"✗ OG image is generic, skipping: {img_url[:80]}")
+            else:
+                logger.warning(f"No og:image meta tag found for {url[:80]}")
 
             # Try Twitter card image
             twitter_image = soup.find("meta", attrs={"name": "twitter:image"})
             if twitter_image and twitter_image.get("content"):
                 img_url = twitter_image.get("content")
+                logger.info(f"Found Twitter image: {img_url[:80]}")
                 if not _is_generic_image(img_url):
+                    logger.info(f"✓ Using Twitter image (not generic)")
                     return img_url
+                else:
+                    logger.warning(f"✗ Twitter image is generic, skipping")
+            else:
+                logger.warning(f"No twitter:image meta tag found")
 
             # Try first large image in article
+            img_count = 0
             for img in soup.find_all("img"):
+                img_count += 1
                 src = img.get("src")
                 if src and not any(x in src.lower() for x in ["logo", "icon", "avatar", "pixel", "1x1"]):
                     # Check if image has reasonable dimensions
@@ -201,13 +262,15 @@ async def _fetch_og_image(url: str) -> Optional[str]:
                     try:
                         if int(width) >= 300 or int(height) >= 300:
                             if not _is_generic_image(src):
+                                logger.info(f"✓ Using large img tag: {src[:80]}")
                                 return src
                     except (ValueError, TypeError):
                         pass
 
+            logger.warning(f"No suitable image found (checked {img_count} img tags)")
             return None
     except Exception as e:
-        logger.debug(f"Error fetching OG image from {url}: {e}")
+        logger.error(f"Error fetching OG image from {url[:80]}: {e}")
         return None
 
 
@@ -361,22 +424,24 @@ async def _parse_rss_item(item: BeautifulSoup, source_name: str, fetch_video: bo
 
     # Extract image URL from RSS with Open Graph fallback
     image_url = _extract_image_from_rss(item)
-    logger.debug(f"Extracted image from RSS: {image_url} for article: {title[:50]}")
+    logger.info(f"Extracted image from RSS: {image_url} for article: {title[:50]}")
 
     # Filter out generic/useless images (Google News logo, etc.)
     if image_url and _is_generic_image(image_url):
-        logger.debug(f"Filtering out generic image: {image_url}")
+        logger.info(f"Filtering out generic image: {image_url}")
         image_url = None
 
     # If no useful image found in RSS, try fetching Open Graph image from article
     if not image_url and url:
-        logger.debug(f"No useful RSS image, attempting OG fetch for: {url}")
+        logger.info(f"No useful RSS image, attempting OG fetch for: {url[:80]}...")
         try:
             image_url = await _fetch_og_image(url)
             if image_url:
-                logger.debug(f"Successfully fetched valid OG image: {image_url[:80]}...")
+                logger.info(f"Successfully fetched valid OG image: {image_url[:80]}...")
+            else:
+                logger.warning(f"OG fetch returned no image for: {url[:80]}...")
         except Exception as e:
-            logger.debug(f"Failed to fetch OG image for {url}: {e}")
+            logger.warning(f"Failed to fetch OG image for {url[:80]}: {e}")
 
     # Extract video URL from RSS first (fast - no external fetch)
     video_url = _extract_video_from_rss(item)
@@ -516,6 +581,18 @@ async def search_duckduckgo(
                 if snippet:
                     summary = clean_cdata(snippet.get_text(strip=True))
 
+                # Fetch Open Graph image for DuckDuckGo results
+                image_url = None
+                try:
+                    logger.info(f"Fetching OG image for DuckDuckGo result: {href[:80]}...")
+                    image_url = await _fetch_og_image(href)
+                    if image_url:
+                        logger.info(f"Got image for DuckDuckGo result: {image_url[:80]}...")
+                    else:
+                        logger.warning(f"No OG image found for: {href[:80]}...")
+                except Exception as e:
+                    logger.warning(f"Failed to fetch OG image for {href[:80]}: {e}")
+
                 headlines.append(
                     HeadlineItem(
                         title=title,
@@ -523,6 +600,7 @@ async def search_duckduckgo(
                         source="web_search",
                         category="news",
                         summary=summary,
+                        image_url=image_url,
                     )
                 )
     except Exception as e:

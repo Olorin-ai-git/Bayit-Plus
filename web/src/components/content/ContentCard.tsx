@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Play, Star, Bookmark } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassCard, GlassBadge, GlassModal } from '@bayit/shared/ui';
+import { GlassCard, GlassBadge, GlassModal, GlassButton } from '@bayit/shared/ui';
 import { GlassPlaceholder } from '@olorin/glass-ui';
 import type { ContentType as GlassContentType } from '@olorin/design-tokens';
 import { SubtitleFlags, ContentBadges } from '@bayit/shared';
@@ -58,6 +58,7 @@ export default function ContentCard({ content, showProgress = false, showActions
   const [isHovered, setIsHovered] = useState(false);
   const { isUIInteractionEnabled } = useModeEnforcement();
   const [showArticleModal, setShowArticleModal] = useState(false);
+  const [iframeLoading, setIframeLoading] = useState(true);
 
   // Thumbnail error handling: YouTube fallback and CDN failures
   const [thumbnailError, setThumbnailError] = useState(false);
@@ -159,9 +160,12 @@ export default function ContentCard({ content, showProgress = false, showActions
     }
   }, [content.id, isScrapedArticle]);
 
-  // Handle article click - open modal instead of navigating
+  // Handle article click - open in modal
   const handleArticleClick = (e?: any) => {
-    console.log('Article clicked!', { isScrapedArticle, hasUrl: Boolean(content.url), contentId: content.id });
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
 
     if (isScrapedArticle && content.url) {
       logger.info('Opening article in modal', 'ContentCard', {
@@ -170,9 +174,20 @@ export default function ContentCard({ content, showProgress = false, showActions
         city: content.city,
         state: content.state
       });
+      setIframeLoading(true); // Reset loading state
       setShowArticleModal(true);
-    } else {
-      console.log('Article click ignored:', { isScrapedArticle, url: content.url });
+    }
+  };
+
+  // Handle iframe load complete
+  const handleIframeLoad = () => {
+    setIframeLoading(false);
+  };
+
+  // Open in new tab
+  const openInNewTab = () => {
+    if (content.url) {
+      window.open(content.url, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -237,19 +252,19 @@ export default function ContentCard({ content, showProgress = false, showActions
   // In Voice Only mode, wrap in non-interactive View instead of Link
   const CardContent = (
     <Pressable
-      onPress={isScrapedArticle ? handleArticleClick : undefined}
-      // @ts-ignore - onClick for web compatibility
-      onClick={isScrapedArticle ? handleArticleClick : undefined}
+      onPress={isScrapedArticle ? undefined : undefined}
       onHoverIn={() => setIsHovered(true)}
       onHoverOut={() => setIsHovered(false)}
-      disabled={!isUIInteractionEnabled}
-      style={!isUIInteractionEnabled ? { pointerEvents: 'none' } : undefined}
+      disabled={isScrapedArticle ? false : !isUIInteractionEnabled}
+      style={isScrapedArticle ? undefined : (!isUIInteractionEnabled ? { pointerEvents: 'none' } : undefined)}
     >
-      <GlassCard style={[
-        styles.card,
-        isHovered && styles.cardHovered,
-        !isUIInteractionEnabled && { opacity: 0.6 },
-      ]}>
+      <GlassCard
+        style={[
+          styles.card,
+          isHovered && styles.cardHovered,
+          !isUIInteractionEnabled && { opacity: 0.6 },
+        ]}
+      >
           {/* Thumbnail */}
           <View style={[
             styles.thumbnailContainer,
@@ -471,25 +486,64 @@ export default function ContentCard({ content, showProgress = false, showActions
       </Pressable>
   );
 
-  // Render article modal (shared for all cases)
+  // Handle modal close - cleanup state
+  const handleModalClose = () => {
+    setShowArticleModal(false);
+    // Reset loading state after a brief delay to ensure clean re-render
+    setTimeout(() => setIframeLoading(true), 100);
+  };
+
+  // Render article modal with iframe and loading spinner
   const articleModal = showArticleModal && content.url && (
     <GlassModal
       visible={showArticleModal}
-      onClose={() => setShowArticleModal(false)}
+      onClose={handleModalClose}
       title={content.title}
       maxWidth={1200}
     >
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
       <View style={styles.articleModalContent}>
+        {/* Always show "Open in New Tab" button in case iframe is blocked */}
+        <View style={styles.articleModalHeader}>
+          <Text style={styles.articleModalHelperText}>
+            If content doesn't load, click below to open in a new tab:
+          </Text>
+          <GlassButton
+            variant="secondary"
+            onPress={openInNewTab}
+            title="Open in New Tab"
+            style={styles.openInNewTabButton}
+          />
+        </View>
+
+        {/* Loading spinner overlay */}
+        {iframeLoading && (
+          <View style={styles.iframeLoadingOverlay}>
+            <View style={styles.spinner} />
+            <Text style={styles.loadingText}>Loading article...</Text>
+          </View>
+        )}
+
+        {/* iframe */}
         <iframe
+          key={content.url} // Force remount on URL change
           src={content.url}
           style={{
             width: '100%',
-            height: '80vh',
+            height: '70vh',
             border: 'none',
             borderRadius: '12px',
+            marginTop: '12px',
+            display: iframeLoading ? 'none' : 'block',
           }}
           title={content.title}
           sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+          onLoad={handleIframeLoad}
         />
       </View>
     </GlassModal>
@@ -498,26 +552,37 @@ export default function ContentCard({ content, showProgress = false, showActions
   // Articles: Return unwrapped with click handler
   if (isScrapedArticle) {
     return (
-      <View style={{ flexShrink: 0 }}>
+      <div
+        onMouseDown={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleArticleClick(e);
+        }}
+        style={{
+          flexShrink: 0,
+          cursor: 'pointer',
+          position: 'relative',
+          WebkitTapHighlightColor: 'transparent',
+          WebkitUserSelect: 'none',
+          userSelect: 'none',
+        }}
+      >
         {CardContent}
         {articleModal}
-      </View>
+      </div>
     );
   }
 
   // Other content: Wrap with Link if UI interactions enabled
   if (isUIInteractionEnabled && linkTo) {
     return (
-      <>
-        <Link
-          to={linkTo.pathname}
-          state={linkTo.state}
-          style={{ textDecoration: 'none', flexShrink: 0 }}
-        >
-          {CardContent}
-        </Link>
-        {articleModal}
-      </>
+      <Link
+        to={linkTo.pathname}
+        state={linkTo.state}
+        style={{ textDecoration: 'none', flexShrink: 0 }}
+      >
+        {CardContent}
+      </Link>
     );
   }
 
@@ -712,5 +777,50 @@ const styles = StyleSheet.create({
     minHeight: 600,
     borderRadius: borderRadius.xl,
     overflow: 'hidden',
+    position: 'relative',
+  },
+  articleModalHeader: {
+    padding: spacing.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.sm,
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  articleModalHelperText: {
+    fontSize: 14,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+  openInNewTabButton: {
+    marginTop: spacing.xs,
+  },
+  iframeLoadingOverlay: {
+    position: 'absolute',
+    top: 100,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(10, 10, 20, 0.95)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing.lg,
+    borderRadius: borderRadius.xl,
+    zIndex: 10,
+  },
+  spinner: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 4,
+    borderColor: 'rgba(107, 33, 168, 0.3)',
+    borderTopColor: colors.primary.DEFAULT,
+    // @ts-ignore - Web animation
+    animation: 'spin 1s linear infinite',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: colors.text,
+    fontWeight: '500',
   },
 });
