@@ -1753,6 +1753,31 @@
       "editEpisode": "エピソードを編集",
       "deleteEpisode": "エピソードを削除",
       "newEpisode": "新しいエピソード"
+    },
+    "nav": {
+      "diagnostics": "システム診断"
+    },
+    "diagnostics": {
+      "title": "システム診断",
+      "servicesOverview": "サービス概要",
+      "performanceMetrics": "パフォーマンスメトリクス",
+      "systemActivity": "システムアクティビティ",
+      "servicesDetails": "サービス詳細",
+      "cpu": "CPU使用率",
+      "memory": "メモリ使用率",
+      "disk": "ディスク使用率",
+      "allSystemsOperational": "すべてのシステムが稼働中",
+      "systemDegraded": "システムが劣化",
+      "systemDown": "システムダウン",
+      "lastUpdated": "最終更新: {{time}}",
+      "ping": "Ping",
+      "restart": "再起動",
+      "online": "オンライン",
+      "offline": "オフライン",
+      "degraded": "劣化",
+      "latency": "レイテンシ: {{ms}}ms",
+      "healthy": "正常",
+      "unhealthy": "異常"
     }
   },
   "cultureClock": {

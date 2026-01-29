@@ -1,0 +1,24 @@
+{
+  "diagnostics": {
+    "title": "System Diagnostics",
+    "servicesOverview": "Services Overview",
+    "performanceMetrics": "Performance Metrics",
+    "systemActivity": "System Activity",
+    "servicesDetails": "Services Details",
+    "cpu": "CPU Usage",
+    "memory": "Memory Usage",
+    "disk": "Disk Usage",
+    "allSystemsOperational": "All Systems Operational",
+    "systemDegraded": "System Degraded",
+    "systemDown": "System Down",
+    "lastUpdated": "Last updated: {{time}}",
+    "ping": "Ping",
+    "restart": "Restart",
+    "healthy": "Online",
+    "degraded": "Degraded",
+    "unhealthy": "Offline",
+    "online": "Online",
+    "offline": "Offline",
+    "latency": "Latency: {{ms}}ms"
+  }
+}

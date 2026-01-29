@@ -10,8 +10,10 @@ SYSTEM MANDATE Compliance:
 
 import logging
 import os
+import re
 from pathlib import Path
 from typing import Optional
+from urllib.parse import quote_plus, urlparse
 
 from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
@@ -47,11 +49,11 @@ class MongoDBConnection:
         self.database: Optional[AsyncIOMotorDatabase] = None
 
         # Load configuration from environment
-        self.mongodb_uri = os.getenv("MONGODB_URI")
+        raw_mongodb_uri = os.getenv("MONGODB_URI")
         self.mongodb_db_name = os.getenv("MONGODB_DB_NAME")
 
         # Validate required configuration
-        if not self.mongodb_uri:
+        if not raw_mongodb_uri:
             raise ConfigurationError(
                 "MONGODB_URI environment variable is required. "
                 "Format: mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority"
@@ -63,12 +65,70 @@ class MongoDBConnection:
                 "Use: bayit_plus, israeli_radio, or olorin depending on platform"
             )
 
+        # Check for placeholder values
+        if raw_mongodb_uri.startswith("<from-secret-manager:"):
+            raise ConfigurationError(
+                f"MONGODB_URI contains a placeholder value: {raw_mongodb_uri}\n"
+                "Please replace with actual MongoDB Atlas connection string.\n"
+                "Format: mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority"
+            )
+
+        # Log URI format for debugging (without exposing credentials)
+        uri_preview = raw_mongodb_uri[:20] + "..." if len(raw_mongodb_uri) > 20 else raw_mongodb_uri
+        logger.debug(f"Raw MongoDB URI format: {uri_preview}")
+
+        # Ensure MongoDB URI has properly URL-encoded credentials
+        self.mongodb_uri = self._encode_mongodb_uri(raw_mongodb_uri)
+
         # Connection pool configuration from environment (with defaults)
         self.max_pool_size = int(os.getenv("MONGODB_MAX_POOL_SIZE", "100"))
         self.min_pool_size = int(os.getenv("MONGODB_MIN_POOL_SIZE", "20"))
         self.max_idle_time_ms = int(os.getenv("MONGODB_MAX_IDLE_TIME_MS", "45000"))
         self.connect_timeout_ms = int(os.getenv("MONGODB_CONNECT_TIMEOUT_MS", "30000"))
         self.server_selection_timeout_ms = int(os.getenv("MONGODB_SERVER_SELECTION_TIMEOUT_MS", "30000"))
+
+    def _encode_mongodb_uri(self, uri: str) -> str:
+        """
+        Ensure MongoDB URI has properly URL-encoded credentials.
+
+        Handles both already-encoded and non-encoded URIs.
+        Extracts username and password from the URI and URL-encodes them if needed.
+
+        Args:
+            uri: Raw MongoDB URI from environment
+
+        Returns:
+            MongoDB URI with properly URL-encoded credentials
+
+        Raises:
+            ConfigurationError: If URI format is invalid
+        """
+        # Pattern to extract username and password from MongoDB URI
+        # Format: mongodb+srv://username:password@host/...
+        pattern = r"^(mongodb(?:\+srv)?://)([^:]+):([^@]+)@(.+)$"
+        match = re.match(pattern, uri)
+
+        if not match:
+            # URI doesn't have credentials or is already in a different format
+            # Return as-is (might be localhost or already properly formatted)
+            logger.debug(f"MongoDB URI doesn't match credential pattern, using as-is")
+            return uri
+
+        protocol, username, password, rest = match.groups()
+
+        logger.debug(f"Encoding MongoDB credentials - username length: {len(username)}, password length: {len(password)}")
+
+        # URL-encode username and password using quote_plus
+        # quote_plus handles special characters including @, :, /, etc.
+        encoded_username = quote_plus(username)
+        encoded_password = quote_plus(password)
+
+        # Reconstruct URI with encoded credentials
+        encoded_uri = f"{protocol}{encoded_username}:{encoded_password}@{rest}"
+
+        logger.debug(f"MongoDB URI credentials encoded successfully")
+
+        return encoded_uri
 
     async def connect(self) -> AsyncIOMotorClient:
         """

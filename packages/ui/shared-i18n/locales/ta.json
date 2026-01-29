@@ -553,7 +553,8 @@
       "dashboard": "டாஷ்போர்டு",
       "users": "பயனர்கள்",
       "content": "உள்ளடக்கம்",
-      "settings": "அமைப்புகள்"
+      "settings": "அமைப்புகள்",
+      "diagnostics": "அமைப்பு நோயறிதல்"
     },
     "users": {
       "roles": {
@@ -598,6 +599,28 @@
       "editEpisode": "எப்பிசோடை தொகு",
       "deleteEpisode": "எப்பிசோடை நீக்கு",
       "newEpisode": "புதிய எப்பிசோடு"
+    },
+    "diagnostics": {
+      "title": "அமைப்பு நோயறிதல்",
+      "servicesOverview": "சேவைகள் கண்ணோட்டம்",
+      "performanceMetrics": "செயல்திறன் அளவீடுகள்",
+      "systemActivity": "அமைப்பு செயல்பாடு",
+      "servicesDetails": "சேவை விவரங்கள்",
+      "cpu": "CPU பயன்பாடு",
+      "memory": "நினைவக பயன்பாடு",
+      "disk": "வட்டு பயன்பாடு",
+      "allSystemsOperational": "அனைத்து அமைப்புகளும் செயல்பாட்டில்",
+      "systemDegraded": "அமைப்பு தரம் குறைந்துள்ளது",
+      "systemDown": "அமைப்பு செயலிழந்துள்ளது",
+      "lastUpdated": "கடைசி புதுப்பிப்பு: {{time}}",
+      "ping": "பிங்",
+      "restart": "மறுதொடக்கம்",
+      "online": "ஆன்லைன்",
+      "offline": "ஆஃப்லைன்",
+      "degraded": "தரம் குறைந்தது",
+      "latency": "தாமதம்: {{ms}}ms",
+      "healthy": "ஆரோக்கியமான",
+      "unhealthy": "ஆரோக்கியமற்ற"
     }
   },
   "cultureClock": {

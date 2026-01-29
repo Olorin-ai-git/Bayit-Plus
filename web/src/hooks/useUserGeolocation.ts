@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { logger as appLogger } from '../utils/logger';
 import { GEOLOCATION_CONFIG } from '@/config/geolocationConfig';
+import api from '@/services/api';
 
 const logger = appLogger.scope('useUserGeolocation');
 
@@ -114,20 +115,18 @@ async function reverseGeocode(
   longitude: number
 ): Promise<LocationData | null> {
   try {
-    const response = await fetch(
-      '/api/v1/location/reverse-geocode?' +
-        new URLSearchParams({
-          latitude: String(latitude),
-          longitude: String(longitude),
-        })
-    );
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = await response.json();
-    if (data.city && data.state) {
+    const response = await api.get('/location/reverse-geocode', {
+      params: {
+        latitude,
+        longitude,
+      },
+    });
+
+    if (response.city && response.state) {
       return {
-        city: data.city,
-        state: data.state,
-        county: data.county,
+        city: response.city,
+        state: response.state,
+        county: response.county,
         latitude,
         longitude,
         timestamp: new Date(),
@@ -143,23 +142,18 @@ async function reverseGeocode(
 
 async function saveLocationToUserPreferences(location: LocationData): Promise<void> {
   try {
-    const response = await fetch('/api/v1/users/me/preferences', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        detected_location: {
-          city: location.city,
-          state: location.state,
-          county: location.county,
-          latitude: location.latitude,
-          longitude: location.longitude,
-          timestamp: location.timestamp.toISOString(),
-          source: location.source,
-        },
-        location_permission: 'granted',
-      }),
+    await api.patch('/users/me/preferences', {
+      detected_location: {
+        city: location.city,
+        state: location.state,
+        county: location.county,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        timestamp: location.timestamp.toISOString(),
+        source: location.source,
+      },
+      location_permission: 'granted',
     });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     logger.info('Location saved to user preferences');
   } catch (err) {
     logger.error('Failed to save location to preferences', { error: err });

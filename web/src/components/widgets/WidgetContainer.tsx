@@ -13,6 +13,7 @@ import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
 import { YnetMivzakimWidget } from './YnetMivzakimWidget';
+import { Maariv103PlaylistWidget } from './Maariv103PlaylistWidget';
 import { useDirection } from '@/hooks/useDirection';
 import type { Widget, WidgetPosition } from '@/types/widget';
 import type { PodcastEpisode } from '@/types/podcast';
@@ -527,9 +528,24 @@ export default function WidgetContainer({
             widget.title.includes('Ynet') ||
             widget.title.includes('מבזקי');
 
+          const is103PlaylistWidget = componentName === 'maariv_103_playlist' ||
+            (widget.title.includes('103FM') && widget.title.includes('ארכיון'));
+
           if (isYnetWidget) {
             return <YnetMivzakimWidget key={refreshKey} />;
           }
+
+          if (is103PlaylistWidget) {
+            return (
+              <Maariv103PlaylistWidget
+                key={refreshKey}
+                podcastId={widget.content.podcast_id || undefined}
+                maxEpisodes={20}
+                autoRefresh={false}
+              />
+            );
+          }
+
           return renderError(`Unknown component: ${componentName}`);
 
         default:

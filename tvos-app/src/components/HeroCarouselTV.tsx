@@ -2,7 +2,7 @@
  * HeroCarouselTV - Featured content carousel for TV home screen
  *
  * Features:
- * - Large hero section (550pt height) for 10-foot viewing
+ * - Large hero section (750pt height) for 10-foot viewing
  * - Horizontal pagination with auto-advance (6 seconds)
  * - TV focus navigation (left/right arrows)
  * - Gradient overlay for text readability
@@ -28,7 +28,7 @@ import { getContentPosterUrl } from '@bayit/shared-utils/youtube';
 
 const WINDOW_WIDTH = Dimensions.get('window').width;
 const HERO_WIDTH = WINDOW_WIDTH - config.tv.safeZoneMarginPt * 2;
-const HERO_HEIGHT = 550;
+const HERO_HEIGHT = 750;
 const AUTO_ADVANCE_INTERVAL = 6000; // 6 seconds
 
 export interface HeroItem {

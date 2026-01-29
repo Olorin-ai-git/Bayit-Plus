@@ -1686,7 +1686,8 @@
       "settings": "Settings",
       "auditLogs": "Audit Logs",
       "librarian": "Librarian Agent",
-      "featured": "Featured"
+      "featured": "Featured",
+      "diagnostics": "System Diagnostics"
     },
     "featured": {
       "title": "Featured Content",
@@ -1846,7 +1847,6 @@
         "dropFiles": "Drop files here to upload",
         "maxSize": "Max file size",
         "invalidFiles": "{{count}} file(s) rejected",
-        "noFilesSelected": "No files selected",
         "uploadMode": "Upload Mode",
         "filesMode": "Individual Files",
         "folderMode": "Folder",
@@ -2808,6 +2808,28 @@
       "confirmSend": "Send notification \"{{title}}\"?",
       "confirmDelete": "Delete notification \"{{title}}\"?",
       "fillRequired": "Please fill in title and body"
+    },
+    "diagnostics": {
+      "title": "System Diagnostics",
+      "servicesOverview": "Services Overview",
+      "performanceMetrics": "Performance Metrics",
+      "systemActivity": "System Activity",
+      "servicesDetails": "Services Details",
+      "cpu": "CPU Usage",
+      "memory": "Memory Usage",
+      "disk": "Disk Usage",
+      "allSystemsOperational": "All Systems Operational",
+      "systemDegraded": "System Degraded",
+      "systemDown": "System Down",
+      "lastUpdated": "Last updated: {{time}}",
+      "ping": "Ping",
+      "restart": "Restart",
+      "online": "Online",
+      "offline": "Offline",
+      "degraded": "Degraded",
+      "latency": "Latency: {{ms}}ms",
+      "healthy": "Healthy",
+      "unhealthy": "Unhealthy"
     }
   },
   "placeholder": {
@@ -3519,6 +3541,7 @@
       "israeli-cities": "Israeli Cities"
     },
     "subcategories": {
+      "title": "Subcategories",
       "learning-hebrew": "Learning Hebrew",
       "learning-hebrew.description": "Learning to read, write and vocabulary in Hebrew for kids",
       "young-science": "Young Science",

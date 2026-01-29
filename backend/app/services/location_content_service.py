@@ -1,5 +1,6 @@
 """Location-based content service for aggregating Israeli-focused content by US city."""
 import logging
+import math
 import re
 from datetime import datetime, timezone
 from typing import Any, Optional
@@ -21,6 +22,46 @@ class LocationContentService:
     """Service for aggregating Israeli-focused content by US location."""
 
     @staticmethod
+    def _calculate_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+        """Calculate distance in miles between two coordinates using Haversine formula."""
+        # Radius of Earth in miles
+        R = 3959.0
+
+        # Convert to radians
+        lat1_rad = math.radians(lat1)
+        lon1_rad = math.radians(lon1)
+        lat2_rad = math.radians(lat2)
+        lon2_rad = math.radians(lon2)
+
+        # Haversine formula
+        dlat = lat2_rad - lat1_rad
+        dlon = lon2_rad - lon1_rad
+        a = math.sin(dlat / 2)**2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2)**2
+        c = 2 * math.asin(math.sqrt(a))
+
+        return R * c
+
+    @staticmethod
+    def _find_nearest_major_city(latitude: float, longitude: float) -> Optional[tuple[str, str, float]]:
+        """Find the nearest major city to given coordinates.
+
+        Returns: (city_name, state_code, distance_in_miles) or None
+        """
+        nearest = None
+        min_distance = float('inf')
+
+        for state_code, city_data in MAJOR_US_CITIES.items():
+            distance = LocationContentService._calculate_distance(
+                latitude, longitude,
+                city_data["latitude"], city_data["longitude"]
+            )
+            if distance < min_distance:
+                min_distance = distance
+                nearest = (city_data["city"], state_code, distance)
+
+        return nearest
+
+    @staticmethod
     def _get_city_coordinates(city: str, state: str) -> tuple[float, float]:
         """Get latitude/longitude for a city/state.
 
@@ -40,8 +81,19 @@ class LocationContentService:
         limit_per_type: int = 10,
         include_articles: bool = True,
         include_events: bool = True,
+        allow_nearby_fallback: bool = True,
     ) -> dict:
-        """Get all Israeli-focused content for a specific city. Never raises exceptions."""
+        """Get all Israeli-focused content for a specific city. Never raises exceptions.
+
+        Args:
+            city: City name
+            state: State code (e.g., 'NY', 'CA')
+            county: Optional county name
+            limit_per_type: Max items per content type
+            include_articles: Whether to fetch news articles
+            include_events: Whether to fetch community events
+            allow_nearby_fallback: If True and no local content found, fetch from nearest major city
+        """
         try:
             # Validate and sanitize inputs
             if not city or not state:
@@ -66,7 +118,12 @@ class LocationContentService:
                 },
                 "content": {"news_articles": [], "community_events": []},
                 "total_items": 0,
-                "coverage": {"has_content": False, "nearest_major_city": None},
+                "coverage": {
+                    "has_content": False,
+                    "nearest_major_city": None,
+                    "content_source": "local",  # 'local' or 'nearby'
+                    "distance_miles": None,
+                },
                 "updated_at": now,
             }
 
@@ -96,8 +153,41 @@ class LocationContentService:
             result["total_items"] = total
             result["coverage"]["has_content"] = total > 0
 
-            if not result["coverage"]["has_content"] and state in MAJOR_US_CITIES:
-                result["coverage"]["nearest_major_city"] = MAJOR_US_CITIES[state]["city"]
+            # If no local content found and fallback is allowed, fetch from nearest major city
+            if not result["coverage"]["has_content"] and allow_nearby_fallback:
+                nearest = self._find_nearest_major_city(latitude, longitude)
+                if nearest:
+                    nearby_city, nearby_state, distance = nearest
+                    result["coverage"]["nearest_major_city"] = nearby_city
+                    result["coverage"]["distance_miles"] = round(distance, 1)
+
+                    logger.info(
+                        f"No content for {city}, {state}. Fetching from nearest major city: "
+                        f"{nearby_city}, {nearby_state} ({distance:.1f} miles away)"
+                    )
+
+                    # Recursively fetch from nearby city (with fallback disabled to prevent infinite recursion)
+                    nearby_result = await self.get_israelis_in_city(
+                        nearby_city,
+                        nearby_state,
+                        limit_per_type=limit_per_type,
+                        include_articles=include_articles,
+                        include_events=include_events,
+                        allow_nearby_fallback=False,  # Prevent infinite recursion
+                    )
+
+                    # Use nearby city's content if available
+                    if nearby_result["total_items"] > 0:
+                        result["content"]["news_articles"] = nearby_result["content"]["news_articles"]
+                        result["content"]["community_events"] = nearby_result["content"]["community_events"]
+                        result["total_items"] = nearby_result["total_items"]
+                        result["coverage"]["has_content"] = True
+                        result["coverage"]["content_source"] = "nearby"
+
+                        logger.info(
+                            f"Successfully loaded {nearby_result['total_items']} items from "
+                            f"{nearby_city}, {nearby_state} for {city}, {state}"
+                        )
 
             return result
 

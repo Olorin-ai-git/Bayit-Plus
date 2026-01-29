@@ -882,7 +882,8 @@
       "campaigns": "Campagnes",
       "billing": "Facturation",
       "content": "Contenu",
-      "settings": "Paramètres"
+      "settings": "Paramètres",
+      "diagnostics": "Diagnostics Système"
     },
     "dashboard": {
       "title": "Tableau de bord",
@@ -934,6 +935,28 @@
       "editEpisode": "Modifier l'épisode",
       "deleteEpisode": "Supprimer l'épisode",
       "newEpisode": "Nouvel épisode"
+    },
+    "diagnostics": {
+      "title": "Diagnostics Système",
+      "servicesOverview": "Vue d'ensemble des Services",
+      "performanceMetrics": "Métriques de Performance",
+      "systemActivity": "Activité Système",
+      "servicesDetails": "Détails des Services",
+      "cpu": "Utilisation du CPU",
+      "memory": "Utilisation de la Mémoire",
+      "disk": "Utilisation du Disque",
+      "allSystemsOperational": "Tous les Systèmes Opérationnels",
+      "systemDegraded": "Système Dégradé",
+      "systemDown": "Système en Panne",
+      "lastUpdated": "Dernière mise à jour: {{time}}",
+      "ping": "Ping",
+      "restart": "Redémarrer",
+      "online": "En Ligne",
+      "offline": "Hors Ligne",
+      "degraded": "Dégradé",
+      "latency": "Latence: {{ms}}ms",
+      "healthy": "Sain",
+      "unhealthy": "Malsain"
     }
   },
   "cultures": {

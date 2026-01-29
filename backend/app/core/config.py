@@ -336,6 +336,20 @@ class Settings(BaseSettings):
         description="Fernet key for encrypting location data at rest (base64-encoded)"
     )
 
+    # Diagnostics Settings (System Health Monitoring)
+    DIAGNOSTICS_ENABLED: bool = Field(
+        default=True,
+        description="Enable system diagnostics and health monitoring"
+    )
+    DIAGNOSTICS_HEARTBEAT_INTERVAL_SECONDS: int = Field(
+        default=10,
+        description="Client heartbeat interval in seconds"
+    )
+    DIAGNOSTICS_CLIENT_TIMEOUT_SECONDS: int = Field(
+        default=300,
+        description="Client timeout in seconds (5 minutes default)"
+    )
+
     @field_validator("GEONAMES_USERNAME")
     @classmethod
     def validate_geonames_username(cls, v: str) -> str:
@@ -857,6 +871,21 @@ class Settings(BaseSettings):
     TEL_AVIV_CONTENT_CACHE_TTL_MINUTES: int = 15
     TEL_AVIV_CONTENT_REQUEST_TIMEOUT_SECONDS: float = 10.0
     TEL_AVIV_CONTENT_MIN_RELEVANCE_SCORE: float = 0.3
+
+    # Jerusalem/Tel Aviv Geolocation Settings
+    JERUSALEM_DEFAULT_RADIUS_KM: float = 50.0
+    TEL_AVIV_DEFAULT_RADIUS_KM: float = 20.0
+
+    # Scoring weights (60% keywords + 30% proximity + 10% source)
+    GEOLOCATION_KEYWORD_WEIGHT: float = 0.6
+    GEOLOCATION_PROXIMITY_WEIGHT: float = 0.3
+    GEOLOCATION_SOURCE_WEIGHT: float = 0.1
+
+    # Minimum combined score threshold
+    GEOLOCATION_MIN_COMBINED_SCORE: float = 0.3
+
+    # City coordinate cache TTL (30 days - cities don't move)
+    GEOLOCATION_CITY_CACHE_TTL_DAYS: int = 30
 
     # Global Cultures Configuration
     CULTURES_ENABLED: bool = True

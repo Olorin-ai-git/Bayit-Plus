@@ -13,8 +13,10 @@ global.Animated = {
     setValue: jest.fn(),
     interpolate: jest.fn(),
   })),
-  timing: jest.fn().mockReturnValue({ start: jest.fn() }),
-  spring: jest.fn().mockReturnValue({ start: jest.fn() }),
+  timing: jest.fn().mockReturnValue({ start: jest.fn(), stop: jest.fn() }),
+  spring: jest.fn().mockReturnValue({ start: jest.fn(), stop: jest.fn() }),
+  sequence: jest.fn().mockReturnValue({ start: jest.fn(), stop: jest.fn() }),
+  loop: jest.fn().mockReturnValue({ start: jest.fn(), stop: jest.fn() }),
   View: 'View',
   Text: 'Text',
   ScrollView: 'ScrollView',
@@ -90,3 +92,40 @@ jest.mock('react-native-gesture-handler', () => ({
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
+
+// Mock react-native-svg
+jest.mock('react-native-svg', () => {
+  const React = require('react');
+  const mockSvgComponent = (name) => {
+    return React.forwardRef((props, ref) => {
+      return React.createElement(name, { ...props, ref });
+    });
+  };
+
+  return {
+    __esModule: true,
+    default: mockSvgComponent('Svg'),
+    Svg: mockSvgComponent('Svg'),
+    Circle: mockSvgComponent('Circle'),
+    Ellipse: mockSvgComponent('Ellipse'),
+    G: mockSvgComponent('G'),
+    Text: mockSvgComponent('Text'),
+    TSpan: mockSvgComponent('TSpan'),
+    TextPath: mockSvgComponent('TextPath'),
+    Path: mockSvgComponent('Path'),
+    Polygon: mockSvgComponent('Polygon'),
+    Polyline: mockSvgComponent('Polyline'),
+    Line: mockSvgComponent('Line'),
+    Rect: mockSvgComponent('Rect'),
+    Use: mockSvgComponent('Use'),
+    Image: mockSvgComponent('Image'),
+    Symbol: mockSvgComponent('Symbol'),
+    Defs: mockSvgComponent('Defs'),
+    LinearGradient: mockSvgComponent('LinearGradient'),
+    RadialGradient: mockSvgComponent('RadialGradient'),
+    Stop: mockSvgComponent('Stop'),
+    ClipPath: mockSvgComponent('ClipPath'),
+    Pattern: mockSvgComponent('Pattern'),
+    Mask: mockSvgComponent('Mask'),
+  };
+});

@@ -46,7 +46,8 @@ def register_all_routers(app: FastAPI) -> None:
                                 auth, chapters, chat,
                                 chess, children, content, content_taxonomy,
                                 cultures, device_pairing, devices,
-                                direct_messages, downloads, dubbing, epg,
+                                diagnostics, direct_messages, downloads, dubbing, epg,
+                                websocket_diagnostics,
                                 extension_subscriptions,
                                 family_controls, favorites, friends, health,
                                 history, jerusalem, judaism, librarian, live,
@@ -244,6 +245,7 @@ def register_all_routers(app: FastAPI) -> None:
     # Admin Routes
     # ============================================
     app.include_router(admin.router, prefix=f"{prefix}/admin", tags=["admin"])
+    app.include_router(diagnostics.router, prefix=prefix, tags=["diagnostics"])
     app.include_router(librarian.router, prefix=prefix, tags=["librarian"])
     app.include_router(
         admin_content_vod_read.router, prefix=f"{prefix}/admin", tags=["admin-content"]
@@ -308,6 +310,7 @@ def register_all_routers(app: FastAPI) -> None:
     # WebSocket Routes
     # ============================================
     app.include_router(websocket.router, prefix=prefix, tags=["websocket"])
+    app.include_router(websocket_diagnostics.router, tags=["websocket", "diagnostics"])
     app.include_router(
         websocket_live_subtitles.router,
         prefix=prefix,

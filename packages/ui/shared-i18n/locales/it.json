@@ -760,7 +760,8 @@
       "dashboard": "Dashboard",
       "users": "Utenti",
       "content": "Contenuti",
-      "settings": "Impostazioni"
+      "settings": "Impostazioni",
+      "diagnostics": "Diagnostica di Sistema"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -809,6 +810,28 @@
       "editEpisode": "Modifica episodio",
       "deleteEpisode": "Elimina episodio",
       "newEpisode": "Nuovo episodio"
+    },
+    "diagnostics": {
+      "title": "Diagnostica di Sistema",
+      "servicesOverview": "Panoramica dei Servizi",
+      "performanceMetrics": "Metriche di Prestazioni",
+      "systemActivity": "Attività del Sistema",
+      "servicesDetails": "Dettagli dei Servizi",
+      "cpu": "Utilizzo CPU",
+      "memory": "Utilizzo Memoria",
+      "disk": "Utilizzo Disco",
+      "allSystemsOperational": "Tutti i Sistemi Operativi",
+      "systemDegraded": "Sistema Degradato",
+      "systemDown": "Sistema Non Funzionante",
+      "lastUpdated": "Ultimo aggiornamento: {{time}}",
+      "ping": "Ping",
+      "restart": "Riavvia",
+      "online": "Online",
+      "offline": "Offline",
+      "degraded": "Degradato",
+      "latency": "Latenza: {{ms}}ms",
+      "healthy": "Sano",
+      "unhealthy": "Non Sano"
     }
   },
   "cultures": {

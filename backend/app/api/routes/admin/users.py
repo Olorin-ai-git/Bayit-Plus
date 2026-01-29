@@ -72,6 +72,27 @@ async def get_users(
     }
 
 
+@router.get("/users/new")
+async def get_new_user_template(
+    current_user: User = Depends(has_permission(Permission.USERS_READ))
+):
+    """Get template for creating a new user."""
+    return {
+        "id": None,
+        "email": "",
+        "name": "",
+        "role": "user",
+        "is_active": True,
+        "is_verified": False,
+        "email_verified": False,
+        "phone_verified": False,
+        "subscription_tier": None,
+        "subscription_status": None,
+        "created_at": None,
+        "last_login": None,
+    }
+
+
 @router.get("/users/{user_id}")
 async def get_user(
     user_id: str, current_user: User = Depends(has_permission(Permission.USERS_READ))

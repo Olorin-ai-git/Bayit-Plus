@@ -20,6 +20,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './src/config/queryClient';
+import { SvgXml } from 'react-native-svg';
 
 // API Configuration - Using fixed URL
 const API_BASE_URL = 'https://bayit.tv/api/v1';
@@ -66,6 +67,39 @@ const fetchFeatured = async (): Promise<{ hero: ContentItem | null; spotlight: C
   } catch {
     return { hero: null, spotlight: [] };
   }
+};
+
+// Channel Logo Component with SVG Support
+const ChannelLogo: React.FC<{
+  logo?: string;
+  channelNumber?: string;
+  channelName?: string;
+  size?: number;
+}> = ({ logo, channelNumber, channelName, size = 100 }) => {
+  // Check if logo is base64 SVG
+  const isSvg = logo?.startsWith('data:image/svg+xml;base64,');
+
+  // For SVG logos, show purple placeholder with channel number
+  // (react-native-svg has compatibility issues with New Architecture on tvOS)
+  if (!logo || isSvg) {
+    // Extract channel number from name if not provided
+    const displayNumber = channelNumber || channelName?.match(/\d+/)?.[0] || '?';
+
+    return (
+      <View style={[styles.channelPlaceholder, { width: size, height: size, borderRadius: size / 2 }]}>
+        <Text style={styles.channelNumber}>{displayNumber}</Text>
+      </View>
+    );
+  }
+
+  // Regular image URL (PNG/JPG)
+  return (
+    <Image
+      source={{ uri: logo }}
+      style={[styles.channelLogo, { width: size, height: size, borderRadius: size / 2 }]}
+      resizeMode="contain"
+    />
+  );
 };
 
 // Navigation Header with Purple Theme
@@ -152,6 +186,7 @@ const HomeScreen: React.FC<{ onNavigate: (route: string) => void }> = ({ onNavig
             style={styles.heroImage}
             resizeMode="cover"
           />
+          <View style={styles.heroGradient} />
           <View style={styles.heroOverlay}>
             <Text style={styles.heroTitle}>{hero.title}</Text>
             {hero.year && <Text style={styles.heroMeta}>{hero.year}</Text>}
@@ -185,17 +220,12 @@ const HomeScreen: React.FC<{ onNavigate: (route: string) => void }> = ({ onNavig
                 focused && styles.cardFocused,
               ]}
             >
-              {channel.logo ? (
-                <Image
-                  source={{ uri: channel.logo }}
-                  style={styles.channelLogo}
-                  resizeMode="contain"
-                />
-              ) : (
-                <View style={styles.channelPlaceholder}>
-                  <Text style={styles.channelNumber}>{channel.number || '?'}</Text>
-                </View>
-              )}
+              <ChannelLogo
+                logo={channel.logo}
+                channelNumber={channel.number}
+                channelName={channel.name}
+                size={100}
+              />
               <Text style={styles.channelName} numberOfLines={1}>
                 {channel.name}
               </Text>
@@ -517,12 +547,25 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   heroSection: {
-    height: 500,
+    height: 700,
     position: 'relative',
+    marginBottom: 20,
   },
   heroImage: {
     width: '100%',
     height: '100%',
+  },
+  heroGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '70%',
+    backgroundColor: 'transparent',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -60 },
+    shadowOpacity: 0.8,
+    shadowRadius: 80,
   },
   heroOverlay: {
     position: 'absolute',
@@ -530,18 +573,26 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 60,
-    paddingTop: 120,
+    paddingTop: 180,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
   },
   heroTitle: {
-    fontSize: 56,
+    fontSize: 64,
     fontWeight: 'bold',
     color: '#ffffff',
-    marginBottom: 12,
+    marginBottom: 16,
+    textShadowColor: 'rgba(0, 0, 0, 0.9)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 12,
   },
   heroMeta: {
-    fontSize: 24,
-    color: 'rgba(255, 255, 255, 0.7)',
-    marginBottom: 16,
+    fontSize: 28,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.85)',
+    marginBottom: 24,
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 8,
   },
   watchButton: {
     backgroundColor: '#A855F7', // Purple button
@@ -595,44 +646,54 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   channelCard: {
-    width: 180,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    width: 200,
+    height: 220,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderRadius: 16,
-    padding: 20,
+    padding: 24,
     marginRight: 20,
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
+    justifyContent: 'space-between',
+    borderWidth: 3,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   cardFocused: {
-    backgroundColor: 'rgba(168, 85, 247, 0.2)', // Purple focus background
+    backgroundColor: 'rgba(168, 85, 247, 0.25)', // Purple focus background
     borderColor: '#A855F7', // Purple border
-    transform: [{ scale: 1.05 }],
+    transform: [{ scale: 1.08 }],
   },
   channelLogo: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 12,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   channelPlaceholder: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(168, 85, 247, 0.2)', // Purple background
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(168, 85, 247, 0.3)', // More visible purple background
+    borderWidth: 3,
+    borderColor: 'rgba(168, 85, 247, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   channelNumber: {
-    fontSize: 28,
+    fontSize: 38,
     fontWeight: 'bold',
-    color: '#A855F7', // Purple text
+    color: '#FFFFFF', // White text for better contrast
+    textShadowColor: 'rgba(168, 85, 247, 0.8)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
   },
   channelName: {
-    fontSize: 18,
+    fontSize: 20,
+    fontWeight: '600',
     color: '#ffffff',
     textAlign: 'center',
+    width: '100%',
   },
   contentCard: {
     width: 220,
@@ -677,35 +738,40 @@ const styles = StyleSheet.create({
     gap: 24,
   },
   gridChannelCard: {
-    width: 200,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    width: 240,
+    height: 260,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderRadius: 16,
-    padding: 24,
+    padding: 28,
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
+    justifyContent: 'space-between',
+    borderWidth: 3,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   gridChannelLogo: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 16,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   gridChannelPlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(168, 85, 247, 0.2)', // Purple
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(168, 85, 247, 0.3)', // More visible purple
+    borderWidth: 3,
+    borderColor: 'rgba(168, 85, 247, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   gridChannelName: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '600',
     color: '#ffffff',
     textAlign: 'center',
-    marginBottom: 8,
+    width: '100%',
   },
   placeholderScreen: {
     flex: 1,

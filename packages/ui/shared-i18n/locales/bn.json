@@ -554,7 +554,8 @@
       "dashboard": "ড্যাশবোর্ড",
       "users": "ব্যবহারকারী",
       "content": "কন্টেন্ট",
-      "settings": "সেটিংস"
+      "settings": "সেটিংস",
+      "diagnostics": "সিস্টেম ডায়াগনস্টিকস"
     },
     "users": {
       "roles": {
@@ -599,6 +600,28 @@
       "editEpisode": "এপিসোড সম্পাদনা করুন",
       "deleteEpisode": "এপিসোড মুছুন",
       "newEpisode": "নতুন এপিসোড"
+    },
+    "diagnostics": {
+      "title": "সিস্টেম ডায়াগনস্টিকস",
+      "servicesOverview": "সেবা সংক্ষিপ্তসার",
+      "performanceMetrics": "পারফরম্যান্স মেট্রিক্স",
+      "systemActivity": "সিস্টেম কার্যকলাপ",
+      "servicesDetails": "সেবা বিবরণ",
+      "cpu": "CPU ব্যবহার",
+      "memory": "মেমরি ব্যবহার",
+      "disk": "ডিস্ক ব্যবহার",
+      "allSystemsOperational": "সমস্ত সিস্টেম চালু",
+      "systemDegraded": "সিস্টেম অবনতি",
+      "systemDown": "সিস্টেম ডাউন",
+      "lastUpdated": "শেষ আপডেট: {{time}}",
+      "ping": "পিং",
+      "restart": "পুনরায় চালু করুন",
+      "online": "অনলাইন",
+      "offline": "অফলাইন",
+      "degraded": "অবনত",
+      "latency": "বিলম্বিতা: {{ms}}ms",
+      "healthy": "সুস্থ",
+      "unhealthy": "অসুস্থ"
     }
   },
   "cultureClock": {

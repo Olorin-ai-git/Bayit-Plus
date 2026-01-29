@@ -105,7 +105,8 @@
     "react-native-gesture-handler": "^2.14.0",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-reanimated": ">=3.0.0",
-    "react-native-safe-area-context": "^4.8.0"
+    "react-native-safe-area-context": "^4.8.0",
+    "react-native-svg": "^15.0.0"
   },
   "peerDependenciesMeta": {
     "react-native": {
@@ -121,6 +122,9 @@
       "optional": true
     },
     "react-native-gesture-handler": {
+      "optional": true
+    },
+    "react-native-svg": {
       "optional": true
     }
   },

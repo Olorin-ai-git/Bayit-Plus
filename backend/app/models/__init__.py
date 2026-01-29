@@ -4,6 +4,13 @@ from app.models.content import (Content, ContentBase, ContentCreate,
 from app.models.cost_breakdown import (CostBreakdown, CostMetrics, CostTotals,
                                        RevenueBreakdown, UserCostBreakdown)
 from app.models.content_taxonomy import ContentSection
+from app.models.diagnostics import (ClientHeartbeat, ClientHealthHistory,
+                                    ClientAlert, ClientType, ClientStatus,
+                                    DiagnosticSeverity, ClientMetrics, SystemMetrics,
+                                    HeartbeatRequest, HeartbeatResponse,
+                                    ClientStatusResponse, ServiceHealthResponse,
+                                    DiagnosticsOverviewResponse, PingResponse,
+                                    AnalyticsResponse)
 from app.models.jerusalem_content import (JerusalemContentAggregatedResponse,
                                           JerusalemContentCategory,
                                           JerusalemContentItem,

@@ -2,26 +2,15 @@ import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, Mail, Key, Ban, UserCheck, Edit2, Trash2, Clock } from 'lucide-react';
+import { ArrowRight, Mail, Key, Ban, UserCheck, Edit2, Trash2, Clock, Check, X } from 'lucide-react';
 import { NativeIcon } from '@olorin/shared-icons/native';
-import { usersService } from '@/services/adminApi';
+import { usersService, type User } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassCard, GlassButton, GlassModal, GlassInput, GlassToggle, GlassView, GlassPageHeader } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { useNotifications } from '@olorin/glass-ui/hooks';;
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import logger from '@/utils/logger';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  status: 'active' | 'inactive' | 'banned';
-  subscription?: { plan: string; status: string };
-  created_at: string;
-  ban_reason?: string;
-}
 
 interface Activity {
   id: string;
@@ -39,10 +28,14 @@ interface Transaction {
   created_at: string;
 }
 
-const statusColors: Record<string, { bg: string; text: string; labelKey: string }> = {
-  active: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', labelKey: 'admin.users.status.active' },
-  inactive: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', labelKey: 'admin.users.status.inactive' },
-  banned: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', labelKey: 'admin.users.status.blocked' },
+const getStatusInfo = (user: User | any) => {
+  if (user?.is_banned) {
+    return { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', labelKey: 'admin.users.status.blocked', status: 'banned' };
+  }
+  if (user?.is_active) {
+    return { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', labelKey: 'admin.users.status.active', status: 'active' };
+  }
+  return { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', labelKey: 'admin.users.status.inactive', status: 'inactive' };
 };
 
 const formatDate = (dateStr: string) => {
@@ -167,7 +160,7 @@ export default function UserDetailPage() {
       name: user.name,
       email: user.email,
       role: user.role,
-      is_active: user.status === 'active',
+      is_active: user.is_active,
     });
     setEditModalOpen(true);
   };
@@ -231,7 +224,7 @@ export default function UserDetailPage() {
     );
   }
 
-  const statusStyle = statusColors[user.status] || statusColors.inactive;
+  const statusInfo = getStatusInfo(user);
 
   const pageConfig = ADMIN_PAGE_CONFIG['user-detail'];
   const IconComponent = pageConfig.icon;
@@ -265,15 +258,15 @@ export default function UserDetailPage() {
               <Text style={styles.avatarText}>{user.name?.charAt(0).toUpperCase() || '?'}</Text>
             </GlassView>
             <GlassView style={styles.profileInfo}>
-              <Text className="text-sm font-medium text-white">{user.name}</Text>
-              <Text className="text-xs text-gray-400">{user.email}</Text>
-              <GlassView style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}>
-                <Text style={[styles.statusText, { color: statusStyle.text }]}>{t(statusStyle.labelKey)}</Text>
+              <Text className="text-base font-semibold text-white">{user.name}</Text>
+              <Text className="text-sm text-white/90">{user.email}</Text>
+              <GlassView style={[styles.statusBadge, { backgroundColor: statusInfo.bg }]}>
+                <Text style={[styles.statusText, { color: statusInfo.text }]}>{t(statusInfo.labelKey)}</Text>
               </GlassView>
             </GlassView>
           </GlassView>
-          {user.ban_reason && (
-            <Text style={styles.banReason}>{t('admin.users.banReason', { defaultValue: 'Ban reason' })}: {user.ban_reason}</Text>
+          {(user as any)?.ban_reason && (
+            <Text style={styles.banReason}>{t('admin.users.banReason', { defaultValue: 'Ban reason' })}: {(user as any).ban_reason}</Text>
           )}
           <GlassView style={styles.actionButtons}>
             <GlassButton
@@ -297,19 +290,19 @@ export default function UserDetailPage() {
               onPress={handleResetPassword}
               style={styles.actionButton}
             />
-            {user.status === 'banned' ? (
-              <GlassButton 
-                title={t('admin.users.unban', { defaultValue: 'Unban' })} 
-                variant="primary" 
-                icon={<UserCheck size={16} color={colors.text} />} 
+            {(user as any)?.is_banned ? (
+              <GlassButton
+                title={t('admin.users.unban', { defaultValue: 'Unban' })}
+                variant="primary"
+                icon={<UserCheck size={16} color={colors.text} />}
                 onPress={handleUnban}
                 style={styles.actionButton}
               />
             ) : (
-              <GlassButton 
-                title={t('admin.users.block')} 
-                variant="secondary" 
-                icon={<Ban size={16} color={colors.error} />} 
+              <GlassButton
+                title={t('admin.users.block')}
+                variant="secondary"
+                icon={<Ban size={16} color={colors.error} />}
                 onPress={handleBan}
                 style={styles.actionButton}
               />
@@ -336,13 +329,48 @@ export default function UserDetailPage() {
               <Text style={styles.infoValue}>{user.role}</Text>
             </GlassView>
             <GlassView style={[styles.infoRow, { flexDirection }]}>
+              <Text style={styles.infoLabel}>{t('admin.users.email', { defaultValue: 'Email' })}:</Text>
+              <Text style={styles.infoValue}>{user.email}</Text>
+            </GlassView>
+            <GlassView style={[styles.infoRow, { flexDirection }]}>
+              <Text style={styles.infoLabel}>{t('admin.users.emailVerified', { defaultValue: 'Email Verified' })}:</Text>
+              <GlassView style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                {(user as any)?.email_verified ? (
+                  <>
+                    <Check size={14} color={colors.success} />
+                    <Text style={[styles.infoValue, { color: colors.success }]}>{t('common.yes', { defaultValue: 'Yes' })}</Text>
+                  </>
+                ) : (
+                  <>
+                    <X size={14} color={colors.error} />
+                    <Text style={[styles.infoValue, { color: colors.error }]}>{t('common.no', { defaultValue: 'No' })}</Text>
+                  </>
+                )}
+              </GlassView>
+            </GlassView>
+            <GlassView style={[styles.infoRow, { flexDirection }]}>
               <Text style={styles.infoLabel}>{t('admin.users.columns.subscription')}:</Text>
-              <Text style={styles.infoValue}>{user.subscription?.plan || t('admin.users.columns.noSubscription')}</Text>
+              <Text style={styles.infoValue}>
+                {(user as any)?.subscription_tier || user.subscription?.tier || t('admin.users.columns.noSubscription')}
+                {((user as any)?.subscription_status || user.subscription?.status) && ` (${(user as any)?.subscription_status || user.subscription?.status})`}
+              </Text>
             </GlassView>
             <GlassView style={[styles.infoRow, { flexDirection }]}>
               <Text style={styles.infoLabel}>{t('admin.users.registered', { defaultValue: 'Registered' })}:</Text>
               <Text style={styles.infoValue}>{formatDate(user.created_at)}</Text>
             </GlassView>
+            {user.last_login && (
+              <GlassView style={[styles.infoRow, { flexDirection }]}>
+                <Text style={styles.infoLabel}>{t('admin.users.lastLogin', { defaultValue: 'Last Login' })}:</Text>
+                <Text style={styles.infoValue}>{formatDate(user.last_login)}</Text>
+              </GlassView>
+            )}
+            {user.updated_at && (
+              <GlassView style={[styles.infoRow, { flexDirection }]}>
+                <Text style={styles.infoLabel}>{t('admin.users.lastUpdated', { defaultValue: 'Last Updated' })}:</Text>
+                <Text style={styles.infoValue}>{formatDate(user.updated_at)}</Text>
+              </GlassView>
+            )}
           </GlassCard>
 
           <GlassCard style={styles.activityCard}>

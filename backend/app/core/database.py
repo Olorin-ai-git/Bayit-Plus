@@ -85,6 +85,7 @@ from app.models.migration import MigrationRecord, RollbackData
 # NLP models
 from app.models.nlp_session import NLPConversationSession
 from app.models.user_audible_account import UserAudibleAccount
+from app.models.diagnostics import ClientHeartbeat, ClientHealthHistory, ClientAlert
 
 
 class Database:
@@ -164,6 +165,10 @@ async def connect_to_mongo():
         UserCostBreakdown,
         # Security audit log
         SecurityAuditLog,
+        # Diagnostics models (system health monitoring)
+        ClientHeartbeat,
+        ClientHealthHistory,
+        ClientAlert,
         # Widget models
         Widget,
         UserSystemWidget,
