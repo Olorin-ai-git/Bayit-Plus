@@ -59,6 +59,10 @@ steps:
       - '--update-secrets=OPENSUBTITLES_API_KEY=opensubtitles-api-key:latest'
       - '--update-secrets=PICOVOICE_ACCESS_KEY=picovoice-access-key:latest'
 
+      # News & Location Services
+      - '--update-secrets=TAVILY_API_KEY=tavily-api-key:latest'
+      - '--update-secrets=EXA_API_KEY=exa-api-key:latest'
+
       # OAuth & Authentication
       - '--update-secrets=GOOGLE_CLIENT_ID=bayit-google-client-id:latest'
       - '--update-secrets=GOOGLE_CLIENT_SECRET=bayit-google-client-secret:latest'

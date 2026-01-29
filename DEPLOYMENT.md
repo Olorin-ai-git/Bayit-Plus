@@ -1,6 +1,44 @@
-# Bayit+ Cloud Build Deployment
+# Bayit+ Deployment Guide
 
-## Quick Deploy
+## Quick Deployment Scripts
+
+All deployment scripts are now conveniently accessible from the bayit-plus root directory via symlinks.
+
+### Main Deployment Commands
+
+```bash
+# Deploy all platforms (backend + web + iOS + tvOS)
+./deploy_all.sh
+
+# Deploy individual platforms
+./deploy_server.sh      # Backend API server
+./deploy_web.sh         # Web application
+./deploy_ios.sh         # iOS mobile app
+./deploy_tvos.sh        # tvOS TV app
+
+# Quick deployment (faster, minimal checks)
+./quick_deploy.sh
+```
+
+### Script Locations
+
+The actual scripts are in `deployment/scripts/` but symlinked to root:
+
+```
+bayit-plus/
+├── deploy_all.sh -> deployment/scripts/deploy_all.sh
+├── deploy_server.sh -> deployment/scripts/deploy_server.sh
+├── deploy_ios.sh -> deployment/scripts/deploy_ios.sh
+├── deploy_tvos.sh -> deployment/scripts/deploy_tvos.sh
+├── deploy_web.sh -> deployment/scripts/deploy-web.sh
+└── quick_deploy.sh -> deployment/scripts/quick-deploy.sh
+```
+
+---
+
+## Cloud Build Deployment
+
+### Quick Deploy
 
 Deploy with default settings:
 

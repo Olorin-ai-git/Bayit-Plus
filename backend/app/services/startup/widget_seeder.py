@@ -12,6 +12,7 @@ from app.models.content import LiveChannel
 from app.models.widget import (Widget, WidgetContent, WidgetContentType,
                                WidgetPosition, WidgetType)
 from app.services.startup.defaults import (CHANNEL_WIDGETS, FLIGHT_WIDGETS,
+                                           GALEI_TZAHAL_WIDGET,
                                            MAARIV_103_WIDGETS, PODCAST_WIDGETS,
                                            YNET_WIDGET_CONFIG)
 
@@ -203,6 +204,71 @@ async def _create_ynet_widget() -> bool:
     return True
 
 
+async def _create_galei_tzahal_widget() -> bool:
+    """Create Galei Tzahal radio widget. Returns True if created."""
+    from app.models.content import RadioStation
+
+    config = GALEI_TZAHAL_WIDGET
+
+    # Check if widget already exists
+    existing = await Widget.find_one(
+        {
+            "type": WidgetType.SYSTEM,
+            "title": config["title"],
+        }
+    )
+
+    if existing:
+        logger.info(f"Galei Tzahal widget already exists: {existing.id}")
+        return False
+
+    # Find Galei Tzahal station by name
+    # NOTE: Query by 'name' field is not indexed on RadioStation collection.
+    # This is acceptable for one-time startup seeding with small dataset (~33 stations).
+    # Collection scan takes ~10-20ms. If this pattern is reused in frequently-called
+    # code, consider using indexed field or adding a name index.
+    station = await RadioStation.find_one({"name": config["station_name"]})
+
+    if not station:
+        logger.error("Galei Tzahal station (גלצ 96.6fm) not found in database")
+        return False
+
+    # Create widget with RADIO content type
+    widget = Widget(
+        type=WidgetType.SYSTEM,
+        title=config["title"],
+        description=config["description"],
+        icon=config["icon"],
+        content=WidgetContent(
+            content_type=WidgetContentType.RADIO,
+            station_id=str(station.id),  # Link to RadioStation
+        ),
+        position=WidgetPosition(
+            x=config["position"]["x"],
+            y=config["position"]["y"],
+            width=config["position"]["width"],
+            height=config["position"]["height"],
+            z_index=100,
+        ),
+        is_active=True,
+        is_muted=True,  # Default muted per widget standards
+        is_visible=True,
+        is_closable=True,
+        is_draggable=True,
+        visible_to_roles=["user", "admin", "premium"],
+        visible_to_subscription_tiers=[],
+        target_pages=[],  # Empty = visible on all pages
+        order=config["order"],
+        created_by="system",
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow(),
+    )
+
+    await widget.insert()
+    logger.info(f"Created Galei Tzahal widget: {widget.id}")
+    return True
+
+
 async def _create_podcast_widgets() -> int:
     """Create podcast widgets. Returns count of widgets created."""
     created_count = 0
@@ -340,6 +406,7 @@ async def init_default_widgets() -> dict[str, int]:
             "flight_widgets": await _create_flight_widgets(),
             "maariv_103_widgets": await _create_maariv_103_widgets(),
             "ynet_widget": 1 if await _create_ynet_widget() else 0,
+            "galei_tzahal_widget": 1 if await _create_galei_tzahal_widget() else 0,
             "podcast_widgets": await _create_podcast_widgets(),
             "channel_widgets": await _create_channel_widgets(),
         }
