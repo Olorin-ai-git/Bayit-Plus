@@ -2,11 +2,15 @@
 set -e
 
 # ============================================
-# Sync Secrets from Google Cloud to .env Files
+# Sync ALL Secrets from Google Cloud to .env Files
 # ============================================
 #
 # This script regenerates .env files from Google Cloud Secret Manager.
 # Google Cloud Secret Manager is the SINGLE SOURCE OF TRUTH.
+#
+# Fetches ALL secrets dynamically and categorizes them:
+# - Backend secrets: All secrets except REACT_APP_* and VITE_*
+# - Web secrets: REACT_APP_* and VITE_* prefixed secrets
 #
 # Usage:
 #   ./scripts/sync-gcloud-secrets.sh [backend|web|all] [project-id]
@@ -14,8 +18,7 @@ set -e
 # Examples:
 #   ./scripts/sync-gcloud-secrets.sh backend          # Sync backend only
 #   ./scripts/sync-gcloud-secrets.sh web              # Sync web only
-#   ./scripts/sync-gcloud-secrets.sh all              # Sync both
-#   ./scripts/sync-gcloud-secrets.sh all my-project   # Use specific project
+#   ./scripts/sync-gcloud-secrets.sh all              # Sync both (default)
 
 # Colors for output
 RED='\033[0;31m'
@@ -33,7 +36,7 @@ BACKEND_ENV="$REPO_ROOT/backend/.env"
 WEB_ENV="$REPO_ROOT/web/.env"
 
 echo -e "${BLUE}============================================${NC}"
-echo -e "${BLUE}Sync Secrets from Google Cloud${NC}"
+echo -e "${BLUE}Sync ALL Secrets from Google Cloud${NC}"
 echo -e "${BLUE}============================================${NC}"
 echo ""
 echo -e "Project ID: ${GREEN}${PROJECT_ID}${NC}"
@@ -55,22 +58,40 @@ if [[ ! "$TARGET" =~ ^(backend|web|all)$ ]]; then
     exit 1
 fi
 
-# Function to get secret value
+# Fetch all secrets from Google Cloud
+echo -e "${BLUE}Fetching secret list from Google Cloud...${NC}"
+ALL_SECRETS=$(gcloud secrets list --project="$PROJECT_ID" --format="value(name)" 2>/dev/null | sort)
+
+if [ -z "$ALL_SECRETS" ]; then
+    echo -e "${RED}Error: No secrets found in project $PROJECT_ID${NC}"
+    echo "Make sure you have access to the project and secrets exist."
+    exit 1
+fi
+
+SECRET_COUNT=$(echo "$ALL_SECRETS" | wc -l | tr -d ' ')
+echo -e "${GREEN}✓${NC} Found ${SECRET_COUNT} secrets in Google Cloud"
+echo ""
+
+# Function to get secret value with error handling
 get_secret() {
     local SECRET_NAME=$1
-    local DEFAULT_VALUE=$2
+    local VALUE
 
-    if gcloud secrets versions access latest --secret="$SECRET_NAME" --project="$PROJECT_ID" 2>/dev/null; then
+    VALUE=$(gcloud secrets versions access latest --secret="$SECRET_NAME" --project="$PROJECT_ID" 2>/dev/null)
+
+    if [ $? -eq 0 ]; then
+        echo "$VALUE"
         return 0
     else
-        if [ -n "$DEFAULT_VALUE" ]; then
-            echo -e "${YELLOW}Warning: Secret '$SECRET_NAME' not found, using default: $DEFAULT_VALUE${NC}" >&2
-            echo "$DEFAULT_VALUE"
-        else
-            echo -e "${RED}Error: Secret '$SECRET_NAME' not found and no default provided${NC}" >&2
-            return 1
-        fi
+        return 1
     fi
+}
+
+# Function to convert secret name to env var format
+# Example: bayit-backend-cors-origins -> BAYIT_BACKEND_CORS_ORIGINS
+normalize_secret_name() {
+    local SECRET_NAME=$1
+    echo "$SECRET_NAME" | tr '[:lower:]' '[:upper:]' | tr '-' '_'
 }
 
 # Function to sync backend secrets
@@ -80,12 +101,17 @@ sync_backend() {
 
     # Create backup
     if [ -f "$BACKEND_ENV" ]; then
-        cp "$BACKEND_ENV" "$BACKEND_ENV.backup.$(date +%Y%m%d_%H%M%S)"
-        echo -e "${GREEN}✓${NC} Backup created: ${BACKEND_ENV}.backup.*"
+        BACKUP_FILE="$BACKEND_ENV.backup.$(date +%Y%m%d_%H%M%S)"
+        cp "$BACKEND_ENV" "$BACKUP_FILE"
+        echo -e "${GREEN}✓${NC} Backup created: $BACKUP_FILE"
     fi
 
-    # Create new .env file
-    cat > "$BACKEND_ENV" << 'EOF'
+    # Filter backend secrets (all except REACT_APP_* and VITE_*)
+    local BACKEND_SECRETS=$(echo "$ALL_SECRETS" | grep -v -E "^(REACT_APP_|VITE_)")
+    local BACKEND_COUNT=$(echo "$BACKEND_SECRETS" | wc -l | tr -d ' ')
+
+    # Create new .env file with header
+    cat > "$BACKEND_ENV" << EOF
 # ============================================
 # BACKEND ENVIRONMENT VARIABLES
 # ============================================
@@ -100,43 +126,44 @@ sync_backend() {
 #
 # Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
 # Project: $PROJECT_ID
+# Total Secrets: $BACKEND_COUNT
 # ============================================
 
 EOF
 
-    echo "" >> "$BACKEND_ENV"
-    echo "# ============================================" >> "$BACKEND_ENV"
-    echo "# PAYMENT FLOW CONFIGURATION" >> "$BACKEND_ENV"
-    echo "# ============================================" >> "$BACKEND_ENV"
-    echo "" >> "$BACKEND_ENV"
+    # Fetch and write backend secrets
+    local SUCCESS_COUNT=0
+    local FAIL_COUNT=0
 
-    # Fetch and write payment flow secrets
-    PAYMENT_SECRETS=(
-        "REQUIRE_PAYMENT_ON_SIGNUP"
-        "REQUIRE_PAYMENT_ON_SIGNUP_PERCENTAGE"
-        "SIGNUP_TRIAL_PERIOD_DAYS"
-        "PAYMENT_SUCCESS_PATH"
-        "PAYMENT_CANCELLED_PATH"
-        "PAYMENT_STATUS_POLL_INTERVAL_MS"
-        "PAYMENT_PENDING_CLEANUP_DAYS"
-        "PAYMENT_CHECKOUT_SESSION_TTL_HOURS"
-        "PAYMENT_CONVERSION_THRESHOLD"
-    )
+    while IFS= read -r SECRET_NAME; do
+        [ -z "$SECRET_NAME" ] && continue
 
-    for SECRET in "${PAYMENT_SECRETS[@]}"; do
-        echo -e "📝 Fetching ${SECRET}..."
-        VALUE=$(get_secret "$SECRET")
+        # Get secret value
+        VALUE=$(get_secret "$SECRET_NAME")
+
         if [ $? -eq 0 ]; then
-            echo "${SECRET}=${VALUE}" >> "$BACKEND_ENV"
-            echo -e "   ${GREEN}✓${NC} ${SECRET}=${VALUE}"
+            # Normalize secret name to ENV VAR format
+            ENV_VAR_NAME=$(normalize_secret_name "$SECRET_NAME")
+
+            # Write to .env file
+            echo "${ENV_VAR_NAME}=${VALUE}" >> "$BACKEND_ENV"
+
+            # Show progress every 20 secrets
+            ((SUCCESS_COUNT++))
+            if [ $((SUCCESS_COUNT % 20)) -eq 0 ]; then
+                echo -e "${GREEN}✓${NC} Synced $SUCCESS_COUNT/$BACKEND_COUNT secrets..."
+            fi
         else
-            echo -e "   ${RED}✗${NC} Failed to fetch ${SECRET}"
-            return 1
+            echo -e "${YELLOW}⚠${NC}  Skipped: ${SECRET_NAME} (access denied or not found)"
+            ((FAIL_COUNT++))
         fi
-    done
+    done <<< "$BACKEND_SECRETS"
 
     echo ""
-    echo -e "${GREEN}✓ Backend .env synced successfully${NC}"
+    echo -e "${GREEN}✓ Backend .env synced: ${SUCCESS_COUNT} secrets${NC}"
+    if [ $FAIL_COUNT -gt 0 ]; then
+        echo -e "${YELLOW}⚠  Skipped: ${FAIL_COUNT} secrets${NC}"
+    fi
     echo -e "   ${BACKEND_ENV}"
     echo ""
 }
@@ -148,12 +175,17 @@ sync_web() {
 
     # Create backup
     if [ -f "$WEB_ENV" ]; then
-        cp "$WEB_ENV" "$WEB_ENV.backup.$(date +%Y%m%d_%H%M%S)"
-        echo -e "${GREEN}✓${NC} Backup created: ${WEB_ENV}.backup.*"
+        BACKUP_FILE="$WEB_ENV.backup.$(date +%Y%m%d_%H%M%S)"
+        cp "$WEB_ENV" "$BACKUP_FILE"
+        echo -e "${GREEN}✓${NC} Backup created: $BACKUP_FILE"
     fi
 
-    # Create new .env file
-    cat > "$WEB_ENV" << 'EOF'
+    # Filter web secrets (only REACT_APP_* and VITE_*)
+    local WEB_SECRETS=$(echo "$ALL_SECRETS" | grep -E "^(REACT_APP_|VITE_)")
+    local WEB_COUNT=$(echo "$WEB_SECRETS" | wc -l | tr -d ' ')
+
+    # Create new .env file with header
+    cat > "$WEB_ENV" << EOF
 # ============================================
 # WEB ENVIRONMENT VARIABLES
 # ============================================
@@ -168,29 +200,43 @@ sync_web() {
 #
 # Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
 # Project: $PROJECT_ID
+# Total Secrets: $WEB_COUNT
 # ============================================
 
 EOF
 
-    echo "" >> "$WEB_ENV"
-    echo "# ============================================" >> "$WEB_ENV"
-    echo "# PAYMENT FLOW CONFIGURATION" >> "$WEB_ENV"
-    echo "# ============================================" >> "$WEB_ENV"
-    echo "" >> "$WEB_ENV"
-
-    # Fetch and write payment flow secrets
-    echo -e "📝 Fetching REACT_APP_PAYMENT_STATUS_POLL_INTERVAL_MS..."
-    VALUE=$(get_secret "REACT_APP_PAYMENT_STATUS_POLL_INTERVAL_MS")
-    if [ $? -eq 0 ]; then
-        echo "REACT_APP_PAYMENT_STATUS_POLL_INTERVAL_MS=${VALUE}" >> "$WEB_ENV"
-        echo -e "   ${GREEN}✓${NC} REACT_APP_PAYMENT_STATUS_POLL_INTERVAL_MS=${VALUE}"
-    else
-        echo -e "   ${RED}✗${NC} Failed to fetch REACT_APP_PAYMENT_STATUS_POLL_INTERVAL_MS"
-        return 1
+    if [ "$WEB_COUNT" -eq 0 ]; then
+        echo -e "${YELLOW}⚠  No REACT_APP_* or VITE_* secrets found${NC}"
+        echo ""
+        return
     fi
 
+    # Fetch and write web secrets
+    local SUCCESS_COUNT=0
+    local FAIL_COUNT=0
+
+    while IFS= read -r SECRET_NAME; do
+        [ -z "$SECRET_NAME" ] && continue
+
+        # Get secret value
+        VALUE=$(get_secret "$SECRET_NAME")
+
+        if [ $? -eq 0 ]; then
+            # Web secrets keep their original name (already have REACT_APP_ or VITE_ prefix)
+            echo "${SECRET_NAME}=${VALUE}" >> "$WEB_ENV"
+            echo -e "${GREEN}✓${NC} ${SECRET_NAME}"
+            ((SUCCESS_COUNT++))
+        else
+            echo -e "${YELLOW}⚠${NC}  Skipped: ${SECRET_NAME} (access denied or not found)"
+            ((FAIL_COUNT++))
+        fi
+    done <<< "$WEB_SECRETS"
+
     echo ""
-    echo -e "${GREEN}✓ Web .env synced successfully${NC}"
+    echo -e "${GREEN}✓ Web .env synced: ${SUCCESS_COUNT} secrets${NC}"
+    if [ $FAIL_COUNT -gt 0 ]; then
+        echo -e "${YELLOW}⚠  Skipped: ${FAIL_COUNT} secrets${NC}"
+    fi
     echo -e "   ${WEB_ENV}"
     echo ""
 }
@@ -212,7 +258,7 @@ esac
 
 echo ""
 echo -e "${GREEN}============================================${NC}"
-echo -e "${GREEN}✓ Secrets Synced Successfully${NC}"
+echo -e "${GREEN}✓ Secrets Synced from Google Cloud${NC}"
 echo -e "${GREEN}============================================${NC}"
 echo ""
 echo -e "${BLUE}Next Steps:${NC}"
@@ -220,21 +266,23 @@ echo ""
 
 if [[ "$TARGET" =~ ^(backend|all)$ ]]; then
     echo -e "1. ${YELLOW}Verify backend .env:${NC}"
-    echo -e "   ${GREEN}cat backend/.env${NC}"
+    echo -e "   ${GREEN}wc -l backend/.env${NC}"
+    echo -e "   ${GREEN}grep -c '=' backend/.env  # Count variables${NC}"
     echo ""
     echo -e "2. ${YELLOW}Restart backend:${NC}"
-    echo -e "   ${GREEN}cd backend && poetry run python -m app.local_server${NC}"
+    echo -e "   ${GREEN}cd backend && poetry run uvicorn app.main:app --host 0.0.0.0 --port 8090 --reload${NC}"
     echo ""
 fi
 
 if [[ "$TARGET" =~ ^(web|all)$ ]]; then
     echo -e "3. ${YELLOW}Verify web .env:${NC}"
-    echo -e "   ${GREEN}cat web/.env${NC}"
+    echo -e "   ${GREEN}wc -l web/.env${NC}"
+    echo -e "   ${GREEN}grep -c '=' web/.env  # Count variables${NC}"
     echo ""
     echo -e "4. ${YELLOW}Restart web:${NC}"
-    echo -e "   ${GREEN}cd web && npm start${NC}"
+    echo -e "   ${GREEN}cd web && npm run dev${NC}"
     echo ""
 fi
 
-echo -e "${GREEN}Configuration synced from Google Cloud Secret Manager!${NC}"
+echo -e "${GREEN}All configuration synced from Google Cloud Secret Manager!${NC}"
 echo ""
