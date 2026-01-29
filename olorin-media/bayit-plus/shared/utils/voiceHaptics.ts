@@ -10,16 +10,20 @@
 
 import { Platform } from 'react-native';
 
-// Dynamic import to avoid errors when expo-haptics is not installed on web.
+// Haptics are only available on native platforms (iOS/Android).
+// On web, all exported functions gracefully no-op.
 let Haptics: any = null;
 
-if (Platform.OS !== 'web') {
+function getHaptics(): any {
+  if (Haptics !== null || Platform.OS === 'web') return Haptics;
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    Haptics = require(/* webpackIgnore: true */ 'expo-haptics');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
+    Haptics = require('expo-haptics');
   } catch {
-    // Haptics unavailable on this platform
+    // expo-haptics not installed - disable haptics permanently
+    Haptics = false;
   }
+  return Haptics;
 }
 
 /**
@@ -27,11 +31,12 @@ if (Platform.OS !== 'web') {
  * Light impact when user activates voice input
  */
 export async function voiceActivationFeedback(): Promise<void> {
-  if (!Haptics || Platform.OS === 'web') return;
+  const h = getHaptics();
+  if (!h) return;
 
   try {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  } catch (error) {
+    await h.impactAsync(h.ImpactFeedbackStyle.Light);
+  } catch {
     // Silently fail if haptics unavailable
   }
 }
@@ -41,11 +46,12 @@ export async function voiceActivationFeedback(): Promise<void> {
  * Medium impact for confirmation
  */
 export async function voiceSuccessFeedback(): Promise<void> {
-  if (!Haptics || Platform.OS === 'web') return;
+  const h = getHaptics();
+  if (!h) return;
 
   try {
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  } catch (error) {
+    await h.notificationAsync(h.NotificationFeedbackType.Success);
+  } catch {
     // Silently fail if haptics unavailable
   }
 }
@@ -55,11 +61,12 @@ export async function voiceSuccessFeedback(): Promise<void> {
  * Heavy impact for error notification
  */
 export async function voiceErrorFeedback(): Promise<void> {
-  if (!Haptics || Platform.OS === 'web') return;
+  const h = getHaptics();
+  if (!h) return;
 
   try {
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-  } catch (error) {
+    await h.notificationAsync(h.NotificationFeedbackType.Error);
+  } catch {
     // Silently fail if haptics unavailable
   }
 }
@@ -69,11 +76,12 @@ export async function voiceErrorFeedback(): Promise<void> {
  * Selection feedback for UI mode changes
  */
 export async function voiceModeChangeFeedback(): Promise<void> {
-  if (!Haptics || Platform.OS === 'web') return;
+  const h = getHaptics();
+  if (!h) return;
 
   try {
-    await Haptics.selectionAsync();
-  } catch (error) {
+    await h.selectionAsync();
+  } catch {
     // Silently fail if haptics unavailable
   }
 }
@@ -83,11 +91,12 @@ export async function voiceModeChangeFeedback(): Promise<void> {
  * Warning feedback when listening starts
  */
 export async function voiceListeningFeedback(): Promise<void> {
-  if (!Haptics || Platform.OS === 'web') return;
+  const h = getHaptics();
+  if (!h) return;
 
   try {
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-  } catch (error) {
+    await h.notificationAsync(h.NotificationFeedbackType.Warning);
+  } catch {
     // Silently fail if haptics unavailable
   }
 }

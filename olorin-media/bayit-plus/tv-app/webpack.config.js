@@ -108,6 +108,8 @@ module.exports = {
       '@react-native-async-storage/async-storage': path.resolve(__dirname, 'src/utils/asyncStorageWeb.ts'),
       // Sentry web shim - @sentry/react-native doesn't work on web
       '@sentry/react-native': path.resolve(__dirname, 'src/utils/sentryWebShim.ts'),
+      // expo-haptics shim - haptics are native-only, no-op on web
+      'expo-haptics': path.resolve(__dirname, 'src/utils/expoHapticsWebShim.ts'),
       // Shared packages - exact matches with $ suffix, specific paths without
       '@bayit/shared/components/ErrorBoundary': path.resolve(__dirname, '../shared/components/ErrorBoundary'),
       '@bayit/shared/components/ai': path.resolve(__dirname, '../shared/components/ai'),
