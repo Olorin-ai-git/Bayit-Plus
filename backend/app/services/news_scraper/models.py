@@ -30,6 +30,7 @@ class HeadlineItem:
     source: str  # ynet, walla, mako, etc.
     category: Optional[str] = None
     image_url: Optional[str] = None
+    video_url: Optional[str] = None  # Video URL for playback (YouTube, direct video, etc.)
     summary: Optional[str] = None
     published_at: Optional[datetime] = None
     scraped_at: datetime = field(default_factory=datetime.utcnow)
@@ -60,6 +61,7 @@ def headlines_to_dict(headlines: List[HeadlineItem]) -> List[Dict[str, Any]]:
             "source": h.source,
             "category": h.category,
             "image_url": h.image_url,
+            "video_url": h.video_url,
             "summary": h.summary,
             "scraped_at": h.scraped_at.isoformat(),
         }

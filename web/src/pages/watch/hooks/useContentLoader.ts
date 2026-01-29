@@ -22,17 +22,22 @@ interface UseContentLoaderResult {
 
 export function useContentLoader(
   contentId: string,
-  contentType: ContentType
+  contentType: ContentType,
+  initialContentData?: ContentData | null
 ): UseContentLoaderResult {
   const { t } = useTranslation();
   const addNotification = useNotificationStore((state) => state.add);
-  const [content, setContent] = useState<ContentData | null>(null);
-  const [streamUrl, setStreamUrl] = useState<string | null>(null);
+  const [content, setContent] = useState<ContentData | null>(initialContentData || null);
+  const [streamUrl, setStreamUrl] = useState<string | null>(
+    initialContentData?.video_url || null
+  );
   const [related, setRelated] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [availableSubtitleLanguages, setAvailableSubtitleLanguages] = useState<string[]>([]);
   const [isTranscoded, setIsTranscoded] = useState(false);
-  const [directUrl, setDirectUrl] = useState<string | null>(null);
+  const [directUrl, setDirectUrl] = useState<string | null>(
+    initialContentData?.video_url || null
+  );
 
   useEffect(() => {
     loadContent();
@@ -43,6 +48,20 @@ export function useContentLoader(
     try {
       let data: ContentData;
       let stream: { url?: string } | undefined;
+
+      // If initial content data was provided (scraped articles/events), use it
+      if (initialContentData) {
+        logger.info('Using provided content data (scraped article/event)', 'useContentLoader', {
+          contentId,
+          hasVideo: Boolean(initialContentData.video_url),
+          hasUrl: Boolean(initialContentData.url)
+        });
+        setContent(initialContentData);
+        setStreamUrl(initialContentData.video_url || null);
+        setDirectUrl(initialContentData.video_url || null);
+        setLoading(false);
+        return;
+      }
 
       // First, fetch content metadata (should work for unauthenticated users)
       try {

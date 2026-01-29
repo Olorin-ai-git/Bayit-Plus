@@ -63,7 +63,8 @@ export default function IsraelisInCitySection({
     if (location && !isDetecting) {
       loadLocationContent();
     }
-  }, [location, isDetecting]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location?.city, location?.state, isDetecting]);
 
   const loadLocationContent = async () => {
     if (!location?.city || !location?.state) {

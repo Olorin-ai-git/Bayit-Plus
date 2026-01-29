@@ -5,7 +5,7 @@
 
 import React, { useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { useNotifications } from '@olorin/glass-ui/hooks';
@@ -43,6 +43,27 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
   const params = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+
+  // Check if content data was passed via navigation state (for scraped articles/events)
+  const stateContentData = (location.state as LocationState)?.contentData;
+
+  // Debug: Log state data
+  React.useEffect(() => {
+    if (stateContentData) {
+      logger.info('Navigation state content data received', 'WatchPage', {
+        hasVideoUrl: Boolean(stateContentData.video_url),
+        hasUrl: Boolean(stateContentData.url),
+        contentId: stateContentData.id,
+        contentType: stateContentData.type
+      });
+    } else {
+      logger.debug('No navigation state content data', 'WatchPage', {
+        hasState: Boolean(location.state),
+        contentId
+      });
+    }
+  }, [stateContentData, contentId]);
 
   // Deep link timestamp from ?t= parameter (in seconds)
   const initialSeekTime = React.useMemo(() => {
@@ -74,7 +95,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
     '';
   const effectiveType = (currentPlaylistItem?.content_type as typeof type) || type;
 
-  const contentLoaderResult = useContentLoader(contentId, effectiveType);
+  const contentLoaderResult = useContentLoader(contentId, effectiveType, stateContentData);
   const {
     content,
     streamUrl: initialStreamUrl,
@@ -166,9 +187,13 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
   }
 
   const isAudio = effectiveType === 'radio' || effectiveType === 'podcast';
+  const isArticle = content.type === 'article' || content.content_format === 'article';
+  const isEvent = content.type === 'event' || content.content_format === 'event';
+  const hasVideo = Boolean(content.video_url);
+  const isWebContent = (isArticle || isEvent) && !hasVideo; // Articles/events without video
   const title = content.title || content.name || '';
-  const requiresAuth = !streamUrl && !user;
-  const hasStreamError = !loading && !streamUrl && user;
+  const requiresAuth = !isWebContent && !hasVideo && !streamUrl && !user;
+  const hasStreamError = !loading && !streamUrl && user && !isWebContent && !hasVideo;
 
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
@@ -186,6 +211,39 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
             <Text style={styles.errorMessage}>
               {t('watch.streamError', 'Unable to load the stream. Please try again later.')}
             </Text>
+          </View>
+        ) : hasVideo && content.video_url ? (
+          <VideoPlayer
+            src={content.video_url}
+            poster={content.backdrop || content.thumbnail}
+            title={title}
+            contentId={contentId}
+            contentType={effectiveType}
+            onProgress={handleProgress}
+            isLive={false}
+            availableSubtitleLanguages={availableSubtitleLanguages}
+            chapters={chapters}
+            chaptersLoading={chaptersLoading}
+            initialSeekTime={initialSeekTime}
+            onEnded={handleContentEnded}
+            onShowUpgrade={() => navigate('/subscribe')}
+            isTranscoded={false}
+            contentDuration={content.duration_hint}
+            directUrl={content.video_url}
+          />
+        ) : isWebContent && content.url ? (
+          <View style={styles.iframeContainer}>
+            <iframe
+              src={content.url}
+              style={{
+                width: '100%',
+                height: '600px',
+                border: 'none',
+                borderRadius: '12px',
+              }}
+              title={title}
+              sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+            />
           </View>
         ) : isAudio ? (
           <AudioPlayer
@@ -378,5 +436,11 @@ const styles = StyleSheet.create({
     fontSize: fontSize.base,
     color: colors.textSecondary,
     textAlign: 'center',
+  },
+  iframeContainer: {
+    width: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius['2xl'],
+    overflow: 'hidden',
   },
 });
