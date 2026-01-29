@@ -493,8 +493,8 @@ export default function ContentCard({ content, showProgress = false, showActions
     setTimeout(() => setIframeLoading(true), 100);
   };
 
-  // Render article modal with iframe and loading spinner
-  const articleModal = showArticleModal && content.url && (
+  // Render article modal with iframe and loading spinner (always mounted for instant display)
+  const articleModal = content.url && (
     <GlassModal
       visible={showArticleModal}
       onClose={handleModalClose}
@@ -806,6 +806,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.lg,
     borderRadius: borderRadius.xl,
+    zIndex: 1000,
     zIndex: 10,
   },
   spinner: {
