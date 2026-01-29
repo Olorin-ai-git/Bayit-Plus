@@ -19,7 +19,9 @@ from app.api.routes.olorin.dubbing_routes.models import (CreateSessionRequest,
                                                          VoicesResponse)
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
 from app.core.config import settings
-from app.models.integration_partner import IntegrationPartner
+from app.models.integration_partner import (DubbingSession,
+                                                IntegrationPartner,
+                                                UsageRecord)
 from app.services.olorin.metering_service import metering_service
 from app.services.olorin.realtime_dubbing_service import RealtimeDubbingService
 
@@ -86,7 +88,24 @@ async def create_session(
         voice_id=request.voice_id,
     )
 
-    state.add_service(service.session_id, service)
+    if not state.add_service(service.session_id, service):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=get_error_message(
+                OlorinErrors.MAX_SESSIONS_REACHED,
+                limit=settings.olorin.dubbing.max_active_sessions,
+            ),
+        )
+
+    # P1-2: Register in Redis for cross-instance visibility
+    await state.register_b2b_session(
+        session_id=service.session_id,
+        partner_id=partner.partner_id,
+        source_language=request.source_language,
+        target_language=request.target_language,
+        voice_id=request.voice_id or settings.ELEVENLABS_DEFAULT_VOICE_ID,
+    )
+
     ws_url = f"/api/v1/olorin/dubbing/ws/{service.session_id}"
 
     logger.info(
@@ -148,6 +167,9 @@ async def end_session(
 
     summary = await service.stop()
     state.remove_service(session_id)
+
+    # P1-2: Unregister from Redis
+    await state.unregister_b2b_session(session_id)
 
     return SessionEndResponse(
         session_id=summary["session_id"],
@@ -247,3 +269,45 @@ async def list_voices(
         logger.warning("Failed to parse ELEVENLABS_DUBBING_VOICES configuration")
 
     return VoicesResponse(voices=voices)
+
+
+@router.delete(
+    "/sessions/{session_id}/gdpr",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="GDPR deletion",
+    description="Delete all session data (GDPR Right to Erasure).",
+)
+async def delete_session_gdpr(
+    session_id: str,
+    partner: IntegrationPartner = Depends(get_current_partner),
+):
+    """P1-7: Delete session data for GDPR Right to Erasure."""
+    session = await DubbingSession.find_one(
+        DubbingSession.session_id == session_id
+    )
+    if not session:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=get_error_message(OlorinErrors.SESSION_NOT_FOUND),
+        )
+
+    if session.partner_id != partner.partner_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=get_error_message(
+                OlorinErrors.SESSION_DIFFERENT_PARTNER
+            ),
+        )
+
+    # Delete session document
+    await session.delete()
+
+    # Delete associated usage records
+    await UsageRecord.find(
+        UsageRecord.session_id == session_id
+    ).delete()
+
+    logger.info(
+        f"GDPR deletion completed for session {session_id} "
+        f"(partner: {partner.partner_id})"
+    )

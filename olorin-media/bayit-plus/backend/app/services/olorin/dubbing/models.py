@@ -4,8 +4,9 @@ Dubbing Data Models
 Message types and metrics for dubbing pipeline communication.
 """
 
+import statistics
 from dataclasses import dataclass, field
-from typing import List, Literal, Optional
+from typing import Dict, List, Literal, Optional
 
 
 @dataclass
@@ -68,6 +69,14 @@ class DubbingMetrics:
     error_count: int = 0
     reconnection_count: int = 0
 
+    # P2-4: Translation cache stats
+    translation_cache_hits: int = 0
+    translation_cache_misses: int = 0
+
+    # P2-5: Transcript compression stats
+    filler_words_removed: int = 0
+    characters_compressed: int = 0
+
     @property
     def avg_stt_latency_ms(self) -> Optional[float]:
         if not self.stt_latencies_ms:
@@ -78,7 +87,9 @@ class DubbingMetrics:
     def avg_translation_latency_ms(self) -> Optional[float]:
         if not self.translation_latencies_ms:
             return None
-        return sum(self.translation_latencies_ms) / len(self.translation_latencies_ms)
+        return sum(self.translation_latencies_ms) / len(
+            self.translation_latencies_ms
+        )
 
     @property
     def avg_tts_latency_ms(self) -> Optional[float]:
@@ -91,3 +102,30 @@ class DubbingMetrics:
         if not self.total_latencies_ms:
             return None
         return sum(self.total_latencies_ms) / len(self.total_latencies_ms)
+
+    def compute_percentiles(self) -> Dict[str, Optional[float]]:
+        """
+        P2-2: Compute p50/p95/p99 percentiles for all latency categories.
+
+        Returns dict of percentile values suitable for MongoDB storage.
+        """
+        result: Dict[str, Optional[float]] = {}
+        categories = {
+            "stt": self.stt_latencies_ms,
+            "translation": self.translation_latencies_ms,
+            "tts": self.tts_latencies_ms,
+            "total": self.total_latencies_ms,
+        }
+
+        for name, latencies in categories.items():
+            if len(latencies) >= 2:
+                quantiles = statistics.quantiles(latencies, n=100)
+                result[f"p50_{name}_latency_ms"] = quantiles[49]
+                result[f"p95_{name}_latency_ms"] = quantiles[94]
+                result[f"p99_{name}_latency_ms"] = quantiles[98]
+            else:
+                result[f"p50_{name}_latency_ms"] = None
+                result[f"p95_{name}_latency_ms"] = None
+                result[f"p99_{name}_latency_ms"] = None
+
+        return result

@@ -13,7 +13,15 @@ from typing import AsyncIterator, Optional
 from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
 from app.services.olorin.dubbing import pipeline
+from app.services.olorin.dubbing.audio_quality import validate_audio_quality
 from app.services.olorin.dubbing.models import DubbingMessage, DubbingMetrics
+from app.services.olorin.dubbing.prometheus_metrics import (
+    record_audio_chunk,
+    record_audio_quality_warning,
+    record_queue_depth,
+    record_session_ended,
+    record_session_started,
+)
 from app.services.olorin.dubbing.stt_provider import (STTProvider,
                                                       get_stt_provider)
 from app.services.olorin.dubbing.translation import TranslationProvider
@@ -40,16 +48,6 @@ class RealtimeDubbingService:
         voice_id: Optional[str] = None,
         stt_provider: Optional[STTProvider] = None,
     ):
-        """
-        Initialize dubbing service.
-
-        Args:
-            partner: Integration partner document
-            source_language: Source language code (default: Hebrew)
-            target_language: Target language code (default: English)
-            voice_id: ElevenLabs voice ID (default: from config)
-            stt_provider: STT provider instance (default: from config)
-        """
         self.partner = partner
         self.source_language = source_language
         self.target_language = target_language
@@ -57,16 +55,26 @@ class RealtimeDubbingService:
 
         self.session_id = f"dub_{uuid.uuid4().hex[:12]}"
 
-        # Use injected provider or create from config
         self._stt_provider: Optional[STTProvider] = stt_provider
         self._translation_provider = TranslationProvider(target_language)
 
         self._running = False
         self._metrics = DubbingMetrics()
 
-        self._output_queue: asyncio.Queue[DubbingMessage] = asyncio.Queue()
+        # P0-3: Bounded output queue
+        dubbing_config = settings.olorin.dubbing
+        self._output_queue: asyncio.Queue[DubbingMessage] = asyncio.Queue(
+            maxsize=dubbing_config.output_queue_maxsize
+        )
         self._stt_task: Optional[asyncio.Task] = None
+        self._idle_task: Optional[asyncio.Task] = None
         self._current_segment_start_time: Optional[float] = None
+
+        # P0-5: Idle timeout tracking
+        self._last_activity: float = time.time()
+
+        # P0-6: Audio validation config
+        self._max_audio_chunk_bytes = dubbing_config.max_audio_chunk_bytes
 
         logger.info(
             f"RealtimeDubbingService initialized: session={self.session_id}, "
@@ -88,7 +96,6 @@ class RealtimeDubbingService:
                 voice_id=self.voice_id,
             )
 
-            # Use injected provider or create from config
             if self._stt_provider is None:
                 self._stt_provider = get_stt_provider()
             await self._stt_provider.connect(source_lang=self.source_language)
@@ -96,6 +103,10 @@ class RealtimeDubbingService:
             await self._translation_provider.initialize()
 
             self._running = True
+            self._last_activity = time.time()
+
+            # P2-3: Record Prometheus session start
+            record_session_started(partner.partner_id)
 
             self._stt_task = asyncio.create_task(
                 pipeline.process_transcripts(
@@ -111,6 +122,9 @@ class RealtimeDubbingService:
                     reset_segment_time=self._reset_segment_time,
                 )
             )
+
+            # P0-5: Start idle timeout monitor
+            self._idle_task = asyncio.create_task(self._check_idle_timeout())
 
             await self._output_queue.put(
                 DubbingMessage(
@@ -129,13 +143,16 @@ class RealtimeDubbingService:
             raise
 
     async def stop(self, error_message: Optional[str] = None) -> dict:
-        """
-        Stop the dubbing pipeline.
-
-        Returns:
-            Session summary with metrics
-        """
+        """Stop the dubbing pipeline."""
         self._running = False
+
+        # Cancel idle monitor
+        if self._idle_task:
+            self._idle_task.cancel()
+            try:
+                await self._idle_task
+            except asyncio.CancelledError:
+                pass
 
         if self._stt_task:
             self._stt_task.cancel()
@@ -148,7 +165,13 @@ class RealtimeDubbingService:
             await self._stt_provider.close()
             self._stt_provider = None
 
+        # P2-2: Compute percentile metrics at session end
+        percentiles = self._metrics.compute_percentiles()
+
+        # P2-3: Record Prometheus session end
         status = "error" if error_message else "ended"
+        record_session_ended(self.partner.partner_id, status=status)
+
         session = await metering_service.end_dubbing_session(
             session_id=self.session_id,
             status=status,
@@ -156,17 +179,23 @@ class RealtimeDubbingService:
         )
 
         if session:
+            update_kwargs = {
+                "segments_processed": self._metrics.segments_processed,
+                "characters_translated": self._metrics.total_characters_translated,
+                "characters_synthesized": self._metrics.total_characters_synthesized,
+                "avg_stt_latency_ms": self._metrics.avg_stt_latency_ms,
+                "avg_translation_latency_ms": self._metrics.avg_translation_latency_ms,
+                "avg_tts_latency_ms": self._metrics.avg_tts_latency_ms,
+                "avg_total_latency_ms": self._metrics.avg_total_latency_ms,
+                "error_count": self._metrics.error_count,
+                "reconnection_count": self._metrics.reconnection_count,
+            }
+            # Include percentile data if available
+            update_kwargs.update(percentiles)
+
             await metering_service.update_dubbing_session(
                 session_id=self.session_id,
-                segments_processed=self._metrics.segments_processed,
-                characters_translated=self._metrics.total_characters_translated,
-                characters_synthesized=self._metrics.total_characters_synthesized,
-                avg_stt_latency_ms=self._metrics.avg_stt_latency_ms,
-                avg_translation_latency_ms=self._metrics.avg_translation_latency_ms,
-                avg_tts_latency_ms=self._metrics.avg_tts_latency_ms,
-                avg_total_latency_ms=self._metrics.avg_total_latency_ms,
-                error_count=self._metrics.error_count,
-                reconnection_count=self._metrics.reconnection_count,
+                **update_kwargs,
             )
 
         await self._output_queue.put(
@@ -199,18 +228,38 @@ class RealtimeDubbingService:
         if not self._running or not self._stt_provider:
             return
 
+        # P0-6: Audio chunk validation
+        if len(audio_data) == 0:
+            return
+        # 16-bit PCM samples = 2 bytes each; odd byte count is invalid
+        if len(audio_data) % 2 != 0:
+            logger.warning(f"Invalid PCM: odd byte count ({len(audio_data)})")
+            return
+        if len(audio_data) > self._max_audio_chunk_bytes:
+            logger.warning(f"Audio chunk too large: {len(audio_data)} bytes")
+            return
+
+        # P0-5: Update activity timestamp
+        self._last_activity = time.time()
+
+        # P2-3: Record audio chunk metric
+        record_audio_chunk()
+
+        # P2-6: Audio quality verification (log warnings, don't reject)
+        quality = validate_audio_quality(audio_data)
+        for warning in quality.warnings:
+            record_audio_quality_warning(warning_type="quality")
+
+        # P2-3: Update queue depth gauge
+        record_queue_depth(self._output_queue.qsize())
+
         if self._current_segment_start_time is None:
             self._current_segment_start_time = time.time() * 1000
 
         await self._stt_provider.send_audio_chunk(audio_data)
 
     async def receive_messages(self) -> AsyncIterator[DubbingMessage]:
-        """
-        Async iterator to receive dubbing output messages.
-
-        Yields:
-            DubbingMessage objects to send to client
-        """
+        """Async iterator to receive dubbing output messages."""
         while self._running or not self._output_queue.empty():
             try:
                 message = await asyncio.wait_for(
@@ -224,6 +273,23 @@ class RealtimeDubbingService:
                 continue
             except Exception as e:
                 logger.error(f"Error receiving message: {e}")
+                break
+
+    async def _check_idle_timeout(self) -> None:
+        """P0-5: Background task to auto-stop idle sessions."""
+        dubbing_config = settings.olorin.dubbing
+        check_interval = dubbing_config.idle_check_interval_seconds
+        idle_timeout = dubbing_config.session_idle_timeout_seconds
+
+        while self._running:
+            await asyncio.sleep(check_interval)
+            elapsed = time.time() - self._last_activity
+            if elapsed > idle_timeout:
+                logger.warning(
+                    f"Session {self.session_id} idle timeout "
+                    f"({elapsed:.0f}s > {idle_timeout}s)"
+                )
+                await self.stop(error_message="Session idle timeout")
                 break
 
     def _reset_segment_time(self) -> None:

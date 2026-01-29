@@ -91,11 +91,11 @@ class LiveDubbingSession(Document):
                     ("last_activity_at", pymongo.DESCENDING),
                 ]
             ),
-            # TTL index for automatic cleanup of old completed sessions (30 days = 2592000 seconds)
+            # P1-6: TTL index for automatic cleanup (7 days = 604800 seconds)
             # Note: MongoDB requires explicit $eq operator in partialFilterExpression
             pymongo.IndexModel(
                 [("ended_at", pymongo.ASCENDING)],
-                expireAfterSeconds=2592000,
+                expireAfterSeconds=604800,
                 partialFilterExpression={"status": {"$eq": "completed"}},
             ),
         ]
