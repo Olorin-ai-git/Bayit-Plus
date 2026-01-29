@@ -339,20 +339,38 @@ async def update_widget_position(
         )
 
         if not subscription:
-            raise HTTPException(status_code=404, detail="Widget not in your collection")
+            # Auto-create subscription if it doesn't exist
+            # This provides seamless UX - users can interact with system widgets immediately
+            subscription = UserSystemWidget(
+                user_id=user_id,
+                widget_id=widget_id,
+                is_minimized=widget.is_minimized,
+                is_muted=widget.is_muted,
+                is_visible=True,
+                position=WidgetPosition(
+                    x=data.x,
+                    y=data.y,
+                    width=data.width if data.width is not None else widget.position.width,
+                    height=data.height if data.height is not None else widget.position.height,
+                    z_index=widget.position.z_index,
+                ),
+                order=widget.order,
+                added_at=datetime.utcnow(),
+            )
+            await subscription.insert()
+        else:
+            # Initialize position if needed
+            if not subscription.position:
+                subscription.position = WidgetPosition()
 
-        # Initialize position if needed
-        if not subscription.position:
-            subscription.position = WidgetPosition()
+            subscription.position.x = data.x
+            subscription.position.y = data.y
+            if data.width is not None:
+                subscription.position.width = data.width
+            if data.height is not None:
+                subscription.position.height = data.height
 
-        subscription.position.x = data.x
-        subscription.position.y = data.y
-        if data.width is not None:
-            subscription.position.width = data.width
-        if data.height is not None:
-            subscription.position.height = data.height
-
-        await subscription.save()
+            await subscription.save()
 
     return {"message": "Position updated"}
 
@@ -394,10 +412,22 @@ async def close_widget(
         )
 
         if not subscription:
-            raise HTTPException(status_code=404, detail="Widget not in your collection")
-
-        subscription.is_visible = False
-        await subscription.save()
+            # Auto-create subscription if it doesn't exist (though closing immediately)
+            # This ensures the state is persisted correctly
+            subscription = UserSystemWidget(
+                user_id=user_id,
+                widget_id=widget_id,
+                is_minimized=widget.is_minimized,
+                is_muted=widget.is_muted,
+                is_visible=False,  # Closing it
+                position=widget.position,
+                order=widget.order,
+                added_at=datetime.utcnow(),
+            )
+            await subscription.insert()
+        else:
+            subscription.is_visible = False
+            await subscription.save()
 
     return {"message": "Widget closed"}
 
@@ -438,9 +468,21 @@ async def toggle_widget_minimize(
         )
 
         if not subscription:
-            raise HTTPException(status_code=404, detail="Widget not in your collection")
-
-        subscription.is_minimized = is_minimized
-        await subscription.save()
+            # Auto-create subscription if it doesn't exist
+            # This provides seamless UX - users can interact with system widgets immediately
+            subscription = UserSystemWidget(
+                user_id=user_id,
+                widget_id=widget_id,
+                is_minimized=is_minimized,
+                is_muted=widget.is_muted,
+                is_visible=True,
+                position=widget.position,
+                order=widget.order,
+                added_at=datetime.utcnow(),
+            )
+            await subscription.insert()
+        else:
+            subscription.is_minimized = is_minimized
+            await subscription.save()
 
     return {"message": f"Widget {'minimized' if is_minimized else 'restored'}"}

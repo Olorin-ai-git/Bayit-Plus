@@ -112,7 +112,7 @@ export function AudiobookCard({ audiobook, onAudiblePlay }: AudiobookCardProps) 
               <Image
                 source={{ uri: audiobook.thumbnail }}
                 style={[styles.image, isHovered ? styles.imageHovered : styles.imageDefault]}
-                resizeMode="cover"
+                resizeMode="contain"
               />
             ) : (
               <View style={styles.placeholder}>

@@ -93,6 +93,9 @@ class UserResponse(BaseModel):
     subscription: Optional[dict] = None
     created_at: datetime
     last_login: Optional[datetime] = None
+    # Payment status fields
+    payment_pending: bool = False
+    pending_plan_id: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -182,6 +185,13 @@ class User(Document):
     # Stripe customer
     stripe_customer_id: Optional[str] = None
 
+    # ==========================================
+    # PAYMENT WORKFLOW FIELDS
+    # ==========================================
+    payment_pending: bool = False  # Primary payment state indicator
+    payment_created_at: Optional[datetime] = None  # For cleanup tracking
+    pending_plan_id: Optional[str] = None  # Store selected plan (not URL)
+
     # User preferences
     preferred_language: str = "he"
     notification_settings: dict = Field(
@@ -255,12 +265,17 @@ class User(Document):
     class Settings:
         name = "users"
         indexes = [
+            # Existing indexes
             "email",
             "stripe_customer_id",
             "role",
             "email_verification_token",
             "phone_number",
             "is_verified",
+            # Payment workflow indexes (CRITICAL for performance)
+            "payment_pending",  # Access control checks (high frequency)
+            [("role", 1), ("subscription_tier", 1)],  # Viewer migration queries
+            [("payment_pending", 1), ("payment_created_at", 1)],  # Cleanup queries
         ]
 
     def to_response(self) -> UserResponse:
@@ -300,6 +315,8 @@ class User(Document):
             subscription=subscription,
             created_at=self.created_at,
             last_login=self.last_login,
+            payment_pending=self.payment_pending,
+            pending_plan_id=self.pending_plan_id,
         )
 
     def to_admin_response(self) -> UserAdminResponse:
@@ -404,3 +421,4 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     user: UserResponse
     refresh_token: Optional[str] = None  # Optional for backward compatibility
+    requires_payment: bool = False  # Signal frontend to redirect to payment

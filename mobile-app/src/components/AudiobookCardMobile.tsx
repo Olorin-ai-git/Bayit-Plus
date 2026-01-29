@@ -29,7 +29,7 @@ export default function AudiobookCardMobile({ audiobook, cardWidth, navigation }
     <Pressable onPress={handlePress} style={[styles.card, { width: cardWidth }]}>
       <View style={styles.imageContainer}>
         {audiobook.thumbnail ? (
-          <Image source={{ uri: audiobook.thumbnail }} style={styles.image} resizeMode="cover" />
+          <Image source={{ uri: audiobook.thumbnail }} style={styles.image} resizeMode="contain" />
         ) : (
           <View style={[styles.image, styles.placeholder]}>
             <Text style={styles.placeholderText}>🎧</Text>

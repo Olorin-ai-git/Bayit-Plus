@@ -7,6 +7,7 @@ import { NotificationProvider } from '@olorin/glass-ui/contexts'
 import Layout from './components/layout/Layout'
 import FullscreenVideoOverlay from './components/player/FullscreenVideoOverlay'
 import LocationManager from './components/location/LocationManager'
+import PaymentPendingGuard from './components/auth/PaymentPendingGuard'
 import { useAuthStore } from '@/stores/authStore'
 import { logger } from '@/utils/logger'
 import './styles/layout-fix.css'
@@ -60,6 +61,10 @@ import RegisterPage from './pages/RegisterPage'
 import GoogleCallbackPage from './pages/GoogleCallbackPage'
 import ProfileSelectionPage from './pages/ProfileSelectionPage'
 import NotFoundPage from './pages/NotFoundPage'
+
+// Payment pages (eagerly loaded for better payment flow experience)
+import PaymentSuccessPage from './pages/payment/PaymentSuccessPage'
+import PaymentCancelledPage from './pages/payment/PaymentCancelledPage'
 
 // Lazily loaded pages for code splitting
 const LivePage = lazy(() => import('./pages/LivePage'))
@@ -164,8 +169,23 @@ const AppContent = () => {
       <Route path="/profiles" element={<ProfileSelectionPage />} />
       <Route path="/tv-login" element={<TVLoginPage />} />
 
-      {/* Admin Routes (lazily loaded) */}
-      <Route path="/admin" element={<AdminLayout />}>
+      {/* Payment Routes (no layout, no guard) */}
+      <Route path="/payment/success" element={<PaymentSuccessPage />} />
+      <Route path="/payment/cancelled" element={<PaymentCancelledPage />} />
+
+      {/* Admin Routes (lazily loaded, protected by payment guard) */}
+      <Route
+        path="/admin"
+        element={
+          <PaymentPendingGuard>
+            <AdminRoute>
+              <Suspense fallback={<LoadingFallback />}>
+                <AdminLayout />
+              </Suspense>
+            </AdminRoute>
+          </PaymentPendingGuard>
+        }
+      >
         <Route index element={<AdminDashboardPage />} />
         <Route path="users" element={<UsersListPage />} />
         <Route path="users/:userId" element={<UserDetailPage />} />
@@ -203,8 +223,16 @@ const AppContent = () => {
         <Route path="diagnostics" element={<SystemDiagnosticsPage />} />
       </Route>
 
-      {/* Main Routes with Layout */}
-      <Route element={<VoiceListeningProvider><Layout /></VoiceListeningProvider>}>
+      {/* Main Routes with Layout (protected by payment guard) */}
+      <Route
+        element={
+          <PaymentPendingGuard>
+            <VoiceListeningProvider>
+              <Layout />
+            </VoiceListeningProvider>
+          </PaymentPendingGuard>
+        }
+      >
         <Route path="/" element={<HomePage />} />
         <Route path="/live" element={<LivePage />} />
         <Route path="/live/:channelId" element={<WatchPage type="live" />} />

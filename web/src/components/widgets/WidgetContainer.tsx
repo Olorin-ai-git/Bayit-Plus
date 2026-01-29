@@ -63,6 +63,8 @@ export default function WidgetContainer({
   const [isResizing, setIsResizing] = useState(false);
   const [resizeDirection, setResizeDirection] = useState<string | null>(null);
   const resizeStartRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
+  const [isAnimatingMinimize, setIsAnimatingMinimize] = useState(false);
+  const previousMinimizedRef = useRef(isMinimized);
 
   // Handle manual refresh
   const handleRefresh = useCallback(() => {
@@ -88,6 +90,18 @@ export default function WidgetContainer({
       setLoading(true);
     }
   }, [streamUrl, widget.content.content_type]);
+
+  // Handle minimize/restore animation
+  useEffect(() => {
+    if (previousMinimizedRef.current !== isMinimized) {
+      setIsAnimatingMinimize(true);
+      const timer = setTimeout(() => {
+        setIsAnimatingMinimize(false);
+      }, 400); // Match animation duration
+      previousMinimizedRef.current = isMinimized;
+      return () => clearTimeout(timer);
+    }
+  }, [isMinimized]);
 
   // Drag handlers
   const handleDragStart = useCallback((e: React.MouseEvent) => {
@@ -576,7 +590,11 @@ export default function WidgetContainer({
         // TV: Always show focus indicator
         outline: IS_TV_BUILD && isFocused ? '2px solid #00aaff' : 'none',
         outlineOffset: '2px',
-        transition: !isResizing && !isDragging ? 'all 0.3s ease' : 'none',
+        transition: !isResizing && !isDragging ? 'all 0.3s ease, opacity 0.4s ease' : 'opacity 0.4s ease',
+        // Fade out when minimizing, fade in when restoring
+        opacity: isMinimized ? 0 : 1,
+        pointerEvents: isMinimized ? 'none' : 'auto',
+        visibility: isMinimized && !isAnimatingMinimize ? 'hidden' : 'visible',
       }}
       onFocus={() => IS_TV_BUILD && setIsFocused(true)}
       onBlur={() => IS_TV_BUILD && setIsFocused(false)}

@@ -26,6 +26,7 @@ import MorningRitual from '@/components/ritual/MorningRitual';
 import { contentService, liveService, historyService, ritualService } from '@/services/api';
 import { ShabbatModeBanner, ShabbatEveSection } from '@/components/judaism';
 import IsraelisInCitySection from '@/components/home/IsraelisInCitySection';
+import IsraeliBusinessesSection from '@/components/home/IsraeliBusinessesSection';
 import { colors, spacing } from '@olorin/design-tokens';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
@@ -355,6 +356,13 @@ export default function HomePage() {
 
       {/* Near Me - Israelis in Your City */}
       <IsraelisInCitySection
+        location={location}
+        isDetecting={locationDetecting}
+        style={styles.section}
+      />
+
+      {/* Israeli Businesses Near Me */}
+      <IsraeliBusinessesSection
         location={location}
         isDetecting={locationDetecting}
         style={styles.section}

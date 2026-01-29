@@ -223,6 +223,8 @@ const apiContentService = {
   // Location-based content endpoints
   getIsraelisInCity: (city, state, params = {}) =>
     api.get('/content/israelis-in-city', { params: { city, state, ...params } }),
+  getIsraeliBusinessesInCity: (city, state, params = {}) =>
+    api.get('/content/israeli-businesses-in-city', { params: { city, state, ...params } }),
 }
 
 // Live TV Service (API)

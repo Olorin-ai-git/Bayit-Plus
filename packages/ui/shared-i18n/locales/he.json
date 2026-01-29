@@ -297,6 +297,12 @@
     "telAvivConnection": "חיבור תל אביב",
     "categories": "קטגוריות",
     "nearYou": "בקרבתך",
+    "israelis_in_city": "ישראלים ב{{city}}, {{state}}",
+    "israeli_businesses": "עסקים ישראליים ב{{city}}, {{state}}",
+    "israeli_businesses_nearby": "עסקים ישראליים קרובים אליך - מ{{city}}",
+    "searching_businesses": "מחפש עסקים ישראליים ב{{city}}...",
+    "no_businesses_found": "לא נמצאו עסקים ישראליים ב{{city}}",
+    "businesses_load_error": "לא ניתן לטעון רשימות עסקים. נסה שוב.",
     "carousel": {
       "fauda": {
         "title": "פאודה",
@@ -3803,6 +3809,28 @@
       "noAudiobooks": "לא נמצאו ספרי אודיו",
       "noFavorites": "עדיין לא הוספת ספרי אודיו למועדפים",
       "trySearch": "חפש ספר אודיו לפי שם, מחבר או קורא"
+    }
+  },
+  "payment": {
+    "pending": {
+      "title": "השלם את המנוי שלך",
+      "description": "בחר תוכנית להתחיל את תקופת הניסיון החינמית למשך 7 ימים ולגשת לכל תכני Bayit+",
+      "timeElapsed": "בודק את סטטוס התשלום... ({{seconds}} שניות)",
+      "takingLonger": "אישור התשלום לוקח זמן רב מהצפוי. אנא נסה לרענן את הדף או פנה לתמיכה אם כבר שילמת.",
+      "helpText": "צריך עזרה? פנה לתמיכה בכתובת support@bayit.tv או רענן את הדף אם כבר השלמת את התשלום."
+    },
+    "continueToPayment": "המשך לתשלום",
+    "success": {
+      "title": "התשלום בוצע בהצלחה!",
+      "description": "ברוך הבא ל-Bayit+! המנוי שלך פעיל כעת.",
+      "redirecting": "מפנה בעוד {{seconds}} שניות...",
+      "continue": "המשך אל Bayit+"
+    },
+    "cancelled": {
+      "title": "התשלום בוטל",
+      "description": "המנוי שלך לא הושלם. תוכל לנסות שוב כשתהיה מוכן.",
+      "retry": "נסה שוב",
+      "helpText": "יש שאלות? פנה לתמיכה בכתובת support@bayit.tv לקבלת עזרה."
     }
   }
 }

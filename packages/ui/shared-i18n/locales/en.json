@@ -304,6 +304,12 @@
     "telAvivConnection": "Tel Aviv Connection",
     "categories": "Categories",
     "nearYou": "Israelis Near You",
+    "israelis_in_city": "Israelis in {{city}}, {{state}}",
+    "israeli_businesses": "Israeli Businesses in {{city}}, {{state}}",
+    "israeli_businesses_nearby": "Israeli Businesses Near You - From {{city}}",
+    "searching_businesses": "Searching for Israeli businesses in {{city}}...",
+    "no_businesses_found": "No Israeli businesses found in {{city}}",
+    "businesses_load_error": "Unable to load business listings. Please try again.",
     "carousel": {
       "fauda": {
         "title": "Fauda",
@@ -3836,6 +3842,28 @@
       "timeout": "Location request timed out. Please try again.",
       "unavailable": "Location services are not available in your browser.",
       "failed": "Failed to get location. Please try again."
+    }
+  },
+  "payment": {
+    "pending": {
+      "title": "Complete Your Subscription",
+      "description": "Choose a plan to start your 7-day free trial and access all of Bayit+",
+      "timeElapsed": "Checking payment status... ({{seconds}}s)",
+      "takingLonger": "Payment confirmation is taking longer than expected. Please try refreshing or contact support if you've already paid.",
+      "helpText": "Need help? Contact support@bayit.tv or refresh this page if you already completed payment."
+    },
+    "continueToPayment": "Continue to Payment",
+    "success": {
+      "title": "Payment Successful!",
+      "description": "Welcome to Bayit+! Your subscription is now active.",
+      "redirecting": "Redirecting in {{seconds}} seconds...",
+      "continue": "Continue to Bayit+"
+    },
+    "cancelled": {
+      "title": "Payment Cancelled",
+      "description": "Your subscription was not completed. You can try again when you're ready.",
+      "retry": "Try Again",
+      "helpText": "Questions? Contact support@bayit.tv for assistance."
     }
   }
 }

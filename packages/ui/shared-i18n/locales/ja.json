@@ -597,6 +597,12 @@
     "channels": "チャンネル",
     "categories": "カテゴリー",
     "nearYou": "あなたの近く",
+    "israelis_in_city": "{{city}}, {{state}}のイスラエル人",
+    "israeli_businesses": "{{city}}, {{state}}のイスラエル企業",
+    "israeli_businesses_nearby": "お近くのイスラエル企業 - {{city}}から",
+    "searching_businesses": "{{city}}でイスラエル企業を検索中...",
+    "no_businesses_found": "{{city}}にイスラエル企業が見つかりませんでした",
+    "businesses_load_error": "ビジネスリストを読み込めません。もう一度お試しください。",
     "discover": "発見",
     "browse": "ブラウズ",
     "library": "ライブラリ",
@@ -1870,6 +1876,28 @@
     "permissionDenied": {
       "title": "アクセスが拒否されました",
       "description": "このコンテンツを表示する権限がありません"
+    }
+  },
+  "payment": {
+    "pending": {
+      "title": "サブスクリプションを完了",
+      "description": "プランを選択して7日間の無料トライアルを開始し、Bayit+のすべてにアクセスしましょう",
+      "timeElapsed": "お支払い状況を確認中... ({{seconds}}秒)",
+      "takingLonger": "お支払いの確認に通常より時間がかかっています。既にお支払いが完了している場合は、ページを更新するかサポートにお問い合わせください。",
+      "helpText": "サポートが必要ですか？ support@bayit.tv までご連絡いただくか、既にお支払いが完了している場合はこのページを更新してください。"
+    },
+    "continueToPayment": "お支払いに進む",
+    "success": {
+      "title": "お支払い完了！",
+      "description": "Bayit+へようこそ！サブスクリプションが有効になりました。",
+      "redirecting": "{{seconds}}秒後にリダイレクトします...",
+      "continue": "Bayit+へ進む"
+    },
+    "cancelled": {
+      "title": "お支払いキャンセル",
+      "description": "サブスクリプションは完了しませんでした。準備ができたらもう一度お試しください。",
+      "retry": "もう一度試す",
+      "helpText": "ご質問がありますか？ support@bayit.tv までお問い合わせください。"
     }
   }
 }
