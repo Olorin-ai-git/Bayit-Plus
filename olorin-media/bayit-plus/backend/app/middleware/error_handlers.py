@@ -160,7 +160,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
     }
 
     # Include stack trace only in development mode
-    if settings.ENVIRONMENT == "development":
+    if settings.DEBUG:
         response_content["traceback"] = traceback.format_exc()
         response_content["error_message"] = str(exc)
 

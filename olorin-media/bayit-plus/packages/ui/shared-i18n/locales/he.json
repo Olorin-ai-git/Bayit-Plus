@@ -1553,7 +1553,8 @@
       "settings": "הגדרות",
       "auditLogs": "יומן פעילות",
       "librarian": "סוכן הספרן",
-      "featured": "מובחר"
+      "featured": "מובחר",
+      "diagnostics": "אבחון מערכת"
     },
     "featured": {
       "title": "תוכן מובחר",
@@ -2667,6 +2668,28 @@
       "confirmSend": "שלח את ההתראה \"{{title}}\"?",
       "confirmDelete": "מחק את ההתראה \"{{title}}\"?",
       "fillRequired": "נא למלא כותרת ותוכן"
+    },
+    "diagnostics": {
+      "title": "אבחון מערכת",
+      "servicesOverview": "סקירת שירותים",
+      "performanceMetrics": "מדדי ביצועים",
+      "systemActivity": "פעילות מערכת",
+      "servicesDetails": "פרטי שירותים",
+      "cpu": "שימוש במעבד",
+      "memory": "שימוש בזיכרון",
+      "disk": "שימוש בדיסק",
+      "allSystemsOperational": "כל המערכות פעילות",
+      "systemDegraded": "מערכת מושפלת",
+      "systemDown": "מערכת לא פעילה",
+      "lastUpdated": "עודכן לאחרונה: {{time}}",
+      "ping": "פינג",
+      "restart": "הפעלה מחדש",
+      "online": "מחובר",
+      "offline": "לא מחובר",
+      "degraded": "מושפל",
+      "latency": "זמן תגובה: {{ms}}ms",
+      "healthy": "תקין",
+      "unhealthy": "לא תקין"
     }
   },
   "watchParty": {
@@ -3514,6 +3537,7 @@
       "live": "שידור חי"
     },
     "subcategories": {
+      "title": "קטגוריות משנה",
       "learning-hebrew": "לימוד עברית",
       "learning-hebrew.description": "לימוד קריאה, כתיבה ואוצר מילים בעברית לילדים",
       "young-science": "מדע צעיר",

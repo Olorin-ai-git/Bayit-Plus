@@ -24,6 +24,7 @@ import {
   Clock,
   BarChart3,
   Headphones,
+  Activity,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -98,6 +99,7 @@ const NAV_ITEMS: NavItem[] = [
   { key: 'uploads', labelKey: 'admin.nav.uploads', icon: Upload, route: '/admin/uploads' },
   { key: 'settings', labelKey: 'admin.nav.settings', icon: Settings, route: '/admin/settings' },
   { key: 'logs', labelKey: 'admin.nav.auditLogs', icon: FileText, route: '/admin/logs' },
+  { key: 'diagnostics', labelKey: 'admin.nav.diagnostics', icon: Activity, route: '/admin/diagnostics' },
 ]
 
 interface AdminSidebarProps {

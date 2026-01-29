@@ -238,6 +238,50 @@ async def check_openai_health() -> ServiceHealth:
         )
 
 
+async def check_elevenlabs_health() -> ServiceHealth:
+    """Check ElevenLabs API connectivity."""
+    import time
+
+    import httpx
+
+    start = time.monotonic()
+    try:
+        if not settings.ELEVENLABS_API_KEY:
+            return ServiceHealth(
+                name="elevenlabs",
+                status=HealthStatus.DEGRADED,
+                message="API key not configured",
+            )
+
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            response = await client.get(
+                "https://api.elevenlabs.io/v1/user",
+                headers={"xi-api-key": settings.ELEVENLABS_API_KEY},
+            )
+            latency = (time.monotonic() - start) * 1000
+
+            if response.status_code == 200:
+                return ServiceHealth(
+                    name="elevenlabs",
+                    status=HealthStatus.HEALTHY,
+                    latency_ms=latency,
+                )
+            return ServiceHealth(
+                name="elevenlabs",
+                status=HealthStatus.DEGRADED,
+                latency_ms=latency,
+                message=f"API returned {response.status_code}",
+            )
+    except Exception as e:
+        latency = (time.monotonic() - start) * 1000
+        return ServiceHealth(
+            name="elevenlabs",
+            status=HealthStatus.DEGRADED,
+            latency_ms=latency,
+            message=str(e),
+        )
+
+
 async def check_external_services() -> list[ServiceHealth]:
     """Check external service availability (non-blocking)."""
     import time
@@ -247,6 +291,9 @@ async def check_external_services() -> list[ServiceHealth]:
     services = []
 
     # Check ElevenLabs API (if configured)
+    elevenlabs_health = await check_elevenlabs_health()
+    services.append(elevenlabs_health)
+
     if settings.ELEVENLABS_API_KEY:
         start = time.monotonic()
         try:

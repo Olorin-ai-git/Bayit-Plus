@@ -126,6 +126,7 @@ const UserLiveQuotaPage = lazy(() => import('./pages/admin/UserLiveQuotaPage'))
 const LiveUsageAnalyticsPage = lazy(() => import('./pages/admin/LiveUsageAnalyticsPage'))
 const TranslationDashboardPage = lazy(() => import('./pages/admin/TranslationDashboardPage'))
 const CostDashboardPage = lazy(() => import('./pages/admin/CostDashboardPage'))
+const SystemDiagnosticsPage = lazy(() => import('./pages/admin/SystemDiagnosticsPage'))
 
 // Auth hydration guard wrapper
 const AppContent = () => {
@@ -199,6 +200,7 @@ const AppContent = () => {
         <Route path="translations" element={<TranslationDashboardPage />} />
         <Route path="widgets" element={<WidgetsPage />} />
         <Route path="recordings" element={<RecordingsManagementPage />} />
+        <Route path="diagnostics" element={<SystemDiagnosticsPage />} />
       </Route>
 
       {/* Main Routes with Layout */}

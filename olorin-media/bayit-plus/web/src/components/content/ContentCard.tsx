@@ -144,14 +144,9 @@ export default function ContentCard({ content, showProgress = false, showActions
       if (content.type === 'radio') return `/radio/${content.id}`;
       if (content.type === 'podcast') return `/podcasts/${content.id}`;
 
-      // Articles/events link to location page
+      // Articles/events play in watch page (like VOD content)
       if (content.type === 'article' || content.type === 'event') {
-        if (content.state && content.city) {
-          return `/location/${content.state}/${content.city}`;
-        }
-        // Fallback to home if location data missing
-        logger.warn('Article/event missing location data', 'ContentCard', { contentId: content.id });
-        return '/';
+        return `/vod/${content.id}`;
       }
 
       if (content.type === 'series' || content.is_series) return `/vod/series/${content.id}`;

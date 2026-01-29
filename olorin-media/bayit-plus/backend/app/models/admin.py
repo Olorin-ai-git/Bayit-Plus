@@ -54,6 +54,8 @@ class Permission(str, Enum):
     VOICE_CONFIG = "voice:config"
     VOICE_TEST = "voice:test"
     VOICE_QUOTA_MANAGE = "voice:quota:manage"
+    DIAGNOSTICS_READ = "diagnostics:read"
+    DIAGNOSTICS_MANAGE = "diagnostics:manage"
 
 
 ROLE_PERMISSIONS: Dict[Role, List[Permission]] = {
@@ -88,6 +90,8 @@ ROLE_PERMISSIONS: Dict[Role, List[Permission]] = {
         Permission.VOICE_CONFIG,
         Permission.VOICE_TEST,
         Permission.VOICE_QUOTA_MANAGE,
+        Permission.DIAGNOSTICS_READ,
+        Permission.DIAGNOSTICS_MANAGE,
     ],
     Role.CONTENT_MANAGER: [
         Permission.CONTENT_READ,

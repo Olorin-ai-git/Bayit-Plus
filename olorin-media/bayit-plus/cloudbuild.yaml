@@ -71,25 +71,31 @@ steps:
       - '--set-env-vars=WEBAUTHN_RP_ID=bayit.tv'
       - '--set-env-vars=WEBAUTHN_RP_NAME=Bayit Plus'
 
-      # Secrets from Google Secret Manager
-      - '--update-secrets=WEBAUTHN_ORIGIN=bayit-webauthn-origin:latest'
-      - '--update-secrets=SECRET_KEY=bayit-backend-secret-key:latest'
-      - '--update-secrets=MONGODB_URI=bayit-mongodb-uri:latest'
-      - '--update-secrets=CSRF_ENABLED=csrf-enabled:latest'
-      - '--update-secrets=ANTHROPIC_API_KEY=bayit-anthropic-api-key:latest'
-      - '--update-secrets=OPENAI_API_KEY=bayit-openai-api-key:latest'
-      - '--update-secrets=ELEVENLABS_API_KEY=bayit-elevenlabs-api-key:latest'
-      - '--update-secrets=BACKEND_CORS_ORIGINS=bayit-backend-cors-origins:latest'
-      - '--update-secrets=FRONTEND_URL=bayit-frontend-url:latest'
-      - '--update-secrets=FRONTEND_WEB_URL=bayit-frontend-web-url:latest'
-      - '--update-secrets=GCS_BUCKET_NAME=bayit-gcs-bucket-name:latest'
-      - '--update-secrets=TMDB_API_KEY=bayit-tmdb-api-key:latest'
-      - '--update-secrets=CHROMECAST_RECEIVER_APP_ID=bayit-chromecast-receiver-id:latest'
+      # Secrets from Google Secret Manager - Consolidated Format (to fit 100-arg limit)
 
-      # Google OAuth Secrets
-      - '--update-secrets=GOOGLE_CLIENT_ID=bayit-google-client-id:latest'
-      - '--update-secrets=GOOGLE_CLIENT_SECRET=bayit-google-client-secret:latest'
-      - '--update-secrets=GOOGLE_REDIRECT_URI=bayit-google-redirect-uri:latest'
+      # Core Auth, Database, Payments (consolidated)
+      - '--update-secrets=SECRET_KEY=bayit-backend-secret-key:latest,CSRF_ENABLED=csrf-enabled:latest,ADMIN_PASSWORD=bayit-admin-password:latest,ADMIN_EMAIL=bayit-admin-email:latest,WEBAUTHN_ORIGIN=bayit-webauthn-origin:latest,MONGODB_URI=bayit-mongodb-uri:latest,OLORIN_MONGODB_URI=olorin-fraud-mongodb-uri:latest,CVPLUS_MONGODB_URI=cvplus-mongodb-uri:latest,STATION_AI_MONGODB_URI=station-ai-mongodb-uri:latest,STRIPE_API_KEY=bayit-stripe-api-key:latest,STRIPE_SECRET_KEY=bayit-stripe-secret-key:latest,STRIPE_WEBHOOK_SECRET=bayit-stripe-webhook-secret:latest,STRIPE_PRICE_BASIC=bayit-stripe-price-basic:latest,STRIPE_PRICE_PREMIUM=bayit-stripe-price-premium:latest,STRIPE_PRICE_FAMILY=bayit-stripe-price-family:latest'
+
+      # AI Services, Content, OAuth (consolidated)
+      - '--update-secrets=ANTHROPIC_API_KEY=bayit-anthropic-api-key:latest,OPENAI_API_KEY=bayit-openai-api-key:latest,ELEVENLABS_API_KEY=bayit-elevenlabs-api-key:latest,ELEVENLABS_WEBHOOK_SECRET=bayit-elevenlabs-webhook-secret:latest,TMDB_API_KEY=bayit-tmdb-api-key:latest,TMDB_API_TOKEN=bayit-tmdb-api-token:latest,OPENSUBTITLES_API_KEY=opensubtitles-api-key:latest,PICOVOICE_ACCESS_KEY=picovoice-access-key:latest,GOOGLE_CLIENT_ID=bayit-google-client-id:latest,GOOGLE_CLIENT_SECRET=bayit-google-client-secret:latest,GOOGLE_REDIRECT_URI=bayit-google-redirect-uri:latest,CHROMECAST_RECEIVER_APP_ID=bayit-chromecast-receiver-id:latest,TWILIO_ACCOUNT_SID=bayit-twilio-account-sid:latest,TWILIO_AUTH_TOKEN=bayit-twilio-auth-token:latest,TWILIO_PHONE_NUMBER=bayit-twilio-phone-number:latest'
+
+      # Storage, CDN, Monitoring, Feature Flags (consolidated)
+      - '--update-secrets=GCS_BUCKET_NAME=bayit-gcs-bucket-name:latest,BACKEND_CORS_ORIGINS=bayit-backend-cors-origins:latest,FRONTEND_URL=bayit-frontend-url:latest,FRONTEND_WEB_URL=bayit-frontend-web-url:latest,SENTRY_DSN=bayit-sentry-dsn:latest,PODCAST_TRANSLATION_ENABLED=podcast-translation-enabled:latest,PODCAST_TRANSLATION_AUTO_START=podcast-translation-auto-start:latest,FEATURE_SCENE_SEARCH_ENABLED=bayit-feature-scene-search-enabled:latest'
+
+      # ElevenLabs Voice IDs (consolidated)
+      - '--update-secrets=ELEVENLABS_DEFAULT_VOICE_ID=bayit-elevenlabs-default-voice-id:latest,ELEVENLABS_HEBREW_VOICE_ID=bayit-elevenlabs-hebrew-voice-id:latest,ELEVENLABS_ENGLISH_VOICE_ID=bayit-elevenlabs-english-voice-id:latest,ELEVENLABS_ASSISTANT_VOICE_ID=bayit-elevenlabs-assistant-voice-id:latest,ELEVENLABS_SUPPORT_VOICE_ID=bayit-elevenlabs-support-voice-id:latest,ELEVENLABS_HEBREW_MALE_VOICE_ID=bayit-elevenlabs-hebrew-male-voice-id:latest,ELEVENLABS_ENGLISH_MALE_VOICE_ID=bayit-elevenlabs-english-male-voice-id:latest'
+
+      # Apple Push Notifications, Location Services (consolidated)
+      - '--update-secrets=APPLE_KEY_ID=bayit-apple-key-id:latest,APPLE_TEAM_ID=bayit-apple-team-id:latest,APPLE_BUNDLE_ID_IOS=bayit-apple-bundle-id-ios:latest,APPLE_BUNDLE_ID_TVOS=bayit-apple-bundle-id-tvos:latest,GEONAMES_USERNAME=bayit-geonames-username:latest,GEONAMES_API_BASE_URL=bayit-geonames-api-base-url:latest,GEONAMES_TIMEOUT_SECONDS=bayit-geonames-timeout-seconds:latest,LOCATION_CACHE_TTL_HOURS=bayit-location-cache-ttl-hours:latest,LOCATION_REVERSE_GEOCODE_RATE_LIMIT=bayit-location-reverse-geocode-rate-limit:latest,LOCATION_CONTENT_RATE_LIMIT=bayit-location-content-rate-limit:latest,LOCATION_ENCRYPTION_KEY=bayit-location-encryption-key:latest'
+
+      # Series Linker Configuration (consolidated)
+      - '--update-secrets=SERIES_LINKER_TITLE_SIMILARITY_THRESHOLD=bayit-series-linker-title-similarity:latest,SERIES_LINKER_AUTO_LINK_CONFIDENCE_THRESHOLD=bayit-series-linker-auto-link-confidence:latest,SERIES_LINKER_AUTO_LINK_BATCH_SIZE=bayit-series-linker-batch-size:latest,SERIES_LINKER_DUPLICATE_RESOLUTION_STRATEGY=bayit-series-linker-duplicate-strategy:latest,SERIES_LINKER_CREATE_MISSING_SERIES=bayit-series-linker-create-missing:latest'
+
+      # Judaism Section Configuration (consolidated)
+      - '--update-secrets=JEWISH_NEWS_CACHE_TTL_MINUTES=bayit-jewish-news-cache-ttl:latest,JEWISH_NEWS_SYNC_INTERVAL_MINUTES=bayit-jewish-news-sync-interval:latest,JEWISH_NEWS_REQUEST_TIMEOUT_SECONDS=bayit-jewish-news-timeout:latest,HEBCAL_API_BASE_URL=bayit-hebcal-api-url:latest,SEFARIA_API_BASE_URL=bayit-sefaria-api-url:latest,JEWISH_CALENDAR_CACHE_TTL_HOURS=bayit-jewish-calendar-cache-ttl:latest,COMMUNITY_SEARCH_RADIUS_MILES=bayit-community-search-radius:latest,COMMUNITY_DEFAULT_REGION=bayit-community-default-region:latest,US_JEWISH_REGIONS=bayit-us-jewish-regions:latest,COMMUNITY_SCRAPE_INTERVAL_HOURS=bayit-community-scrape-interval:latest,YUTORAH_RSS_URL=bayit-yutorah-rss-url:latest,CHABAD_MULTIMEDIA_RSS_URL=bayit-chabad-multimedia-rss-url:latest,TORAHANYTIME_RSS_URL=bayit-torahanytime-rss-url:latest'
+
+      # Turborepo (consolidated)
+      - '--update-secrets=TURBO_TOKEN=turbo-token:latest,TURBO_TEAM=turbo-team:latest'
 
       # Audible Integration Feature Flag
       # Audible OAuth secrets are optional and handled separately by deploy_server.sh

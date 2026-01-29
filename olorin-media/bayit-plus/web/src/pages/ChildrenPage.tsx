@@ -352,7 +352,7 @@ export default function ChildrenPage() {
         <View style={[styles.header, flexDirection === 'row-reverse' && styles.headerReversed]}>
           <GlassPageHeader
             title={t('children.title')}
-            pageType="kids"
+            pageType="children"
             badge={content.length}
             isRTL={flexDirection === 'row-reverse'}
             style={styles.pageHeader}

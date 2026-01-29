@@ -1902,7 +1902,8 @@
       "widgets": "Widgets",
       "recordings": "Grabaciones",
       "uploads": "Cargas",
-      "featured": "Destacado"
+      "featured": "Destacado",
+      "diagnostics": "Diagnósticos del Sistema"
     },
     "featured": {
       "title": "Contenido Destacado",
@@ -2508,6 +2509,28 @@
         "completed": "Completado",
         "failed": "Fallido"
       }
+    },
+    "diagnostics": {
+      "title": "Diagnósticos del Sistema",
+      "servicesOverview": "Resumen de Servicios",
+      "performanceMetrics": "Métricas de Rendimiento",
+      "systemActivity": "Actividad del Sistema",
+      "servicesDetails": "Detalles de Servicios",
+      "cpu": "Uso de CPU",
+      "memory": "Uso de Memoria",
+      "disk": "Uso de Disco",
+      "allSystemsOperational": "Todos los Sistemas Operativos",
+      "systemDegraded": "Sistema Degradado",
+      "systemDown": "Sistema Caído",
+      "lastUpdated": "Última actualización: {{time}}",
+      "ping": "Ping",
+      "restart": "Reiniciar",
+      "online": "En Línea",
+      "offline": "Fuera de Línea",
+      "degraded": "Degradado",
+      "latency": "Latencia: {{ms}}ms",
+      "healthy": "Saludable",
+      "unhealthy": "No Saludable"
     }
   },
   "watchParty": {
@@ -3402,6 +3425,7 @@
       "live": "TV en vivo"
     },
     "subcategories": {
+      "title": "Subcategorías",
       "learning-hebrew": "Aprender Hebreo",
       "learning-hebrew.description": "Aprender a leer, escribir y vocabulario en hebreo para niños",
       "young-science": "Ciencia Joven",

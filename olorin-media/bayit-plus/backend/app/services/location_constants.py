@@ -1,5 +1,69 @@
 """Location service constants and configuration."""
 
+from typing import Dict, Tuple
+
+# Israeli city coordinates with Hebrew translations
+ISRAELI_CITIES: Dict[str, Dict[str, any]] = {
+    "Jerusalem": {
+        "latitude": 31.7683,
+        "longitude": 35.2137,
+        "hebrew": "ירושלים"
+    },
+    "Tel Aviv": {
+        "latitude": 32.0853,
+        "longitude": 34.7818,
+        "hebrew": "תל אביב"
+    },
+    "Haifa": {
+        "latitude": 32.7940,
+        "longitude": 34.9896,
+        "hebrew": "חיפה"
+    },
+    "Be'er Sheva": {
+        "latitude": 31.2518,
+        "longitude": 34.7913,
+        "hebrew": "באר שבע"
+    },
+    "Eilat": {
+        "latitude": 29.5577,
+        "longitude": 34.9519,
+        "hebrew": "אילת"
+    },
+    "Netanya": {
+        "latitude": 32.3343,
+        "longitude": 34.8539,
+        "hebrew": "נתניה"
+    },
+    "Ashdod": {
+        "latitude": 31.8044,
+        "longitude": 34.6553,
+        "hebrew": "אשדוד"
+    },
+    "Rishon LeZion": {
+        "latitude": 31.9730,
+        "longitude": 34.7925,
+        "hebrew": "ראשון לציון"
+    },
+    "Petah Tikva": {
+        "latitude": 32.0878,
+        "longitude": 34.8883,
+        "hebrew": "פתח תקווה"
+    },
+    "Holon": {
+        "latitude": 32.0116,
+        "longitude": 34.7750,
+        "hebrew": "חולון"
+    },
+}
+
+# Reference coordinates for content services
+JERUSALEM_COORDS: Tuple[float, float] = (31.7683, 35.2137)
+TEL_AVIV_COORDS: Tuple[float, float] = (32.0853, 34.7818)
+
+# Default radius settings (confirmed by architectural decision)
+JERUSALEM_DEFAULT_RADIUS_KM: float = 50.0
+TEL_AVIV_DEFAULT_RADIUS_KM: float = 20.0
+
 # Major US cities with coordinates for location-based content
 MAJOR_US_CITIES = {
     "NY": {"city": "New York", "county": "New York County", "latitude": 40.7128, "longitude": -74.0060},

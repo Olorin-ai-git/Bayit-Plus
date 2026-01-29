@@ -18,7 +18,7 @@ class AppDelegate: RCTAppDelegate {
 
   override func bundleURL() -> URL? {
     #if DEBUG
-    return URL(string: "http://127.0.0.1:8081/index.bundle?platform=ios&dev=true&minify=false")
+    return URL(string: "http://192.168.72.211:8081/index.bundle?platform=ios&dev=true&minify=false")
     #else
     return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
     #endif

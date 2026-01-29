@@ -14,6 +14,7 @@ from .campaigns import router as campaigns_router
 # Import all routers
 from .cost_dashboard import router as cost_dashboard_router
 from .dashboard import router as dashboard_router
+from .database_maintenance import router as database_maintenance_router
 from .live_quota_analytics import router as live_quota_analytics_router
 from .live_quotas import router as live_quotas_router
 from .marketing import router as marketing_router
@@ -49,5 +50,6 @@ router.include_router(voice_management_router, tags=["admin-voice-management"])
 router.include_router(voice_analytics_router, tags=["admin-voice-analytics"])
 router.include_router(voice_quotas_router, tags=["admin-voice-quotas"])
 router.include_router(voice_settings_router, tags=["admin-voice-settings"])
+router.include_router(database_maintenance_router, tags=["admin-database"])
 
 __all__ = ["router", "require_admin", "has_permission", "log_audit"]

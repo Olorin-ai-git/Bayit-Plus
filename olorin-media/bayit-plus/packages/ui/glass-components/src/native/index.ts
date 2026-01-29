@@ -98,6 +98,11 @@ export { GlassTVSwitch, type GlassTVSwitchProps } from './components/GlassTVSwit
 export { GlassCarousel3D, type GlassCarousel3DProps } from './components/GlassCarousel3D';
 export { GlassPosterCard, type GlassPosterCardProps } from './components/GlassPosterCard';
 
+// Visualization components
+export { GlassRadar, type GlassRadarProps, type RadarAgent, type RadarAnomaly, type RadarUIState } from './components/GlassRadar';
+export { GlassGauge, type GlassGaugeProps, type RiskZone } from './components/GlassGauge';
+export { GlassHeartbeat, type GlassHeartbeatProps, type HeartbeatStatus, type HeartbeatSize } from './components/GlassHeartbeat';
+
 // Re-export hooks
 export * from '../hooks/index';
 

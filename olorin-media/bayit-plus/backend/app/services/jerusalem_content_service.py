@@ -27,6 +27,9 @@ from app.models.jerusalem_content import (JerusalemContentAggregatedResponse,
                                           JerusalemContentSource,
                                           JerusalemContentSourceResponse,
                                           JerusalemFeaturedResponse)
+from app.services.geolocation_enhancer import GeolocationEnhancer
+from app.services.location_constants import (JERUSALEM_COORDS,
+                                             JERUSALEM_DEFAULT_RADIUS_KM)
 from app.services.news_scraper import (HEADERS, HeadlineItem,
                                        scrape_jerusalem_news, scrape_mako,
                                        scrape_walla, scrape_ynet)
@@ -306,6 +309,7 @@ class JerusalemContentService:
             ttl_minutes=settings.JERUSALEM_CONTENT_CACHE_TTL_MINUTES
         )
         self._sources_initialized = False
+        self._geo_enhancer = GeolocationEnhancer()
 
     async def initialize_sources(self) -> None:
         """Initialize default Jerusalem sources in the database if not present."""
@@ -482,33 +486,128 @@ class JerusalemContentService:
 
         return tags[:5]
 
-    def _filter_jerusalem_content(
-        self, headlines: List[HeadlineItem]
+    def _get_source_reputation(self, source_name: str) -> float:
+        """
+        Assign reputation score to news sources (0-1 scale).
+
+        1.0: Official Israeli sources (Ynet, Walla, Jerusalem Post)
+        0.7: Major international (BBC, Reuters)
+        0.5: General news
+        0.3: Blogs/opinion sites
+        """
+        official_sources = [
+            "ynet",
+            "walla",
+            "mako",
+            "jerusalem post",
+            "haaretz",
+            "times of israel",
+            "israel hayom",
+            "kan",
+        ]
+        major_sources = ["bbc", "reuters", "ap", "cnn", "guardian", "nyt"]
+
+        source_lower = source_name.lower()
+        if any(s in source_lower for s in official_sources):
+            return 1.0
+        elif any(s in source_lower for s in major_sources):
+            return 0.7
+        else:
+            return 0.5
+
+    async def _filter_jerusalem_content(
+        self,
+        headlines: List[HeadlineItem],
+        enable_geolocation: bool = True,
+        radius_km: Optional[float] = None,
+        reference_coords: Optional[tuple[float, float]] = None,
     ) -> List[Dict[str, Any]]:
-        """Filter headlines for Jerusalem-related content."""
-        jerusalem_items = []
+        """
+        Filter headlines for Jerusalem-related content.
+
+        Args:
+            headlines: List of headline items to filter
+            enable_geolocation: Enable geolocation enhancement (default: True)
+            radius_km: Optional maximum distance filter (km)
+            reference_coords: Override default Jerusalem coordinates
+
+        Returns:
+            List of Jerusalem content items with hybrid scoring
+        """
+        keyword_results = []
 
         for headline in headlines:
-            score, matched_keywords, category = self._calculate_relevance_score(
+            keyword_score, matched_keywords, category = self._calculate_relevance_score(
                 headline.title, headline.summary
             )
 
-            if score >= settings.JERUSALEM_CONTENT_MIN_RELEVANCE_SCORE:
-                jerusalem_items.append(
-                    {
-                        "source_name": headline.source,
-                        "title": headline.title,
-                        "title_he": headline.title,  # Hebrew source
-                        "url": headline.url,
-                        "published_at": headline.published_at or headline.scraped_at,
-                        "summary": headline.summary,
-                        "image_url": headline.image_url,
-                        "category": category,
-                        "tags": matched_keywords[:5],  # Top 5 keywords as tags
-                        "relevance_score": score,
-                        "matched_keywords": matched_keywords,
-                    }
+            keyword_results.append(
+                {
+                    "headline": headline,
+                    "keyword_score": keyword_score / 10.0,
+                    "matched_keywords": matched_keywords,
+                    "category": category,
+                }
+            )
+
+        if enable_geolocation:
+            coords = reference_coords or JERUSALEM_COORDS
+            enhanced = await self._geo_enhancer.enhance_headlines(
+                [r["headline"] for r in keyword_results],
+                reference_coords=coords,
+                radius_km=radius_km or JERUSALEM_DEFAULT_RADIUS_KM,
+            )
+
+            final_results = []
+            for i, result in enumerate(keyword_results):
+                proximity_score = enhanced[i].proximity_score / 10.0
+                source_score = self._get_source_reputation(result["headline"].source)
+
+                final_score = (
+                    result["keyword_score"] * 0.6
+                    + proximity_score * 0.3
+                    + source_score * 0.1
                 )
+
+                result["proximity_score"] = enhanced[i].proximity_score
+                result["distance_km"] = enhanced[i].distance_km
+                result["detected_location"] = enhanced[i].detected_location
+                result["final_score"] = final_score * 10.0
+                final_results.append(result)
+        else:
+            final_results = keyword_results
+            for result in final_results:
+                result["final_score"] = result["keyword_score"] * 10.0
+
+        min_score = settings.JERUSALEM_CONTENT_MIN_RELEVANCE_SCORE
+        filtered = [
+            r for r in final_results
+            if r.get("final_score", r["keyword_score"] * 10) >= min_score
+        ]
+
+        jerusalem_items = []
+        for result in filtered:
+            item = {
+                "source_name": result["headline"].source,
+                "title": result["headline"].title,
+                "title_he": result["headline"].title,
+                "url": result["headline"].url,
+                "published_at": result["headline"].published_at
+                or result["headline"].scraped_at,
+                "summary": result["headline"].summary,
+                "image_url": result["headline"].image_url,
+                "category": result["category"],
+                "tags": result["matched_keywords"][:5],
+                "relevance_score": result["final_score"],
+                "matched_keywords": result["matched_keywords"],
+            }
+
+            if enable_geolocation:
+                item["distance_km"] = result.get("distance_km")
+                item["detected_location"] = result.get("detected_location")
+                item["proximity_score"] = result.get("proximity_score")
+
+            jerusalem_items.append(item)
 
         return jerusalem_items
 
@@ -517,12 +616,23 @@ class JerusalemContentService:
         category: Optional[str] = None,
         page: int = 1,
         limit: int = 20,
+        reference_coords: Optional[tuple[float, float]] = None,
+        radius_km: Optional[float] = None,
+        enable_geolocation: bool = True,
     ) -> JerusalemContentAggregatedResponse:
         """
         Fetch aggregated Jerusalem content from all sources.
 
         Uses web search as PRIMARY source for fresh location-specific content,
         then supplements with keyword-filtered general news.
+
+        Args:
+            category: Filter by content category
+            page: Pagination page number
+            limit: Results per page
+            reference_coords: Override default Jerusalem coordinates (lat, lon)
+            radius_km: Maximum distance filter in kilometers
+            enable_geolocation: Enable geolocation enhancement (default: True)
         """
         await self.initialize_sources()
 
@@ -576,7 +686,12 @@ class JerusalemContentService:
                     all_headlines.extend(result)
 
                 # Filter for Jerusalem content
-                filtered_items = self._filter_jerusalem_content(all_headlines)
+                filtered_items = await self._filter_jerusalem_content(
+                    all_headlines,
+                    enable_geolocation=enable_geolocation,
+                    radius_km=radius_km,
+                    reference_coords=reference_coords,
+                )
 
                 # Add unique items
                 existing_urls = {item["url"] for item in all_items}

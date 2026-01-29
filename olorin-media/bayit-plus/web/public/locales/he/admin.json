@@ -1,0 +1,24 @@
+{
+  "diagnostics": {
+    "title": "אבחון מערכת",
+    "servicesOverview": "סקירת שירותים",
+    "performanceMetrics": "מדדי ביצועים",
+    "systemActivity": "פעילות המערכת",
+    "servicesDetails": "פרטי שירותים",
+    "cpu": "שימוש במעבד",
+    "memory": "שימוש בזיכרון",
+    "disk": "שימוש בדיסק",
+    "allSystemsOperational": "כל המערכות פעילות",
+    "systemDegraded": "המערכת פגומה",
+    "systemDown": "המערכת כבויה",
+    "lastUpdated": "עודכן לאחרונה: {{time}}",
+    "ping": "פינג",
+    "restart": "הפעלה מחדש",
+    "healthy": "מקוון",
+    "degraded": "פגום",
+    "unhealthy": "לא מקוון",
+    "online": "מקוון",
+    "offline": "לא מקוון",
+    "latency": "השהיה: {{ms}}ms"
+  }
+}

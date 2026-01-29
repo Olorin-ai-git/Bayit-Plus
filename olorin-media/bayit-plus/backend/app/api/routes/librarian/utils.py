@@ -7,7 +7,7 @@ import logging
 from datetime import UTC, datetime
 
 from beanie import PydanticObjectId
-from motor.motor_asyncio import AsyncIOMotorClient
+from olorin_shared.database import get_mongodb_database
 
 from app.core.config import settings
 from app.models.librarian import AuditReport
@@ -50,8 +50,8 @@ async def run_audit_with_tracking(audit_id: str, audit_func, **kwargs):
 
             if audit:
                 # Use raw MongoDB update to avoid validation issues
-                client = AsyncIOMotorClient(settings.MONGODB_URI)
-                db = client[settings.MONGODB_DB_NAME]
+                # Use shared MongoDB connection from olorin_shared.database
+                db = get_mongodb_database()
                 await db["audit_reports"].update_one(
                     {"audit_id": audit_id},
                     {
@@ -89,8 +89,8 @@ async def run_audit_with_tracking(audit_id: str, audit_func, **kwargs):
 
             if audit:
                 # Use raw MongoDB update to avoid validation issues
-                client = AsyncIOMotorClient(settings.MONGODB_URI)
-                db = client[settings.MONGODB_DB_NAME]
+                # Use shared MongoDB connection from olorin_shared.database
+                db = get_mongodb_database()
                 await db["audit_reports"].update_one(
                     {"audit_id": audit_id},
                     {

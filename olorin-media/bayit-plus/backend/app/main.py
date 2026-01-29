@@ -86,6 +86,46 @@ def _validate_configuration() -> None:
         logger.info("All critical configuration validated")
 
 
+async def _verify_collections_initialized() -> None:
+    """
+    Verify that Beanie collections are initialized and ready.
+
+    Checks if Widget and Culture collections can be accessed by attempting
+    simple count queries. Includes retry logic to handle race conditions.
+    """
+    import asyncio
+    from app.models.widget import Widget
+    from app.models.culture import Culture
+    from app.models.tel_aviv_content import TelAvivContentSource
+    from app.models.jerusalem_content import JerusalemContentSource
+
+    max_retries = 3
+    retry_delay = 0.5  # seconds
+
+    for attempt in range(max_retries):
+        try:
+            # Attempt to count documents in critical collections
+            # This will fail with CollectionWasNotInitialized if not ready
+            await Widget.count()
+            await Culture.count()
+            await TelAvivContentSource.count()
+            await JerusalemContentSource.count()
+            logger.debug(f"Collection verification successful (attempt {attempt + 1})")
+            return
+        except Exception as e:
+            if attempt < max_retries - 1:
+                logger.debug(
+                    f"Collections not ready yet (attempt {attempt + 1}/{max_retries}), "
+                    f"retrying in {retry_delay}s..."
+                )
+                await asyncio.sleep(retry_delay)
+            else:
+                logger.warning(
+                    f"Collection verification failed after {max_retries} attempts: {e}"
+                )
+                raise
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
@@ -139,6 +179,14 @@ async def lifespan(app: FastAPI):
     upload_dir = Path(settings.UPLOAD_DIR)
     upload_dir.mkdir(parents=True, exist_ok=True)
     logger.info(f"Upload directory ready: {upload_dir}")
+
+    # Wait for Beanie collections to be fully initialized
+    try:
+        await _verify_collections_initialized()
+        logger.info("✅ Database collections verified and ready")
+    except Exception as e:
+        logger.warning(f"Collection verification failed: {e}")
+        # Continue anyway - seeders will handle errors gracefully
 
     # Initialize default data (widgets)
     try:

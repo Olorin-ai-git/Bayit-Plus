@@ -12,7 +12,8 @@ from app.models.content import LiveChannel
 from app.models.widget import (Widget, WidgetContent, WidgetContentType,
                                WidgetPosition, WidgetType)
 from app.services.startup.defaults import (CHANNEL_WIDGETS, FLIGHT_WIDGETS,
-                                           PODCAST_WIDGETS, YNET_WIDGET_CONFIG)
+                                           MAARIV_103_WIDGETS, PODCAST_WIDGETS,
+                                           YNET_WIDGET_CONFIG)
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +69,76 @@ async def _create_flight_widgets() -> int:
 
         await widget.insert()
         logger.info(f"Created flight widget '{config['title']}': {widget.id}")
+        created_count += 1
+
+    return created_count
+
+
+async def _create_maariv_103_widgets() -> int:
+    """Create Maariv 103FM radio widgets. Returns count of widgets created."""
+    created_count = 0
+
+    for config in MAARIV_103_WIDGETS:
+        existing = await Widget.find_one(
+            {
+                "type": WidgetType.SYSTEM,
+                "title": config["title"],
+            }
+        )
+
+        if existing:
+            logger.info(
+                f"Maariv 103 widget '{config['title']}' already exists: {existing.id}"
+            )
+            continue
+
+        # Determine if this is an iframe widget or custom component widget
+        is_custom = "component_name" in config and config.get("component_name")
+
+        if is_custom:
+            # Custom component widget (e.g., playlist widget)
+            widget_content = WidgetContent(
+                content_type=WidgetContentType.CUSTOM,
+                component_name=config["component_name"],
+                podcast_id=config.get("podcast_id"),
+            )
+        else:
+            # iframe widget
+            widget_content = WidgetContent(
+                content_type=WidgetContentType.IFRAME,
+                iframe_url=config["iframe_url"],
+                iframe_title=config["title"],
+            )
+
+        widget = Widget(
+            type=WidgetType.SYSTEM,
+            title=config["title"],
+            description=config["description"],
+            icon=config["icon"],
+            content=widget_content,
+            position=WidgetPosition(
+                x=config["position"]["x"],
+                y=config["position"]["y"],
+                width=config["position"]["width"],
+                height=config["position"]["height"],
+                z_index=100,
+            ),
+            is_active=True,
+            is_muted=True,
+            is_visible=True,
+            is_closable=True,
+            is_draggable=True,
+            visible_to_roles=["user", "admin", "premium"],
+            visible_to_subscription_tiers=[],
+            target_pages=[],
+            order=config["order"],
+            created_by="system",
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+
+        await widget.insert()
+        logger.info(f"Created Maariv 103 widget '{config['title']}': {widget.id}")
         created_count += 1
 
     return created_count
@@ -267,6 +338,7 @@ async def init_default_widgets() -> dict[str, int]:
     try:
         results = {
             "flight_widgets": await _create_flight_widgets(),
+            "maariv_103_widgets": await _create_maariv_103_widgets(),
             "ynet_widget": 1 if await _create_ynet_widget() else 0,
             "podcast_widgets": await _create_podcast_widgets(),
             "channel_widgets": await _create_channel_widgets(),

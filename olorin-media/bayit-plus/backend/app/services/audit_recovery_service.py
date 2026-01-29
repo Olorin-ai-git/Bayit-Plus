@@ -10,7 +10,8 @@ import logging
 from datetime import UTC, datetime, timedelta
 from typing import Dict, List, Optional
 
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from motor.motor_asyncio import AsyncIOMotorDatabase
+from olorin_shared.database import get_mongodb_database
 
 from app.core.config import settings
 from app.services.audit_task_manager import audit_task_manager
@@ -65,10 +66,35 @@ class AuditRecoveryService:
         )
 
     async def _get_db(self) -> AsyncIOMotorDatabase:
-        """Get database connection."""
+        """
+        Get database connection with retry logic.
+
+        Handles startup race condition where monitoring starts before MongoDB is ready.
+        """
         if self.db is None:
-            client = AsyncIOMotorClient(settings.MONGODB_URI)
-            self.db = client[settings.MONGODB_DB_NAME]
+            # Retry logic for startup race condition
+            max_retries = 5
+            retry_delay = 1  # Start with 1 second
+
+            for attempt in range(max_retries):
+                try:
+                    # Use shared MongoDB connection from olorin_shared.database
+                    # This ensures proper connection pooling and URL encoding
+                    self.db = get_mongodb_database()
+                    if attempt > 0:
+                        logger.info(f"Successfully connected to MongoDB on attempt {attempt + 1}")
+                    return self.db
+                except RuntimeError as e:
+                    if attempt < max_retries - 1:
+                        logger.debug(
+                            f"MongoDB not ready yet (attempt {attempt + 1}/{max_retries}), "
+                            f"retrying in {retry_delay}s: {e}"
+                        )
+                        await asyncio.sleep(retry_delay)
+                        retry_delay *= 2  # Exponential backoff
+                    else:
+                        logger.error(f"Failed to connect to MongoDB after {max_retries} attempts: {e}")
+                        raise
         return self.db
 
     async def check_audit_health(self, audit_id: str) -> Dict[str, any]:
@@ -289,15 +315,28 @@ class AuditRecoveryService:
         logger.info("Starting audit health monitoring")
 
         async def monitor_loop():
+            startup_complete = False
             while self._is_running:
                 try:
                     await self.scan_and_recover_stuck_audits()
+                    if not startup_complete:
+                        logger.info("Audit monitoring fully operational")
+                        startup_complete = True
                     await asyncio.sleep(self.check_interval_seconds)
                 except asyncio.CancelledError:
                     logger.info("Audit monitoring cancelled")
                     break
+                except RuntimeError as e:
+                    # MongoDB connection not ready - log as debug during startup
+                    if not startup_complete:
+                        logger.debug(f"Waiting for MongoDB connection: {e}")
+                    else:
+                        logger.error(f"MongoDB connection lost: {e}", exc_info=True)
+                    await asyncio.sleep(self.check_interval_seconds)
                 except Exception as e:
-                    logger.error(f"Error in audit monitoring loop: {e}", exc_info=True)
+                    # Log error severity based on startup state
+                    log_level = logger.warning if not startup_complete else logger.error
+                    log_level(f"Error in audit monitoring loop: {e}", exc_info=True)
                     await asyncio.sleep(self.check_interval_seconds)
 
         self._monitoring_task = asyncio.create_task(monitor_loop())

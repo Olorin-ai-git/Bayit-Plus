@@ -15,6 +15,7 @@ from typing import Any, Dict, List, Optional
 
 from beanie import Document
 from pydantic import BaseModel, Field
+from pymongo import IndexModel, ASCENDING
 
 
 class CultureCityCategory(BaseModel):
@@ -148,6 +149,11 @@ class CultureCity(Document):
             "is_active",
             "is_featured",
             ("culture_id", "display_order"),
+            IndexModel(
+                [("culture_id", ASCENDING), ("city_id", ASCENDING)],
+                unique=True,
+                name="culture_city_unique"
+            ),
         ]
 
 

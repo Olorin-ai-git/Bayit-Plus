@@ -687,7 +687,8 @@
       "dashboard": "डैशबोर्ड",
       "users": "उपयोगकर्ता",
       "content": "सामग्री",
-      "settings": "सेटिंग्स"
+      "settings": "सेटिंग्स",
+      "diagnostics": "सिस्टम डायग्नोस्टिक्स"
     },
     "users": {
       "roles": {
@@ -732,6 +733,28 @@
       "editEpisode": "एपिसोड संपादित करें",
       "deleteEpisode": "एपिसोड हटाएं",
       "newEpisode": "नया एपिसोड"
+    },
+    "diagnostics": {
+      "title": "सिस्टम डायग्नोस्टिक्स",
+      "servicesOverview": "सेवाओं का अवलोकन",
+      "performanceMetrics": "प्रदर्शन मेट्रिक्स",
+      "systemActivity": "सिस्टम गतिविधि",
+      "servicesDetails": "सेवा विवरण",
+      "cpu": "CPU उपयोग",
+      "memory": "मेमोरी उपयोग",
+      "disk": "डिस्क उपयोग",
+      "allSystemsOperational": "सभी सिस्टम परिचालन में",
+      "systemDegraded": "सिस्टम डीग्रेड",
+      "systemDown": "सिस्टम डाउन",
+      "lastUpdated": "अंतिम अपडेट: {{time}}",
+      "ping": "पिंग",
+      "restart": "पुनः आरंभ करें",
+      "online": "ऑनलाइन",
+      "offline": "ऑफलाइन",
+      "degraded": "डीग्रेडेड",
+      "latency": "विलंबता: {{ms}}ms",
+      "healthy": "स्वस्थ",
+      "unhealthy": "अस्वस्थ"
     }
   },
   "cultureClock": {

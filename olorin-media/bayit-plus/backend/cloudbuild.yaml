@@ -24,7 +24,115 @@ steps:
       - '--max-instances=${_MAX_INSTANCES}'
       - '--port=8080'
       - '--set-env-vars=ENVIRONMENT=production'
-      - '--update-secrets=CSRF_ENABLED=csrf-enabled:latest,PODCAST_TRANSLATION_ENABLED=podcast-translation-enabled:latest,PODCAST_TRANSLATION_AUTO_START=podcast-translation-auto-start:latest'
+
+      # Secrets from Google Secret Manager - Single Source of Truth (Same as root cloudbuild.yaml)
+      # Core Authentication & Security
+      - '--update-secrets=SECRET_KEY=bayit-backend-secret-key:latest'
+      - '--update-secrets=CSRF_ENABLED=csrf-enabled:latest'
+      - '--update-secrets=ADMIN_PASSWORD=bayit-admin-password:latest'
+      - '--update-secrets=ADMIN_EMAIL=bayit-admin-email:latest'
+      - '--update-secrets=WEBAUTHN_ORIGIN=bayit-webauthn-origin:latest'
+
+      # Database
+      - '--update-secrets=MONGODB_URI=bayit-mongodb-uri:latest'
+      - '--update-secrets=OLORIN_MONGODB_URI=olorin-fraud-mongodb-uri:latest'
+      - '--update-secrets=CVPLUS_MONGODB_URI=cvplus-mongodb-uri:latest'
+      - '--update-secrets=STATION_AI_MONGODB_URI=station-ai-mongodb-uri:latest'
+
+      # Payment Processing - Stripe
+      - '--update-secrets=STRIPE_API_KEY=bayit-stripe-api-key:latest'
+      - '--update-secrets=STRIPE_SECRET_KEY=bayit-stripe-secret-key:latest'
+      - '--update-secrets=STRIPE_WEBHOOK_SECRET=bayit-stripe-webhook-secret:latest'
+      - '--update-secrets=STRIPE_PRICE_BASIC=bayit-stripe-price-basic:latest'
+      - '--update-secrets=STRIPE_PRICE_PREMIUM=bayit-stripe-price-premium:latest'
+      - '--update-secrets=STRIPE_PRICE_FAMILY=bayit-stripe-price-family:latest'
+
+      # AI Services
+      - '--update-secrets=ANTHROPIC_API_KEY=bayit-anthropic-api-key:latest'
+      - '--update-secrets=OPENAI_API_KEY=bayit-openai-api-key:latest'
+      - '--update-secrets=ELEVENLABS_API_KEY=bayit-elevenlabs-api-key:latest'
+      - '--update-secrets=ELEVENLABS_WEBHOOK_SECRET=bayit-elevenlabs-webhook-secret:latest'
+
+      # Content Metadata Services
+      - '--update-secrets=TMDB_API_KEY=bayit-tmdb-api-key:latest'
+      - '--update-secrets=TMDB_API_TOKEN=bayit-tmdb-api-token:latest'
+      - '--update-secrets=OPENSUBTITLES_API_KEY=opensubtitles-api-key:latest'
+      - '--update-secrets=PICOVOICE_ACCESS_KEY=picovoice-access-key:latest'
+
+      # OAuth & Authentication
+      - '--update-secrets=GOOGLE_CLIENT_ID=bayit-google-client-id:latest'
+      - '--update-secrets=GOOGLE_CLIENT_SECRET=bayit-google-client-secret:latest'
+      - '--update-secrets=GOOGLE_REDIRECT_URI=bayit-google-redirect-uri:latest'
+      - '--update-secrets=CHROMECAST_RECEIVER_APP_ID=bayit-chromecast-receiver-id:latest'
+
+      # Communications
+      - '--update-secrets=TWILIO_ACCOUNT_SID=bayit-twilio-account-sid:latest'
+      - '--update-secrets=TWILIO_AUTH_TOKEN=bayit-twilio-auth-token:latest'
+      - '--update-secrets=TWILIO_PHONE_NUMBER=bayit-twilio-phone-number:latest'
+
+      # Storage & CDN
+      - '--update-secrets=GCS_BUCKET_NAME=bayit-gcs-bucket-name:latest'
+      - '--update-secrets=BACKEND_CORS_ORIGINS=bayit-backend-cors-origins:latest'
+      - '--update-secrets=FRONTEND_URL=bayit-frontend-url:latest'
+      - '--update-secrets=FRONTEND_WEB_URL=bayit-frontend-web-url:latest'
+
+      # Monitoring
+      - '--update-secrets=SENTRY_DSN=bayit-sentry-dsn:latest'
+
+      # Feature Flags
+      - '--update-secrets=PODCAST_TRANSLATION_ENABLED=podcast-translation-enabled:latest'
+      - '--update-secrets=PODCAST_TRANSLATION_AUTO_START=podcast-translation-auto-start:latest'
+      - '--update-secrets=FEATURE_SCENE_SEARCH_ENABLED=bayit-feature-scene-search-enabled:latest'
+
+      # ElevenLabs Voice IDs
+      - '--update-secrets=ELEVENLABS_DEFAULT_VOICE_ID=bayit-elevenlabs-default-voice-id:latest'
+      - '--update-secrets=ELEVENLABS_HEBREW_VOICE_ID=bayit-elevenlabs-hebrew-voice-id:latest'
+      - '--update-secrets=ELEVENLABS_ENGLISH_VOICE_ID=bayit-elevenlabs-english-voice-id:latest'
+      - '--update-secrets=ELEVENLABS_ASSISTANT_VOICE_ID=bayit-elevenlabs-assistant-voice-id:latest'
+      - '--update-secrets=ELEVENLABS_SUPPORT_VOICE_ID=bayit-elevenlabs-support-voice-id:latest'
+      - '--update-secrets=ELEVENLABS_HEBREW_MALE_VOICE_ID=bayit-elevenlabs-hebrew-male-voice-id:latest'
+      - '--update-secrets=ELEVENLABS_ENGLISH_MALE_VOICE_ID=bayit-elevenlabs-english-male-voice-id:latest'
+
+      # Apple Push Notifications
+      - '--update-secrets=APPLE_KEY_ID=bayit-apple-key-id:latest'
+      - '--update-secrets=APPLE_TEAM_ID=bayit-apple-team-id:latest'
+      - '--update-secrets=APPLE_BUNDLE_ID_IOS=bayit-apple-bundle-id-ios:latest'
+      - '--update-secrets=APPLE_BUNDLE_ID_TVOS=bayit-apple-bundle-id-tvos:latest'
+
+      # Location Services
+      - '--update-secrets=GEONAMES_USERNAME=bayit-geonames-username:latest'
+      - '--update-secrets=GEONAMES_API_BASE_URL=bayit-geonames-api-base-url:latest'
+      - '--update-secrets=GEONAMES_TIMEOUT_SECONDS=bayit-geonames-timeout-seconds:latest'
+      - '--update-secrets=LOCATION_CACHE_TTL_HOURS=bayit-location-cache-ttl-hours:latest'
+      - '--update-secrets=LOCATION_REVERSE_GEOCODE_RATE_LIMIT=bayit-location-reverse-geocode-rate-limit:latest'
+      - '--update-secrets=LOCATION_CONTENT_RATE_LIMIT=bayit-location-content-rate-limit:latest'
+      - '--update-secrets=LOCATION_ENCRYPTION_KEY=bayit-location-encryption-key:latest'
+
+      # Series Linker Configuration
+      - '--update-secrets=SERIES_LINKER_TITLE_SIMILARITY_THRESHOLD=bayit-series-linker-title-similarity:latest'
+      - '--update-secrets=SERIES_LINKER_AUTO_LINK_CONFIDENCE_THRESHOLD=bayit-series-linker-auto-link-confidence:latest'
+      - '--update-secrets=SERIES_LINKER_AUTO_LINK_BATCH_SIZE=bayit-series-linker-batch-size:latest'
+      - '--update-secrets=SERIES_LINKER_DUPLICATE_RESOLUTION_STRATEGY=bayit-series-linker-duplicate-strategy:latest'
+      - '--update-secrets=SERIES_LINKER_CREATE_MISSING_SERIES=bayit-series-linker-create-missing:latest'
+
+      # Judaism Section Configuration
+      - '--update-secrets=JEWISH_NEWS_CACHE_TTL_MINUTES=bayit-jewish-news-cache-ttl:latest'
+      - '--update-secrets=JEWISH_NEWS_SYNC_INTERVAL_MINUTES=bayit-jewish-news-sync-interval:latest'
+      - '--update-secrets=JEWISH_NEWS_REQUEST_TIMEOUT_SECONDS=bayit-jewish-news-timeout:latest'
+      - '--update-secrets=HEBCAL_API_BASE_URL=bayit-hebcal-api-url:latest'
+      - '--update-secrets=SEFARIA_API_BASE_URL=bayit-sefaria-api-url:latest'
+      - '--update-secrets=JEWISH_CALENDAR_CACHE_TTL_HOURS=bayit-jewish-calendar-cache-ttl:latest'
+      - '--update-secrets=COMMUNITY_SEARCH_RADIUS_MILES=bayit-community-search-radius:latest'
+      - '--update-secrets=COMMUNITY_DEFAULT_REGION=bayit-community-default-region:latest'
+      - '--update-secrets=US_JEWISH_REGIONS=bayit-us-jewish-regions:latest'
+      - '--update-secrets=COMMUNITY_SCRAPE_INTERVAL_HOURS=bayit-community-scrape-interval:latest'
+      - '--update-secrets=YUTORAH_RSS_URL=bayit-yutorah-rss-url:latest'
+      - '--update-secrets=CHABAD_MULTIMEDIA_RSS_URL=bayit-chabad-multimedia-rss-url:latest'
+      - '--update-secrets=TORAHANYTIME_RSS_URL=bayit-torahanytime-rss-url:latest'
+
+      # Turborepo
+      - '--update-secrets=TURBO_TOKEN=turbo-token:latest'
+      - '--update-secrets=TURBO_TEAM=turbo-team:latest'
       - '--startup-probe=failureThreshold=3,periodSeconds=240,timeoutSeconds=240,tcpSocket.port=8080'
 
 images:

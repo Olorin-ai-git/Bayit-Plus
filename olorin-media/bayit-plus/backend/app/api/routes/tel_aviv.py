@@ -35,12 +35,26 @@ async def get_tel_aviv_content(
     ),
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(20, ge=1, le=50, description="Items per page"),
+    latitude: Optional[float] = Query(
+        None, description="User latitude for proximity sorting"
+    ),
+    longitude: Optional[float] = Query(
+        None, description="User longitude for proximity sorting"
+    ),
+    radius_km: Optional[float] = Query(
+        None, ge=1, le=100, description="Filter within radius (km)"
+    ),
+    enable_geolocation: bool = Query(
+        True, description="Enable geolocation enhancement"
+    ),
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Get Tel Aviv-focused content from Israeli news.
 
-    Content is filtered and scored based on Tel Aviv-related keywords.
+    Content is filtered and scored based on Tel Aviv-related keywords
+    and optional geolocation proximity.
+
     Returns content about:
     - Beaches and promenade
     - Nightlife and entertainment
@@ -49,8 +63,14 @@ async def get_tel_aviv_content(
     - Food and dining
     - Tech and startups
     - Events and festivals
+
+    NEW FEATURES:
+    - latitude/longitude: Override default Tel Aviv center with user's location
+    - radius_km: Only show content within specified radius
+    - enable_geolocation: Toggle geolocation on/off (default: on)
+
+    BACKWARD COMPATIBLE: All new parameters optional.
     """
-    # Validate category if provided
     valid_categories = [
         TelAvivContentCategory.BEACHES,
         TelAvivContentCategory.NIGHTLIFE,
@@ -68,8 +88,15 @@ async def get_tel_aviv_content(
             detail=f"Invalid category. Must be one of: {', '.join(valid_categories)}",
         )
 
+    reference_coords = (latitude, longitude) if latitude and longitude else None
+
     return await tel_aviv_content_service.fetch_all_content(
-        category=category, page=page, limit=limit
+        category=category,
+        page=page,
+        limit=limit,
+        reference_coords=reference_coords,
+        radius_km=radius_km,
+        enable_geolocation=enable_geolocation,
     )
 
 

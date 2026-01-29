@@ -75,3 +75,11 @@ export class PodcastTranslationError extends Error {
     this.name = 'PodcastTranslationError'
   }
 }
+
+// Podcast episodes list API response
+export interface EpisodesResponse {
+  episodes: PodcastEpisode[]
+  total: number
+  page: number
+  pages: number
+}

@@ -1910,7 +1910,8 @@
       "settings": "设置",
       "auditLogs": "审计日志",
       "librarian": "管理员代理",
-      "featured": "精选"
+      "featured": "精选",
+      "diagnostics": "系统诊断"
     },
     "dashboard": {
       "subtitle": "系统概览",
@@ -2059,6 +2060,28 @@
       "editEpisode": "编辑剧集",
       "deleteEpisode": "删除剧集",
       "newEpisode": "新剧集"
+    },
+    "diagnostics": {
+      "title": "系统诊断",
+      "servicesOverview": "服务概览",
+      "performanceMetrics": "性能指标",
+      "systemActivity": "系统活动",
+      "servicesDetails": "服务详情",
+      "cpu": "CPU使用率",
+      "memory": "内存使用率",
+      "disk": "磁盘使用率",
+      "allSystemsOperational": "所有系统正常",
+      "systemDegraded": "系统降级",
+      "systemDown": "系统故障",
+      "lastUpdated": "最后更新: {{time}}",
+      "ping": "Ping",
+      "restart": "重启",
+      "online": "在线",
+      "offline": "离线",
+      "degraded": "降级",
+      "latency": "延迟: {{ms}}ms",
+      "healthy": "健康",
+      "unhealthy": "不健康"
     }
   },
   "cultures": {
