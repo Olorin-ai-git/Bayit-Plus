@@ -115,6 +115,12 @@ class Settings(BaseSettings):
     CLAUDE_MAX_TOKENS_SHORT: int = 200
     CLAUDE_MAX_TOKENS_LONG: int = 500
 
+    # Tavily (Web Search & News API)
+    TAVILY_API_KEY: str = ""
+
+    # Exa.ai (Article Search & Extraction)
+    EXA_API_KEY: str = ""
+
     # NLP Features (opt-in, requires ANTHROPIC_API_KEY)
     NLP_ENABLED: bool = Field(
         default=False,

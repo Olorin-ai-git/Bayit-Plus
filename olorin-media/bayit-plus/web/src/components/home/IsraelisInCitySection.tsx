@@ -58,6 +58,8 @@ export default function IsraelisInCitySection({
   const [content, setContent] = useState<ContentItem[]>([]);
   const [coverage, setCoverage] = useState<Coverage | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (location && !isDetecting) {
@@ -66,6 +68,19 @@ export default function IsraelisInCitySection({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location?.city, location?.state, isDetecting]);
 
+  // Trigger animation when content loads
+  useEffect(() => {
+    if (content.length > 0) {
+      console.log('=== ANIMATING SECTION IN ===', { contentCount: content.length });
+      // Use requestAnimationFrame to ensure initial state is painted before transition
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsVisible(true);
+        });
+      });
+    }
+  }, [content.length]);
+
   const loadLocationContent = async () => {
     if (!location?.city || !location?.state) {
       logger.debug('Skipping location content - location incomplete', 'IsraelisInCitySection');
@@ -73,31 +88,56 @@ export default function IsraelisInCitySection({
     }
 
     try {
+      setIsVisible(false); // Reset animation state
       setIsLoading(true);
+      console.log('=== LOADING LOCATION CONTENT ===', {
+        city: location.city,
+        state: location.state,
+        retryCount
+      });
+
       const response: ContentResponse = await contentService.getIsraelisInCity(
         location.city,
         location.state
       );
+
+      console.log('=== API RESPONSE ===', {
+        hasContent: Boolean(response?.content),
+        articles: response?.content?.news_articles?.length || 0,
+        events: response?.content?.community_events?.length || 0
+      });
 
       if (response?.content) {
         const allContent = [
           ...(response.content.news_articles || []),
           ...(response.content.community_events || []),
         ];
+
+        console.log('=== SETTING CONTENT ===', { count: allContent.length });
         setContent(allContent);
         setCoverage(response.coverage);
 
-        if (response.coverage?.content_source === 'nearby') {
-          logger.info(
-            `Loaded ${allContent.length} items from nearby ${response.coverage.nearest_major_city} ` +
-            `(${response.coverage.distance_miles} miles) for ${location.city}, ${location.state}`,
-            'IsraelisInCitySection'
-          );
-        } else {
-          logger.info(
-            `Loaded ${allContent.length} items for ${location.city}, ${location.state}`,
-            'IsraelisInCitySection'
-          );
+        if (allContent.length > 0) {
+          if (response.coverage?.content_source === 'nearby') {
+            logger.info(
+              `Loaded ${allContent.length} items from nearby ${response.coverage.nearest_major_city} ` +
+              `(${response.coverage.distance_miles} miles) for ${location.city}, ${location.state}`,
+              'IsraelisInCitySection'
+            );
+          } else {
+            logger.info(
+              `Loaded ${allContent.length} items for ${location.city}, ${location.state}`,
+              'IsraelisInCitySection'
+            );
+          }
+        } else if (retryCount < 2) {
+          // Scraping in progress. Retry after 10 seconds (up to 2 retries = 20s total wait)
+          const delay = 10000;
+          logger.info(`Content empty, retry ${retryCount + 1}/2 in ${delay/1000}s...`, 'IsraelisInCitySection');
+          setTimeout(() => {
+            setRetryCount(retryCount + 1);
+            loadLocationContent();
+          }, delay);
         }
       }
     } catch (error) {
@@ -107,33 +147,17 @@ export default function IsraelisInCitySection({
     }
   };
 
-  // Debug: Always show something to verify component is rendering
-  if (!location) {
-    logger.debug('No location available', 'IsraelisInCitySection');
+  // Don't block page load - only show section when content is ready
+  if (!location || isLoading || content.length === 0) {
+    console.log('=== SECTION NOT RENDERING ===', {
+      hasLocation: Boolean(location),
+      isLoading,
+      contentLength: content.length
+    });
     return null;
   }
 
-  if (isLoading) {
-    logger.debug('Loading location content...', 'IsraelisInCitySection');
-    return (
-      <View style={styles.debugContainer}>
-        <Text style={styles.debugText}>Loading Near Me content...</Text>
-      </View>
-    );
-  }
-
-  if (content.length === 0) {
-    logger.debug(`No content found for ${location.city}, ${location.state}`, 'IsraelisInCitySection');
-    // Show the section anyway with a message
-    return (
-      <View style={styles.debugContainer}>
-        <Text style={styles.debugTitle}>
-          Near You: {location.city}, {location.state}
-        </Text>
-        <Text style={styles.debugSubtext}>No Israeli content available for your area yet.</Text>
-      </View>
-    );
-  }
+  console.log('=== SECTION RENDERING ===', { contentLength: content.length });
 
   // Determine title based on content source
   const getTitle = () => {
@@ -148,12 +172,20 @@ export default function IsraelisInCitySection({
   };
 
   return (
-    <ContentCarousel
-      title={getTitle()}
-      items={content}
-      seeAllLink={`/location/${location.state}/${location.city}`}
-      style={style}
-    />
+    <div
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 600ms ease-out, transform 600ms ease-out',
+      }}
+    >
+      <ContentCarousel
+        title={getTitle()}
+        items={content}
+        seeAllLink={`/location/${location.state}/${location.city}`}
+        style={style}
+      />
+    </div>
   );
 }
 

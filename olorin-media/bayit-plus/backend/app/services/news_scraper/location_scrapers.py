@@ -65,30 +65,34 @@ async def _search_with_fallback(
     max_results: int,
     category_fn: Optional[callable] = None,
 ) -> List[HeadlineItem]:
-    """Search using Google News first, then DuckDuckGo as fallback."""
+    """Search using DuckDuckGo first (has real article images), then Google News as fallback."""
     all_headlines: List[HeadlineItem] = []
     seen_urls: set[str] = set()
 
-    for query in queries:
+    # Try DuckDuckGo first - it has real article URLs that we can fetch images from
+    for query in queries[:3]:  # Limit to first 3 queries for performance
         if len(all_headlines) >= max_results:
             break
         try:
-            results = await search_google_news_rss(query, max_results=5)
+            results = await search_duckduckgo(query, max_results=5)
             for item in results:
                 if item.url not in seen_urls:
                     seen_urls.add(item.url)
                     if category_fn:
                         item.category = category_fn(item.title, item.summary)
                     all_headlines.append(item)
+                    logger.info(f"Added DuckDuckGo result: {item.title[:50]} - Image: {bool(item.image_url)}")
         except Exception as e:
-            logger.warning(f"Google News search failed for '{query}': {e}")
+            logger.warning(f"DuckDuckGo search failed for '{query}': {e}")
 
-    if len(all_headlines) < max_results // 2:
-        for query in queries[:3]:
+    # If we don't have enough results, use Google News as fallback
+    if len(all_headlines) < max_results:
+        logger.info(f"Only {len(all_headlines)} results from DuckDuckGo, adding Google News...")
+        for query in queries:
             if len(all_headlines) >= max_results:
                 break
             try:
-                results = await search_duckduckgo(query, max_results=5)
+                results = await search_google_news_rss(query, max_results=5)
                 for item in results:
                     if item.url not in seen_urls:
                         seen_urls.add(item.url)
@@ -96,7 +100,7 @@ async def _search_with_fallback(
                             item.category = category_fn(item.title, item.summary)
                         all_headlines.append(item)
             except Exception as e:
-                logger.warning(f"DuckDuckGo search failed for '{query}': {e}")
+                logger.warning(f"Google News search failed for '{query}': {e}")
 
     return all_headlines[:max_results]
 

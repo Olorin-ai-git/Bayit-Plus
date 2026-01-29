@@ -1,16 +1,16 @@
 """Location-based content service for aggregating Israeli-focused content by US city."""
+import asyncio
 import logging
 import math
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Any, Optional
 
 from app.core.config import settings
 from app.models.content import Content
 from app.models.jewish_community import CommunityEvent
 from app.services.location_constants import MAJOR_US_CITIES, CITY_COORDINATES
-from app.services.news_scraper.location_scrapers import scrape_israeli_content_in_us_city
-from app.services.news_scraper.rss_parser import _fetch_og_image
+from app.services.news_scraper.exa_scraper import scrape_israeli_content_exa
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +20,37 @@ FALLBACK_NEWS_POSTER = "https://images.unsplash.com/photo-1504711434969-e3388616
 
 class LocationContentService:
     """Service for aggregating Israeli-focused content by US location."""
+
+    # Cache for location content (city_state -> {data, timestamp})
+    _cache = {}
+    _cache_ttl = timedelta(hours=1)  # Cache for 1 hour
+    _scraping_tasks = {}  # Track ongoing scraping tasks
+
+    @classmethod
+    def _get_cache_key(cls, city: str, state: str) -> str:
+        """Generate cache key from city/state."""
+        return f"{city.lower()}_{state.upper()}"
+
+    @classmethod
+    def _get_cached_result(cls, city: str, state: str) -> Optional[dict]:
+        """Get cached result if fresh."""
+        cache_key = cls._get_cache_key(city, state)
+        if cache_key in cls._cache:
+            cached_data, timestamp = cls._cache[cache_key]
+            if datetime.now(timezone.utc) - timestamp < cls._cache_ttl:
+                logger.info(f"Cache hit for {city}, {state}")
+                return cached_data
+            else:
+                # Cache expired, remove it
+                del cls._cache[cache_key]
+        return None
+
+    @classmethod
+    def _set_cache(cls, city: str, state: str, data: dict):
+        """Cache the result."""
+        cache_key = cls._get_cache_key(city, state)
+        cls._cache[cache_key] = (data, datetime.now(timezone.utc))
+        logger.info(f"Cached result for {city}, {state}")
 
     @staticmethod
     def _calculate_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -85,6 +116,9 @@ class LocationContentService:
     ) -> dict:
         """Get all Israeli-focused content for a specific city. Never raises exceptions.
 
+        Uses 1-hour cache to avoid blocking page loads. First request triggers background scraping,
+        returns empty result. Subsequent requests get cached data instantly.
+
         Args:
             city: City name
             state: State code (e.g., 'NY', 'CA')
@@ -94,6 +128,111 @@ class LocationContentService:
             include_events: Whether to fetch community events
             allow_nearby_fallback: If True and no local content found, fetch from nearest major city
         """
+        try:
+            # Check cache first
+            cached_result = self._get_cached_result(city, state)
+            if cached_result:
+                return cached_result
+
+            # Check if scraping is already in progress
+            cache_key = self._get_cache_key(city, state)
+            if cache_key in self._scraping_tasks:
+                logger.info(f"Scraping already in progress for {city}, {state}, returning empty")
+                return self._get_empty_result(city, state)
+
+            # Start background scraping
+            logger.info(f"Starting background scraping for {city}, {state}")
+            task = asyncio.create_task(
+                self._scrape_and_cache(
+                    city, state, county, limit_per_type,
+                    include_articles, include_events, allow_nearby_fallback
+                )
+            )
+            self._scraping_tasks[cache_key] = task
+
+            # Return empty result immediately (non-blocking)
+            return self._get_empty_result(city, state)
+
+        except Exception as e:
+            logger.error(f"Critical error in get_israelis_in_city for {city}, {state}: {e}")
+            return self._get_empty_result(city, state)
+
+    async def _fetch_content_direct(
+        self,
+        city: str,
+        state: str,
+        limit_per_type: int = 10,
+        include_articles: bool = True,
+        include_events: bool = True,
+    ) -> dict:
+        """Fetch content directly without caching (for nearby city fallback)."""
+        city = city.strip()
+        state = state.upper().strip()
+        latitude, longitude = self._get_city_coordinates(city, state)
+        now = datetime.now(timezone.utc)
+
+        result = {
+            "location": {
+                "city": city,
+                "state": state,
+                "county": None,
+                "latitude": latitude,
+                "longitude": longitude,
+                "timestamp": now,
+                "source": "lookup",
+            },
+            "content": {"news_articles": [], "community_events": []},
+            "total_items": 0,
+            "coverage": {
+                "has_content": False,
+                "nearest_major_city": None,
+                "content_source": "local",
+                "distance_miles": None,
+            },
+            "updated_at": now,
+        }
+
+        # Fetch content synchronously
+        if include_articles:
+            try:
+                result["content"]["news_articles"] = await self.fetch_news_articles(
+                    city, state, limit_per_type
+                )
+                logger.info(f"Fetched {len(result['content']['news_articles'])} articles for {city}, {state}")
+            except Exception as e:
+                logger.error(f"Failed to fetch articles for {city}, {state}: {e}")
+
+        if include_events:
+            try:
+                result["content"]["community_events"] = await self.fetch_community_events(
+                    city, state, limit_per_type
+                )
+                logger.info(f"Fetched {len(result['content']['community_events'])} events for {city}, {state}")
+            except Exception as e:
+                logger.error(f"Failed to fetch events for {city}, {state}: {e}")
+
+        total = (
+            len(result["content"]["news_articles"])
+            + len(result["content"]["community_events"])
+        )
+        result["total_items"] = total
+        result["coverage"]["has_content"] = total > 0
+        logger.info(f"Direct fetch completed for {city}, {state}: {total} total items")
+
+        return result
+
+    async def _scrape_and_cache(
+        self,
+        city: str,
+        state: str,
+        county: Optional[str] = None,
+        limit_per_type: int = 10,
+        include_articles: bool = True,
+        include_events: bool = True,
+        allow_nearby_fallback: bool = True,
+    ):
+        """Background task to scrape content and cache it."""
+        cache_key = self._get_cache_key(city, state)
         try:
             # Validate and sanitize inputs
             if not city or not state:
@@ -166,14 +305,14 @@ class LocationContentService:
                         f"{nearby_city}, {nearby_state} ({distance:.1f} miles away)"
                     )
 
-                    # Recursively fetch from nearby city (with fallback disabled to prevent infinite recursion)
-                    nearby_result = await self.get_israelis_in_city(
+                    # Fetch from nearby city synchronously (don't use cache for fallback)
+                    logger.info(f"Fetching from nearby city synchronously: {nearby_city}, {nearby_state}")
+                    nearby_result = await self._fetch_content_direct(
                         nearby_city,
                         nearby_state,
                         limit_per_type=limit_per_type,
                         include_articles=include_articles,
                         include_events=include_events,
-                        allow_nearby_fallback=False,  # Prevent infinite recursion
                     )
 
                     # Use nearby city's content if available
@@ -189,11 +328,16 @@ class LocationContentService:
                             f"{nearby_city}, {nearby_state} for {city}, {state}"
                         )
 
-            return result
+            # Cache the result
+            self._set_cache(city, state, result)
+            logger.info(f"Background scraping completed for {city}, {state}: {result['total_items']} items")
 
         except Exception as e:
-            logger.error(f"Critical error in get_israelis_in_city for {city}, {state}: {e}")
-            return self._get_empty_result(city, state)
+            logger.error(f"Background scraping failed for {city}, {state}: {e}")
+        finally:
+            # Clean up task tracking
+            if cache_key in self._scraping_tasks:
+                del self._scraping_tasks[cache_key]
 
     def _get_empty_result(self, city: str, state: str) -> dict:
         """Return empty result structure - used for error recovery."""
@@ -217,14 +361,23 @@ class LocationContentService:
     async def fetch_news_articles(
         self, city: str, state: str, limit: int = 10
     ) -> list[dict[str, Any]]:
-        """Fetch news articles related to Israelis in a specific city using live web scraping."""
+        """Fetch news articles related to Israelis in a specific city using Exa."""
         try:
-            logger.info(f"Scraping Israeli content for {city}, {state}")
+            logger.info(f"Fetching Israeli content for {city}, {state} via Exa.ai")
 
-            # Use live web scraper to get Israeli-related news for this US city
-            headlines = await scrape_israeli_content_in_us_city(city, state, max_results=limit)
+            # Use Exa to get Israeli-related news with clean article data and images
+            headlines = await scrape_israeli_content_exa(city, state, max_results=limit)
 
             logger.info(f"Found {len(headlines)} Israeli-related headlines for {city}, {state}")
+
+            # Log image extraction stats
+            with_images = sum(1 for h in headlines if h.image_url)
+            logger.info(f"Articles with images: {with_images}/{len(headlines)} ({with_images*100//len(headlines) if len(headlines) > 0 else 0}%)")
+            for idx, h in enumerate(headlines):
+                if h.image_url:
+                    logger.info(f"  ✓ Article {idx}: {h.title[:50]} -> {h.image_url[:80]}")
+                else:
+                    logger.warning(f"  ✗ Article {idx}: {h.title[:50]} -> NO IMAGE (will use fallback)")
 
             return [
                 {
