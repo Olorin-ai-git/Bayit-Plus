@@ -98,8 +98,10 @@
       "emailRequired": "மின்னஞ்சல் தேவை",
       "passwordRequired": "கடவுச்சொல் தேவை",
       "loginFailed": "உள்நுழைவு தோல்வி.",
-      "fillAllFields": "அனைத்து புலங்களையும் நிரப்பவும்"
-    }
+      "fillAllFields": "அனைத்து புலங்களையும் நிரப்பவும்",
+      "noAccount": "கணக்கு இல்லையா?"
+    },
+    "signUpNow": "இப்போது பதிவு செய்க"
   },
   "register": {
     "title": "கணக்கை உருவாக்கு",

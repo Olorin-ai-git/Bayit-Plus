@@ -111,7 +111,8 @@
       "passwordRequired": "需要密码",
       "loginFailed": "登录失败。请检查您的凭据。",
       "googleFailed": "Google 登录失败。请重试。",
-      "fillAllFields": "请填写所有字段"
+      "fillAllFields": "请填写所有字段",
+      "noAccount": "没有账户？"
     },
     "qrInstructions": "用手机扫描二维码快速登录",
     "methodQR": "二维码",
@@ -134,7 +135,8 @@
     "send": "发送",
     "createAccount": "创建账户",
     "bayitThinking": "Bayit 正在思考...",
-    "unexpectedError": "发生意外错误"
+    "unexpectedError": "发生意外错误",
+    "signUpNow": "立即注册"
   },
   "tvLogin": {
     "invalidQR": "无效的二维码。请从电视重新扫描。",

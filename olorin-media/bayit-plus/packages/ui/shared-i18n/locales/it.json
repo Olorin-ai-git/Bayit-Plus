@@ -111,7 +111,8 @@
       "passwordRequired": "La password è obbligatoria",
       "loginFailed": "Accesso fallito. Verifica le tue credenziali.",
       "googleFailed": "Accesso con Google fallito. Riprova.",
-      "fillAllFields": "Compila tutti i campi"
+      "fillAllFields": "Compila tutti i campi",
+      "noAccount": "Non hai un account?"
     },
     "qrInstructions": "Scansiona il codice con il telefono per un accesso rapido",
     "methodQR": "Codice QR",
@@ -134,7 +135,8 @@
     "send": "Invia",
     "createAccount": "Crea account",
     "bayitThinking": "Bayit sta pensando...",
-    "unexpectedError": "Si è verificato un errore imprevisto"
+    "unexpectedError": "Si è verificato un errore imprevisto",
+    "signUpNow": "Iscriviti ora"
   },
   "register": {
     "title": "Crea account",

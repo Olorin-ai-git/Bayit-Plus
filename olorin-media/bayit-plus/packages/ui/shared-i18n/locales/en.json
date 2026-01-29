@@ -111,7 +111,8 @@
       "passwordRequired": "Password is required",
       "loginFailed": "Login failed. Please check your credentials.",
       "googleFailed": "Google sign-in failed. Please try again.",
-      "fillAllFields": "Please fill in all fields"
+      "fillAllFields": "Please fill in all fields",
+      "noAccount": "Don't have an account?"
     },
     "qrInstructions": "Scan the code with your phone for quick login",
     "methodQR": "QR Code",
@@ -134,7 +135,8 @@
     "send": "Send",
     "createAccount": "Create Account",
     "bayitThinking": "Bayit is thinking...",
-    "unexpectedError": "An unexpected error occurred"
+    "unexpectedError": "An unexpected error occurred",
+    "signUpNow": "Sign up now"
   },
   "tvLogin": {
     "invalidQR": "Invalid QR code. Please scan again from your TV.",

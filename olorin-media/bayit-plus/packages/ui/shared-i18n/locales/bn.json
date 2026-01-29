@@ -98,8 +98,10 @@
       "emailRequired": "ইমেইল প্রয়োজন",
       "passwordRequired": "পাসওয়ার্ড প্রয়োজন",
       "loginFailed": "লগইন ব্যর্থ।",
-      "fillAllFields": "সব ফিল্ড পূরণ করুন"
-    }
+      "fillAllFields": "সব ফিল্ড পূরণ করুন",
+      "noAccount": "অ্যাকাউন্ট নেই?"
+    },
+    "signUpNow": "এখনই সাইন আপ করুন"
   },
   "register": {
     "title": "অ্যাকাউন্ট তৈরি করুন",

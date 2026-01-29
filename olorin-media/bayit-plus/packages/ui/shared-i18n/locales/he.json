@@ -107,7 +107,8 @@
     "termsNotice": "בהתחברות, אתה מסכים לתנאי השימוש ומדיניות הפרטיות שלנו",
     "errors": {
       "fillAllFields": "נא למלא את כל השדות",
-      "loginFailed": "שגיאה בהתחברות. נסה שוב."
+      "loginFailed": "שגיאה בהתחברות. נסה שוב.",
+      "noAccount": "אין לך חשבון?"
     },
     "qrInstructions": "סרוק את הקוד עם הטלפון להתחברות מהירה",
     "methodQR": "קוד QR",
@@ -129,7 +130,8 @@
     "voicePlaceholder": "הקלד את תשובתך...",
     "send": "שלח",
     "createAccount": "צור חשבון",
-    "bayitThinking": "בית חושב..."
+    "bayitThinking": "בית חושב...",
+    "signUpNow": "הירשם עכשיו"
   },
   "tvLogin": {
     "invalidQR": "קוד QR לא תקין. סרוק שוב מהטלוויזיה.",
