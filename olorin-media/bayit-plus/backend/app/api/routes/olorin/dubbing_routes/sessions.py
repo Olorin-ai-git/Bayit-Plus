@@ -22,6 +22,7 @@ from app.core.config import settings
 from app.models.integration_partner import (DubbingSession,
                                                 IntegrationPartner,
                                                 UsageRecord)
+from app.services.olorin.dubbing.voice_settings import VoiceSettings
 from app.services.olorin.metering_service import metering_service
 from app.services.olorin.realtime_dubbing_service import RealtimeDubbingService
 
@@ -81,11 +82,22 @@ async def create_session(
             ),
         )
 
+    # P3-2: Convert request voice settings to domain object
+    voice_settings = None
+    if request.voice_settings:
+        voice_settings = VoiceSettings(
+            stability=request.voice_settings.stability,
+            similarity_boost=request.voice_settings.similarity_boost,
+            style=request.voice_settings.style,
+            speaker_boost=request.voice_settings.speaker_boost,
+        )
+
     service = RealtimeDubbingService(
         partner=partner,
         source_language=request.source_language,
         target_language=request.target_language,
         voice_id=request.voice_id,
+        voice_settings=voice_settings,
     )
 
     if not state.add_service(service.session_id, service):
