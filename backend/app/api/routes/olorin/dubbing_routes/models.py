@@ -18,6 +18,10 @@ class CreateSessionRequest(BaseModel):
         default=None,
         description="ElevenLabs voice ID (optional, uses default if not specified)",
     )
+    voice_settings: Optional["VoiceSettingsRequest"] = Field(
+        default=None,
+        description="P3-2: Per-session voice customization settings",
+    )
 
 
 class SessionResponse(BaseModel):
@@ -58,3 +62,58 @@ class VoicesResponse(BaseModel):
     """List of available voices."""
 
     voices: List[VoiceInfo]
+
+
+# P3-1: Voice training models
+
+
+class CreateCustomVoiceRequest(BaseModel):
+    """Request to create a custom voice for training."""
+
+    voice_name: str = Field(
+        ..., min_length=1, max_length=100, description="Display name for the voice"
+    )
+    description: Optional[str] = Field(
+        default=None, max_length=500, description="Voice description"
+    )
+    language: str = Field(
+        default="multilingual", description="Primary language for the voice"
+    )
+
+
+class CustomVoiceResponse(BaseModel):
+    """Custom voice information."""
+
+    id: str
+    partner_id: str
+    voice_id: str
+    voice_name: str
+    description: Optional[str]
+    language: str
+    status: str
+    training_sample_count: int
+    created_at: str
+    ready_at: Optional[str]
+
+
+class CustomVoiceListResponse(BaseModel):
+    """List of custom voices."""
+
+    voices: List[CustomVoiceResponse]
+
+
+class VoiceSettingsRequest(BaseModel):
+    """P3-2: Per-session voice customization settings."""
+
+    stability: float = Field(
+        default=0.5, ge=0.0, le=1.0, description="Voice consistency"
+    )
+    similarity_boost: float = Field(
+        default=0.75, ge=0.0, le=1.0, description="Voice matching strength"
+    )
+    style: float = Field(
+        default=0.0, ge=0.0, le=1.0, description="Style exaggeration"
+    )
+    speaker_boost: bool = Field(
+        default=True, description="Enable speaker boost for clarity"
+    )

@@ -13,6 +13,7 @@ from typing import AsyncIterator, Optional
 from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
 from app.services.olorin.dubbing import pipeline
+from app.services.olorin.dubbing.adaptive_vad import AdaptiveVAD
 from app.services.olorin.dubbing.audio_quality import validate_audio_quality
 from app.services.olorin.dubbing.models import DubbingMessage, DubbingMetrics
 from app.services.olorin.dubbing.prometheus_metrics import (
@@ -25,6 +26,7 @@ from app.services.olorin.dubbing.prometheus_metrics import (
 from app.services.olorin.dubbing.stt_provider import (STTProvider,
                                                       get_stt_provider)
 from app.services.olorin.dubbing.translation import TranslationProvider
+from app.services.olorin.dubbing.voice_settings import VoiceSettings
 from app.services.olorin.metering_service import metering_service
 
 logger = logging.getLogger(__name__)
@@ -47,6 +49,7 @@ class RealtimeDubbingService:
         target_language: str = "en",
         voice_id: Optional[str] = None,
         stt_provider: Optional[STTProvider] = None,
+        voice_settings: Optional[VoiceSettings] = None,
     ):
         self.partner = partner
         self.source_language = source_language
@@ -57,6 +60,12 @@ class RealtimeDubbingService:
 
         self._stt_provider: Optional[STTProvider] = stt_provider
         self._translation_provider = TranslationProvider(target_language)
+
+        # P3-2: Per-session voice customization
+        self._voice_settings = voice_settings
+
+        # P3-5: Adaptive VAD with calibration phase
+        self._adaptive_vad = AdaptiveVAD()
 
         self._running = False
         self._metrics = DubbingMetrics()
@@ -106,7 +115,7 @@ class RealtimeDubbingService:
             self._last_activity = time.time()
 
             # P2-3: Record Prometheus session start
-            record_session_started(partner.partner_id)
+            record_session_started(self.partner.partner_id)
 
             self._stt_task = asyncio.create_task(
                 pipeline.process_transcripts(
@@ -120,6 +129,7 @@ class RealtimeDubbingService:
                     running_check=lambda: self._running,
                     get_segment_start_time=lambda: self._current_segment_start_time,
                     reset_segment_time=self._reset_segment_time,
+                    voice_settings=self._voice_settings,
                 )
             )
 
@@ -249,6 +259,16 @@ class RealtimeDubbingService:
         quality = validate_audio_quality(audio_data)
         for warning in quality.warnings:
             record_audio_quality_warning(warning_type="quality")
+
+        # P3-5: Adaptive VAD - calibrate then filter silence
+        if not self._adaptive_vad.is_calibrated:
+            self._adaptive_vad.process_calibration_chunk(audio_data)
+            # During calibration, still forward all audio to STT
+        else:
+            speech_detected = self._adaptive_vad.is_speech(audio_data)
+            if speech_detected is False:
+                # Silence detected - skip STT to reduce costs
+                return
 
         # P2-3: Update queue depth gauge
         record_queue_depth(self._output_queue.qsize())
