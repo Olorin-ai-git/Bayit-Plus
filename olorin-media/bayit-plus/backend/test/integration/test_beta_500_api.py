@@ -84,7 +84,7 @@ class TestBetaSignupEndpoint:
             mock_email_service.send_verification_email = AsyncMock()
 
             response = client.post(
-                "/beta/signup",
+                "/api/v1/beta/signup",
                 json={
                     "email": "newuser@example.com",
                     "ip": "192.168.1.1",
@@ -105,7 +105,7 @@ class TestBetaSignupEndpoint:
             MockUser.find.return_value.count = AsyncMock(return_value=500)  # Full
 
             response = client.post(
-                "/beta/signup",
+                "/api/v1/beta/signup",
                 json={
                     "email": "newuser@example.com",
                     "ip": "192.168.1.1",
@@ -125,7 +125,7 @@ class TestBetaSignupEndpoint:
             MockUser.find_one = AsyncMock(return_value=existing_user)
 
             response = client.post(
-                "/beta/signup",
+                "/api/v1/beta/signup",
                 json={
                     "email": "existing@example.com",
                     "ip": "192.168.1.1",
@@ -156,7 +156,7 @@ class TestBetaVerifyEndpoint:
             mock_credit_service = MockCredit.return_value
             mock_credit_service.allocate_credits = AsyncMock()
 
-            response = client.get("/beta/verify/valid-token-123")
+            response = client.get("/api/v1/beta/verify/valid-token-123")
 
             assert response.status_code == 200
             data = response.json()
@@ -170,7 +170,7 @@ class TestBetaVerifyEndpoint:
             mock_email_service = MockEmail.return_value
             mock_email_service.verify_user_email = AsyncMock(return_value=(False, "invalid_format"))
 
-            response = client.get("/beta/verify/invalid-token")
+            response = client.get("/api/v1/beta/verify/invalid-token")
 
             assert response.status_code == 400
             assert "invalid" in response.json()["detail"].lower()
@@ -191,7 +191,7 @@ class TestCreditBalanceEndpoint:
             mock_service.is_low_balance = AsyncMock(return_value=(False, 4000))
             mock_service.is_critical_balance = AsyncMock(return_value=(False, 4000))
 
-            response = client.get("/beta/credits/balance/user-123")
+            response = client.get("/api/v1/beta/credits/balance/user-123")
 
             assert response.status_code == 200
             data = response.json()
@@ -208,7 +208,7 @@ class TestCreditBalanceEndpoint:
         with patch('app.api.routes.beta.credits.BetaCredit') as MockCredit:
             MockCredit.find_one = AsyncMock(return_value=None)
 
-            response = client.get("/beta/credits/balance/nonexistent-user")
+            response = client.get("/api/v1/beta/credits/balance/nonexistent-user")
 
             assert response.status_code == 404
 
@@ -224,7 +224,7 @@ class TestCreditDeductEndpoint:
             mock_service.deduct_credits = AsyncMock(return_value=(True, 3950))
 
             response = client.post(
-                "/beta/credits/deduct",
+                "/api/v1/beta/credits/deduct",
                 json={
                     "user_id": "user-123",
                     "feature": "live_dubbing",
@@ -246,7 +246,7 @@ class TestCreditDeductEndpoint:
             mock_service.deduct_credits = AsyncMock(return_value=(False, 10))
 
             response = client.post(
-                "/beta/credits/deduct",
+                "/api/v1/beta/credits/deduct",
                 json={
                     "user_id": "user-123",
                     "feature": "live_dubbing",
@@ -271,7 +271,7 @@ class TestSessionStartEndpoint:
             mock_service.start_dubbing_session = AsyncMock(return_value="sess-unique-123")
 
             response = client.post(
-                "/beta/sessions/start",
+                "/api/v1/beta/sessions/start",
                 json={
                     "user_id": "user-123",
                     "feature": "live_dubbing",
@@ -292,7 +292,7 @@ class TestSessionStartEndpoint:
             mock_service.start_dubbing_session = AsyncMock(return_value=None)
 
             response = client.post(
-                "/beta/sessions/start",
+                "/api/v1/beta/sessions/start",
                 json={
                     "user_id": "user-123",
                     "feature": "live_dubbing"
@@ -312,7 +312,7 @@ class TestSessionCheckpointEndpoint:
             mock_service = MockService.return_value
             mock_service.checkpoint_session = AsyncMock(return_value=3970)
 
-            response = client.post("/beta/sessions/sess-123/checkpoint")
+            response = client.post("/api/v1/beta/sessions/sess-123/checkpoint")
 
             assert response.status_code == 200
             data = response.json()
@@ -326,7 +326,7 @@ class TestSessionCheckpointEndpoint:
             mock_service = MockService.return_value
             mock_service.checkpoint_session = AsyncMock(return_value=0)
 
-            response = client.post("/beta/sessions/sess-123/checkpoint")
+            response = client.post("/api/v1/beta/sessions/sess-123/checkpoint")
 
             assert response.status_code == 200
             data = response.json()
@@ -349,7 +349,7 @@ class TestSessionEndEndpoint:
             mock_service.end_session = AsyncMock(return_value=3950)
 
             response = client.post(
-                "/beta/sessions/sess-123/end",
+                "/api/v1/beta/sessions/sess-123/end",
                 json={"reason": "completed"}
             )
 
@@ -369,7 +369,7 @@ class TestProgramStatusEndpoint:
         with patch('app.api.routes.beta.status.BetaUser') as MockUser:
             MockUser.find.return_value.count = AsyncMock(return_value=250)
 
-            response = client.get("/beta/status")
+            response = client.get("/api/v1/beta/status")
 
             assert response.status_code == 200
             data = response.json()
@@ -385,7 +385,7 @@ class TestProgramStatusEndpoint:
         with patch('app.api.routes.beta.status.BetaUser') as MockUser:
             MockUser.find.return_value.count = AsyncMock(return_value=500)
 
-            response = client.get("/beta/status")
+            response = client.get("/api/v1/beta/status")
 
             assert response.status_code == 200
             data = response.json()
