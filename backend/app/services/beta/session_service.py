@@ -12,7 +12,15 @@ from app.core.config import Settings
 from app.core.logging_config import get_logger
 from app.models.beta_session import BetaSession
 from app.services.beta.credit_service import BetaCreditService
-from app.core.metrics import record_session_metrics, record_checkpoint
+
+# Optional metrics (requires prometheus_client)
+try:
+    from app.core.metrics import record_session_metrics, record_checkpoint
+except ImportError:
+    def record_session_metrics(*args, **kwargs):
+        pass  # No-op if metrics not available
+    def record_checkpoint(*args, **kwargs):
+        pass  # No-op if metrics not available
 
 logger = get_logger(__name__)
 

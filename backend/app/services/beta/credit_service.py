@@ -15,7 +15,15 @@ from app.models.beta_user import BetaUser
 from app.models.beta_credit import BetaCredit
 from app.models.beta_credit_transaction import BetaCreditTransaction
 from app.services.olorin.metering.service import MeteringService
-from app.core.metrics import record_credit_deduction
+
+# Optional metrics (requires prometheus_client)
+try:
+    from app.core.metrics import record_credit_deduction
+    METRICS_ENABLED = True
+except ImportError:
+    METRICS_ENABLED = False
+    def record_credit_deduction(*args, **kwargs):
+        pass  # No-op if metrics not available
 
 logger = get_logger(__name__)
 

@@ -70,6 +70,8 @@ def register_all_routers(app: FastAPI) -> None:
         router as admin_recordings_router
     from app.api.routes.olorin import legacy_router as olorin_legacy_router
     from app.api.routes.olorin import router as olorin_router
+    # Beta 500 routes
+    from app.api.routes.beta import signup, credits, sessions, status
 
     # ============================================
     # Health Check Routes (no prefix)
@@ -356,6 +358,15 @@ def register_all_routers(app: FastAPI) -> None:
     # ============================================
     app.include_router(nlp.router, prefix=prefix, tags=["nlp"])
     logger.debug("Registered NLP routes (intent parsing, agent execution, semantic search, voice commands)")
+
+    # ============================================
+    # Beta 500 Program Routes
+    # ============================================
+    app.include_router(signup.router, prefix=prefix, tags=["beta"])
+    app.include_router(credits.router, prefix=prefix, tags=["beta-credits"])
+    app.include_router(sessions.router, prefix=prefix, tags=["beta-sessions"])
+    app.include_router(status.router, prefix=prefix, tags=["beta-status"])
+    logger.debug("Registered Beta 500 closed beta program routes (signup, credits, sessions, status)")
 
     logger.info(f"All API routers registered with prefix {prefix}")
 

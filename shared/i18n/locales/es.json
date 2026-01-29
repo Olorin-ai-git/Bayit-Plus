@@ -3176,6 +3176,11 @@
       "israeliMovies": "Películas israelíes recomendadas",
       "whatsOnNow": "¿Qué hay ahora?",
       "popularPodcasts": "Podcasts populares"
+    },
+    "voiceCommands": {
+      "showChannels": "Muéstrame canales...",
+      "playChess": "Comienza un juego de ajedrez con...",
+      "multiContent": "Mostrar lado a lado..."
     }
   },
   "chat": {
@@ -3858,6 +3863,18 @@
         "food": "🍴 Gastronomía",
         "tech": "💻 Tecnología e Innovación",
         "events": "📅 Eventos Locales"
+      }
+    },
+    "beta": {
+      "credits": {
+        "loading": "Cargando saldo de créditos...",
+        "error": "No se puede cargar el saldo de créditos",
+        "label": "Créditos de IA",
+        "remaining": "créditos restantes",
+        "warningCritical": "Crítico: Créditos casi agotados",
+        "warningLow": "Advertencia: Saldo de créditos bajo",
+        "upgrade": "Actualizar Plan",
+        "upgradeAction": "Actualizar para obtener más créditos"
       }
     }
   }

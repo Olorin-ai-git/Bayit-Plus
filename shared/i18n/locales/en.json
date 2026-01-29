@@ -4439,6 +4439,18 @@
         "title": "7. Contact Us",
         "intro": "If you have any questions about this Privacy Policy, please contact us at:"
       }
+    },
+    "beta": {
+      "credits": {
+        "loading": "Loading credit balance...",
+        "error": "Unable to load credit balance",
+        "label": "AI Credits",
+        "remaining": "credits remaining",
+        "warningCritical": "Critical: Running low on credits",
+        "warningLow": "Warning: Credit balance is low",
+        "upgrade": "Upgrade Plan",
+        "upgradeAction": "Upgrade to get more credits"
+      }
     }
   }
 }
