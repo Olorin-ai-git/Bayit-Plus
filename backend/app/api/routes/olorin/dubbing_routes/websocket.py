@@ -7,9 +7,10 @@ Real-time audio streaming via WebSocket.
 import asyncio
 import logging
 
-from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from app.api.routes.olorin.dubbing_routes import state
+from app.core.config import settings
 from app.services.olorin.partner_service import partner_service
 
 logger = logging.getLogger(__name__)
@@ -21,12 +22,17 @@ router = APIRouter()
 async def websocket_dubbing(
     websocket: WebSocket,
     session_id: str,
-    api_key: str = Query(..., alias="api_key"),
 ):
     """
     WebSocket endpoint for real-time audio dubbing.
 
-    Protocol:
+    Auth Protocol (P0-2):
+    - Client connects without query params
+    - Server accepts connection
+    - Client sends JSON auth message: {"api_key": "..."}
+    - Server validates within timeout, closes on failure
+
+    Data Protocol:
     - Client sends: Binary audio (16kHz, mono, LINEAR16 PCM)
     - Server sends JSON messages:
       - {"type": "transcript", "original_text": "...", "source_language": "he"}
@@ -36,6 +42,29 @@ async def websocket_dubbing(
       - {"type": "session_started", "session_id": "..."}
       - {"type": "session_ended", "session_id": "..."}
     """
+    await websocket.accept()
+
+    # P0-2: Require auth message within timeout (no query param)
+    auth_timeout = settings.olorin.dubbing.ws_auth_timeout_seconds
+    try:
+        auth_data = await asyncio.wait_for(
+            websocket.receive_json(),
+            timeout=auth_timeout,
+        )
+    except asyncio.TimeoutError:
+        logger.warning(f"WebSocket auth timeout for session {session_id}")
+        await websocket.close(code=4001, reason="Auth timeout")
+        return
+    except Exception as e:
+        logger.warning(f"WebSocket auth error for session {session_id}: {e}")
+        await websocket.close(code=4001, reason="Auth message required")
+        return
+
+    api_key = auth_data.get("api_key") if isinstance(auth_data, dict) else None
+    if not api_key:
+        await websocket.close(code=4001, reason="Missing api_key in auth message")
+        return
+
     partner = await partner_service.authenticate_by_api_key(api_key)
     if not partner:
         await websocket.close(code=4001, reason="Invalid API key")
@@ -54,8 +83,9 @@ async def websocket_dubbing(
         await websocket.close(code=4003, reason="Session belongs to different partner")
         return
 
-    await websocket.accept()
-    logger.info(f"WebSocket connected for dubbing session: {session_id}")
+    logger.info(f"WebSocket authenticated for dubbing session: {session_id}")
+
+    max_chunk_bytes = settings.olorin.dubbing.max_audio_chunk_bytes
 
     try:
         await service.start()
@@ -66,11 +96,21 @@ async def websocket_dubbing(
                 while True:
                     data = await websocket.receive()
                     if "bytes" in data:
-                        await service.process_audio_chunk(data["bytes"])
+                        audio_bytes = data["bytes"]
+                        # P0-1: Message size limit
+                        if len(audio_bytes) > max_chunk_bytes:
+                            await websocket.close(
+                                code=1009,
+                                reason="Message too large",
+                            )
+                            return
+                        await service.process_audio_chunk(audio_bytes)
                     elif "text" in data:
                         logger.debug(f"Received text message: {data['text']}")
             except WebSocketDisconnect:
-                logger.info(f"Client disconnected from dubbing session: {session_id}")
+                logger.info(
+                    f"Client disconnected from dubbing session: {session_id}"
+                )
             except Exception as e:
                 logger.error(f"Error receiving audio: {e}")
 

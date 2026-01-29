@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from app.models.integration_partner import DubbingSession
+from app.services.olorin.dubbing.pii_detector import detect_and_mask
 from app.services.olorin.metering.costs import calculate_session_cost
 from app.services.olorin.metering.usage import record_dubbing_usage
 
@@ -72,7 +73,9 @@ async def end_dubbing_session(
     session.last_activity_at = datetime.now(timezone.utc)
 
     if error_message:
-        session.error_message = error_message
+        # P1-5: Mask PII before storing error messages
+        pii_result = detect_and_mask(error_message)
+        session.error_message = pii_result.masked_text
         session.error_count += 1
 
     session.estimated_cost_usd = calculate_session_cost(

@@ -199,6 +199,110 @@ class DubbingConfig(BaseSettings):
         description="Maximum connections in Redis connection pool",
     )
 
+    # P0 - Security Configuration
+    max_audio_chunk_bytes: int = Field(
+        default=65536,
+        ge=1024,
+        le=1048576,
+        description="Maximum audio chunk size in bytes (default 64KB)",
+    )
+    ws_auth_timeout_seconds: float = Field(
+        default=10.0,
+        ge=1.0,
+        le=60.0,
+        description="Timeout for WebSocket authentication message",
+    )
+    output_queue_maxsize: int = Field(
+        default=50,
+        ge=5,
+        le=500,
+        description="Maximum queued output messages before backpressure",
+    )
+    max_concurrent_pipeline_tasks: int = Field(
+        default=5,
+        ge=1,
+        le=50,
+        description="Maximum concurrent translation+TTS pipeline tasks",
+    )
+    session_idle_timeout_seconds: int = Field(
+        default=7200,
+        ge=60,
+        le=86400,
+        description="Auto-stop session after this many seconds idle",
+    )
+    idle_check_interval_seconds: int = Field(
+        default=60,
+        ge=10,
+        le=600,
+        description="How often to check for idle sessions (seconds)",
+    )
+    max_active_sessions: int = Field(
+        default=500,
+        ge=1,
+        le=10000,
+        description="Maximum concurrent B2B dubbing sessions per instance",
+    )
+
+    # P1 - Scalability Configuration
+    tts_connection_pool_size: int = Field(
+        default=10,
+        ge=1,
+        le=100,
+        description="TTS WebSocket connection pool size",
+    )
+    translation_thread_pool_size: int = Field(
+        default=50,
+        ge=1,
+        le=200,
+        description="Dedicated translation thread pool workers",
+    )
+    pii_detection_enabled: bool = Field(
+        default=True,
+        description="Enable PII detection and masking before storage",
+    )
+    session_retention_days: int = Field(
+        default=7,
+        ge=1,
+        le=365,
+        description="Session data retention period in days",
+    )
+
+    # P2 - Performance Configuration
+    max_parallel_translation_chunks: int = Field(
+        default=10,
+        ge=1,
+        le=50,
+        description="Maximum parallel translation chunk requests",
+    )
+    transcript_compression_enabled: bool = Field(
+        default=True,
+        description="Enable filler word removal from transcripts",
+    )
+    translation_cache_enabled: bool = Field(
+        default=True,
+        description="Enable two-tier translation caching",
+    )
+    audio_quality_check_enabled: bool = Field(
+        default=True,
+        description="Enable audio quality verification on incoming chunks",
+    )
+    audio_clipping_threshold: float = Field(
+        default=0.01,
+        ge=0.0,
+        le=1.0,
+        description="Fraction of samples at max amplitude before clipping warning",
+    )
+    audio_silence_threshold: float = Field(
+        default=0.8,
+        ge=0.0,
+        le=1.0,
+        description="Fraction of silent samples before silence warning",
+    )
+    prometheus_metrics_enabled: bool = Field(
+        default=True,
+        description="Enable Prometheus metrics export for dubbing",
+    )
+
     class Config:
         env_prefix = "DUBBING_"
 

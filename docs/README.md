@@ -24,6 +24,7 @@ Deployment guides and status:
 - **Location Feature Production Ready** (`LOCATION_FEATURE_PRODUCTION_READY.md`) - Production readiness report for location-based content feature with all security fixes and deployment guide - ✅ PRODUCTION READY - 2026-01-28
 - **Secrets & Environment Variables Comprehensive Audit** (`SECRETS_ENVIRONMENT_AUDIT_2026-01-28.md`) - Critical security audit comparing backend/.env (120+ vars), cloudbuild.yaml (3 secrets), deploy_server.sh (72 secrets), Google Cloud Secret Manager (118 secrets), and Cloud Run service (60+ secrets) with security vulnerabilities, naming inconsistencies, and deployment gaps - 🚨 CRITICAL SECURITY ISSUES - 2026-01-28 **NEW**
 - **Google Cloud Secrets: Librarian & WebAuthn** (`GCLOUD_SECRETS_LIBRARIAN_WEBAUTHN.md`) - Secrets management documentation for 25 Librarian Agent configuration variables and 3 WebAuthn/Passkey authentication variables with GCloud commands and sync script workflow - 2026-01-29 **NEW**
+- **Google Cloud Secrets: Dubbing Pipeline Improvements** (`GCLOUD_SECRETS_DUBBING_IMPROVEMENTS.md`) - Secrets management documentation for 18 new dubbing configuration variables across P0 security, P1 scalability, P2 performance improvements with GCloud commands, service account access, and tuning guide - 2026-01-29 **NEW**
 
 ### `/testing/`
 Testing documentation and checklists:
