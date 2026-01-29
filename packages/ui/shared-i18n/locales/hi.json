@@ -111,7 +111,8 @@
       "passwordRequired": "पासवर्ड आवश्यक है",
       "loginFailed": "लॉगिन विफल।",
       "googleFailed": "Google साइन-इन विफल।",
-      "fillAllFields": "कृपया सभी फ़ील्ड भरें"
+      "fillAllFields": "कृपया सभी फ़ील्ड भरें",
+      "noAccount": "खाता नहीं है?"
     },
     "qrInstructions": "त्वरित लॉगिन के लिए अपने फोन से कोड स्कैन करें",
     "methodQR": "QR कोड",
@@ -126,7 +127,8 @@
     "send": "भेजें",
     "createAccount": "खाता बनाएं",
     "bayitThinking": "Bayit सोच रहा है...",
-    "unexpectedError": "एक अप्रत्याशित त्रुटि हुई"
+    "unexpectedError": "एक अप्रत्याशित त्रुटि हुई",
+    "signUpNow": "अभी साइन अप करें"
   },
   "tvLogin": {
     "invalidQR": "अमान्य QR कोड।",

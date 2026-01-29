@@ -140,6 +140,16 @@ export default function LoginPage() {
           {error && (
             <View style={styles.errorContainer}>
               <Text style={styles.errorText}>{error}</Text>
+              <View style={[styles.errorSignupPrompt, isRTL && styles.errorSignupPromptRTL]}>
+                <Text style={styles.errorSignupText}>
+                  {t('login.errors.noAccount', "Don't have an account?")}
+                </Text>
+                <Link to="/register" style={{ textDecoration: 'none' }}>
+                  <Text style={styles.errorSignupLink}>
+                    {t('login.signUpNow', 'Sign up now')}
+                  </Text>
+                </Link>
+              </View>
             </View>
           )}
 
@@ -435,6 +445,26 @@ const styles = StyleSheet.create({
     color: '#fca5a5',
     fontSize: 14,
     textAlign: 'center',
+    marginBottom: spacing.sm,
+  },
+  errorSignupPrompt: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+  },
+  errorSignupPromptRTL: {
+    flexDirection: 'row-reverse',
+  },
+  errorSignupText: {
+    color: '#fca5a5',
+    fontSize: 13,
+  },
+  errorSignupLink: {
+    color: colors.primary.DEFAULT,
+    fontSize: 13,
+    fontWeight: '600',
   },
   // Input Wrappers
   inputWrapper: {

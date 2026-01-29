@@ -131,9 +131,11 @@
       "fillAllFields": "Por favor, completa todos los campos",
       "loginFailed": "Error al iniciar sesión. Verifica tus credenciales.",
       "googleFailed": "Error al iniciar sesión con Google. Intenta de nuevo.",
-      "unexpectedError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
+      "unexpectedError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
+      "noAccount": "¿No tienes una cuenta?"
     },
-    "unexpectedError": "Ocurrió un error inesperado"
+    "unexpectedError": "Ocurrió un error inesperado",
+    "signUpNow": "Regístrate ahora"
   },
   "tvLogin": {
     "invalidQR": "Código QR inválido. Escanea de nuevo desde tu TV.",

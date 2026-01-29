@@ -111,7 +111,8 @@
       "passwordRequired": "Le mot de passe est requis",
       "loginFailed": "Échec de la connexion. Veuillez vérifier vos identifiants.",
       "googleFailed": "Échec de la connexion Google. Veuillez réessayer.",
-      "fillAllFields": "Veuillez remplir tous les champs"
+      "fillAllFields": "Veuillez remplir tous les champs",
+      "noAccount": "Vous n'avez pas de compte ?"
     },
     "qrInstructions": "Scannez le code avec votre téléphone pour une connexion rapide",
     "methodQR": "Code QR",
@@ -134,7 +135,8 @@
     "send": "Envoyer",
     "createAccount": "Créer un compte",
     "bayitThinking": "Bayit réfléchit...",
-    "unexpectedError": "Une erreur inattendue s'est produite"
+    "unexpectedError": "Une erreur inattendue s'est produite",
+    "signUpNow": "Inscrivez-vous maintenant"
   },
   "tvLogin": {
     "invalidQR": "Code QR invalide. Veuillez scanner à nouveau depuis votre TV.",

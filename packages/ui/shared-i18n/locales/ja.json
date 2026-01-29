@@ -536,7 +536,11 @@
     "secureLogin": "安全なログイン",
     "staySignedIn": "ログイン状態を保持",
     "signOut": "ログアウト",
-    "switchAccount": "アカウントを切り替え"
+    "switchAccount": "アカウントを切り替え",
+    "signUpNow": "今すぐ登録",
+    "errors": {
+      "noAccount": "アカウントをお持ちでないですか？"
+    }
   },
   "register": {
     "title": "アカウント作成",
