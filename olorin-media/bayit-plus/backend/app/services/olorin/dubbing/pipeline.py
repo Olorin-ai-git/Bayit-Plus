@@ -7,7 +7,6 @@ Uses TTS connection pool (P1-1) and per-session voice settings (P3-2).
 
 import asyncio
 import base64
-import json
 import logging
 import time
 from typing import Optional
@@ -24,7 +23,7 @@ from app.services.olorin.dubbing.prometheus_metrics import (
     record_tts_latency,
 )
 from app.services.olorin.dubbing.transcript_utils import compress_transcript
-from app.services.olorin.dubbing.tts_connection_pool import get_tts_pool
+from app.services.olorin.dubbing.tts_stream import stream_tts
 from app.services.olorin.dubbing.voice_settings import VoiceSettings
 
 logger = logging.getLogger(__name__)
@@ -142,8 +141,6 @@ async def process_translation_tts(
     Uses P1-1 TTS connection pool for reduced latency.
     Uses P3-2 per-session voice settings.
     """
-    ws = None
-
     # P0-4: Bound concurrent pipeline tasks
     semaphore = _get_pipeline_semaphore()
 
@@ -180,84 +177,46 @@ async def process_translation_tts(
                 )
             )
 
-            # P1-1: Generate TTS using connection pool
+            # P1-1: Generate TTS using extracted stream handler
             tts_start = time.time() * 1000
-            pool = get_tts_pool()
-            ws = await pool.acquire(voice_id=voice_id)
+            tts_result = await stream_tts(
+                text=translated_text,
+                voice_id=voice_id,
+                voice_settings=voice_settings,
+            )
 
-            # P3-2: Apply per-session voice settings
-            tts_voice_settings = (
-                voice_settings or VoiceSettings()
-            ).to_elevenlabs_dict()
+            if tts_result.error:
+                raise RuntimeError(tts_result.error)
 
-            init_message = {
-                "text": " ",
-                "voice_settings": tts_voice_settings,
-                "generation_config": {
-                    "chunk_length_schedule": [120, 160, 250, 290],
-                },
-                "xi_api_key": settings.ELEVENLABS_API_KEY,
-            }
-            await ws.send(json.dumps(init_message))
+            # Record TTS latency from first audio chunk
+            if tts_result.first_audio_time_ms is not None:
+                tts_latency = tts_result.first_audio_time_ms - tts_start
+                metrics.tts_latencies_ms.append(tts_latency)
+                record_tts_latency(tts_latency)
 
-            # Send translated text
-            text_message = {
-                "text": translated_text,
-                "try_trigger_generation": True,
-                "flush": True,
-            }
-            await ws.send(json.dumps(text_message))
+            # Voice Tech #12: Audio is already raw bytes from ElevenLabs
+            # (PCM format). Encode to base64 once for WebSocket transport.
+            for audio_chunk in tts_result.audio_chunks:
+                audio_b64 = base64.b64encode(audio_chunk).decode("utf-8")
+                total_latency = (time.time() * 1000) - stt_end_time
 
-            # Signal end of text input
-            await ws.send(json.dumps({"text": "", "flush": True}))
-
-            # Receive audio chunks from TTS
-            first_audio_time: Optional[float] = None
-            async for raw_message in ws:
-                data = json.loads(raw_message)
-
-                if "error" in data:
-                    raise RuntimeError(
-                        data.get("error", "Unknown TTS error")
+                await output_queue.put(
+                    DubbingMessage(
+                        type="dubbed_audio",
+                        data=audio_b64,
+                        original_text=transcript,
+                        translated_text=translated_text,
+                        source_language=source_lang,
+                        target_language=target_language,
+                        latency_ms=total_latency,
                     )
-
-                if "audio" in data and data["audio"]:
-                    audio_bytes = base64.b64decode(data["audio"])
-                    if first_audio_time is None:
-                        first_audio_time = time.time() * 1000
-                        tts_latency = first_audio_time - tts_start
-                        metrics.tts_latencies_ms.append(tts_latency)
-                        record_tts_latency(tts_latency)
-
-                    audio_b64 = base64.b64encode(
-                        audio_bytes
-                    ).decode("utf-8")
-                    total_latency = (time.time() * 1000) - stt_end_time
-
-                    await output_queue.put(
-                        DubbingMessage(
-                            type="dubbed_audio",
-                            data=audio_b64,
-                            original_text=transcript,
-                            translated_text=translated_text,
-                            source_language=source_lang,
-                            target_language=target_language,
-                            latency_ms=total_latency,
-                        )
-                    )
-
-                if data.get("isFinal"):
-                    break
-
-            # Release connection back to pool
-            await pool.release(ws)
-            ws = None
+                )
 
             metrics.segments_processed += 1
             metrics.total_characters_synthesized += len(translated_text)
 
-            if first_audio_time:
-                total_latency = first_audio_time - stt_end_time
+            if tts_result.first_audio_time_ms is not None:
+                total_latency = tts_result.first_audio_time_ms - stt_end_time
                 metrics.total_latencies_ms.append(total_latency)
                 record_total_latency(total_latency)
 
@@ -285,10 +244,3 @@ async def process_translation_tts(
             await output_queue.put(
                 DubbingMessage(type="error", message=str(e))
             )
-        finally:
-            if ws:
-                try:
-                    pool = get_tts_pool()
-                    await pool.release(ws)
-                except Exception:
-                    pass

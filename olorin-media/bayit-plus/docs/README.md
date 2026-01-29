@@ -25,6 +25,8 @@ Deployment guides and status:
 - **Secrets & Environment Variables Comprehensive Audit** (`SECRETS_ENVIRONMENT_AUDIT_2026-01-28.md`) - Critical security audit comparing backend/.env (120+ vars), cloudbuild.yaml (3 secrets), deploy_server.sh (72 secrets), Google Cloud Secret Manager (118 secrets), and Cloud Run service (60+ secrets) with security vulnerabilities, naming inconsistencies, and deployment gaps - 🚨 CRITICAL SECURITY ISSUES - 2026-01-28 **NEW**
 - **Google Cloud Secrets: Librarian & WebAuthn** (`GCLOUD_SECRETS_LIBRARIAN_WEBAUTHN.md`) - Secrets management documentation for 25 Librarian Agent configuration variables and 3 WebAuthn/Passkey authentication variables with GCloud commands and sync script workflow - 2026-01-29 **NEW**
 - **Google Cloud Secrets: Dubbing Pipeline Improvements** (`GCLOUD_SECRETS_DUBBING_IMPROVEMENTS.md`) - Secrets management documentation for 18 new dubbing configuration variables across P0 security, P1 scalability, P2 performance improvements with GCloud commands, service account access, and tuning guide - 2026-01-29 **NEW**
+- **Google Cloud Secrets: Beta 500 Program** (`GCLOUD_SECRETS_BETA_500.md`) - Secrets management documentation for 16 Beta 500 closed beta program configuration variables (fraud detection, email verification, credit system, session tracking) with GCloud commands, service account access, and sync workflow - 2026-01-29 **NEW**
+- **Beta 500 Monitoring Setup** (`MONITORING_SETUP.md`) - Prometheus/Grafana/Alertmanager monitoring infrastructure for Beta 500 program with 30+ business and system metrics, alert rules for credit thresholds, fraud detection, session tracking, and dashboard templates - 2026-01-29 **NEW**
 
 ### `/testing/`
 Testing documentation and checklists:
@@ -45,6 +47,7 @@ Implementation notes and session reports:
 - Frontend/backend updates
 - Data migration notes
 - Session completion reports
+- **Beta 500 Closed Beta Program** (`BETA_500_REVISED_PLAN.md`) - Comprehensive implementation plan for closed beta program supporting 500 Israeli expat families with 5,000 free AI credits each: email verification with HMAC-SHA256 tokens, fraud detection with SHA-256 fingerprinting, atomic MongoDB credit transactions, session-based checkpoint deduction (30-second intervals), complete API endpoints, web/mobile/tvOS credit widgets, Prometheus metrics, blue-green deployment with gradual rollout - ✅ APPROVED BY ALL REVIEWERS - 2026-01-29 **NEW**
 - **GlassEmptyState Migration Guide** (`GLASS_EMPTY_STATE_MIGRATION.md`) - Migration of 12+ empty state implementations to unified GlassEmptyState component - 2026-01-28 **NEW**
 - **Geolocation Permission UI** (`GEOLOCATION_UI_IMPLEMENTATION.md`) - GDPR-compliant browser geolocation permission UI with consent modal, permission banner, and backend integration - ✅ COMPLETE - 2026-01-28 **NEW**
 - **Maariv 103FM Playlist Widget** (`MAARIV_103_PLAYLIST_WIDGET_IMPLEMENTATION.md`) - Custom React widget displaying scrollable archive of 103FM podcast episodes with integrated AudioPlayer, pagination, RTL support, and glassmorphism styling - ✅ IMPLEMENTED - 2026-01-28 **NEW**
@@ -212,6 +215,7 @@ When adding new documentation:
 This documentation structure was organized on January 13, 2026 to improve project organization.
 
 **Latest Updates:**
+- **January 29, 2026:** Added Beta 500 Closed Beta Program documentation - Complete implementation plan (`/implementation/BETA_500_REVISED_PLAN.md`), secrets management (`/deployment/GCLOUD_SECRETS_BETA_500.md`), and monitoring setup (`/deployment/MONITORING_SETUP.md`) for 500-family closed beta with 5,000 free AI credits per user
 - **January 25, 2026:** Added Admin Uploads Page critical issues resolution documentation (`/reviews/CRITICAL_ISSUES_FIXED_2026-01-25.md`) - All 5 blocking issues resolved, production-ready
 - **January 24, 2026 (Phase 1.5):** Added environment variables documentation (`ENVIRONMENT_VARIABLES.md`) and validation infrastructure
 - **January 24, 2026 (Phase 1):** Added `/cli/` directory with Olorin CLI documentation (Bash Router complete)

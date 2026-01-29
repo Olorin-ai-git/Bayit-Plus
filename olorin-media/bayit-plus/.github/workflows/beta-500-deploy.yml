@@ -1,0 +1,445 @@
+name: Beta 500 Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+    paths:
+      - 'backend/app/services/beta/**'
+      - 'backend/app/api/routes/beta/**'
+      - 'backend/app/models/beta_*.py'
+      - 'shared/components/beta/**'
+      - 'mobile-app/src/components/beta/**'
+      - 'web/src/components/beta/**'
+      - 'tvos-app/src/components/beta/**'
+      - '.github/workflows/beta-500-deploy.yml'
+  pull_request:
+    branches:
+      - main
+      - staging
+    paths:
+      - 'backend/app/services/beta/**'
+      - 'backend/app/api/routes/beta/**'
+
+env:
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_REGION: us-central1
+  BACKEND_IMAGE: gcr.io/${{ secrets.GCP_PROJECT_ID }}/bayit-plus-backend
+  FRONTEND_IMAGE: gcr.io/${{ secrets.GCP_PROJECT_ID }}/bayit-plus-frontend
+
+jobs:
+  # ============================================================================
+  # VALIDATION & TESTING
+  # ============================================================================
+  validate:
+    name: Validate Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: |
+          poetry config virtualenvs.create true
+          poetry install --no-interaction
+
+      - name: Run Black (Code Formatting)
+        working-directory: ./backend
+        run: poetry run black --check .
+
+      - name: Run isort (Import Sorting)
+        working-directory: ./backend
+        run: poetry run isort --check .
+
+      - name: Run MyPy (Type Checking)
+        working-directory: ./backend
+        run: poetry run mypy app/
+
+      - name: Run Pylint (Linting)
+        working-directory: ./backend
+        run: poetry run pylint app/ --fail-under=8.0
+
+  test-backend:
+    name: Backend Tests (87% Coverage Required)
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install Dependencies
+        working-directory: ./backend
+        run: poetry install --no-interaction
+
+      - name: Run Pytest with Coverage
+        working-directory: ./backend
+        env:
+          APP_ENV: test
+          MONGODB_TEST_URI: mongodb://localhost:27017/bayit_test
+        run: |
+          poetry run pytest \
+            --cov=app \
+            --cov-report=xml \
+            --cov-report=term \
+            --cov-fail-under=87 \
+            -v
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./backend/coverage.xml
+          flags: backend
+          name: backend-coverage
+
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: './backend'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy Results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Run Safety (Python Dependency Check)
+        working-directory: ./backend
+        run: |
+          pip install safety
+          poetry export -f requirements.txt --output requirements.txt
+          safety check --file requirements.txt --json
+
+  test-frontend:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    needs: validate
+    strategy:
+      matrix:
+        platform: [web, mobile-app, tvos-app]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: ${{ matrix.platform }}/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: ./${{ matrix.platform }}
+        run: npm ci
+
+      - name: Run Tests
+        working-directory: ./${{ matrix.platform }}
+        run: npm test -- --coverage --watchAll=false
+
+      - name: Run Linting
+        working-directory: ./${{ matrix.platform }}
+        run: npm run lint
+
+      - name: Type Check
+        working-directory: ./${{ matrix.platform }}
+        run: npm run typecheck
+
+  # ============================================================================
+  # BUILD DOCKER IMAGES
+  # ============================================================================
+  build-images:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend, security-scan]
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for GCR
+        run: gcloud auth configure-docker
+
+      - name: Build Backend Image
+        run: |
+          docker build \
+            -t ${{ env.BACKEND_IMAGE }}:${{ github.sha }} \
+            -t ${{ env.BACKEND_IMAGE }}:latest \
+            -f backend/Dockerfile \
+            ./backend
+
+      - name: Build Frontend Image
+        run: |
+          docker build \
+            -t ${{ env.FRONTEND_IMAGE }}:${{ github.sha }} \
+            -t ${{ env.FRONTEND_IMAGE }}:latest \
+            -f web/Dockerfile \
+            ./web
+
+      - name: Push Images to GCR
+        run: |
+          docker push ${{ env.BACKEND_IMAGE }}:${{ github.sha }}
+          docker push ${{ env.BACKEND_IMAGE }}:latest
+          docker push ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+          docker push ${{ env.FRONTEND_IMAGE }}:latest
+
+  # ============================================================================
+  # DEPLOY TO STAGING
+  # ============================================================================
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: build-images
+    if: github.ref == 'refs/heads/staging'
+    environment:
+      name: staging
+      url: https://staging.bayitplus.com
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Sync GCloud Secrets to Staging
+        run: |
+          chmod +x ./scripts/sync-gcloud-secrets.sh
+          ./scripts/sync-gcloud-secrets.sh staging
+
+      - name: Deploy Backend to Cloud Run (Staging)
+        run: |
+          gcloud run deploy bayit-plus-backend-staging \
+            --image ${{ env.BACKEND_IMAGE }}:${{ github.sha }} \
+            --platform managed \
+            --region ${{ env.GCP_REGION }} \
+            --allow-unauthenticated \
+            --set-env-vars APP_ENV=staging \
+            --set-secrets=MONGODB_URI=MONGODB_URI_STAGING:latest,\
+ELEVENLABS_API_KEY=ELEVENLABS_API_KEY:latest,\
+OPENAI_API_KEY=OPENAI_API_KEY:latest
+
+      - name: Deploy Frontend to Firebase Hosting (Staging)
+        run: |
+          npm install -g firebase-tools
+          cd web && npm ci && npm run build
+          firebase deploy --only hosting:staging --token ${{ secrets.FIREBASE_TOKEN }}
+
+      - name: Run Smoke Tests (Staging)
+        run: |
+          sleep 30  # Wait for deployment to stabilize
+          curl --fail https://staging-api.bayitplus.com/health || exit 1
+          curl --fail https://staging.bayitplus.com || exit 1
+
+  # ============================================================================
+  # DEPLOY TO PRODUCTION (BLUE-GREEN)
+  # ============================================================================
+  deploy-production:
+    name: Deploy to Production (Blue-Green)
+    runs-on: ubuntu-latest
+    needs: build-images
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://bayitplus.com
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Sync GCloud Secrets to Production
+        run: |
+          chmod +x ./scripts/sync-gcloud-secrets.sh
+          ./scripts/sync-gcloud-secrets.sh production
+
+      - name: Deploy Backend GREEN (New Version)
+        id: deploy-green
+        run: |
+          gcloud run deploy bayit-plus-backend-green \
+            --image ${{ env.BACKEND_IMAGE }}:${{ github.sha }} \
+            --platform managed \
+            --region ${{ env.GCP_REGION }} \
+            --no-traffic \
+            --set-env-vars APP_ENV=production \
+            --set-secrets=MONGODB_URI=MONGODB_URI:latest,\
+ELEVENLABS_API_KEY=ELEVENLABS_API_KEY:latest,\
+OPENAI_API_KEY=OPENAI_API_KEY:latest
+
+      - name: Run Smoke Tests on GREEN
+        run: |
+          GREEN_URL=$(gcloud run services describe bayit-plus-backend-green \
+            --region ${{ env.GCP_REGION }} \
+            --format 'value(status.url)')
+          curl --fail $GREEN_URL/health || exit 1
+          echo "GREEN_URL=$GREEN_URL" >> $GITHUB_ENV
+
+      - name: Gradual Traffic Migration (0% → 10% → 50% → 100%)
+        run: |
+          # Send 10% traffic to GREEN
+          gcloud run services update-traffic bayit-plus-backend \
+            --to-revisions bayit-plus-backend-green=10 \
+            --region ${{ env.GCP_REGION }}
+
+          sleep 60  # Monitor for 1 minute
+
+          # Send 50% traffic to GREEN
+          gcloud run services update-traffic bayit-plus-backend \
+            --to-revisions bayit-plus-backend-green=50 \
+            --region ${{ env.GCP_REGION }}
+
+          sleep 120  # Monitor for 2 minutes
+
+          # Send 100% traffic to GREEN
+          gcloud run services update-traffic bayit-plus-backend \
+            --to-revisions bayit-plus-backend-green=100 \
+            --region ${{ env.GCP_REGION }}
+
+      - name: Deploy Frontend to Firebase Hosting (Production)
+        run: |
+          npm install -g firebase-tools
+          cd web && npm ci && npm run build
+          firebase deploy --only hosting:production --token ${{ secrets.FIREBASE_TOKEN }}
+
+      - name: Run Post-Deployment Tests
+        run: |
+          curl --fail https://api.bayitplus.com/health || exit 1
+          curl --fail https://bayitplus.com || exit 1
+
+      - name: Cleanup Old Revisions (Keep Last 3)
+        run: |
+          gcloud run revisions list \
+            --service bayit-plus-backend \
+            --region ${{ env.GCP_REGION }} \
+            --format="value(name)" \
+            --sort-by="~metadata.creationTimestamp" \
+            | tail -n +4 \
+            | xargs -I {} gcloud run revisions delete {} \
+              --region ${{ env.GCP_REGION }} \
+              --quiet
+
+  # ============================================================================
+  # ROLLBACK (Manual Trigger)
+  # ============================================================================
+  rollback:
+    name: Rollback Production
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Rollback to Previous Revision
+        run: |
+          PREVIOUS_REVISION=$(gcloud run revisions list \
+            --service bayit-plus-backend \
+            --region ${{ env.GCP_REGION }} \
+            --format="value(name)" \
+            --sort-by="~metadata.creationTimestamp" \
+            --limit=2 | tail -1)
+
+          gcloud run services update-traffic bayit-plus-backend \
+            --to-revisions $PREVIOUS_REVISION=100 \
+            --region ${{ env.GCP_REGION }}
+
+      - name: Verify Rollback
+        run: |
+          curl --fail https://api.bayitplus.com/health || exit 1
+
+  # ============================================================================
+  # NOTIFICATIONS
+  # ============================================================================
+  notify-success:
+    name: Notify Deployment Success
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: success()
+    steps:
+      - name: Send Slack Notification
+        uses: slackapi/slack-github-action@v1
+        with:
+          webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          payload: |
+            {
+              "text": "✅ Beta 500 Deployment Successful",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Deployment Successful* ✅\n*Branch:* ${{ github.ref_name }}\n*Commit:* ${{ github.sha }}\n*Environment:* ${{ github.ref == 'refs/heads/main' && 'Production' || 'Staging' }}"
+                  }
+                }
+              ]
+            }
+
+  notify-failure:
+    name: Notify Deployment Failure
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: failure()
+    steps:
+      - name: Send Slack Notification
+        uses: slackapi/slack-github-action@v1
+        with:
+          webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          payload: |
+            {
+              "text": "❌ Beta 500 Deployment Failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Deployment Failed* ❌\n*Branch:* ${{ github.ref_name }}\n*Commit:* ${{ github.sha }}\n*Environment:* ${{ github.ref == 'refs/heads/main' && 'Production' || 'Staging' }}\n*Logs:* ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                  }
+                }
+              ]
+            }

@@ -15,6 +15,7 @@ import {
   VoiceSearchSection,
   WakeWordSection,
   AccessibilitySection,
+  AvatarPreferencesSection,
   SavingIndicator,
 } from './components';
 
@@ -72,6 +73,8 @@ export default function VoiceSettingsMain() {
         onToggleWakeWord={() => actions.setWakeWordEnabled(!preferences.wake_word_enabled)}
         onSensitivityChange={actions.setWakeWordSensitivity}
       />
+
+      <AvatarPreferencesSection isRTL={isRTL} />
 
       <AccessibilitySection
         autoSubtitle={preferences.auto_subtitle}

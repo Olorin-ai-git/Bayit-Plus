@@ -42,6 +42,8 @@ try:
         # Location Services - Protection for geolocation and content discovery
         "reverse_geocode": "30/minute",  # GeoNames API quota protection
         "location_content": "60/minute",  # Content discovery queries
+        # Voice Interaction - Protection for AI inference and real-time processing
+        "voice_unified": "60/minute",  # Voice command processing (intent classification + execution)
     }
 
     RATE_LIMITING_ENABLED = True

@@ -61,7 +61,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 subtitle_preferences, subtitles, support,
                                 tel_aviv, trending, trivia,
                                 user_system_widgets, users, verification,
-                                watchlist, webauthn, websocket,
+                                voice, watchlist, webauthn, websocket,
                                 websocket_chess, websocket_dm,
                                 websocket_live_dubbing,
                                 websocket_live_subtitles, widgets, youngsters,
@@ -196,6 +196,7 @@ def register_all_routers(app: FastAPI) -> None:
     # Social Routes
     # ============================================
     app.include_router(chat.router, prefix=f"{prefix}/chat", tags=["chat"])
+    app.include_router(voice.router, prefix=f"{prefix}/voice", tags=["voice"])
     app.include_router(friends.router, prefix=prefix, tags=["friends"])
     app.include_router(direct_messages.router, prefix=prefix, tags=["direct-messages"])
     app.include_router(stats.router, prefix=prefix, tags=["stats"])

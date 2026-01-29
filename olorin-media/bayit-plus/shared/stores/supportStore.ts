@@ -6,6 +6,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { AvatarMode, VoiceIntent, VoiceCommand } from '../types/voiceAvatar';
 
 /**
  * Voice interaction states following the state machine:
@@ -146,6 +147,16 @@ interface SupportStore {
   // Voice error toast (for mic/connection issues)
   voiceError: { message: string; type: 'mic' | 'connection' | 'general' } | null;
 
+  // Unified Voice System - Avatar Mode Control
+  /** Current avatar visibility mode */
+  avatarVisibilityMode: AvatarMode;
+  /** Current interaction type (for context) */
+  currentInteractionType: VoiceIntent | null;
+  /** Last intent confidence score */
+  lastIntentConfidence: number;
+  /** Command history for context */
+  commandHistory: VoiceCommand[];
+
   // Voice actions
   setVoiceState: (state: VoiceState) => void;
   setCurrentTranscript: (transcript: string) => void;
@@ -211,6 +222,18 @@ interface SupportStore {
   setError: (error: string | null) => void;
   clearError: () => void;
 
+  // Unified Voice System - Avatar Mode Actions
+  /** Set avatar visibility mode */
+  setAvatarVisibilityMode: (mode: AvatarMode) => void;
+  /** Set current interaction type */
+  setInteractionType: (type: VoiceIntent | null) => void;
+  /** Set intent confidence score */
+  setIntentConfidence: (confidence: number) => void;
+  /** Add command to history */
+  addCommandToHistory: (command: VoiceCommand) => void;
+  /** Clear command history */
+  clearCommandHistory: () => void;
+
   // Reset
   reset: () => void;
 }
@@ -259,6 +282,12 @@ const initialState = {
 
   // Voice error toast
   voiceError: null as { message: string; type: 'mic' | 'connection' | 'general' } | null,
+
+  // Unified Voice System - Avatar Mode
+  avatarVisibilityMode: 'full' as AvatarMode,
+  currentInteractionType: null as VoiceIntent | null,
+  lastIntentConfidence: 0,
+  commandHistory: [] as VoiceCommand[],
 };
 
 export const useSupportStore = create<SupportStore>()(
@@ -387,6 +416,20 @@ export const useSupportStore = create<SupportStore>()(
 
       clearError: () => set({ lastError: null }),
 
+      // Unified Voice System - Avatar Mode Actions
+      setAvatarVisibilityMode: (mode: AvatarMode) => set({ avatarVisibilityMode: mode }),
+
+      setInteractionType: (type: VoiceIntent | null) => set({ currentInteractionType: type }),
+
+      setIntentConfidence: (confidence: number) => set({ lastIntentConfidence: confidence }),
+
+      addCommandToHistory: (command: VoiceCommand) =>
+        set((state) => ({
+          commandHistory: [command, ...state.commandHistory].slice(0, 50), // Keep last 50 commands
+        })),
+
+      clearCommandHistory: () => set({ commandHistory: [] }),
+
       // Reset
       reset: () => set(initialState),
     }),
@@ -397,6 +440,7 @@ export const useSupportStore = create<SupportStore>()(
       partialize: (state) => ({
         isWakeWordEnabled: state.isWakeWordEnabled,
         hasSeenWizardIntro: state.hasSeenWizardIntro,
+        avatarVisibilityMode: state.avatarVisibilityMode, // NEW: Persist avatar mode preference
       }),
     }
   )

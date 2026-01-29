@@ -1,0 +1,3267 @@
+
+ ▐▛███▜▌   Claude Code v2.1.22
+▝▜█████▛▘  Opus 4.5 · Claude Max
+  ▘▘ ▝▝    ~/Documents/olorin/olorin-media/bayit-plus
+
+ ⚠Large /Users/olorin/.claude/CLAUDE.md will impact performance (43.6k chars > 
+  40.0k) • /memory to edit
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Plan to implement                                                            │
+│                                                                              │
+│ Beta 500 Implementation Plan                                                 │
+│                                                                              │
+│ Executive Summary                                                            │
+│                                                                              │
+│ Objective: Launch Beta 500 - a closed beta program offering AI-powered       │
+│ real-time dubbing of Israeli content to 500 Israeli expat families, with     │
+│ free 5,000 AI credits ($20/month value after beta).                          │
+│                                                                              │
+│ Core Strategy:                                                               │
+│ 1. "Safe" Content: Kan 11 via YouTube embed + AI audio overlay (legal        │
+│ compliance), Israeli podcasts with AI dubbing                                │
+│ 2. Targeted Launch: Israeli Mapped in NY, WhatsApp groups (Iconz/TechAviv),  │
+│ LinkedIn "Build in Public"                                                   │
+│ 3. Value Anchoring: Free for beta testers, $20/month post-beta (immediate    │
+│ perceived value)                                                             │
+│                                                                              │
+│ Timeline: 4-6 weeks implementation + testing                                 │
+│ Budget: $3,475/month for 500 beta users (approved)                           │
+│ Expected Outcome: 500 beta signups, 60%+ activation rate, 20%+ conversion    │
+│ intent                                                                       │
+│                                                                              │
+│ ---                                                                          │
+│ Architecture Overview                                                        │
+│                                                                              │
+│ Three Core Components                                                        │
+│                                                                              │
+│ 1. Content Delivery System                                                   │
+│                                                                              │
+│ - Kan 11 Integration: YouTube IFrame Player + synchronized AI audio overlay  │
+│ - Podcast Dubbing: Automated pipeline for Israeli tech/news podcasts with    │
+│ dual-language transcripts                                                    │
+│                                                                              │
+│ 2. Credit System                                                             │
+│                                                                              │
+│ - 5,000 AI Credits per beta tester (free during beta)                        │
+│ - Credit Consumption: 1 credit/second dubbing, 0.5 credits/second            │
+│ transcription                                                                │
+│ - Beta Tier: Temporary subscription tier with Family plan features + free    │
+│ credits                                                                      │
+│                                                                              │
+│ 3. Launch Infrastructure                                                     │
+│                                                                              │
+│ - Beta Landing Page: Problem statement, demo video, sign-up form with        │
+│ waitlist overflow                                                            │
+│ - Email Automation: Welcome, onboarding, surveys via SendGrid                │
+│ - Community Outreach: Personalized materials for Guy Franklin, WhatsApp      │
+│ groups, LinkedIn                                                             │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 1: Content Delivery Implementation (Weeks 1-2)                         │
+│                                                                              │
+│ 1.1 Kan 11 YouTube Integration                                               │
+│                                                                              │
+│ Backend Changes:                                                             │
+│                                                                              │
+│ File: /backend/app/models/content.py (Line 317-366)                          │
+│ - Action: Extend LiveChannel model with YouTube embed support                │
+│ - New Fields:                                                                │
+│ content_source: str = "hls"  # Add "youtube_embed" option                    │
+│ youtube_video_id: Optional[str] = None                                       │
+│ youtube_channel_id: Optional[str] = None                                     │
+│ enable_audio_overlay: bool = False                                           │
+│ audio_overlay_languages: List[str] = []                                      │
+│ audio_sync_buffer_ms: int = 800                                              │
+│ fallback_stream_url: Optional[str] = None                                    │
+│                                                                              │
+│ File: /backend/app/services/youtube_audio_overlay_service.py (NEW)           │
+│ - Purpose: Orchestrate YouTube embed + audio overlay synchronization         │
+│ - Key Methods:                                                               │
+│   - start_audio_overlay_session() - Initialize dubbing session               │
+│   - sync_audio_to_youtube_time() - Handle drift correction                   │
+│ - Integration: Coordinates with existing LiveDubbingService and              │
+│ ChannelSTTManager                                                            │
+│                                                                              │
+│ File: /backend/app/api/routes/youtube_overlay.py (NEW)                       │
+│ - Endpoints:                                                                 │
+│   - POST /api/youtube/overlay/start - Start audio overlay session            │
+│   - POST /api/youtube/overlay/sync - Sync audio with YouTube player time     │
+│   - POST /api/youtube/overlay/stop - Stop session                            │
+│   - WebSocket /ws/youtube/overlay/{session_id} - Real-time dubbed audio      │
+│ stream                                                                       │
+│                                                                              │
+│ Frontend Changes:                                                            │
+│                                                                              │
+│ File: /web/src/components/player/YouTubeAudioOverlayPlayer.tsx (NEW)         │
+│ - Purpose: React component integrating YouTube IFrame Player API with audio  │
+│ overlay                                                                      │
+│ - Key Features:                                                              │
+│   - YouTube IFrame Player initialization                                     │
+│   - 1-second sync polling (send YouTube time to backend)                     │
+│   - Web Audio API for dubbed audio playback                                  │
+│   - Language selector UI                                                     │
+│   - Volume mixer (YouTube video vs AI audio)                                 │
+│ - Reuses: Existing BufferedLiveDubbingPlayer WebSocket logic                 │
+│                                                                              │
+│ File: /web/src/components/player/FullscreenVideoOverlay.tsx (Line 215-244)   │
+│ - Action: Extend to detect content_source === "youtube_embed"                │
+│ - Change: Render YouTubeAudioOverlayPlayer instead of existing YouTube       │
+│ iframe (no audio overlay)                                                    │
+│                                                                              │
+│ Audio Synchronization Strategy:                                              │
+│ 1. Initial buffer: 800ms (configurable per channel)                          │
+│ 2. Sync polling: Frontend reports YouTube time every 1 second                │
+│ 3. Drift correction: Backend adjusts audio timing, skip/repeat frames if     │
+│ >500ms drift                                                                 │
+│ 4. Emergency resync: Full catch-up if >2 seconds drift                       │
+│ 5. Fallback: Disable audio overlay if sync fails, continue with YouTube      │
+│ video only                                                                   │
+│                                                                              │
+│ Legal Compliance (YouTube TOS):                                              │
+│ - ✅ Use official YouTube IFrame Player API (not re-streaming)               │
+│ - ✅ Preserve YouTube ads (audio overlay plays on top)                       │
+│ - ✅ Attribution (YouTube logo, link to original)                            │
+│ - ✅ No video download/extraction (audio overlay independent)                │
+│                                                                              │
+│ 1.2 Podcast Dubbing Pipeline                                                 │
+│                                                                              │
+│ Infrastructure Status: ✅ COMPLETE - ALREADY EXISTS                          │
+│                                                                              │
+│ Existing Services (Reuse as-is):                                             │
+│ - /backend/app/services/podcast_translation_service.py - Full pipeline       │
+│ already implemented                                                          │
+│   - Download → Vocal separation → Whisper transcription → Translation →      │
+│ ElevenLabs TTS → Mix → GCS upload                                            │
+│ - /backend/app/services/podcast_sync_service.py - RSS feed ingestion already │
+│  running                                                                     │
+│ - /backend/app/models/content.py - Podcast and PodcastEpisode models already │
+│  exist                                                                       │
+│ - Podcasts already configured with RSS feeds on podcasts page                │
+│                                                                              │
+│ No Configuration Needed: Podcasts already exist in production with correct   │
+│ RSS feeds                                                                    │
+│                                                                              │
+│ Action Required: Enable AI dubbing for existing Israeli podcasts             │
+│ - Mark existing podcasts as Beta 500 eligible: is_beta_content: true         │
+│ - Ensure auto-translation is enabled for existing episodes                   │
+│ - Verify ElevenLabs TTS dubbing is running for Hebrew → English              │
+│                                                                              │
+│ Frontend Changes:                                                            │
+│                                                                              │
+│ File: /web/src/components/podcast/PodcastDualLanguagePlayer.tsx (NEW)        │
+│ - Purpose: Podcast player with language switcher (original Hebrew vs         │
+│ AI-dubbed English)                                                           │
+│ - Features:                                                                  │
+│   - Audio player component (reuses existing AudioPlayer)                     │
+│   - Language toggle (he ↔ en)                                                │
+│   - Transcript viewer (synchronized with playback)                           │
+│   - Download/copy transcript functionality                                   │
+│                                                                              │
+│ File: /web/src/components/podcast/TranscriptViewer.tsx (NEW)                 │
+│ - Purpose: Display transcript with auto-scroll to current position           │
+│ - Features:                                                                  │
+│   - Full transcript display                                                  │
+│   - Copy to clipboard                                                        │
+│   - Download as text file                                                    │
+│                                                                              │
+│ Copyright Strategy (Closed Beta):                                            │
+│ - Fair Use Justification: Educational/research, no monetization,             │
+│ transformative use, limited distribution (500 users), attribution            │
+│ - Transition Plan: Negotiate licensing before public launch                  │
+│ - Risk Mitigation: Private GCS bucket, authenticated access only, DMCA       │
+│ compliance                                                                   │
+│                                                                              │
+│ 1.3 Beta Content Filtering (CRITICAL)                                        │
+│                                                                              │
+│ Requirement: Hide non-compliant content from beta users                      │
+│                                                                              │
+│ Content Visibility Rules:                                                    │
+│ - ✅ Beta Users Can View: Kan 11 (YouTube embed), Israeli podcasts, Israeli  │
+│ radio stations                                                               │
+│ - ❌ Beta Users CANNOT View: Series, movies, audiobooks (non-compliant       │
+│ copyright content)                                                           │
+│ - ✅ Admin/Super Admin: Can view ALL content (no restrictions)               │
+│                                                                              │
+│ Backend Implementation:                                                      │
+│                                                                              │
+│ File: /backend/app/models/content.py (Extend existing models)                │
+│ - Action: Add is_beta_content field to Content, LiveChannel, Podcast,        │
+│ RadioStation models                                                          │
+│ - New Field:                                                                 │
+│ is_beta_content: bool = False  # True for YouTube embeds, podcasts, radio    │
+│                                                                              │
+│ File: /backend/app/api/dependencies/beta_content_filter.py (NEW)             │
+│ - Purpose: Dependency to filter content based on user role and beta status   │
+│ - Logic:                                                                     │
+│ def filter_beta_content(user: User, content: List[Content]) ->               │
+│ List[Content]:                                                               │
+│     # Admin/super_admin: see everything                                      │
+│     if user.role in ["admin", "super_admin"]:                                │
+│         return content                                                       │
+│                                                                              │
+│     # Beta users: only see beta-compliant content                            │
+│     if user.beta_tester:                                                     │
+│         return [c for c in content if c.is_beta_content]                     │
+│                                                                              │
+│     # Regular users: see everything (post-beta)                              │
+│     return content                                                           │
+│                                                                              │
+│ File: /backend/app/api/routes/content.py (Modify existing endpoints)         │
+│ - Action: Apply filter_beta_content to all content listing endpoints         │
+│ - Endpoints to modify:                                                       │
+│   - GET /api/content/featured - Filter featured content                      │
+│   - GET /api/content/search - Filter search results                          │
+│   - GET /api/content/category/{category} - Filter by category                │
+│   - GET /api/content/{content_id} - Block access to non-beta content (404)   │
+│                                                                              │
+│ Frontend Implementation:                                                     │
+│                                                                              │
+│ File: /web/src/contexts/BetaContext.tsx (NEW)                                │
+│ - Purpose: React context to manage beta mode state                           │
+│ - State:                                                                     │
+│ interface BetaContextState {                                                 │
+│   isBetaUser: boolean                                                        │
+│   isAdmin: boolean                                                           │
+│   canViewContent: (content: Content) => boolean                              │
+│ }                                                                            │
+│                                                                              │
+│ File: /web/src/components/content/ContentCard.tsx (Modify existing)          │
+│ - Action: Hide non-beta content cards from beta users                        │
+│ - Logic: Check canViewContent(content) before rendering                      │
+│                                                                              │
+│ File: /web/src/pages/HomePage.tsx (Modify existing)                          │
+│ - Action: Filter content sections for beta users                             │
+│ - Sections:                                                                  │
+│   - ✅ Show: "Kan 11 Live", "Israeli Podcasts", "Israeli Radio"              │
+│   - ❌ Hide: "Featured Movies", "TV Series", "Audiobooks"                    │
+│                                                                              │
+│ Migration Script:                                                            │
+│                                                                              │
+│ File: /scripts/backend/production/content/mark_beta_content.py (NEW)         │
+│ - Purpose: Mark existing content as beta-eligible                            │
+│ - Logic:                                                                     │
+│ # Mark Kan 11 as beta content                                                │
+│ await LiveChannel.find(LiveChannel.name == "כאן 11").update({"$set":         │
+│ {"is_beta_content": True}})                                                  │
+│                                                                              │
+│ # Mark all Israeli podcasts as beta content                                  │
+│ await Podcast.find(Podcast.culture_id == "israeli").update({"$set":          │
+│ {"is_beta_content": True}})                                                  │
+│                                                                              │
+│ # Mark all Israeli radio stations as beta content                            │
+│ await RadioStation.find(RadioStation.culture_id ==                           │
+│ "israeli").update({"$set": {"is_beta_content": True}})                       │
+│                                                                              │
+│ # Ensure series, movies, audiobooks are NOT beta content (default: False)    │
+│ await Content.find(Content.type.in_(["movie", "series",                      │
+│ "audiobook"])).update({"$set": {"is_beta_content": False}})                  │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 2: Credit System Implementation (Weeks 2-3)                            │
+│                                                                              │
+│ 2.1 Database Schema Extensions                                               │
+│                                                                              │
+│ File: /backend/app/models/beta_credit.py (NEW)                               │
+│                                                                              │
+│ from datetime import datetime, timezone                                      │
+│ from typing import Optional                                                  │
+│ from beanie import Document                                                  │
+│ from pydantic import Field                                                   │
+│                                                                              │
+│ class BetaCredit(Document):                                                  │
+│     """Beta tester credit tracking and transaction history."""               │
+│                                                                              │
+│     user_id: str  # User ObjectId as string                                  │
+│     total_credits: int = 5000  # Free credits for beta                       │
+│     used_credits: int = 0                                                    │
+│     remaining_credits: int = 5000                                            │
+│                                                                              │
+│     # Credit lifecycle                                                       │
+│     granted_at: datetime = Field(default_factory=lambda:                     │
+│ datetime.now(timezone.utc))                                                  │
+│     expires_at: Optional[datetime] = None  # Beta expiration date            │
+│     is_expired: bool = False                                                 │
+│                                                                              │
+│     # Transaction history                                                    │
+│     transactions: List[Dict[str, Any]] = []  # {timestamp, type, amount,     │
+│ feature, description}                                                        │
+│                                                                              │
+│     class Settings:                                                          │
+│         name = "beta_credits"                                                │
+│         indexes = ["user_id", "is_expired"]                                  │
+│                                                                              │
+│ class BetaCreditTransaction(Document):                                       │
+│     """Individual credit transaction record."""                              │
+│                                                                              │
+│     user_id: str                                                             │
+│     credit_id: str  # BetaCredit ObjectId                                    │
+│                                                                              │
+│     transaction_type: str  # "debit", "credit", "bonus"                      │
+│     amount: int  # Positive for credits added, negative for usage            │
+│     balance_after: int                                                       │
+│                                                                              │
+│     feature: str  # "live_dubbing", "podcast_translation", "transcription"   │
+│     description: str                                                         │
+│     metadata: Dict[str, Any] = {}  # {audio_seconds, characters, provider}   │
+│                                                                              │
+│     created_at: datetime = Field(default_factory=lambda:                     │
+│ datetime.now(timezone.utc))                                                  │
+│                                                                              │
+│     class Settings:                                                          │
+│         name = "beta_credit_transactions"                                    │
+│         indexes = ["user_id", "created_at", "feature"]                       │
+│                                                                              │
+│ File: /backend/app/models/user.py (Extend existing User model)               │
+│                                                                              │
+│ # Add to existing User model                                                 │
+│ beta_tester: bool = False                                                    │
+│ beta_cohort: Optional[str] = None  # "beta_500"                              │
+│ referral_source: Optional[str] = None  # "israeli_mapped", "iconz",          │
+│ "linkedin"                                                                   │
+│ beta_joined_at: Optional[datetime] = None                                    │
+│ beta_credits_id: Optional[str] = None  # BetaCredit ObjectId                 │
+│ beta_survey_completed: bool = False                                          │
+│ beta_nps_score: Optional[int] = None                                         │
+│                                                                              │
+│ 2.2 Credit Service                                                           │
+│                                                                              │
+│ File: /backend/app/services/beta_credit_service.py (NEW)                     │
+│                                                                              │
+│ class BetaCreditService:                                                     │
+│     """Manages beta credit allocation, consumption, and tracking."""         │
+│                                                                              │
+│     # Credit consumption rates                                               │
+│     CREDIT_RATES = {                                                         │
+│         "live_dubbing": 1.0,  # credits per second                           │
+│         "podcast_translation": 1.0,  # credits per second                    │
+│         "transcription": 0.5,  # credits per second                          │
+│         "live_subtitles": 0.5,  # credits per second                         │
+│         "cultural_context": 10,  # credits per API call                      │
+│         "semantic_search": 5,  # credits per query                           │
+│     }                                                                        │
+│                                                                              │
+│     async def allocate_credits(self, user_id: str, amount: int = 5000) ->    │
+│ BetaCredit:                                                                  │
+│         """Allocate credits to beta tester."""                               │
+│                                                                              │
+│     async def deduct_credits(                                                │
+│         self,                                                                │
+│         user_id: str,                                                        │
+│         feature: str,                                                        │
+│         usage_amount: float,  # seconds, characters, calls                   │
+│         metadata: Dict[str, Any] = {}                                        │
+│     ) -> Tuple[bool, int]:                                                   │
+│         """                                                                  │
+│         Deduct credits based on feature usage.                               │
+│         Returns (success, remaining_credits).                                │
+│         """                                                                  │
+│                                                                              │
+│     async def get_balance(self, user_id: str) -> int:                        │
+│         """Get current credit balance."""                                    │
+│                                                                              │
+│     async def get_transactions(self, user_id: str, limit: int = 50) ->       │
+│ List[BetaCreditTransaction]:                                                 │
+│         """Get transaction history."""                                       │
+│                                                                              │
+│     async def check_low_balance(self, user_id: str) -> Optional[str]:        │
+│         """                                                                  │
+│         Check if user has low balance and return warning level.              │
+│         Returns: "low" (500 credits), "critical" (100 credits), "depleted"   │
+│ (0 credits), or None.                                                        │
+│         """                                                                  │
+│                                                                              │
+│ 2.3 Metering Integration                                                     │
+│                                                                              │
+│ File: /backend/app/services/olorin/metering/service.py (Extend existing)     │
+│                                                                              │
+│ Action: Add credit deduction to existing metering calls                      │
+│                                                                              │
+│ # In MeteringService.record_usage()                                          │
+│ if user.beta_tester and user.beta_credits_id:                                │
+│     credit_service = BetaCreditService()                                     │
+│     success, remaining = await credit_service.deduct_credits(                │
+│         user_id=str(user.id),                                                │
+│         feature=feature_name,                                                │
+│         usage_amount=usage_quantity,                                         │
+│         metadata={"provider": provider, "cost_usd": actual_cost}             │
+│     )                                                                        │
+│                                                                              │
+│     if not success:                                                          │
+│         raise HTTPException(                                                 │
+│             status_code=402,                                                 │
+│             detail="Insufficient AI credits. Please upgrade your plan."      │
+│         )                                                                    │
+│                                                                              │
+│ 2.4 Beta Tier Subscription                                                   │
+│                                                                              │
+│ File: /backend/app/models/subscription.py (Extend existing)                  │
+│                                                                              │
+│ # Add new subscription plan                                                  │
+│ class SubscriptionPlan:                                                      │
+│     # ... existing plans ...                                                 │
+│                                                                              │
+│     BETA = {                                                                 │
+│         "id": "beta",                                                        │
+│         "name": "Beta Tester",                                               │
+│         "price": 0.00,  # Free during beta                                   │
+│         "currency": "USD",                                                   │
+│         "interval": "month",                                                 │
+│         "features": {                                                        │
+│             **FAMILY["features"],  # All Family features                     │
+│             "ai_credits": 5000,                                              │
+│             "credits_reset": "monthly",                                      │
+│             "beta_access": True,                                             │
+│         },                                                                   │
+│         "limits": {                                                          │
+│             "concurrent_streams": 4,                                         │
+│             "profiles": 5,                                                   │
+│             "quality": "4k",                                                 │
+│             "downloads": True,                                               │
+│         }                                                                    │
+│     }                                                                        │
+│                                                                              │
+│     CREDITS_SUBSCRIPTION = {                                                 │
+│         "id": "credits_20",                                                  │
+│         "name": "AI Credits Subscription",                                   │
+│         "price": 20.00,                                                      │
+│         "currency": "USD",                                                   │
+│         "interval": "month",                                                 │
+│         "features": {                                                        │
+│             "ai_credits": 5000,                                              │
+│             "credits_reset": "monthly",                                      │
+│         }                                                                    │
+│     }                                                                        │
+│                                                                              │
+│ 2.5 User Experience Components                                               │
+│                                                                              │
+│ File: /web/src/components/beta/CreditBalanceWidget.tsx (NEW)                 │
+│                                                                              │
+│ interface CreditBalanceWidgetProps {                                         │
+│   userId: string                                                             │
+│ }                                                                            │
+│                                                                              │
+│ export function CreditBalanceWidget({ userId }: CreditBalanceWidgetProps) {  │
+│   const [credits, setCredits] = useState<number>(0)                          │
+│   const [warningLevel, setWarningLevel] = useState<'low' | 'critical' |      │
+│ 'depleted' | null>(null)                                                     │
+│                                                                              │
+│   useEffect(() => {                                                          │
+│     // Fetch credit balance                                                  │
+│     fetch(`/api/beta/credits/${userId}`)                                     │
+│       .then(res => res.json())                                               │
+│       .then(data => {                                                        │
+│         setCredits(data.remaining_credits)                                   │
+│         setWarningLevel(data.warning_level)                                  │
+│       })                                                                     │
+│   }, [userId])                                                               │
+│                                                                              │
+│   return (                                                                   │
+│     <View style={styles.container}>                                          │
+│       <Text style={styles.label}>AI Credits</Text>                           │
+│       <Text style={styles.balance}>{credits.toLocaleString()} / 5,000</Text> │
+│                                                                              │
+│       {warningLevel === 'low' && (                                           │
+│         <Text style={styles.warningLow}>                                     │
+│           ⚠️ 10% remaining - upgrade soon                                    │
+│         </Text>                                                              │
+│       )}                                                                     │
+│                                                                              │
+│       {warningLevel === 'critical' && (                                      │
+│         <Text style={styles.warningCritical}>                                │
+│           🚨 2% remaining - upgrade now                                      │
+│         </Text>                                                              │
+│       )}                                                                     │
+│                                                                              │
+│       {warningLevel === 'depleted' && (                                      │
+│         <View style={styles.depleted}>                                       │
+│           <Text style={styles.depletedText}>Credits depleted</Text>          │
+│           <GlassButton onPress={() => navigate('/upgrade')}>                 │
+│             Upgrade to Continue                                              │
+│           </GlassButton>                                                     │
+│         </View>                                                              │
+│       )}                                                                     │
+│     </View>                                                                  │
+│   )                                                                          │
+│ }                                                                            │
+│                                                                              │
+│ File: /web/src/components/beta/BetaGraduationModal.tsx (NEW)                 │
+│                                                                              │
+│ // Modal shown when beta expires or credits depleted                         │
+│ export function BetaGraduationModal({ onClose }: { onClose: () => void }) {  │
+│   return (                                                                   │
+│     <GlassModal visible={true} onClose={onClose}>                            │
+│       <GlassCard style={styles.card}>                                        │
+│         <Text style={styles.title}>Your Beta 500 Access is Ending</Text>     │
+│                                                                              │
+│         <Text style={styles.description}>                                    │
+│           Thank you for being an early adopter! Choose your next plan:       │
+│         </Text>                                                              │
+│                                                                              │
+│         <GlassButton variant="primary" onPress={handleUpgradeCredits}>       │
+│           Continue with AI Credits - $20/month                               │
+│           (5,000 credits/month)                                              │
+│         </GlassButton>                                                       │
+│                                                                              │
+│         <GlassButton variant="secondary" onPress={handleUpgradePremium}>     │
+│           Premium Streaming + Credits - $34.99/month                         │
+│           (Premium features + 5,000 credits)                                 │
+│         </GlassButton>                                                       │
+│                                                                              │
+│         <GlassButton variant="ghost" onPress={handleDowngrade}>              │
+│           Free Tier (No AI features)                                         │
+│         </GlassButton>                                                       │
+│       </GlassCard>                                                           │
+│     </GlassModal>                                                            │
+│   )                                                                          │
+│ }                                                                            │
+│                                                                              │
+│ 2.6 Admin Tools                                                              │
+│                                                                              │
+│ File: /backend/app/api/routes/admin/beta_management.py (NEW)                 │
+│                                                                              │
+│ Endpoints:                                                                   │
+│ - POST /api/admin/beta/grant-access - Grant beta access to user (email)      │
+│ - POST /api/admin/beta/adjust-credits - Add/remove credits                   │
+│ - GET /api/admin/beta/analytics - Beta cohort analytics                      │
+│ - GET /api/admin/beta/users - List beta testers with credit usage            │
+│ - POST /api/admin/beta/expire - Force-expire beta access                     │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 3: Launch Infrastructure (Weeks 2-4)                                   │
+│                                                                              │
+│ 3.1 Beta Landing Page                                                        │
+│                                                                              │
+│ File: /web/src/pages/BetaLandingPage.tsx (NEW)                               │
+│                                                                              │
+│ Key Sections:                                                                │
+│ 1. Hero Section                                                              │
+│   - Headline: "Your Kids Can't Understand Hebrew News?"                      │
+│   - Subheadline: "We Built an AI to Fix That."                               │
+│   - Demo video embed (30-second split-screen)                                │
+│   - CTA: "Join Beta 500 - Free Access"                                       │
+│ 2. Value Proposition                                                         │
+│   - "5,000 AI Credits - $0 for Beta Testers"                                 │
+│   - Strikethrough: "~~$20/month~~ Free during beta"                          │
+│   - "Limited to 500 Israeli expat families"                                  │
+│ 3. Sign-up Form                                                              │
+│   - Email (required)                                                         │
+│   - Name (required)                                                          │
+│   - Referral source dropdown (israeli_mapped, iconz, techaviv, linkedin,     │
+│ other)                                                                       │
+│   - Submit → Email verification → Waitlist if 501+                           │
+│ 4. Social Proof                                                              │
+│   - Testimonial quotes (from pilot users)                                    │
+│   - Community logos (pending approval)                                       │
+│   - "Built by Israeli expat founders"                                        │
+│                                                                              │
+│ File: /backend/app/api/routes/beta.py (NEW)                                  │
+│                                                                              │
+│ Endpoints:                                                                   │
+│ - POST /api/beta/signup - Beta signup (email, name, referral_source)         │
+│ - GET /api/beta/status - Check beta availability (slots remaining)           │
+│ - POST /api/beta/verify-email - Email verification for beta signup           │
+│                                                                              │
+│ Waitlist Logic:                                                              │
+│                                                                              │
+│ async def process_beta_signup(email: str, name: str, referral_source: str):  │
+│     # Count current beta users                                               │
+│     beta_count = await User.find(User.beta_tester == True).count()           │
+│                                                                              │
+│     if beta_count >= 500:                                                    │
+│         # Add to waitlist                                                    │
+│         waitlist_user = WaitlistUser(                                        │
+│             email=email,                                                     │
+│             name=name,                                                       │
+│             referral_source=referral_source,                                 │
+│             position=await WaitlistUser.find().count() + 1                   │
+│         )                                                                    │
+│         await waitlist_user.insert()                                         │
+│         await send_waitlist_email(email, name, waitlist_user.position)       │
+│         return {"status": "waitlist", "position": waitlist_user.position}    │
+│                                                                              │
+│     # Create beta user                                                       │
+│     user = User(                                                             │
+│         email=email,                                                         │
+│         name=name,                                                           │
+│         beta_tester=True,                                                    │
+│         beta_cohort="beta_500",                                              │
+│         referral_source=referral_source,                                     │
+│         beta_joined_at=datetime.now(timezone.utc)                            │
+│     )                                                                        │
+│     await user.insert()                                                      │
+│                                                                              │
+│     # Allocate 5,000 AI credits                                              │
+│     credit_service = BetaCreditService()                                     │
+│     await credit_service.allocate_credits(str(user.id), 5000)                │
+│                                                                              │
+│     # Send welcome email                                                     │
+│     await send_beta_welcome_email(user)                                      │
+│                                                                              │
+│     return {"status": "approved", "user_id": str(user.id)}                   │
+│                                                                              │
+│ 3.2 Email Automation                                                         │
+│                                                                              │
+│ File: /backend/app/services/email_templates/beta_welcome.html (NEW -         │
+│ SendGrid Template)                                                           │
+│                                                                              │
+│ Subject: Welcome to Bayit+ Beta 500! 🎉                                      │
+│                                                                              │
+│ Content:                                                                     │
+│ Hi {{name}},                                                                 │
+│                                                                              │
+│ You're in! You've secured one of 500 Beta spots for Bayit+.                  │
+│                                                                              │
+│ 🎁 Your Beta Perks:                                                          │
+│ • 5,000 AI Credits (100 hours of content)                                    │
+│ • Early access to all features                                               │
+│ • Direct feedback channel to founders                                        │
+│ • Lock in Beta pricing forever ($0 → $20/month after Beta)                   │
+│                                                                              │
+│ 📱 Next Steps:                                                               │
+│ 1. Verify your email (link below)                                            │
+│ 2. Download the app (iOS/Android/Web)                                        │
+│ 3. Start streaming Israeli content with real-time AI dubbing                 │
+│                                                                              │
+│ [Verify Email] [Download App] [Watch Demo]                                   │
+│                                                                              │
+│ Questions? Reply to this email or join our Beta community.                   │
+│                                                                              │
+│ Welcome aboard!                                                              │
+│ The Bayit+ Team                                                              │
+│                                                                              │
+│ File: /backend/app/services/email_templates/beta_waitlist.html (NEW -        │
+│ SendGrid Template)                                                           │
+│                                                                              │
+│ Subject: You're on the Bayit+ Beta Waitlist                                  │
+│                                                                              │
+│ Content:                                                                     │
+│ Hi {{name}},                                                                 │
+│                                                                              │
+│ Thanks for your interest in Bayit+ Beta!                                     │
+│                                                                              │
+│ All 500 Beta spots are currently filled, but you're on our priority          │
+│ waitlist.                                                                    │
+│                                                                              │
+│ 📍 Your Position: #{{position}}                                              │
+│                                                                              │
+│ We'll notify you immediately when a spot opens up (usually within 48 hours). │
+│                                                                              │
+│ Meanwhile, watch our demo video to see what you're missing:                  │
+│ [Watch Demo]                                                                 │
+│                                                                              │
+│ Stay tuned!                                                                  │
+│ The Bayit+ Team                                                              │
+│                                                                              │
+│ Email Sequence:                                                              │
+│ - Day 0: Welcome email (immediately after signup)                            │
+│ - Day 3: Product tour email (3 tips to get the most out of Bayit+)           │
+│ - Day 7: Feedback survey (NPS, feature requests, would you pay $20/month?)   │
+│                                                                              │
+│ 3.3 Community Outreach Materials                                             │
+│                                                                              │
+│ File: /docs/marketing/beta_500_outreach_materials.md (NEW)                   │
+│                                                                              │
+│ Guy Franklin (Israeli Mapped in NY) - Email Template:                        │
+│                                                                              │
+│ Subject: Built an AI tool for Israeli expat kids - would love your feedback  │
+│                                                                              │
+│ Hi Guy,                                                                      │
+│                                                                              │
+│ I'm [Founder Name], co-founder of Bayit+. We've built an AI-powered tool     │
+│ that solves a problem many Israeli expats face: kids can't understand Hebrew │
+│  news and cultural content.                                                  │
+│                                                                              │
+│ Problem: Israeli expat kids in NY lose connection to Israeli culture because │
+│  they can't understand Hebrew media.                                         │
+│                                                                              │
+│ Solution: Bayit+ uses AI to dub Israeli content (Kan 11, radio, podcasts)    │
+│ into English in real-time, while preserving cultural context.                │
+│                                                                              │
+│ Why I'm reaching out: Israeli Mapped in NY is a hub for tech-savvy Israeli   │
+│ expats who'd benefit from this. I'd love to offer your community early       │
+│ access to Beta 500 (free testing, 100 hours of content).                     │
+│                                                                              │
+│ Demo: [30-second video link]                                                 │
+│                                                                              │
+│ Would you be open to a quick call? I'd love to show you a live demo and      │
+│ explore if this would add value to your community.                           │
+│                                                                              │
+│ Thanks for building such an amazing space for Israelis in NY!                │
+│                                                                              │
+│ Best,                                                                        │
+│ [Founder Name]                                                               │
+│                                                                              │
+│ P.S. We're limiting Beta to 500 users, and I'd love Israeli Mapped members   │
+│ to get first access.                                                         │
+│                                                                              │
+│ WhatsApp Groups (Iconz, TechAviv) - Message Template:                        │
+│                                                                              │
+│ Hey everyone! 👋                                                             │
+│                                                                              │
+│ Quick share: I just shipped a feature I built because my kids couldn't       │
+│ understand the Hebrew news.                                                  │
+│                                                                              │
+│ Built an LLM pipeline that dubs Kan 11 live broadcasts into English - in     │
+│ real-time. Latency is ~2-3 seconds.                                          │
+│                                                                              │
+│ Would love feedback on the AI audio quality and if the translation preserves │
+│  cultural context.                                                           │
+│                                                                              │
+│ Testing with 500 beta users - totally free (normally $20/mo after beta).     │
+│                                                                              │
+│ Demo (30s): [link]                                                           │
+│ Beta signup: [bayitplus.com/beta]                                            │
+│                                                                              │
+│ Tech stack: ElevenLabs for TTS, GPT-4 for context-aware translation, GCS for │
+│  streaming.                                                                  │
+│                                                                              │
+│ Any Israeli expat founders here? This might be useful for your kids too.     │
+│                                                                              │
+│ LinkedIn "Build in Public" Post:                                             │
+│                                                                              │
+│ My kids couldn't understand the Hebrew news. So I built an AI to translate   │
+│ it in real-time. 🎙️                                                          │
+│                                                                              │
+│ Here's the demo: [30-second video embed]                                     │
+│                                                                              │
+│ Problem: Israeli expat kids in the US lose connection to Israeli culture     │
+│ because they can't understand Hebrew media.                                  │
+│                                                                              │
+│ Solution: AI-powered real-time dubbing for Israeli content (TV, radio,       │
+│ podcasts). Original Hebrew audio + English AI translation, playing           │
+│ simultaneously.                                                              │
+│                                                                              │
+│ Tech behind it:                                                              │
+│ • ElevenLabs TTS for natural voices                                          │
+│ • GPT-4 for context-aware translation                                        │
+│ • Custom LLM pipeline for 2-3s latency                                       │
+│ • React Native for cross-platform (iOS/Android/Web/TV)                       │
+│                                                                              │
+│ Why I'm sharing: We're opening Beta 500 (free testing for Israeli expats).   │
+│                                                                              │
+│ If you're raising bilingual kids and struggle with Hebrew content, this      │
+│ might help. Drop a comment or DM for beta access.                            │
+│                                                                              │
+│ #BuildInPublic #AI #MultilingualKids #IsraeliExpats                          │
+│                                                                              │
+│ 3.4 Analytics & Tracking                                                     │
+│                                                                              │
+│ File: /web/src/services/beta_analytics.ts (NEW)                              │
+│                                                                              │
+│ export const betaAnalytics = {                                               │
+│   trackLandingView: (source: string) => {                                    │
+│     growthbook.trackEvent('beta_landing_viewed', { source })                 │
+│   },                                                                         │
+│                                                                              │
+│   trackEmailSubmit: (source: string, email: string) => {                     │
+│     growthbook.trackEvent('beta_email_submitted', { source, email })         │
+│   },                                                                         │
+│                                                                              │
+│   trackVerification: (userId: string, source: string) => {                   │
+│     growthbook.trackEvent('beta_email_verified', { userId, source })         │
+│   },                                                                         │
+│                                                                              │
+│   trackFirstSession: (userId: string, source: string) => {                   │
+│     growthbook.trackEvent('beta_first_session', { userId, source })          │
+│   },                                                                         │
+│                                                                              │
+│   trackConversion: (userId: string, source: string, creditsUsed: number) =>  │
+│ {                                                                            │
+│     growthbook.trackEvent('beta_converted', { userId, source, creditsUsed }) │
+│   }                                                                          │
+│ }                                                                            │
+│                                                                              │
+│ UTM Parameters:                                                              │
+│ - ?utm_source=israeli_mapped&utm_medium=community&utm_campaign=beta_500      │
+│ - ?utm_source=iconz&utm_medium=whatsapp&utm_campaign=beta_500                │
+│ - ?utm_source=techaviv&utm_medium=whatsapp&utm_campaign=beta_500             │
+│ - ?utm_source=linkedin&utm_medium=social&utm_campaign=beta_500               │
+│                                                                              │
+│ Conversion Funnel Tracking:                                                  │
+│ Landing View → Email Submit → Email Verify → First Session → Active User (7  │
+│ days)                                                                        │
+│                                                                              │
+│ Target Metrics:                                                              │
+│ • Landing → Email: 30% conversion                                            │
+│ • Email → Verify: 80% conversion                                             │
+│ • Verify → First Session: 90% conversion                                     │
+│ • First Session → Active: 60% retention                                      │
+│                                                                              │
+│ ---                                                                          │
+│ Implementation Timeline                                                      │
+│                                                                              │
+│ Week 1: Foundation                                                           │
+│                                                                              │
+│ - Days 1-2: Kan 11 YouTube integration (backend model, service, API)         │
+│ - Days 3-4: YouTubeAudioOverlayPlayer component (frontend)                   │
+│ - Days 5-6: Beta landing page + signup API                                   │
+│ - Day 7: Demo video production                                               │
+│                                                                              │
+│ Week 2: Credit System                                                        │
+│                                                                              │
+│ - Days 8-9: BetaCredit models, credit service, metering integration          │
+│ - Days 10-11: Credit balance widget, transaction history UI                  │
+│ - Days 12-13: Admin tools for beta management                                │
+│ - Day 14: Email templates (SendGrid)                                         │
+│                                                                              │
+│ Week 3: Beta Content Filtering & Podcast Enhancement                         │
+│                                                                              │
+│ - Days 15-16: Implement beta content filtering (backend + frontend)          │
+│ - Days 17-18: Migration script to mark existing content as beta-eligible     │
+│ - Days 19-20: PodcastDualLanguagePlayer, TranscriptViewer components         │
+│ - Day 21: Verify existing podcasts have AI dubbing enabled                   │
+│                                                                              │
+│ Week 4: Integration & Launch                                                 │
+│                                                                              │
+│ - Days 22-23: Internal testing (landing page, signup flow, credit system,    │
+│ content filtering)                                                           │
+│ - Days 24-25: Verify beta users cannot access series/movies/audiobooks       │
+│ - Day 26: Demo video production and upload                                   │
+│ - Day 27: Guy Franklin outreach                                              │
+│ - Day 28: WhatsApp groups (Iconz, TechAviv) + LinkedIn post                  │
+│                                                                              │
+│ Weeks 5-6: Optimization & Scaling                                            │
+│                                                                              │
+│ - Days 29-35: Monitor signups, conversion funnel, credit usage               │
+│ - Days 36-42: Collect feedback, iterate on user experience                   │
+│                                                                              │
+│ ---                                                                          │
+│ Critical Files Summary                                                       │
+│                                                                              │
+│ Backend Files (16 files)                                                     │
+│                                                                              │
+│ New Files (10):                                                              │
+│ 1. /backend/app/models/beta_credit.py - BetaCredit and BetaCreditTransaction │
+│  models                                                                      │
+│ 2. /backend/app/services/beta_credit_service.py - Credit allocation,         │
+│ deduction, tracking                                                          │
+│ 3. /backend/app/services/youtube_audio_overlay_service.py - YouTube sync     │
+│ orchestration                                                                │
+│ 4. /backend/app/api/routes/youtube_overlay.py - YouTube overlay API          │
+│ endpoints                                                                    │
+│ 5. /backend/app/api/routes/beta.py - Beta signup, verification, status       │
+│ 6. /backend/app/api/routes/admin/beta_management.py - Admin tools for beta   │
+│ 7. /backend/app/api/dependencies/beta_content_filter.py - Beta content       │
+│ filtering logic                                                              │
+│ 8. /backend/app/services/email_templates/beta_welcome.html - Welcome email   │
+│ template                                                                     │
+│ 9. /backend/app/services/email_templates/beta_waitlist.html - Waitlist email │
+│  template                                                                    │
+│ 10. /scripts/backend/production/content/mark_beta_content.py - Migration     │
+│ script to mark beta content                                                  │
+│                                                                              │
+│ Modified Files (6):                                                          │
+│ 1. /backend/app/models/content.py (Line 317-366) - Extend LiveChannel with   │
+│ YouTube fields + is_beta_content field                                       │
+│ 2. /backend/app/models/user.py - Add beta_tester, beta_cohort,               │
+│ referral_source fields                                                       │
+│ 3. /backend/app/models/subscription.py - Add BETA and CREDITS_SUBSCRIPTION   │
+│ plans                                                                        │
+│ 4. /backend/app/services/olorin/metering/service.py - Integrate credit       │
+│ deduction                                                                    │
+│ 5. /backend/app/api/routes/websocket_live_dubbing.py - Add YouTube sync mode │
+│ 6. /backend/app/api/routes/content.py - Apply beta content filtering to all  │
+│ endpoints                                                                    │
+│                                                                              │
+│ Frontend Files (9 files)                                                     │
+│                                                                              │
+│ New Files (8):                                                               │
+│ 1. /web/src/components/player/YouTubeAudioOverlayPlayer.tsx - YouTube +      │
+│ audio overlay player                                                         │
+│ 2. /web/src/components/podcast/PodcastDualLanguagePlayer.tsx - Podcast       │
+│ player with language switcher                                                │
+│ 3. /web/src/components/podcast/TranscriptViewer.tsx - Transcript display     │
+│ component                                                                    │
+│ 4. /web/src/components/beta/CreditBalanceWidget.tsx - Credit balance display │
+│ 5. /web/src/components/beta/BetaGraduationModal.tsx - Beta expiration        │
+│ upgrade modal                                                                │
+│ 6. /web/src/pages/BetaLandingPage.tsx - Beta 500 landing page                │
+│ 7. /web/src/services/beta_analytics.ts - Beta analytics tracking             │
+│ 8. /web/src/contexts/BetaContext.tsx - Beta mode state management            │
+│                                                                              │
+│ Modified Files (3):                                                          │
+│ 1. /web/src/components/player/FullscreenVideoOverlay.tsx (Line 215-244) -    │
+│ Add YouTube overlay mode                                                     │
+│ 2. /web/src/components/content/ContentCard.tsx - Apply beta content          │
+│ filtering                                                                    │
+│ 3. /web/src/pages/HomePage.tsx - Filter content sections for beta users      │
+│                                                                              │
+│ Configuration Files (2 files)                                                │
+│                                                                              │
+│ 1. /docs/marketing/beta_500_outreach_materials.md (NEW) - Outreach templates │
+│ 2. /.env - Add Beta 500 environment variables (via Google Cloud Secret       │
+│ Manager)                                                                     │
+│                                                                              │
+│ ---                                                                          │
+│ Configuration Requirements                                                   │
+│                                                                              │
+│ Environment Variables (Google Cloud Secret Manager)                          │
+│                                                                              │
+│ # Beta 500 Configuration                                                     │
+│ BETA_MAX_USERS=500                                                           │
+│ BETA_AI_CREDITS=5000                                                         │
+│ BETA_TIER=beta                                                               │
+│ BETA_EXPIRATION_MONTHS=3                                                     │
+│                                                                              │
+│ # YouTube Integration                                                        │
+│ YOUTUBE_API_KEY=[Google Cloud API Key]                                       │
+│ YOUTUBE_EMBED_ALLOWED_DOMAINS=youtube.com,youtu.be                           │
+│                                                                              │
+│ # SendGrid Email                                                             │
+│ SENDGRID_BETA_WELCOME_TEMPLATE_ID=[SendGrid Template ID]                     │
+│ SENDGRID_BETA_WAITLIST_TEMPLATE_ID=[SendGrid Template ID]                    │
+│ SENDGRID_BETA_SURVEY_TEMPLATE_ID=[SendGrid Template ID]                      │
+│                                                                              │
+│ # Credit Consumption Rates                                                   │
+│ CREDIT_RATE_LIVE_DUBBING=1.0  # credits per second                           │
+│ CREDIT_RATE_PODCAST_TRANSLATION=1.0                                          │
+│ CREDIT_RATE_TRANSCRIPTION=0.5                                                │
+│ CREDIT_RATE_LIVE_SUBTITLES=0.5                                               │
+│ CREDIT_RATE_CULTURAL_CONTEXT=10  # credits per API call                      │
+│ CREDIT_RATE_SEMANTIC_SEARCH=5  # credits per query                           │
+│                                                                              │
+│ # Feature Flags (GrowthBook)                                                 │
+│ GROWTHBOOK_BETA_LANDING_ENABLED=true                                         │
+│ GROWTHBOOK_BETA_SIGNUP_RATE_LIMIT=10  # signups per minute                   │
+│                                                                              │
+│ # Analytics                                                                  │
+│ BETA_LANDING_PAGE_URL=https://bayitplus.com/beta                             │
+│ BETA_DEMO_VIDEO_URL=[YouTube URL]                                            │
+│                                                                              │
+│ Important: Follow secrets management workflow:                               │
+│ 1. Add secrets to Google Cloud Secret Manager first                          │
+│ 2. Run /scripts/sync-gcloud-secrets.sh to regenerate .env                    │
+│ 3. Restart services to pick up new configuration                             │
+│                                                                              │
+│ ---                                                                          │
+│ Cost Projections                                                             │
+│                                                                              │
+│ Beta Cost Breakdown (500 users)                                              │
+│                                                                              │
+│ Monthly Costs:                                                               │
+│ - ElevenLabs TTS: $1,500/month (3M characters @ $0.50/1K chars)              │
+│ - Google Cloud Translation: $900/month (60M chars @ $15/1M chars)            │
+│ - OpenAI Whisper: $720/month (24K audio minutes @ $0.03/min)                 │
+│ - Infrastructure (GCS, MongoDB): $275/month (storage, bandwidth)             │
+│ - Email (SendGrid): $80/month (10K emails @ $0.008/email)                    │
+│                                                                              │
+│ Total: $3,475/month for 500 users                                            │
+│                                                                              │
+│ Assumptions:                                                                 │
+│ - Average 3,000 credits used per user (60% of allocation)                    │
+│ - 70% live dubbing, 20% podcast translation, 10% other features              │
+│ - 50 hours dubbing per user during beta                                      │
+│                                                                              │
+│ Post-Beta Revenue Model                                                      │
+│                                                                              │
+│ Credits Subscription: $20/month                                              │
+│ - Cost per user: $6.95/month (ElevenLabs, translation, transcription)        │
+│ - Margin: $13.05/month (65% gross margin)                                    │
+│ - Break-even: 174 users needed (35% conversion from beta)                    │
+│                                                                              │
+│ Expected Beta Conversion:                                                    │
+│ - 500 beta users × 20% conversion = 100 paid subscribers                     │
+│ - 100 × $20/month = $2,000 MRR                                               │
+│ - Month 1 cost: $3,475 (beta) - Month 2 revenue: $2,000 (paid) = Break-even  │
+│ in ~6 months                                                                 │
+│                                                                              │
+│ ---                                                                          │
+│ Success Metrics                                                              │
+│                                                                              │
+│ Technical Metrics                                                            │
+│                                                                              │
+│ - YouTube Audio Sync Quality: < 300ms average drift, < 5% emergency resyncs  │
+│ - YouTube Uptime: > 95% availability (with fallback to HLS)                  │
+│ - Podcast Translation Time: < 15 minutes per 1-hour episode                  │
+│ - Translation Quality: > 90% user satisfaction (NPS survey)                  │
+│                                                                              │
+│ User Engagement Metrics                                                      │
+│                                                                              │
+│ - Beta Signups: 500 within 2 weeks                                           │
+│ - Activation Rate: 60%+ (first session within 7 days)                        │
+│ - YouTube Audio Overlay Usage: 40%+ of users enable audio overlay            │
+│ - Podcast Listening: 30%+ average listen time per episode                    │
+│ - Credit Usage: 3,000+ average credits used per user (60% utilization)       │
+│                                                                              │
+│ Conversion Metrics                                                           │
+│                                                                              │
+│ - Landing → Email: 30% conversion                                            │
+│ - Email → Verification: 80% conversion                                       │
+│ - Verification → First Session: 90% conversion                               │
+│ - NPS Score: 4.0+ (would recommend)                                          │
+│ - Conversion Intent: 20%+ (would pay $20/month after beta)                   │
+│                                                                              │
+│ ---                                                                          │
+│ Risk Mitigation Strategies                                                   │
+│                                                                              │
+│ Risk 1: YouTube Audio Sync Drift                                             │
+│                                                                              │
+│ Mitigation:                                                                  │
+│ - Adaptive buffer (800ms default, auto-adjust)                               │
+│ - 1-second sync polling with drift correction                                │
+│ - Emergency resync if >2 seconds drift                                       │
+│ - Fallback: Disable audio overlay if sync fails                              │
+│                                                                              │
+│ Risk 2: YouTube Stream Availability                                          │
+│                                                                              │
+│ Mitigation:                                                                  │
+│ - Fallback HLS stream configured (fallback_stream_url)                       │
+│ - Health check endpoint for YouTube video accessibility                      │
+│ - Automatic fallback detection                                               │
+│ - Admin notification on failures                                             │
+│                                                                              │
+│ Risk 3: Podcast Copyright Claims                                             │
+│                                                                              │
+│ Mitigation:                                                                  │
+│ - Closed beta only (no public access)                                        │
+│ - Fair use justification (educational, no monetization)                      │
+│ - Attribution and links to original content                                  │
+│ - DMCA compliance (immediate takedown)                                       │
+│ - Pre-emptive outreach to podcast creators                                   │
+│                                                                              │
+│ Risk 4: Credit System Gaming                                                 │
+│                                                                              │
+│ Mitigation:                                                                  │
+│ - Rate limiting on API endpoints                                             │
+│ - Device fingerprinting (prevent multi-account abuse)                        │
+│ - Credit transaction audit logs                                              │
+│ - Admin tools for manual credit adjustment                                   │
+│ - Fraud detection (usage patterns, IP tracking)                              │
+│                                                                              │
+│ Risk 5: Budget Overrun                                                       │
+│                                                                              │
+│ Mitigation:                                                                  │
+│ - Real-time cost monitoring (Olorin metering service)                        │
+│ - Per-feature cost tracking (ElevenLabs, translation, transcription)         │
+│ - Credit consumption alerts (admin dashboard)                                │
+│ - Emergency credit freeze if budget exceeded                                 │
+│ - Fallback to cheaper providers (Google TTS vs ElevenLabs)                   │
+│                                                                              │
+│ ---                                                                          │
+│ Verification & Testing                                                       │
+│                                                                              │
+│ End-to-End Testing Checklist                                                 │
+│                                                                              │
+│ Content Delivery:                                                            │
+│ - Kan 11 YouTube embed loads correctly                                       │
+│ - Audio overlay syncs within 300ms                                           │
+│ - Language switcher works (he → en)                                          │
+│ - Drift correction maintains sync over 30-minute session                     │
+│ - Fallback to HLS if YouTube unavailable                                     │
+│ - Podcast dual-language player switches languages                            │
+│ - Transcripts display and download correctly                                 │
+│ - Israeli radio stations are visible to beta users                           │
+│                                                                              │
+│ Beta Content Filtering (CRITICAL):                                           │
+│ - Beta users can view: Kan 11, podcasts, radio stations                      │
+│ - Beta users CANNOT view: series, movies, audiobooks (404 or hidden)         │
+│ - Admin/super_admin users can view ALL content                               │
+│ - Content cards for non-beta content are hidden in UI                        │
+│ - Direct URL access to non-beta content returns 404 for beta users           │
+│ - Homepage sections filter correctly for beta users                          │
+│                                                                              │
+│ Credit System:                                                               │
+│ - Beta signup allocates 5,000 credits                                        │
+│ - Credit balance displays in real-time                                       │
+│ - Credits deducted correctly (1 credit/sec dubbing)                          │
+│ - Low credit warnings appear (500, 100, 0)                                   │
+│ - Credit exhaustion blocks access                                            │
+│ - Transaction history displays correctly                                     │
+│ - Admin tools grant/adjust credits                                           │
+│                                                                              │
+│ Landing Page & Signup:                                                       │
+│ - Landing page loads with demo video                                         │
+│ - Signup form submits successfully                                           │
+│ - Waitlist logic activates at 501 users                                      │
+│ - Welcome email sent after signup                                            │
+│ - Email verification link works                                              │
+│ - UTM tracking captures referral source                                      │
+│ - Analytics events fire correctly                                            │
+│                                                                              │
+│ User Experience:                                                             │
+│ - First-time user onboarding completes                                       │
+│ - Credit balance widget visible                                              │
+│ - Beta graduation modal appears on expiration                                │
+│ - Upgrade flow to paid plan works                                            │
+│ - Feedback survey collects NPS scores                                        │
+│                                                                              │
+│ Performance Testing                                                          │
+│                                                                              │
+│ - YouTube sync latency < 300ms (p95)                                         │
+│ - Podcast translation completes < 15 min/hour                                │
+│ - Landing page loads < 2 seconds                                             │
+│ - API response times < 200ms (p95)                                           │
+│ - WebSocket connections stable > 98% uptime                                  │
+│                                                                              │
+│ Security Testing                                                             │
+│                                                                              │
+│ - Email verification required before access                                  │
+│ - Credit deduction uses atomic transactions                                  │
+│ - Admin tools require super_admin role                                       │
+│ - Rate limiting prevents abuse (10 signups/min)                              │
+│ - CSRF protection on all forms                                               │
+│                                                                              │
+│ ---                                                                          │
+│ Documentation Requirements                                                   │
+│                                                                              │
+│ User Documentation                                                           │
+│                                                                              │
+│ 1. Beta User Guide (/docs/beta/user_guide.md)                                │
+│   - How to use audio overlay feature                                         │
+│   - How to switch languages on podcasts                                      │
+│   - How to monitor credit usage                                              │
+│   - FAQ and troubleshooting                                                  │
+│ 2. Onboarding Tutorial (In-app)                                              │
+│   - Step-by-step first-time user flow                                        │
+│   - Interactive tooltips for key features                                    │
+│                                                                              │
+│ Admin Documentation                                                          │
+│                                                                              │
+│ 1. Beta Management Guide (/docs/beta/admin_guide.md)                         │
+│   - How to grant beta access                                                 │
+│   - How to adjust credits                                                    │
+│   - How to view analytics                                                    │
+│   - How to handle escalations                                                │
+│ 2. Secrets Management (/docs/deployment/GCLOUD_SECRETS_BETA_500.md)          │
+│   - List of new secrets for Beta 500                                         │
+│   - GCloud commands to add secrets                                           │
+│   - Regeneration workflow                                                    │
+│                                                                              │
+│ Technical Documentation                                                      │
+│                                                                              │
+│ 1. YouTube Audio Overlay Architecture                                        │
+│ (/docs/architecture/youtube_audio_overlay.md)                                │
+│   - Sync mechanism details                                                   │
+│   - Drift correction algorithm                                               │
+│   - Fallback logic                                                           │
+│ 2. Credit System Design (/docs/architecture/beta_credit_system.md)           │
+│   - Credit consumption rates                                                 │
+│   - Transaction tracking                                                     │
+│   - Metering integration                                                     │
+│                                                                              │
+│ ---                                                                          │
+│ Next Steps                                                                   │
+│                                                                              │
+│ Immediate Actions (Before Implementation)                                    │
+│                                                                              │
+│ 1. Obtain Kan 11 YouTube Channel/Video ID (User confirmed: has it)           │
+│ 2. Create Demo Video (30-second split-screen)                                │
+│ 3. Set up SendGrid Templates (welcome, waitlist, survey)                     │
+│ 4. Configure GrowthBook Feature Flags (beta_landing_enabled)                 │
+│                                                                              │
+│ Implementation Approach                                                      │
+│                                                                              │
+│ Claude Code will implement everything phase by phase:                        │
+│ - No project management tools (Jira/Linear)                                  │
+│ - No manual engineer assignments                                             │
+│ - No daily standups                                                          │
+│ - Claude Code executes each phase sequentially with verification             │
+│                                                                              │
+│ Implementation Phases (Sequential)                                           │
+│                                                                              │
+│ Phase 1: Backend Foundation (Week 1)                                         │
+│ 1. Extend LiveChannel model with YouTube fields + is_beta_content flag       │
+│ 2. Create BetaCredit models and credit service                               │
+│ 3. Extend User model with beta fields                                        │
+│ 4. Create beta content filtering dependency                                  │
+│ 5. Implement YouTube audio overlay service                                   │
+│ 6. Add beta signup API endpoints                                             │
+│                                                                              │
+│ Phase 2: Frontend Foundation (Week 2)                                        │
+│ 1. Create BetaLandingPage component                                          │
+│ 2. Create YouTubeAudioOverlayPlayer component                                │
+│ 3. Create CreditBalanceWidget component                                      │
+│ 4. Create BetaContext for state management                                   │
+│ 5. Modify FullscreenVideoOverlay for YouTube mode                            │
+│ 6. Apply content filtering to HomePage and ContentCard                       │
+│                                                                              │
+│ Phase 3: Podcast & Radio Enhancement (Week 3)                                │
+│ 1. Create PodcastDualLanguagePlayer component                                │
+│ 2. Create TranscriptViewer component                                         │
+│ 3. Run migration script to mark beta content                                 │
+│ 4. Verify existing podcasts have AI dubbing                                  │
+│ 5. Verify radio stations are visible                                         │
+│                                                                              │
+│ Phase 4: Testing & Launch (Week 4)                                           │
+│ 1. End-to-end testing (content filtering, credit system, YouTube sync)       │
+│ 2. Create demo video                                                         │
+│ 3. Set up email templates                                                    │
+│ 4. Deploy to staging                                                         │
+│ 5. Launch to production                                                      │
+│                                                                              │
+│ Launch Readiness Checklist                                                   │
+│                                                                              │
+│ - Beta content filtering verified (series/movies hidden)                     │
+│ - Credit system functional (5,000 credits allocated)                         │
+│ - YouTube audio overlay syncing correctly                                    │
+│ - Podcasts and radio stations visible                                        │
+│ - Landing page live with demo video                                          │
+│ - Email templates configured                                                 │
+│ - Analytics tracking enabled                                                 │
+│                                                                              │
+│ ---                                                                          │
+│ Conclusion                                                                   │
+│                                                                              │
+│ This plan delivers Beta 500 within 4-6 weeks by maximizing reuse of existing │
+│  Bayit+ infrastructure (90% reuse) and focusing on three net-new components: │
+│                                                                              │
+│ 1. YouTube Audio Overlay - Legal compliance, audio sync, user experience     │
+│ 2. Credit System - Beta tier, credit tracking, metering integration          │
+│ 3. Launch Infrastructure - Landing page, email automation, community         │
+│ outreach                                                                     │
+│                                                                              │
+│ The architecture is production-ready, follows all coding standards (no       │
+│ mocks, no hardcoded values, configuration-driven, proper error handling),    │
+│ and includes comprehensive testing, monitoring, and documentation            │
+│ strategies.                                                                  │
+│                                                                              │
+│ Expected Outcome: 500 beta signups in 2 weeks, 60%+ activation, 20%+         │
+│ conversion intent, setting the foundation for $2,000+ MRR post-beta launch.  │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+⏺ I'll implement the Beta 500 plan phase by phase. Let me start by scanning the
+  codebase to understand the current structure and identify what needs to be
+  built.
+
+⏺ Searched for 3 patterns (ctrl+o to expand)
+
+⏺ Now let me read the key models to understand the structure:
+
+⏺ Read 3 files (ctrl+o to expand)
+
+⏺ Let me check for existing services and API routes structure:
+
+⏺ Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Now let me check if there's existing podcast translation service and email
+  service:
+
+⏺ Searched for 1 pattern, read 2 files (ctrl+o to expand)
+
+⏺ Perfect! The infrastructure already exists. Now let me create a comprehensive
+  task list for the Beta 500 implementation:
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ the plan is missing a crucial elemebt: the platform. we are production    
+  reaqdy on web but need at least tvos and potentially ios mobile to be     
+  production ready and to provide a platform agnostic experience fr the     
+  beta testers                                                              
+
+⏺ You're absolutely right! The plan is missing critical platform coverage. Let
+  me read the mobile and TV app structures to understand what needs to be built:
+
+⏺ Searched for 6 patterns, read 3 files (ctrl+o to expand)
+
+⏺ Perfect analysis! You're absolutely right. Let me create a comprehensive
+  Platform Parity Addendum to ensure Beta 500 works seamlessly across web, iOS
+  mobile, and tvOS. Here's what's missing:
+
+  Platform Parity Requirements for Beta 500
+
+  Current Status:
+
+  - ✅ Web: Production-ready
+  - ❌ iOS Mobile: Missing Beta 500 components
+  - ❌ tvOS: Missing Beta 500 components
+
+  ---
+  Missing Platform Components
+
+  iOS Mobile (mobile-app/) - 12 Components
+
+  1. YouTubeAudioOverlayPlayerMobile.tsx
+
+  // mobile-app/src/components/player/YouTubeAudioOverlayPlayerMobile.tsx
+  // Features:
+  // - react-native-youtube-iframe for YouTube player
+  // - Touch gesture controls
+  // - Audio overlay with expo-av or react-native-sound
+  // - Language selector (Hebrew ↔ English)
+  // - Volume mixer (video vs AI audio)
+  // - WebSocket client for dubbed audio stream
+  // - 1-second sync polling
+  // - Drift correction (800ms buffer)
+
+  2. PodcastDualLanguagePlayerMobile.tsx
+
+  // mobile-app/src/components/podcast/PodcastDualLanguagePlayerMobile.tsx
+  // Features:
+  // - react-native-video or expo-av for audio
+  // - Language toggle (he ↔ en)
+  // - Transcript viewer synchronized with playback
+  // - Download/share transcript
+  // - Background audio support
+
+  3. TranscriptViewerMobile.tsx
+
+  // mobile-app/src/components/podcast/TranscriptViewerMobile.tsx
+  // Features:
+  // - ScrollView with transcript
+  // - Auto-scroll to current position
+  // - Copy to clipboard
+  // - Share transcript
+
+  4. CreditBalanceWidgetMobile.tsx
+
+  // mobile-app/src/components/beta/CreditBalanceWidgetMobile.tsx
+  // Features:
+  // - Display credits: "X / 5,000"
+  // - Warning indicators (low/critical/depleted)
+  // - Upgrade button with navigation
+  // - Real-time updates via polling
+
+  5. BetaGraduationModalMobile.tsx
+
+  // mobile-app/src/components/beta/BetaGraduationModalMobile.tsx
+  // Features:
+  // - Bottom sheet or full-screen modal
+  // - 3 upgrade options
+  // - Navigate to subscription flow
+  // - @olorin/glass-ui styling
+
+  6. BetaContext (React Native)
+
+  // mobile-app/src/contexts/BetaContext.tsx
+  // State: isBetaUser, isAdmin, canViewContent(content)
+
+  7. Beta Content Filtering - Navigation
+
+  // mobile-app/src/navigation/HomeStack.tsx
+  // Filter tabs/screens: Show Kan 11, Podcasts, Radio
+  // Hide: Movies, Series, Audiobooks
+
+  8. Beta Content Filtering - Content Cards
+
+  // mobile-app/src/components/ContentCardMobile.tsx
+  // Add canViewContent() check before rendering
+
+  9. BetaLandingScreen (Mobile)
+
+  // mobile-app/src/screens/BetaLandingScreen.tsx
+  // Mobile-optimized landing page
+  // ScrollView with signup form
+
+  10. Beta Analytics Service (Mobile)
+
+  // mobile-app/src/services/betaAnalytics.ts
+  // Platform-specific tracking (Expo Analytics or Firebase)
+
+  11. WebSocket Dubbing Client (Mobile)
+
+  // mobile-app/src/services/youtubeOverlayWebSocket.ts
+  // WebSocket client for /ws/youtube/overlay/{session_id}
+
+  12. Audio Sync Manager (Mobile)
+
+  // mobile-app/src/services/audioSyncManager.ts
+  // Handles drift correction, emergency resync
+
+  ---
+  tvOS (tvos-app/) - 12 Components
+
+  1. YouTubeAudioOverlayPlayerTV.tsx
+
+  // tvos-app/src/components/player/YouTubeAudioOverlayPlayerTV.tsx
+  // Features:
+  // - YouTube player (react-native-youtube-iframe with tvOS support)
+  // - Siri Remote navigation
+  // - Focus-based controls (language, volume)
+  // - 10-foot UI design
+  // - Audio overlay with AVAudioEngine
+  // - WebSocket dubbed audio stream
+
+  2. PodcastDualLanguagePlayerTV.tsx
+
+  // tvos-app/src/components/podcast/PodcastDualLanguagePlayerTV.tsx
+  // Features:
+  // - Audio player with Siri Remote controls
+  // - Focus navigation for language toggle
+  // - Transcript viewer on side panel (10-foot readable)
+
+  3. TranscriptViewerTV.tsx
+
+  // tvos-app/src/components/podcast/TranscriptViewerTV.tsx
+  // Features:
+  // - Large text for 10-foot viewing
+  // - Siri Remote scrolling
+  // - Auto-scroll synchronized
+
+  4. CreditBalanceWidgetTV.tsx
+
+  // tvos-app/src/components/beta/CreditBalanceWidgetTV.tsx
+  // Features:
+  // - Top-right corner placement
+  // - Large text (10-foot UI)
+  // - Warning overlays (low/critical/depleted)
+
+  5. BetaGraduationModalTV.tsx
+
+  // tvos-app/src/components/beta/BetaGraduationModalTV.tsx
+  // Features:
+  // - Full-screen modal
+  // - Focus navigation between options
+  // - Siri Remote selection
+  // - Large buttons (10-foot UI)
+
+  6. BetaContext (tvOS)
+
+  // tvos-app/src/contexts/BetaContext.tsx
+  // Same as mobile, React Native context
+
+  7. Beta Content Filtering - Shelves
+
+  // tvos-app/src/components/ContentShelf.tsx
+  // Filter shelves: Show Kan 11, Podcasts, Radio
+  // Hide: Movies, Series, Audiobooks
+
+  8. Beta Content Filtering - Content Cards
+
+  // tvos-app/src/components/ContentCard.tsx
+  // Add canViewContent() check
+
+  9. Beta Landing Screen (tvOS)
+
+  // tvos-app/src/screens/BetaLandingScreen.tsx
+  // TV-optimized landing (QR code for signup on mobile)
+
+  10. Beta Analytics Service (tvOS)
+
+  // tvos-app/src/services/betaAnalytics.ts
+  // tvOS-specific tracking
+
+  11. WebSocket Dubbing Client (tvOS)
+
+  // tvos-app/src/services/youtubeOverlayWebSocket.ts
+  // Same as mobile
+
+  12. Audio Sync Manager (tvOS)
+
+  // tvos-app/src/services/audioSyncManager.ts
+  // tvOS-specific audio handling
+
+  ---
+  Shared Native Dependencies
+
+  Required npm packages:
+
+  {
+    "react-native-youtube-iframe": "^2.3.0",  // YouTube player (iOS + tvOS)
+    "expo-av": "^14.0.0",  // Audio playback
+    "react-native-webrtc": "^118.0.0",  // WebSocket audio streaming
+    "react-native-fs": "^2.20.0"  // Transcript download
+  }
+
+  ---
+  Updated Implementation Plan with Platform Parity
+
+  Phase 1: Backend Foundation (Weeks 1-2) - UNCHANGED
+
+  All backend work remains the same (models, services, APIs)
+
+  Phase 2: Web Implementation (Week 2) - UNCHANGED
+
+  Web components as originally planned
+
+  Phase 3: iOS Mobile Implementation (Week 3) - NEW
+
+  1. Install dependencies (react-native-youtube-iframe, expo-av)
+  2. Create 12 mobile components (listed above)
+  3. Integrate beta content filtering in navigation
+  4. Test on iPhone SE, 15, 15 Pro Max, iPad
+
+  Phase 4: tvOS Implementation (Week 3-4) - NEW
+
+  1. Verify tvOS YouTube player compatibility
+  2. Create 12 tvOS components with focus navigation
+  3. Integrate beta content filtering in shelves
+  4. Test on Apple TV 4K simulator + physical device
+
+  Phase 5: Cross-Platform Testing (Week 4) - NEW
+
+  1. YouTube audio sync across all platforms
+  2. Credit system works on all platforms
+  3. Beta content filtering verified on all platforms
+  4. Podcast dual-language playback on all platforms
+  5. Beta signup flow (web) → access on mobile/tvOS
+
+  Phase 6: Documentation & Launch (Weeks 5-6) - UPDATED
+
+  1. Platform-specific user guides (web, iOS, tvOS)
+  2. Platform-specific testing checklists
+  3. Secrets documentation (YouTube API keys, SendGrid templates)
+  4. Outreach materials updated with platform badges
+
+  ---
+  Critical Platform-Specific Considerations
+
+  iOS Mobile:
+
+  - App Store Submission: Beta 500 must pass App Store review (ensure compliance
+   with YouTube ToS, content licensing)
+  - TestFlight: Beta testers access via TestFlight (up to 10,000 external
+  testers)
+  - Background Audio: Enable audio background mode for podcast playback
+  - Notifications: Push notifications for credit warnings
+
+  tvOS:
+
+  - Apple TV App Store: Separate submission from iOS
+  - TestFlight tvOS: Limited to 100 external testers (may need multiple builds)
+  - Focus Engine: All UI must support Siri Remote focus navigation
+  - Top Shelf: Update Top Shelf with Beta 500 content
+  - Living Room UX: 10-foot UI, high contrast, large touch targets
+
+  Platform Feature Parity Matrix:
+  ┌────────────────────────┬─────┬──────────────────────┬───────────────┐
+  │        Feature         │ Web │      iOS Mobile      │     tvOS      │
+  ├────────────────────────┼─────┼──────────────────────┼───────────────┤
+  │ YouTube Audio Overlay  │ ✅  │ ✅                   │ ✅            │
+  ├────────────────────────┼─────┼──────────────────────┼───────────────┤
+  │ Podcast Dual-Language  │ ✅  │ ✅                   │ ✅            │
+  ├────────────────────────┼─────┼──────────────────────┼───────────────┤
+  │ Credit Balance Widget  │ ✅  │ ✅                   │ ✅            │
+  ├────────────────────────┼─────┼──────────────────────┼───────────────┤
+  │ Beta Content Filtering │ ✅  │ ✅                   │ ✅            │
+  ├────────────────────────┼─────┼──────────────────────┼───────────────┤
+  │ Beta Signup            │ ✅  │ ❌ (redirect to web) │ ❌ (QR code)  │
+  ├────────────────────────┼─────┼──────────────────────┼───────────────┤
+  │ Credit Purchase        │ ✅  │ ✅ (In-App Purchase) │ ✅ (IAP tvOS) │
+  ├────────────────────────┼─────┼──────────────────────┼───────────────┤
+  │ Analytics Tracking     │ ✅  │ ✅                   │ ✅            │
+  └────────────────────────┴─────┴──────────────────────┴───────────────┘
+  ---
+  Updated Timeline with Platform Parity
+
+  Week 1: Backend Foundation
+
+  - All backend models, services, APIs
+
+  Week 2: Web + Backend Integration
+
+  - Web components
+  - Backend integration testing
+
+  Week 3: iOS Mobile + tvOS (Parallel)
+
+  - Mobile components (Days 15-18)
+  - tvOS components (Days 19-21)
+
+  Week 4: Cross-Platform Testing + Polish
+
+  - Platform parity testing
+  - Beta content filtering verification
+  - YouTube sync across platforms
+
+  Week 5-6: Launch Preparation
+
+  - App Store submissions (iOS + tvOS)
+  - TestFlight beta distribution
+  - Web production deployment
+  - Community outreach
+
+  ---
+  Platform-Specific Testing Checklist
+
+  iOS Mobile Testing:
+
+  - iPhone SE (small screen)
+  - iPhone 15 (standard)
+  - iPhone 15 Pro Max (large)
+  - iPad (tablet layout)
+  - YouTube audio overlay syncs < 300ms
+  - Beta users cannot access series/movies
+  - Credit balance displays correctly
+  - Background audio works for podcasts
+  - Push notifications for credit warnings
+
+  tvOS Testing:
+
+  - Apple TV 4K (tvOS 17+)
+  - Focus navigation (no traps)
+  - Siri Remote gestures work
+  - 10-foot UI readability
+  - YouTube audio overlay with Remote control
+  - Beta content filtering in shelves
+  - Credit warnings visible from 10 feet
+  - Top Shelf displays Beta content
+
+  ---
+  Does this comprehensive platform parity plan address your concerns? Should I
+  proceed with implementation starting with the backend foundation, then web,
+  then native platforms?
+
+✻ Crunched for 1m 41s
+
+❯ Another critical elemnt- voice operated actions and queries- must be      
+  fully implemented with great performance as a crucial part of the beta.   
+  make sure to THOROUGHLY scan all existing code!!!!!!                      
+
+⏺ Absolutely right! Voice operations are critical. Let me do a comprehensive
+  scan of existing voice infrastructure:
+
+⏺ Searched for 8 patterns, read 8 files (ctrl+o to expand)
+
+⏺ Excellent! Now I have the complete picture. Let me create the Voice Operations
+   Addendum for Beta 500:
+
+  ---
+  🎙️ VOICE OPERATIONS - CRITICAL BETA 500 REQUIREMENT
+
+  Existing Voice Infrastructure (Already Production-Ready)
+
+  Backend (Complete):
+  - ✅ VoicePipelineService - Streaming Audio → STT → LLM → TTS (~3-5s latency)
+  - ✅ VoiceManagementService - Configuration management
+  - ✅ ElevenLabsRealtimeService - Realtime STT (~150ms latency)
+  - ✅ ElevenLabsTTSStreamingService - Streaming TTS generation
+  - ✅ Voice APIs (admin routes, librarian voice command)
+  - ✅ VoiceConfiguration & VoiceProviderHealth models
+
+  Frontend (Complete):
+  - ✅ VoiceManager - Orchestrates wake word → speech → processing → TTS
+  - ✅ OlorinVoiceOrchestrator - Unified intent routing
+  - ✅ Wake word detection ("Hey Bayit")
+  - ✅ Multi-language support (Hebrew/English/Spanish)
+  - ✅ Voice UI components (mobile + tvOS)
+
+  Voice Intents (Complete):
+  - ✅ SEARCH - Content search
+  - ✅ NAVIGATION - Navigate app
+  - ✅ PLAYBACK - Play/pause/skip controls
+  - ✅ CHAT - Natural language queries
+  - ✅ SCROLL - Scroll UI
+  - ✅ CONTROL - System controls
+
+  ---
+  Beta 500 Voice Extensions (NEW)
+
+  1. Beta-Specific Voice Intents
+
+  Create: backend/app/services/beta_voice_handler.py
+  class BetaVoiceHandler:
+      """Handle Beta 500-specific voice commands."""
+
+      # Credit balance queries
+      async def handle_credit_balance(self, user_id: str) -> str:
+          # "How many credits do I have?"
+          # "What's my credit balance?"
+          # "Am I running out of credits?"
+
+      # Beta content discovery
+      async def handle_beta_content_discovery(self, query: str, user: User) -> 
+  List[Content]:
+          # "Show me Israeli podcasts"
+          # "What's on Kan 11 right now?"
+          # "Find me Israeli radio"
+          # FILTER: Only return is_beta_content=True
+
+      # Beta feature discovery
+      async def handle_feature_discovery(self, user: User) -> str:
+          # "What can I watch?"
+          # "What content is available?"
+          # "Tell me about Beta 500"
+
+      # Language switching
+      async def handle_language_switch(self, content_id: str, language: str) -> 
+  dict:
+          # "Switch to English"
+          # "Play in Hebrew"
+          # Works for: YouTube overlay, podcasts
+
+  Extend: shared/services/olorinVoiceOrchestrator.ts
+  // Add new intents
+  export type BetaVoiceIntent =
+    | 'CREDIT_BALANCE'      // Credit queries
+    | 'BETA_DISCOVERY'      // Beta content search
+    | 'FEATURE_DISCOVERY'   // What's available
+    | 'LANGUAGE_SWITCH';    // Switch audio language
+
+  // Route Beta intents
+  private async routeIntent(transcript: string, response: VoiceCommandResponse)
+  {
+    switch (response.intent) {
+      case 'CREDIT_BALANCE':
+        await this.executeCreditBalanceQuery();
+        break;
+      case 'BETA_DISCOVERY':
+        await this.executeBetaContentSearch(response.action.payload.query);
+        break;
+      case 'LANGUAGE_SWITCH':
+        await this.executeLanguageSwitch(response.action.payload.language);
+        break;
+      // ... existing intents
+    }
+  }
+
+  ---
+  2. Beta Content Filtering in Voice
+
+  Extend: backend/app/api/routes/librarian/voice_command.py
+  # Add beta filtering to voice search
+  async def execute_voice_command(request: VoiceCommandRequest, current_user: 
+  User):
+      # Check if user is beta tester
+      if current_user.beta_tester:
+          # Filter tool results - only beta content
+          filtered_results = [
+              content for content in search_results
+              if content.is_beta_content
+          ]
+
+          # Add beta messaging to response
+          if request.command.contains("series") or
+  request.command.contains("movie"):
+              response.message = "Beta users can access Kan 11 live TV, Israeli 
+  podcasts, and radio. Series and movies coming soon!"
+
+  Voice Response Examples:
+  - ❌ "Show me Breaking Bad" → "Series are not available in Beta. Try Kan 11
+  news or Israeli podcasts!"
+  - ✅ "Show me Israeli podcasts" → "Here are Israeli tech podcasts: Reversim,
+  'עושים היסטוריה'..."
+  - ✅ "What's on Kan 11?" → "Kan 11 is live now with 'חדשות הערב' - AI dubbed
+  in English"
+
+  ---
+  3. YouTube Overlay Voice Controls
+
+  Create: shared/services/youtubeOverlayVoiceCommands.ts
+  export const youtubeOverlayVoiceCommands = {
+    // Language switching
+    switchLanguage: async (language: 'he' | 'en') => {
+      // "Switch to English dubbing"
+      // "Back to Hebrew"
+    },
+
+    // Volume mixing
+    adjustAudioVolume: async (type: 'video' | 'ai', level: number) => {
+      // "Turn up AI audio"
+      // "Lower video volume"
+    },
+
+    // Sync control
+    syncAudio: async () => {
+      // "Sync audio"
+      // "Fix audio delay"
+    }
+  };
+
+  Voice Commands:
+  - "Switch to English" → Toggle YouTube overlay audio to English
+  - "Turn up AI audio" → Increase AI audio volume, decrease video
+  - "Sync audio" → Trigger emergency resync
+
+  ---
+  4. Podcast Voice Controls
+
+  Create: shared/services/podcastVoiceCommands.ts
+  export const podcastVoiceCommands = {
+    switchLanguage: async (episodeId: string, language: 'he' | 'en') => {
+      // "Switch to English"
+      // "Play original Hebrew"
+    },
+
+    showTranscript: async (episodeId: string) => {
+      // "Show transcript"
+      // "Read transcript"
+    },
+
+    jumpToPosition: async (episodeId: string, position: string) => {
+      // "Jump to minute 5"
+      // "Skip to 10 minutes"
+    }
+  };
+
+  ---
+  5. Voice Performance Requirements for Beta 500
+
+  Target Latency:
+  - End-to-end: < 5 seconds (wake word → response audio)
+  - STT: < 200ms (after speech ends)
+  - LLM first token: < 300ms
+  - TTS first audio: < 500ms
+  - Total pipeline: < 1s (speech end → audio start)
+
+  Load Testing:
+  - 500 concurrent voice sessions (1 per beta user)
+  - Peak load: 100 simultaneous voice commands
+  - Sustained throughput: 50 commands/second
+
+  Monitoring:
+  # Add to VoicePipelineService
+  class VoiceMetrics:
+      stt_latency_ms: float
+      llm_first_token_ms: float
+      tts_first_audio_ms: float
+      total_pipeline_ms: float
+      user_id: str
+      intent: str
+      beta_tester: bool
+
+  # Track beta user voice performance separately
+  if user.beta_tester:
+      await beta_voice_metrics.record(metrics)
+
+  ---
+  6. Multi-Language Voice Support
+
+  Beta 500 Languages:
+  - Hebrew (primary) - Native Israeli content
+  - English (secondary) - AI-dubbed content, international users
+
+  Code-Switching Support:
+  # Handle Hebrew → English code-switching
+  # Example: "תן לי podcast about technology"
+  # Translation: "Give me podcast about technology"
+
+  class MultilingualVoiceHandler:
+      async def detect_language(self, transcript: str) -> List[str]:
+          # Detect mixed Hebrew/English
+          # Return: ['he', 'en'] if code-switched
+
+      async def process_multilingual_command(self, transcript: str):
+          # Parse Hebrew command with English keywords
+          # "תן לי" (Hebrew: give me) + "podcast" (English)
+
+  ---
+  7. Voice Analytics for Beta 500
+
+  Create: backend/app/models/beta_voice_analytics.py
+  class BetaVoiceSession(Document):
+      user_id: str
+      session_id: str
+      started_at: datetime
+      ended_at: Optional[datetime]
+
+      # Commands
+      total_commands: int = 0
+      successful_commands: int = 0
+      failed_commands: int = 0
+
+      # Intents
+      intent_breakdown: Dict[str, int] = {}  # {SEARCH: 5, PLAYBACK: 3, ...}
+
+      # Performance
+      avg_latency_ms: float
+      max_latency_ms: float
+
+      # Language
+      primary_language: str  # he or en
+      code_switched_commands: int = 0
+
+      # Engagement
+      wake_word_activations: int = 0
+      manual_activations: int = 0
+
+  Track Beta-Specific Metrics:
+  - Voice commands per beta user
+  - Most used intents
+  - Voice→playback conversion rate
+  - Credit balance queries per user
+  - Language switching frequency
+
+  ---
+  Platform-Specific Voice Implementation
+
+  iOS Mobile Voice (Complete - Minor Enhancements)
+
+  - ✅ VoiceManager with wake word detection
+  - ✅ VoiceCommandButton, VoiceSettings, VoiceCommandHistory
+  - NEW: Beta intent handlers
+  - NEW: Credit balance voice queries
+  - NEW: Beta content filtering in voice search
+
+  tvOS Voice (Complete - Minor Enhancements)
+
+  - ✅ Siri Remote microphone support
+  - ✅ TVVoiceDemo, TVVoiceSettings
+  - ✅ Focus navigation for voice UI
+  - NEW: Beta intent handlers (same as mobile)
+  - NEW: 10-foot voice response UI
+
+  Web Voice (Partial - Needs Beta Extensions)
+
+  - ✅ Voice pipeline exists
+  - NEW: Web microphone permissions handling
+  - NEW: Beta voice UI components
+  - NEW: Credit balance voice queries
+
+  ---
+  Voice-Specific Testing Checklist
+
+  Performance Testing:
+
+  - Voice latency < 5s (all platforms)
+  - 500 concurrent voice sessions stable
+  - Peak load: 100 simultaneous commands
+  - STT latency < 200ms
+  - TTS first audio < 500ms
+
+  Beta Intent Testing:
+
+  - "How many credits do I have?" → Returns accurate balance
+  - "Show me Israeli podcasts" → Returns only beta content
+  - "Show me Breaking Bad" → "Not available in Beta"
+  - "What can I watch?" → Lists Kan 11, podcasts, radio
+
+  YouTube Overlay Voice:
+
+  - "Switch to English" → Toggles audio overlay
+  - "Turn up AI audio" → Adjusts volume mixer
+  - "Sync audio" → Triggers drift correction
+
+  Podcast Voice:
+
+  - "Switch to English" → Changes podcast language
+  - "Show transcript" → Opens transcript viewer
+  - "Jump to minute 5" → Seeks playback
+
+  Multi-Language:
+
+  - Hebrew commands work ("תן לי פודקאסטים")
+  - English commands work ("Show me podcasts")
+  - Code-switching works ("תן לי podcast")
+
+  Beta Content Filtering:
+
+  - Voice search only returns is_beta_content=True
+  - Series/movies blocked with helpful message
+  - Beta users can access Kan 11, podcasts, radio via voice
+
+  ---
+  Voice Credit Usage
+
+  Voice commands consume credits:
+  - STT (Speech-to-Text): 0.5 credits/second
+  - TTS (Text-to-Speech): 0.5 credits/second
+  - LLM processing: 1 credit/query
+
+  Example:
+  - 10-second voice command: 5 credits (STT)
+  - 5-second voice response: 2.5 credits (TTS)
+  - Total: 7.5 credits per voice interaction
+
+  Track in BetaCreditService:
+  await credit_service.deduct_credits(
+      user_id=user_id,
+      feature="voice_command",
+      usage_amount=audio_duration_seconds,
+      metadata={
+          "intent": intent,
+          "stt_seconds": stt_duration,
+          "tts_seconds": tts_duration,
+          "llm_tokens": llm_tokens_used
+      }
+  )
+
+  ---
+  Updated Implementation Timeline (with Voice)
+
+  Week 1: Backend Foundation + Voice Extensions
+
+  - Days 1-3: Backend models, services, APIs (as planned)
+  - Days 4-5: BetaVoiceHandler, beta_voice_analytics.py
+  - Days 6-7: Voice intent extensions in OlorinVoiceOrchestrator
+
+  Week 2: Web + Voice Integration
+
+  - Days 8-10: Web components (as planned)
+  - Days 11-12: Web voice extensions (credit queries, beta filtering)
+  - Days 13-14: Voice performance testing
+
+  Week 3: iOS Mobile + tvOS + Voice
+
+  - Days 15-18: Mobile components + mobile voice extensions
+  - Days 19-21: tvOS components + tvOS voice extensions
+
+  Week 4: Cross-Platform Testing + Voice Load Testing
+
+  - Days 22-24: Platform parity testing
+  - Days 25-26: Voice load testing (500 concurrent sessions)
+  - Day 27: Voice performance optimization
+  - Day 28: Launch readiness
+
+  ---
+  Voice Performance Guarantee for Beta 500
+
+  MANDATORY REQUIREMENTS:
+  - ✅ < 5s end-to-end voice latency (99th percentile)
+  - ✅ < 200ms STT latency (after speech ends)
+  - ✅ 500 concurrent voice sessions supported
+  - ✅ 100 simultaneous commands handled
+  - ✅ Hebrew + English + code-switching support
+  - ✅ Beta content filtering in all voice searches
+  - ✅ Voice credit tracking per user
+  - ✅ Voice analytics dashboard for Beta cohort
+
+  FAILURE CONDITIONS:
+  - ❌ Voice latency > 5s (p99)
+  - ❌ Beta users can access series/movies via voice
+  - ❌ Voice commands not tracked in credit system
+  - ❌ Code-switching not supported
+  - ❌ Voice performance degrades under load
+
+  ---
+  Does this comprehensive voice operations plan address your concerns? The
+  existing voice infrastructure is production-ready, we just need to add Beta
+  500-specific intent handlers and content filtering. Should I proceed with
+  implementation?
+
+✻ Crunched for 2m 26s
+
+❯ Verify full voice itegration with widgets system. user should be able to  
+  Say " Show me channel 11 and play latest podcast from Segal and Berko",   
+  system should be able to display channel 11 and play it muted and add a   
+  widget with the latest episode and play it on the home screen             
+
+⏺ Excellent catch! This is a critical integration point. Let me verify the
+  widgets system and voice-widget orchestration:
+
+⏺ Searched for 4 patterns, read 4 files (ctrl+o to expand)
+
+⏺ Perfect! I found critical gaps. Let me create a comprehensive Voice-Widget 
+  Integration Plan:
+
+  ---
+  🚨 CRITICAL GAP: Voice-Widget Multi-Intent Orchestration
+
+  Current State Analysis
+
+  ✅ What EXISTS:
+  1. Widget System (Complete):
+    - Widget model with 7 content types (live_channel, podcast, radio, vod,
+  audiobook, iframe, custom)
+    - PiPWidgetManager orchestrates multiple widgets
+    - Mobile: Max 2 concurrent widgets, single active audio
+    - Widgets can be muted/visible/minimized/draggable
+  2. Voice System (Single-Intent Only):
+    - VoiceCommandProcessor handles ONE intent per command
+    - Hebrew + English command patterns
+    - 6 intent types: NAVIGATION, SEARCH, PLAYBACK, SCROLL, CONTROL, CHAT
+
+  ❌ What's MISSING:
+  1. Multi-Intent Parsing - Cannot parse "Show channel 11 AND play podcast"
+  2. Voice→Widget Creation - No API to create widgets from voice
+  3. Concurrent Playback Orchestration - No coordination for video muted + audio
+   widget
+  4. Complex Entity Extraction - Cannot parse "channel 11" → Kan 11, "Segal and
+  Berko" → סגל וברקו
+
+  ---
+  Implementation Plan: Voice-Widget Multi-Intent System
+
+  Phase 1: Multi-Intent Voice Parser (NEW)
+
+  Create: shared/services/multiIntentVoiceParser.ts
+
+  /**
+   * Multi-Intent Voice Parser
+   * Parses compound voice commands with multiple actions
+   * Example: "Show me channel 11 and play latest podcast from Segal and Berko"
+   */
+
+  export interface ParsedIntent {
+    intent: string;
+    entities: Record<string, any>;
+    confidence: number;
+    order: number; // Execution order
+  }
+
+  export interface MultiIntentCommand {
+    intents: ParsedIntent[];
+    originalTranscript: string;
+    orchestrationType: 'sequential' | 'concurrent' | 'conditional';
+  }
+
+  export class MultiIntentVoiceParser {
+    /**
+     * Parse compound commands with conjunctions (and, also, then)
+     * Hebrew: ו, גם, אז, בנוסף
+     */
+    parseMultiIntent(transcript: string): MultiIntentCommand {
+      // Split by conjunction markers
+      const conjunctions = {
+        he: ['\\sו', '\\sגם\\s', '\\sאז\\s', '\\sבנוסף\\s'],
+        en: ['\\sand\\s', '\\salso\\s', '\\sthen\\s', '\\splus\\s']
+      };
+
+      // Example: "הראה לי ערוץ 11 ו נגן את הפודקאסט האחרון של סגל וברקו"
+      // Split: ["הראה לי ערוץ 11", "נגן את הפודקאסט האחרון של סגל וברקו"]
+
+      const segments = this.splitByConjunctions(transcript, conjunctions);
+
+      const intents: ParsedIntent[] = segments.map((segment, index) => {
+        return {
+          intent: this.classifyIntent(segment),
+          entities: this.extractEntities(segment),
+          confidence: this.calculateConfidence(segment),
+          order: index
+        };
+      });
+
+      return {
+        intents,
+        originalTranscript: transcript,
+        orchestrationType: this.determineOrchestrationType(intents)
+      };
+    }
+
+    /**
+     * Determine if intents should run sequential or concurrent
+     * Example: "Show video and play audio" → concurrent (video muted + audio 
+  widget)
+     * Example: "Pause then go home" → sequential
+     */
+    private determineOrchestrationType(intents: ParsedIntent[]): string {
+      // If one is video display + one is audio playback → concurrent
+      const hasVideoDisplay = intents.some(i =>
+        i.intent === 'DISPLAY_CHANNEL' && i.entities.contentType ===
+  'live_channel'
+      );
+      const hasAudioPlayback = intents.some(i =>
+        i.intent === 'PLAY_PODCAST' && i.entities.contentType === 'podcast'
+      );
+
+      if (hasVideoDisplay && hasAudioPlayback) {
+        return 'concurrent'; // Video muted + audio widget
+      }
+
+      return 'sequential'; // Default: execute in order
+    }
+
+    /**
+     * Extract entities from voice segment
+     * Examples:
+     * - "ערוץ 11" → { channelName: "כאן 11", channelId: "..." }
+     * - "פודקאסט של סגל וברקו" → { podcastName: "סגל וברקו", podcastId: "..." }
+     * - "הפודקאסט האחרון" → { episodeFilter: "latest" }
+     */
+    private extractEntities(segment: string): Record<string, any> {
+      const entities: Record<string, any> = {};
+
+      // Channel extraction
+      const channelMatch = segment.match(/ערוץ\s*(\d+)/); // "ערוץ 11"
+      if (channelMatch) {
+        const channelNum = channelMatch[1];
+        entities.channelNumber = channelNum;
+        entities.channelName = this.mapChannelNumber(channelNum); // 11 → "כאן 
+  11"
+      }
+
+      // Podcast extraction
+      const podcastPatterns = [
+        /פודקאסט.*?(של|מאת)\s+(.+?)(?:\s|$)/,  // "פודקאסט של סגל וברקו"
+        /(.+?)\s+פודקאסט/,  // "סגל וברקו פודקאסט"
+      ];
+
+      for (const pattern of podcastPatterns) {
+        const match = segment.match(pattern);
+        if (match) {
+          entities.podcastQuery = match[match.length - 1];
+          break;
+        }
+      }
+
+      // Episode filter
+      if (segment.includes('האחרון') || segment.includes('latest')) {
+        entities.episodeFilter = 'latest';
+      }
+
+      return entities;
+    }
+
+    /**
+     * Map channel numbers to canonical names
+     */
+    private mapChannelNumber(num: string): string {
+      const channelMap: Record<string, string> = {
+        '11': 'כאן 11',
+        '12': 'קשת 12',
+        '13': 'רשת 13',
+        '14': 'ערוץ 14'
+      };
+      return channelMap[num] || `ערוץ ${num}`;
+    }
+  }
+
+  ---
+  Phase 2: Voice-Widget Orchestrator (NEW)
+
+  Create: shared/services/voiceWidgetOrchestrator.ts
+
+  /**
+   * Voice-Widget Orchestrator
+   * Executes multi-intent commands by creating/manipulating widgets
+   */
+
+  import { MultiIntentCommand, ParsedIntent } from './multiIntentVoiceParser';
+  import { api } from './api';
+
+  export class VoiceWidgetOrchestrator {
+    /**
+     * Execute multi-intent command
+     * Example: Display Channel 11 (muted video) + Play podcast (audio widget)
+     */
+    async executeMultiIntent(command: MultiIntentCommand): Promise<void> {
+      if (command.orchestrationType === 'concurrent') {
+        // Execute all intents in parallel
+        await Promise.all(
+          command.intents.map(intent => this.executeIntent(intent))
+        );
+      } else {
+        // Execute intents sequentially
+        for (const intent of command.intents) {
+          await this.executeIntent(intent);
+        }
+      }
+    }
+
+    /**
+     * Execute single intent by creating appropriate widget
+     */
+    private async executeIntent(intent: ParsedIntent): Promise<void> {
+      switch (intent.intent) {
+        case 'DISPLAY_CHANNEL':
+          await this.displayChannelWidget(intent.entities, muted: true);
+          break;
+
+        case 'PLAY_PODCAST':
+          await this.playPodcastWidget(intent.entities);
+          break;
+
+        case 'PLAY_RADIO':
+          await this.playRadioWidget(intent.entities);
+          break;
+
+        default:
+          console.warn('Unknown intent for widget creation:', intent.intent);
+      }
+    }
+
+    /**
+     * Display live channel in widget (muted by default for concurrent playback)
+     */
+    private async displayChannelWidget(
+      entities: Record<string, any>,
+      muted: boolean = true
+    ): Promise<void> {
+      const channelName = entities.channelName; // "כאן 11"
+
+      // Find channel by name
+      const channel = await api.get('/live/channels', {
+        params: { name: channelName }
+      });
+
+      if (!channel.data || channel.data.length === 0) {
+        throw new Error(`Channel not found: ${channelName}`);
+      }
+
+      const channelData = channel.data[0];
+
+      // Create widget
+      await api.post('/widgets/personal', {
+        title: channelData.name,
+        description: `Live: ${channelData.current_show || 'Now Playing'}`,
+        content: {
+          content_type: 'live_channel',
+          live_channel_id: channelData.id
+        },
+        position: {
+          x: 20,
+          y: 100,
+          width: 480,
+          height: 270,
+          z_index: 100
+        },
+        is_muted: muted, // CRITICAL: Muted if concurrent audio playback
+        is_visible: true,
+        is_minimized: false
+      });
+    }
+
+    /**
+     * Play podcast in audio widget
+     */
+    private async playPodcastWidget(entities: Record<string, any>):
+  Promise<void> {
+      const podcastQuery = entities.podcastQuery; // "סגל וברקו"
+      const episodeFilter = entities.episodeFilter; // "latest"
+
+      // Search for podcast
+      const podcast = await api.get('/podcasts/search', {
+        params: { q: podcastQuery, limit: 1 }
+      });
+
+      if (!podcast.data || podcast.data.length === 0) {
+        throw new Error(`Podcast not found: ${podcastQuery}`);
+      }
+
+      const podcastData = podcast.data[0];
+
+      // Get latest episode
+      const episodes = await api.get(`/podcasts/${podcastData.id}/episodes`, {
+        params: { sort: 'date_desc', limit: 1 }
+      });
+
+      if (!episodes.data || episodes.data.length === 0) {
+        throw new Error(`No episodes found for: ${podcastData.title}`);
+      }
+
+      const latestEpisode = episodes.data[0];
+
+      // Create audio widget
+      await api.post('/widgets/personal', {
+        title: latestEpisode.title,
+        description: podcastData.title,
+        cover_url: latestEpisode.thumbnail || podcastData.thumbnail,
+        content: {
+          content_type: 'podcast',
+          podcast_id: podcastData.id,
+          content_id: latestEpisode.id
+        },
+        position: {
+          x: 20,
+          y: 400, // Below video widget
+          width: 480,
+          height: 120,
+          z_index: 101 // Above video widget
+        },
+        is_muted: false, // Audio widget NOT muted
+        is_visible: true,
+        is_minimized: false
+      });
+    }
+  }
+
+  ---
+  Phase 3: Backend Voice-Widget API (NEW)
+
+  Create: backend/app/api/routes/voice_widget.py
+
+  """
+  Voice-Widget API
+  Creates widgets from voice commands with concurrent playback support
+  """
+
+  from fastapi import APIRouter, Depends, HTTPException
+  from pydantic import BaseModel
+  from typing import List, Optional
+  from app.models.user import User
+  from app.models.widget import Widget, WidgetContent, WidgetContentType,
+  WidgetPosition, WidgetType
+  from app.models.content import LiveChannel, Podcast, PodcastEpisode
+  from app.api.routes.auth import get_current_user
+
+  router = APIRouter()
+
+  class VoiceWidgetRequest(BaseModel):
+      """Request to create widget from voice command"""
+      transcript: str
+      intents: List[dict]
+      orchestration_type: str  # sequential or concurrent
+
+  @router.post("/voice-widget/create-multi")
+  async def create_multi_widgets(
+      request: VoiceWidgetRequest,
+      current_user: User = Depends(get_current_user)
+  ):
+      """
+      Create multiple widgets from multi-intent voice command.
+      
+      Example request:
+      {
+        "transcript": "הראה לי ערוץ 11 ו נגן את הפודקאסט האחרון של סגל וברקו",
+        "intents": [
+          {
+            "intent": "DISPLAY_CHANNEL",
+            "entities": {"channelName": "כאן 11"},
+            "order": 0
+          },
+          {
+            "intent": "PLAY_PODCAST",
+            "entities": {"podcastQuery": "סגל וברקו", "episodeFilter": 
+  "latest"},
+            "order": 1
+          }
+        ],
+        "orchestration_type": "concurrent"
+      }
+      """
+
+      created_widgets = []
+      is_concurrent = request.orchestration_type == "concurrent"
+
+      for intent_data in request.intents:
+          intent = intent_data["intent"]
+          entities = intent_data["entities"]
+
+          widget = None
+
+          if intent == "DISPLAY_CHANNEL":
+              widget = await create_channel_widget(
+                  current_user,
+                  entities,
+                  muted=is_concurrent  # Mute video if concurrent audio
+              )
+
+          elif intent == "PLAY_PODCAST":
+              widget = await create_podcast_widget(
+                  current_user,
+                  entities,
+                  muted=False  # Audio NOT muted
+              )
+
+          if widget:
+              created_widgets.append(widget)
+
+      return {
+          "success": True,
+          "widgets_created": len(created_widgets),
+          "widgets": [w.dict() for w in created_widgets]
+      }
+
+  async def create_channel_widget(
+      user: User,
+      entities: dict,
+      muted: bool = True
+  ) -> Widget:
+      """Create live channel widget"""
+
+      channel_name = entities.get("channelName")
+
+      # Find channel
+      channel = await LiveChannel.find_one(LiveChannel.name == channel_name)
+      if not channel:
+          raise HTTPException(status_code=404, detail=f"Channel not found: 
+  {channel_name}")
+
+      # Check beta filtering
+      if user.beta_tester and not channel.is_beta_content:
+          raise HTTPException(
+              status_code=403,
+              detail="Beta users can only access Kan 11, podcasts, and radio"
+          )
+
+      # Create widget
+      widget = Widget(
+          type=WidgetType.PERSONAL,
+          user_id=str(user.id),
+          title=channel.name,
+          description=f"Live: {channel.current_show or 'Now Playing'}",
+          cover_url=channel.thumbnail,
+          content=WidgetContent(
+              content_type=WidgetContentType.LIVE_CHANNEL,
+              live_channel_id=str(channel.id)
+          ),
+          position=WidgetPosition(
+              x=20, y=100, width=480, height=270, z_index=100
+          ),
+          is_muted=muted,
+          is_visible=True,
+          is_minimized=False
+      )
+
+      await widget.insert()
+      return widget
+
+  async def create_podcast_widget(
+      user: User,
+      entities: dict,
+      muted: bool = False
+  ) -> Widget:
+      """Create podcast widget with latest episode"""
+
+      podcast_query = entities.get("podcastQuery")
+
+      # Search podcast (fuzzy match)
+      podcasts = await Podcast.find(
+          {"$text": {"$search": podcast_query}}
+      ).limit(1).to_list()
+
+      if not podcasts:
+          raise HTTPException(status_code=404, detail=f"Podcast not found: 
+  {podcast_query}")
+
+      podcast = podcasts[0]
+
+      # Check beta filtering
+      if user.beta_tester and not podcast.is_beta_content:
+          raise HTTPException(
+              status_code=403,
+              detail="Beta users can only access Israeli podcasts"
+          )
+
+      # Get latest episode
+      episodes = await PodcastEpisode.find(
+          PodcastEpisode.podcast_id == str(podcast.id)
+      ).sort(-PodcastEpisode.published_at).limit(1).to_list()
+
+      if not episodes:
+          raise HTTPException(status_code=404, detail=f"No episodes found for: 
+  {podcast.title}")
+
+      episode = episodes[0]
+
+      # Create widget
+      widget = Widget(
+          type=WidgetType.PERSONAL,
+          user_id=str(user.id),
+          title=episode.title,
+          description=podcast.title,
+          cover_url=episode.thumbnail or podcast.thumbnail,
+          content=WidgetContent(
+              content_type=WidgetContentType.PODCAST,
+              podcast_id=str(podcast.id),
+              content_id=str(episode.id)
+          ),
+          position=WidgetPosition(
+              x=20, y=400, width=480, height=120, z_index=101
+          ),
+          is_muted=muted,
+          is_visible=True,
+          is_minimized=False
+      )
+
+      await widget.insert()
+      return widget
+
+  ---
+  Phase 4: Integration with Existing Voice System
+
+  Extend: shared/services/olorinVoiceOrchestrator.ts
+
+  import { MultiIntentVoiceParser } from './multiIntentVoiceParser';
+  import { VoiceWidgetOrchestrator } from './voiceWidgetOrchestrator';
+
+  export class OlorinVoiceOrchestrator {
+    private multiIntentParser: MultiIntentVoiceParser;
+    private widgetOrchestrator: VoiceWidgetOrchestrator;
+
+    constructor(config: VoiceConfig) {
+      // ... existing code
+      this.multiIntentParser = new MultiIntentVoiceParser();
+      this.widgetOrchestrator = new VoiceWidgetOrchestrator();
+    }
+
+    async processTranscript(transcript: string): Promise<VoiceCommandResponse> {
+      // Check if multi-intent command
+      if (this.isMultiIntent(transcript)) {
+        return await this.processMultiIntentCommand(transcript);
+      }
+
+      // Single intent (existing flow)
+      return await this.processSingleIntent(transcript);
+    }
+
+    private isMultiIntent(transcript: string): boolean {
+      // Check for conjunction markers
+      const conjunctions = ['\\sו', '\\sגם\\s', '\\sand\\s', '\\salso\\s'];
+      return conjunctions.some(conj => new RegExp(conj).test(transcript));
+    }
+
+    private async processMultiIntentCommand(transcript: string):
+  Promise<VoiceCommandResponse> {
+      const command = this.multiIntentParser.parseMultiIntent(transcript);
+
+      // Execute via widget orchestrator
+      await this.widgetOrchestrator.executeMultiIntent(command);
+
+      return {
+        intent: 'MULTI_INTENT',
+        action: { type: 'widget_created', payload: { count:
+  command.intents.length } },
+        spokenResponse: this.generateMultiIntentResponse(command),
+        confidence: 0.9
+      };
+    }
+
+    private generateMultiIntentResponse(command: MultiIntentCommand): string {
+      // Hebrew: "הצגתי ערוץ 11 ומשמיע את הפודקאסט האחרון של סגל וברקו"
+      // English: "Displaying Channel 11 and playing latest podcast from Segal 
+  and Berko"
+
+      const intents = command.intents.map(i => this.describeIntent(i)).join(' 
+  ו');
+      return `מבצע: ${intents}`;
+    }
+  }
+
+  ---
+  Phase 5: Testing & Validation
+
+  Test Cases:
+
+  1. Simple Multi-Intent (Sequential):
+    - Hebrew: "השהה ואז חזור הביתה"
+    - English: "Pause then go home"
+    - Expected: Pause → Navigate home (sequential)
+  2. Complex Multi-Intent (Concurrent):
+    - Hebrew: "הראה לי ערוץ 11 ו נגן את הפודקאסט האחרון של סגל וברקו"
+    - English: "Show me channel 11 and play latest podcast from Segal and Berko"
+    - Expected:
+        - Channel 11 widget (video, muted, 480x270, z-index 100)
+      - Podcast widget (audio, unmuted, 480x120, z-index 101)
+  3. Triple Intent:
+    - Hebrew: "הראה חדשות גם פודקאסט וגלול למטה"
+    - English: "Show news also podcast and scroll down"
+    - Expected: News widget → Podcast widget → Scroll
+  4. Beta Content Filtering:
+    - Hebrew: "הראה לי ערוץ 12 ו נגן סדרת breaking bad"
+    - Expected: Channel 12 blocked (not beta content), Breaking Bad blocked
+  (series not allowed)
+
+  ---
+  Updated Implementation Timeline (with Voice-Widget Integration)
+
+  Week 1: Backend + Voice-Widget Foundation
+  - Days 1-3: Backend models, services, APIs (as planned)
+  - Days 4-5: MultiIntentVoiceParser, VoiceWidgetOrchestrator
+  - Days 6-7: Backend voice-widget API (/voice-widget/create-multi)
+
+  Week 2: Frontend Integration
+  - Days 8-10: Web components + voice-widget integration
+  - Days 11-12: Multi-intent testing (sequential + concurrent)
+  - Days 13-14: Beta content filtering in voice-widget creation
+
+  Week 3: Mobile + tvOS
+  - Days 15-18: Mobile voice-widget integration
+  - Days 19-21: tvOS voice-widget integration (Siri Remote)
+
+  Week 4: Load Testing & Polish
+  - Days 22-24: Voice-widget concurrent playback stress testing
+  - Days 25-26: Multi-intent parsing accuracy tuning
+  - Day 27: Entity extraction optimization (channel names, podcast names)
+  - Day 28: Launch readiness
+
+  ---
+  Voice-Widget Integration Checklist
+
+  Functionality:
+
+  - Multi-intent parsing ("Show X and play Y")
+  - Concurrent playback (video muted + audio widget)
+  - Sequential execution (pause then navigate)
+  - Entity extraction (channel numbers, podcast names)
+  - Widget creation from voice
+  - Beta content filtering in voice-widget
+
+  Performance:
+
+  - Multi-intent latency < 6s (2 intents)
+  - Widget creation < 1s per widget
+  - Concurrent playback starts simultaneously
+  - No audio conflict (video auto-muted)
+
+  User Experience:
+
+  - Voice response confirms both actions
+  - Widgets appear in correct positions
+  - Z-index ordering correct (audio above video)
+  - Beta users get helpful error messages
+
+  ---
+  Does this comprehensive voice-widget integration plan address the critical
+  requirement? Should I proceed with implementation starting with the
+  multi-intent parser?
+
+✻ Baked for 2m 5s
+
+❯ not enough, add our dubbing system and live translation subtitles         
+  systems, they are the key features of the platform                        
+
+⏺ ABSOLUTELY CRITICAL! You're right - I need to deeply integrate the live 
+  dubbing and live translation subtitles systems. Let me scan these core
+  features:
+
+⏺ Searched for 2 patterns, read 2 files (ctrl+o to expand)
+
+⏺ PERFECT! Now let me scan the WebSocket APIs and frontend components:
+
+⏺ Searched for 2 patterns, read 2 files (ctrl+o to expand)
+
+⏺ Perfect! Now I have everything. Let me create the MASTER INTEGRATION PLAN
+  bringing together ALL core systems:
+
+  ---
+  🎯 MASTER BETA 500 INTEGRATION PLAN
+
+  Core Features: Live Dubbing + Live Subtitles + Voice + Widgets
+
+  Current State: Production-Ready Systems
+
+  ✅ Live Dubbing System (COMPLETE)
+  - Backend: LiveDubbingService - Audio → STT → Translation → TTS (~3-5s
+  latency)
+  - WebSocket: /ws/live/{channel_id}/dubbing
+  - Providers: ElevenLabs Scribe (STT), Google/OpenAI/Claude (Translation),
+  ElevenLabs (TTS)
+  - Features: ChannelSTTManager (cost optimization), session management, latency
+   tracking
+  - Multi-language: he, en, ar, es, ru, fr, de, it, pt, yi
+  - Voice selection: Customizable ElevenLabs voices
+
+  ✅ Live Translation Subtitles (COMPLETE)
+  - Backend: LiveTranslationService - STT → Translation → Formatted Subtitles
+  - WebSocket: /ws/live/{channel_id}/subtitles
+  - Providers: Google Cloud Speech / OpenAI Whisper / ElevenLabs (STT),
+  Google/OpenAI/Claude (Translation)
+  - Features: Subtitle chunking (80 char max), multi-language, WebVTT format
+  - Optimization: Natural breakpoint splitting (punctuation, spaces)
+
+  ✅ Voice System (COMPLETE)
+  - VoiceCommandProcessor: Single-intent classification
+  - OlorinVoiceOrchestrator: Intent routing
+  - VoicePipelineService: Audio → STT → LLM → TTS (~3-5s)
+  - Wake word: "Hey Bayit"
+
+  ✅ Widget System (COMPLETE)
+  - PiPWidgetManager: Multi-widget orchestration
+  - Widget types: live_channel, podcast, radio, vod, audiobook, iframe, custom
+  - Mobile: Max 2 concurrent, single active audio
+  - Features: Draggable, muted/unmuted, minimized, z-index ordering
+
+  ---
+  CRITICAL GAPS (What Must Be Built)
+
+  Gap 1: Voice-Controlled Live Dubbing/Subtitles
+
+  Voice commands currently don't control dubbing or subtitles
+
+  Gap 2: Multi-Intent + Dubbing/Subtitles
+
+  Cannot parse: "Show channel 11 WITH English dubbing AND Spanish subtitles"
+
+  Gap 3: Widget + Dubbing/Subtitles Integration
+
+  Widgets don't support live dubbing/subtitle sessions
+
+  Gap 4: Credit Tracking for Live Features
+
+  Beta credits not deducted for live dubbing/subtitles
+
+  Gap 5: YouTube Overlay + Dubbing
+
+  YouTube audio overlay doesn't integrate with dubbing system
+
+  ---
+  MASTER IMPLEMENTATION PLAN
+
+  Phase 1: Voice Intent Extensions for Live Features
+
+  Create: shared/services/liveFeaturesVoiceParser.ts
+
+  /**
+   * Live Features Voice Parser
+   * Parses voice commands for dubbing and subtitles
+   */
+
+  export type LiveFeatureIntent =
+    | 'ENABLE_DUBBING'     // "Turn on English dubbing"
+    | 'DISABLE_DUBBING'    // "Turn off dubbing"
+    | 'SWITCH_DUBBING_LANG' // "Switch to Spanish audio"
+    | 'ENABLE_SUBTITLES'   // "Show English subtitles"
+    | 'DISABLE_SUBTITLES'  // "Turn off subtitles"
+    | 'SWITCH_SUBTITLE_LANG'; // "Change subtitles to Spanish"
+
+  export class LiveFeaturesVoiceParser {
+    /**
+     * Parse voice commands for live features
+     * Examples:
+     * - "הפעל דיבוב באנגלית" → ENABLE_DUBBING, lang: en
+     * - "הראה כתוביות בספרדית" → ENABLE_SUBTITLES, lang: es
+     * - "כבה דיבוב" → DISABLE_DUBBING
+     */
+    parseLiveFeatureCommand(transcript: string): ParsedLiveFeatureIntent | null
+  {
+      const normalized = transcript.toLowerCase();
+
+      // Dubbing patterns (Hebrew + English)
+      const dubbingPatterns = {
+        enable: [
+          /הפעל דיבוב/,
+          /דבב/,
+          /turn on.*dubbing/,
+          /enable.*dubbing/,
+          /start.*dubbing/
+        ],
+        disable: [
+          /כבה דיבוב/,
+          /הפסק דיבוב/,
+          /turn off.*dubbing/,
+          /disable.*dubbing/,
+          /stop.*dubbing/
+        ],
+        switchLang: [
+          /דבב ב(אנגלית|ספרדית|ערבית)/,
+          /החלף דיבוב ל(אנגלית|ספרדית)/,
+          /switch.*dubbing.*to\s+(\w+)/,
+          /dub.*in\s+(\w+)/
+        ]
+      };
+
+      // Subtitle patterns
+      const subtitlePatterns = {
+        enable: [
+          /הראה כתוביות/,
+          /הפעל כתוביות/,
+          /show.*subtitles/,
+          /enable.*subtitles/,
+          /turn on.*subtitles/
+        ],
+        disable: [
+          /כבה כתוביות/,
+          /הסתר כתוביות/,
+          /hide.*subtitles/,
+          /turn off.*subtitles/,
+          /disable.*subtitles/
+        ],
+        switchLang: [
+          /כתוביות ב(אנגלית|ספרדית|ערבית)/,
+          /החלף כתוביות ל(אנגלית|ספרדית)/,
+          /subtitles.*in\s+(\w+)/,
+          /change.*subtitles.*to\s+(\w+)/
+        ]
+      };
+
+      // Extract language from command
+      const langMap: Record<string, string> = {
+        'english': 'en', 'אנגלית': 'en',
+        'spanish': 'es', 'ספרדית': 'es',
+        'arabic': 'ar', 'ערבית': 'ar',
+        'hebrew': 'he', 'עברית': 'he',
+        'russian': 'ru', 'רוסית': 'ru',
+        'french': 'fr', 'צרפתית': 'fr'
+      };
+
+      // Parse intent
+      // ... implementation
+    }
+  }
+
+  ---
+  Phase 2: Extended Multi-Intent Parser with Live Features
+
+  Extend: shared/services/multiIntentVoiceParser.ts
+
+  /**
+   * Parse compound commands with live features
+   * Example: "Show channel 11 with English dubbing and Spanish subtitles"
+   * Parsed intents:
+   * 1. DISPLAY_CHANNEL (entities: {channelName: "כאן 11"})
+   * 2. ENABLE_DUBBING (entities: {language: "en"})
+   * 3. ENABLE_SUBTITLES (entities: {language: "es"})
+   */
+
+  export class EnhancedMultiIntentParser extends MultiIntentVoiceParser {
+    parseWithLiveFeatures(transcript: string): MultiIntentCommand {
+      // Parse base intents (channel display, podcast play)
+      const baseIntents = super.parseMultiIntent(transcript);
+
+      // Parse live feature modifiers
+      const liveFeatureParser = new LiveFeaturesVoiceParser();
+      const dubbingIntent = liveFeatureParser.parseDubbingCommand(transcript);
+      const subtitleIntent = liveFeatureParser.parseSubtitleCommand(transcript);
+
+      // Merge intents
+      const allIntents = [
+        ...baseIntents.intents,
+        ...(dubbingIntent ? [dubbingIntent] : []),
+        ...(subtitleIntent ? [subtitleIntent] : [])
+      ];
+
+      return {
+        intents: allIntents,
+        originalTranscript: transcript,
+        orchestrationType: this.determineOrchestration(allIntents)
+      };
+    }
+  }
+
+  ---
+  Phase 3: Voice-Widget-Dubbing-Subtitles Orchestrator
+
+  Create: shared/services/masterVoiceOrchestrator.ts
+
+  /**
+   * Master Voice Orchestrator
+   * Coordinates widgets + dubbing + subtitles from voice commands
+   */
+
+  export class MasterVoiceOrchestrator {
+    private widgetOrchestrator: VoiceWidgetOrchestrator;
+    private dubbingService: LiveDubbingService;
+    private subtitleService: LiveSubtitleService; // New service
+
+    /**
+     * Execute master voice command
+     * Example: "Show channel 11 with English dubbing and Spanish subtitles"
+     */
+    async executeMasterCommand(command: MultiIntentCommand): Promise<void> {
+      const sessions: LiveSession[] = [];
+
+      // Step 1: Create widget (if DISPLAY_CHANNEL intent)
+      const displayIntent = command.intents.find(i => i.intent ===
+  'DISPLAY_CHANNEL');
+      if (displayIntent) {
+        const widget = await this.widgetOrchestrator.displayChannelWidget(
+          displayIntent.entities,
+          muted: false // Keep audio for now
+        );
+
+        const channelId = widget.content.live_channel_id;
+
+        // Step 2: Start dubbing (if ENABLE_DUBBING intent)
+        const dubbingIntent = command.intents.find(i => i.intent ===
+  'ENABLE_DUBBING');
+        if (dubbingIntent) {
+          const dubbingSession = await this.dubbingService.connect({
+            channelId,
+            targetLang: dubbingIntent.entities.language,
+            voiceId: dubbingIntent.entities.voiceId,
+            onAudio: (audio) => this.playDubbedAudio(widget.id, audio),
+            onLatency: (report) => this.trackDubbingMetrics(report)
+          });
+          sessions.push({ type: 'dubbing', session: dubbingSession });
+
+          // Mute original video if dubbing enabled
+          await this.widgetOrchestrator.muteWidget(widget.id);
+        }
+
+        // Step 3: Start subtitles (if ENABLE_SUBTITLES intent)
+        const subtitleIntent = command.intents.find(i => i.intent ===
+  'ENABLE_SUBTITLES');
+        if (subtitleIntent) {
+          const subtitleSession = await this.subtitleService.connect({
+            channelId,
+            targetLang: subtitleIntent.entities.language,
+            onSubtitle: (subtitle) => this.displaySubtitle(widget.id, subtitle),
+            onError: (error) => this.handleSubtitleError(error)
+          });
+          sessions.push({ type: 'subtitles', session: subtitleSession });
+        }
+      }
+
+      // Step 4: Track credit usage
+      await this.trackCreditUsage(sessions);
+    }
+
+    /**
+     * Track credit usage for live features
+     * Dubbing: 1 credit/second
+     * Subtitles: 0.5 credits/second
+     */
+    private async trackCreditUsage(sessions: LiveSession[]): Promise<void> {
+      for (const session of sessions) {
+        const rate = session.type === 'dubbing' ? 1.0 : 0.5;
+
+        // Continuous credit deduction every second
+        setInterval(async () => {
+          await api.post('/beta/credits/deduct', {
+            feature: `live_${session.type}`,
+            amount: rate,
+            metadata: {
+              session_id: session.session.session_id,
+              channel_id: session.session.channel_id
+            }
+          });
+        }, 1000);
+      }
+    }
+  }
+
+  ---
+  Phase 4: Backend Voice-Live-Features API
+
+  Create: backend/app/api/routes/voice_live_features.py
+
+  """
+  Voice-controlled live features API
+  Creates widget + starts dubbing/subtitle sessions from voice
+  """
+
+  from fastapi import APIRouter, Depends, HTTPException
+  from pydantic import BaseModel
+  from typing import List, Optional
+  from app.models.user import User
+  from app.services.live_dubbing_service import LiveDubbingService
+  from app.services.live_translation_service import LiveTranslationService
+  from app.services.beta_credit_service import BetaCreditService
+  from app.api.routes.auth import get_current_user
+
+  router = APIRouter()
+
+  class VoiceLiveFeaturesRequest(BaseModel):
+      """Request to create widget with live features from voice"""
+      transcript: str
+      intents: List[dict]  # DISPLAY_CHANNEL, ENABLE_DUBBING, ENABLE_SUBTITLES
+      orchestration_type: str = "concurrent"
+
+  @router.post("/voice-live-features/create")
+  async def create_widget_with_live_features(
+      request: VoiceLiveFeaturesRequest,
+      current_user: User = Depends(get_current_user)
+  ):
+      """
+      Create widget with live dubbing and/or subtitles from voice command.
+      
+      Example:
+      {
+        "transcript": "Show channel 11 with English dubbing and Spanish 
+  subtitles",
+        "intents": [
+          {"intent": "DISPLAY_CHANNEL", "entities": {"channelName": "כאן 11"}},
+          {"intent": "ENABLE_DUBBING", "entities": {"language": "en"}},
+          {"intent": "ENABLE_SUBTITLES", "entities": {"language": "es"}}
+        ]
+      }
+      """
+
+      # Parse intents
+      display_intent = next((i for i in request.intents if i["intent"] ==
+  "DISPLAY_CHANNEL"), None)
+      dubbing_intent = next((i for i in request.intents if i["intent"] ==
+  "ENABLE_DUBBING"), None)
+      subtitle_intent = next((i for i in request.intents if i["intent"] ==
+  "ENABLE_SUBTITLES"), None)
+
+      if not display_intent:
+          raise HTTPException(status_code=400, detail="DISPLAY_CHANNEL intent 
+  required")
+
+      # Create widget
+      widget = await create_channel_widget(
+          current_user,
+          display_intent["entities"],
+          muted=bool(dubbing_intent)  # Mute if dubbing enabled
+      )
+
+      # Initialize live feature sessions
+      sessions = {}
+
+      if dubbing_intent:
+          # Check beta credits
+          if current_user.beta_tester:
+              credit_service = BetaCreditService()
+              balance = await credit_service.get_balance(str(current_user.id))
+              if balance < 60:  # Need at least 1 minute (60 credits)
+                  raise HTTPException(
+                      status_code=402,
+                      detail="Insufficient credits for live dubbing (need 60+)"
+                  )
+
+          # Create dubbing session metadata (WebSocket connects separately)
+          sessions["dubbing"] = {
+              "channel_id": widget.content.live_channel_id,
+              "target_lang": dubbing_intent["entities"]["language"],
+              "voice_id": dubbing_intent["entities"].get("voice_id"),
+              "credit_rate": 1.0  # 1 credit/second
+          }
+
+      if subtitle_intent:
+          # Check beta credits
+          if current_user.beta_tester:
+              credit_service = BetaCreditService()
+              balance = await credit_service.get_balance(str(current_user.id))
+              if balance < 30:  # Need at least 1 minute (30 credits)
+                  raise HTTPException(
+                      status_code=402,
+                      detail="Insufficient credits for live subtitles (need 
+  30+)"
+                  )
+
+          # Create subtitle session metadata
+          sessions["subtitles"] = {
+              "channel_id": widget.content.live_channel_id,
+              "target_lang": subtitle_intent["entities"]["language"],
+              "credit_rate": 0.5  # 0.5 credits/second
+          }
+
+      return {
+          "success": True,
+          "widget": widget.dict(),
+          "sessions": sessions,
+          "websocket_endpoints": {
+              "dubbing": f"/ws/live/{widget.content.live_channel_id}/dubbing" if
+   "dubbing" in sessions else None,
+              "subtitles":
+  f"/ws/live/{widget.content.live_channel_id}/subtitles" if "subtitles" in
+  sessions else None
+          }
+      }
+
+  ---
+  Phase 5: YouTube Overlay + Dubbing Integration
+
+  The YouTube audio overlay IS the dubbing system!
+
+  Clarification:
+  - YouTube overlay doesn't need separate dubbing
+  - YouTube audio overlay = AI-dubbed audio synchronized with YouTube video
+  - This is ALREADY the dubbing implementation for YouTube content
+
+  Enhancement Needed: Voice control
+
+  // Voice command: "Switch YouTube dubbing to Spanish"
+  async function switchYouTubeDubbingLanguage(language: string) {
+    // Stop current dubbing WebSocket
+    await youtubeOverlayService.stopDubbing();
+
+    // Start new dubbing with different language
+    await youtubeOverlayService.startDubbing({
+      channelId: currentYoutubeChannelId,
+      targetLang: language,
+      syncWithYouTube: true
+    });
+  }
+
+  ---
+  Phase 6: Credit Consumption Tracking
+
+  Extend: backend/app/services/beta_credit_service.py
+
+  class BetaCreditService:
+      # Existing credit rates
+      CREDIT_RATES = {
+          "live_dubbing": 1.0,  # 1 credit/second
+          "podcast_translation": 1.0,
+          "transcription": 0.5,
+          "live_subtitles": 0.5,  # 0.5 credits/second
+          "voice_command": 0.5,  # Voice STT/TTS
+      }
+
+      async def start_continuous_deduction(
+          self,
+          user_id: str,
+          feature: str,
+          session_id: str
+      ) -> str:
+          """
+          Start continuous credit deduction for live features.
+          Returns deduction_task_id for cancellation.
+          """
+          rate = self.CREDIT_RATES[feature]
+
+          async def deduct_loop():
+              while True:
+                  await asyncio.sleep(1)  # Deduct every second
+                  success, remaining = await self.deduct_credits(
+                      user_id=user_id,
+                      feature=feature,
+                      usage_amount=1.0,  # 1 second
+                      metadata={"session_id": session_id}
+                  )
+
+                  if not success:
+                      # Credits depleted - emit event to close session
+                      await emit_credits_depleted_event(user_id, session_id)
+                      break
+
+          task = asyncio.create_task(deduct_loop())
+          return id(task)
+
+  ---
+  Phase 7: Testing Matrix
+  ┌─────────────────────────────┬─────────────────────────┬────────────────────┐
+  │        Voice Command        │     Expected Result     │  Systems Involved  │
+  ├─────────────────────────────┼─────────────────────────┼────────────────────┤
+  │ "Show channel 11"           │ Widget with Channel 11  │ Widget             │
+  │                             │ (unmuted)               │                    │
+  ├─────────────────────────────┼─────────────────────────┼────────────────────┤
+  │ "Show channel 11 with       │ Widget + Dubbing (video │ Widget + Dubbing + │
+  │ English dubbing"            │  muted, AI audio)       │  Credits           │
+  ├─────────────────────────────┼─────────────────────────┼────────────────────┤
+  │ "Show channel 11 with       │ Widget + Subtitles      │ Widget + Subtitles │
+  │ Spanish subtitles"          │                         │  + Credits         │
+  ├─────────────────────────────┼─────────────────────────┼────────────────────┤
+  │ "Show channel 11 with       │ Widget + Dubbing +      │ Widget + Dubbing + │
+  │ English dubbing and Spanish │ Subtitles               │  Subtitles +       │
+  │  subtitles"                 │ (simultaneous)          │ Credits            │
+  ├─────────────────────────────┼─────────────────────────┼────────────────────┤
+  │ "Turn on English dubbing"   │ Enable dubbing          │ Dubbing            │
+  │ (during playback)           │ mid-stream              │                    │
+  ├─────────────────────────────┼─────────────────────────┼────────────────────┤
+  │ "Switch dubbing to Spanish" │ Change dubbing language │ Dubbing            │
+  │                             │  live                   │                    │
+  ├─────────────────────────────┼─────────────────────────┼────────────────────┤
+  │ "Turn off dubbing"          │ Disable dubbing, unmute │ Dubbing            │
+  │                             │  video                  │                    │
+  ├─────────────────────────────┼─────────────────────────┼────────────────────┤
+  │ "Show English subtitles"    │ Enable subtitles        │ Subtitles          │
+  ├─────────────────────────────┼─────────────────────────┼────────────────────┤
+  │ "Turn off subtitles"        │ Disable subtitles       │ Subtitles          │
+  ├─────────────────────────────┼─────────────────────────┼────────────────────┤
+  │ "Play podcast from Segal    │ Podcast widget +        │ Widget + Subtitles │
+  │ and Berko with Hebrew       │ Subtitles               │  + Credits         │
+  │ subtitles"                  │                         │                    │
+  └─────────────────────────────┴─────────────────────────┴────────────────────┘
+  ---
+  Updated Timeline with FULL Integration
+
+  Week 1: Backend Foundation + Live Features Integration
+  - Days 1-3: Models, BetaCredit, User extensions
+  - Days 4-5: Live features voice parser, continuous credit deduction
+  - Days 6-7: Voice-live-features API, YouTube dubbing voice control
+
+  Week 2: Frontend Master Orchestration
+  - Days 8-10: MasterVoiceOrchestrator, widget-dubbing-subtitles integration
+  - Days 11-12: Multi-intent testing (display + dubbing + subtitles)
+  - Days 13-14: Credit tracking UI, low balance warnings
+
+  Week 3: Platform Parity
+  - Days 15-18: Mobile master orchestrator
+  - Days 19-21: tvOS master orchestrator
+
+  Week 4: Load Testing & Launch
+  - Days 22-24: 500 concurrent dubbing sessions
+  - Days 25-26: Multi-feature stress testing (dubbing + subtitles
+  simultaneously)
+  - Day 27: Credit consumption validation
+  - Day 28: Launch readiness
+
+  ---
+  🎯 MASTER INTEGRATION CHECKLIST
+
+  Voice + Dubbing:
+
+  - "Turn on English dubbing" starts dubbing
+  - "Switch dubbing to Spanish" changes language live
+  - "Turn off dubbing" disables dubbing
+  - Dubbing consumes 1 credit/second
+  - Low credit warning at 60 credits (1 minute remaining)
+
+  Voice + Subtitles:
+
+  - "Show English subtitles" starts subtitles
+  - "Change subtitles to Spanish" switches language
+  - "Turn off subtitles" disables subtitles
+  - Subtitles consume 0.5 credits/second
+  - Low credit warning at 30 credits (1 minute remaining)
+
+  Voice + Widget + Dubbing:
+
+  - "Show channel 11 with English dubbing" creates widget + starts dubbing
+  - Video automatically muted when dubbing enabled
+  - Dubbed audio plays through widget audio system
+
+  Voice + Widget + Subtitles:
+
+  - "Show channel 11 with Spanish subtitles" creates widget + starts subtitles
+  - Subtitles displayed over widget video
+
+  Voice + Widget + Dubbing + Subtitles:
+
+  - "Show channel 11 with English dubbing and Spanish subtitles" works
+  - Both systems run concurrently
+  - Credits deducted for both (1.5 credits/second total)
+  - Low credit warning considers both features
+
+  Beta Content Filtering:
+
+  - Beta users can dub Kan 11, podcasts, radio only
+  - Series/movies blocked even with voice dubbing request
+
+  ---
+  Does this MASTER PLAN address all core features? Ready to implement?
+
+✻ Cooked for 2m 17s

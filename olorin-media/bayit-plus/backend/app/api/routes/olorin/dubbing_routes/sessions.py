@@ -82,15 +82,10 @@ async def create_session(
             ),
         )
 
-    # P3-2: Convert request voice settings to domain object
+    # P3-2: Convert request voice settings to domain object (Code Review #4)
     voice_settings = None
     if request.voice_settings:
-        voice_settings = VoiceSettings(
-            stability=request.voice_settings.stability,
-            similarity_boost=request.voice_settings.similarity_boost,
-            style=request.voice_settings.style,
-            speaker_boost=request.voice_settings.speaker_boost,
-        )
+        voice_settings = VoiceSettings.from_request(request.voice_settings)
 
     service = RealtimeDubbingService(
         partner=partner,
