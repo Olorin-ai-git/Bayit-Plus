@@ -70,7 +70,7 @@ export const AudiobookCardTVOS: React.FC<AudiobookCardTVOSProps> = ({
           <Image
             source={{ uri: audiobook.thumbnail }}
             className="w-full aspect-[3/4]"
-            resizeMode="cover"
+            resizeMode="contain"
           />
         ) : (
           <View className="w-full aspect-[3/4] bg-[#2a2235] justify-center items-center">

@@ -10,7 +10,7 @@ from app.core.config import settings
 from app.models.content import Content
 from app.models.jewish_community import CommunityEvent
 from app.services.location_constants import MAJOR_US_CITIES, CITY_COORDINATES
-from app.services.news_scraper.exa_scraper import scrape_israeli_content_exa
+from app.services.news_scraper.exa_scraper import scrape_israeli_content_exa, scrape_israeli_businesses_exa
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +27,18 @@ class LocationContentService:
     _scraping_tasks = {}  # Track ongoing scraping tasks
 
     @classmethod
-    def _get_cache_key(cls, city: str, state: str) -> str:
-        """Generate cache key from city/state."""
-        return f"{city.lower()}_{state.upper()}"
+    def _get_cache_key(cls, city: str, state: str, content_type: str = "content") -> str:
+        """Generate cache key from city/state with content type.
+
+        Args:
+            city: City name
+            state: State code
+            content_type: Type of content ('content' for news/events, 'businesses' for businesses)
+        """
+        base_key = f"{city.lower()}_{state.upper()}"
+        if content_type == "businesses":
+            return f"{base_key}_businesses"
+        return base_key
 
     @classmethod
     def _get_cached_result(cls, city: str, state: str) -> Optional[dict]:
@@ -357,6 +366,195 @@ class LocationContentService:
             "coverage": {"has_content": False, "nearest_major_city": None},
             "updated_at": now,
         }
+
+    async def get_israeli_businesses_in_city(
+        self,
+        city: str,
+        state: str,
+        county: Optional[str] = None,
+        limit_per_type: int = 15,
+        allow_nearby_fallback: bool = True,
+    ) -> dict:
+        """Get Israeli business listings for a specific city. Never raises exceptions.
+
+        Uses 1-hour cache to avoid blocking page loads. First request triggers background scraping,
+        returns empty result. Subsequent requests get cached data instantly.
+
+        Args:
+            city: City name
+            state: State code (e.g., 'NY', 'CA')
+            county: Optional county name
+            limit_per_type: Max business listings to return
+            allow_nearby_fallback: If True and no local content found, fetch from nearest major city
+        """
+        try:
+            # Check cache first with correct content_type
+            cache_key = self._get_cache_key(city, state, content_type="businesses")
+            if cache_key in self._cache:
+                cached_data, timestamp = self._cache[cache_key]
+                if datetime.now(timezone.utc) - timestamp < self._cache_ttl:
+                    logger.info(f"Business cache hit for {city}, {state}")
+                    return cached_data
+                else:
+                    # Cache expired, remove it
+                    del self._cache[cache_key]
+
+            # Check if scraping is already in progress
+            if cache_key in self._scraping_tasks:
+                logger.info(f"Business scraping already in progress for {city}, {state}, returning empty")
+                return self._get_empty_result(city, state)
+
+            # Start background scraping
+            logger.info(f"Starting background business scraping for {city}, {state}")
+            task = asyncio.create_task(
+                self._scrape_businesses_and_cache(
+                    city, state, county, limit_per_type, allow_nearby_fallback
+                )
+            )
+            self._scraping_tasks[cache_key] = task
+
+            # Return empty result immediately (non-blocking)
+            return self._get_empty_result(city, state)
+
+        except Exception as e:
+            logger.error(f"Critical error in get_israeli_businesses_in_city for {city}, {state}: {e}")
+            return self._get_empty_result(city, state)
+
+    async def _scrape_businesses_and_cache(
+        self,
+        city: str,
+        state: str,
+        county: Optional[str] = None,
+        limit: int = 15,
+        allow_nearby_fallback: bool = True,
+    ):
+        """Background task to scrape business listings and cache them."""
+        cache_key = self._get_cache_key(city, state, content_type="businesses")
+        try:
+            # Validate and sanitize inputs
+            if not city or not state:
+                logger.error(f"Invalid city/state: city={city}, state={state}")
+                return self._get_empty_result("Unknown", "XX")
+
+            city = city.strip()
+            state = state.upper().strip()
+
+            latitude, longitude = self._get_city_coordinates(city, state)
+            now = datetime.now(timezone.utc)
+
+            result = {
+                "location": {
+                    "city": city,
+                    "state": state,
+                    "county": county,
+                    "latitude": latitude,
+                    "longitude": longitude,
+                    "timestamp": now,
+                    "source": "lookup",
+                },
+                "content": {"news_articles": []},
+                "total_items": 0,
+                "coverage": {
+                    "has_content": False,
+                    "nearest_major_city": None,
+                    "content_source": "local",
+                    "distance_miles": None,
+                },
+                "updated_at": now,
+            }
+
+            # Fetch business listings
+            try:
+                result["content"]["news_articles"] = await self.fetch_business_listings(
+                    city, state, limit
+                )
+            except Exception as e:
+                logger.error(f"Failed to fetch business listings for {city}, {state}: {e}")
+                result["content"]["news_articles"] = []
+
+            total = len(result["content"]["news_articles"])
+            result["total_items"] = total
+            result["coverage"]["has_content"] = total > 0
+
+            # If no local businesses found and fallback is allowed, fetch from nearest major city
+            if not result["coverage"]["has_content"] and allow_nearby_fallback:
+                nearest = self._find_nearest_major_city(latitude, longitude)
+                if nearest:
+                    nearby_city, nearby_state, distance = nearest
+                    result["coverage"]["nearest_major_city"] = nearby_city
+                    result["coverage"]["distance_miles"] = round(distance, 1)
+
+                    logger.info(
+                        f"No businesses for {city}, {state}. Fetching from nearest major city: "
+                        f"{nearby_city}, {nearby_state} ({distance:.1f} miles away)"
+                    )
+
+                    # Fetch from nearby city
+                    nearby_businesses = await self.fetch_business_listings(
+                        nearby_city, nearby_state, limit
+                    )
+
+                    if nearby_businesses:
+                        result["content"]["news_articles"] = nearby_businesses
+                        result["total_items"] = len(nearby_businesses)
+                        result["coverage"]["has_content"] = True
+                        result["coverage"]["content_source"] = "nearby"
+
+                        logger.info(
+                            f"Successfully loaded {len(nearby_businesses)} businesses from "
+                            f"{nearby_city}, {nearby_state} for {city}, {state}"
+                        )
+
+            # Cache the result with correct key
+            self._cache[cache_key] = (result, datetime.now(timezone.utc))
+            logger.info(f"Background business scraping completed for {city}, {state}: {result['total_items']} items (cached as {cache_key})")
+
+        except Exception as e:
+            logger.error(f"Background business scraping failed for {city}, {state}: {e}")
+        finally:
+            # Clean up task tracking
+            if cache_key in self._scraping_tasks:
+                del self._scraping_tasks[cache_key]
+
+    async def fetch_business_listings(
+        self, city: str, state: str, limit: int = 15
+    ) -> list[dict[str, Any]]:
+        """Fetch Israeli business listings for a specific city using Exa."""
+        try:
+            logger.info(f"Fetching Israeli businesses for {city}, {state} via Exa.ai")
+
+            # Use Exa to get Israeli business listings with images
+            headlines = await scrape_israeli_businesses_exa(city, state, max_results=limit)
+
+            logger.info(f"Found {len(headlines)} Israeli business listings for {city}, {state}")
+
+            # Log image extraction stats
+            with_images = sum(1 for h in headlines if h.image_url)
+            logger.info(f"Businesses with images: {with_images}/{len(headlines)} ({with_images*100//len(headlines) if len(headlines) > 0 else 0}%)")
+
+            return [
+                {
+                    "id": f"business-{idx}",
+                    "title": headline.title,
+                    "description": headline.summary,
+                    "thumbnail": headline.image_url or FALLBACK_NEWS_POSTER,
+                    "url": headline.url,
+                    "source": headline.source,
+                    "city": city,
+                    "state": state,
+                    "type": "business",
+                    "content_format": "article",
+                    "published_at": (
+                        headline.published_at.isoformat()
+                        if headline.published_at
+                        else datetime.now(timezone.utc).isoformat()
+                    ),
+                }
+                for idx, headline in enumerate(headlines)
+            ]
+        except Exception as e:
+            logger.error(f"Error fetching business listings for {city}, {state}: {e}")
+            return []
 
     async def fetch_news_articles(
         self, city: str, state: str, limit: int = 10

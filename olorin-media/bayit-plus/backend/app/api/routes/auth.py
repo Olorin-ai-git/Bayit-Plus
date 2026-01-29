@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 import random
 import secrets
 from datetime import datetime, timezone
@@ -11,12 +12,16 @@ from olorin_shared.auth import create_refresh_token, verify_refresh_token
 from pydantic import BaseModel
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
 from app.core.rate_limiter import RATE_LIMITING_ENABLED, limiter
 from app.core.security import (create_access_token, get_current_active_user,
                                get_password_hash, verify_password)
 from app.models.user import (TokenResponse, User, UserCreate, UserLogin,
                              UserResponse, UserUpdate)
 from app.services.audit_logger import audit_logger
+from app.services.payment.signup_checkout_service import SignupCheckoutService
+
+logger = get_logger(__name__)
 
 
 class GoogleAuthCode(BaseModel):
@@ -28,25 +33,70 @@ class GoogleAuthCode(BaseModel):
 router = APIRouter()
 
 
+def should_require_payment(user_id: str) -> bool:
+    """Determine if user should be in payment-required flow.
+
+    Uses hash-based bucketing for consistent user assignment during gradual rollout.
+
+    Args:
+        user_id: User ID for consistent bucketing
+
+    Returns:
+        True if user should be required to pay, False otherwise
+
+    Algorithm:
+        - If feature flag is disabled: False
+        - If percentage is 100%: True
+        - Otherwise: Hash user_id and mod 100 to assign bucket
+    """
+    if not settings.REQUIRE_PAYMENT_ON_SIGNUP:
+        return False
+
+    # Gradual rollout: 0% → 5% → 25% → 100%
+    if settings.REQUIRE_PAYMENT_ON_SIGNUP_PERCENTAGE < 100:
+        # Hash user_id to get consistent assignment
+        hash_value = int(hashlib.md5(user_id.encode()).hexdigest(), 16)
+        bucket = hash_value % 100
+        return bucket < settings.REQUIRE_PAYMENT_ON_SIGNUP_PERCENTAGE
+
+    return True
+
+
 @router.post("/register", response_model=TokenResponse)
 @limiter.limit("3/hour")
 async def register(request: Request, user_data: UserCreate):
-    """Register a new user with enumeration protection."""
-    import logging
+    """Register a new user with enumeration protection and payment flow.
 
-    logger = logging.getLogger(__name__)
+    With REQUIRE_PAYMENT_ON_SIGNUP enabled, users must complete payment
+    before accessing the app. Uses gradual rollout via percentage setting.
+
+    Timing Attack Protection:
+        - Minimum 500ms response time to prevent user enumeration
+        - Constant time regardless of success/failure
+    """
+    start_time = asyncio.get_event_loop().time()
 
     # Check if user exists
     existing_user = await User.find_one(User.email == user_data.email)
     if existing_user:
         # ✅ Don't reveal that email exists - log attempt for security monitoring
         logger.warning(
-            f"Registration attempt for existing email: {user_data.email} from IP: {request.client.host}"
+            "Registration attempt for existing email",
+            extra={
+                "email": user_data.email,
+                "ip": request.client.host
+            }
         )
 
         # Security Note: Warning emails for registration attempts on existing accounts
         # are intentionally not implemented to avoid potential abuse as an email
         # enumeration vector. The audit log captures this for security monitoring.
+
+        # Ensure constant response time (prevent user enumeration)
+        elapsed = asyncio.get_event_loop().time() - start_time
+        min_response_time = 0.5  # 500ms minimum
+        if elapsed < min_response_time:
+            await asyncio.sleep(min_response_time - elapsed)
 
         # Return same generic error message to prevent enumeration
         raise HTTPException(
@@ -66,14 +116,48 @@ async def register(request: Request, user_data: UserCreate):
     )
     await user.insert()
 
+    # Determine if this user requires payment (feature flag + gradual rollout)
+    requires_payment = should_require_payment(str(user.id))
+
+    if requires_payment:
+        # NEW FLOW: Payment-first model
+        user.payment_pending = True
+        user.payment_created_at = datetime.now(timezone.utc)
+        user.pending_plan_id = "basic"  # Default plan
+        await user.save()
+
+        logger.info(
+            "User registered - payment required",
+            extra={
+                "user_id": str(user.id),
+                "email": user.email,
+                "requires_payment": True,
+            }
+        )
+    else:
+        # OLD FLOW: Viewer tier allowed (for rollback/gradual rollout)
+        user.payment_pending = False
+        await user.save()
+
+        logger.info(
+            "User registered - viewer tier",
+            extra={
+                "user_id": str(user.id),
+                "email": user.email,
+                "requires_payment": False,
+            }
+        )
+
     # Auto-send email verification
     try:
         from app.services.verification_service import verification_service
 
         await verification_service.initiate_email_verification(user)
-        logger.info(f"New user registered: {user.email}")
     except Exception as e:
-        logger.warning(f"Failed to send verification email during registration: {e}")
+        logger.warning(
+            "Failed to send verification email during registration",
+            extra={"error": str(e)}
+        )
 
     # ✅ Audit log: successful registration
     await audit_logger.log_registration(user, request)
@@ -86,10 +170,17 @@ async def register(request: Request, user_data: UserCreate):
         algorithm=settings.ALGORITHM,
     )
 
+    # Ensure constant response time (prevent timing attacks)
+    elapsed = asyncio.get_event_loop().time() - start_time
+    min_response_time = 0.5  # 500ms minimum
+    if elapsed < min_response_time:
+        await asyncio.sleep(min_response_time - elapsed)
+
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
         user=user.to_response(),
+        requires_payment=requires_payment,  # Signal frontend to show payment page
     )
 
 
@@ -502,3 +593,115 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
         refresh_token=refresh_token,
         user=user.to_response(),
     )
+
+
+# ==========================================
+# PAYMENT FLOW ENDPOINTS
+# ==========================================
+
+@router.get("/payment/status")
+@limiter.limit("10/minute")
+async def get_payment_status(
+    request: Request,
+    current_user: User = Depends(get_current_active_user)
+):
+    """Check payment status for current user.
+
+    Used by frontend to poll for payment completion.
+    Rate limited to 10/minute to prevent abuse.
+
+    Returns:
+        PaymentStatusResponse with current payment state
+    """
+    from app.models.responses import PaymentStatusResponse
+    from app.models.user_state import can_access_content
+
+    return PaymentStatusResponse(
+        payment_pending=current_user.payment_pending,
+        subscription_tier=current_user.subscription_tier,
+        subscription_status=current_user.subscription_status,
+        can_access_app=can_access_content(current_user),
+        pending_plan_id=current_user.pending_plan_id,
+    )
+
+
+@router.get("/payment/checkout-url")
+@limiter.limit("3/minute")
+async def get_checkout_url(
+    request: Request,
+    plan_id: str = "basic",
+    current_user: User = Depends(get_current_active_user)
+):
+    """Generate fresh checkout URL on-demand (never stored).
+
+    Very strict rate limit (3/minute) because:
+    - Expensive Stripe API calls
+    - Prevents checkout session spam
+
+    Args:
+        plan_id: Plan to subscribe to (basic, premium, family)
+
+    Returns:
+        CheckoutSessionResponse with temporary checkout URL
+
+    Raises:
+        400: If payment is not pending
+        500: If Stripe API fails
+    """
+    from app.models.responses import CheckoutSessionResponse
+
+    # Verify user is in payment pending state
+    if not current_user.payment_pending:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No payment pending for this user",
+        )
+
+    logger.info(
+        "Generating checkout URL",
+        extra={
+            "user_id": str(current_user.id),
+            "plan_id": plan_id,
+        }
+    )
+
+    try:
+        # Create fresh checkout session (NOT stored in DB)
+        checkout_service = SignupCheckoutService()
+        result = await checkout_service.create_checkout_session(
+            current_user,
+            plan_id
+        )
+
+        return CheckoutSessionResponse(
+            checkout_url=result.url,
+            expires_in=3600,  # Stripe default: 24 hours (86400s), return 1 hour for clarity
+            session_id=result.session_id,
+        )
+
+    except ValueError as e:
+        # Invalid plan_id
+        logger.error(
+            "Invalid plan for checkout",
+            extra={
+                "error": str(e),
+                "plan_id": plan_id,
+            }
+        )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+    except Exception as e:
+        # Stripe API error
+        logger.error(
+            "Failed to create checkout session",
+            extra={
+                "error": str(e),
+                "user_id": str(current_user.id),
+            }
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create payment session. Please try again later.",
+        )

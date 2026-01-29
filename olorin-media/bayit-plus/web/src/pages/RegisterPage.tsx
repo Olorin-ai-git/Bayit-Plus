@@ -77,8 +77,17 @@ export default function RegisterPage() {
     }
 
     try {
-      await register({ name, email, password });
-      navigate('/', { replace: true });
+      const response = await register({ name, email, password });
+
+      // Check if payment is required (payment-first flow)
+      if (response?.requires_payment) {
+        // Payment required - redirect handled by PaymentPendingGuard
+        // Just navigate to home and guard will show payment page
+        navigate('/', { replace: true });
+      } else {
+        // No payment required (legacy viewer flow or admin)
+        navigate('/', { replace: true });
+      }
     } catch (err: any) {
       setError(err.message || t('register.errors.registrationFailed'));
     }

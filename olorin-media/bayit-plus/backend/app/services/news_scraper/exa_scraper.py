@@ -15,8 +15,10 @@ from app.services.news_scraper.models import HeadlineItem
 
 logger = logging.getLogger(__name__)
 
-# Exa API key from environment
-EXA_API_KEY = getattr(settings, "EXA_API_KEY", "8ea21bf5-1900-4531-b34c-c7dec89fe64f")
+# Exa API key from environment - fail fast if not configured
+EXA_API_KEY = getattr(settings, "EXA_API_KEY", None)
+if not EXA_API_KEY:
+    raise ValueError("EXA_API_KEY must be configured in environment variables or settings")
 
 
 class ExaNewsScraperError(Exception):
@@ -188,4 +190,91 @@ async def scrape_israeli_content_exa(
 
     except Exception as e:
         logger.error(f"Failed to scrape Israeli content for {city}, {state}: {e}")
+        return []  # Return empty list on error
+
+
+async def scrape_israeli_businesses_exa(
+    city: str,
+    state: str,
+    max_results: int = 15,
+) -> List[HeadlineItem]:
+    """
+    Search for Israeli businesses in a US city using Exa.
+
+    Focuses on business listings including:
+    - Restaurants & Food
+    - Tech & Startups
+    - Community Services (synagogues, centers)
+    - Retail & Services
+    - Professional Services
+
+    Args:
+        city: City name
+        state: State code
+        max_results: Maximum results to return
+
+    Returns:
+        List of HeadlineItem objects with Israeli business listings
+    """
+    try:
+        # Comprehensive business-focused queries
+        queries = [
+            # Restaurants & Food (HIGH PRIORITY)
+            f'Israeli restaurant in {city} {state}',
+            f'Israeli cafe {city}',
+            f'kosher Israeli restaurant {city}',
+            f'Israeli Mediterranean restaurant {city}',
+            f'Israeli falafel hummus {city}',
+            # Tech & Startups (HIGH PRIORITY)
+            f'Israeli tech company {city} {state}',
+            f'Israeli startup {city}',
+            f'Israeli software cybersecurity {city}',
+            # Community Services
+            f'Israeli synagogue {city}',
+            f'Israeli community center {city}',
+            f'Hebrew school {city}',
+            # Retail & Services
+            f'Israeli shop store market {city}',
+            f'Israeli owned business {city}',
+            # Professional Services
+            f'Israeli professional services {city}',
+        ]
+
+        all_headlines: List[HeadlineItem] = []
+        seen_urls: set[str] = set()
+
+        # Try each query, fetching 2-3 results per query for diversity
+        for query in queries:
+            if len(all_headlines) >= max_results:
+                break
+
+            try:
+                results = await search_exa_news(
+                    query=query,
+                    max_results=2,
+                )
+
+                for headline in results:
+                    if headline.url not in seen_urls:
+                        seen_urls.add(headline.url)
+                        all_headlines.append(headline)
+
+                        if len(all_headlines) >= max_results:
+                            break
+
+            except ExaNewsScraperError as e:
+                logger.warning(f"Business query '{query}' failed: {e}")
+                continue
+
+        with_images = sum(1 for h in all_headlines if h.image_url)
+        logger.info(
+            f"Exa business scraping complete for {city}, {state}:\n"
+            f"  Total business listings: {len(all_headlines)}\n"
+            f"  With images: {with_images}/{len(all_headlines)} ({with_images*100//len(all_headlines) if len(all_headlines) > 0 else 0}%)"
+        )
+
+        return all_headlines[:max_results]
+
+    except Exception as e:
+        logger.error(f"Failed to scrape Israeli businesses for {city}, {state}: {e}")
         return []  # Return empty list on error

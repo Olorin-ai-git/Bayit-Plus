@@ -5,10 +5,14 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
 from app.core.security import get_current_active_user
 from app.models.subscription import SUBSCRIPTION_PLANS, Subscription
 from app.models.user import User
+from app.models.webhook_event import WebhookEvent
+from app.services.payment.webhook_handler_service import WebhookHandlerService
 
+logger = get_logger(__name__)
 router = APIRouter()
 
 # Initialize Stripe
@@ -169,7 +173,13 @@ async def cancel_subscription(
 
 @router.post("/webhook")
 async def stripe_webhook(request: Request):
-    """Handle Stripe webhooks."""
+    """Handle Stripe webhooks with idempotency protection.
+
+    Security Features:
+        - Signature verification (prevents spoofing)
+        - Idempotency checking (prevents replay attacks)
+        - Structured logging (audit trail)
+    """
     payload = await request.body()
     sig_header = request.headers.get("stripe-signature")
 
@@ -178,20 +188,75 @@ async def stripe_webhook(request: Request):
             payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
         )
     except ValueError:
+        logger.error("Invalid webhook payload")
         raise HTTPException(status_code=400, detail="Invalid payload")
     except stripe.error.SignatureVerificationError:
+        logger.error("Invalid webhook signature")
         raise HTTPException(status_code=400, detail="Invalid signature")
 
+    event_id = event["id"]
+    event_type = event["type"]
+
+    logger.info(
+        "Received webhook",
+        extra={
+            "event_id": event_id,
+            "event_type": event_type,
+        }
+    )
+
+    # Check idempotency - prevent duplicate processing
+    if await WebhookEvent.is_processed(event_id):
+        logger.info(
+            "Webhook already processed (idempotent)",
+            extra={"event_id": event_id}
+        )
+        return {"status": "already_processed"}
+
+    # Mark as processed before handling
+    await WebhookEvent.mark_processed(event_id, event_type)
+
+    # Initialize webhook handler service
+    webhook_service = WebhookHandlerService()
+
     # Handle the event
-    if event["type"] == "checkout.session.completed":
-        session = event["data"]["object"]
-        await handle_checkout_completed(session)
-    elif event["type"] == "customer.subscription.updated":
-        subscription = event["data"]["object"]
-        await handle_subscription_updated(subscription)
-    elif event["type"] == "customer.subscription.deleted":
-        subscription = event["data"]["object"]
-        await handle_subscription_deleted(subscription)
+    try:
+        if event_type == "checkout.session.completed":
+            session = event["data"]["object"]
+            # NEW: Use WebhookHandlerService (handles payment_pending flow)
+            await webhook_service.handle_checkout_completed(session)
+            # LEGACY: Also call old handler for backward compatibility
+            await handle_checkout_completed(session)
+
+        elif event_type == "customer.subscription.updated":
+            subscription = event["data"]["object"]
+            await webhook_service.handle_subscription_updated(subscription)
+            await handle_subscription_updated(subscription)
+
+        elif event_type == "customer.subscription.deleted":
+            subscription = event["data"]["object"]
+            await webhook_service.handle_subscription_deleted(subscription)
+            await handle_subscription_deleted(subscription)
+
+        logger.info(
+            "Webhook processed successfully",
+            extra={
+                "event_id": event_id,
+                "event_type": event_type,
+            }
+        )
+
+    except Exception as e:
+        logger.error(
+            "Webhook processing failed",
+            extra={
+                "event_id": event_id,
+                "event_type": event_type,
+                "error": str(e),
+            }
+        )
+        # Don't raise - return 200 to Stripe to prevent retries
+        # Log the error for investigation
 
     return {"status": "success"}
 

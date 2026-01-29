@@ -93,7 +93,7 @@ export default function AudiobookDetailPage() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.sidebar}>
           {audiobook.thumbnail ? (
-            <Image source={{ uri: audiobook.thumbnail }} style={styles.thumbnail} />
+            <Image source={{ uri: audiobook.thumbnail }} style={styles.thumbnail} resizeMode="contain" />
           ) : (
             <View style={[styles.thumbnail, styles.placeholder]}>
               <NativeIcon name="podcasts" size="xl" color={colors.textMuted} />

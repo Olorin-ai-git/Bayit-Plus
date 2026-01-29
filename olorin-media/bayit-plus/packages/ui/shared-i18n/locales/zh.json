@@ -301,6 +301,12 @@
     "telAvivConnection": "特拉维夫连接",
     "categories": "分类",
     "nearYou": "您附近",
+    "israelis_in_city": "{{city}}, {{state}}的以色列人",
+    "israeli_businesses": "{{city}}, {{state}}的以色列企业",
+    "israeli_businesses_nearby": "您附近的以色列企业 - 来自{{city}}",
+    "searching_businesses": "正在{{city}}搜索以色列企业...",
+    "no_businesses_found": "在{{city}}未找到以色列企业",
+    "businesses_load_error": "无法加载企业列表。请重试。",
     "carousel": {
       "fauda": {
         "title": "法乌达",
@@ -2188,5 +2194,27 @@
       "startUsing": "开始使用语音控制"
     },
     "skip": "暂时跳过"
+  },
+  "payment": {
+    "pending": {
+      "title": "完成您的订阅",
+      "description": "选择计划开始7天免费试用并访问所有Bayit+内容",
+      "timeElapsed": "正在检查付款状态... ({{seconds}}秒)",
+      "takingLonger": "付款确认时间比预期长。如果您已付款，请尝试刷新或联系支持。",
+      "helpText": "需要帮助？请联系 support@bayit.tv 或刷新此页面（如果您已完成付款）。"
+    },
+    "continueToPayment": "继续付款",
+    "success": {
+      "title": "付款成功！",
+      "description": "欢迎使用Bayit+！您的订阅现已激活。",
+      "redirecting": "{{seconds}}秒后重定向...",
+      "continue": "继续访问Bayit+"
+    },
+    "cancelled": {
+      "title": "付款已取消",
+      "description": "您的订阅未完成。准备好后可以重试。",
+      "retry": "重试",
+      "helpText": "有疑问？请联系 support@bayit.tv 获取帮助。"
+    }
   }
 }

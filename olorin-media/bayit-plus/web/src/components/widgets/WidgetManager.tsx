@@ -13,6 +13,7 @@ import { liveService, radioService, podcastService } from '@/services/api';
 import { adminContentService } from '@/services/adminApi';
 import { useAuthStore } from '@/stores/authStore';
 import WidgetContainer from './WidgetContainer';
+import MinimizedWidgetDock from './MinimizedWidgetDock';
 import type { Widget, WidgetPosition } from '@/types/widget';
 import type { PodcastEpisode } from '@/types/podcast';
 import logger from '@/utils/logger';
@@ -291,6 +292,8 @@ export default function WidgetManager() {
           />
         );
       })}
+
+      <MinimizedWidgetDock />
     </>
   );
 }

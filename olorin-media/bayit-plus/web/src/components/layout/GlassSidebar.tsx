@@ -55,6 +55,7 @@ const baseMenuSections: MenuSection[] = [
       { id: 'liveTV', icon: 'live', labelKey: 'nav.liveTV', path: '/live' },
       { id: 'epg', icon: 'epg', labelKey: 'nav.epg', path: '/epg' },
       { id: 'vod', icon: 'vod', labelKey: 'nav.vod', path: '/vod' },
+      { id: 'widgets', icon: 'widgets', labelKey: 'nav.widgets', path: '/widgets' },
       { id: 'radio', icon: 'radio', labelKey: 'nav.radio', path: '/radio' },
       { id: 'podcasts', icon: 'podcasts', labelKey: 'nav.podcasts', path: '/podcasts' },
       { id: 'audiobooks', icon: 'audiobooks', labelKey: 'nav.audiobooks', path: '/audiobooks' },
@@ -81,7 +82,6 @@ const baseMenuSections: MenuSection[] = [
       { id: 'watchlist', icon: 'watchlist', labelKey: 'nav.watchlist', path: '/watchlist' },
       { id: 'downloads', icon: 'downloads', labelKey: 'nav.downloads', path: '/downloads' },
       { id: 'recordings', icon: 'recordings', labelKey: 'nav.recordings', path: '/recordings' },
-      { id: 'widgets', icon: 'widgets', labelKey: 'nav.widgets', path: '/widgets' },
     ],
   },
   {

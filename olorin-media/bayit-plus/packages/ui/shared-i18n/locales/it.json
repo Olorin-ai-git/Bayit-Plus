@@ -251,7 +251,13 @@
     "jerusalemConnection": "Connessione Gerusalemme",
     "telAvivConnection": "Connessione Tel Aviv",
     "categories": "Categorie",
-    "nearYou": "Vicino a te"
+    "nearYou": "Vicino a te",
+    "israelis_in_city": "Israeliani a {{city}}, {{state}}",
+    "israeli_businesses": "Imprese Israeliane a {{city}}, {{state}}",
+    "israeli_businesses_nearby": "Imprese Israeliane Vicino a Te - Da {{city}}",
+    "searching_businesses": "Ricerca di imprese israeliane a {{city}}...",
+    "no_businesses_found": "Nessuna impresa israeliana trovata a {{city}}",
+    "businesses_load_error": "Impossibile caricare gli elenchi delle imprese. Riprova."
   },
   "search": {
     "title": "Cerca",
@@ -989,6 +995,28 @@
     "permissionDenied": {
       "title": "Accesso negato",
       "description": "Non hai il permesso di visualizzare questo contenuto"
+    }
+  },
+  "payment": {
+    "pending": {
+      "title": "Completa Il Tuo Abbonamento",
+      "description": "Scegli un piano per iniziare la tua prova gratuita di 7 giorni e accedere a tutto Bayit+",
+      "timeElapsed": "Controllo stato pagamento... ({{seconds}}s)",
+      "takingLonger": "La conferma del pagamento sta richiedendo più tempo del previsto. Prova ad aggiornare o contatta il supporto se hai già pagato.",
+      "helpText": "Serve aiuto? Contatta support@bayit.tv o aggiorna questa pagina se hai già completato il pagamento."
+    },
+    "continueToPayment": "Continua al Pagamento",
+    "success": {
+      "title": "Pagamento Riuscito!",
+      "description": "Benvenuto su Bayit+! Il tuo abbonamento è ora attivo.",
+      "redirecting": "Reindirizzamento tra {{seconds}} secondi...",
+      "continue": "Continua su Bayit+"
+    },
+    "cancelled": {
+      "title": "Pagamento Annullato",
+      "description": "Il tuo abbonamento non è stato completato. Puoi riprovare quando sei pronto.",
+      "retry": "Riprova",
+      "helpText": "Domande? Contatta support@bayit.tv per assistenza."
     }
   }
 }

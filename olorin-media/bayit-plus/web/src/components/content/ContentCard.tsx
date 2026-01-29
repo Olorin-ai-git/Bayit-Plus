@@ -142,16 +142,19 @@ export default function ContentCard({ content, showProgress = false, showActions
   const [favoriteHovered, setFavoriteHovered] = useState(false);
   const [watchlistHovered, setWatchlistHovered] = useState(false);
 
-  // Check if this is a scraped article that should open in modal
-  const isScrapedArticle = (content.type === 'article' || content.type === 'event') &&
-    (Boolean(content.city && content.state) || content.id?.startsWith('article-'));
+  // Check if this is a scraped article/business that should open in modal
+  // Any content with city+state (location-based) or article/event type should open in modal
+  const isScrapedArticle =
+    Boolean(content.city && content.state) ||
+    ((content.type === 'article' || content.type === 'event') && content.id?.startsWith('article-'));
 
   // Debug logging
   useEffect(() => {
-    if (content.type === 'article') {
-      console.log('Article card rendered:', {
+    if (content.type === 'article' || (content.city && content.state)) {
+      console.log('Location/Article card rendered:', {
         id: content.id,
         title: content.title.substring(0, 50),
+        type: content.type,
         isScrapedArticle,
         hasCity: Boolean(content.city),
         hasState: Boolean(content.state),
@@ -269,6 +272,8 @@ export default function ContentCard({ content, showProgress = false, showActions
           <View style={[
             styles.thumbnailContainer,
             content.type === 'podcast' || content.type === 'audiobook'
+              ? styles.thumbnailSquare
+              : (content.type === 'article' || content.type === 'event')
               ? styles.thumbnailSquare
               : styles.thumbnailPortrait
           ]}>
@@ -460,8 +465,8 @@ export default function ContentCard({ content, showProgress = false, showActions
               {content.title}
             </Text>
             <View style={[styles.meta, { flexDirection }]}>
-              {/* For articles/events, show source and location instead of year/category */}
-              {(content.type === 'article' || content.type === 'event') ? (
+              {/* For location-based content (articles/events/businesses), show source and location instead of year/category */}
+              {isScrapedArticle ? (
                 <>
                   {content.source && <Text style={styles.metaText}>{content.source}</Text>}
                   {content.source && (content.city || content.state) && (
@@ -612,7 +617,7 @@ const styles = StyleSheet.create({
     aspectRatio: 2 / 3, // Portrait aspect ratio for movie/series posters
   },
   thumbnailSquare: {
-    aspectRatio: 1, // Square aspect ratio for podcasts and audiobooks
+    aspectRatio: 1, // Square aspect ratio for podcasts, audiobooks, articles, and events
   },
   thumbnail: {
     width: '100%',

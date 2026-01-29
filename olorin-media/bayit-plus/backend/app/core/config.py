@@ -109,6 +109,84 @@ class Settings(BaseSettings):
     STRIPE_PRICE_PREMIUM: str = ""
     STRIPE_PRICE_FAMILY: str = ""
 
+    # ==========================================
+    # PAYMENT FLOW FEATURE FLAGS
+    # ==========================================
+    REQUIRE_PAYMENT_ON_SIGNUP: bool = Field(
+        default=False,  # Safe default - disabled until explicitly enabled
+        env="REQUIRE_PAYMENT_ON_SIGNUP",
+        description="Require immediate payment during signup (mandatory subscription model)"
+    )
+
+    REQUIRE_PAYMENT_ON_SIGNUP_PERCENTAGE: int = Field(
+        default=0,  # 0% = disabled, 100% = all users
+        env="REQUIRE_PAYMENT_ON_SIGNUP_PERCENTAGE",
+        description="Percentage of new signups requiring payment (0-100) for gradual rollout"
+    )
+
+    # ==========================================
+    # PAYMENT FLOW CONFIGURATION
+    # ==========================================
+    SIGNUP_TRIAL_PERIOD_DAYS: int = Field(
+        default=7,
+        env="SIGNUP_TRIAL_PERIOD_DAYS",
+        description="Free trial duration for new signups (days)"
+    )
+
+    FRONTEND_URL: str = Field(
+        default="http://localhost:3000",
+        env="FRONTEND_URL",
+        description="Frontend base URL for payment redirects"
+    )
+
+    PAYMENT_SUCCESS_PATH: str = Field(
+        default="/payment/success",
+        env="PAYMENT_SUCCESS_PATH",
+        description="Frontend path for successful payment redirect"
+    )
+
+    PAYMENT_CANCELLED_PATH: str = Field(
+        default="/payment/cancelled",
+        env="PAYMENT_CANCELLED_PATH",
+        description="Frontend path for cancelled payment redirect"
+    )
+
+    PAYMENT_STATUS_POLL_INTERVAL_MS: int = Field(
+        default=5000,  # 5 seconds
+        env="PAYMENT_STATUS_POLL_INTERVAL_MS",
+        description="Frontend polling interval for payment status (milliseconds)"
+    )
+
+    PAYMENT_PENDING_CLEANUP_DAYS: int = Field(
+        default=7,
+        env="PAYMENT_PENDING_CLEANUP_DAYS",
+        description="Delete abandoned signups with payment_pending after N days"
+    )
+
+    PAYMENT_CHECKOUT_SESSION_TTL_HOURS: int = Field(
+        default=24,
+        env="PAYMENT_CHECKOUT_SESSION_TTL_HOURS",
+        description="Stripe checkout session expiration (hours)"
+    )
+
+    # ==========================================
+    # MIGRATION CONFIGURATION
+    # ==========================================
+    VIEWER_MIGRATION_BATCH_SIZE: int = Field(
+        default=100,
+        env="VIEWER_MIGRATION_BATCH_SIZE",
+        description="Batch size for viewer-to-payment-pending migration"
+    )
+
+    # ==========================================
+    # ROLLBACK CONFIGURATION
+    # ==========================================
+    PAYMENT_CONVERSION_THRESHOLD: float = Field(
+        default=0.40,  # 40%
+        env="PAYMENT_CONVERSION_THRESHOLD",
+        description="Trigger rollback if payment conversion rate falls below this threshold"
+    )
+
     # Anthropic (Claude)
     ANTHROPIC_API_KEY: str = ""
     CLAUDE_MODEL: str = "claude-haiku-4-5-20251001"
