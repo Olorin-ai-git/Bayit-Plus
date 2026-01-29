@@ -22,6 +22,7 @@ Deployment guides and status:
 - **Automated Library Integrity Checks** (`/infrastructure/scheduled-jobs/library-integrity/`) - Cloud Run Job and Cloud Scheduler setup for weekly automated verification
 - **Location Feature Production Ready** (`LOCATION_FEATURE_PRODUCTION_READY.md`) - Production readiness report for location-based content feature with all security fixes and deployment guide - ✅ PRODUCTION READY - 2026-01-28
 - **Secrets & Environment Variables Comprehensive Audit** (`SECRETS_ENVIRONMENT_AUDIT_2026-01-28.md`) - Critical security audit comparing backend/.env (120+ vars), cloudbuild.yaml (3 secrets), deploy_server.sh (72 secrets), Google Cloud Secret Manager (118 secrets), and Cloud Run service (60+ secrets) with security vulnerabilities, naming inconsistencies, and deployment gaps - 🚨 CRITICAL SECURITY ISSUES - 2026-01-28 **NEW**
+- **Google Cloud Secrets: Librarian & WebAuthn** (`GCLOUD_SECRETS_LIBRARIAN_WEBAUTHN.md`) - Secrets management documentation for 25 Librarian Agent configuration variables and 3 WebAuthn/Passkey authentication variables with GCloud commands and sync script workflow - 2026-01-29 **NEW**
 
 ### `/testing/`
 Testing documentation and checklists:
