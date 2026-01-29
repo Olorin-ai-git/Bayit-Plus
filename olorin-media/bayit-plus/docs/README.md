@@ -11,6 +11,7 @@ Feature documentation and implementation guides:
 - Subscription and payment features
 - Live streaming functionality
 - Content import and management
+- **Unified Voice System** (`/architecture/UNIFIED_VOICE_ARCHITECTURE.md`, `/guides/VOICE_MIGRATION_GUIDE.md`, `/api/VOICE_API_REFERENCE.md`) - Complete unified voice system consolidating 3 separate voice systems under Olorin wizard avatar with 4 visibility modes, cross-platform support (Web/iOS/Android/tvOS), intent routing, and orchestrator pattern - ✅ IMPLEMENTED - 2026-01-29 **NEW**
 - **Librarian Audit Log Improvements** (`LIBRARIAN_AUDIT_LOG_IMPROVEMENTS.md`) - Comprehensive UI/UX enhancements for Live Audit Log and Recent Reports components with search, filtering, sorting, quick audit triggers, and enhanced table layout - ✅ ENHANCEMENT COMPLETE - 2026-01-25 **NEW**
 
 ### `/deployment/`
@@ -46,6 +47,7 @@ Implementation notes and session reports:
 - **GlassEmptyState Migration Guide** (`GLASS_EMPTY_STATE_MIGRATION.md`) - Migration of 12+ empty state implementations to unified GlassEmptyState component - 2026-01-28 **NEW**
 - **Geolocation Permission UI** (`GEOLOCATION_UI_IMPLEMENTATION.md`) - GDPR-compliant browser geolocation permission UI with consent modal, permission banner, and backend integration - ✅ COMPLETE - 2026-01-28 **NEW**
 - **Maariv 103FM Playlist Widget** (`MAARIV_103_PLAYLIST_WIDGET_IMPLEMENTATION.md`) - Custom React widget displaying scrollable archive of 103FM podcast episodes with integrated AudioPlayer, pagination, RTL support, and glassmorphism styling - ✅ IMPLEMENTED - 2026-01-28 **NEW**
+- **Israeli Tech Podcasts Implementation** (`ISRAELI_TECH_PODCASTS_IMPLEMENTATION.md`) - Complete implementation of 3 Israeli tech/news podcasts (חיות כיס, בזמן שעבדתם, Raymond Tec News) with system widgets, Technology category classification, RSS feed connectivity testing, and 50 episodes synced - ✅ PRODUCTION READY - 2026-01-29 **NEW**
 - **UI/UX Implementations**:
   - `MISSING_ASSETS_IMPLEMENTATION.md` - Complete technical specification for missing asset fixes
   - `MISSING_ASSETS_SUMMARY.md` - Executive summary of missing assets implementation
@@ -108,7 +110,12 @@ Complete environment variables reference:
 
 ### API Documentation
 Located in `/docs/api/`:
+- **Voice API Reference** (`VOICE_API_REFERENCE.md`) - Complete API reference for unified voice system: POST /api/v1/voice/unified endpoint, 6 intent types, authentication, rate limits, error codes, and usage examples - 2026-01-29 **NEW**
 - **Audible API Examples** (`AUDIBLE_API_EXAMPLES.md`) - Complete OAuth flow walkthrough with curl examples, pagination, search, and troubleshooting guide - 2026-01-27 **NEW**
+
+### Architecture Documentation
+Located in `/docs/architecture/`:
+- **Unified Voice Architecture** (`UNIFIED_VOICE_ARCHITECTURE.md`) - Complete system architecture for unified voice system: OlorinVoiceOrchestrator, 4 avatar modes, intent classification, platform implementations, performance characteristics, and monitoring - 2026-01-29 **NEW**
 
 ### Backend Documentation
 Located in `/backend/docs/`:
@@ -136,6 +143,7 @@ Located in `/backend/docs/`:
 5. Development: `/backend/README.md`
 
 ### Key Features
+- **Unified Voice System**: `/guides/VOICE_MIGRATION_GUIDE.md` (Migration), `/api/VOICE_API_REFERENCE.md` (API), `/architecture/UNIFIED_VOICE_ARCHITECTURE.md` (Architecture) **NEW**
 - **Live Translation**: `/features/LIVE_TRANSLATION_EXPANSION.md`
 - **Subscription Gates**: `/features/SUBSCRIPTION_GATE_IMPLEMENTATION.md`
 - **Storage**: `/features/S3_INTEGRATION_GUIDE.md`
