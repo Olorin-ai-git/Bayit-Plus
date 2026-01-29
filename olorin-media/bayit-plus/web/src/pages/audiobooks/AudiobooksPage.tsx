@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useMemo } from 'react'
-import { View, Text, StyleSheet, ScrollView, useWindowDimensions, Pressable } from 'react-native'
+import { View, StyleSheet, ScrollView, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useDirection } from '@/hooks/useDirection'
 import { Search, X, RefreshCw } from 'lucide-react'
@@ -52,7 +52,6 @@ const styles = StyleSheet.create({
 export default function AudiobooksPage() {
   const { t } = useTranslation()
   const { isRTL } = useDirection()
-  const { width } = useWindowDimensions()
 
   const [audiobooks, setAudiobooks] = useState<Audiobook[]>([])
   const [loading, setLoading] = useState(true)
@@ -63,8 +62,6 @@ export default function AudiobooksPage() {
     page: 1,
     page_size: 50,
   })
-
-  const numColumns = width >= 1280 ? 3 : width >= 768 ? 2 : 1
 
   // Filter audiobooks by search query
   const filteredAudiobooks = useMemo(() => {
@@ -180,9 +177,9 @@ export default function AudiobooksPage() {
           <AudiobooksPageGrid
             audiobooks={filteredAudiobooks}
             loading={loading}
-            numColumns={numColumns}
+            currentPage={filters.page || 1}
             onPageChange={(page) => setFilters({ ...filters, page })}
-            isRTL={isRTL}
+            searchQuery={searchQuery}
           />
         )}
       </ScrollView>

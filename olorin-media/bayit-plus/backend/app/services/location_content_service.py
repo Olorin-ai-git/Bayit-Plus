@@ -232,6 +232,7 @@ class LocationContentService:
                     "title": headline.title,
                     "description": headline.summary,
                     "thumbnail": headline.image_url or FALLBACK_NEWS_POSTER,
+                    "url": headline.url,  # Article URL for modal display
                     "source": headline.source,
                     "city": city,
                     "state": state,

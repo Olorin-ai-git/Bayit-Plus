@@ -18,7 +18,6 @@ import {
 import { useCultureStore } from '@bayit/shared-contexts/CultureContext';
 import {
   GlassCard,
-  GlassCheckbox,
   GlassPageHeader,
   HeroCarouselSkeleton,
   RowSkeleton,
@@ -158,7 +157,6 @@ export default function HomePage() {
 
   const [syncing, setSyncing] = useState(false);
   const [showMorningRitual, setShowMorningRitual] = useState(false);
-  const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false);
 
   // Fetch featured audiobooks
   const { audiobooks: featuredAudiobooks, isLoading: audiobooksLoading } =
@@ -347,22 +345,13 @@ export default function HomePage() {
       {/* Continue Watching - loads independently */}
       {continueLoading ? (
         <SectionSkeleton />
-      ) : continueWatching.length > 0 && (() => {
-        const filteredContinueWatching = showOnlyWithSubtitles
-          ? continueWatching.filter(item =>
-              item.available_subtitle_languages &&
-              item.available_subtitle_languages.length > 0
-            )
-          : continueWatching;
-
-        return filteredContinueWatching.length > 0 ? (
-          <ContentCarousel
-            title={t('home.continueWatching')}
-            items={filteredContinueWatching}
-            style={styles.section}
-          />
-        ) : null;
-      })()}
+      ) : continueWatching.length > 0 && (
+        <ContentCarousel
+          title={t('home.continueWatching')}
+          items={continueWatching}
+          style={styles.section}
+        />
+      )}
 
       {/* Near Me - Israelis in Your City */}
       <IsraelisInCitySection
@@ -413,16 +402,6 @@ export default function HomePage() {
         </View>
       )}
 
-      {/* Content Filters - only visible when authenticated */}
-      {useAuthStore.getState().isAuthenticated && (
-        <View style={styles.filterSection}>
-          <GlassCheckbox
-            label={t('home.showOnlyWithSubtitles', 'Show only with subtitles')}
-            checked={showOnlyWithSubtitles}
-            onChange={setShowOnlyWithSubtitles}
-          />
-        </View>
-      )}
 
       {/* Sections in desired order: near-you, trending, Jerusalem, Tel Aviv, then all other categories */}
       {categoriesLoading ? (
@@ -437,20 +416,13 @@ export default function HomePage() {
         <>
           {/* 1. Near You (Israelis Near You) - from API */}
           {categories.filter(cat => cat.name === 'near-you').map((category) => {
-            const filteredItems = showOnlyWithSubtitles
-              ? category.items.filter(item =>
-                  item.available_subtitle_languages &&
-                  item.available_subtitle_languages.length > 0
-                )
-              : category.items;
-
-            if (filteredItems.length === 0) return null;
+            if (category.items.length === 0) return null;
 
             return (
               <ContentCarousel
                 key={category.id}
                 title={t(category.name_key || `home.${category.name}`, { defaultValue: getLocalizedName(category, i18n.language) })}
-                items={filteredItems}
+                items={category.items}
                 seeAllLink={`/vod?category=${category.id}`}
                 style={styles.section}
               />
@@ -486,14 +458,7 @@ export default function HomePage() {
 
           {/* 5-8. Movies, Series, Podcasts, Audiobooks - from API in backend-specified order */}
           {categories.filter(cat => cat.name !== 'near-you').map((category) => {
-        const filteredItems = showOnlyWithSubtitles
-          ? category.items.filter(item =>
-              item.available_subtitle_languages &&
-              item.available_subtitle_languages.length > 0
-            )
-          : category.items;
-
-        if (filteredItems.length === 0) return null;
+        if (category.items.length === 0) return null;
 
         // Determine the see-all link based on category type
         let seeAllLink = `/vod?category=${category.id}`;
@@ -507,7 +472,7 @@ export default function HomePage() {
           <ContentCarousel
             key={category.id}
             title={t(category.name_key || `home.${category.name}`, { defaultValue: getLocalizedName(category, i18n.language) })}
-            items={filteredItems}
+            items={category.items}
             seeAllLink={seeAllLink}
             style={styles.section}
           />
@@ -555,12 +520,6 @@ const styles = StyleSheet.create({
   carouselSection: {
     paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
     paddingTop: IS_TV_BUILD ? spacing.md : spacing.sm,
-  },
-  // Filter Section
-  filterSection: {
-    paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
-    marginVertical: spacing.md,
-    alignItems: 'flex-start',
   },
   // Sections
   section: {

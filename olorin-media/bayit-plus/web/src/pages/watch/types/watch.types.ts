@@ -40,6 +40,14 @@ export interface ContentData {
   latestEpisode?: {
     audioUrl: string;
   };
+  /** URL for web content (articles, events) to display in iframe */
+  url?: string;
+  /** Video URL for playback (YouTube, direct video, etc.) - takes priority over url */
+  video_url?: string;
+  /** Content type (article, event, vod, etc.) */
+  type?: string;
+  /** Content format (article, event, movie, video, etc.) */
+  content_format?: string;
 }
 
 export interface Episode {
@@ -65,6 +73,7 @@ export interface LocationState {
   flowName?: string;
   playlist?: PlaylistItem[];
   currentIndex?: number;
+  contentData?: ContentData;  // Full content data passed from ContentCard (for scraped articles/events)
 }
 
 export type ContentType = 'vod' | 'live' | 'radio' | 'podcast';

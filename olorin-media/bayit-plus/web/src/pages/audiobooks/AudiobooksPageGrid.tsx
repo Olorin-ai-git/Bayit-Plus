@@ -3,40 +3,52 @@
  * Responsive grid layout for audiobook display
  */
 
-import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native'
+import { View, Text, StyleSheet, FlatList, Pressable, useWindowDimensions } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Book } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
-import { GlassButton, GlassView } from '@bayit/shared/ui'
+import { GlassButton, GlassView, GlassCard } from '@bayit/shared/ui'
 import type { Audiobook } from '@/types/audiobook'
 import AudiobookCard from '@/components/AudiobookCard'
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.lg,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.md,
-    marginBottom: spacing.xl,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.xl * 2,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: colors.textMuted,
-    marginBottom: spacing.md,
+  skeletonContainer: {
+    flex: 1,
+    minWidth: 150,
+    maxWidth: '20%',
+    marginHorizontal: 4,
   },
   skeletonCard: {
-    height: 280,
+    aspectRatio: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: borderRadius.lg,
-    backgroundColor: `${colors.border}33`,
-    overflow: 'hidden',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: spacing.xl * 3,
+  },
+  emptyCard: {
+    padding: spacing.xl * 1.5,
+    alignItems: 'center',
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginTop: spacing.lg,
+    marginBottom: spacing.sm,
+  },
+  emptyMessage: {
+    fontSize: 16,
+    color: '#9CA3AF',
+  },
+  gridContainer: {
+    gap: 16,
+  },
+  columnWrapper: {
+    gap: 16,
   },
   paginationContainer: {
     flexDirection: 'row',
@@ -55,107 +67,114 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontWeight: '500',
   },
-  loadingContainer: {
-    marginVertical: spacing.lg,
-  },
 })
 
 interface AudiobooksPageGridProps {
   audiobooks: Audiobook[]
   loading?: boolean
-  numColumns?: number
   currentPage?: number
   onPageChange?: (page: number) => void
-  isRTL?: boolean
+  searchQuery?: string
+}
+
+// Skeleton Loading Card
+function SkeletonCard() {
+  return (
+    <View style={styles.skeletonContainer}>
+      <View style={styles.skeletonCard} />
+    </View>
+  )
+}
+
+// Empty State Component
+function EmptyState({ searchQuery }: { searchQuery?: string }) {
+  const { t } = useTranslation()
+
+  return (
+    <View style={styles.emptyContainer}>
+      <GlassCard style={styles.emptyCard}>
+        <Book size={64} color={colors.textMuted} />
+        {searchQuery ? (
+          <>
+            <Text style={styles.emptyTitle}>{t('common.noResults')}</Text>
+            <Text style={styles.emptyMessage}>{t('common.tryDifferentSearch')}</Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.emptyTitle}>{t('audiobooks.noAudiobooks')}</Text>
+            <Text style={styles.emptyMessage}>{t('audiobooks.tryLater')}</Text>
+          </>
+        )}
+      </GlassCard>
+    </View>
+  )
 }
 
 export default function AudiobooksPageGrid({
   audiobooks,
   loading = false,
-  numColumns = 3,
   currentPage = 1,
   onPageChange = () => {},
-  isRTL = false,
+  searchQuery = '',
 }: AudiobooksPageGridProps) {
   const { t } = useTranslation()
+  const { width } = useWindowDimensions()
 
-  // Calculate responsive column width
-  const calculateColumnWidth = () => {
-    const totalGap = spacing.md * (numColumns - 1)
-    const containerWidth = 100 // percentage
-    return (containerWidth - (totalGap / 360) * 100) / numColumns
-  }
+  const numColumns = width >= 1280 ? 5 : width >= 1024 ? 4 : width >= 768 ? 3 : 2
 
-  if (loading && audiobooks.length === 0) {
+  if (loading) {
     return (
-      <View style={styles.container}>
-        <View style={styles.loadingContainer}>
-          {Array(6)
-            .fill(0)
-            .map((_, i) => (
-              <View key={i} style={styles.skeletonCard} />
-            ))}
-        </View>
-      </View>
-    )
-  }
-
-  if (audiobooks.length === 0) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>
-            {t('audiobooks.noResults', 'No audiobooks found. Try adjusting your filters.')}
-          </Text>
-          <GlassButton>
-            {t('common.refresh', 'Refresh')}
-          </GlassButton>
-        </View>
+      <View style={[styles.gridContainer, { flexDirection: 'row', flexWrap: 'wrap' }]}>
+        {[...Array(10)].map((_, i) => (
+          <SkeletonCard key={i} />
+        ))}
       </View>
     )
   }
 
   return (
-    <View style={styles.container}>
-      {/* Grid */}
-      <View style={styles.grid}>
-        {audiobooks.map((book) => (
-          <View
-            key={book.id}
-            style={{
-              width: `${100 / numColumns}%`,
-              paddingHorizontal: spacing.sm,
-            }}
-          >
-            <AudiobookCard audiobook={book} />
+    <>
+      <FlatList
+        data={audiobooks}
+        keyExtractor={(item) => item.id}
+        numColumns={numColumns}
+        key={numColumns}
+        contentContainerStyle={styles.gridContainer}
+        columnWrapperStyle={numColumns > 1 ? styles.columnWrapper : undefined}
+        renderItem={({ item }) => (
+          <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
+            <AudiobookCard audiobook={item} />
           </View>
-        ))}
-      </View>
+        )}
+        ListEmptyComponent={<EmptyState searchQuery={searchQuery} />}
+      />
 
       {/* Pagination */}
-      <GlassView style={styles.paginationContainer}>
-        <Pressable
-          style={styles.paginationButton}
-          disabled={currentPage === 1}
-          onPress={() => onPageChange(currentPage - 1)}
-        >
-          <ChevronLeft
-            size={20}
-            color={currentPage === 1 ? colors.textMuted : colors.text}
-          />
-        </Pressable>
+      {audiobooks.length > 0 && (
+        <GlassView style={styles.paginationContainer}>
+          <Pressable
+            style={styles.paginationButton}
+            disabled={currentPage === 1}
+            onPress={() => onPageChange(currentPage - 1)}
+          >
+            <ChevronLeft
+              size={20}
+              color={currentPage === 1 ? colors.textMuted : colors.text}
+            />
+          </Pressable>
 
-        <Text style={styles.pageInfo}>
-          {t('common.page', 'Page')} {currentPage}
-        </Text>
+          <Text style={styles.pageInfo}>
+            {t('common.page', 'Page')} {currentPage}
+          </Text>
 
-        <Pressable
-          style={styles.paginationButton}
-          onPress={() => onPageChange(currentPage + 1)}
-        >
-          <ChevronRight size={20} color={colors.text} />
-        </Pressable>
-      </GlassView>
-    </View>
+          <Pressable
+            style={styles.paginationButton}
+            onPress={() => onPageChange(currentPage + 1)}
+          >
+            <ChevronRight size={20} color={colors.text} />
+          </Pressable>
+        </GlassView>
+      )}
+    </>
   )
 }

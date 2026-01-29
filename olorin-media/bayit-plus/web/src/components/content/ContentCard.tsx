@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Play, Star, Bookmark } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassCard, GlassBadge } from '@bayit/shared/ui';
+import { GlassCard, GlassBadge, GlassModal } from '@bayit/shared/ui';
 import { GlassPlaceholder } from '@olorin/glass-ui';
 import type { ContentType as GlassContentType } from '@olorin/design-tokens';
 import { SubtitleFlags, ContentBadges } from '@bayit/shared';
@@ -35,6 +35,9 @@ interface Content {
   city?: string;
   state?: string;
   published_at?: string;
+  url?: string;  // Article/event URL for iframe display
+  video_url?: string;  // Video URL for playback (YouTube, direct video, etc.)
+  content_format?: string;  // Content format (article, event, movie, video, etc.)
 }
 
 interface ContentCardProps {
@@ -54,6 +57,7 @@ export default function ContentCard({ content, showProgress = false, showActions
   const { isRTL, textAlign, flexDirection } = useDirection();
   const [isHovered, setIsHovered] = useState(false);
   const { isUIInteractionEnabled } = useModeEnforcement();
+  const [showArticleModal, setShowArticleModal] = useState(false);
 
   // Thumbnail error handling: YouTube fallback and CDN failures
   const [thumbnailError, setThumbnailError] = useState(false);
@@ -137,25 +141,60 @@ export default function ContentCard({ content, showProgress = false, showActions
   const [favoriteHovered, setFavoriteHovered] = useState(false);
   const [watchlistHovered, setWatchlistHovered] = useState(false);
 
-  // Determine link destination based on content type with safe defaults
-  const getLinkDestination = (): string => {
-    try {
-      if (content.type === 'live') return `/live/${content.id}`;
-      if (content.type === 'radio') return `/radio/${content.id}`;
-      if (content.type === 'podcast') return `/podcasts/${content.id}`;
+  // Check if this is a scraped article that should open in modal
+  const isScrapedArticle = (content.type === 'article' || content.type === 'event') &&
+    (Boolean(content.city && content.state) || content.id?.startsWith('article-'));
 
-      // Articles/events play in watch page (like VOD content)
-      if (content.type === 'article' || content.type === 'event') {
-        return `/vod/${content.id}`;
+  // Debug logging
+  useEffect(() => {
+    if (content.type === 'article') {
+      console.log('Article card rendered:', {
+        id: content.id,
+        title: content.title.substring(0, 50),
+        isScrapedArticle,
+        hasCity: Boolean(content.city),
+        hasState: Boolean(content.state),
+        hasUrl: Boolean(content.url)
+      });
+    }
+  }, [content.id, isScrapedArticle]);
+
+  // Handle article click - open modal instead of navigating
+  const handleArticleClick = (e?: any) => {
+    console.log('Article clicked!', { isScrapedArticle, hasUrl: Boolean(content.url), contentId: content.id });
+
+    if (isScrapedArticle && content.url) {
+      logger.info('Opening article in modal', 'ContentCard', {
+        contentId: content.id,
+        url: content.url,
+        city: content.city,
+        state: content.state
+      });
+      setShowArticleModal(true);
+    } else {
+      console.log('Article click ignored:', { isScrapedArticle, url: content.url });
+    }
+  };
+
+  // Determine link destination based on content type with safe defaults
+  const getLinkDestination = (): { pathname: string; state?: any } | null => {
+    try {
+      // Articles open in modal, not navigation
+      if (isScrapedArticle) {
+        return null; // No navigation for articles
       }
 
-      if (content.type === 'series' || content.is_series) return `/vod/series/${content.id}`;
+      if (content.type === 'live') return { pathname: `/live/${content.id}` };
+      if (content.type === 'radio') return { pathname: `/radio/${content.id}` };
+      if (content.type === 'podcast') return { pathname: `/podcasts/${content.id}` };
+
+      if (content.type === 'series' || content.is_series) return { pathname: `/vod/series/${content.id}` };
 
       // Default to movie/VOD page
-      return `/vod/movie/${content.id}`;
+      return { pathname: `/vod/movie/${content.id}` };
     } catch (error) {
       logger.error('Error determining link destination', 'ContentCard', { error, contentType: content.type });
-      return '/'; // Safe fallback to home
+      return { pathname: '/' }; // Safe fallback to home
     }
   };
 
@@ -198,6 +237,9 @@ export default function ContentCard({ content, showProgress = false, showActions
   // In Voice Only mode, wrap in non-interactive View instead of Link
   const CardContent = (
     <Pressable
+      onPress={isScrapedArticle ? handleArticleClick : undefined}
+      // @ts-ignore - onClick for web compatibility
+      onClick={isScrapedArticle ? handleArticleClick : undefined}
       onHoverIn={() => setIsHovered(true)}
       onHoverOut={() => setIsHovered(false)}
       disabled={!isUIInteractionEnabled}
@@ -326,8 +368,8 @@ export default function ContentCard({ content, showProgress = false, showActions
               </div>
             )}
 
-            {/* Play Overlay */}
-            {isHovered && (
+            {/* Play Overlay - Hide for articles */}
+            {isHovered && !isScrapedArticle && (
               <View style={styles.playOverlay}>
                 <LinearGradient
                   colors={['transparent', 'rgba(10, 10, 20, 0.8)']}
@@ -429,16 +471,57 @@ export default function ContentCard({ content, showProgress = false, showActions
       </Pressable>
   );
 
-  // Wrap with Link only if UI interactions are enabled
-  if (isUIInteractionEnabled) {
+  // Render article modal (shared for all cases)
+  const articleModal = showArticleModal && content.url && (
+    <GlassModal
+      visible={showArticleModal}
+      onClose={() => setShowArticleModal(false)}
+      title={content.title}
+      maxWidth={1200}
+    >
+      <View style={styles.articleModalContent}>
+        <iframe
+          src={content.url}
+          style={{
+            width: '100%',
+            height: '80vh',
+            border: 'none',
+            borderRadius: '12px',
+          }}
+          title={content.title}
+          sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+        />
+      </View>
+    </GlassModal>
+  );
+
+  // Articles: Return unwrapped with click handler
+  if (isScrapedArticle) {
     return (
-      <Link to={linkTo} style={{ textDecoration: 'none', flexShrink: 0 }}>
+      <View style={{ flexShrink: 0 }}>
         {CardContent}
-      </Link>
+        {articleModal}
+      </View>
     );
   }
 
-  // Otherwise return as unwrapped View for Voice Only mode
+  // Other content: Wrap with Link if UI interactions enabled
+  if (isUIInteractionEnabled && linkTo) {
+    return (
+      <>
+        <Link
+          to={linkTo.pathname}
+          state={linkTo.state}
+          style={{ textDecoration: 'none', flexShrink: 0 }}
+        >
+          {CardContent}
+        </Link>
+        {articleModal}
+      </>
+    );
+  }
+
+  // Voice Only mode: Return unwrapped
   return <View style={{ flexShrink: 0 }}>{CardContent}</View>;
 }
 
@@ -623,5 +706,11 @@ const styles = StyleSheet.create({
   fallbackText: {
     fontSize: 48,
     color: colors.textMuted,
+  },
+  articleModalContent: {
+    width: '100%',
+    minHeight: 600,
+    borderRadius: borderRadius.xl,
+    overflow: 'hidden',
   },
 });
