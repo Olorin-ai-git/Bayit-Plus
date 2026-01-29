@@ -741,7 +741,99 @@
       "hybridFeedback": "Retroalimentación Híbrida",
       "voiceFeedback": "Retroalimentación por Voz",
       "voiceFeedbackDesc": "Escucha confirmaciones por voz para las acciones",
-      "feedbackExample": "Ejemplo: 'Canal cambiado a 13'"
+      "feedbackExample": "Ejemplo: 'Canal cambiado a 13'",
+      "state": {
+        "idle": "Listo",
+        "listening": "Escuchando...",
+        "processing": "Procesando...",
+        "speaking": "Hablando",
+        "error": "Error"
+      },
+      "avatar": {
+        "title": "Pantalla de Avatar",
+        "description": "Elige cómo aparece el mago Olorin durante las interacciones de voz",
+        "currentMode": "Modo Actual",
+        "modes": {
+          "full": "Pantalla Completa",
+          "compact": "Compacto",
+          "minimal": "Mínimo",
+          "iconOnly": "Solo Ícono"
+        },
+        "descriptions": {
+          "full": "Mago completo con animaciones, transcripción e interacción de voz completa",
+          "compact": "Panel circular flotante del mago con animaciones",
+          "minimal": "Barra de forma de onda solo con indicador de estado",
+          "iconOnly": "Oculto - solo botón de micrófono visible"
+        },
+        "features": {
+          "wizard": "Personaje mago",
+          "animations": "Gestos animados",
+          "waveform": "Forma de onda de audio",
+          "transcript": "Transcripción en vivo"
+        },
+        "closePanel": "Cerrar panel de voz",
+        "closePanelHint": "Toca para cerrar el panel de interacción de voz",
+        "audioVisualization": "Visualización de audio",
+        "compactMode": "Mago de voz compacto",
+        "wizardAvatar": "Avatar del mago",
+        "wizardCharacter": "Personaje del mago Olorin",
+        "fullMode": "Mago de voz en pantalla completa",
+        "wizardInteraction": "Interacción de voz con el mago",
+        "openVoice": "Abrir asistente de voz",
+        "openVoiceHint": "Activar interacción de voz con el mago Olorin",
+        "wizardHat": "Ícono de sombrero de mago"
+      },
+      "gesture": {
+        "browsing": "Mago navegando",
+        "cheering": "Mago animando",
+        "clapping": "Mago aplaudiendo",
+        "conjuring": "Mago conjurando magia",
+        "crying": "Mago llorando",
+        "shrugging": "Mago encogiéndose de hombros",
+        "facepalm": "Mago con facepalm"
+      },
+      "settings": {
+        "title": "Configuración de Voz",
+        "close": "Cerrar",
+        "voiceFeatures": "Funciones de Voz",
+        "enableCommands": "Activar Comandos de Voz",
+        "enableCommandsDesc": "Activar búsqueda y comandos de voz",
+        "voiceLanguage": "Idioma de Voz",
+        "wakeWordDetection": "Detección de Palabra de Activación",
+        "sensitivityLabel": "Sensibilidad",
+        "sensitivityHint": "Más alto = más receptivo, puede activar más falsos positivos",
+        "currentSensitivity": "Sensibilidad actual: {{value}}%",
+        "avatarDisplay": "Pantalla de Avatar",
+        "voiceResponse": "Respuesta de Voz",
+        "audioResponses": "Respuestas de Audio",
+        "audioResponsesDesc": "Responder con voz en lugar de texto",
+        "privacy": "Privacidad e Historial",
+        "recordHistory": "Grabar Historial de Comandos",
+        "recordHistoryDesc": "Guardar comandos de voz para acceso rápido",
+        "historyHelp": "El historial ayuda a mejorar la precisión del reconocimiento de voz",
+        "permissions": "Permisos",
+        "microphone": "Micrófono",
+        "granted": "Concedido",
+        "denied": "Denegado",
+        "microphoneRequired": "Se requiere acceso al micrófono para comandos de voz",
+        "supportedCommands": "Comandos Compatibles",
+        "advanced": "Avanzado",
+        "clearHistory": "Borrar Historial de Comandos",
+        "resetSettings": "Restablecer Toda la Configuración",
+        "clearHistoryConfirm": "Borrar Historial de Comandos",
+        "clearHistoryMessage": "¿Estás seguro de que quieres eliminar todo el historial de comandos de voz?",
+        "resetConfirm": "Restablecer Configuración",
+        "resetMessage": "¿Restablecer la configuración de voz a los valores predeterminados?",
+        "historyCleared": "Historial de comandos borrado",
+        "success": "Éxito"
+      },
+      "errors": {
+        "microphoneAccess": "Acceso al micrófono denegado",
+        "networkError": "Error de conexión de red",
+        "processingFailed": "Error al procesar la entrada de voz",
+        "intentClassification": "No se pudo entender el comando",
+        "timeout": "Tiempo de reconocimiento de voz agotado"
+      }
     },
     "dropdown": {
       "myProfile": "Mi Perfil",

@@ -51,7 +51,7 @@ class TTSConnectionPool:
         self,
         voice_id: str,
         model_id: str = "eleven_turbo_v2_5",
-        output_format: str = "mp3_44100_128",
+        output_format: str = "pcm_16000",
     ) -> ClientConnection:
         """
         Get or create a WebSocket connection.

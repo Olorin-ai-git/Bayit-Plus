@@ -1,12 +1,13 @@
 /**
  * TV Voice Settings Component
- * Grid-based settings: language selection, wake word toggle, TTS rate slider
+ * Grid-based settings: language selection, wake word toggle, TTS rate slider, avatar display
  */
 
 import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { voiceComponentStyles } from './voiceStyles';
+import { TVAvatarPreferences } from './TVAvatarPreferences';
 
 interface TVVoiceSettingsProps {
   language: string;
@@ -67,7 +68,10 @@ export const TVVoiceSettings: React.FC<TVVoiceSettingsProps> = ({
                 onFocus={() => setFocusedSetting(`lang-${lang.code}`)}
                 onBlur={() => setFocusedSetting(null)}
                 accessible
-                accessibilityLabel={lang.name}
+                accessibilityLabel={`${lang.name} language`}
+                accessibilityRole="button"
+                accessibilityState={{ selected: isSelected }}
+                accessibilityHint={`Select ${lang.name} as voice language`}
                 style={[
                   styles.languageButton,
                   {
@@ -101,7 +105,9 @@ export const TVVoiceSettings: React.FC<TVVoiceSettingsProps> = ({
           onBlur={() => setFocusedSetting(null)}
           accessible
           accessibilityLabel={t('voice.wake_word', 'Wake Word Detection')}
+          accessibilityRole="switch"
           accessibilityState={{ checked: wakeWordEnabled }}
+          accessibilityHint={`Toggle wake word detection ${wakeWordEnabled ? 'off' : 'on'}`}
           style={[
             styles.toggleButton,
             {
@@ -139,7 +145,9 @@ export const TVVoiceSettings: React.FC<TVVoiceSettingsProps> = ({
             onFocus={() => setFocusedSetting('rate-decrease')}
             onBlur={() => setFocusedSetting(null)}
             accessible
-            accessibilityLabel={t('voice.decrease', 'Decrease')}
+            accessibilityLabel={t('voice.decrease', 'Decrease speech rate')}
+            accessibilityRole="button"
+            accessibilityHint={`Decrease speech rate from ${ttsRate.toFixed(1)}x to ${Math.max(0.5, ttsRate - 0.1).toFixed(1)}x`}
             style={[
               styles.rateButton,
               {
@@ -151,7 +159,12 @@ export const TVVoiceSettings: React.FC<TVVoiceSettingsProps> = ({
             <Text style={styles.rateButtonText}>−</Text>
           </Pressable>
 
-          <View style={styles.rateDisplay}>
+          <View
+            style={styles.rateDisplay}
+            accessible
+            accessibilityLabel={`Current speech rate ${ttsRate.toFixed(1)}x`}
+            accessibilityRole="text"
+          >
             <Text style={styles.rateValue}>{ttsRate.toFixed(1)}x</Text>
           </View>
 
@@ -160,7 +173,9 @@ export const TVVoiceSettings: React.FC<TVVoiceSettingsProps> = ({
             onFocus={() => setFocusedSetting('rate-increase')}
             onBlur={() => setFocusedSetting(null)}
             accessible
-            accessibilityLabel={t('voice.increase', 'Increase')}
+            accessibilityLabel={t('voice.increase', 'Increase speech rate')}
+            accessibilityRole="button"
+            accessibilityHint={`Increase speech rate from ${ttsRate.toFixed(1)}x to ${Math.min(2.0, ttsRate + 0.1).toFixed(1)}x`}
             style={[
               styles.rateButton,
               {
@@ -172,6 +187,14 @@ export const TVVoiceSettings: React.FC<TVVoiceSettingsProps> = ({
             <Text style={styles.rateButtonText}>+</Text>
           </Pressable>
         </View>
+      </View>
+
+      {/* Avatar Display Preferences */}
+      <View style={styles.settingGroup}>
+        <Text style={styles.settingLabel}>
+          {t('voice.avatar_display', 'Avatar Display')}
+        </Text>
+        <TVAvatarPreferences />
       </View>
     </ScrollView>
   );

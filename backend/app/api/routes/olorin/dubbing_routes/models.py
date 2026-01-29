@@ -2,11 +2,42 @@
 Dubbing API Models
 
 Request/Response models for dubbing endpoints.
+VoiceSettingsRequest defined before CreateSessionRequest (Code Review #3).
+Includes NaN/Infinity validation (Security #6).
 """
 
+import math
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+
+class VoiceSettingsRequest(BaseModel):
+    """P3-2: Per-session voice customization settings."""
+
+    stability: float = Field(
+        default=0.5, ge=0.0, le=1.0, description="Voice consistency"
+    )
+    similarity_boost: float = Field(
+        default=0.75, ge=0.0, le=1.0, description="Voice matching strength"
+    )
+    style: float = Field(
+        default=0.0, ge=0.0, le=1.0, description="Style exaggeration"
+    )
+    # Voice Tech #13: Default False for real-time dubbing (saves 30-80ms)
+    speaker_boost: bool = Field(
+        default=False,
+        description="Enable speaker boost for clarity (adds latency)",
+    )
+
+    # Security #6: Reject NaN and Infinity values
+    @field_validator("stability", "similarity_boost", "style", mode="before")
+    @classmethod
+    def reject_non_finite(cls, v: float) -> float:
+        """Reject NaN and Infinity float values."""
+        if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+            raise ValueError("NaN and Infinity values are not allowed")
+        return v
 
 
 class CreateSessionRequest(BaseModel):
@@ -18,7 +49,7 @@ class CreateSessionRequest(BaseModel):
         default=None,
         description="ElevenLabs voice ID (optional, uses default if not specified)",
     )
-    voice_settings: Optional["VoiceSettingsRequest"] = Field(
+    voice_settings: Optional[VoiceSettingsRequest] = Field(
         default=None,
         description="P3-2: Per-session voice customization settings",
     )
@@ -100,20 +131,3 @@ class CustomVoiceListResponse(BaseModel):
     """List of custom voices."""
 
     voices: List[CustomVoiceResponse]
-
-
-class VoiceSettingsRequest(BaseModel):
-    """P3-2: Per-session voice customization settings."""
-
-    stability: float = Field(
-        default=0.5, ge=0.0, le=1.0, description="Voice consistency"
-    )
-    similarity_boost: float = Field(
-        default=0.75, ge=0.0, le=1.0, description="Voice matching strength"
-    )
-    style: float = Field(
-        default=0.0, ge=0.0, le=1.0, description="Style exaggeration"
-    )
-    speaker_boost: bool = Field(
-        default=True, description="Enable speaker boost for clarity"
-    )

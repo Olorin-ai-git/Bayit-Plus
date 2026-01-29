@@ -20,6 +20,7 @@ import {
 } from 'react-native';
 import { useNotifications } from '@olorin/glass-ui/hooks';
 import { useConversationContextMobile } from '../../hooks/useConversationContextMobile';
+import { AvatarPreferences } from './AvatarPreferences';
 
 interface VoiceSettingsProps {
   onClose?: () => void;
@@ -98,10 +99,30 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
   return (
     <SafeAreaView className="flex-1 bg-slate-900">
       <View className="flex-row justify-between items-center px-4 py-3 border-b border-slate-800">
-        <TouchableOpacity onPress={onClose}>
-          <Text className="text-sm text-blue-600 font-medium">✕ Close</Text>
+        <TouchableOpacity
+          onPress={onClose}
+          accessible
+          accessibilityLabel="Close voice settings"
+          accessibilityRole="button"
+          accessibilityHint="Closes the voice settings screen"
+          style={{ minWidth: 44, minHeight: 44 }}
+          className="justify-center"
+        >
+          <Text
+            className="text-sm text-blue-600 font-medium"
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1.3}
+          >
+            ✕ Close
+          </Text>
         </TouchableOpacity>
-        <Text className="text-lg font-semibold text-white">Voice Settings</Text>
+        <Text
+          className="text-lg font-semibold text-white"
+          allowFontScaling={true}
+          maxFontSizeMultiplier={1.3}
+        >
+          Voice Settings
+        </Text>
         <View className="w-12" />
       </View>
 
@@ -129,8 +150,20 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
             activeOpacity={0.7}
           >
             <View className="flex-row justify-between items-center">
-              <Text className="text-sm font-medium text-slate-100">Voice Language</Text>
-              <Text className="text-sm text-slate-400">{getLanguageName(settings.language)}</Text>
+              <Text
+                className="text-sm font-medium text-slate-100"
+                allowFontScaling={true}
+                maxFontSizeMultiplier={1.3}
+              >
+                Voice Language
+              </Text>
+              <Text
+                className="text-sm text-slate-400"
+                allowFontScaling={true}
+                maxFontSizeMultiplier={1.3}
+              >
+                {getLanguageName(settings.language)}
+              </Text>
             </View>
           </TouchableOpacity>
           <View className="flex-row gap-2 mt-3">
@@ -143,6 +176,11 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
                     : 'border-slate-700'
                 } items-center`}
                 onPress={() => handleSettingChange('language', lang)}
+                accessible
+                accessibilityLabel={`Select ${getLanguageName(lang)} language`}
+                accessibilityRole="button"
+                accessibilityState={{ selected: settings.language === lang }}
+                accessibilityHint={`Changes voice language to ${getLanguageName(lang)}`}
               >
                 <Text
                   className={`text-xs font-medium ${
@@ -150,6 +188,8 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
                       ? 'text-white'
                       : 'text-slate-200'
                   }`}
+                  allowFontScaling={true}
+                  maxFontSizeMultiplier={1.3}
                 >
                   {getLanguageName(lang)}
                 </Text>
@@ -168,9 +208,18 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
             label="Sensitivity"
             description="Higher = more responsive, may trigger more false positives"
           />
-          <Text className="text-xs text-slate-600 mt-2 italic">
+          <Text
+            className="text-xs text-slate-600 mt-2 italic"
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1.3}
+          >
             Current sensitivity: {(settings.wakeSensitivity * 100).toFixed(0)}%
           </Text>
+        </Section>
+
+        {/* Avatar Display Preferences */}
+        <Section title="Avatar Display">
+          <AvatarPreferences />
         </Section>
 
         {/* Voice Response Settings */}
@@ -195,7 +244,11 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
               handleSettingChange('recordCommandHistory', value)
             }
           />
-          <Text className="text-xs text-slate-600 mt-2 italic">
+          <Text
+            className="text-xs text-slate-600 mt-2 italic"
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1.3}
+          >
             History helps improve voice recognition accuracy
           </Text>
         </Section>
@@ -205,8 +258,18 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
           <View className="py-3">
             <View className="flex-row justify-between items-center">
               <View>
-                <Text className="text-sm font-medium text-slate-100 mb-0.5">Microphone</Text>
-                <Text className="text-xs text-slate-400 mt-0.5">
+                <Text
+                  className="text-sm font-medium text-slate-100 mb-0.5"
+                  allowFontScaling={true}
+                  maxFontSizeMultiplier={1.3}
+                >
+                  Microphone
+                </Text>
+                <Text
+                  className="text-xs text-slate-400 mt-0.5"
+                  allowFontScaling={true}
+                  maxFontSizeMultiplier={1.3}
+                >
                   {settings.microphonePermission ? '✓ Granted' : '✗ Denied'}
                 </Text>
               </View>
@@ -220,7 +283,11 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
               />
             </View>
           </View>
-          <Text className="text-xs text-slate-600 mt-2 italic">
+          <Text
+            className="text-xs text-slate-600 mt-2 italic"
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1.3}
+          >
             Microphone access is required for voice commands
           </Text>
         </Section>
@@ -235,14 +302,34 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
           <TouchableOpacity
             className="py-3 px-3 bg-red-900 rounded items-center mt-2 border border-red-800"
             onPress={handleClearHistory}
+            accessible
+            accessibilityLabel="Clear command history"
+            accessibilityRole="button"
+            accessibilityHint="Deletes all saved voice command history"
           >
-            <Text className="text-xs font-semibold text-red-300">Clear Command History</Text>
+            <Text
+              className="text-xs font-semibold text-red-300"
+              allowFontScaling={true}
+              maxFontSizeMultiplier={1.3}
+            >
+              Clear Command History
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             className="py-3 px-3 bg-red-900 rounded items-center mt-2 border border-red-800"
             onPress={handleResetSettings}
+            accessible
+            accessibilityLabel="Reset settings to defaults"
+            accessibilityRole="button"
+            accessibilityHint="Resets all voice settings to default values"
           >
-            <Text className="text-xs font-semibold text-red-300">Reset to Defaults</Text>
+            <Text
+              className="text-xs font-semibold text-red-300"
+              allowFontScaling={true}
+              maxFontSizeMultiplier={1.3}
+            >
+              Reset to Defaults
+            </Text>
           </TouchableOpacity>
         </Section>
 
@@ -263,7 +350,11 @@ interface SectionProps {
 
 const Section: React.FC<SectionProps> = ({ title, children }) => (
   <View className="mb-2">
-    <Text className="text-sm font-semibold text-slate-100 mb-3 uppercase tracking-wide">
+    <Text
+      className="text-sm font-semibold text-slate-100 mb-3 uppercase tracking-wide"
+      allowFontScaling={true}
+      maxFontSizeMultiplier={1.3}
+    >
       {title}
     </Text>
     <View className="bg-slate-800 rounded-lg p-3 overflow-hidden">
@@ -287,9 +378,21 @@ const SettingRow: React.FC<SettingRowProps> = ({
 }) => (
   <View className="flex-row justify-between items-center py-3 border-b border-slate-700">
     <View className="flex-1 mr-3">
-      <Text className="text-sm font-medium text-slate-100 mb-0.5">{label}</Text>
+      <Text
+        className="text-sm font-medium text-slate-100 mb-0.5"
+        allowFontScaling={true}
+        maxFontSizeMultiplier={1.3}
+      >
+        {label}
+      </Text>
       {description && (
-        <Text className="text-xs text-slate-400 mt-0.5">{description}</Text>
+        <Text
+          className="text-xs text-slate-400 mt-0.5"
+          allowFontScaling={true}
+          maxFontSizeMultiplier={1.3}
+        >
+          {description}
+        </Text>
       )}
     </View>
     <Switch
@@ -297,6 +400,11 @@ const SettingRow: React.FC<SettingRowProps> = ({
       onValueChange={onValueChange}
       trackColor={{ false: '#475569', true: '#3B82F6' }}
       thumbColor={value ? '#60A5FA' : '#94A3B8'}
+      accessible
+      accessibilityLabel={label}
+      accessibilityRole="switch"
+      accessibilityState={{ checked: value }}
+      accessibilityHint={description || `Toggle ${label}`}
     />
   </View>
 );
@@ -316,9 +424,21 @@ const SensitivitySlider: React.FC<SensitivitySliderProps> = ({
 }) => (
   <View className="py-3 border-b border-slate-700">
     <View className="mb-3">
-      <Text className="text-sm font-medium text-slate-100 mb-0.5">{label}</Text>
+      <Text
+        className="text-sm font-medium text-slate-100 mb-0.5"
+        allowFontScaling={true}
+        maxFontSizeMultiplier={1.3}
+      >
+        {label}
+      </Text>
       {description && (
-        <Text className="text-xs text-slate-400 mt-0.5">{description}</Text>
+        <Text
+          className="text-xs text-slate-400 mt-0.5"
+          allowFontScaling={true}
+          maxFontSizeMultiplier={1.3}
+        >
+          {description}
+        </Text>
       )}
     </View>
     <View className="h-1.5 bg-slate-700 rounded-full overflow-hidden mb-2">
@@ -328,8 +448,20 @@ const SensitivitySlider: React.FC<SensitivitySliderProps> = ({
       />
     </View>
     <View className="flex-row justify-between">
-      <Text className="text-xs text-slate-600">Low</Text>
-      <Text className="text-xs text-slate-600">High</Text>
+      <Text
+        className="text-xs text-slate-600"
+        allowFontScaling={true}
+        maxFontSizeMultiplier={1.3}
+      >
+        Low
+      </Text>
+      <Text
+        className="text-xs text-slate-600"
+        allowFontScaling={true}
+        maxFontSizeMultiplier={1.3}
+      >
+        High
+      </Text>
     </View>
   </View>
 );
@@ -358,8 +490,20 @@ interface CommandExampleProps {
 
 const CommandExample: React.FC<CommandExampleProps> = ({ command, example }) => (
   <View className="py-2 border-b border-slate-700">
-    <Text className="text-xs font-semibold text-slate-100 mb-0.5">{command}</Text>
-    <Text className="text-xs text-slate-400 italic">e.g., {example}</Text>
+    <Text
+      className="text-xs font-semibold text-slate-100 mb-0.5"
+      allowFontScaling={true}
+      maxFontSizeMultiplier={1.3}
+    >
+      {command}
+    </Text>
+    <Text
+      className="text-xs text-slate-400 italic"
+      allowFontScaling={true}
+      maxFontSizeMultiplier={1.3}
+    >
+      e.g., {example}
+    </Text>
   </View>
 );
 

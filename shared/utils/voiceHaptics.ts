@@ -10,15 +10,13 @@
 
 import { Platform } from 'react-native';
 
-// Dynamic import to avoid errors when expo-haptics is not installed.
-// The variable indirection prevents webpack from resolving the module at build time.
+// Dynamic import to avoid errors when expo-haptics is not installed on web.
 let Haptics: any = null;
 
 if (Platform.OS !== 'web') {
   try {
-    const moduleName = 'expo-haptics';
-    // @ts-ignore - Dynamic require with variable to prevent webpack static analysis
-    Haptics = require(moduleName);
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    Haptics = require(/* webpackIgnore: true */ 'expo-haptics');
   } catch {
     // Haptics unavailable on this platform
   }

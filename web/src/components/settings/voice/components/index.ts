@@ -19,3 +19,4 @@ export { PrivacyNotice } from './PrivacyNotice';
 export { WakeWordTestButton } from './WakeWordTestButton';
 export { AccessibilitySection } from './AccessibilitySection';
 export { SavingIndicator } from './SavingIndicator';
+export { AvatarPreferencesSection } from './AvatarPreferencesSection';

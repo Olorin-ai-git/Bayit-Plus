@@ -28,7 +28,8 @@ class VoiceSettings:
     stability: float = 0.5
     similarity_boost: float = 0.75
     style: float = 0.0
-    speaker_boost: bool = True
+    # Voice Tech #13: Default False for real-time (saves 30-80ms latency)
+    speaker_boost: bool = False
 
     def to_elevenlabs_dict(self) -> Dict:
         """Convert to ElevenLabs API voice_settings format."""
@@ -46,7 +47,17 @@ class VoiceSettings:
             stability=data.get("stability", 0.5),
             similarity_boost=data.get("similarity_boost", 0.75),
             style=data.get("style", 0.0),
-            speaker_boost=data.get("speaker_boost", True),
+            speaker_boost=data.get("speaker_boost", False),
+        )
+
+    @classmethod
+    def from_request(cls, request) -> "VoiceSettings":
+        """Create from a VoiceSettingsRequest API model (Code Review #4)."""
+        return cls(
+            stability=request.stability,
+            similarity_boost=request.similarity_boost,
+            style=request.style,
+            speaker_boost=request.speaker_boost,
         )
 
 

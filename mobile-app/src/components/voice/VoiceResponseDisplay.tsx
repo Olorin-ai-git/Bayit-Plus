@@ -85,10 +85,20 @@ export const VoiceResponseDisplay: React.FC<VoiceResponseDisplayProps> = ({
             className="w-7 h-7 rounded-full justify-center items-center mt-0.5"
             style={{ backgroundColor: statusColor }}
           >
-            <Text className="text-base font-bold text-white">{statusIcon}</Text>
+            <Text
+              className="text-base font-bold text-white"
+              allowFontScaling={true}
+              maxFontSizeMultiplier={1.3}
+            >
+              {statusIcon}
+            </Text>
           </View>
           <View className="flex-1">
-            <Text className="text-sm font-semibold text-slate-100 mb-1">
+            <Text
+              className="text-sm font-semibold text-slate-100 mb-1"
+              allowFontScaling={true}
+              maxFontSizeMultiplier={1.3}
+            >
               {response.success ? 'Command Recognized' : 'Command Failed'}
             </Text>
             <View className="flex-row items-center gap-2">
@@ -96,12 +106,20 @@ export const VoiceResponseDisplay: React.FC<VoiceResponseDisplayProps> = ({
                 className="px-2 py-0.5 rounded"
                 style={{ backgroundColor: commandTypeColor }}
               >
-                <Text className="text-xs font-semibold text-white capitalize">
+                <Text
+                  className="text-xs font-semibold text-white capitalize"
+                  allowFontScaling={true}
+                  maxFontSizeMultiplier={1.3}
+                >
                   {response.commandType}
                 </Text>
               </View>
               {response.confidence && (
-                <Text className="text-xs text-slate-400">
+                <Text
+                  className="text-xs text-slate-400"
+                  allowFontScaling={true}
+                  maxFontSizeMultiplier={1.3}
+                >
                   {(response.confidence * 100).toFixed(0)}% confident
                 </Text>
               )}
@@ -111,32 +129,70 @@ export const VoiceResponseDisplay: React.FC<VoiceResponseDisplayProps> = ({
             onPress={handleDismiss}
             className="p-1"
           >
-            <Text className="text-lg text-slate-600">✕</Text>
+            <Text
+              className="text-lg text-slate-600"
+              allowFontScaling={true}
+              maxFontSizeMultiplier={1.3}
+            >
+              ✕
+            </Text>
           </TouchableOpacity>
         </View>
 
         {/* Response Text */}
-        <Text className="text-xs text-slate-200 leading-tight mb-3">
+        <Text
+          className="text-xs text-slate-200 leading-tight mb-3"
+          allowFontScaling={true}
+          maxFontSizeMultiplier={1.3}
+        >
           {response.responseText}
         </Text>
 
         {/* Action Details */}
         {response.action && (
           <View className="bg-slate-900 rounded p-2 mb-2 border-l-4 border-blue-600">
-            <Text className="text-xs text-slate-400 mb-1">Action:</Text>
-            <Text className="text-xs text-slate-100">{response.action}</Text>
+            <Text
+              className="text-xs text-slate-400 mb-1"
+              allowFontScaling={true}
+              maxFontSizeMultiplier={1.3}
+            >
+              Action:
+            </Text>
+            <Text
+              className="text-xs text-slate-100"
+              allowFontScaling={true}
+              maxFontSizeMultiplier={1.3}
+            >
+              {response.action}
+            </Text>
           </View>
         )}
 
         {/* Action Data */}
         {response.actionData && (
           <View className="bg-slate-900 rounded p-2 border-l-4 border-purple-600">
-            <Text className="text-xs text-slate-400 mb-1.5">Details:</Text>
+            <Text
+              className="text-xs text-slate-400 mb-1.5"
+              allowFontScaling={true}
+              maxFontSizeMultiplier={1.3}
+            >
+              Details:
+            </Text>
             <View className="gap-1">
               {Object.entries(response.actionData).map(([key, value]) => (
                 <View key={key} className="flex-row justify-between items-center">
-                  <Text className="text-xs text-slate-600 font-medium">{key}:</Text>
-                  <Text className="text-xs text-slate-300">
+                  <Text
+                    className="text-xs text-slate-600 font-medium"
+                    allowFontScaling={true}
+                    maxFontSizeMultiplier={1.3}
+                  >
+                    {key}:
+                  </Text>
+                  <Text
+                    className="text-xs text-slate-300"
+                    allowFontScaling={true}
+                    maxFontSizeMultiplier={1.3}
+                  >
                     {typeof value === 'string' ? value : JSON.stringify(value)}
                   </Text>
                 </View>

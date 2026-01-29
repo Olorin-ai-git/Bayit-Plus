@@ -101,7 +101,13 @@ export const VoiceStatusIndicator: React.FC<VoiceStatusIndicatorProps> = ({
           }}
         />
         {showLabel && (
-          <Text className="text-xs text-slate-400">{getStageLabel()}</Text>
+          <Text
+            className="text-xs text-slate-400"
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1.3}
+          >
+            {getStageLabel()}
+          </Text>
         )}
       </TouchableOpacity>
     );
@@ -121,7 +127,13 @@ export const VoiceStatusIndicator: React.FC<VoiceStatusIndicatorProps> = ({
         }}
       />
       {showLabel && (
-        <Text className="text-xs text-slate-200 font-medium">{getStageLabel()}</Text>
+        <Text
+          className="text-xs text-slate-200 font-medium"
+          allowFontScaling={true}
+          maxFontSizeMultiplier={1.3}
+        >
+          {getStageLabel()}
+        </Text>
       )}
     </TouchableOpacity>
   );

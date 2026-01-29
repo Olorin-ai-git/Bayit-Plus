@@ -2,10 +2,12 @@
 Voice Training API Routes (P3-1)
 
 REST endpoints for partner-scoped custom voice management.
+Uses FastAPI Depends for thread-safe service injection (Code Review #2).
+Includes body size limits (Security #5) and content type validation (#10).
 """
 
+import asyncio
 import logging
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
@@ -16,7 +18,6 @@ from app.api.routes.olorin.dubbing_routes.models import (
     CustomVoiceListResponse,
     CustomVoiceResponse,
 )
-from app.api.routes.olorin.errors import OlorinErrors, get_error_message
 from app.models.integration_partner import IntegrationPartner
 from app.services.olorin.dubbing.voice_training import VoiceTrainingService
 
@@ -24,15 +25,36 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/voices/custom", tags=["dubbing-voices"])
 
-_training_service: Optional[VoiceTrainingService] = None
+# Code Review #2: Thread-safe singleton with asyncio.Lock
+_training_service_lock = asyncio.Lock()
+_training_service_instance: VoiceTrainingService | None = None
+
+# Security #5: Maximum upload body size (bytes)
+MAX_TRAINING_SAMPLE_BYTES = 10 * 1024 * 1024  # 10 MB
+
+# Security #10: Allowed audio MIME types for training samples
+ALLOWED_AUDIO_CONTENT_TYPES = frozenset({
+    "audio/mpeg",
+    "audio/wav",
+    "audio/x-wav",
+    "audio/mp3",
+    "audio/ogg",
+    "audio/flac",
+    "audio/webm",
+    "application/octet-stream",
+})
 
 
-def _get_training_service() -> VoiceTrainingService:
-    """Get or create the voice training service singleton."""
-    global _training_service
-    if _training_service is None:
-        _training_service = VoiceTrainingService()
-    return _training_service
+async def get_training_service() -> VoiceTrainingService:
+    """Thread-safe dependency for voice training service."""
+    global _training_service_instance
+    if _training_service_instance is not None:
+        return _training_service_instance
+
+    async with _training_service_lock:
+        if _training_service_instance is None:
+            _training_service_instance = VoiceTrainingService()
+        return _training_service_instance
 
 
 def _voice_to_response(voice) -> CustomVoiceResponse:
@@ -61,11 +83,11 @@ def _voice_to_response(voice) -> CustomVoiceResponse:
 async def create_custom_voice(
     request: CreateCustomVoiceRequest,
     partner: IntegrationPartner = Depends(get_current_partner),
+    service: VoiceTrainingService = Depends(get_training_service),
 ):
     """P3-1: Create a custom voice placeholder for training."""
     await verify_capability(partner, "realtime_dubbing")
 
-    service = _get_training_service()
     voice = await service.create_voice(
         partner_id=partner.partner_id,
         voice_name=request.voice_name,
@@ -88,11 +110,11 @@ async def create_custom_voice(
 )
 async def list_custom_voices(
     partner: IntegrationPartner = Depends(get_current_partner),
+    service: VoiceTrainingService = Depends(get_training_service),
 ):
     """P3-1: List partner's custom voices."""
     await verify_capability(partner, "realtime_dubbing")
 
-    service = _get_training_service()
     voices = await service.list_voices(partner.partner_id)
 
     return CustomVoiceListResponse(
@@ -108,11 +130,11 @@ async def list_custom_voices(
 async def get_custom_voice(
     voice_id: str,
     partner: IntegrationPartner = Depends(get_current_partner),
+    service: VoiceTrainingService = Depends(get_training_service),
 ):
     """P3-1: Get a specific custom voice by ElevenLabs voice ID."""
     await verify_capability(partner, "realtime_dubbing")
 
-    service = _get_training_service()
     voice = await service.get_voice(partner.partner_id, voice_id)
 
     if not voice:
@@ -134,18 +156,51 @@ async def upload_training_sample(
     voice_doc_id: str,
     request: Request,
     partner: IntegrationPartner = Depends(get_current_partner),
+    service: VoiceTrainingService = Depends(get_training_service),
 ):
     """P3-1: Upload audio sample for voice training."""
     await verify_capability(partner, "realtime_dubbing")
 
+    # Security #10: Validate content type
+    content_type = request.headers.get("content-type", "").split(";")[0].strip()
+    if content_type not in ALLOWED_AUDIO_CONTENT_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail=(
+                f"Unsupported content type: {content_type}. "
+                f"Use audio/mpeg, audio/wav, or similar audio formats."
+            ),
+        )
+
+    # Security #5: Check content-length header before reading body
+    content_length = request.headers.get("content-length")
+    if content_length and int(content_length) > MAX_TRAINING_SAMPLE_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=(
+                f"Request body too large. "
+                f"Maximum: {MAX_TRAINING_SAMPLE_BYTES} bytes"
+            ),
+        )
+
     audio_data = await request.body()
+
+    # Security #5: Enforce size limit on actual body
+    if len(audio_data) > MAX_TRAINING_SAMPLE_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=(
+                f"Audio data too large ({len(audio_data)} bytes). "
+                f"Maximum: {MAX_TRAINING_SAMPLE_BYTES} bytes"
+            ),
+        )
+
     if len(audio_data) == 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Empty audio data",
         )
 
-    service = _get_training_service()
     success = await service.upload_training_sample(
         partner_id=partner.partner_id,
         voice_doc_id=voice_doc_id,
@@ -171,11 +226,11 @@ async def upload_training_sample(
 async def archive_custom_voice(
     voice_id: str,
     partner: IntegrationPartner = Depends(get_current_partner),
+    service: VoiceTrainingService = Depends(get_training_service),
 ):
     """P3-1: Archive a custom voice."""
     await verify_capability(partner, "realtime_dubbing")
 
-    service = _get_training_service()
     archived = await service.archive_voice(
         partner.partner_id, voice_id
     )

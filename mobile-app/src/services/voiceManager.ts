@@ -13,15 +13,20 @@
  * ARCHITECTURE:
  * 1. Wake Word Detection → Listen for "Hey Bayit"
  * 2. Speech Recognition → Capture user command (with timeout)
- * 3. API Processing → Send command to backend
+ * 3. Olorin Orchestrator → Unified intent routing
  * 4. Text-to-Speech → Voice response feedback
  * 5. Resume Listening → Return to wake word detection
+ *
+ * UNIFIED VOICE SYSTEM:
+ * Now integrates with OlorinVoiceOrchestrator for unified intent routing
  */
 
 import { speechService } from './speech';
 import { wakeWordService } from './wakeWord';
 import { ttsService } from './tts';
 import { backendProxyService } from './backendProxyService';
+import { createVoiceOrchestrator, OlorinVoiceOrchestrator } from '@bayit/shared/services/olorinVoiceOrchestrator';
+import { useSupportStore } from '@bayit/shared/stores/supportStore';
 
 import logger from '@/utils/logger';
 
@@ -86,6 +91,7 @@ class VoiceManager {
   private sessionMetrics: VoiceSessionMetrics | null = null;
   private sessionStartTime: number = 0;
   private isWakeWordListening: boolean = false;
+  private orchestrator: OlorinVoiceOrchestrator | null = null;
 
   constructor(config: VoiceManagerConfig = {}) {
     this.config = {
@@ -100,6 +106,31 @@ class VoiceManager {
     };
 
     this._setupEventListeners();
+    this._initializeOrchestrator();
+  }
+
+  /**
+   * Initialize Olorin Voice Orchestrator
+   */
+  private async _initializeOrchestrator(): Promise<void> {
+    try {
+      const store = useSupportStore.getState();
+
+      this.orchestrator = createVoiceOrchestrator({
+        platform: 'ios', // Will be 'android' on Android devices
+        language: this.config.speechLanguage,
+        wakeWordEnabled: this.config.enableBackgroundListening,
+        streamingMode: false,
+        initialAvatarMode: store.avatarVisibilityMode,
+        autoExpandOnWakeWord: true,
+        collapseDelay: 10000,
+      });
+
+      await this.orchestrator.initialize();
+      moduleLogger.debug('[VoiceManager] Orchestrator initialized');
+    } catch (error) {
+      moduleLogger.error('[VoiceManager] Failed to initialize orchestrator:', error);
+    }
   }
 
   /**
@@ -257,6 +288,15 @@ class VoiceManager {
       // Stop background wake word listening
       await this.stopBackgroundListening();
 
+      // Notify orchestrator of wake word detection
+      if (this.orchestrator) {
+        await this.orchestrator.startListening('wake-word');
+      }
+
+      // Notify supportStore to trigger UI auto-expand
+      const store = useSupportStore.getState();
+      store.onWakeWordDetected();
+
       // Start metrics tracking
       this._startSession();
       if (this.config.enableMetrics && this.sessionMetrics) {
@@ -321,14 +361,38 @@ class VoiceManager {
       // Start processing
       this._setStage('processing');
 
-      // Send to backend proxy for processing
+      // Process through Olorin Orchestrator (unified voice system)
       const processingStartTime = Date.now();
       try {
-        const response = await backendProxyService.processVoiceCommand({
-          transcription: result.transcription,
-          confidence: result.confidence,
-          language: this.config.speechLanguage,
-        });
+        let response;
+
+        if (this.orchestrator) {
+          // Use unified orchestrator for intent routing
+          const orchestratorResponse = await this.orchestrator.processTranscript(
+            result.transcription,
+            undefined // conversation_id will be managed by orchestrator
+          );
+
+          // Convert orchestrator response to voice response format
+          response = {
+            responseText: orchestratorResponse.spokenResponse,
+            intent: orchestratorResponse.intent,
+            confidence: orchestratorResponse.confidence,
+          };
+
+          moduleLogger.debug('[VoiceManager] Orchestrator response:', {
+            intent: response.intent,
+            confidence: response.confidence,
+          });
+        } else {
+          // Fallback to legacy backend proxy (should rarely happen)
+          moduleLogger.warn('[VoiceManager] Orchestrator not available, using legacy proxy');
+          response = await backendProxyService.processVoiceCommand({
+            transcription: result.transcription,
+            confidence: result.confidence,
+            language: this.config.speechLanguage,
+          });
+        }
 
         if (this.sessionMetrics) {
           this.sessionMetrics.processingTime = Date.now() - processingStartTime;

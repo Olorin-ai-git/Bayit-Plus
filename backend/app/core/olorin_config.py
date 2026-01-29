@@ -267,6 +267,32 @@ class DubbingConfig(BaseSettings):
         description="Session data retention period in days",
     )
 
+    # TTS Stream Configuration
+    tts_receive_timeout_seconds: float = Field(
+        default=30.0,
+        ge=5.0,
+        le=120.0,
+        description="Timeout for TTS WebSocket receive loop (Security #8)",
+    )
+    tts_chunk_schedule_1: int = Field(
+        default=100,
+        ge=50,
+        le=500,
+        description="First chunk length in TTS schedule (Voice Tech #15)",
+    )
+    tts_chunk_schedule_2: int = Field(
+        default=180,
+        ge=100,
+        le=500,
+        description="Second chunk length in TTS schedule",
+    )
+    tts_chunk_schedule_3: int = Field(
+        default=250,
+        ge=100,
+        le=500,
+        description="Third chunk length in TTS schedule",
+    )
+
     # P2 - Performance Configuration
     max_parallel_translation_chunks: int = Field(
         default=10,

@@ -775,7 +775,99 @@
       "hybridFeedback": "משוב אינטראקטיבי",
       "voiceFeedback": "משוב קולי על פעולות",
       "voiceFeedbackDesc": "קבל אישור קולי כשאתה משתמש בשלט רחוק או לוחץ על כפתורים",
-      "feedbackExample": "דוגמה: לחץ על סרט → היישום אומר \"מנגן [שם הסרט]\""
+      "feedbackExample": "דוגמה: לחץ על סרט → היישום אומר \"מנגן [שם הסרט]\"",
+      "state": {
+        "idle": "מוכן",
+        "listening": "מאזין...",
+        "processing": "מעבד...",
+        "speaking": "מדבר",
+        "error": "שגיאה"
+      },
+      "avatar": {
+        "title": "תצוגת אווטר",
+        "description": "בחר כיצד אורלין המכשף מופיע במהלך אינטראקציות קוליות",
+        "currentMode": "מצב נוכחי",
+        "modes": {
+          "full": "מסך מלא",
+          "compact": "קומפקטי",
+          "minimal": "מינימלי",
+          "iconOnly": "אייקון בלבד"
+        },
+        "descriptions": {
+          "full": "מכשף שלם עם אנימציות, תמלול וא¸נטראקציה קולית מלאה",
+          "compact": "פאנל מכשף עגול צף עם אנימציות",
+          "minimal": "פס צורת גל עם אינדיקטור סטטוס בלבד",
+          "iconOnly": "מוסתר - רק כפתור מיקרופון גלוי"
+        },
+        "features": {
+          "wizard": "דמות מכשף",
+          "animations": "מחוות מונפשות",
+          "waveform": "צורת גל אודיו",
+          "transcript": "תמלול חי"
+        },
+        "closePanel": "סגור פאנל קולי",
+        "closePanelHint": "הקש לסגירת פאנל אינטראקציה קולית",
+        "audioVisualization": "ויזואליזציה של אודיו",
+        "compactMode": "מכשף קולי קומפקטי",
+        "wizardAvatar": "אווטר מכשף",
+        "wizardCharacter": "דמות אורלין המכשף",
+        "fullMode": "מכשף קולי במסך מלא",
+        "wizardInteraction": "אינטראקציה קולית עם המכשף",
+        "openVoice": "פתח עוזר קולי",
+        "openVoiceHint": "הפעל אינטראקציה קולית עם אורלין המכשף",
+        "wizardHat": "אייקון כובע מכשף"
+      },
+      "gesture": {
+        "browsing": "מכשף גולש",
+        "cheering": "מכשף מעודד",
+        "clapping": "מכשף מוחא כפיים",
+        "conjuring": "מכשף מכשף קסמים",
+        "crying": "מכשף בוכה",
+        "shrugging": "מכשף משכשך בכתפיו",
+        "facepalm": "מכשף מכסה את פניו"
+      },
+      "settings": {
+        "title": "הגדרות קול",
+        "close": "סגור",
+        "voiceFeatures": "תכונות קול",
+        "enableCommands": "הפעל פקודות קוליות",
+        "enableCommandsDesc": "הפעל חיפוש ופקודות קוליות",
+        "voiceLanguage": "שפת קול",
+        "wakeWordDetection": "זיהוי מילת הפעלה",
+        "sensitivityLabel": "רגישות",
+        "sensitivityHint": "גבוה יותר = יותר רספונסיבי, עלול לגרום ליותר הפעלות שגויות",
+        "currentSensitivity": "רגישות נוכחית: {{value}}%",
+        "avatarDisplay": "תצוגת אווטר",
+        "voiceResponse": "תגובת קול",
+        "audioResponses": "תגובות אודיו",
+        "audioResponsesDesc": "השב עם קול במקום טקסט",
+        "privacy": "פרטיות והיסטוריה",
+        "recordHistory": "שמור היסטוריית פקודות",
+        "recordHistoryDesc": "שמור פקודות קוליות לגישה מהירה",
+        "historyHelp": "היסטוריה עוזרת לשפר דיוק זיהוי הקול",
+        "permissions": "הרשאות",
+        "microphone": "מיקרופון",
+        "granted": "ניתנה",
+        "denied": "נדחתה",
+        "microphoneRequired": "נדרשת גישה למיקרופון עבור פקודות קוליות",
+        "supportedCommands": "פקודות נתמכות",
+        "advanced": "מתקדם",
+        "clearHistory": "נקה היסטוריית פקודות",
+        "resetSettings": "אפס את כל ההגדרות",
+        "clearHistoryConfirm": "נקה היסטוריית פקודות",
+        "clearHistoryMessage": "האם אתה בטוח שברצונך למחוק את כל היסטוריית הפקודות הקוליות?",
+        "resetConfirm": "אפס הגדרות",
+        "resetMessage": "לאפס את הגדרות הקול לברירת המחדל?",
+        "historyCleared": "היסטוריית הפקודות נוקתה",
+        "success": "הצלחה"
+      },
+      "errors": {
+        "microphoneAccess": "גישה למיקרופון נדחתה",
+        "networkError": "שגיאת חיבור רשת",
+        "processingFailed": "נכשל בעיבוד קלט קולי",
+        "intentClassification": "לא הצלחתי להבין את הפקודה",
+        "timeout": "זיהוי הקול עבר את זמן הקצוב"
+      }
     },
     "dropdown": {
       "myProfile": "הפרופיל שלי",

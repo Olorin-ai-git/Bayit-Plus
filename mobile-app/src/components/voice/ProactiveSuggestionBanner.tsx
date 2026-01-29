@@ -91,10 +91,22 @@ export default function ProactiveSuggestionBanner({
 
         {/* Content */}
         <View className="flex-1 justify-center">
-          <Text className="text-[15px] font-bold text-white leading-[22px] mb-1.5">{suggestion.message}</Text>
+          <Text
+            className="text-[15px] font-bold text-white leading-[22px] mb-1.5"
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1.3}
+          >
+            {suggestion.message}
+          </Text>
 
           {/* Type label */}
-          <Text className="text-xs font-medium text-purple-500/90 uppercase tracking-wide">{suggestion.type.replace('-', ' ')}</Text>
+          <Text
+            className="text-xs font-medium text-purple-500/90 uppercase tracking-wide"
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1.3}
+          >
+            {suggestion.type.replace('-', ' ')}
+          </Text>
         </View>
 
         {/* Actions */}

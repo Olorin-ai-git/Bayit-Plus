@@ -1,6 +1,7 @@
 /**
  * Voice Avatar FAB
  * Floating action button with animated wizard avatar for voice support
+ * Mode-aware: visibility controlled by avatar mode setting
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -11,11 +12,15 @@ import {
   Animated,
   Easing,
   Image,
+  Platform,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { colors, spacing } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
 import { useSupportStore } from '../../stores/supportStore';
+import { useVoiceAvatarMode } from '../../hooks/useVoiceAvatarMode';
 import { isTV } from '../../utils/platform';
+import { voiceActivationFeedback } from '../../utils/voiceHaptics';
 
 // Wizard hat images for FAB button
 const WIZARD_HAT = {
@@ -32,9 +37,17 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({
   onPress,
   visible = true,
 }) => {
+  const { t } = useTranslation();
   const { isRTL } = useDirection();
-  const { voiceState } = useSupportStore();
+  const { voiceState, wakeWordDetected } = useSupportStore();
   const [isFocused, setIsFocused] = useState(false);
+
+  // Get avatar mode configuration
+  const platform = Platform.OS === 'web' ? 'web' : isTV ? 'tv' : 'mobile';
+  const { avatarMode } = useVoiceAvatarMode(platform);
+
+  // FAB always visible except when voice modal is open in full/compact mode
+  const shouldShow = visible;
 
   // Animations
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -88,11 +101,24 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({
     }).start();
   };
 
+  const handlePress = async () => {
+    // Trigger haptic feedback on activation
+    await voiceActivationFeedback();
+    onPress();
+  };
+
   // Sizes: TV gets bigger FAB and hat
   const fabSize = isTV ? 96 : 64;
   const hatSize = isTV ? 72 : 48;
 
-  if (!visible) return null;
+  // Auto-expand on wake word detection
+  useEffect(() => {
+    if (wakeWordDetected && avatarMode !== 'icon_only') {
+      onPress(); // Trigger expansion
+    }
+  }, [wakeWordDetected, avatarMode, onPress]);
+
+  if (!shouldShow) return null;
 
   return (
     <Animated.View
@@ -109,12 +135,20 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({
       ]}
     >
       <TouchableOpacity
-        onPress={onPress}
+        onPress={handlePress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         activeOpacity={0.9}
+        accessible
+        accessibilityLabel={t('voice.avatar.openVoice')}
+        accessibilityRole="button"
+        accessibilityHint={t('voice.avatar.openVoiceHint')}
+        accessibilityState={{
+          busy: voiceState === 'processing',
+          selected: wakeWordDetected,
+        }}
         style={[
           styles.fab,
           {
@@ -132,9 +166,15 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({
             { width: hatSize, height: hatSize },
           ]}
           resizeMode="contain"
+          accessible
+          accessibilityLabel={t('voice.avatar.wizardHat')}
         />
 
+        {/* Processing indicator */}
         {voiceState === 'processing' && <ProcessingOverlay />}
+
+        {/* Wake word detection pulse */}
+        {wakeWordDetected && <WakeWordPulse />}
       </TouchableOpacity>
     </Animated.View>
   );
@@ -166,6 +206,53 @@ const ProcessingOverlay: React.FC = () => {
       style={[
         styles.processingOverlay,
         { transform: [{ rotate: spin }] },
+      ]}
+    />
+  );
+};
+
+const WakeWordPulse: React.FC = () => {
+  const pulseAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 800,
+          easing: Easing.out(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 0,
+          duration: 800,
+          easing: Easing.in(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    pulse.start();
+    return () => pulse.stop();
+  }, [pulseAnim]);
+
+  const scale = pulseAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.4],
+  });
+
+  const opacity = pulseAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.6, 0],
+  });
+
+  return (
+    <Animated.View
+      style={[
+        styles.wakeWordPulse,
+        {
+          transform: [{ scale }],
+          opacity,
+        },
       ]}
     />
   );
@@ -212,6 +299,15 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.warning.DEFAULT,
     borderTopColor: 'transparent',
+  },
+  wakeWordPulse: {
+    position: 'absolute',
+    width: isTV ? 96 : 64,
+    height: isTV ? 96 : 64,
+    borderRadius: isTV ? 48 : 32,
+    borderWidth: 2,
+    borderColor: colors.blue[500],
+    backgroundColor: 'transparent',
   },
 });
 

@@ -776,7 +776,99 @@
       "hybridFeedback": "Interactive Feedback",
       "voiceFeedback": "Voice feedback on actions",
       "voiceFeedbackDesc": "Get voice confirmation when you use the remote or click buttons",
-      "feedbackExample": "Example: Click a movie → App says \"Playing [Movie Name]\""
+      "feedbackExample": "Example: Click a movie → App says \"Playing [Movie Name]\"",
+      "state": {
+        "idle": "Ready",
+        "listening": "Listening...",
+        "processing": "Processing...",
+        "speaking": "Speaking",
+        "error": "Error"
+      },
+      "avatar": {
+        "title": "Avatar Display",
+        "description": "Choose how the Olorin wizard appears during voice interactions",
+        "currentMode": "Current Mode",
+        "modes": {
+          "full": "Full Screen",
+          "compact": "Compact",
+          "minimal": "Minimal",
+          "iconOnly": "Icon Only"
+        },
+        "descriptions": {
+          "full": "Complete wizard with animations, transcript, and full voice interaction",
+          "compact": "Floating circular wizard panel with animations",
+          "minimal": "Waveform bar with status indicator only",
+          "iconOnly": "Hidden - only microphone button visible"
+        },
+        "features": {
+          "wizard": "Wizard character",
+          "animations": "Animated gestures",
+          "waveform": "Audio waveform",
+          "transcript": "Live transcript"
+        },
+        "closePanel": "Close voice panel",
+        "closePanelHint": "Tap to close voice interaction panel",
+        "audioVisualization": "Audio visualization",
+        "compactMode": "Compact voice wizard",
+        "wizardAvatar": "Wizard avatar",
+        "wizardCharacter": "Olorin wizard character",
+        "fullMode": "Full screen voice wizard",
+        "wizardInteraction": "Voice interaction with wizard",
+        "openVoice": "Open voice assistant",
+        "openVoiceHint": "Activate voice interaction with Olorin wizard",
+        "wizardHat": "Wizard hat icon"
+      },
+      "gesture": {
+        "browsing": "Wizard browsing",
+        "cheering": "Wizard cheering",
+        "clapping": "Wizard clapping",
+        "conjuring": "Wizard conjuring magic",
+        "crying": "Wizard crying",
+        "shrugging": "Wizard shrugging",
+        "facepalm": "Wizard facepalm"
+      },
+      "settings": {
+        "title": "Voice Settings",
+        "close": "Close",
+        "voiceFeatures": "Voice Features",
+        "enableCommands": "Enable Voice Commands",
+        "enableCommandsDesc": "Activate voice search and commands",
+        "voiceLanguage": "Voice Language",
+        "wakeWordDetection": "Wake Word Detection",
+        "sensitivityLabel": "Sensitivity",
+        "sensitivityHint": "Higher = more responsive, may trigger more false positives",
+        "currentSensitivity": "Current sensitivity: {{value}}%",
+        "avatarDisplay": "Avatar Display",
+        "voiceResponse": "Voice Response",
+        "audioResponses": "Audio Responses",
+        "audioResponsesDesc": "Respond with voice instead of text",
+        "privacy": "Privacy & History",
+        "recordHistory": "Record Command History",
+        "recordHistoryDesc": "Save voice commands for quick access",
+        "historyHelp": "History helps improve voice recognition accuracy",
+        "permissions": "Permissions",
+        "microphone": "Microphone",
+        "granted": "Granted",
+        "denied": "Denied",
+        "microphoneRequired": "Microphone access is required for voice commands",
+        "supportedCommands": "Supported Commands",
+        "advanced": "Advanced",
+        "clearHistory": "Clear Command History",
+        "resetSettings": "Reset All Settings",
+        "clearHistoryConfirm": "Clear Command History",
+        "clearHistoryMessage": "Are you sure you want to delete all voice command history?",
+        "resetConfirm": "Reset Settings",
+        "resetMessage": "Reset voice settings to defaults?",
+        "historyCleared": "Command history cleared",
+        "success": "Success"
+      },
+      "errors": {
+        "microphoneAccess": "Microphone access denied",
+        "networkError": "Network connection error",
+        "processingFailed": "Failed to process voice input",
+        "intentClassification": "Could not understand command",
+        "timeout": "Voice recognition timed out"
+      }
     },
     "devices": {
       "registeredDevices": "Registered Devices",

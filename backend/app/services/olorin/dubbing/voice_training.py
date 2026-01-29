@@ -36,10 +36,27 @@ class CustomVoiceMetadata(Document):
     )
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     ready_at: Optional[datetime] = None
+    # Database Architect: archived_at timestamp for soft-delete tracking
+    archived_at: Optional[datetime] = None
     metadata: Dict = Field(default_factory=dict)
 
     class Settings:
         name = "dubbing_custom_voices"
+        # Database Architect #16: Required indexes for query performance
+        indexes = [
+            # Unique compound: one voice per partner+elevenlabs ID
+            {
+                "fields": ["partner_id", "voice_id"],
+                "unique": True,
+                "partialFilterExpression": {"voice_id": {"$ne": ""}},
+            },
+            # Compound: partner listing by status (used by list_voices)
+            ["partner_id", "status"],
+            # Single field for status-based queries
+            "status",
+            # Single field for created_at sorting
+            "created_at",
+        ]
 
 
 class VoiceTrainingService:
@@ -173,12 +190,13 @@ class VoiceTrainingService:
     async def archive_voice(
         self, partner_id: str, voice_id: str
     ) -> bool:
-        """Archive a custom voice (soft delete)."""
+        """Archive a custom voice (soft delete with timestamp)."""
         voice = await self.get_voice(partner_id, voice_id)
         if not voice:
             return False
 
         voice.status = "archived"
+        voice.archived_at = datetime.now(timezone.utc)
         await voice.save()
 
         logger.info(

@@ -5,7 +5,7 @@ Provides real-time audio dubbing from Hebrew to English/Spanish.
 Target latency: <2 seconds from speech end to dubbed audio start.
 
 Pipeline:
-  Audio Stream → ElevenLabs STT (~150ms) → Translation → ElevenLabs TTS (~300ms) → Dubbed Audio
+  Audio Stream -> ElevenLabs STT (~150ms) -> Translation -> ElevenLabs TTS (~300ms) -> Dubbed Audio
 
 Includes:
   P0: Security (message size limits, auth, bounded queues, concurrency, idle timeout, validation)
@@ -15,6 +15,14 @@ Includes:
 """
 
 from app.services.olorin.dubbing.models import DubbingMessage, DubbingMetrics
-from app.services.olorin.dubbing.service import RealtimeDubbingService
+
+
+def __getattr__(name):
+    """Lazy import to avoid circular import with metering_service."""
+    if name == "RealtimeDubbingService":
+        from app.services.olorin.dubbing.service import RealtimeDubbingService
+        return RealtimeDubbingService
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 __all__ = ["RealtimeDubbingService", "DubbingMessage", "DubbingMetrics"]

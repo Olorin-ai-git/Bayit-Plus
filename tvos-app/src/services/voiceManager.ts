@@ -14,16 +14,18 @@
  * tvOS-SPECIFIC ARCHITECTURE:
  * 1. PRIMARY TRIGGER: Menu button long-press (500ms) - native, always available
  * 2. OPTIONAL TRIGGER: Wake word "Hey Bayit" - user-configurable enhancement
- * 3. Speech Recognition → Capture user command (45s timeout for 10-foot distance)
- * 4. API Processing → Send command to backend
- * 5. Text-to-Speech → Voice response feedback (0.9x rate for TV clarity)
- * 6. Resume Listening → Return to idle or wake word detection
+ * 3. Olorin Orchestrator → Unified intent routing
+ * 4. Text-to-Speech → Voice response feedback (0.9x rate for TV clarity)
+ * 5. Resume Listening → Return to idle or wake word detection
  *
  * TV-OPTIMIZED VOICE FLOW:
  * - Longer timeouts (45s vs 30s mobile) for 10-foot speaking distance
  * - Slower TTS rate (0.9x vs 1.0x) for TV clarity
  * - Focus-based visual feedback during listening
  * - Multi-window voice commands ("switch to window 2")
+ *
+ * UNIFIED VOICE SYSTEM:
+ * Now integrates with OlorinVoiceOrchestrator for unified intent routing
  */
 
 import { speechService } from './speech';
@@ -31,6 +33,8 @@ import { wakeWordService } from './wakeWord';
 import { ttsService } from './tts';
 import { backendProxyService } from './backendProxyService';
 import { config } from '../config/appConfig';
+import { createVoiceOrchestrator, OlorinVoiceOrchestrator } from '@bayit/shared/services/olorinVoiceOrchestrator';
+import { useSupportStore } from '@bayit/shared/stores/supportStore';
 
 /**
  * Voice command pipeline stages
@@ -92,6 +96,7 @@ class VoiceManager {
   private sessionMetrics: VoiceSessionMetrics | null = null;
   private sessionStartTime: number = 0;
   private isWakeWordListening: boolean = false;
+  private orchestrator: OlorinVoiceOrchestrator | null = null;
 
   constructor(voiceConfig: VoiceManagerConfig = {}) {
     // tvOS-specific defaults from appConfig
@@ -108,6 +113,31 @@ class VoiceManager {
     };
 
     this._setupEventListeners();
+    this._initializeOrchestrator();
+  }
+
+  /**
+   * Initialize Olorin Voice Orchestrator (tvOS)
+   */
+  private async _initializeOrchestrator(): Promise<void> {
+    try {
+      const store = useSupportStore.getState();
+
+      this.orchestrator = createVoiceOrchestrator({
+        platform: 'tvos',
+        language: this.config.speechLanguage,
+        wakeWordEnabled: this.config.enableBackgroundListening,
+        streamingMode: false,
+        initialAvatarMode: store.avatarVisibilityMode,
+        autoExpandOnWakeWord: true,
+        collapseDelay: 10000,
+      });
+
+      await this.orchestrator.initialize();
+      console.log('[VoiceManager] Orchestrator initialized (tvOS)');
+    } catch (error) {
+      console.error('[VoiceManager] Failed to initialize orchestrator:', error);
+    }
   }
 
   /**
@@ -204,6 +234,15 @@ class VoiceManager {
     try {
       console.log('[VoiceManager] Starting speech recognition via Menu button (TV primary method)');
 
+      // Notify orchestrator of manual activation
+      if (this.orchestrator) {
+        await this.orchestrator.startListening('manual');
+      }
+
+      // Notify supportStore to open voice modal
+      const store = useSupportStore.getState();
+      store.openVoiceModal();
+
       // Stop background wake word listening first
       if (this.isWakeWordListening) {
         await this.stopBackgroundListening();
@@ -277,6 +316,15 @@ class VoiceManager {
       // Stop background wake word listening
       await this.stopBackgroundListening();
 
+      // Notify orchestrator of wake word detection
+      if (this.orchestrator) {
+        await this.orchestrator.startListening('wake-word');
+      }
+
+      // Notify supportStore to trigger UI auto-expand
+      const store = useSupportStore.getState();
+      store.onWakeWordDetected();
+
       // Start metrics tracking
       this._startSession('wake-word');
       if (this.config.enableMetrics && this.sessionMetrics) {
@@ -341,14 +389,31 @@ class VoiceManager {
       // Start processing
       this._setStage('processing');
 
-      // Send to backend proxy for processing
+      // Send to orchestrator or backend proxy for processing
       const processingStartTime = Date.now();
       try {
-        const response = await backendProxyService.processVoiceCommand({
-          transcription: result.transcription,
-          confidence: result.confidence,
-          language: this.config.speechLanguage,
-        });
+        let response: { responseText?: string; intent?: string; confidence?: number };
+
+        if (this.orchestrator) {
+          // Use unified orchestrator for intent routing
+          const orchestratorResponse = await this.orchestrator.processTranscript(
+            result.transcription,
+            undefined // conversation ID handled internally
+          );
+
+          response = {
+            responseText: orchestratorResponse.spokenResponse,
+            intent: orchestratorResponse.intent,
+            confidence: orchestratorResponse.confidence,
+          };
+        } else {
+          // Fallback to legacy backend proxy
+          response = await backendProxyService.processVoiceCommand({
+            transcription: result.transcription,
+            confidence: result.confidence,
+            language: this.config.speechLanguage,
+          });
+        }
 
         if (this.sessionMetrics) {
           this.sessionMetrics.processingTime = Date.now() - processingStartTime;

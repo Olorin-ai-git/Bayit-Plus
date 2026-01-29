@@ -260,15 +260,12 @@ class RealtimeDubbingService:
         for warning in quality.warnings:
             record_audio_quality_warning(warning_type="quality")
 
-        # P3-5: Adaptive VAD - calibrate then filter silence
-        if not self._adaptive_vad.is_calibrated:
-            self._adaptive_vad.process_calibration_chunk(audio_data)
-            # During calibration, still forward all audio to STT
-        else:
-            speech_detected = self._adaptive_vad.is_speech(audio_data)
-            if speech_detected is False:
-                # Silence detected - skip STT to reduce costs
-                return
+        # P3-5: Adaptive VAD - unified process_chunk (Code Review #5)
+        vad_result = self._adaptive_vad.process_chunk(audio_data)
+        if vad_result is False:
+            # Silence detected post-calibration - skip STT to reduce costs
+            return
+        # vad_result is None (calibrating) or True (speech) - forward audio
 
         # P2-3: Update queue depth gauge
         record_queue_depth(self._output_queue.qsize())
