@@ -24,8 +24,78 @@ This project enforces strict code standards documented in individual CLAUDE.md f
 5. **NO Fallback/Default Values**: If real data doesn't exist, reject the task—**DO NOT USE FALLBACKS**
 6. **Configuration-Driven Design**: All variable values injected, never literals
 7. **MANDATORY Olorin-Core Shared Packages**: ALL subplatforms MUST use authorized packages from `olorin-core/packages/` (i18n, shared utilities, etc.). **NO custom implementations** of functionality provided by shared packages.
+8. **NO Direct .env Edits**: **Google Cloud Secret Manager is the SINGLE SOURCE OF TRUTH** for all secrets and configuration. **NEVER edit `.env` or `.env.example` files directly.** See [Secrets Management](olorin-media/bayit-plus/docs/deployment/SECRETS_MANAGEMENT.md) for workflow.
 
 See individual service CLAUDE.md files for language-specific implementation details.
+
+---
+
+## 🔐 SECRETS MANAGEMENT - GOOGLE CLOUD SINGLE SOURCE OF TRUTH
+
+**CRITICAL REQUIREMENT - ZERO TOLERANCE**
+
+All environment variables and secrets are managed through **Google Cloud Secret Manager**.
+
+### Mandatory Workflow
+
+```
+1. Update Google Cloud Secrets (single source of truth)
+   ↓
+2. Regenerate .env files from GCloud secrets
+   ↓
+3. Restart services to pick up new configuration
+```
+
+### ❌ FORBIDDEN
+
+```bash
+# NEVER do this
+echo "NEW_SECRET=value" >> backend/.env
+echo "REACT_APP_CONFIG=value" >> web/.env
+vim backend/.env.example  # Never edit directly
+nano .env  # CRITICAL VIOLATION
+```
+
+### ✅ CORRECT
+
+```bash
+# 1. Add/update secret in Google Cloud
+gcloud secrets create NEW_SECRET --data-file=- <<< "value"
+
+# 2. Regenerate .env from GCloud
+./scripts/sync-gcloud-secrets.sh
+
+# 3. Restart services
+kubectl rollout restart deployment/bayit-plus-backend
+```
+
+### When Configuration Changes Are Needed
+
+**DO NOT edit .env files. Instead:**
+
+1. Create a secrets management documentation file (`docs/deployment/GCLOUD_SECRETS_[FEATURE_NAME].md`)
+2. List all new secrets with:
+   - Secret name
+   - Description
+   - Type (string, integer, boolean, float)
+   - Default value (safe defaults only)
+   - GCloud commands to add the secret
+   - Grant access commands for service accounts
+3. Provide regeneration and deployment instructions
+4. Reference the global [Secrets Management Guide](olorin-media/bayit-plus/docs/deployment/SECRETS_MANAGEMENT.md)
+
+### Enforcement
+
+- **Any direct `.env` file edits = CRITICAL VIOLATION**
+- **Claude MUST REFUSE and provide GCloud secrets documentation instead**
+- **Code review will REJECT any commits with direct `.env` edits**
+
+### Documentation
+
+- [Secrets Management Guide](olorin-media/bayit-plus/docs/deployment/SECRETS_MANAGEMENT.md) - Complete workflow and best practices
+- [Payment Flow Secrets](olorin-media/bayit-plus/docs/deployment/GCLOUD_SECRETS_PAYMENT_FLOW.md) - Example secrets documentation
+
+---
 
 ## CRITICAL: Before ANY Code is Written
 
