@@ -35,7 +35,6 @@ import {
   MorningRitualScreen,
   ProfileSelectionScreen,
   ChildrenScreen,
-  FlowsScreen,
   JudaismScreen,
   EPGScreen,
   MovieDetailScreen,
@@ -46,7 +45,7 @@ import {
   SupportScreen,
   SubscribeScreen,
 } from '@bayit/shared-screens';
-import { YoungstersScreen } from './src/screens';
+import { YoungstersScreen, FlowsScreen } from './src/screens';
 import { useAuthStore, useChatbotStore } from '@bayit/shared-stores';
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';

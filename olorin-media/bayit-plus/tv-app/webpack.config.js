@@ -35,7 +35,7 @@ const babelLoaderConfiguration = {
 // Node modules that need transpilation (only react-native, not react-navigation which is already ESM)
 const nodeModulesConfiguration = {
   test: /\.(js|jsx|ts|tsx)$/,
-  include: /node_modules\/(react-native-web|react-native-safe-area-context|react-native-screens|@react-native|@expo|expo-linear-gradient|expo-font|expo-asset|expo-modules-core)/,
+  include: /node_modules\/(react-native-web|react-native-safe-area-context|react-native-screens|react-native-reanimated|@react-native|@expo|expo-linear-gradient|expo-font|expo-asset|expo-modules-core)/,
   exclude: /node_modules\/@react-navigation/,
   use: {
     loader: 'babel-loader',

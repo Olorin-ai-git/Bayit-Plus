@@ -18,3 +18,4 @@ export { WatchlistScreen } from './WatchlistScreen';
 export { NotFoundScreen } from './NotFoundScreen';
 export { JudaismScreen } from './judaism';
 export { YoungstersScreen } from './YoungstersScreen';
+export { FlowsScreen } from './FlowsScreen';
