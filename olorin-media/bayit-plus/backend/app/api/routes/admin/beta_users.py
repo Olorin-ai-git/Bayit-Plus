@@ -10,8 +10,9 @@ Authentication:
 
 from typing import List, Optional
 from datetime import datetime, timedelta, timezone
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from pydantic import BaseModel, Field, field_validator
+import re
 from pymongo import ReturnDocument
 
 from app.core.security import get_current_admin_user
@@ -24,6 +25,8 @@ from app.services.beta.email_service import EmailVerificationService
 from app.core.database import get_database
 from app.core.config import get_settings
 from app.core.rate_limiter import limiter
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from fastapi.responses import Response
 
 
 # Pydantic response models
@@ -70,9 +73,40 @@ class CreditTransaction(BaseModel):
 
 class CreditAdjustmentRequest(BaseModel):
     """Request to manually adjust user credits."""
-    amount: int = Field(..., description="Credits to add (positive) or remove (negative)")
-    reason: str = Field(..., min_length=10, max_length=500, description="Reason for adjustment")
-    notify_user: bool = Field(default=False, description="Send email notification to user")
+    amount: int = Field(
+        ...,
+        ge=-500,  # Minimum: -500 (remove up to 500 credits)
+        le=500,   # Maximum: +500 (add up to 500 credits)
+        description="Credits to add (positive) or remove (negative), bounded to ±500"
+    )
+    reason: str = Field(
+        ...,
+        min_length=10,
+        max_length=500,
+        description="Detailed reason for adjustment (10-500 characters)"
+    )
+    notify_user: bool = Field(
+        default=False,
+        description="Send email notification to user about adjustment"
+    )
+
+    @field_validator('amount')
+    @classmethod
+    def validate_adjustment_bounds(cls, v):
+        """Validate adjustment amount is within safe bounds."""
+        if abs(v) > 500:
+            raise ValueError("Individual credit adjustment cannot exceed ±500 credits")
+        if v == 0:
+            raise ValueError("Adjustment amount cannot be zero")
+        return v
+
+    @field_validator('reason')
+    @classmethod
+    def validate_reason_content(cls, v):
+        """Ensure reason contains meaningful text, not just repeated characters."""
+        if not re.search(r'[a-zA-Z]{5,}', v):
+            raise ValueError("Reason must contain meaningful text, not just repeated characters")
+        return v
 
 
 class BetaAnalytics(BaseModel):
@@ -97,6 +131,7 @@ router = APIRouter(
 @router.get("/users", response_model=List[BetaUserSummary])
 @limiter.limit("30/minute")
 async def list_beta_users(
+    request: Request,
     status: Optional[str] = Query(None, description="Filter by status: active, pending_verification, inactive"),
     min_credits: Optional[int] = Query(None, description="Filter by minimum credits remaining"),
     max_credits: Optional[int] = Query(None, description="Filter by maximum credits remaining"),
@@ -149,6 +184,7 @@ async def list_beta_users(
 @router.get("/users/{user_id}", response_model=BetaUserDetail)
 @limiter.limit("60/minute")
 async def get_beta_user(
+    request: Request,
     user_id: str,
     current_admin: User = Depends(get_current_admin_user),
 ):
@@ -191,7 +227,9 @@ async def get_beta_user(
 
 
 @router.get("/users/{user_id}/credits", response_model=List[CreditTransaction])
+@limiter.limit("60/minute")
 async def get_user_credit_history(
+    request: Request,
     user_id: str,
     limit: int = Query(50, ge=1, le=200),
     current_admin: User = Depends(get_current_admin_user),
@@ -228,7 +266,9 @@ async def get_user_credit_history(
 
 
 @router.post("/users/{user_id}/credits/adjust")
+@limiter.limit("10/minute")  # CRITICAL: Prevent credit adjustment abuse
 async def adjust_user_credits(
+    request: Request,
     user_id: str,
     adjustment: CreditAdjustmentRequest,
     current_admin: User = Depends(get_current_admin_user),
@@ -342,7 +382,9 @@ async def adjust_user_credits(
 
 
 @router.post("/users/{user_id}/deactivate")
+@limiter.limit("5/minute")  # Prevent bulk deactivation abuse
 async def deactivate_beta_user(
+    request: Request,
     user_id: str,
     reason: str = Query(..., min_length=10, max_length=500),
     current_admin: User = Depends(get_current_admin_user),
@@ -374,7 +416,9 @@ async def deactivate_beta_user(
 
 
 @router.post("/users/{user_id}/reactivate")
+@limiter.limit("5/minute")  # Prevent bulk reactivation abuse
 async def reactivate_beta_user(
+    request: Request,
     user_id: str,
     current_admin: User = Depends(get_current_admin_user),
 ):
@@ -404,7 +448,9 @@ async def reactivate_beta_user(
 
 
 @router.get("/analytics", response_model=BetaAnalytics)
+@limiter.limit("10/minute")  # Analytics queries can be expensive
 async def get_beta_analytics(
+    request: Request,
     current_admin: User = Depends(get_current_admin_user),
     db = Depends(get_database),
 ):
@@ -484,4 +530,33 @@ async def get_beta_analytics(
         average_credits_per_user=avg_per_user,
         top_features=top_features,
         enrollment_trend=enrollment_trend,
+    )
+
+
+@router.get("/metrics")
+@limiter.limit("30/minute")  # Prometheus scraping endpoint
+async def prometheus_metrics(
+    request: Request,
+    current_admin: User = Depends(get_current_admin_user),
+):
+    """
+    Expose Prometheus metrics for Beta 500 program monitoring.
+
+    This endpoint provides real-time metrics in Prometheus format for:
+    - User counts (active, verified, unverified)
+    - Credit usage (allocated, used, remaining)
+    - Session metrics (active sessions, duration, timeouts)
+    - API performance (request counts, latency, errors)
+    - Worker metrics (runs, duration, errors)
+    - Email metrics (sent, failed, completed verifications)
+
+    **Authentication**: Requires admin role
+    **Rate Limit**: 30 requests/minute (Prometheus scraping)
+
+    Returns:
+        Response: Prometheus metrics in text format
+    """
+    return Response(
+        generate_latest(),
+        media_type=CONTENT_TYPE_LATEST
     )

@@ -166,8 +166,8 @@ class LiveChannelMonitor:
                     f"Channel {channel.name} health: {health['status']}",
                     extra={
                         "channel_id": str(channel.id),
-                        "status": health["status"],
-                        "message": health["message"]
+                        "health_status": health["status"],
+                        "health_message": health["message"]
                     }
                 )
 
@@ -223,6 +223,9 @@ class LiveChannelMonitor:
         logger.info(
             f"Starting live channel monitor (interval: {self.check_interval_seconds}s)"
         )
+
+        # Wait for server initialization (database, Beanie ODM)
+        await asyncio.sleep(30)
 
         while True:
             try:

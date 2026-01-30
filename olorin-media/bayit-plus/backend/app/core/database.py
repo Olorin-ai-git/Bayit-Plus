@@ -94,6 +94,9 @@ from app.models.beta_credit_transaction import BetaCreditTransaction
 from app.models.beta_session import BetaSession
 # Email tracking models
 from olorin_email.tracking.models import EmailEvent
+# Channel chat models
+from app.models.channel_chat import (ChannelChatMessage, ChatTranslationCacheEntry,
+                                     ChatReaction, ModerationAuditLog)
 
 
 class Database:
@@ -270,36 +273,39 @@ async def connect_to_mongo():
         BetaSession,
         # Email tracking models
         EmailEvent,
+        # Channel chat models
+        ChannelChatMessage,
+        ChatTranslationCacheEntry,
+        ChatReaction,
+        ModerationAuditLog,
     ]
 
-    # Conditionally add Olorin models based on database separation setting
-    # When Phase 2 (separate database) is enabled, Olorin models are managed separately
-    if not settings.olorin.database.use_separate_database:
-        # Phase 1: Olorin models in main database
-        document_models.extend(
-            [
-                IntegrationPartner,
-                UsageRecord,
-                DubbingSession,
-                WebhookDelivery,
-                ContentEmbedding,
-                RecapSession,
-                CulturalReference,
-            ]
-        )
-        print("Olorin models included in main database (Phase 1)")
-    else:
-        # Phase 2: Olorin models in separate database
-        print("Olorin models excluded from main database (Phase 2 - separate database)")
+    # Always include Olorin models in main init_beanie call.
+    # In Beanie 2.x, calling init_beanie() a second time resets the internal
+    # document registry, un-initializing all previously registered models.
+    # Olorin models must be initialized here regardless of database separation setting.
+    document_models.extend(
+        [
+            IntegrationPartner,
+            UsageRecord,
+            DubbingSession,
+            WebhookDelivery,
+            ContentEmbedding,
+            RecapSession,
+            CulturalReference,
+        ]
+    )
 
     # Initialize Beanie with document models using centralized database
-    # Note: allow_index_dropping disabled to prevent errors on missing indexes
-    # Use dedicated migration scripts (rebuild_all_indexes.py) for index management
+    # skip_indexes=True prevents init_beanie from failing on index conflicts
+    # (e.g., existing non-unique index vs model-defined unique index).
+    # Use dedicated migration scripts (rebuild_all_indexes.py) for index management.
     database = get_mongodb_database()
     await init_beanie(
         database=database,
         document_models=document_models,
         allow_index_dropping=False,
+        skip_indexes=True,
     )
     print(f"Connected to MongoDB via olorin-shared: {database.name}")
 

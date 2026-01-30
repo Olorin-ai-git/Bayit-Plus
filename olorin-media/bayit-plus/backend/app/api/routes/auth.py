@@ -190,123 +190,135 @@ async def register(request: Request, user_data: UserCreate):
 async def login(request: Request, credentials: UserLogin):
     """Login with email and password - with timing attack protection and account lockout."""
     import logging
+    import asyncio
 
     logger = logging.getLogger(__name__)
 
-    # Always fetch user first
-    user = await User.find_one(User.email == credentials.email)
+    # Enforce minimum response time to prevent timing attacks
+    start_time = asyncio.get_event_loop().time()
 
-    # ✅ Check if account is locked (brute force protection)
-    if user and user.account_locked_until:
-        if user.account_locked_until > datetime.now(timezone.utc):
-            # Account is still locked
-            lockout_remaining = (
-                user.account_locked_until - datetime.now(timezone.utc)
-            ).seconds // 60
-            logger.warning(
-                f"Login attempt for locked account: {credentials.email} from IP: {request.client.host}"
-            )
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Account temporarily locked due to too many failed login attempts. Please try again in {lockout_remaining} minutes.",
-            )
-        else:
-            # Lockout expired, reset counters
-            user.account_locked_until = None
-            user.failed_login_attempts = 0
-            await user.save()
+    try:
+        # Always fetch user first
+        user = await User.find_one(User.email == credentials.email)
 
-    # Constant-time password verification
-    # Always verify password even if user doesn't exist to prevent timing attacks
-    if user and user.hashed_password:
-        password_valid = verify_password(credentials.password, user.hashed_password)
-    else:
-        # Use fake hash to maintain constant time
-        # This is a real bcrypt hash of "dummy_password"
-        fake_hash = "$2b$12$KIXVZJGvCR67Nh8LKTtNGujsS1qPbT85N3jnF8XyZ8JlNHkVVQDNC"
-        verify_password(credentials.password, fake_hash)
-        password_valid = False
-
-    # Check both conditions together
-    if not user or not password_valid:
-        # ✅ Track failed login attempts for account lockout
-        if user:
-            user.failed_login_attempts += 1
-            user.last_failed_login = datetime.now(timezone.utc)
-
-            # Lock account after 5 failed attempts for 30 minutes
-            if user.failed_login_attempts >= 5:
-                user.account_locked_until = datetime.now(timezone.utc) + __import__(
-                    "datetime"
-                ).timedelta(minutes=30)
-                await user.save()
+        # Check if account is locked (brute force protection)
+        if user and user.account_locked_until:
+            if user.account_locked_until > datetime.now(timezone.utc):
+                # Account is still locked
+                lockout_remaining = (
+                    user.account_locked_until - datetime.now(timezone.utc)
+                ).seconds // 60
                 logger.warning(
-                    f"Account locked due to failed attempts: {credentials.email} from IP: {request.client.host}"
+                    f"Login attempt for locked account: {credentials.email} from IP: {request.client.host}"
                 )
-                # ✅ Audit log: account locked
-                await audit_logger.log_account_locked(user, request)
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Account temporarily locked due to too many failed login attempts. Please try again in 30 minutes or reset your password.",
+                    detail=f"Account temporarily locked due to too many failed login attempts. Please try again in {lockout_remaining} minutes.",
+                )
+            else:
+                # Lockout expired, reset counters
+                user.account_locked_until = None
+                user.failed_login_attempts = 0
+                await user.save()
+
+        # Constant-time password verification
+        # Always verify password even if user doesn't exist to prevent timing attacks
+        if user and user.hashed_password:
+            password_valid = verify_password(credentials.password, user.hashed_password)
+        else:
+            # Use fake hash to maintain constant time
+            # This is a real bcrypt hash of "dummy_password"
+            fake_hash = "$2b$12$KIXVZJGvCR67Nh8LKTtNGujsS1qPbT85N3jnF8XyZ8JlNHkVVQDNC"
+            verify_password(credentials.password, fake_hash)
+            password_valid = False
+
+        # Check both conditions together
+        if not user or not password_valid:
+            # Track failed login attempts for account lockout
+            if user:
+                user.failed_login_attempts += 1
+                user.last_failed_login = datetime.now(timezone.utc)
+
+                # Lock account after 5 failed attempts for 30 minutes
+                if user.failed_login_attempts >= 5:
+                    user.account_locked_until = datetime.now(timezone.utc) + __import__(
+                        "datetime"
+                    ).timedelta(minutes=30)
+                    await user.save()
+                    logger.warning(
+                        f"Account locked due to failed attempts: {credentials.email} from IP: {request.client.host}"
+                    )
+                    # Audit log: account locked
+                    await audit_logger.log_account_locked(user, request)
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="Account temporarily locked due to too many failed login attempts. Please try again in 30 minutes or reset your password.",
+                    )
+
+                await user.save()
+                logger.warning(
+                    f"Failed login attempt ({user.failed_login_attempts}/5): {credentials.email} from IP: {request.client.host}"
                 )
 
-            await user.save()
-            logger.warning(
-                f"Failed login attempt ({user.failed_login_attempts}/5): {credentials.email} from IP: {request.client.host}"
+            # Audit log: failed login
+            await audit_logger.log_login_failure(
+                credentials.email, request, "invalid_credentials"
             )
 
-        # ✅ Audit log: failed login
-        await audit_logger.log_login_failure(
-            credentials.email, request, "invalid_credentials"
+            # Add small random delay to further prevent timing attacks
+            await asyncio.sleep(0.1 + random.uniform(0, 0.2))
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        # Successful login - reset failed attempts
+        if user.failed_login_attempts > 0:
+            user.failed_login_attempts = 0
+            user.last_failed_login = None
+
+        # Check if user is active
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Account is inactive. Please contact support.",
+            )
+
+        # Enforce email verification for non-admin users
+        if not user.email_verified and not user.is_admin_role():
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Please verify your email address before logging in. Check your inbox for the verification link.",
+            )
+
+        # Update last login
+        user.last_login = datetime.now(timezone.utc)
+        await user.save()
+
+        # Audit log: successful login
+        await audit_logger.log_login_success(user, request, "email_password")
+
+        # Create access and refresh tokens
+        access_token = create_access_token(data={"sub": str(user.id)})
+        refresh_token = create_refresh_token(
+            user_id=str(user.id),
+            secret_key=settings.SECRET_KEY,
+            algorithm=settings.ALGORITHM,
         )
 
-        # Add small random delay to further prevent timing attacks
-        await asyncio.sleep(0.1 + random.uniform(0, 0.2))
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            user=user.to_response(),
         )
 
-    # ✅ Successful login - reset failed attempts
-    if user.failed_login_attempts > 0:
-        user.failed_login_attempts = 0
-        user.last_failed_login = None
-
-    # Check if user is active
-    if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Account is inactive. Please contact support.",
-        )
-
-    # Enforce email verification for non-admin users
-    if not user.email_verified and not user.is_admin_role():
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Please verify your email address before logging in. Check your inbox for the verification link.",
-        )
-
-    # Update last login
-    user.last_login = datetime.now(timezone.utc)
-    await user.save()
-
-    # ✅ Audit log: successful login
-    await audit_logger.log_login_success(user, request, "email_password")
-
-    # Create access and refresh tokens
-    access_token = create_access_token(data={"sub": str(user.id)})
-    refresh_token = create_refresh_token(
-        user_id=str(user.id),
-        secret_key=settings.SECRET_KEY,
-        algorithm=settings.ALGORITHM,
-    )
-
-    return TokenResponse(
-        access_token=access_token,
-        refresh_token=refresh_token,
-        user=user.to_response(),
-    )
+    finally:
+        # ALWAYS enforce minimum response time (prevents timing attacks)
+        elapsed = asyncio.get_event_loop().time() - start_time
+        min_response_time = 0.5  # 500ms minimum
+        if elapsed < min_response_time:
+            await asyncio.sleep(min_response_time - elapsed)
 
 
 @router.get("/me", response_model=UserResponse)

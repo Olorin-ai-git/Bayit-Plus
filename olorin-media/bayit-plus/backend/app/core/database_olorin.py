@@ -8,15 +8,9 @@ Maintains access to Bayit+ Content model for metadata operations.
 import logging
 from typing import Optional
 
-from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.core.config import settings
-from app.models.content_embedding import ContentEmbedding, RecapSession
-from app.models.cultural_reference import CulturalReference
-# Olorin.ai Platform models
-from app.models.integration_partner import (DubbingSession, IntegrationPartner,
-                                            UsageRecord, WebhookDelivery)
 
 logger = logging.getLogger(__name__)
 
@@ -57,19 +51,12 @@ async def connect_to_olorin_mongo() -> None:
         serverSelectionTimeoutMS=10000,  # Server selection timeout
     )
 
-    # Initialize Beanie with Olorin models only
-    await init_beanie(
-        database=olorin_db.client[settings.olorin.database.mongodb_db_name],
-        document_models=[
-            IntegrationPartner,
-            UsageRecord,
-            DubbingSession,
-            WebhookDelivery,
-            ContentEmbedding,
-            RecapSession,
-            CulturalReference,
-        ],
-    )
+    # NOTE: Do NOT call init_beanie() here. In Beanie 2.x, a second init_beanie
+    # call resets the internal document registry, un-initializing all models from
+    # the main database. Instead, Olorin models are always initialized in the main
+    # init_beanie call (database.py). When use_separate_database is True, the Olorin
+    # models still use the main database collections; the separate database reference
+    # is available via get_olorin_database() for raw Motor queries if needed.
 
     logger.info(
         f"Connected to Olorin MongoDB: {settings.olorin.database.mongodb_db_name}"

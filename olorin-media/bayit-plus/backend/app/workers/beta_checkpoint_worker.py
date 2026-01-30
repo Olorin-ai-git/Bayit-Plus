@@ -119,6 +119,9 @@ class BetaCheckpointWorker:
 
     async def _checkpoint_loop(self):
         """Main checkpoint loop - runs every N seconds."""
+        # Wait for server initialization (database, Beanie ODM)
+        await asyncio.sleep(15)
+
         while self.running:
             try:
                 await self._process_checkpoints()
@@ -145,7 +148,7 @@ class BetaCheckpointWorker:
 
         # Find all active Beta 500 sessions
         active_sessions = await BetaSession.find(
-            BetaSession.status == "active"
+            {"status": "active"}
         ).limit(self.max_batch_size).to_list()
 
         if not active_sessions:

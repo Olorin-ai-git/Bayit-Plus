@@ -43,6 +43,20 @@ _channel_monitor = None
 # Global transcript feeder instance
 _transcript_feeder = None
 
+# Database readiness flag - set by main.py after successful init_beanie()
+_database_ready = False
+
+
+def set_database_ready(ready: bool = True) -> None:
+    """Mark database as initialized (called from main.py after connect_to_mongo)."""
+    global _database_ready
+    _database_ready = ready
+
+
+def is_database_ready() -> bool:
+    """Check if database was initialized successfully."""
+    return _database_ready
+
 
 async def _scan_monitored_folders_task() -> None:
     """Periodically scan monitored folders for new content."""
@@ -232,6 +246,13 @@ async def _cleanup_stale_playback_sessions_task() -> None:
 def start_background_tasks() -> None:
     """Start all background tasks."""
     global _running_tasks
+
+    if not _database_ready:
+        logger.warning(
+            "Database not initialized - skipping DB-dependent background tasks "
+            "(server running in DEGRADED mode)"
+        )
+        return
 
     # Folder monitoring (only when running locally, not on Cloud Run)
     if settings.UPLOAD_MONITOR_ENABLED and _is_running_locally():
