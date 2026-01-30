@@ -14,6 +14,8 @@ export type {
   AIRecommendation,
   AIRecommendationsResponse,
 } from './AIRecommendationsScreen';
+export { InsufficientCreditsModal } from './InsufficientCreditsModal';
+export type { InsufficientCreditsModalProps } from './InsufficientCreditsModal';
 
 // Re-export shared components (already React Native compatible)
 export { BetaEnrollmentModal } from '../../../../shared/components/beta/BetaEnrollmentModal';
