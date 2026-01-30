@@ -2,25 +2,22 @@
  * Voice Haptic Feedback
  * Provides tactile feedback for voice interactions
  *
- * INSTALLATION REQUIRED:
- * npm install expo-haptics --save
- * or
- * yarn add expo-haptics
+ * On native (iOS/Android): dynamically loads expo-haptics for real feedback.
+ * On web: the dynamic import is skipped via webpackIgnore, and the catch
+ * block disables haptics permanently so all calls gracefully no-op.
  */
 
 import { Platform } from 'react-native';
 
-// Haptics are only available on native platforms (iOS/Android).
-// On web, all exported functions gracefully no-op.
+// Lazily loaded expo-haptics module. `false` means load was attempted and failed.
 let Haptics: any = null;
 
-function getHaptics(): any {
+async function getHaptics(): Promise<any> {
   if (Haptics !== null || Platform.OS === 'web') return Haptics;
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
-    Haptics = require('expo-haptics');
+    Haptics = await import(/* webpackIgnore: true */ 'expo-haptics');
   } catch {
-    // expo-haptics not installed - disable haptics permanently
+    // expo-haptics not available - disable haptics permanently
     Haptics = false;
   }
   return Haptics;
@@ -31,7 +28,7 @@ function getHaptics(): any {
  * Light impact when user activates voice input
  */
 export async function voiceActivationFeedback(): Promise<void> {
-  const h = getHaptics();
+  const h = await getHaptics();
   if (!h) return;
 
   try {
@@ -46,7 +43,7 @@ export async function voiceActivationFeedback(): Promise<void> {
  * Medium impact for confirmation
  */
 export async function voiceSuccessFeedback(): Promise<void> {
-  const h = getHaptics();
+  const h = await getHaptics();
   if (!h) return;
 
   try {
@@ -61,7 +58,7 @@ export async function voiceSuccessFeedback(): Promise<void> {
  * Heavy impact for error notification
  */
 export async function voiceErrorFeedback(): Promise<void> {
-  const h = getHaptics();
+  const h = await getHaptics();
   if (!h) return;
 
   try {
@@ -76,7 +73,7 @@ export async function voiceErrorFeedback(): Promise<void> {
  * Selection feedback for UI mode changes
  */
 export async function voiceModeChangeFeedback(): Promise<void> {
-  const h = getHaptics();
+  const h = await getHaptics();
   if (!h) return;
 
   try {
@@ -91,7 +88,7 @@ export async function voiceModeChangeFeedback(): Promise<void> {
  * Warning feedback when listening starts
  */
 export async function voiceListeningFeedback(): Promise<void> {
-  const h = getHaptics();
+  const h = await getHaptics();
   if (!h) return;
 
   try {
