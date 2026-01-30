@@ -99,6 +99,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
   const {
     content,
     streamUrl: initialStreamUrl,
+    streamType,
     related,
     loading,
     availableSubtitleLanguages,
@@ -106,7 +107,11 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
     directUrl,
   } = contentLoaderResult;
 
-  const [streamUrl, setStreamUrl] = React.useState<string | null>(initialStreamUrl);
+  // Local streamUrl state allows episode player to override the URL.
+  // Use initialStreamUrl as fallback to avoid race condition where
+  // the useEffect hasn't synced yet but render logic needs the URL.
+  const [localStreamUrl, setStreamUrl] = React.useState<string | null>(initialStreamUrl);
+  const streamUrl = localStreamUrl || initialStreamUrl;
 
   React.useEffect(() => {
     setStreamUrl(initialStreamUrl);
@@ -191,9 +196,10 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
   const isEvent = content.type === 'event' || content.content_format === 'event';
   const hasVideo = Boolean(content.video_url);
   const isWebContent = (isArticle || isEvent) && !hasVideo; // Articles/events without video
+  const isEmbedStream = streamType === 'dailymotion' || streamType === 'youtube';
   const title = content.title || content.name || '';
-  const requiresAuth = !isWebContent && !hasVideo && !streamUrl && !user;
-  const hasStreamError = !loading && !streamUrl && user && !isWebContent && !hasVideo;
+  const requiresAuth = !isWebContent && !hasVideo && !streamUrl && !isEmbedStream && !user;
+  const hasStreamError = !loading && !streamUrl && user && !isWebContent && !hasVideo && !isEmbedStream;
 
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
@@ -243,6 +249,21 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
               }}
               title={title}
               sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+            />
+          </View>
+        ) : isEmbedStream && streamUrl ? (
+          <View style={styles.iframeContainer}>
+            <iframe
+              src={streamUrl}
+              style={{
+                width: '100%',
+                height: '100%',
+                border: 'none',
+                borderRadius: '12px',
+              }}
+              title={title}
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
             />
           </View>
         ) : isAudio ? (

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
@@ -311,14 +311,14 @@ export default function HomePage() {
         {/* Israeli Clock - Left side */}
         <CultureClock
           cultureId="israeli"
-          variant="medium"
+          variant="large"
           style={styles.clockLeft}
         />
 
         {/* USA Clock - Right side */}
         <CultureClock
           cultureId="usa"
-          variant="medium"
+          variant="large"
           style={styles.clockRight}
         />
       </View>
@@ -398,12 +398,11 @@ export default function HomePage() {
                 isRTL={isRTL}
                 style={styles.liveCardWrapper}
               >
-                <Pressable onPress={() => navigate(`/live/${channel.id}`)}>
-                  <GlassCard
-                    title={channel.name}
-                    imageUrl={channel.thumbnail || channel.logo}
-                  />
-                </Pressable>
+                <GlassCard
+                  title={channel.name}
+                  imageUrl={channel.thumbnail || channel.logo}
+                  onPress={() => navigate(`/live/${channel.id}`)}
+                />
               </AnimatedCard>
             ))}
           </ScrollView>
@@ -492,24 +491,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
     paddingTop: spacing.lg,
   },
-  // Header Bar - Compact clocks
+  // Header Bar - Large clocks
   headerBar: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing.lg,
+    alignItems: 'flex-start',
+    gap: spacing.xl,
     paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
     paddingTop: spacing.sm,
-    paddingBottom: spacing.xs,
+    paddingBottom: spacing.md,
   },
   headerBarRTL: {
     flexDirection: 'row-reverse',
   },
   clockLeft: {
     alignItems: 'center',
+    flex: 1,
   },
   clockRight: {
     alignItems: 'center',
+    flex: 1,
   },
   // Carousel Section
   carouselSection: {

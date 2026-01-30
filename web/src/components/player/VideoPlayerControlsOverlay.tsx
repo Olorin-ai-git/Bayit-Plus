@@ -33,6 +33,9 @@ interface VideoPlayerControlsOverlayProps {
   renderDubbingControls: () => React.ReactNode
   renderRecordButton: () => React.ReactNode
   renderCastButton?: () => React.ReactNode
+  renderChannelChatButton?: () => React.ReactNode
+  renderLiveTriviaButton?: () => React.ReactNode
+  renderCatchUpButton?: () => React.ReactNode
   contentId?: string
 }
 
@@ -59,6 +62,9 @@ export default function VideoPlayerControlsOverlay({
   renderDubbingControls,
   renderRecordButton,
   renderCastButton,
+  renderChannelChatButton,
+  renderLiveTriviaButton,
+  renderCatchUpButton,
   contentId,
 }: VideoPlayerControlsOverlayProps) {
   const { t } = useTranslation()
@@ -138,6 +144,9 @@ export default function VideoPlayerControlsOverlay({
           renderDubbingControls={renderDubbingControls}
           renderRecordButton={renderRecordButton}
           renderCastButton={renderCastButton}
+          renderChannelChatButton={renderChannelChatButton}
+          renderLiveTriviaButton={renderLiveTriviaButton}
+          renderCatchUpButton={renderCatchUpButton}
         />
       </GlassView>
     </View>

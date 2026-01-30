@@ -6,6 +6,8 @@ import VideoPlayerOverlays from './VideoPlayerOverlays'
 import VideoPlayerPanels from './VideoPlayerPanels'
 import VideoPlayerControlsOverlay from './VideoPlayerControlsOverlay'
 import VideoPlayerWatchParty from './VideoPlayerWatchParty'
+import VideoPlayerCatchUp from './VideoPlayerCatchUp'
+import ChannelChatPanel from './chat/ChannelChatPanel'
 import { BufferedLiveDubbingPlayer } from '../BufferedLiveDubbingPlayer'
 import { StreamLimitExceededModal } from './StreamLimitExceededModal'
 import {
@@ -15,6 +17,9 @@ import {
   useWatchParty,
   useLiveDubbing,
   useTrivia,
+  useLiveTrivia,
+  useChannelChat,
+  useCatchUp,
   usePlayerPanels,
   usePlayerControlRenderers,
   useCastSession,
@@ -22,6 +27,7 @@ import {
 } from './hooks'
 import { castConfig } from '@/config/castConfig'
 import { useLiveFeatureQuota } from '@/hooks/useLiveFeatureQuota'
+import { useBetaUser } from '@/hooks/useBetaUser'
 import { VideoPlayerProps } from './types'
 
 export default function VideoPlayer({
@@ -177,6 +183,29 @@ export default function VideoPlayer({
     setShowSettings,
   } = usePlayerPanels()
 
+  // Check if user is Beta 500 user
+  const { isBetaUser } = useBetaUser(user?.id)
+
+  // Live trivia for live TV
+  const liveTrivia = useLiveTrivia({
+    channelId: isLive ? contentId : undefined,
+    language: i18n.language,
+    enabled: isLive && !!user,
+  })
+
+  // Channel chat for live TV
+  const channelChat = useChannelChat({
+    channelId: isLive ? contentId : undefined,
+    userId: user?.id,
+    enabled: isLive && !!user,
+  })
+
+  // Catchup summaries for live TV (Beta 500 only)
+  const catchUp = useCatchUp({
+    channelId: isLive ? contentId || '' : '',
+    isBetaUser: isBetaUser,
+  })
+
   const [isMobile, setIsMobile] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [recordingDuration, setRecordingDuration] = useState(0)
@@ -250,6 +279,9 @@ export default function VideoPlayer({
     renderDubbingControls,
     renderRecordButton,
     renderCastButton,
+    renderChannelChatButton,
+    renderLiveTriviaButton,
+    renderCatchUpButton,
   } = usePlayerControlRenderers({
     user,
     contentId,
@@ -278,6 +310,13 @@ export default function VideoPlayer({
     cast,
     setIsRecording,
     setRecordingDuration,
+    channelChat: isLive ? channelChat : undefined,
+    liveTrivia: isLive ? liveTrivia : undefined,
+    catchUp: isLive && isBetaUser ? {
+      showSummary: catchUp.showSummary,
+      toggleSummary: () => catchUp.showSummary ? catchUp.closeSummary() : catchUp.fetchSummary(),
+      canRequest: catchUp.isAvailable && catchUp.hasCredits && !catchUp.isLoading,
+    } : undefined,
     onShowUpgrade,
     onHoveredButtonChange: setHoveredButton,
   })
@@ -393,6 +432,9 @@ export default function VideoPlayer({
         renderLiveSubtitleControls={renderLiveSubtitleControls}
         renderDubbingControls={renderDubbingControls}
         renderRecordButton={renderRecordButton}
+        renderChannelChatButton={renderChannelChatButton}
+        renderLiveTriviaButton={renderLiveTriviaButton}
+        renderCatchUpButton={renderCatchUpButton}
       />
 
       <VideoPlayerWatchParty
@@ -417,6 +459,31 @@ export default function VideoPlayer({
         sendMessage={sendMessage}
         title={title}
       />
+
+      {/* Channel Live Chat for Live TV */}
+      {isLive && (
+        <ChannelChatPanel
+          channelId={contentId || ''}
+          isVisible={channelChat.showChat}
+          onClose={() => channelChat.toggleChat()}
+          messages={channelChat.messages}
+          onSendMessage={channelChat.sendMessage}
+          isConnected={channelChat.isConnected}
+          user={user}
+        />
+      )}
+
+      {/* Catch-Up Summary for Live TV (Beta 500 only) */}
+      {isLive && isBetaUser && (
+        <VideoPlayerCatchUp
+          channelId={contentId || ''}
+          isBetaUser={isBetaUser}
+          creditBalance={catchUp.balance}
+          creditCost={5}
+          programName={title}
+          autoDismissSeconds={30}
+        />
+      )}
 
       {streamLimitError && (
         <StreamLimitExceededModal

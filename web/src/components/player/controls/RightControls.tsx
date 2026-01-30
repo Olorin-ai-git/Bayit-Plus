@@ -36,6 +36,9 @@ interface RightControlsProps {
   renderLiveSubtitleControls?: () => React.ReactNode
   renderDubbingControls?: () => React.ReactNode
   renderRecordButton?: () => React.ReactNode
+  renderChannelChatButton?: () => React.ReactNode
+  renderLiveTriviaButton?: () => React.ReactNode
+  renderCatchUpButton?: () => React.ReactNode
 }
 
 export default function RightControls({
@@ -60,6 +63,9 @@ export default function RightControls({
   renderLiveSubtitleControls,
   renderDubbingControls,
   renderRecordButton,
+  renderChannelChatButton,
+  renderLiveTriviaButton,
+  renderCatchUpButton,
 }: RightControlsProps) {
   const { t } = useTranslation()
   const chaptersFocus = useTVFocus({ styleType: 'button' })
@@ -73,6 +79,9 @@ export default function RightControls({
     <View style={styles.rightControls}>
       {renderWatchPartyButton && renderWatchPartyButton()}
       {renderCastButton && renderCastButton()}
+      {renderChannelChatButton && renderChannelChatButton()}
+      {renderLiveTriviaButton && renderLiveTriviaButton()}
+      {renderCatchUpButton && renderCatchUpButton()}
 
       {/* Chapters */}
       {!isLive && hasChapters && onChaptersPanelToggle && (

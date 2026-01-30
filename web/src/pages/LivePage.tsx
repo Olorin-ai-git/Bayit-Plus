@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDirection } from '@/hooks/useDirection';
 import { liveService } from '@/services/api';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
@@ -51,6 +51,7 @@ export default function LivePage() {
   const nextLabel = t('live.next');
   const liveLabel = t('common.live');
 
+  const navigate = useNavigate();
   const numColumns = width >= 1280 ? 5 : width >= 1024 ? 4 : width >= 768 ? 3 : 2;
 
   useEffect(() => {
@@ -145,13 +146,12 @@ export default function LivePage() {
                 variant="grid"
                 style={{ width: `${100 / numColumns}%`, padding: spacing.xs } as any}
               >
-                <Link to={`/live/${channel.id}`} style={{ textDecoration: 'none' }}>
-                  <GlassCard
-                    title={channel.name}
-                    imageUrl={channel.thumbnail || channel.logo}
-                    subtitle={channel.currentShow}
-                  />
-                </Link>
+                <GlassCard
+                  title={channel.name}
+                  imageUrl={channel.thumbnail || channel.logo}
+                  subtitle={channel.currentShow}
+                  onPress={() => navigate(`/live/${channel.id}`)}
+                />
               </AnimatedCard>
             ))}
           </View>

@@ -5,6 +5,7 @@ import LiveSubtitleControls from '../LiveSubtitleControls'
 import { DubbingControls } from '../dubbing'
 import { RecordButton } from '../RecordButton'
 import CastButton from '../controls/CastButton'
+import CatchUpButton from '../catchup/CatchUpButton'
 import liveSubtitleService from '@/services/liveSubtitleService'
 import { SubtitleTrack, SubtitleSettings } from '@/types/subtitle'
 import { UseLiveDubbingState } from './useLiveDubbing'
@@ -54,6 +55,27 @@ interface UsePlayerControlRenderersParams {
   setIsRecording: (recording: boolean) => void
   setRecordingDuration: (duration: number) => void
 
+  // Channel Chat (Live TV)
+  channelChat?: {
+    showChat: boolean
+    toggleChat: () => void
+    hasUnreadMessages: boolean
+  }
+
+  // Live Trivia (Live TV)
+  liveTrivia?: {
+    enabled: boolean
+    toggleEnabled: () => void
+    hasActiveFact: boolean
+  }
+
+  // Catch-Up Summary (Live TV)
+  catchUp?: {
+    showSummary: boolean
+    toggleSummary: () => void
+    canRequest: boolean
+  }
+
   // Callbacks
   onShowUpgrade?: () => void
   onHoveredButtonChange?: (button: string | null) => void
@@ -87,6 +109,9 @@ export function usePlayerControlRenderers({
   cast,
   setIsRecording,
   setRecordingDuration,
+  channelChat,
+  liveTrivia,
+  catchUp,
   onShowUpgrade,
   onHoveredButtonChange,
 }: UsePlayerControlRenderersParams) {
@@ -206,6 +231,39 @@ export function usePlayerControlRenderers({
     ) : null
   , [cast, onHoveredButtonChange])
 
+  const renderChannelChatButton = useCallback(() =>
+    isLive && channelChat ? (
+      <CatchUpButton
+        label="Chat"
+        isActive={channelChat.showChat}
+        onClick={channelChat.toggleChat}
+        hasNotification={channelChat.hasUnreadMessages}
+      />
+    ) : null
+  , [isLive, channelChat])
+
+  const renderLiveTriviaButton = useCallback(() =>
+    isLive && liveTrivia ? (
+      <CatchUpButton
+        label="Trivia"
+        isActive={liveTrivia.enabled}
+        onClick={liveTrivia.toggleEnabled}
+        hasNotification={liveTrivia.hasActiveFact}
+      />
+    ) : null
+  , [isLive, liveTrivia])
+
+  const renderCatchUpButton = useCallback(() =>
+    isLive && catchUp ? (
+      <CatchUpButton
+        label="Catch Up"
+        isActive={catchUp.showSummary}
+        onClick={catchUp.toggleSummary}
+        disabled={!catchUp.canRequest}
+      />
+    ) : null
+  , [isLive, catchUp])
+
   return useMemo(() => ({
     renderWatchPartyButton,
     renderSubtitleControls,
@@ -213,6 +271,9 @@ export function usePlayerControlRenderers({
     renderDubbingControls,
     renderRecordButton,
     renderCastButton,
+    renderChannelChatButton,
+    renderLiveTriviaButton,
+    renderCatchUpButton,
   }), [
     renderWatchPartyButton,
     renderSubtitleControls,
@@ -220,5 +281,8 @@ export function usePlayerControlRenderers({
     renderDubbingControls,
     renderRecordButton,
     renderCastButton,
+    renderChannelChatButton,
+    renderLiveTriviaButton,
+    renderCatchUpButton,
   ])
 }

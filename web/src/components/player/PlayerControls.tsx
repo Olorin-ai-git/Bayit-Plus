@@ -31,6 +31,9 @@ interface PlayerControlsProps {
   renderDubbingControls?: () => React.ReactNode
   renderRecordButton?: () => React.ReactNode
   renderCastButton?: () => React.ReactNode
+  renderChannelChatButton?: () => React.ReactNode
+  renderLiveTriviaButton?: () => React.ReactNode
+  renderCatchUpButton?: () => React.ReactNode
 }
 
 export default function PlayerControls({
@@ -56,6 +59,9 @@ export default function PlayerControls({
   renderDubbingControls,
   renderRecordButton,
   renderCastButton,
+  renderChannelChatButton,
+  renderLiveTriviaButton,
+  renderCatchUpButton,
 }: PlayerControlsProps) {
   return (
     <View style={styles.controlsRow}>
@@ -88,6 +94,9 @@ export default function PlayerControls({
         renderLiveSubtitleControls={renderLiveSubtitleControls}
         renderDubbingControls={renderDubbingControls}
         renderRecordButton={renderRecordButton}
+        renderChannelChatButton={renderChannelChatButton}
+        renderLiveTriviaButton={renderLiveTriviaButton}
+        renderCatchUpButton={renderCatchUpButton}
       />
     </View>
   )

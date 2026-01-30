@@ -13,6 +13,7 @@ import { useNotificationStore } from '@olorin/glass-ui/stores';
 interface UseContentLoaderResult {
   content: ContentData | null;
   streamUrl: string | null;
+  streamType: string | null;
   related: any[];
   loading: boolean;
   availableSubtitleLanguages: string[];
@@ -38,6 +39,7 @@ export function useContentLoader(
   const [directUrl, setDirectUrl] = useState<string | null>(
     initialContentData?.video_url || null
   );
+  const [streamType, setStreamType] = useState<string | null>(null);
 
   useEffect(() => {
     loadContent();
@@ -93,8 +95,12 @@ export function useContentLoader(
         // For live channels, use stream_url from channel metadata directly
         // (the getChannel endpoint already returns it without auth)
         if (contentType === 'live' && (data as any).stream_url) {
-          logger.debug('Using stream URL from channel metadata', 'useContentLoader', { contentId });
+          logger.debug('Using stream URL from channel metadata', 'useContentLoader', {
+            contentId,
+            streamType: (data as any).stream_type,
+          });
           setStreamUrl((data as any).stream_url);
+          setStreamType((data as any).stream_type || 'hls');
           setLoading(false);
           return;
         }
@@ -174,6 +180,7 @@ export function useContentLoader(
   return {
     content,
     streamUrl,
+    streamType,
     related,
     loading,
     availableSubtitleLanguages,
