@@ -30,7 +30,8 @@ from app.middleware.options_handler import OptionsHandlerMiddleware
 from app.middleware.request_timing import RequestTimingMiddleware
 from app.services.olorin.content_metadata_service import \
     content_metadata_service
-from app.services.startup import (init_default_cultures, init_default_widgets,
+from app.services.startup import (init_default_cultures, init_default_podcasts,
+                                  init_default_widgets,
                                   start_background_tasks,
                                   stop_background_tasks)
 
@@ -188,6 +189,12 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Collection verification failed: {e}")
         # Continue anyway - seeders will handle errors gracefully
+
+    # Initialize default podcasts (before widgets, since widgets reference them)
+    try:
+        await init_default_podcasts()
+    except Exception as e:
+        logger.warning(f"Failed to initialize default podcasts: {e}")
 
     # Initialize default data (widgets)
     try:

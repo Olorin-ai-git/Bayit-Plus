@@ -1,0 +1,178 @@
+name: Beta 500 CI/CD
+
+on:
+  pull_request:
+    paths:
+      - 'backend/app/services/beta/**'
+      - 'backend/app/models/beta*.py'
+      - 'backend/app/api/routes/beta/**'
+      - 'backend/tests/**'
+      - 'web/src/components/beta/**'
+      - 'web/src/stores/betaCreditsStore.ts'
+      - 'web/e2e/beta/**'
+  push:
+    branches: [main, beta-500]
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
+      - name: Install dependencies
+        working-directory: backend
+        run: poetry install
+
+      - name: Run unit tests (Beta module)
+        working-directory: backend
+        run: |
+          poetry run pytest tests/unit/beta/ -v \
+            --cov=app/services/beta \
+            --cov=app/models \
+            --cov=app/api/routes/beta \
+            --cov-report=xml \
+            --cov-report=term-missing
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_TEST_URI }}
+
+      - name: Enforce 87% coverage requirement
+        working-directory: backend
+        run: |
+          COVERAGE=$(poetry run coverage report | grep TOTAL | awk '{print $4}' | sed 's/%//')
+          echo "Coverage: ${COVERAGE}%"
+          if (( $(echo "$COVERAGE < 87" | bc -l) )); then
+            echo "❌ Coverage ${COVERAGE}% is below required 87%"
+            exit 1
+          fi
+          echo "✅ Coverage ${COVERAGE}% meets requirement"
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./backend/coverage.xml
+          flags: backend-beta
+          name: beta-500-backend
+
+      - name: Run integration tests
+        working-directory: backend
+        run: |
+          poetry run pytest tests/integration/ -v -m beta
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_TEST_URI }}
+
+  frontend-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        working-directory: web
+        run: npm ci
+
+      - name: Lint frontend code
+        working-directory: web
+        run: npm run lint
+
+      - name: TypeScript type checking
+        working-directory: web
+        run: npm run typecheck
+
+      - name: Build frontend
+        working-directory: web
+        run: npm run build
+        env:
+          REACT_APP_API_BASE_URL: http://localhost:8000
+
+      - name: Run E2E tests (Beta module)
+        working-directory: web
+        run: |
+          npm run test:e2e:beta
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: 0
+
+  code-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        working-directory: backend
+        run: poetry install
+
+      - name: Run Black (code formatter)
+        working-directory: backend
+        run: poetry run black --check app/services/beta app/models/beta*.py app/api/routes/beta
+
+      - name: Run isort (import sorting)
+        working-directory: backend
+        run: poetry run isort --check app/services/beta app/models/beta*.py app/api/routes/beta
+
+      - name: Run mypy (type checking)
+        working-directory: backend
+        run: poetry run mypy app/services/beta app/models/beta*.py app/api/routes/beta
+
+      - name: Run pylint (linting)
+        working-directory: backend
+        run: poetry run pylint app/services/beta app/models/beta*.py app/api/routes/beta
+        continue-on-error: true
+
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Bandit security scan
+        working-directory: backend
+        run: |
+          pip install bandit
+          bandit -r app/services/beta app/models/beta*.py app/api/routes/beta -f json -o bandit-report.json
+        continue-on-error: true
+
+      - name: Upload Bandit report
+        uses: actions/upload-artifact@v3
+        with:
+          name: bandit-security-report
+          path: backend/bandit-report.json

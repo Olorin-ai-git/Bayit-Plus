@@ -7,7 +7,7 @@
 
 import { api, contentApi } from './client';
 
-// Jerusalem Content Service (API) - uses contentApi for longer timeout
+// X Content Service (API) - uses contentApi for longer timeout
 export const apiJerusalemService = {
   getContent: (category?: string, page?: number, limit?: number) =>
     contentApi.get('/jerusalem/content', { params: { category, page, limit } }),

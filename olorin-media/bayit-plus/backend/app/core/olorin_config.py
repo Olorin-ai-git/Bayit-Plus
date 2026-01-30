@@ -5,7 +5,7 @@ Nested Pydantic configuration models for the Olorin AI overlay platform.
 This module provides separation of concerns for Olorin-specific settings.
 """
 
-from typing import Optional
+from typing import List, Optional
 
 from olorin_i18n import I18nConfig
 from pydantic import Field, field_validator
@@ -369,6 +369,166 @@ class RecapConfig(BaseSettings):
 
     class Config:
         env_prefix = "RECAP_"
+
+
+class LiveTriviaConfig(BaseSettings):
+    """Live trivia configuration for real-time broadcast trivia generation."""
+
+    enabled: bool = Field(
+        default=False,
+        description="Enable live trivia feature",
+    )
+    ner_provider: str = Field(
+        default="hybrid",
+        pattern="^(spacy|hybrid)$",
+        description="NER provider: 'spacy' or 'hybrid' (spacy + Claude)",
+    )
+    search_provider: str = Field(
+        default="wikipedia",
+        pattern="^(wikipedia|duckduckgo|google)$",
+        description="Search provider for trivia facts",
+    )
+    min_topic_mentions: int = Field(
+        default=2,
+        ge=1,
+        le=10,
+        description="Minimum topic mentions before triggering fact generation",
+    )
+    fact_cache_ttl_seconds: int = Field(
+        default=3600,
+        ge=300,
+        le=86400,
+        description="Cache TTL for trivia facts (1 hour default)",
+    )
+    topic_cooldown_minutes: int = Field(
+        default=15,
+        ge=1,
+        le=60,
+        description="Cooldown period before repeating topics for same user",
+    )
+    mention_ttl_seconds: int = Field(
+        default=1800,
+        ge=300,
+        le=7200,
+        description="TTL for topic mention tracking in Redis (default 30 minutes)",
+    )
+    min_interval_seconds: int = Field(
+        default=30,
+        ge=10,
+        le=120,
+        description="Minimum interval between facts (high frequency setting)",
+    )
+    max_facts_per_session: int = Field(
+        default=50,
+        ge=10,
+        le=200,
+        description="Maximum facts per user session",
+    )
+    requires_subscription: List[str] = Field(
+        default_factory=lambda: ["premium", "family", "beta"],
+        description="Subscription tiers with access to live trivia",
+    )
+    max_daily_cost_usd: float = Field(
+        default=30.0,
+        ge=0.0,
+        le=1000.0,
+        description="Alert threshold for daily API costs",
+    )
+
+    # Web Search Configuration
+    wikipedia_api_url: str = Field(
+        default="https://en.wikipedia.org/api/rest_v1/page/summary",
+        description="Wikipedia REST API URL for fact search",
+    )
+    duckduckgo_api_url: str = Field(
+        default="https://api.duckduckgo.com/",
+        description="DuckDuckGo API URL for fallback search",
+    )
+    search_timeout_seconds: int = Field(
+        default=5,
+        ge=1,
+        le=30,
+        description="Timeout for web search requests",
+    )
+    summary_truncate_length: int = Field(
+        default=1500,
+        ge=500,
+        le=5000,
+        description="Maximum length for Wikipedia summaries",
+    )
+
+    # Claude AI Configuration
+    claude_model: str = Field(
+        default="claude-3-haiku-20240307",
+        description="Claude model for topic validation and fact extraction",
+    )
+    claude_max_tokens_short: int = Field(
+        default=200,
+        ge=50,
+        le=1000,
+        description="Max tokens for short Claude responses (topic validation)",
+    )
+    claude_max_tokens_long: int = Field(
+        default=1000,
+        ge=200,
+        le=4000,
+        description="Max tokens for long Claude responses (fact extraction)",
+    )
+    claude_temperature_validation: float = Field(
+        default=0.0,
+        ge=0.0,
+        le=1.0,
+        description="Claude temperature for topic validation (0.0 = deterministic)",
+    )
+    claude_temperature_facts: float = Field(
+        default=0.3,
+        ge=0.0,
+        le=1.0,
+        description="Claude temperature for fact extraction (0.3 = some creativity)",
+    )
+
+    # Topic Detection Configuration
+    spacy_confidence_baseline: float = Field(
+        default=0.8,
+        ge=0.0,
+        le=1.0,
+        description="Baseline confidence score for spaCy entity detection",
+    )
+    tracked_topic_default_confidence: float = Field(
+        default=0.8,
+        ge=0.0,
+        le=1.0,
+        description="Default confidence score for tracked topics in database",
+    )
+    mention_cleanup_threshold: int = Field(
+        default=100,
+        ge=10,
+        le=1000,
+        description="Cleanup old topic mentions after this many entries",
+    )
+
+    # Fact Generation Defaults
+    fact_display_duration: int = Field(
+        default=12,
+        ge=5,
+        le=60,
+        description="Default display duration for facts (seconds)",
+    )
+    fact_default_priority: int = Field(
+        default=7,
+        ge=1,
+        le=10,
+        description="Default priority for generated facts",
+    )
+    fact_default_relevance: float = Field(
+        default=0.8,
+        ge=0.0,
+        le=1.0,
+        description="Default relevance score for generated facts",
+    )
+
+    class Config:
+        env_prefix = "LIVE_TRIVIA_"
 
 
 class CulturalContextConfig(BaseSettings):
@@ -739,6 +899,10 @@ class OlorinSettings(BaseSettings):
     i18n: I18nConfig = Field(
         default_factory=I18nConfig,
         description="Internationalization configuration for multilingual support",
+    )
+    live_trivia: LiveTriviaConfig = Field(
+        default_factory=LiveTriviaConfig,
+        description="Live trivia configuration for real-time broadcast trivia",
     )
 
     class Config:

@@ -105,9 +105,9 @@ export async function initWebI18n(): Promise<void> {
  * Set up language change listener for web document updates.
  * Updates document lang and dir attributes when language changes.
  */
-export function setupWebDirectionListener(): void {
+export async function setupWebDirectionListener(): Promise<void> {
   try {
-    const i18n = require('./index').default;
+    const i18n = await import('./index').then(m => m.default);
 
     i18n.on('languageChanged', (lng: string) => {
       const isRTL = ['he', 'ar'].includes(lng);

@@ -13,12 +13,47 @@
  *   }, []);
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { I18nManager } from 'react-native';
-
 import type { LanguageCode } from './types';
 
+// Declare types for React Native modules (imported dynamically)
+declare const require: (module: string) => {
+  I18nManager?: {
+    isRTL: boolean;
+    forceRTL: (value: boolean) => void;
+  };
+  default?: {
+    getItem: (key: string) => Promise<string | null>;
+    setItem: (key: string, value: string) => Promise<void>;
+    removeItem: (key: string) => Promise<void>;
+  };
+};
+
 const LANGUAGE_KEY = '@olorin_language';
+
+/**
+ * Get AsyncStorage dynamically (React Native only)
+ */
+async function getAsyncStorage() {
+  try {
+    const AsyncStorage = (await import(/* webpackIgnore: true */ '@react-native-async-storage/async-storage')).default;
+    return AsyncStorage;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Get I18nManager dynamically (React Native only)
+ */
+function getI18nManager() {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { I18nManager } = require('react-native');
+    return I18nManager;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Get initial language for React Native.
@@ -35,7 +70,10 @@ export function getInitialLanguageNative(): LanguageCode {
  */
 export async function saveLanguageNative(langCode: LanguageCode): Promise<void> {
   try {
-    await AsyncStorage.setItem(LANGUAGE_KEY, langCode);
+    const AsyncStorage = await getAsyncStorage();
+    if (AsyncStorage) {
+      await AsyncStorage.setItem(LANGUAGE_KEY, langCode);
+    }
     // Update i18n
     const i18n = (await import('./index')).default;
     await i18n.changeLanguage(langCode);
@@ -52,10 +90,13 @@ export async function saveLanguageNative(langCode: LanguageCode): Promise<void> 
  */
 export async function loadSavedLanguageNative(): Promise<LanguageCode> {
   try {
-    const saved = await AsyncStorage.getItem(LANGUAGE_KEY);
-    const validLanguages: LanguageCode[] = ['he', 'en', 'es', 'zh', 'fr', 'it', 'hi', 'ta', 'bn', 'ja'];
-    if (saved && validLanguages.includes(saved as LanguageCode)) {
-      return saved as LanguageCode;
+    const AsyncStorage = await getAsyncStorage();
+    if (AsyncStorage) {
+      const saved = await AsyncStorage.getItem(LANGUAGE_KEY);
+      const validLanguages: LanguageCode[] = ['he', 'en', 'es', 'zh', 'fr', 'it', 'hi', 'ta', 'bn', 'ja'];
+      if (saved && validLanguages.includes(saved as LanguageCode)) {
+        return saved as LanguageCode;
+      }
     }
   } catch (error) {
     console.warn('Failed to load saved language:', error);
@@ -83,8 +124,8 @@ export async function initNativeI18n(): Promise<void> {
     }
 
     // Listen for language changes
-    i18n.on('languageChanged', (lng: LanguageCode) => {
-      updateNativeRTL(lng);
+    i18n.on('languageChanged', (lng: string) => {
+      updateNativeRTL(lng as LanguageCode);
     });
   } catch (error) {
     console.warn('Failed to initialize native i18n:', error);
@@ -98,6 +139,9 @@ export async function initNativeI18n(): Promise<void> {
  */
 function updateNativeRTL(langCode: LanguageCode): void {
   try {
+    const I18nManager = getI18nManager();
+    if (!I18nManager) return;
+
     const isRTL = langCode === 'he';
     I18nManager.forceRTL(isRTL);
 
@@ -129,7 +173,10 @@ export function getLanguageStorageKeyNative(): string {
  */
 export async function clearI18nPreferences(): Promise<void> {
   try {
-    await AsyncStorage.removeItem(LANGUAGE_KEY);
+    const AsyncStorage = await getAsyncStorage();
+    if (AsyncStorage) {
+      await AsyncStorage.removeItem(LANGUAGE_KEY);
+    }
   } catch (error) {
     console.warn('Failed to clear i18n preferences:', error);
   }
@@ -139,5 +186,6 @@ export async function clearI18nPreferences(): Promise<void> {
  * Check if current device is using RTL.
  */
 export function isNativeRTL(): boolean {
-  return I18nManager.isRTL;
+  const I18nManager = getI18nManager();
+  return I18nManager?.isRTL ?? false;
 }

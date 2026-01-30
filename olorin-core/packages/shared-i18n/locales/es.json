@@ -4454,4 +4454,29 @@
       "pendingModeration": "Pendiente de moderación"
     }
   }
+  },
+  "liveTrivia": {
+    "errorLoadingPreferences": "Error al cargar preferencias de trivia en vivo",
+    "errorSavingPreferences": "Error al guardar preferencias",
+    "loading": "Cargando configuración de trivia...",
+    "errorLoading": "Error al cargar configuración",
+    "settings": {
+      "title": "Configuración de Trivia en Vivo",
+      "enable": "Activar Trivia en Vivo",
+      "frequency": "Frecuencia de Trivia",
+      "info": "Los datos de trivia en vivo aparecen durante las transmisiones según los temas detectados. Los datos son educativos y aptos para todas las audiencias."
+    },
+    "frequency": {
+      "off": "Desactivado",
+      "low": "Bajo (60 segundos)",
+      "normal": "Normal (45 segundos)",
+      "high": "Alto (30 segundos)"
+    },
+    "quota": {
+      "title": "Límites de Uso",
+      "hourly": "Esta Hora",
+      "daily": "Hoy",
+      "monthly": "Este Mes"
+    }
+  }
 }

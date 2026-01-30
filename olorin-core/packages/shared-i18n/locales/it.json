@@ -1416,4 +1416,29 @@
     "empty": "La tua lista è vuota",
     "emptyHint": "Inizia a guardare e gli elementi appariranno qui"
   }
+  },
+  "liveTrivia": {
+    "errorLoadingPreferences": "Errore nel caricamento delle preferenze del trivia dal vivo",
+    "errorSavingPreferences": "Errore nel salvataggio delle preferenze",
+    "loading": "Caricamento impostazioni trivia...",
+    "errorLoading": "Errore nel caricamento delle impostazioni",
+    "settings": {
+      "title": "Impostazioni Trivia dal Vivo",
+      "enable": "Attiva Trivia dal Vivo",
+      "frequency": "Frequenza Trivia",
+      "info": "I fatti di trivia dal vivo appaiono durante le trasmissioni in base ai temi rilevati. I fatti sono educativi e adatti a tutti i pubblici."
+    },
+    "frequency": {
+      "off": "Disattivato",
+      "low": "Basso (60 secondi)",
+      "normal": "Normale (45 secondi)",
+      "high": "Alto (30 secondi)"
+    },
+    "quota": {
+      "title": "Limiti di Utilizzo",
+      "hourly": "Questa Ora",
+      "daily": "Oggi",
+      "monthly": "Questo Mese"
+    }
+  }
 }

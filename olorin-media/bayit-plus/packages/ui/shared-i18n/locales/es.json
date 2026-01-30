@@ -1749,6 +1749,25 @@
         "waitlistMessage": "Las 500 plazas están actualmente ocupadas. Únete a la lista de espera para ser notificado cuando haya una plaza disponible.",
         "enrollmentSuccess": "¡Bienvenido a Beta 500! Revisa tu correo electrónico para verificar tu cuenta.",
         "enrollmentError": "No se puede inscribir. Por favor, inténtalo de nuevo más tarde."
+      },
+      "verification": {
+        "verifying": "Verificando tu correo electrónico...",
+        "success": "¡Correo electrónico verificado con éxito! Redirigiendo al inicio de sesión...",
+        "failed": "La verificación del correo electrónico falló. Por favor, inténtalo de nuevo o solicita un nuevo enlace de verificación.",
+        "missingToken": "Falta el token de verificación. Por favor, revisa el enlace de tu correo electrónico.",
+        "expired": "Este enlace de verificación ha expirado. Por favor, solicita uno nuevo.",
+        "invalidToken": "Este enlace de verificación no es válido. Por favor, solicita uno nuevo.",
+        "resendEmail": "Reenviar Correo de Verificación",
+        "backToHome": "Volver al Inicio",
+        "redirecting": "Redirigiendo en {{seconds}} segundos...",
+        "resendSuccess": "¡Correo de verificación enviado! Por favor, revisa tu bandeja de entrada.",
+        "resendFailed": "Error al reenviar el correo. Por favor, inténtalo de nuevo más tarde.",
+        "emailSent": "Correo de verificación enviado a {{email}}",
+        "checkInbox": "Por favor, revisa tu bandeja de entrada y haz clic en el enlace de verificación.",
+        "expiresIn": "El enlace expira en {{hours}} horas",
+        "welcomeTitle": "¡Bienvenido a Bayit+ Beta 500!",
+        "welcomeMessage": "Gracias por unirte a nuestro programa beta exclusivo. Has recibido 500 créditos de IA para probar nuestras funciones avanzadas.",
+        "verifyPrompt": "Por favor, verifica tu correo electrónico para activar tu cuenta y créditos."
       }
     }
   },

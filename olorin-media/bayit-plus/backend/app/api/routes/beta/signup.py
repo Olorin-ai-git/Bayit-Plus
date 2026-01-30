@@ -40,6 +40,17 @@ class VerifyResponse(BaseModel):
     message: str
 
 
+class ResendRequest(BaseModel):
+    """Resend verification email request."""
+    email: EmailStr
+
+
+class ResendResponse(BaseModel):
+    """Resend verification response."""
+    success: bool
+    message: str
+
+
 @router.post("/signup", response_model=SignupResponse)
 async def signup(
     request: SignupRequest,
@@ -212,4 +223,82 @@ async def verify_email(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Verification failed"
+        )
+
+
+@router.post("/resend-verification", response_model=ResendResponse)
+async def resend_verification(
+    request: ResendRequest,
+    settings: Settings = Depends(get_settings)
+):
+    """
+    Resend verification email to user.
+
+    Generates a new verification token and resends the email
+    for users whose verification link expired or was lost.
+
+    Args:
+        request: Resend request with email
+
+    Returns:
+        Resend response with success status
+    """
+    try:
+        # Find user
+        user = await BetaUser.find_one(BetaUser.email == request.email)
+
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No beta signup found for this email. Please sign up first."
+            )
+
+        if user.status == "active" and user.verified_at:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already verified. You can log in now."
+            )
+
+        # Generate new verification token
+        email_service = EmailVerificationService(settings=settings)
+        verification_token = email_service.generate_verification_token(request.email)
+
+        # Update user with new token
+        user.verification_token = verification_token
+        user.updated_at = datetime.utcnow()
+        await user.save()
+
+        # Resend verification email
+        email_sent = await email_service.send_verification_email(request.email, verification_token)
+
+        if not email_sent:
+            logger.error(
+                "Failed to resend verification email",
+                extra={"email": request.email}
+            )
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to send email. Please try again."
+            )
+
+        logger.info(
+            "Verification email resent successfully",
+            extra={"email": request.email}
+        )
+
+        return ResendResponse(
+            success=True,
+            message="Verification email resent. Please check your inbox."
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(
+            "Resend verification error",
+            extra={"email": request.email, "error": str(e)}
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to resend email. Please try again later."
         )

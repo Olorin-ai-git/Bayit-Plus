@@ -120,6 +120,53 @@ async def websocket_live_dubbing(
         f"channel={channel_id}, target_lang={target_lang}"
     )
 
+    # Step 7.5: Beta 500 integration (if user is beta user)
+    beta_session_id = None
+    beta_user = None
+    session_service = None  # SessionBasedCreditService instance (if Beta user)
+    if settings.BETA_FEATURES_ENABLED:
+        from app.core.database import get_database
+        from app.services.beta.credit_service import BetaCreditService
+        from app.services.beta.session_service import SessionBasedCreditService
+        from app.services.olorin.metering.service import MeteringService
+
+        db = get_database()
+        beta_user = await db.beta_users.find_one({"email": user.email})
+
+        if beta_user and beta_user.get("is_beta_user"):
+            logger.info(f"Beta user detected: {user.email}, checking credits...")
+
+            # Pre-authorize (estimate 60 credits for 1 minute of dubbing)
+            estimated_cost = 60
+            metering_service = MeteringService()
+            credit_service = BetaCreditService(settings, metering_service, db)
+            success, remaining = await credit_service.authorize(
+                str(user.id), estimated_cost
+            )
+
+            if not success:
+                await websocket.send_json(
+                    {
+                        "type": "error",
+                        "message": "Insufficient beta credits for live dubbing",
+                        "upgrade_required": True,
+                        "remaining_credits": remaining,
+                    }
+                )
+                await websocket.close(code=4003, reason="Insufficient beta credits")
+                return
+
+            # Start Beta session
+            session_service = SessionBasedCreditService(credit_service, settings)
+            import uuid
+
+            beta_session_id = str(uuid.uuid4())
+            await session_service.start_dubbing_session(str(user.id), beta_session_id)
+            logger.info(
+                f"Beta session started: session_id={beta_session_id}, "
+                f"remaining_credits={remaining}"
+            )
+
     # Step 8: Check quota and start session tracking
     allowed, quota_session, _ = await check_and_start_quota_session(
         websocket,
@@ -131,6 +178,9 @@ async def websocket_live_dubbing(
         platform,
     )
     if not allowed:
+        # End Beta session if quota check failed
+        if beta_session_id and session_service:
+            await session_service.end_session(beta_session_id, "quota_failed")
         return
 
     # Step 9: Initialize dubbing service and start all tasks
@@ -178,9 +228,28 @@ async def websocket_live_dubbing(
             )
             await end_quota_session(quota_session, UsageSessionStatus.COMPLETED)
 
+            # End Beta session
+            if beta_session_id and session_service:
+                remaining = await session_service.end_session(
+                    beta_session_id, "user_stopped"
+                )
+                logger.info(
+                    f"Beta session ended (disconnect): session_id={beta_session_id}, "
+                    f"remaining_credits={remaining}"
+                )
+
     except Exception as e:
         logger.error(f"Error in live dubbing stream: {str(e)}")
         await end_quota_session(quota_session, UsageSessionStatus.ERROR)
+
+        # End Beta session on error
+        if beta_session_id and session_service:
+            remaining = await session_service.end_session(beta_session_id, "error")
+            logger.info(
+                f"Beta session ended (error): session_id={beta_session_id}, "
+                f"remaining_credits={remaining}"
+            )
+
         try:
             await websocket.send_json(
                 {"type": "error", "message": str(e), "recoverable": False}

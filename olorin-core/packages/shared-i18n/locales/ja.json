@@ -2294,4 +2294,29 @@
     "manage": "ウォッチリストを管理",
     "clearAll": "すべてクリア"
   }
+  },
+  "liveTrivia": {
+    "errorLoadingPreferences": "ライブトリビア設定の読み込みに失敗しました",
+    "errorSavingPreferences": "設定の保存に失敗しました",
+    "loading": "トリビア設定を読み込んでいます...",
+    "errorLoading": "設定の読み込みに失敗しました",
+    "settings": {
+      "title": "ライブトリビア設定",
+      "enable": "ライブトリビアを有効にする",
+      "frequency": "トリビア頻度",
+      "info": "ライブトリビアの事実は、検出されたトピックに基づいて放送中に表示されます。事実は教育的で、すべての視聴者に適しています。"
+    },
+    "frequency": {
+      "off": "オフ",
+      "low": "低（60秒）",
+      "normal": "通常（45秒）",
+      "high": "高（30秒）"
+    },
+    "quota": {
+      "title": "使用制限",
+      "hourly": "この1時間",
+      "daily": "今日",
+      "monthly": "今月"
+    }
+  }
 }

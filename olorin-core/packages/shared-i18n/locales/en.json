@@ -5534,4 +5534,29 @@
       "pendingModeration": "Pending Moderation"
     }
   }
+  },
+  "liveTrivia": {
+    "errorLoadingPreferences": "Failed to load live trivia preferences",
+    "errorSavingPreferences": "Failed to save preferences",
+    "loading": "Loading trivia settings...",
+    "errorLoading": "Failed to load settings",
+    "settings": {
+      "title": "Live Trivia Settings",
+      "enable": "Enable Live Trivia",
+      "frequency": "Trivia Frequency",
+      "info": "Live trivia facts appear during broadcasts based on detected topics. Facts are educational and suitable for all audiences."
+    },
+    "frequency": {
+      "off": "Off",
+      "low": "Low (60 seconds)",
+      "normal": "Normal (45 seconds)",
+      "high": "High (30 seconds)"
+    },
+    "quota": {
+      "title": "Usage Limits",
+      "hourly": "This Hour",
+      "daily": "Today",
+      "monthly": "This Month"
+    }
+  }
 }

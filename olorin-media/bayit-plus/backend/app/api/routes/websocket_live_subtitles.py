@@ -19,10 +19,61 @@ from app.models.live_feature_quota import FeatureType, UsageSessionStatus
 from app.services.beta.live_translation_integration import BetaLiveTranslationIntegration
 from app.services.live_feature_quota_service import live_feature_quota_service
 from app.services.live_translation_service import LiveTranslationService
+from app.services.live_trivia.live_trivia_orchestrator import LiveTriviaOrchestrator
 from app.services.rate_limiter_live import get_rate_limiter
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+
+async def _process_trivia_in_background(
+    orchestrator: LiveTriviaOrchestrator,
+    transcript: str,
+    channel_id: str,
+    user_id: str,
+    language: str,
+    websocket: WebSocket
+) -> None:
+    """
+    Process transcript for trivia in background (non-blocking).
+
+    This runs in parallel with subtitle delivery to avoid latency.
+    """
+    try:
+        facts = await orchestrator.process_transcript(
+            transcript,
+            channel_id,
+            user_id,
+            language
+        )
+
+        # Send facts to client if any were generated
+        for fact in facts:
+            try:
+                await websocket.send_json({
+                    "type": "live_trivia",
+                    "data": {
+                        "fact_id": fact.fact_id,
+                        "text": fact.text,
+                        "text_en": fact.text_en,
+                        "text_es": fact.text_es,
+                        "category": fact.category,
+                        "display_duration": fact.display_duration,
+                        "priority": fact.priority,
+                        "detected_topic": fact.detected_topic,
+                        "topic_type": fact.topic_type,
+                    }
+                })
+                logger.info(
+                    f"Sent trivia fact: topic={fact.detected_topic}, "
+                    f"user={user_id}, channel={channel_id}"
+                )
+            except Exception as e:
+                logger.error(f"Error sending trivia fact: {e}")
+
+    except Exception as e:
+        logger.error(f"Error processing trivia in background: {e}")
+        # Don't raise - this is a background task
 
 
 async def create_audio_stream_with_quota_updates(websocket, session, user):
@@ -70,6 +121,7 @@ async def websocket_live_subtitles(
     websocket: WebSocket,
     channel_id: str,
     target_lang: str = Query("en"),
+    enable_trivia: bool = Query(True),
 ):
     """
     Live subtitle translation. Client sends: auth message + binary audio chunks.
@@ -229,12 +281,42 @@ async def websocket_live_subtitles(
 
         await websocket.send_json(connection_msg)
 
+        # Initialize Live Trivia orchestrator if enabled
+        trivia_orchestrator = None
+        trivia_enabled = (
+            enable_trivia
+            and settings.olorin.live_trivia.enabled
+            and user.subscription_tier in settings.olorin.live_trivia.requires_subscription
+        )
+
+        if trivia_enabled:
+            try:
+                trivia_orchestrator = LiveTriviaOrchestrator()
+                logger.info(f"Live trivia enabled for user={user.id}")
+            except Exception as e:
+                logger.error(f"Failed to initialize trivia orchestrator: {e}")
+                trivia_orchestrator = None
+
         # Process audio and stream subtitles
         try:
             async for subtitle_cue in translation_integration.process_audio_with_credits(
                 create_audio_stream_with_quota_updates(websocket, session, user),
             ):
                 await websocket.send_json({"type": "subtitle", "data": subtitle_cue})
+
+                # Process transcript for trivia (non-blocking)
+                if trivia_orchestrator and subtitle_cue.get("text"):
+                    transcript_text = subtitle_cue.get("text", "")
+                    asyncio.create_task(
+                        _process_trivia_in_background(
+                            trivia_orchestrator,
+                            transcript_text,
+                            channel_id,
+                            str(user.id),
+                            source_lang,
+                            websocket
+                        )
+                    )
 
         except WebSocketDisconnect:
             logger.info(

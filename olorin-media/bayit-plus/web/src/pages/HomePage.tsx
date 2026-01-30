@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@/stores/authStore';
+import { AIRecommendationsPanel, type AIRecommendation } from '@/components/beta/AIRecommendationsPanel';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import AnimatedCard from '@/components/common/AnimatedCard';
 import {
@@ -132,6 +133,7 @@ export default function HomePage() {
   const { t, i18n } = useTranslation();
   const { isRTL } = useDirection();
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuthStore();
 
   // Culture store for dynamic culture-based content
   const {
@@ -296,6 +298,32 @@ export default function HomePage() {
     }
   };
 
+  // Handle AI recommendation selection
+  const handleRecommendationSelect = (recommendation: AIRecommendation) => {
+    const routeMap: Record<AIRecommendation['type'], string> = {
+      movie: `/vod/movie/${recommendation.id}`,
+      series: `/vod/series/${recommendation.id}`,
+      podcast: `/podcasts/${recommendation.id}`,
+      audiobook: `/audiobooks/${recommendation.id}`,
+    };
+
+    const route = routeMap[recommendation.type];
+    if (route) {
+      logger.info('Navigating to AI recommendation', 'HomePage', {
+        contentType: recommendation.type,
+        contentId: recommendation.id,
+        title: recommendation.title,
+        route,
+      });
+      navigate(route);
+    } else {
+      logger.warn('Unknown content type from AI recommendations', 'HomePage', {
+        contentType: recommendation.type,
+        contentId: recommendation.id,
+      });
+    }
+  };
+
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
       {/* Page Header */}
@@ -346,6 +374,17 @@ export default function HomePage() {
           />
         )}
       </View>
+
+      {/* AI Recommendations Panel (Beta 500 feature) */}
+      {isAuthenticated && user && user.subscription?.plan === 'beta' && (
+        <View style={styles.section}>
+          <AIRecommendationsPanel
+            isEnrolled={true}
+            onSelectRecommendation={handleRecommendationSelect}
+            apiBaseUrl="/api/v1"
+          />
+        </View>
+      )}
 
       {/* Continue Watching - loads independently */}
       {continueLoading ? (

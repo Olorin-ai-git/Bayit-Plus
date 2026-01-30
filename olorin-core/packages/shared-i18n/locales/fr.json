@@ -1541,4 +1541,29 @@
     "empty": "Votre liste de lecture est vide",
     "emptyHint": "Commencez à regarder et les éléments apparaîtront ici"
   }
+  },
+  "liveTrivia": {
+    "errorLoadingPreferences": "Échec du chargement des préférences de trivia en direct",
+    "errorSavingPreferences": "Échec de l'enregistrement des préférences",
+    "loading": "Chargement des paramètres de trivia...",
+    "errorLoading": "Échec du chargement des paramètres",
+    "settings": {
+      "title": "Paramètres de Trivia en Direct",
+      "enable": "Activer Trivia en Direct",
+      "frequency": "Fréquence de Trivia",
+      "info": "Les faits de trivia en direct apparaissent pendant les diffusions en fonction des sujets détectés. Les faits sont éducatifs et adaptés à tous les publics."
+    },
+    "frequency": {
+      "off": "Désactivé",
+      "low": "Faible (60 secondes)",
+      "normal": "Normal (45 secondes)",
+      "high": "Élevé (30 secondes)"
+    },
+    "quota": {
+      "title": "Limites d'Utilisation",
+      "hourly": "Cette Heure",
+      "daily": "Aujourd'hui",
+      "monthly": "Ce Mois"
+    }
+  }
 }

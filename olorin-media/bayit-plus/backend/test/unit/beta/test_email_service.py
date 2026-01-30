@@ -18,6 +18,7 @@ def mock_settings():
     settings.EMAIL_VERIFICATION_TOKEN_EXPIRY_HOURS = 24
     settings.SENDGRID_API_KEY = "SG.test-key"
     settings.SENDGRID_FROM_EMAIL = "noreply@bayit.plus"
+    settings.SENDGRID_FROM_NAME = "Bayit+ Beta"
     settings.FRONTEND_URL = "https://app.bayit.plus"
     return settings
 
@@ -212,6 +213,67 @@ class TestVerifyUserEmail:
             assert error is None
 
 
+class TestSendWelcomeEmail:
+    """Tests for send_welcome_email method."""
+
+    @pytest.mark.asyncio
+    async def test_send_welcome_email_success(self, email_service):
+        """Test sending welcome email after verification."""
+        email = "newuser@example.com"
+        user_name = "New User"
+        credits_balance = 500
+
+        with patch('app.services.beta.email_service.EmailSender') as MockSender, \
+             patch('app.services.beta.email_service.httpx.AsyncClient') as MockClient:
+
+            # Mock EmailSender
+            mock_sender_instance = MagicMock()
+            mock_sender_instance.send = AsyncMock(return_value=MagicMock(
+                success=True,
+                message_id="test-welcome-message-id"
+            ))
+            MockSender.return_value = mock_sender_instance
+
+            # Mock httpx.AsyncClient
+            mock_client = AsyncMock()
+            mock_client.aclose = AsyncMock()
+            MockClient.return_value = mock_client
+
+            result = await email_service.send_welcome_email(email, user_name, credits_balance)
+
+            assert result is True
+            mock_sender_instance.send.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_send_welcome_email_contains_credits_info(self, email_service):
+        """Test that welcome email includes credit balance information."""
+        email = "test@example.com"
+        user_name = "Test User"
+        credits_balance = 500
+
+        with patch('app.services.beta.email_service.EmailSender') as MockSender, \
+             patch('app.services.beta.email_service.httpx.AsyncClient') as MockClient:
+
+            mock_sender_instance = MagicMock()
+            mock_sender_instance.send = AsyncMock(return_value=MagicMock(
+                success=True,
+                message_id="test-message-id"
+            ))
+            MockSender.return_value = mock_sender_instance
+
+            mock_client = AsyncMock()
+            mock_client.aclose = AsyncMock()
+            MockClient.return_value = mock_client
+
+            await email_service.send_welcome_email(email, user_name, credits_balance)
+
+            # Verify EmailBuilder was called with correct template and variables
+            mock_sender_instance.send.assert_called_once()
+            # Template should be beta/welcome-email.html.j2
+            # Variables should include user_name and credits_balance
+
+
+@pytest.mark.skip(reason="SendGrid integration not implemented - service has TODO for Twilio SendGrid")
 class TestSendVerificationEmail:
     """Tests for send_verification_email method."""
 

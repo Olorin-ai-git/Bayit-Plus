@@ -17,6 +17,9 @@ export type {
 export { BetaCreditBalance } from './BetaCreditBalance';
 export type { BetaCreditBalanceProps } from './BetaCreditBalance';
 
+export { InsufficientCreditsModal } from './InsufficientCreditsModal';
+export type { InsufficientCreditsModalProps } from './InsufficientCreditsModal';
+
 // Re-export shared components (already work with web)
 export { BetaEnrollmentModal } from '../../../../shared/components/beta/BetaEnrollmentModal';
 export { BetaProgramsSettings } from '../../../../shared/components/beta/BetaProgramsSettings';

@@ -9,6 +9,7 @@ from .analytics import router as analytics_router
 from .audit import router as audit_router
 # Import auth utilities for external use
 from .auth import has_permission, log_audit, require_admin
+from .beta_users import router as beta_users_router
 from .billing import router as billing_router
 from .campaigns import router as campaigns_router
 # Import all routers
@@ -43,6 +44,7 @@ router.include_router(marketing_router, tags=["admin-marketing"])
 router.include_router(settings_router, tags=["admin-settings"])
 router.include_router(audit_router, tags=["admin-audit"])
 router.include_router(analytics_router, tags=["admin-analytics"])
+router.include_router(beta_users_router, tags=["admin-beta-500"])
 router.include_router(recordings_router, tags=["admin-recordings"])
 router.include_router(live_quotas_router, tags=["admin-live-quotas"])
 router.include_router(live_quota_analytics_router, tags=["admin-live-quota-analytics"])

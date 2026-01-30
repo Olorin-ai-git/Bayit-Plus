@@ -8,6 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useBetaFeatureGate } from '../../../../shared/hooks/useBetaFeatureGate';
+import { InsufficientCreditsModal } from './InsufficientCreditsModal';
 
 export interface AISearchResult {
   type: 'movie' | 'series' | 'podcast' | 'audiobook' | 'live_channel';
@@ -42,6 +43,8 @@ export interface AISearchModalProps {
   apiBaseUrl?: string;
 }
 
+const AI_SEARCH_CREDIT_COST = 2; // Credits required for AI search
+
 export const AISearchModal: React.FC<AISearchModalProps> = ({
   visible,
   onClose,
@@ -54,6 +57,8 @@ export const AISearchModal: React.FC<AISearchModalProps> = ({
   const [searching, setSearching] = useState(false);
   const [results, setResults] = useState<AISearchResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [currentBalance, setCurrentBalance] = useState<number | null>(null);
+  const [showInsufficientModal, setShowInsufficientModal] = useState(false);
 
   const {
     canAccess,
@@ -71,8 +76,28 @@ export const AISearchModal: React.FC<AISearchModalProps> = ({
       setQuery('');
       setResults(null);
       setError(null);
+    } else {
+      // Fetch current credit balance when modal opens
+      fetchCurrentBalance();
     }
   }, [visible]);
+
+  const fetchCurrentBalance = async () => {
+    try {
+      const response = await fetch(`${apiBaseUrl}/beta/credits/balance`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentBalance(data.balance);
+      }
+    } catch (err) {
+      // Silent fail - balance check is not critical for modal display
+      console.warn('Failed to fetch credit balance:', err);
+    }
+  };
 
   const handleSearch = async () => {
     if (!query.trim()) return;
@@ -82,11 +107,22 @@ export const AISearchModal: React.FC<AISearchModalProps> = ({
       return;
     }
 
+    // Pre-authorization check
+    if (currentBalance !== null && currentBalance < AI_SEARCH_CREDIT_COST) {
+      setShowInsufficientModal(true);
+      return;
+    }
+
     setSearching(true);
     setError(null);
 
+    // Optimistic update: deduct credits immediately
+    if (currentBalance !== null) {
+      setCurrentBalance(currentBalance - AI_SEARCH_CREDIT_COST);
+    }
+
     try {
-      const response = await fetch(`${apiBaseUrl}/beta/search`, {
+      const response = await fetch(`${apiBaseUrl}/beta/ai-search`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,8 +138,14 @@ export const AISearchModal: React.FC<AISearchModalProps> = ({
 
       const data: AISearchResponse = await response.json();
       setResults(data);
+      // Update balance with actual value from server
+      setCurrentBalance(data.credits_remaining);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Search failed');
+      // Rollback optimistic update on error
+      if (currentBalance !== null) {
+        setCurrentBalance(currentBalance + AI_SEARCH_CREDIT_COST);
+      }
     } finally {
       setSearching(false);
     }
@@ -289,6 +331,15 @@ export const AISearchModal: React.FC<AISearchModalProps> = ({
           )}
         </div>
       </div>
+
+      {/* Insufficient Credits Modal */}
+      <InsufficientCreditsModal
+        visible={showInsufficientModal}
+        onClose={() => setShowInsufficientModal(false)}
+        requiredCredits={AI_SEARCH_CREDIT_COST}
+        currentBalance={currentBalance || 0}
+        featureName={t('beta.aiSearch.title')}
+      />
     </div>
   );
 };

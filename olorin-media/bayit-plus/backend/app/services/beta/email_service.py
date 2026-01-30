@@ -2,12 +2,22 @@
 Email Verification Service
 
 HMAC-SHA256 token generation and verification for beta user email validation.
+Uses olorin-email shared package for email delivery.
 """
 
 import hmac
 import hashlib
+import httpx
 from datetime import datetime, timedelta
 from typing import Optional, Tuple
+
+from olorin_email import (
+    EmailSettings,
+    SendGridProvider,
+    TemplateEngine,
+    EmailSender,
+    EmailBuilder
+)
 
 from app.core.config import Settings
 from app.core.logging_config import get_logger
@@ -103,7 +113,7 @@ class EmailVerificationService:
                         "Token expired",
                         extra={"email": email, "expired_at": expiry.isoformat()}
                     )
-                    return (False, email, "expired")
+                    return (False, None, "expired")
                     
             except ValueError:
                 return (False, None, "invalid_expiry")
@@ -121,7 +131,7 @@ class EmailVerificationService:
                     "Invalid token signature",
                     extra={"email": email}
                 )
-                return (False, email, "invalid_signature")
+                return (False, None, "invalid_signature")
 
             logger.info(
                 "Token verified successfully",
@@ -143,7 +153,7 @@ class EmailVerificationService:
         token: str
     ) -> bool:
         """
-        Send verification email via Twilio SendGrid.
+        Send verification email using olorin-email shared package.
 
         Args:
             email: Recipient email
@@ -154,23 +164,326 @@ class EmailVerificationService:
         """
         try:
             # Build verification URL
-            verification_url = f"{self.settings.BETA_LANDING_PAGE_URL}/verify?token={token}"
+            verification_url = f"{self.settings.FRONTEND_URL}/verify-email?token={token}"
 
-            # TODO: Integrate with Twilio SendGrid
-            # For now, log the verification URL
-            logger.info(
-                "Verification email sent",
-                extra={
-                    "email": email,
-                    "verification_url": verification_url
-                }
+            # Initialize olorin-email components
+            # Add backend templates directory to template search path
+            from pathlib import Path
+            backend_templates = str(Path(__file__).resolve().parents[3] / "templates")
+
+            email_settings = EmailSettings(
+                SENDGRID_API_KEY=self.settings.SENDGRID_API_KEY,
+                SENDGRID_FROM_EMAIL=self.settings.SENDGRID_FROM_EMAIL,
+                SENDGRID_FROM_NAME=self.settings.SENDGRID_FROM_NAME,
+                EMAIL_TEMPLATE_DIRS=[backend_templates]
             )
 
-            return True
+            http_client = httpx.AsyncClient()
+            try:
+                provider = SendGridProvider(http_client, email_settings)
+                template_engine = TemplateEngine(email_settings)
+                sender = EmailSender(email_settings, provider, template_engine)
+
+                # Send email using template
+                result = await sender.send(
+                    EmailBuilder(email_settings)
+                    .to(email)
+                    .subject("Verify Your Bayit+ Beta Account")
+                    .template("beta/verification-email.html.j2", {
+                        "verification_url": verification_url,
+                        "expiry_hours": self.settings.EMAIL_VERIFICATION_TOKEN_EXPIRY_HOURS
+                    })
+                    .category("beta")
+                    .tag("verification")
+                    .custom_arg("email", email)
+                    .custom_arg("token_expiry_hours", str(self.settings.EMAIL_VERIFICATION_TOKEN_EXPIRY_HOURS))
+                )
+
+                if result.success:
+                    logger.info(
+                        "Verification email sent successfully",
+                        extra={
+                            "email": email,
+                            "message_id": result.message_id,
+                            "verification_url": verification_url
+                        }
+                    )
+                    return True
+                else:
+                    logger.error(
+                        "Failed to send verification email",
+                        extra={
+                            "email": email,
+                            "error": result.error,
+                            "status_code": result.status_code
+                        }
+                    )
+                    return False
+
+            finally:
+                await http_client.aclose()
 
         except Exception as e:
             logger.error(
                 "Failed to send verification email",
+                extra={"email": email, "error": str(e)}
+            )
+            return False
+
+    async def send_welcome_email(
+        self,
+        email: str,
+        user_name: str,
+        credits_balance: int = 500
+    ) -> bool:
+        """
+        Send welcome email after successful email verification.
+
+        Args:
+            email: Recipient email
+            user_name: User's display name
+            credits_balance: Current credit balance (default 500)
+
+        Returns:
+            True if sent successfully, False otherwise
+        """
+        try:
+            # Initialize olorin-email components
+            from pathlib import Path
+            backend_templates = str(Path(__file__).resolve().parents[3] / "templates")
+
+            email_settings = EmailSettings(
+                SENDGRID_API_KEY=self.settings.SENDGRID_API_KEY,
+                SENDGRID_FROM_EMAIL=self.settings.SENDGRID_FROM_EMAIL,
+                SENDGRID_FROM_NAME=self.settings.SENDGRID_FROM_NAME,
+                EMAIL_TEMPLATE_DIRS=[backend_templates]
+            )
+
+            http_client = httpx.AsyncClient()
+            try:
+                provider = SendGridProvider(http_client, email_settings)
+                template_engine = TemplateEngine(email_settings)
+                sender = EmailSender(email_settings, provider, template_engine)
+
+                # Send welcome email using template
+                result = await sender.send(
+                    EmailBuilder(email_settings)
+                    .to(email)
+                    .subject("Welcome to Bayit+ Beta 500!")
+                    .template("beta/welcome-email.html.j2", {
+                        "user_name": user_name,
+                        "credits_balance": credits_balance,
+                        "support_url": f"{self.settings.FRONTEND_URL}/support"
+                    })
+                    .category("beta")
+                    .tag("welcome")
+                    .custom_arg("email", email)
+                    .custom_arg("credits_balance", str(credits_balance))
+                )
+
+                if result.success:
+                    logger.info(
+                        "Welcome email sent successfully",
+                        extra={
+                            "email": email,
+                            "message_id": result.message_id,
+                            "credits_balance": credits_balance
+                        }
+                    )
+                    return True
+                else:
+                    logger.error(
+                        "Failed to send welcome email",
+                        extra={
+                            "email": email,
+                            "error": result.error,
+                            "status_code": result.status_code
+                        }
+                    )
+                    return False
+
+            finally:
+                await http_client.aclose()
+
+        except Exception as e:
+            logger.error(
+                "Failed to send welcome email",
+                extra={"email": email, "error": str(e)}
+            )
+            return False
+
+    async def send_low_credit_warning(
+        self,
+        email: str,
+        user_name: str,
+        credits_remaining: int,
+        threshold: int = 50,
+        usage_summary: list = None
+    ) -> bool:
+        """
+        Send low credit warning email when credits drop below threshold.
+
+        Args:
+            email: Recipient email
+            user_name: User's display name
+            credits_remaining: Current remaining credits
+            threshold: Warning threshold (default 50)
+            usage_summary: List of recent usage items
+
+        Returns:
+            True if sent successfully, False otherwise
+        """
+        try:
+            from pathlib import Path
+            backend_templates = str(Path(__file__).resolve().parents[3] / "templates")
+
+            email_settings = EmailSettings(
+                SENDGRID_API_KEY=self.settings.SENDGRID_API_KEY,
+                SENDGRID_FROM_EMAIL=self.settings.SENDGRID_FROM_EMAIL,
+                SENDGRID_FROM_NAME=self.settings.SENDGRID_FROM_NAME,
+                EMAIL_TEMPLATE_DIRS=[backend_templates]
+            )
+
+            http_client = httpx.AsyncClient()
+            try:
+                provider = SendGridProvider(http_client, email_settings)
+                template_engine = TemplateEngine(email_settings)
+                sender = EmailSender(email_settings, provider, template_engine)
+
+                # Default usage summary if not provided
+                if usage_summary is None:
+                    usage_summary = []
+
+                result = await sender.send(
+                    EmailBuilder(email_settings)
+                    .to(email)
+                    .subject("⚠️ Low Credit Balance - Bayit+ Beta 500")
+                    .template("beta/credit-low-warning.html.j2", {
+                        "user_name": user_name,
+                        "credits_remaining": credits_remaining,
+                        "threshold": threshold,
+                        "usage_summary": usage_summary,
+                        "upgrade_url": f"{self.settings.FRONTEND_URL}/upgrade"
+                    })
+                    .category("beta")
+                    .tag("credit-warning")
+                    .custom_arg("email", email)
+                    .custom_arg("credits_remaining", str(credits_remaining))
+                )
+
+                if result.success:
+                    logger.info(
+                        "Low credit warning email sent",
+                        extra={
+                            "email": email,
+                            "message_id": result.message_id,
+                            "credits_remaining": credits_remaining
+                        }
+                    )
+                    return True
+                else:
+                    logger.error(
+                        "Failed to send low credit warning",
+                        extra={
+                            "email": email,
+                            "error": result.error
+                        }
+                    )
+                    return False
+
+            finally:
+                await http_client.aclose()
+
+        except Exception as e:
+            logger.error(
+                "Failed to send low credit warning",
+                extra={"email": email, "error": str(e)}
+            )
+            return False
+
+    async def send_credits_depleted(
+        self,
+        email: str,
+        user_name: str,
+        total_used: int = 500,
+        top_features: list = None
+    ) -> bool:
+        """
+        Send credits depleted email when all credits are used.
+
+        Args:
+            email: Recipient email
+            user_name: User's display name
+            total_used: Total credits used (default 500)
+            top_features: List of top features used with stats
+
+        Returns:
+            True if sent successfully, False otherwise
+        """
+        try:
+            from pathlib import Path
+            backend_templates = str(Path(__file__).resolve().parents[3] / "templates")
+
+            email_settings = EmailSettings(
+                SENDGRID_API_KEY=self.settings.SENDGRID_API_KEY,
+                SENDGRID_FROM_EMAIL=self.settings.SENDGRID_FROM_EMAIL,
+                SENDGRID_FROM_NAME=self.settings.SENDGRID_FROM_NAME,
+                EMAIL_TEMPLATE_DIRS=[backend_templates]
+            )
+
+            http_client = httpx.AsyncClient()
+            try:
+                provider = SendGridProvider(http_client, email_settings)
+                template_engine = TemplateEngine(email_settings)
+                sender = EmailSender(email_settings, provider, template_engine)
+
+                # Default top features if not provided
+                if top_features is None:
+                    top_features = []
+
+                result = await sender.send(
+                    EmailBuilder(email_settings)
+                    .to(email)
+                    .subject("🔴 Credits Depleted - Bayit+ Beta 500")
+                    .template("beta/credit-depleted.html.j2", {
+                        "user_name": user_name,
+                        "total_used": total_used,
+                        "top_features": top_features,
+                        "upgrade_url": f"{self.settings.FRONTEND_URL}/upgrade",
+                        "support_url": f"{self.settings.FRONTEND_URL}/support"
+                    })
+                    .category("beta")
+                    .tag("credit-depleted")
+                    .custom_arg("email", email)
+                    .custom_arg("total_used", str(total_used))
+                )
+
+                if result.success:
+                    logger.info(
+                        "Credits depleted email sent",
+                        extra={
+                            "email": email,
+                            "message_id": result.message_id,
+                            "total_used": total_used
+                        }
+                    )
+                    return True
+                else:
+                    logger.error(
+                        "Failed to send credits depleted email",
+                        extra={
+                            "email": email,
+                            "error": result.error
+                        }
+                    )
+                    return False
+
+            finally:
+                await http_client.aclose()
+
+        except Exception as e:
+            logger.error(
+                "Failed to send credits depleted email",
                 extra={"email": email, "error": str(e)}
             )
             return False
@@ -220,6 +533,26 @@ class EmailVerificationService:
                 "User email verified",
                 extra={"email": email, "user_id": str(user.id)}
             )
+
+            # Send welcome email (non-blocking - don't fail verification if email fails)
+            try:
+                # Get user's display name (use email prefix if no name)
+                user_name = user.name if hasattr(user, 'name') and user.name else email.split('@')[0]
+
+                # Get credit balance (should be 500 for new beta users)
+                from app.models.beta_credit import BetaCredit
+                credit_record = await BetaCredit.find_one(BetaCredit.user_id == str(user.id))
+                credits_balance = credit_record.remaining_credits if credit_record else 500
+
+                # Send welcome email asynchronously
+                await self.send_welcome_email(email, user_name, credits_balance)
+
+            except Exception as e:
+                # Log error but don't fail the verification
+                logger.warning(
+                    "Failed to send welcome email after verification",
+                    extra={"email": email, "error": str(e)}
+                )
 
             return (True, None)
 

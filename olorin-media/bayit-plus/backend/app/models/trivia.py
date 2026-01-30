@@ -22,11 +22,32 @@ class TriviaFactModel(BaseModel):
     trigger_time: Optional[float] = Field(
         None, ge=0, description="Seconds into content"
     )
-    trigger_type: str = Field("random", pattern="^(time|scene|actor|random)$")
+    trigger_type: str = Field("random", pattern="^(time|scene|actor|random|topic)$")
     category: str = Field(
         ..., pattern="^(cast|production|location|cultural|historical)$"
     )
-    source: str = Field("manual", pattern="^(tmdb|ai|manual|cultural_reference)$")
+    source: str = Field("manual", pattern="^(tmdb|ai|manual|cultural_reference|wikipedia|web_search|live_ai)$")
+
+    # NEW: Live trivia fields
+    detected_topic: Optional[str] = Field(
+        None,
+        description="Original topic text detected from transcript"
+    )
+    topic_type: Optional[str] = Field(
+        None,
+        pattern="^(person|place|event|organization)$",
+        description="Entity type of detected topic"
+    )
+    search_query: Optional[str] = Field(
+        None,
+        description="Wikipedia/web search query used"
+    )
+    relevance_score: Optional[float] = Field(
+        None,
+        ge=0.0,
+        le=1.0,
+        description="AI relevance score (0.0-1.0)"
+    )
     display_duration: int = Field(default=10, ge=5, le=30)
     priority: int = Field(default=5, ge=1, le=10)
     related_person: Optional[str] = None

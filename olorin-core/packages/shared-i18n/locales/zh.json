@@ -2782,4 +2782,29 @@
       "change": "更改"
     }
   }
+  },
+  "liveTrivia": {
+    "errorLoadingPreferences": "加载实时问答偏好设置失败",
+    "errorSavingPreferences": "保存偏好设置失败",
+    "loading": "正在加载问答设置...",
+    "errorLoading": "加载设置失败",
+    "settings": {
+      "title": "实时问答设置",
+      "enable": "启用实时问答",
+      "frequency": "问答频率",
+      "info": "实时问答根据检测到的主题在广播期间显示。问答内容具有教育性，适合所有观众。"
+    },
+    "frequency": {
+      "off": "关闭",
+      "low": "低（60秒）",
+      "normal": "正常（45秒）",
+      "high": "高（30秒）"
+    },
+    "quota": {
+      "title": "使用限制",
+      "hourly": "本小时",
+      "daily": "今天",
+      "monthly": "本月"
+    }
+  }
 }

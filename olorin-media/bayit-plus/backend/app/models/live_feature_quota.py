@@ -16,6 +16,7 @@ class FeatureType(str, Enum):
 
     SUBTITLE = "subtitle"
     DUBBING = "dubbing"
+    TRIVIA = "trivia"
 
 
 class UsageSessionStatus(str, Enum):
@@ -41,6 +42,10 @@ class LiveFeatureQuota(Document):
     dubbing_minutes_per_day: int = 60
     dubbing_minutes_per_month: int = 500
 
+    trivia_facts_per_hour: int = 30
+    trivia_facts_per_day: int = 120
+    trivia_facts_per_month: int = 1000
+
     # Current usage tracking (rolling windows)
     subtitle_usage_current_hour: float = 0.0
     subtitle_usage_current_day: float = 0.0
@@ -49,6 +54,10 @@ class LiveFeatureQuota(Document):
     dubbing_usage_current_hour: float = 0.0
     dubbing_usage_current_day: float = 0.0
     dubbing_usage_current_month: float = 0.0
+
+    trivia_usage_current_hour: int = 0
+    trivia_usage_current_day: int = 0
+    trivia_usage_current_month: int = 0
 
     # Window tracking (for reset)
     last_hour_reset: datetime = Field(default_factory=datetime.utcnow)

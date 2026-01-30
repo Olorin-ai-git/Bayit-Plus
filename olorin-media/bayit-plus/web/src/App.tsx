@@ -1,5 +1,5 @@
-import { useEffect, lazy, Suspense } from 'react'
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useEffect, useState, lazy, Suspense } from 'react'
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { initWebI18n, setupWebDirectionListener } from '@bayit/shared-i18n/web'
 import { useDirection } from '@/hooks/useDirection'
 import { VoiceListeningProvider } from '@bayit/shared-contexts'
@@ -8,8 +8,10 @@ import Layout from './components/layout/Layout'
 import FullscreenVideoOverlay from './components/player/FullscreenVideoOverlay'
 import LocationManager from './components/location/LocationManager'
 import PaymentPendingGuard from './components/auth/PaymentPendingGuard'
+import ProtectedRoute from './components/auth/ProtectedRoute'
 import { useAuthStore } from '@/stores/authStore'
 import { logger } from '@/utils/logger'
+import { AISearchModal, type AISearchResult } from './components/beta/AISearchModal'
 import './styles/layout-fix.css'
 
 // Loading fallback component
@@ -59,6 +61,7 @@ import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import GoogleCallbackPage from './pages/GoogleCallbackPage'
+import EmailVerificationPage from './pages/auth/EmailVerificationPage'
 import ProfileSelectionPage from './pages/ProfileSelectionPage'
 import NotFoundPage from './pages/NotFoundPage'
 
@@ -166,6 +169,7 @@ const AppContent = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
+      <Route path="/verify-email" element={<EmailVerificationPage />} />
       <Route path="/profiles" element={<ProfileSelectionPage />} />
       <Route path="/tv-login" element={<TVLoginPage />} />
 
@@ -223,14 +227,16 @@ const AppContent = () => {
         <Route path="diagnostics" element={<SystemDiagnosticsPage />} />
       </Route>
 
-      {/* Main Routes with Layout (protected by payment guard) */}
+      {/* Main Routes with Layout (protected by authentication and payment guard) */}
       <Route
         element={
-          <PaymentPendingGuard>
-            <VoiceListeningProvider>
-              <Layout />
-            </VoiceListeningProvider>
-          </PaymentPendingGuard>
+          <ProtectedRoute>
+            <PaymentPendingGuard>
+              <VoiceListeningProvider>
+                <Layout />
+              </VoiceListeningProvider>
+            </PaymentPendingGuard>
+          </ProtectedRoute>
         }
       >
         <Route path="/" element={<HomePage />} />
@@ -272,6 +278,9 @@ const AppContent = () => {
 function App() {
   // Set document direction based on language (RTL for Hebrew/Arabic, LTR for others)
   useDirection()
+  const navigate = useNavigate()
+  const { isAuthenticated, user } = useAuthStore()
+  const [aiSearchModalVisible, setAiSearchModalVisible] = useState(false)
 
   useEffect(() => {
     const initI18n = async () => {
@@ -302,6 +311,58 @@ function App() {
     initI18n()
   }, [])
 
+  // Cmd+K / Ctrl+K keyboard shortcut for AI Search
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Check for Cmd+K (Mac) or Ctrl+K (Windows/Linux)
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+
+        // Only open if user is authenticated
+        if (isAuthenticated && user) {
+          setAiSearchModalVisible(true)
+          logger.info('AI Search modal opened via keyboard shortcut', 'App', {
+            userId: user.id,
+          })
+        } else {
+          logger.debug('AI Search shortcut pressed but user not authenticated', 'App')
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [isAuthenticated, user])
+
+  const handleAiSearchResultSelect = (result: AISearchResult) => {
+    setAiSearchModalVisible(false)
+
+    // Navigate to the appropriate page based on content type
+    const routeMap: Record<AISearchResult['type'], string> = {
+      movie: `/vod/movie/${result.id}`,
+      series: `/vod/series/${result.id}`,
+      podcast: `/podcasts/${result.id}`,
+      audiobook: `/audiobooks/${result.id}`,
+      live_channel: `/live/${result.id}`,
+    }
+
+    const route = routeMap[result.type]
+    if (route) {
+      logger.info('Navigating to AI Search result', 'App', {
+        contentType: result.type,
+        contentId: result.id,
+        title: result.title,
+        route,
+      })
+      navigate(route)
+    } else {
+      logger.warn('Unknown content type from AI Search', 'App', {
+        contentType: result.type,
+        contentId: result.id,
+      })
+    }
+  }
+
   return (
     <NotificationProvider position="top" maxVisible={3}>
       <Suspense fallback={<LoadingFallback />}>
@@ -313,6 +374,15 @@ function App() {
 
       {/* Location Services - GDPR-compliant geolocation with consent modal */}
       <LocationManager />
+
+      {/* AI Search Modal - Cmd+K keyboard shortcut (Beta 500 feature) */}
+      <AISearchModal
+        visible={aiSearchModalVisible}
+        onClose={() => setAiSearchModalVisible(false)}
+        onSelectResult={handleAiSearchResultSelect}
+        isEnrolled={!!user && !!user.subscription?.plan && user.subscription.plan === 'beta'}
+        apiBaseUrl="/api/v1"
+      />
     </NotificationProvider>
   )
 }

@@ -29,6 +29,12 @@ class BetaCredit(Document):
     used_credits: int = Field(default=0, ge=0)
     remaining_credits: int = Field(ge=0)
     is_expired: bool = Field(default=False)
+    version: int = Field(default=0)  # Optimistic locking version
+
+    # Email notification tracking (to avoid duplicate emails)
+    low_balance_email_sent: bool = Field(default=False)
+    depleted_email_sent: bool = Field(default=False)
+
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

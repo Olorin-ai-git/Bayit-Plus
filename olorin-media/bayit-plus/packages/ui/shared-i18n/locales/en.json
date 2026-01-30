@@ -2393,6 +2393,25 @@
       "status": {
         "active": "Active",
         "pending": "Pending Verification"
+      },
+      "verification": {
+        "verifying": "Verifying your email...",
+        "success": "Email verified successfully! Redirecting to login...",
+        "failed": "Email verification failed. Please try again or request a new verification link.",
+        "missingToken": "Verification token is missing. Please check your email link.",
+        "expired": "This verification link has expired. Please request a new one.",
+        "invalidToken": "This verification link is invalid. Please request a new one.",
+        "resendEmail": "Resend Verification Email",
+        "backToHome": "Back to Home",
+        "redirecting": "Redirecting in {{seconds}} seconds...",
+        "resendSuccess": "Verification email sent! Please check your inbox.",
+        "resendFailed": "Failed to resend email. Please try again later.",
+        "emailSent": "Verification email sent to {{email}}",
+        "checkInbox": "Please check your inbox and click the verification link.",
+        "expiresIn": "Link expires in {{hours}} hours",
+        "welcomeTitle": "Welcome to Bayit+ Beta 500!",
+        "welcomeMessage": "Thank you for joining our exclusive beta program. You've received 500 AI credits to test our advanced features.",
+        "verifyPrompt": "Please verify your email to activate your account and credits."
       }
     }
   },

@@ -13,7 +13,7 @@ from typing import Optional
 from app.core.config import settings
 from app.models.integration_partner import IntegrationPartner
 from app.services.beta.credit_service import BetaCreditService
-from app.services.beta.session_credit_service import SessionBasedCreditService
+from app.services.beta.session_service import SessionBasedCreditService
 from app.services.olorin.dubbing.service import RealtimeDubbingService
 from app.services.olorin.dubbing.voice_settings import VoiceSettings
 

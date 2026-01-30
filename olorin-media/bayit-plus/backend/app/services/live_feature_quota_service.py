@@ -100,6 +100,58 @@ class LiveFeatureQuotaService:
         """Get current usage stats for user"""
         return await self.quota_checker.get_usage_stats(self.quota_manager, user_id)
 
+    async def check_trivia_quota(
+        self,
+        user_id: str,
+        facts_count: int = 1
+    ) -> Tuple[bool, Optional[str], Dict]:
+        """
+        Check if user has trivia quota available.
+
+        Args:
+            user_id: User ID
+            facts_count: Number of facts to check
+
+        Returns:
+            (allowed, error_message, usage_stats) tuple
+        """
+        quota = await self.quota_manager.get_or_create_quota(user_id)
+        await self.quota_manager.reset_windows_if_needed(quota)
+
+        # Check hour limit
+        if quota.trivia_usage_current_hour + facts_count > quota.trivia_facts_per_hour:
+            return (
+                False,
+                f"Hourly trivia limit reached ({quota.trivia_facts_per_hour} facts/hour)",
+                {}
+            )
+
+        # Check day limit
+        if quota.trivia_usage_current_day + facts_count > quota.trivia_facts_per_day:
+            return (
+                False,
+                f"Daily trivia limit reached ({quota.trivia_facts_per_day} facts/day)",
+                {}
+            )
+
+        # Check month limit
+        if quota.trivia_usage_current_month + facts_count > quota.trivia_facts_per_month:
+            return (
+                False,
+                f"Monthly trivia limit reached ({quota.trivia_facts_per_month} facts/month)",
+                {}
+            )
+
+        return (True, None, {})
+
+    async def increment_trivia_usage(self, user_id: str, facts_count: int = 1) -> None:
+        """Increment trivia usage counters."""
+        quota = await self.quota_manager.get_or_create_quota(user_id)
+        quota.trivia_usage_current_hour += facts_count
+        quota.trivia_usage_current_day += facts_count
+        quota.trivia_usage_current_month += facts_count
+        await quota.save()
+
     async def reset_user_quota(self, user_id: str):
         """Reset all usage counters (admin action)"""
         return await self.admin_operations.reset_user_quota(self.quota_manager, user_id)

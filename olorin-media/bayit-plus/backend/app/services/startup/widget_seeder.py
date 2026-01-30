@@ -268,6 +268,8 @@ async def _create_radio_103fm_widget() -> bool:
 
 async def _create_podcast_widgets() -> int:
     """Create podcast widgets. Returns count of widgets created."""
+    from app.models.content import Podcast
+
     created_count = 0
 
     for config in PODCAST_WIDGETS:
@@ -284,14 +286,24 @@ async def _create_podcast_widgets() -> int:
             )
             continue
 
+        # Look up podcast by title to get its ObjectId
+        podcast = await Podcast.find_one({"title": config["podcast_title"]})
+        if not podcast:
+            logger.error(
+                f"Podcast '{config['podcast_title']}' not found in database - "
+                f"skipping widget '{config['title']}'"
+            )
+            continue
+
         widget = Widget(
             type=WidgetType.SYSTEM,
             title=config["title"],
             description=config["description"],
             icon=config["icon"],
+            cover_url=config.get("cover_url"),
             content=WidgetContent(
                 content_type=WidgetContentType.PODCAST,
-                podcast_id=config["podcast_id"],
+                podcast_id=str(podcast.id),
             ),
             position=WidgetPosition(
                 x=config["position"]["x"],

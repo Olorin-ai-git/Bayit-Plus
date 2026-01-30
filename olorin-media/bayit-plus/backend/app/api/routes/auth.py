@@ -12,6 +12,7 @@ from olorin_shared.auth import create_refresh_token, verify_refresh_token
 from pydantic import BaseModel
 
 from app.core.config import settings
+from app.core.database import get_database
 from app.core.logging_config import get_logger
 from app.core.rate_limiter import RATE_LIMITING_ENABLED, limiter
 from app.core.security import (create_access_token, get_current_active_user,
@@ -599,6 +600,82 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
 
     # ✅ Audit log: OAuth login
     await audit_logger.log_oauth_login(user, request, "google")
+
+    # ✅ Check for Beta 500 invitation and auto-enroll (with MongoDB transaction)
+    try:
+        from app.services.beta.credit_service import BetaCreditService
+        from app.services.olorin.metering.service import MeteringService
+        from datetime import timedelta
+
+        # Get database connection
+        db = get_database()
+
+        # Check if user has beta invitation (use raw MongoDB query)
+        beta_user_doc = await db.beta_users.find_one({"email": email})
+        if beta_user_doc and beta_user_doc.get("status") == "pending_verification":
+            # ✅ TRANSACTIONAL ENROLLMENT - All operations succeed or all fail
+            async with await db.client.start_session() as session:
+                async with session.start_transaction():
+                    try:
+                        # 1. Auto-activate beta user (OAuth email is pre-verified)
+                        await db.beta_users.update_one(
+                            {"email": email},
+                            {
+                                "$set": {
+                                    "status": "active",
+                                    "is_beta_user": True,
+                                    "enrolled_at": datetime.now(timezone.utc)
+                                }
+                            },
+                            session=session
+                        )
+
+                        # 2. Allocate beta credits (with real MeteringService)
+                        metering_service = MeteringService()
+                        credit_service = BetaCreditService(
+                            settings=settings,
+                            metering_service=metering_service,
+                            db=db
+                        )
+                        await credit_service.allocate_credits(
+                            user_id=str(user.id),
+                            session=session
+                        )
+
+                        # 3. Set subscription to Beta tier
+                        user.subscription = {
+                            "plan": "beta",
+                            "status": "active",
+                            "start_date": datetime.now(timezone.utc).isoformat(),
+                            "end_date": (datetime.now(timezone.utc) + timedelta(days=settings.BETA_DURATION_DAYS)).isoformat()
+                        }
+                        await user.save(session=session)
+
+                        # Commit transaction
+                        await session.commit_transaction()
+
+                        logger.info(
+                            "Beta user auto-enrolled via OAuth (transactional)",
+                            extra={"email": email, "user_id": str(user.id)}
+                        )
+
+                    except Exception as tx_error:
+                        # Abort transaction on any error
+                        await session.abort_transaction()
+                        raise tx_error
+
+    except Exception as e:
+        import traceback
+        logger.error(
+            "Beta enrollment error during OAuth (transaction rolled back)",
+            extra={
+                "email": email,
+                "error": str(e),
+                "error_type": type(e).__name__,
+                "traceback": traceback.format_exc()
+            }
+        )
+        # Continue with login even if beta enrollment fails
 
     # Create JWT access and refresh tokens
     jwt_token = create_access_token(data={"sub": str(user.id)})

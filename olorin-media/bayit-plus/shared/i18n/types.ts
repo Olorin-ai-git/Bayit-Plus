@@ -64,9 +64,9 @@ export interface TranslationNamespace {
 /**
  * Storage for all translations by language.
  */
-export interface TranslationResources {
+export type TranslationResources = {
   [lang in LanguageCode]?: TranslationNamespace;
-}
+};
 
 /**
  * Direction information for RTL/LTR support.

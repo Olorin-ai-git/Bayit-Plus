@@ -139,6 +139,9 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction
 
+      - name: Install spaCy language models
+        run: poetry run python -m spacy download en_core_web_sm
+
       - name: Run pytest
         run: poetry run pytest --cov=app --cov-report=xml -v
         env:

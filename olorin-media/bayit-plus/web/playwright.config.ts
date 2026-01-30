@@ -9,8 +9,8 @@ import { defineConfig, devices } from '@playwright/test';
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
-  testDir: './tests/migration',
-  testMatch: '**/*.spec.ts',
+  testDir: './e2e',
+  testMatch: ['**/beta/**/*.spec.ts', '**/migration/**/*.spec.ts'],
 
   // Run tests in parallel
   fullyParallel: true,
@@ -34,7 +34,7 @@ export default defineConfig({
   // Shared settings for all tests
   use: {
     // Base URL for navigation
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3200',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
 
     // Screenshot on failure
     screenshot: 'only-on-failure',
@@ -133,11 +133,19 @@ export default defineConfig({
     },
   ],
 
-  // Run local dev server before starting tests
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3200',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-  },
+  // Run local dev servers before starting tests (backend + frontend)
+  webServer: [
+    {
+      command: 'cd ../backend && poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000',
+      url: 'http://localhost:8000/health',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000, // 2 minutes for backend startup
+    },
+    {
+      command: 'npm run dev',
+      url: 'http://localhost:3000',
+      reuseExistingServer: !process.env.CI,
+      timeout: 60 * 1000, // 1 minute for frontend startup
+    },
+  ],
 });

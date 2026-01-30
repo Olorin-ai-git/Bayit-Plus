@@ -34,6 +34,9 @@ _running_tasks: list[asyncio.Task[Any]] = []
 # Global translation worker instance
 _translation_worker: PodcastTranslationWorker | None = None
 
+# Global Beta checkpoint worker instance
+_beta_checkpoint_worker = None
+
 
 async def _scan_monitored_folders_task() -> None:
     """Periodically scan monitored folders for new content."""
@@ -275,16 +278,34 @@ def start_background_tasks() -> None:
     _running_tasks.append(task)
     logger.info("Started cost aggregation background task (every 1 hour)")
 
+    # Beta 500 checkpoint worker (always runs when beta features enabled)
+    if settings.BETA_FEATURES_ENABLED:
+        from app.workers.beta_checkpoint_worker import checkpoint_worker
+        global _beta_checkpoint_worker
+        _beta_checkpoint_worker = checkpoint_worker
+        task = asyncio.create_task(_beta_checkpoint_worker.start())
+        _running_tasks.append(task)
+        logger.info(
+            f"Started Beta 500 checkpoint worker "
+            f"(interval: {settings.SESSION_CHECKPOINT_INTERVAL_SECONDS}s)"
+        )
+
 
 async def stop_background_tasks() -> None:
     """Stop all running background tasks gracefully."""
-    global _running_tasks, _translation_worker
+    global _running_tasks, _translation_worker, _beta_checkpoint_worker
 
     # Stop translation worker first
     if _translation_worker:
         logger.info("Stopping podcast translation worker...")
         await _translation_worker.stop()
         _translation_worker = None
+
+    # Stop Beta checkpoint worker
+    if _beta_checkpoint_worker:
+        logger.info("Stopping Beta 500 checkpoint worker...")
+        await _beta_checkpoint_worker.stop()
+        _beta_checkpoint_worker = None
 
     # Stop session monitor
     from app.services.session_monitor import shutdown_session_monitor

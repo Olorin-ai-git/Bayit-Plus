@@ -39,7 +39,7 @@ export const BetaCreditBalance: React.FC<BetaCreditBalanceProps> = ({
 
   const fetchBalance = async () => {
     try {
-      const response = await fetch(`${apiBaseUrl}/beta/credits`, {
+      const response = await fetch(`${apiBaseUrl}/beta/credits/balance`, {
         method: 'GET',
         credentials: 'include',
       });

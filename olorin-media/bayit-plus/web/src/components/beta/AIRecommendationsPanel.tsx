@@ -8,6 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useBetaFeatureGate } from '../../../../shared/hooks/useBetaFeatureGate';
+import { InsufficientCreditsModal } from './InsufficientCreditsModal';
 
 export interface AIRecommendation {
   type: 'movie' | 'series' | 'podcast' | 'audiobook';
@@ -37,6 +38,8 @@ export interface AIRecommendationsPanelProps {
   apiBaseUrl?: string;
 }
 
+const AI_RECOMMENDATIONS_CREDIT_COST = 3; // Credits required for AI recommendations
+
 export const AIRecommendationsPanel: React.FC<AIRecommendationsPanelProps> = ({
   isEnrolled,
   onSelectRecommendation,
@@ -48,6 +51,8 @@ export const AIRecommendationsPanel: React.FC<AIRecommendationsPanelProps> = ({
   const [loading, setLoading] = useState(false);
   const [recommendations, setRecommendations] = useState<AIRecommendationsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [currentBalance, setCurrentBalance] = useState<number | null>(null);
+  const [showInsufficientModal, setShowInsufficientModal] = useState(false);
 
   const {
     canAccess,
@@ -75,14 +80,47 @@ export const AIRecommendationsPanel: React.FC<AIRecommendationsPanelProps> = ({
     t('beta.recommendations.contexts.funny'),
   ];
 
+  // Fetch current credit balance on component mount
+  useEffect(() => {
+    fetchCurrentBalance();
+  }, []);
+
+  const fetchCurrentBalance = async () => {
+    try {
+      const response = await fetch(`${apiBaseUrl}/beta/credits/balance`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentBalance(data.balance);
+      }
+    } catch (err) {
+      // Silent fail - balance check is not critical
+      console.warn('Failed to fetch credit balance:', err);
+    }
+  };
+
   const fetchRecommendations = async () => {
     if (!canAccess) {
       requestFeatureAccess();
       return;
     }
 
+    // Pre-authorization check
+    if (currentBalance !== null && currentBalance < AI_RECOMMENDATIONS_CREDIT_COST) {
+      setShowInsufficientModal(true);
+      return;
+    }
+
     setLoading(true);
     setError(null);
+
+    // Optimistic update: deduct credits immediately
+    if (currentBalance !== null) {
+      setCurrentBalance(currentBalance - AI_RECOMMENDATIONS_CREDIT_COST);
+    }
 
     try {
       const params = new URLSearchParams({
@@ -94,7 +132,7 @@ export const AIRecommendationsPanel: React.FC<AIRecommendationsPanelProps> = ({
         params.append('context', context.trim());
       }
 
-      const response = await fetch(`${apiBaseUrl}/beta/recommendations?${params}`, {
+      const response = await fetch(`${apiBaseUrl}/beta/ai-recommendations?${params}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -109,8 +147,14 @@ export const AIRecommendationsPanel: React.FC<AIRecommendationsPanelProps> = ({
 
       const data: AIRecommendationsResponse = await response.json();
       setRecommendations(data);
+      // Update balance with actual value from server
+      setCurrentBalance(data.credits_remaining);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to get recommendations');
+      // Rollback optimistic update on error
+      if (currentBalance !== null) {
+        setCurrentBalance(currentBalance + AI_RECOMMENDATIONS_CREDIT_COST);
+      }
     } finally {
       setLoading(false);
     }
@@ -325,6 +369,15 @@ export const AIRecommendationsPanel: React.FC<AIRecommendationsPanelProps> = ({
           <p>{t('beta.recommendations.emptyState')}</p>
         </div>
       )}
+
+      {/* Insufficient Credits Modal */}
+      <InsufficientCreditsModal
+        visible={showInsufficientModal}
+        onClose={() => setShowInsufficientModal(false)}
+        requiredCredits={AI_RECOMMENDATIONS_CREDIT_COST}
+        currentBalance={currentBalance || 0}
+        featureName={t('beta.recommendations.title')}
+      />
     </div>
   );
 };

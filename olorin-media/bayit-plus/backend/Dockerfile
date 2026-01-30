@@ -28,6 +28,9 @@ WORKDIR /app/backend
 RUN poetry config virtualenvs.create false && \
     poetry install --only main --no-interaction --no-ansi
 
+# Install spaCy language models for live trivia
+RUN python -m spacy download en_core_web_sm
+
 # Production stage
 FROM python:3.11-slim
 

@@ -27,6 +27,7 @@ import {
 } from '@bayit/shared';
 import { ProfileDropdown } from '@bayit/shared/ProfileDropdown';
 import { platformClass } from '../../../utils/platformClass';
+import { BetaCreditBalance } from '../../beta/BetaCreditBalance';
 
 // Check if this is a TV build
 declare const __TV__: boolean;
@@ -134,6 +135,15 @@ export default function HeaderActions({
             </Text>
           </View>
         </Link>
+      )}
+
+      {/* Beta Credit Balance */}
+      {isAuthenticated && user && (
+        <BetaCreditBalance
+          variant="compact"
+          apiBaseUrl="/api/v1"
+          refreshInterval={30000}
+        />
       )}
 
       {/* Profile or Login */}

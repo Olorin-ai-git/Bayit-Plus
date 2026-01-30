@@ -13,7 +13,7 @@ from typing import Any, AsyncIterator, Dict, Optional
 from app.core.config import settings
 from app.models.user import User
 from app.services.beta.credit_service import BetaCreditService
-from app.services.beta.session_credit_service import SessionBasedCreditService
+from app.services.beta.session_service import SessionBasedCreditService
 from app.services.live_translation_service import LiveTranslationService
 
 logger = logging.getLogger(__name__)
