@@ -10,6 +10,7 @@
 
 import React, { useEffect } from 'react';
 import { View, Dimensions } from 'react-native';
+import { colors } from '@olorin/design-tokens';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -38,7 +39,7 @@ export default function VoiceWaveform({
   isListening,
   amplitude = 0.5,
   barCount = DEFAULT_BAR_COUNT,
-  color = '#00aaff',
+  color = colors.info.DEFAULT,
 }: VoiceWaveformProps) {
   // Create shared values for each bar
   const barAnimations = Array.from({ length: barCount }, () => useSharedValue(0));

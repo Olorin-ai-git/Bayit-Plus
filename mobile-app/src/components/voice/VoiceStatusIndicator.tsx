@@ -12,6 +12,7 @@ import {
   Animated,
   TouchableOpacity,
 } from 'react-native';
+import { colors } from '@olorin/design-tokens';
 import { useVoiceState } from '../../hooks/useVoiceFeatures';
 import { VoiceStage } from '../../services/voiceManager';
 
@@ -53,16 +54,16 @@ export const VoiceStatusIndicator: React.FC<VoiceStatusIndicatorProps> = ({
   const getStageColor = () => {
     switch (stage) {
       case 'listening':
-        return '#EF4444'; // Red
+        return colors.error.DEFAULT; // Red
       case 'processing':
-        return '#F59E0B'; // Amber
+        return colors.warning.DEFAULT; // Amber
       case 'responding':
-        return '#10B981'; // Green
+        return colors.success.DEFAULT; // Green
       case 'error':
       case 'timeout':
-        return '#DC2626'; // Dark red
+        return colors.error[600]; // Dark red
       default:
-        return '#6B7280'; // Gray
+        return colors.textMuted; // Gray
     }
   };
 

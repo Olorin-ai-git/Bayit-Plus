@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   minimalBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: colors.glass.bgStrong,
     borderRadius: borderRadius.xl,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,

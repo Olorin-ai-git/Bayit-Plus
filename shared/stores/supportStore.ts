@@ -125,6 +125,7 @@ interface SupportStore {
   // Wake word state
   isWakeWordEnabled: boolean;
   wakeWordDetected: boolean;
+  wakeSensitivity: number;
 
   // Wizard intro state
   hasSeenWizardIntro: boolean;
@@ -188,6 +189,7 @@ interface SupportStore {
   setWakeWordEnabled: (enabled: boolean) => void;
   onWakeWordDetected: () => void;
   resetWakeWordDetected: () => void;
+  setWakeSensitivity: (sensitivity: number) => void;
 
   // Wizard intro actions
   markWizardIntroSeen: () => void;
@@ -264,6 +266,7 @@ const initialState = {
   // Wake word state
   isWakeWordEnabled: true,
   wakeWordDetected: false,
+  wakeSensitivity: 0.7,
 
   // Wizard intro state
   hasSeenWizardIntro: false,
@@ -386,6 +389,9 @@ export const useSupportStore = create<SupportStore>()(
 
       resetWakeWordDetected: () => set({ wakeWordDetected: false }),
 
+      setWakeSensitivity: (sensitivity: number) =>
+        set({ wakeSensitivity: Math.max(0, Math.min(1, sensitivity)) }),
+
       // Wizard intro actions
       markWizardIntroSeen: () => set({ hasSeenWizardIntro: true }),
       setSessionIntroPlayed: (played: boolean) => set({ hasPlayedSessionIntro: played }),
@@ -440,7 +446,8 @@ export const useSupportStore = create<SupportStore>()(
       partialize: (state) => ({
         isWakeWordEnabled: state.isWakeWordEnabled,
         hasSeenWizardIntro: state.hasSeenWizardIntro,
-        avatarVisibilityMode: state.avatarVisibilityMode, // NEW: Persist avatar mode preference
+        avatarVisibilityMode: state.avatarVisibilityMode, // Persist avatar mode preference
+        wakeSensitivity: state.wakeSensitivity, // Persist wake word sensitivity
       }),
     }
   )
