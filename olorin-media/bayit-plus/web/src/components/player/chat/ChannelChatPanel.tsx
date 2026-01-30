@@ -13,6 +13,7 @@ import { MessageCircle, AlertTriangle } from 'lucide-react'
 import { useChannelChat } from '../hooks/useChannelChat'
 import { useChannelChatStore } from '@/stores/channelChatSlice'
 import { logger } from '@/utils/logger'
+import { channelChatConfig } from '@/config/channelChatConfig'
 import ChannelChatHeader from './ChannelChatHeader'
 import ChannelChatMessage from './ChannelChatMessage'
 import ChannelChatInput from './ChannelChatInput'
@@ -22,9 +23,6 @@ interface ChannelChatPanelProps {
   channelId: string
   isLiveChannel: boolean
 }
-
-const CHAT_MAX_LENGTH = 280
-const AUTO_HIDE_MS = 10000
 
 export default function ChannelChatPanel({
   channelId,
@@ -57,7 +55,7 @@ export default function ChannelChatPanel({
     if (autoHideTimer.current) clearTimeout(autoHideTimer.current)
     autoHideTimer.current = setTimeout(() => {
       if (isChatExpanded) toggleChatExpanded()
-    }, AUTO_HIDE_MS)
+    }, channelChatConfig.autoHideMs)
   }, [isChatExpanded, toggleChatExpanded])
 
   useEffect(() => {
@@ -154,7 +152,7 @@ export default function ChannelChatPanel({
       </ScrollView>
       <ChannelChatInput
         onSendMessage={handleSendMessage}
-        maxLength={CHAT_MAX_LENGTH}
+        maxLength={channelChatConfig.maxMessageLength}
         disabled={!isConnected}
       />
     </View>

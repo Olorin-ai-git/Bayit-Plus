@@ -4,7 +4,7 @@ Background service for analyzing videos and extracting embedded subtitles
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List
 
 from app.models.content import Content
@@ -52,7 +52,7 @@ async def analyze_and_extract_subtitles(content_id: str, stream_url: str):
         metadata = await ffmpeg_service.analyze_video(stream_url)
         content.video_metadata = metadata
         content.embedded_subtitle_count = len(metadata.get("subtitle_tracks", []))
-        content.subtitle_last_checked = datetime.utcnow()
+        content.subtitle_last_checked = datetime.now(timezone.utc)
 
         # Step 2: Extract subtitles if found (only required languages: en, he, es)
         subtitle_tracks = metadata.get("subtitle_tracks", [])

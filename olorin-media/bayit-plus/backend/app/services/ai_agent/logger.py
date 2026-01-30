@@ -6,7 +6,7 @@ Database logging utilities for streaming logs to UI in real-time.
 
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Dict, Optional
 
 if TYPE_CHECKING:
@@ -83,7 +83,7 @@ async def log_to_database(
 
         log_entry = {
             "id": str(uuid.uuid4())[:8],  # Short ID for React keys
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "level": level,
             "message": message,
             "source": source,

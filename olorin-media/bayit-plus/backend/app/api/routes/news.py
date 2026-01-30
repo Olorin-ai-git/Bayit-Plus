@@ -5,7 +5,7 @@ Provides endpoints for:
 - Ynet Mivzakim (Breaking News)
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Query
@@ -40,7 +40,7 @@ async def get_mivzakim(
             for item in items
         ],
         "total": len(items),
-        "updated_at": datetime.utcnow().isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
     }
 
 

@@ -5,7 +5,7 @@ Implements the taxonomy enforcement tools for the 5-axis classification system.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from app.models.content import Content
@@ -369,7 +369,7 @@ async def execute_apply_taxonomy_classification(
         if not update_data:
             return {"success": False, "error": "No fields to update"}
 
-        update_data["updated_at"] = datetime.utcnow()
+        update_data["updated_at"] = datetime.now(timezone.utc)
 
         if dry_run:
             logger.info(
@@ -477,7 +477,7 @@ async def execute_batch_migrate_taxonomy(
                 update_data = {
                     "section_ids": [section_id],
                     "primary_section_id": section_id,
-                    "updated_at": datetime.utcnow(),
+                    "updated_at": datetime.now(timezone.utc),
                 }
 
                 # Content format

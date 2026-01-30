@@ -14,7 +14,7 @@ Categories:
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
@@ -468,8 +468,8 @@ class KidsContentSeeder:
                     is_featured=seeded_count < 6,  # First 6 are featured
                     requires_subscription="basic",  # Kids content on basic tier
                     # Timestamps
-                    created_at=datetime.utcnow(),
-                    updated_at=datetime.utcnow(),
+                    created_at=datetime.now(timezone.utc),
+                    updated_at=datetime.now(timezone.utc),
                 )
 
                 await content.insert()

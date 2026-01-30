@@ -9,7 +9,7 @@ import io
 import json
 import secrets
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, Optional
 
 from fastapi import WebSocket
@@ -45,7 +45,7 @@ class PairingSession:
             self.expires_at = self.created_at + timedelta(minutes=5)
 
     def is_expired(self) -> bool:
-        return datetime.utcnow() > self.expires_at
+        return datetime.now(timezone.utc) > self.expires_at
 
 
 class PairingManager:

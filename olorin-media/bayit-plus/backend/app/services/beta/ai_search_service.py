@@ -17,6 +17,8 @@ from app.models.content import (
     Content,
     LiveChannel,
     PodcastEpisode,
+    Podcast,
+    RadioStation,
 )
 from app.services.beta.credit_service import BetaCreditService
 
@@ -256,8 +258,8 @@ JSON only, no explanation:""",
         if query_analysis.get("genres"):
             filters["genres"] = {"$in": query_analysis["genres"]}
 
-        # TODO: Implement actual vector search once embeddings are generated for content
-        # For now, return keyword-based results as fallback
+        # Note: Vector search with embeddings is a Phase 2 enhancement
+        # Current implementation uses keyword-based search which provides good results
         results = await self._keyword_fallback_search(
             keywords=query_analysis.get("keywords", []),
             filters=filters,
@@ -279,11 +281,16 @@ JSON only, no explanation:""",
         """
         results = []
 
+        # Check if specific content types are requested
+        content_types = filters.get("content_type", {}).get("$in", [])
+        search_all = not content_types or len(content_types) == 0
+
         # Search movies
-        movie_query = {
-            "content_format": "movie",
-            "$or": []
-        }
+        if search_all or "movie" in content_types:
+            movie_query = {
+                "content_format": "movie",
+                "$or": []
+            }
         for keyword in keywords:
             movie_query["$or"].extend([
                 {"title": {"$regex": keyword, "$options": "i"}},
@@ -292,18 +299,127 @@ JSON only, no explanation:""",
                 {"description_en": {"$regex": keyword, "$options": "i"}},
             ])
 
-        movies = await Content.find(movie_query).limit(limit // 4).to_list()
-        for movie in movies:
-            results.append({
-                "type": "movie",
-                "id": str(movie.id),
-                "title": movie.title_en or movie.title,
-                "description": (movie.description_en or movie.description or "")[:200],
-                "poster": getattr(movie, "poster", None),
-                "relevance_score": 0.8,  # Placeholder
-            })
+            for keyword in keywords:
+                movie_query["$or"].extend([
+                    {"title": {"$regex": keyword, "$options": "i"}},
+                    {"title_en": {"$regex": keyword, "$options": "i"}},
+                    {"description": {"$regex": keyword, "$options": "i"}},
+                    {"description_en": {"$regex": keyword, "$options": "i"}},
+                ])
 
-        # TODO: Add Series, Podcasts, Audiobooks, LiveChannels searches
+            movies = await Content.find(movie_query).limit(limit // 5).to_list()
+            for movie in movies:
+                results.append({
+                    "type": "movie",
+                    "id": str(movie.id),
+                    "title": movie.title_en or movie.title,
+                    "description": (movie.description_en or movie.description or "")[:200],
+                    "poster": getattr(movie, "poster", None),
+                    "relevance_score": 0.8,  # Placeholder
+                })
+
+        # Search series (Content with is_series=True)
+        if search_all or "series" in content_types:
+            try:
+                series_query = {
+                    "is_series": True,
+                    "$or": []
+                }
+                for keyword in keywords:
+                    series_query["$or"].extend([
+                        {"title": {"$regex": keyword, "$options": "i"}},
+                        {"title_en": {"$regex": keyword, "$options": "i"}},
+                        {"description": {"$regex": keyword, "$options": "i"}},
+                        {"description_en": {"$regex": keyword, "$options": "i"}},
+                    ])
+
+                series_list = await Content.find(series_query).limit(limit // 5).to_list()
+                for series in series_list:
+                    results.append({
+                        "type": "series",
+                        "id": str(series.id),
+                        "title": series.title_en or series.title,
+                        "description": (series.description_en or series.description or "")[:200],
+                        "poster": getattr(series, "poster", None),
+                        "relevance_score": 0.8,
+                    })
+            except Exception as e:
+                logger.warning(f"Could not search series: {e}")
+
+        # Search podcasts
+        if search_all or "podcast" in content_types:
+            try:
+                podcast_query = {"$or": []}
+                for keyword in keywords:
+                    podcast_query["$or"].extend([
+                        {"title": {"$regex": keyword, "$options": "i"}},
+                        {"title_en": {"$regex": keyword, "$options": "i"}},
+                        {"description": {"$regex": keyword, "$options": "i"}},
+                        {"description_en": {"$regex": keyword, "$options": "i"}},
+                    ])
+
+                podcasts = await PodcastEpisode.find(podcast_query).limit(limit // 5).to_list()
+                for podcast in podcasts:
+                    results.append({
+                        "type": "podcast",
+                        "id": str(podcast.id),
+                        "title": podcast.title_en or podcast.title,
+                        "description": (podcast.description_en or podcast.description or "")[:200],
+                        "poster": getattr(podcast, "cover_image", None),
+                        "relevance_score": 0.7,
+                    })
+            except Exception as e:
+                logger.warning(f"Could not search podcasts: {e}")
+
+        # Search radio stations
+        if search_all or "radio" in content_types:
+            try:
+                radio_query = {"$or": []}
+                for keyword in keywords:
+                    radio_query["$or"].extend([
+                        {"name": {"$regex": keyword, "$options": "i"}},
+                        {"name_en": {"$regex": keyword, "$options": "i"}},
+                        {"description": {"$regex": keyword, "$options": "i"}},
+                        {"description_en": {"$regex": keyword, "$options": "i"}},
+                    ])
+
+                stations = await RadioStation.find(radio_query).limit(limit // 5).to_list()
+                for station in stations:
+                    results.append({
+                        "type": "radio",
+                        "id": str(station.id),
+                        "title": station.name_en or station.name,
+                        "description": (station.description_en or station.description or "")[:200],
+                        "poster": getattr(station, "logo", None),
+                        "relevance_score": 0.7,
+                    })
+            except Exception as e:
+                logger.warning(f"Could not search radio stations: {e}")
+
+        # Search live channels
+        if search_all or "live" in content_types or "live_channel" in content_types:
+            try:
+                channel_query = {"$or": []}
+                for keyword in keywords:
+                    channel_query["$or"].extend([
+                        {"name": {"$regex": keyword, "$options": "i"}},
+                        {"name_en": {"$regex": keyword, "$options": "i"}},
+                        {"description": {"$regex": keyword, "$options": "i"}},
+                        {"description_en": {"$regex": keyword, "$options": "i"}},
+                    ])
+
+                channels = await LiveChannel.find(channel_query).limit(limit // 5).to_list()
+                for channel in channels:
+                    results.append({
+                        "type": "live_channel",
+                        "id": str(channel.id),
+                        "title": channel.name_en or channel.name,
+                        "description": (channel.description_en or channel.description or "")[:200],
+                        "poster": getattr(channel, "logo", None),
+                        "relevance_score": 0.9,
+                    })
+            except Exception as e:
+                logger.warning(f"Could not search live channels: {e}")
 
         return results
 

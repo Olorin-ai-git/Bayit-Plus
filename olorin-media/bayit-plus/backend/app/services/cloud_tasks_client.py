@@ -1,7 +1,7 @@
 """Cloud Tasks client for enqueuing podcast translation jobs."""
 
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from google.cloud import tasks_v2
@@ -48,7 +48,7 @@ class CloudTasksClient:
         # Task payload
         payload = {
             "episode_id": episode_id,
-            "enqueued_at": datetime.utcnow().isoformat(),
+            "enqueued_at": datetime.now(timezone.utc).isoformat(),
             "priority": priority,
         }
 

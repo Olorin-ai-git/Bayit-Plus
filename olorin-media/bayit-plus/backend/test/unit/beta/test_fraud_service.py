@@ -2,7 +2,7 @@
 
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import hashlib
 from app.services.beta.fraud_service import FraudDetectionService
 from app.core.config import Settings
@@ -203,7 +203,7 @@ class TestDetectCreditAbuse:
         with patch('app.services.beta.fraud_service.BetaCreditTransaction') as MockTx, \
              patch('app.services.beta.fraud_service.datetime') as mock_datetime:
 
-            mock_now = datetime.utcnow()
+            mock_now = datetime.now(timezone.utc)
             mock_datetime.utcnow.return_value = mock_now
 
             MockTx.find = MagicMock()

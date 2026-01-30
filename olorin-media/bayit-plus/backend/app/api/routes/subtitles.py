@@ -3,7 +3,7 @@ Subtitles API Routes.
 Handles subtitle tracks, nikud generation, and word translation.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, Query, Request
@@ -150,8 +150,8 @@ async def generate_nikud_for_track(
         cue.text_nikud = nikud_texts[i]
 
     track.has_nikud_version = True
-    track.nikud_generated_at = datetime.utcnow()
-    track.updated_at = datetime.utcnow()
+    track.nikud_generated_at = datetime.now(timezone.utc)
+    track.updated_at = datetime.now(timezone.utc)
     await track.save()
 
     return {
@@ -202,7 +202,7 @@ async def import_subtitles(
         ]
         existing.source_url = source_url
         existing.format = track.format
-        existing.updated_at = datetime.utcnow()
+        existing.updated_at = datetime.now(timezone.utc)
         await existing.save()
 
         return {
@@ -482,7 +482,7 @@ async def fetch_external_subtitles(
                 source="opensubtitles",
                 external_id=file_id,
                 external_url=best_result.get("download_url"),
-                download_date=datetime.utcnow(),
+                download_date=datetime.now(timezone.utc),
                 cues=[
                     SubtitleCueModel(
                         index=cue.index,

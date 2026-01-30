@@ -3,7 +3,7 @@ Quota Checker - Validates quota availability and enforces limits
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Optional, Tuple
 
 from app.models.live_feature_quota import FeatureType
@@ -66,13 +66,13 @@ class QuotaChecker:
                     False,
                     f"Hourly limit reached for {feature_type.value}. "
                     f"Used {current_hour:.1f} of {limit_hour + accumulated:.1f} minutes. "
-                    f"Resets in {60 - datetime.utcnow().minute} minutes.",
+                    f"Resets in {60 - datetime.now(timezone.utc).minute} minutes.",
                     usage_stats,
                 )
 
             # Check daily limit
             if current_day + estimated_duration_minutes > limit_day:
-                hours_until_reset = 24 - datetime.utcnow().hour
+                hours_until_reset = 24 - datetime.now(timezone.utc).hour
                 return (
                     False,
                     f"Daily limit reached for {feature_type.value}. "

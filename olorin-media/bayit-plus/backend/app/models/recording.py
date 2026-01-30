@@ -4,7 +4,7 @@ Database models for live stream recording functionality
 """
 
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from beanie import Document
@@ -105,11 +105,11 @@ class Recording(Document):
             channel_name=session.channel_name,
             title=f"{session.channel_name} - {session.started_at.strftime('%Y-%m-%d %H:%M')}",
             started_at=session.started_at,
-            ended_at=session.actual_end_at or datetime.utcnow(),
+            ended_at=session.actual_end_at or datetime.now(timezone.utc),
             duration_seconds=session.duration_seconds,
             video_url=video_url,
             file_size_bytes=file_size,
-            auto_delete_at=datetime.utcnow() + timedelta(days=30),
+            auto_delete_at=datetime.now(timezone.utc) + timedelta(days=30),
         )
 
     class Settings:

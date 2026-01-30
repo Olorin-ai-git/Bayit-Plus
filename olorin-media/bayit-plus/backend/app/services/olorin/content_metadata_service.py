@@ -7,7 +7,7 @@ with read-only access to Bayit+ Content metadata while maintaining database sepa
 
 import asyncio
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional, Tuple
 
 from beanie import PydanticObjectId
@@ -235,7 +235,7 @@ class ContentMetadataService:
         cached = self._series_cache.get(series_id)
         if cached:
             episodes, cached_at = cached
-            if datetime.utcnow() - cached_at < timedelta(
+            if datetime.now(timezone.utc) - cached_at < timedelta(
                 seconds=SERIES_CACHE_TTL_SECONDS
             ):
                 logger.debug(f"Cache hit for series episodes: {series_id}")
@@ -254,7 +254,7 @@ class ContentMetadataService:
             )
 
             # Update cache
-            self._series_cache[series_id] = (episodes, datetime.utcnow())
+            self._series_cache[series_id] = (episodes, datetime.now(timezone.utc))
 
             # Clean old cache entries (simple LRU-like cleanup)
             if len(self._series_cache) > 100:

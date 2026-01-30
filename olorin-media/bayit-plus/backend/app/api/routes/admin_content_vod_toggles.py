@@ -4,7 +4,7 @@ Handle publish/feature status toggles for VOD content
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
@@ -36,8 +36,8 @@ async def toggle_content_publish(
     try:
         content.is_published = not content.is_published
         if content.is_published and not content.published_at:
-            content.published_at = datetime.utcnow()
-        content.updated_at = datetime.utcnow()
+            content.published_at = datetime.now(timezone.utc)
+        content.updated_at = datetime.now(timezone.utc)
         await content.save()
 
         action = (
@@ -81,7 +81,7 @@ async def toggle_content_feature(
 
     try:
         content.is_featured = not content.is_featured
-        content.updated_at = datetime.utcnow()
+        content.updated_at = datetime.now(timezone.utc)
         await content.save()
         await log_audit(
             str(current_user.id),

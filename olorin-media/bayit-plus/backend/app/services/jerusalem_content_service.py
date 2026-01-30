@@ -13,7 +13,7 @@ Uses existing news_scraper infrastructure with Jerusalem keyword filtering.
 import asyncio
 import logging
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -195,7 +195,7 @@ SEED_JERUSALEM_CONTENT = [
         "title_he": "הכותל המערבי - אתר המורשת של עם ישראל",
         "title_en": "The Western Wall - Heritage Site of the Jewish People",
         "url": "https://english.thekotel.org/",
-        "published_at": datetime.utcnow(),
+        "published_at": datetime.now(timezone.utc),
         "summary": "הכותל המערבי הוא המקום הקדוש ביותר ליהודים בעולם, מקום תפילה ועלייה לרגל מזה אלפי שנים",
         "summary_he": "הכותל המערבי הוא המקום הקדוש ביותר ליהודים בעולם",
         "summary_en": "The Western Wall is the holiest site in Judaism",
@@ -210,7 +210,7 @@ SEED_JERUSALEM_CONTENT = [
         "title_he": "טקסי השבעה בכותל המערבי",
         "title_en": "IDF Swearing-In Ceremonies at the Western Wall",
         "url": "https://www.idf.il/",
-        "published_at": datetime.utcnow(),
+        "published_at": datetime.now(timezone.utc),
         "summary": 'חיילי צה"ל נשבעים אמונים למדינת ישראל בטקסים מרגשים ברחבת הכותל המערבי',
         "summary_he": 'חיילי צה"ל נשבעים אמונים למדינת ישראל בכותל',
         "summary_en": "IDF soldiers swear allegiance at the Western Wall",
@@ -225,7 +225,7 @@ SEED_JERUSALEM_CONTENT = [
         "title_he": "עולים חדשים מגיעים לישראל",
         "title_en": "New Immigrants Arrive in Israel",
         "url": "https://www.jewishagency.org/",
-        "published_at": datetime.utcnow(),
+        "published_at": datetime.now(timezone.utc),
         "summary": "יהודים מרחבי העולם עולים לישראל ומתחברים למורשת העם היהודי",
         "summary_he": "יהודים מרחבי העולם עולים לישראל",
         "summary_en": "Jews from around the world make Aliyah to Israel",
@@ -240,7 +240,7 @@ SEED_JERUSALEM_CONTENT = [
         "title_he": "אירועים ופסטיבלים בירושלים",
         "title_en": "Events and Festivals in Jerusalem",
         "url": "https://www.jerusalem.muni.il/",
-        "published_at": datetime.utcnow(),
+        "published_at": datetime.now(timezone.utc),
         "summary": "ירושלים מציעה מגוון אירועים תרבותיים, פסטיבלים וחגיגות לאורך כל השנה",
         "summary_he": "ירושלים מציעה מגוון אירועים תרבותיים",
         "summary_en": "Jerusalem offers diverse cultural events year-round",
@@ -255,7 +255,7 @@ SEED_JERUSALEM_CONTENT = [
         "title_he": "עיר דוד - חפירות ארכיאולוגיות",
         "title_en": "City of David - Archaeological Excavations",
         "url": "https://www.cityofdavid.org.il/",
-        "published_at": datetime.utcnow(),
+        "published_at": datetime.now(timezone.utc),
         "summary": "גילויים ארכיאולוגיים חדשים בעיר דוד חושפים את ההיסטוריה העתיקה של ירושלים",
         "summary_he": "גילויים ארכיאולוגיים בעיר דוד",
         "summary_en": "Archaeological discoveries in the City of David",
@@ -280,7 +280,7 @@ class JerusalemContentCache:
             return None
 
         items, cached_at = self._cache[key]
-        if datetime.utcnow() - cached_at > self._ttl:
+        if datetime.now(timezone.utc) - cached_at > self._ttl:
             del self._cache[key]
             return None
 
@@ -288,7 +288,7 @@ class JerusalemContentCache:
 
     def set(self, key: str, items: List[Dict[str, Any]]) -> None:
         """Cache items with current timestamp."""
-        self._cache[key] = (items, datetime.utcnow())
+        self._cache[key] = (items, datetime.now(timezone.utc))
 
     def clear(self) -> None:
         """Clear all cached items."""
@@ -749,7 +749,7 @@ class JerusalemContentService:
                 title_he=item.get("title_he"),
                 title_en=item.get("title_en"),
                 url=item.get("url", ""),
-                published_at=item.get("published_at", datetime.utcnow()),
+                published_at=item.get("published_at", datetime.now(timezone.utc)),
                 summary=item.get("summary"),
                 summary_he=item.get("summary_he"),
                 summary_en=item.get("summary_en"),
@@ -767,7 +767,7 @@ class JerusalemContentService:
 
         # Get sources count
         sources = await JerusalemContentSource.find({"is_active": True}).count()
-        last_updated = self._cache.get_last_updated(cache_key) or datetime.utcnow()
+        last_updated = self._cache.get_last_updated(cache_key) or datetime.now(timezone.utc)
 
         return JerusalemContentAggregatedResponse(
             items=response_items,

@@ -4,7 +4,7 @@ Usage charts, cost breakdown, latency metrics
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -68,7 +68,7 @@ async def get_cost_breakdown(
         if end_date:
             end = datetime.fromisoformat(end_date.replace("Z", "+00:00"))
         else:
-            end = datetime.utcnow()
+            end = datetime.now(timezone.utc)
 
         if start_date:
             start = datetime.fromisoformat(start_date.replace("Z", "+00:00"))
@@ -102,7 +102,7 @@ async def get_latency_metrics(
                 detail="Period must be one of: day, week, month",
             )
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         if period == "day":
             start_time = now - timedelta(days=1)
         elif period == "week":

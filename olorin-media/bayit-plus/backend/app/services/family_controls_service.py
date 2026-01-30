@@ -6,7 +6,7 @@ Handles PIN verification, settings management, and migration from legacy control
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from app.core.security import get_password_hash, verify_password
@@ -121,7 +121,7 @@ class FamilyControlsService:
 
         # Hash and set new PIN
         controls.pin_hash = get_password_hash(new_pin)
-        controls.updated_at = datetime.utcnow()
+        controls.updated_at = datetime.now(timezone.utc)
         await controls.save()
 
         logger.info(f"Updated family PIN for user {user_id}")

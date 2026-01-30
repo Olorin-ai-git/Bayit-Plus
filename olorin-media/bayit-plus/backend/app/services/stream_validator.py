@@ -7,7 +7,7 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -218,7 +218,7 @@ async def filter_cached_streams(
     uncached = []
     cached_results = []
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     for stream in streams:
         # Check cache
@@ -369,13 +369,13 @@ async def cache_validation_result(result: StreamValidationResult):
 
         cache_entry = StreamValidationCache(
             stream_url=result.url,
-            last_validated=datetime.utcnow(),
+            last_validated=datetime.now(timezone.utc),
             is_valid=result.is_valid,
             status_code=result.status_code,
             response_time_ms=result.response_time_ms,
             error_message=result.error_message,
             stream_type=result.stream_type,
-            expires_at=datetime.utcnow() + ttl,
+            expires_at=datetime.now(timezone.utc) + ttl,
         )
 
         # Upsert (replace if exists)
@@ -392,7 +392,7 @@ async def cache_validation_result(result: StreamValidationResult):
 async def cleanup_expired_cache():
     """Clean up expired cache entries"""
     try:
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         result = await StreamValidationCache.find({"expires_at": {"$lt": now}}).delete()
 
         if result.deleted_count > 0:

@@ -13,7 +13,7 @@ Target Channels:
 import json
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -461,8 +461,8 @@ class YouTubeKidsService:
                         requires_subscription="basic",
                         # Timestamps
                         published_at=video["published_at"],
-                        created_at=datetime.utcnow(),
-                        updated_at=datetime.utcnow(),
+                        created_at=datetime.now(timezone.utc),
+                        updated_at=datetime.now(timezone.utc),
                     )
 
                     await content.insert()

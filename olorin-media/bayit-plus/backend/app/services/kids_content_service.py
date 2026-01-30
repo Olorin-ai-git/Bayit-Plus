@@ -410,7 +410,7 @@ class KidsContentService:
 
         # Get sources count
         sources_count = await KidsContentSource.find({"is_active": True}).count()
-        last_updated = self._cache.get_last_updated(cache_key) or datetime.utcnow()
+        last_updated = self._cache.get_last_updated(cache_key) or datetime.now(timezone.utc)
 
         return KidsContentAggregatedResponse(
             items=response_items,
@@ -681,7 +681,7 @@ class KidsContentService:
                 items=[],
                 pagination={"page": page, "limit": limit, "total": 0, "pages": 0},
                 sources_count=0,
-                last_updated=datetime.utcnow(),
+                last_updated=datetime.now(timezone.utc),
             )
 
         min_age, max_age = age_range

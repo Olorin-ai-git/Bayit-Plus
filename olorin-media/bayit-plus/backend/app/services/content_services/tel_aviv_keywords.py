@@ -8,7 +8,7 @@ Contains bilingual (Hebrew/English) keyword sets for:
 Focuses on Tel Aviv-specific locations and culture.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.models.tel_aviv_content import TelAvivContentCategory
 
@@ -234,7 +234,7 @@ SEED_TEL_AVIV_CONTENT = [
         "title_he": "חופי תל אביב - נופש וים",
         "title_en": "Tel Aviv Beaches - Sun and Sea",
         "url": "https://www.tel-aviv.gov.il/",
-        "published_at": datetime.utcnow(),
+        "published_at": datetime.now(timezone.utc),
         "summary": "חופי תל אביב מציעים חוויית רחצה מושלמת עם שמש, חול וים תכלת",
         "summary_he": "חופי תל אביב מציעים חוויית רחצה מושלמת",
         "summary_en": "Tel Aviv beaches offer a perfect swimming experience",
@@ -249,7 +249,7 @@ SEED_TEL_AVIV_CONTENT = [
         "title_he": "חיי הלילה של תל אביב - העיר שלא ישנה",
         "title_en": "Tel Aviv Nightlife - The City That Never Sleeps",
         "url": "https://www.tel-aviv.gov.il/",
-        "published_at": datetime.utcnow(),
+        "published_at": datetime.now(timezone.utc),
         "summary": "תל אביב מציעה חיי לילה תוססים עם ברים, מועדונים והופעות חיות",
         "summary_he": "תל אביב מציעה חיי לילה תוססים",
         "summary_en": "Tel Aviv offers vibrant nightlife with bars and clubs",
@@ -264,7 +264,7 @@ SEED_TEL_AVIV_CONTENT = [
         "title_he": "העיר הלבנה - אדריכלות באוהאוס בתל אביב",
         "title_en": "The White City - Bauhaus Architecture in Tel Aviv",
         "url": "https://www.tel-aviv.gov.il/",
-        "published_at": datetime.utcnow(),
+        "published_at": datetime.now(timezone.utc),
         "summary": "תל אביב מוכרת כאתר מורשת עולמית בזכות אוסף מבני הבאוהאוס הגדול בעולם",
         "summary_he": "תל אביב מוכרת כאתר מורשת עולמית בזכות הבאוהאוס",
         "summary_en": "Tel Aviv is a UNESCO World Heritage Site for Bauhaus architecture",
@@ -279,7 +279,7 @@ SEED_TEL_AVIV_CONTENT = [
         "title_he": "הופעות ופסטיבלים בתל אביב",
         "title_en": "Concerts and Festivals in Tel Aviv",
         "url": "https://www.tel-aviv.gov.il/",
-        "published_at": datetime.utcnow(),
+        "published_at": datetime.now(timezone.utc),
         "summary": "תל אביב היא מרכז המוסיקה של ישראל עם מועדונים, במות והופעות חיות",
         "summary_he": "תל אביב היא מרכז המוסיקה של ישראל",
         "summary_en": "Tel Aviv is Israel's music hub with venues and live shows",
@@ -294,7 +294,7 @@ SEED_TEL_AVIV_CONTENT = [
         "title_he": "תל אביב - עיר הסטארטאפים",
         "title_en": "Tel Aviv - The Startup City",
         "url": "https://www.tel-aviv.gov.il/",
-        "published_at": datetime.utcnow(),
+        "published_at": datetime.now(timezone.utc),
         "summary": "תל אביב היא אחת מערי ההייטק המובילות בעולם עם אלפי סטארטאפים",
         "summary_he": "תל אביב היא אחת מערי ההייטק המובילות בעולם",
         "summary_en": "Tel Aviv is a leading tech hub with thousands of startups",

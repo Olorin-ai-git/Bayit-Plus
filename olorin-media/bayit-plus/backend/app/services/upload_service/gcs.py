@@ -9,7 +9,7 @@ import asyncio
 import hashlib
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Optional
 
@@ -167,7 +167,7 @@ class GCSUploader:
 
             content_type = self.get_content_type(job.filename)
 
-            start_time = datetime.utcnow()
+            start_time = datetime.now(timezone.utc)
             file_size = job.file_size or Path(job.source_path).stat().st_size
 
             job.progress = 25.0
@@ -205,7 +205,7 @@ class GCSUploader:
                         ) * 70.0
                         self.state.progress = 25.0 + upload_progress
 
-                        elapsed = (datetime.utcnow() - self.start_time).total_seconds()
+                        elapsed = (datetime.now(timezone.utc) - self.start_time).total_seconds()
                         if elapsed > 0:
                             self.state.upload_speed = self.state.bytes_read / elapsed
                             remaining_bytes = self.file_size - self.state.bytes_read
@@ -315,7 +315,7 @@ class GCSUploader:
             job.progress = 95.0
             job.bytes_uploaded = file_size
 
-            elapsed = (datetime.utcnow() - start_time).total_seconds()
+            elapsed = (datetime.now(timezone.utc) - start_time).total_seconds()
             if elapsed > 0:
                 job.upload_speed = file_size / elapsed
 

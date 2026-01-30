@@ -3,7 +3,7 @@ Trending Topics Models.
 Stores trending topics and analysis results.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from beanie import Document
@@ -54,7 +54,7 @@ class TrendingSnapshot(Document):
     @classmethod
     async def cleanup_old(cls, keep_hours: int = 24):
         """Remove snapshots older than specified hours"""
-        cutoff = datetime.utcnow() - timedelta(hours=keep_hours)
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=keep_hours)
         await cls.find(cls.analyzed_at < cutoff).delete()
 
 

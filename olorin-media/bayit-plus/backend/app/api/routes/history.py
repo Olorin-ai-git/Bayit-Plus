@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -128,7 +128,7 @@ async def update_progress(
         history.duration = data.duration
         history.progress_percent = progress_percent
         history.completed = completed
-        history.last_watched_at = datetime.utcnow()
+        history.last_watched_at = datetime.now(timezone.utc)
         await history.save()
     else:
         history = WatchHistory(
@@ -165,7 +165,7 @@ async def restart_video(
     history.position = 0
     history.progress_percent = 0
     history.completed = False
-    history.last_watched_at = datetime.utcnow()
+    history.last_watched_at = datetime.now(timezone.utc)
     await history.save()
 
     return {

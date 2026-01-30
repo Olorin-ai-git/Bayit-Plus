@@ -3,7 +3,7 @@ Recording API Routes
 Endpoints for managing live stream recordings
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -315,7 +315,7 @@ async def get_recording(
 
         # Update view stats
         recording.view_count += 1
-        recording.last_viewed_at = datetime.utcnow()
+        recording.last_viewed_at = datetime.now(timezone.utc)
         await recording.save()
 
         return RecordingResponse(

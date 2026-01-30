@@ -39,7 +39,7 @@ from prometheus_client import (
 )
 from fastapi import Response
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from app.core.logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -253,7 +253,7 @@ beta_program_info.info({
     'max_users': '500',
     'credits_per_user': '5000',
     'duration_days': '90',
-    'start_date': datetime.utcnow().isoformat()
+    'start_date': datetime.now(timezone.utc).isoformat()
 })
 
 # ============================================================================

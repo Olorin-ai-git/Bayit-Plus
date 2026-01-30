@@ -6,7 +6,7 @@ Handles audit triggering, reports, actions, and audit control.
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from beanie import PydanticObjectId
@@ -62,7 +62,7 @@ async def trigger_scheduled_audit(
 
         # Create audit record for the main scan
         audit = AuditReport(
-            audit_date=datetime.utcnow(),
+            audit_date=datetime.now(timezone.utc),
             audit_type=request.audit_type if not request.use_ai_agent else "ai_agent",
             status="in_progress",
             execution_time_seconds=0,
@@ -230,7 +230,7 @@ async def trigger_librarian_audit(
                 language = "en"
 
         audit = AuditReport(
-            audit_date=datetime.utcnow(),
+            audit_date=datetime.now(timezone.utc),
             audit_type=request.audit_type if not request.use_ai_agent else "ai_agent",
             status="in_progress",
             execution_time_seconds=0,
@@ -755,7 +755,7 @@ async def reapply_audit_fixes(
         # Create a new audit record for tracking the fix operation
         fix_audit = AuditReport(
             audit_id=fix_audit_id,
-            audit_date=datetime.utcnow(),
+            audit_date=datetime.now(timezone.utc),
             audit_type="reapply_fixes",
             status="in_progress",
             execution_time_seconds=0,
@@ -817,7 +817,7 @@ async def _run_reapply_fixes(
     )
     from app.services.ai_agent.issue_tracker import get_reapply_items
 
-    start_time = datetime.utcnow()
+    start_time = datetime.now(timezone.utc)
     all_stats = {}
 
     try:
@@ -903,7 +903,7 @@ async def _run_reapply_fixes(
         # Update fix audit with results
         fix_audit.status = "completed"
         fix_audit.execution_time_seconds = (
-            datetime.utcnow() - start_time
+            datetime.now(timezone.utc) - start_time
         ).total_seconds()
         fix_audit.summary = {
             "source_audit_id": source_audit.audit_id,
@@ -920,7 +920,7 @@ async def _run_reapply_fixes(
                 else "Fell back to database scan (original audit had no tracked data)"
             ),
         }
-        fix_audit.completed_at = datetime.utcnow()
+        fix_audit.completed_at = datetime.now(timezone.utc)
         await fix_audit.save()
 
         logger.info(
@@ -933,7 +933,7 @@ async def _run_reapply_fixes(
         if fix_audit:
             fix_audit.status = "failed"
             fix_audit.summary["error"] = str(e)
-            fix_audit.completed_at = datetime.utcnow()
+            fix_audit.completed_at = datetime.now(timezone.utc)
             await fix_audit.save()
 
 
@@ -1167,7 +1167,7 @@ async def _log_fix_progress(audit: AuditReport, fix_type: str, stats: dict):
 
     log_entry = {
         "id": str(uuid.uuid4()),
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "level": "info",
         "message": f"Applied {fix_type} fixes: {stats.get('success', 0)}/{stats.get('attempted', 0)} successful",
         "metadata": {"fix_type": fix_type, "stats": stats},

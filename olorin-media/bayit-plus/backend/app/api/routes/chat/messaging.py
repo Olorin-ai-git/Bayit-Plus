@@ -5,7 +5,7 @@ Endpoints for chat messaging and conversation management.
 """
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 import anthropic
@@ -127,7 +127,7 @@ async def send_message(
         {
             "role": "user",
             "content": request.message,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     )
     messages = [
@@ -152,10 +152,10 @@ async def send_message(
             {
                 "role": "assistant",
                 "content": asst_msg,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
-        conv.updated_at = datetime.utcnow()
+        conv.updated_at = datetime.now(timezone.utc)
         await conv.save()
         recs = await get_recommendations_from_response(
             asst_msg, request.message, media_ctx
@@ -210,6 +210,6 @@ async def clear_conversation(
     if not conv or conv.user_id != str(current_user.id):
         raise HTTPException(status_code=404, detail="Conversation not found")
     conv.messages = []
-    conv.updated_at = datetime.utcnow()
+    conv.updated_at = datetime.now(timezone.utc)
     await conv.save()
     return {"message": "Conversation cleared"}

@@ -1,7 +1,7 @@
 """Hourly cost aggregation background job."""
 
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
@@ -72,7 +72,7 @@ async def monthly_cost_rollup_job() -> None:
     while True:
         try:
             # Schedule to run at start of each month
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             if now.day != 1:
                 # Wait until next month
                 days_until_next_month = (

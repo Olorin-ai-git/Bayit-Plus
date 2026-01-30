@@ -9,7 +9,7 @@ import hashlib
 import json
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional, Set
 
@@ -165,7 +165,7 @@ class FolderMonitorService:
                     stats["files_enqueued"] += folder_stats["files_enqueued"]
 
                     # Update folder stats
-                    folder.last_scanned = datetime.utcnow()
+                    folder.last_scanned = datetime.now(timezone.utc)
                     folder.files_found = folder_stats["files_found"]
                     folder.files_uploaded += folder_stats["files_enqueued"]
                     folder.last_error = None
@@ -515,7 +515,7 @@ class FolderMonitorService:
             stats = await self._scan_folder(folder)
 
             # Update folder
-            folder.last_scanned = datetime.utcnow()
+            folder.last_scanned = datetime.now(timezone.utc)
             folder.files_found = stats["files_found"]
             folder.files_uploaded += stats["files_enqueued"]
             folder.last_error = None
@@ -687,7 +687,7 @@ class FolderMonitorService:
                 setattr(folder, key, value)
                 logger.debug(f"  Set {key} = {value}")
 
-        folder.updated_at = datetime.utcnow()
+        folder.updated_at = datetime.now(timezone.utc)
         await folder.save()
 
         logger.info(

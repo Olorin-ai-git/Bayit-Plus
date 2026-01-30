@@ -1,7 +1,7 @@
 """Unit tests for CatchUpIntegration service."""
 
 import pytest
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
 from app.services.catchup.integration import CatchUpIntegration
 
 
@@ -24,9 +24,18 @@ def mock_credit_service():
     service = AsyncMock()
     service.is_beta_user = AsyncMock(return_value=True)
     service.authorize = AsyncMock(return_value=(True, 500))
-    service.deduct_credits = AsyncMock(return_value=(True, 499))
+    service.deduct_credits = AsyncMock(return_value=(True, 495))
     service.get_balance = AsyncMock(return_value=500)
     return service
+
+
+@pytest.fixture(autouse=True)
+def mock_catchup_settings():
+    """Mock settings for catchup integration."""
+    mock = MagicMock()
+    mock.olorin.catchup.credit_cost = 5.0
+    with patch('app.services.catchup.integration.settings', mock):
+        yield mock
 
 
 class TestCatchUpIntegrationInit:
@@ -64,8 +73,8 @@ class TestGenerateCatchupWithCredits:
         mock_credit_service.authorize.assert_called_once()
         mock_session_manager.generate_summary.assert_called_once()
         mock_credit_service.deduct_credits.assert_called_once()
-        assert result["credits_used"] == 1.0
-        assert result["remaining_credits"] == 499
+        assert result["credits_used"] == 5.0
+        assert result["remaining_credits"] == 495
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("error_type,error_msg,expected_match", [

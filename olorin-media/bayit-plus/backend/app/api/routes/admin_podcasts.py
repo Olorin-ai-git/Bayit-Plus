@@ -2,7 +2,7 @@
 Admin Podcast Management Routes - CRUD operations for podcasts
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -320,7 +320,7 @@ async def update_podcast(
     if data.order is not None:
         changes["order"] = {"old": podcast.order, "new": data.order}
         podcast.order = data.order
-    podcast.updated_at = datetime.utcnow()
+    podcast.updated_at = datetime.now(timezone.utc)
     await podcast.save()
     await log_audit(
         str(current_user.id),

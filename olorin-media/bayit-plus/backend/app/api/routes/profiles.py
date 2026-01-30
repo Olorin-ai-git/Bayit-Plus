@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
@@ -230,7 +230,7 @@ async def select_profile(
     current_user.active_profile_id = profile_id
     await current_user.save()
 
-    profile.last_used_at = datetime.utcnow()
+    profile.last_used_at = datetime.now(timezone.utc)
     await profile.save()
 
     return profile.to_response()
@@ -500,7 +500,7 @@ async def update_ai_preferences(
 ):
     """Update AI preferences."""
     current_user.preferences["ai_settings"] = preferences.model_dump()
-    current_user.updated_at = datetime.utcnow()
+    current_user.updated_at = datetime.now(timezone.utc)
     await current_user.save()
     return {
         "message": "AI preferences updated",
@@ -533,7 +533,7 @@ async def update_voice_preferences(
 ):
     """Update voice and accessibility preferences."""
     current_user.preferences["voice_settings"] = preferences.model_dump()
-    current_user.updated_at = datetime.utcnow()
+    current_user.updated_at = datetime.now(timezone.utc)
     await current_user.save()
     return {
         "message": "Voice preferences updated",
@@ -574,7 +574,7 @@ async def update_home_page_preferences(
 ):
     """Update home page section configuration preferences."""
     current_user.preferences["home_page_settings"] = preferences.model_dump()
-    current_user.updated_at = datetime.utcnow()
+    current_user.updated_at = datetime.now(timezone.utc)
     await current_user.save()
     return {
         "message": "Home page preferences updated",
@@ -600,7 +600,7 @@ async def upload_avatar(
 
         # Update user's avatar URL
         current_user.avatar = url
-        current_user.updated_at = datetime.utcnow()
+        current_user.updated_at = datetime.now(timezone.utc)
         await current_user.save()
 
         return {"url": url, "message": "Avatar uploaded successfully"}

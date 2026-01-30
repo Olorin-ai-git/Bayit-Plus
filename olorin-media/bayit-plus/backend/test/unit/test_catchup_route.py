@@ -26,6 +26,15 @@ def mock_credit_service():
 
 
 @pytest.fixture
+def mock_settings():
+    """Mock Settings with proper catchup config."""
+    s = MagicMock()
+    s.olorin.catchup.default_window_minutes = 15
+    s.olorin.catchup.retry_after_seconds = 30
+    return s
+
+
+@pytest.fixture
 def mock_integration():
     """Mock CatchUpIntegration."""
     integration = AsyncMock()
@@ -33,7 +42,7 @@ def mock_integration():
         "summary": "Summary", "key_points": ["A", "B"],
         "program_info": {"title": "Show", "description": "Desc", "genre": "News"},
         "window_start": "2026-01-30T10:00:00", "window_end": "2026-01-30T10:15:00",
-        "cached": False, "credits_used": 1.0, "remaining_credits": 499
+        "cached": False, "credits_used": 5.0, "remaining_credits": 495
     })
     integration.check_available = AsyncMock(return_value={
         "available": True, "is_beta_user": True, "has_credits": True, "balance": 500
@@ -45,32 +54,32 @@ class TestGenerateCatchupSummary:
     """Tests for generate_catchup_summary endpoint."""
 
     @pytest.mark.asyncio
-    async def test_successful_generation(self, mock_user, mock_credit_service, mock_integration):
+    async def test_successful_generation(self, mock_user, mock_credit_service, mock_integration, mock_settings):
         """Test successful summary generation."""
         response = MagicMock()
         with patch('app.api.routes.catchup.CatchUpIntegration', return_value=mock_integration):
             result = await generate_catchup_summary(
-                "ch-456", response, 15, "en", mock_user, mock_credit_service, MagicMock()
+                "ch-456", response, 15, "en", mock_user, mock_credit_service, mock_settings
             )
             assert result.summary == "Summary"
-            assert result.credits_used == 1.0
+            assert result.credits_used == 5.0
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("channel_id", ["ch@invalid", "ch!bad", "ch/wrong"])
-    async def test_invalid_channel_format(self, channel_id, mock_user, mock_credit_service):
+    async def test_invalid_channel_format(self, channel_id, mock_user, mock_credit_service, mock_settings):
         """Test invalid channel ID formats."""
         with pytest.raises(HTTPException) as exc:
             await generate_catchup_summary(
-                channel_id, MagicMock(), 15, "en", mock_user, mock_credit_service, MagicMock()
+                channel_id, MagicMock(), 15, "en", mock_user, mock_credit_service, mock_settings
             )
         assert exc.value.status_code == 400
 
     @pytest.mark.asyncio
-    async def test_default_window_minutes(self, mock_user, mock_credit_service, mock_integration):
+    async def test_default_window_minutes(self, mock_user, mock_credit_service, mock_integration, mock_settings):
         """Test default window_minutes."""
         with patch('app.api.routes.catchup.CatchUpIntegration', return_value=mock_integration):
             await generate_catchup_summary(
-                "ch-456", MagicMock(), None, "en", mock_user, mock_credit_service, MagicMock()
+                "ch-456", MagicMock(), None, "en", mock_user, mock_credit_service, mock_settings
             )
             call_args = mock_integration.generate_catchup_with_credits.call_args
             assert call_args.kwargs["window_minutes"] == 15
@@ -81,7 +90,7 @@ class TestGenerateCatchupSummary:
         ("AI service error", 503, "Service temporarily unavailable"),
     ])
     async def test_error_handling(
-        self, mock_user, mock_credit_service, mock_integration,
+        self, mock_user, mock_credit_service, mock_integration, mock_settings,
         error_msg, status_code, detail_contains
     ):
         """Test various error scenarios."""
@@ -94,27 +103,27 @@ class TestGenerateCatchupSummary:
         with patch('app.api.routes.catchup.CatchUpIntegration', return_value=mock_integration):
             with pytest.raises(HTTPException) as exc:
                 await generate_catchup_summary(
-                    "ch-456", response, 15, "en", mock_user, mock_credit_service, MagicMock()
+                    "ch-456", response, 15, "en", mock_user, mock_credit_service, mock_settings
                 )
             assert exc.value.status_code == status_code
             assert detail_contains in str(exc.value.detail)
 
     @pytest.mark.asyncio
-    async def test_cached_result(self, mock_user, mock_credit_service, mock_integration):
+    async def test_cached_result(self, mock_user, mock_credit_service, mock_integration, mock_settings):
         """Test cached result indication."""
         mock_integration.generate_catchup_with_credits.return_value["cached"] = True
         with patch('app.api.routes.catchup.CatchUpIntegration', return_value=mock_integration):
             result = await generate_catchup_summary(
-                "ch-456", MagicMock(), 15, "en", mock_user, mock_credit_service, MagicMock()
+                "ch-456", MagicMock(), 15, "en", mock_user, mock_credit_service, mock_settings
             )
             assert result.cached is True
 
     @pytest.mark.asyncio
-    async def test_program_info_mapping(self, mock_user, mock_credit_service, mock_integration):
+    async def test_program_info_mapping(self, mock_user, mock_credit_service, mock_integration, mock_settings):
         """Test program_info properly mapped."""
         with patch('app.api.routes.catchup.CatchUpIntegration', return_value=mock_integration):
             result = await generate_catchup_summary(
-                "ch-456", MagicMock(), 15, "en", mock_user, mock_credit_service, MagicMock()
+                "ch-456", MagicMock(), 15, "en", mock_user, mock_credit_service, mock_settings
             )
             assert result.program_info.title == "Show"
             assert result.program_info.genre == "News"

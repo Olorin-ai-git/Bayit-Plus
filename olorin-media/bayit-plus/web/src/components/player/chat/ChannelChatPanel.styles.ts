@@ -3,20 +3,20 @@
  * Extracted to keep the component under 200 lines.
  */
 
-import { StyleSheet } from 'react-native'
-import { colors, spacing, borderRadius } from '@olorin/design-tokens'
+import { StyleSheet, I18nManager } from 'react-native'
+import { colors, spacing, borderRadius, glass } from '@olorin/design-tokens'
 
-const GLASS_BG = 'rgba(17, 17, 34, 0.85)'
 const GLASS_BLUR = 'blur(20px)'
 
 export const panelStyles = StyleSheet.create({
   panel: {
     position: 'absolute',
-    right: spacing.md,
+    ...(I18nManager.isRTL ? { left: spacing.md } : { right: spacing.md }),
     bottom: spacing.xl,
-    width: 340,
+    width: '90%',
+    maxWidth: 340,
     maxHeight: 480,
-    backgroundColor: GLASS_BG,
+    backgroundColor: glass.bgStrong,
     backdropFilter: GLASS_BLUR as any,
     borderWidth: 1,
     borderColor: colors.glassBorderLight,
@@ -27,12 +27,12 @@ export const panelStyles = StyleSheet.create({
   },
   miniBar: {
     position: 'absolute',
-    right: spacing.md,
+    ...(I18nManager.isRTL ? { left: spacing.md } : { right: spacing.md }),
     bottom: spacing.xl,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    backgroundColor: GLASS_BG,
+    backgroundColor: glass.bgStrong,
     backdropFilter: GLASS_BLUR as any,
     borderWidth: 1,
     borderColor: colors.glassBorderLight,

@@ -21,7 +21,7 @@ import logging
 import os
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -197,7 +197,7 @@ async def convert_content_to_hls(
         if not content.metadata:
             content.metadata = {}
         content.metadata["original_stream_url"] = old_url
-        content.metadata["hls_migrated_at"] = datetime.utcnow().isoformat()
+        content.metadata["hls_migrated_at"] = datetime.now(timezone.utc).isoformat()
         content.metadata["hls_source"] = "local" if local_path else "gcs"
 
         await content.save()

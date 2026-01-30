@@ -1,6 +1,6 @@
 """Admin Subscriptions Management - Endpoints for managing user subscriptions and plans"""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
@@ -94,7 +94,7 @@ async def extend_subscription(
         raise HTTPException(status_code=400, detail="User has no subscription")
 
     user.subscription_end_date = user.subscription_end_date + timedelta(days=days)
-    user.updated_at = datetime.utcnow()
+    user.updated_at = datetime.now(timezone.utc)
     await user.save()
 
     await log_audit(
@@ -121,7 +121,7 @@ async def cancel_subscription(
         raise HTTPException(status_code=404, detail="User not found")
 
     user.subscription_status = "canceled"
-    user.updated_at = datetime.utcnow()
+    user.updated_at = datetime.now(timezone.utc)
     await user.save()
 
     await log_audit(
@@ -148,7 +148,7 @@ async def pause_subscription(
         raise HTTPException(status_code=404, detail="User not found")
 
     user.subscription_status = "paused"
-    user.updated_at = datetime.utcnow()
+    user.updated_at = datetime.now(timezone.utc)
     await user.save()
 
     return {"message": "Subscription paused"}
@@ -166,7 +166,7 @@ async def resume_subscription(
         raise HTTPException(status_code=404, detail="User not found")
 
     user.subscription_status = "active"
-    user.updated_at = datetime.utcnow()
+    user.updated_at = datetime.now(timezone.utc)
     await user.save()
 
     return {"message": "Subscription resumed"}
@@ -191,7 +191,7 @@ async def create_subscription(
         raise HTTPException(status_code=404, detail="Plan not found")
 
     # Set subscription details
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     user.subscription_tier = plan_id
     user.subscription_status = "active"
     user.subscription_start_date = now
@@ -242,7 +242,7 @@ async def update_subscription_plan(
 
     old_plan = user.subscription_tier
     user.subscription_tier = plan_id
-    user.updated_at = datetime.utcnow()
+    user.updated_at = datetime.now(timezone.utc)
     await user.save()
 
     await log_audit(
@@ -277,7 +277,7 @@ async def delete_subscription(
     user.subscription_start_date = None
     user.subscription_end_date = None
     user.subscription_id = None
-    user.updated_at = datetime.utcnow()
+    user.updated_at = datetime.now(timezone.utc)
     await user.save()
 
     await log_audit(
@@ -297,7 +297,7 @@ async def get_subscriptions_churn_analytics(
     current_user: User = Depends(has_permission(Permission.ANALYTICS_READ)),
 ):
     """Get subscription churn analytics."""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     # Active subscriptions
     active_subs = await User.find(User.subscription_status == "active").count()

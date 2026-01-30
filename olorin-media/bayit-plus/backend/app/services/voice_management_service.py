@@ -6,7 +6,7 @@ Orchestrates voice configuration, testing, analytics, and provider management
 import asyncio
 import base64
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -97,7 +97,7 @@ class VoiceManagementService:
             # Update existing
             existing.config_value = config_value
             existing.updated_by = admin_id
-            existing.updated_at = datetime.utcnow()
+            existing.updated_at = datetime.now(timezone.utc)
             if description:
                 existing.description = description
             await existing.save()
@@ -165,7 +165,7 @@ class VoiceManagementService:
             not force_refresh
             and VoiceManagementService._voices_cache is not None
             and VoiceManagementService._voices_cache_expires_at is not None
-            and datetime.utcnow() < VoiceManagementService._voices_cache_expires_at
+            and datetime.now(timezone.utc) < VoiceManagementService._voices_cache_expires_at
         ):
             return VoiceManagementService._voices_cache.get("voices", [])
 
@@ -186,7 +186,7 @@ class VoiceManagementService:
                 # Cache for 1 hour
                 VoiceManagementService._voices_cache = data
                 VoiceManagementService._voices_cache_expires_at = (
-                    datetime.utcnow() + timedelta(hours=1)
+                    datetime.now(timezone.utc) + timedelta(hours=1)
                 )
 
                 return data.get("voices", [])
@@ -253,7 +253,7 @@ class VoiceManagementService:
             Chart data with time series
         """
         # Calculate time range
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         if period == "day":
             start_time = now - timedelta(days=1)
             bucket_size = timedelta(hours=1)
@@ -349,7 +349,7 @@ class VoiceManagementService:
         Returns:
             Health check results
         """
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         is_healthy = False
         error_message = None
         latency_ms = 0.0
@@ -384,19 +384,19 @@ class VoiceManagementService:
             error_message = str(e)
             logger.error(f"Provider health check failed for {provider}: {e}")
 
-        latency_ms = (datetime.utcnow() - start_time).total_seconds() * 1000
+        latency_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
 
         # Update health record
         health_record = await VoiceProviderHealth.find_one({"provider": provider})
 
         if health_record:
             health_record.is_healthy = is_healthy
-            health_record.last_check_at = datetime.utcnow()
+            health_record.last_check_at = datetime.now(timezone.utc)
             if is_healthy:
-                health_record.last_success_at = datetime.utcnow()
+                health_record.last_success_at = datetime.now(timezone.utc)
                 health_record.consecutive_failures = 0
             else:
-                health_record.last_failure_at = datetime.utcnow()
+                health_record.last_failure_at = datetime.now(timezone.utc)
                 health_record.consecutive_failures += 1
                 health_record.last_error_message = error_message
             health_record.avg_latency_ms = latency_ms
@@ -405,9 +405,9 @@ class VoiceManagementService:
             health_record = VoiceProviderHealth(
                 provider=provider,
                 is_healthy=is_healthy,
-                last_check_at=datetime.utcnow(),
-                last_success_at=datetime.utcnow() if is_healthy else None,
-                last_failure_at=None if is_healthy else datetime.utcnow(),
+                last_check_at=datetime.now(timezone.utc),
+                last_success_at=datetime.now(timezone.utc) if is_healthy else None,
+                last_failure_at=None if is_healthy else datetime.now(timezone.utc),
                 consecutive_failures=0 if is_healthy else 1,
                 last_error_message=error_message,
                 avg_latency_ms=latency_ms,
@@ -419,5 +419,5 @@ class VoiceManagementService:
             "is_healthy": is_healthy,
             "latency_ms": latency_ms,
             "error_message": error_message,
-            "last_check_at": datetime.utcnow().isoformat(),
+            "last_check_at": datetime.now(timezone.utc).isoformat(),
         }

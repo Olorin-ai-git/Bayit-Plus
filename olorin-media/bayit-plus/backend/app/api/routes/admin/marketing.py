@@ -1,6 +1,6 @@
 """Admin Marketing Management - Email campaigns, push notifications, and audience segments"""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -159,7 +159,7 @@ async def get_audience_segments(
     # Default to Hebrew if language not supported
     translations = segment_translations.get(preferred_lang, segment_translations["he"])
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     seven_days_ago = now - timedelta(days=7)
     thirty_days_ago = now - timedelta(days=30)
 
@@ -278,7 +278,7 @@ async def send_email_campaign(
 
     # In production, this would queue the emails for sending
     campaign.status = MarketingStatus.SENT
-    campaign.sent_at = datetime.utcnow()
+    campaign.sent_at = datetime.now(timezone.utc)
     await campaign.save()
 
     return {"message": "Email campaign sent"}
@@ -401,7 +401,7 @@ async def send_push_notification(
 
     # In production, this would send via FCM/APNS
     notification.status = MarketingStatus.SENT
-    notification.sent_at = datetime.utcnow()
+    notification.sent_at = datetime.now(timezone.utc)
     await notification.save()
 
     return {"message": "Push notification sent"}

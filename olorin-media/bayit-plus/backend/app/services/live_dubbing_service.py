@@ -12,7 +12,7 @@ import base64
 import logging
 import time
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, AsyncIterator, Dict, Optional, Protocol
 
 from app.core.config import settings
@@ -244,8 +244,8 @@ class LiveDubbingService:
                     "voice_id": self.voice_id,
                     "platform": self.platform,
                     "status": "active",
-                    "created_at": datetime.utcnow().isoformat(),
-                    "last_activity_at": datetime.utcnow().isoformat(),
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "last_activity_at": datetime.now(timezone.utc).isoformat(),
                 },
                 ttl_seconds=settings.olorin.dubbing.redis_session_ttl_seconds,
             )
@@ -263,7 +263,7 @@ class LiveDubbingService:
             if self._session:
                 self._session.status = "error"
                 self._session.last_error = str(e)
-                self._session.last_error_at = datetime.utcnow()
+                self._session.last_error_at = datetime.now(timezone.utc)
                 await self._session.save()
             raise
 
@@ -303,7 +303,7 @@ class LiveDubbingService:
         # Update session record and remove from Redis
         if self._session:
             self._session.status = "completed"
-            self._session.ended_at = datetime.utcnow()
+            self._session.ended_at = datetime.now(timezone.utc)
             self._session.metrics = self._metrics
             await self._session.save()
 
@@ -342,7 +342,7 @@ class LiveDubbingService:
 
         # Update last activity time in both database and Redis
         if self._session:
-            self._session.last_activity_at = datetime.utcnow()
+            self._session.last_activity_at = datetime.now(timezone.utc)
 
         # Update last activity in Redis for session recovery
         try:
@@ -499,7 +499,7 @@ class LiveDubbingService:
 
             if self._session:
                 self._session.last_error = str(e)
-                self._session.last_error_at = datetime.utcnow()
+                self._session.last_error_at = datetime.now(timezone.utc)
 
             # Send error message to client
             await self._output_queue.put(DubbingMessage(type="error", error=str(e)))

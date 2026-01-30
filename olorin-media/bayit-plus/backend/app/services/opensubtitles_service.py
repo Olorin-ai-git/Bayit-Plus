@@ -12,7 +12,7 @@ Features:
 
 import asyncio
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -73,7 +73,7 @@ class OpenSubtitlesService:
 
         # Check if token is still valid
         if self.jwt_token and self.jwt_expires_at:
-            if datetime.utcnow() < self.jwt_expires_at - timedelta(minutes=5):
+            if datetime.now(timezone.utc) < self.jwt_expires_at - timedelta(minutes=5):
                 return True  # Token still valid
 
         # Login to get JWT token
@@ -89,7 +89,7 @@ class OpenSubtitlesService:
                 self.jwt_token = data.get("token")
 
                 # Token typically expires in 24 hours
-                self.jwt_expires_at = datetime.utcnow() + timedelta(
+                self.jwt_expires_at = datetime.now(timezone.utc) + timedelta(
                     hours=23, minutes=50
                 )
 
@@ -274,7 +274,7 @@ class OpenSubtitlesService:
         available = remaining > 0
 
         # Calculate when quota resets (midnight UTC)
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         tomorrow = (now + timedelta(days=1)).replace(
             hour=0, minute=0, second=0, microsecond=0
         )
@@ -292,7 +292,7 @@ class OpenSubtitlesService:
         """Check if we're within rate limits (40 requests per 10 seconds)"""
         tracker = await SubtitleQuotaTrackerDoc.get_today()
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         cutoff = now - timedelta(seconds=self.rate_limit_window)
 
         # Filter recent requests within the time window
@@ -309,7 +309,7 @@ class OpenSubtitlesService:
         """Track API usage in SubtitleQuotaTrackerDoc"""
         tracker = await SubtitleQuotaTrackerDoc.get_today()
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
 
         if operation == "download":
             tracker.downloads_used += 1
@@ -611,7 +611,7 @@ class OpenSubtitlesService:
         else:
             ttl_days = settings.SUBTITLE_NOT_FOUND_CACHE_TTL_DAYS
 
-        expires_at = datetime.utcnow() + timedelta(days=ttl_days)
+        expires_at = datetime.now(timezone.utc) + timedelta(days=ttl_days)
 
         # Check if cache entry exists
         existing = await SubtitleSearchCacheDoc.find_one(
@@ -625,7 +625,7 @@ class OpenSubtitlesService:
             existing.source = "opensubtitles" if found else None
             existing.external_id = external_id
             existing.external_url = external_url
-            existing.search_date = datetime.utcnow()
+            existing.search_date = datetime.now(timezone.utc)
             existing.expires_at = expires_at
             await existing.save()
         else:

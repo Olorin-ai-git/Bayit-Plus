@@ -7,7 +7,7 @@ Ensures data consistency by rolling back partial changes on failure.
 
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Callable, Coroutine, List, Optional
 
 from app.models.upload import UploadJob
@@ -111,7 +111,7 @@ class UploadTransaction:
                 CompensationAction(
                     action_name=action_name,
                     compensation=compensation,
-                    completed_at=datetime.utcnow(),
+                    completed_at=datetime.now(timezone.utc),
                 )
             )
 
@@ -150,7 +150,7 @@ class UploadTransaction:
             CompensationAction(
                 action_name=action_name,
                 compensation=compensation,
-                completed_at=datetime.utcnow(),
+                completed_at=datetime.now(timezone.utc),
             )
         )
 

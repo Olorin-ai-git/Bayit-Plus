@@ -10,7 +10,7 @@ Uses the py_webauthn library for FIDO2/WebAuthn protocol implementation.
 import base64
 import logging
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional, Tuple
 
 from webauthn import (generate_authentication_options,
@@ -102,7 +102,7 @@ class WebAuthnService:
         )
 
         # Store challenge for verification
-        challenge_expiry = datetime.utcnow() + timedelta(
+        challenge_expiry = datetime.now(timezone.utc) + timedelta(
             seconds=self.challenge_expiry_seconds
         )
         challenge_doc = PasskeyChallenge(
@@ -152,7 +152,7 @@ class WebAuthnService:
 
         # Mark challenge as used
         challenge_doc.is_used = True
-        challenge_doc.used_at = datetime.utcnow()
+        challenge_doc.used_at = datetime.now(timezone.utc)
         await challenge_doc.save()
 
         # Verify the registration response
@@ -252,7 +252,7 @@ class WebAuthnService:
         )
 
         # Store challenge
-        challenge_expiry = datetime.utcnow() + timedelta(
+        challenge_expiry = datetime.now(timezone.utc) + timedelta(
             seconds=self.challenge_expiry_seconds
         )
         qr_session_id = secrets.token_urlsafe(32) if is_qr_flow else None
@@ -345,16 +345,16 @@ class WebAuthnService:
 
         # Update sign count (replay attack prevention)
         passkey.sign_count = verification.new_sign_count
-        passkey.last_used_at = datetime.utcnow()
+        passkey.last_used_at = datetime.now(timezone.utc)
         await passkey.save()
 
         # Mark challenge as used
         challenge_doc.is_used = True
-        challenge_doc.used_at = datetime.utcnow()
+        challenge_doc.used_at = datetime.now(timezone.utc)
 
         # Create session token
         session_token = secrets.token_urlsafe(64)
-        session_expires = datetime.utcnow() + timedelta(days=self.session_duration_days)
+        session_expires = datetime.now(timezone.utc) + timedelta(days=self.session_duration_days)
 
         session = PasskeySession(
             user_id=passkey.user_id,
@@ -496,7 +496,7 @@ class WebAuthnService:
             return False
 
         session.is_revoked = True
-        session.revoked_at = datetime.utcnow()
+        session.revoked_at = datetime.now(timezone.utc)
         session.revoked_reason = reason
         await session.save()
 
@@ -521,7 +521,7 @@ class WebAuthnService:
         count = 0
         for session in sessions:
             session.is_revoked = True
-            session.revoked_at = datetime.utcnow()
+            session.revoked_at = datetime.now(timezone.utc)
             session.revoked_reason = reason
             await session.save()
             count += 1
@@ -536,7 +536,7 @@ class WebAuthnService:
         Should be run periodically (e.g., hourly) to remove old challenges.
         Returns the number of challenges deleted.
         """
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         result = await PasskeyChallenge.find(
             PasskeyChallenge.expires_at < now,
         ).delete()

@@ -3,7 +3,7 @@ Admin user management endpoints.
 Provides CRUD operations and user administration.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -143,7 +143,7 @@ async def update_user(
         }
         user.custom_permissions = updates.custom_permissions
 
-    user.updated_at = datetime.utcnow()
+    user.updated_at = datetime.now(timezone.utc)
     await user.save()
 
     await log_audit(
@@ -199,7 +199,7 @@ async def ban_user(
 
     user.is_banned = True
     user.ban_reason = reason
-    user.banned_at = datetime.utcnow()
+    user.banned_at = datetime.now(timezone.utc)
     user.is_active = False
     await user.save()
 

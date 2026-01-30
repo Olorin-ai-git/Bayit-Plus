@@ -5,7 +5,7 @@ Create, Read, Update, Delete endpoints for audiobooks.
 All operations require appropriate admin permissions.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
@@ -150,7 +150,7 @@ async def update_audiobook(
     for field, value in update_data.items():
         setattr(audiobook, field, value)
 
-    audiobook.updated_at = datetime.utcnow()
+    audiobook.updated_at = datetime.now(timezone.utc)
     await audiobook.save()
 
     await log_audit(

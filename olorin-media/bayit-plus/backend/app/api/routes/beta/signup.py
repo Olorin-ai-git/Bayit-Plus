@@ -4,7 +4,7 @@ Beta 500 Signup and Verification API
 Handles user signup and email verification for closed beta program.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, EmailStr
 
@@ -116,8 +116,8 @@ async def signup(
             email=request.email,
             status="pending_verification",
             verification_token=token,
-            created_at=datetime.utcnow(),
-            expires_at=datetime.utcnow() + timedelta(days=settings.BETA_DURATION_DAYS)
+            created_at=datetime.now(timezone.utc),
+            expires_at=datetime.now(timezone.utc) + timedelta(days=settings.BETA_DURATION_DAYS)
         )
         await user.insert()
 
@@ -265,7 +265,7 @@ async def resend_verification(
 
         # Update user with new token
         user.verification_token = verification_token
-        user.updated_at = datetime.utcnow()
+        user.updated_at = datetime.now(timezone.utc)
         await user.save()
 
         # Resend verification email

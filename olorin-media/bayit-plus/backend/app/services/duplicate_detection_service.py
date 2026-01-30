@@ -11,7 +11,7 @@ Identifies duplicates based on:
 import logging
 import re
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -497,7 +497,7 @@ class DuplicateDetectionService:
         primary.is_quality_variant = False
         primary.primary_content_id = None
         primary.quality_tier = quality_variants_data[0]["quality_tier"]
-        primary.updated_at = datetime.utcnow()
+        primary.updated_at = datetime.now(timezone.utc)
         await primary.save()
 
         # Update variant content items
@@ -519,7 +519,7 @@ class DuplicateDetectionService:
             variant.primary_content_id = primary_id_str
             variant.quality_tier = tier
             variant.quality_variants = []  # Variants don't store the full list
-            variant.updated_at = datetime.utcnow()
+            variant.updated_at = datetime.now(timezone.utc)
             await variant.save()
             updated_variants.append(
                 {"id": str(variant.id), "title": variant.title, "quality_tier": tier}
@@ -577,7 +577,7 @@ class DuplicateDetectionService:
                 "imdb_duplicate_groups": len(imdb_duplicates),
                 "exact_name_duplicate_groups": len(exact_name_duplicates),
                 "title_duplicate_groups": len(title_duplicates),
-                "scanned_at": datetime.utcnow().isoformat(),
+                "scanned_at": datetime.now(timezone.utc).isoformat(),
             },
             "hash_duplicates": hash_duplicates,
             "tmdb_duplicates": tmdb_duplicates,
@@ -621,7 +621,7 @@ class DuplicateDetectionService:
 
                 if action == "unpublish":
                     content.is_published = False
-                    content.updated_at = datetime.utcnow()
+                    content.updated_at = datetime.now(timezone.utc)
                     await content.save()
                     processed.append(
                         {"id": dup_id, "title": content.title, "action": "unpublished"}
@@ -641,10 +641,10 @@ class DuplicateDetectionService:
                         {
                             "type": "duplicate",
                             "original_id": keep_id,
-                            "flagged_at": datetime.utcnow().isoformat(),
+                            "flagged_at": datetime.now(timezone.utc).isoformat(),
                         }
                     )
-                    content.updated_at = datetime.utcnow()
+                    content.updated_at = datetime.now(timezone.utc)
                     await content.save()
                     processed.append(
                         {"id": dup_id, "title": content.title, "action": "flagged"}

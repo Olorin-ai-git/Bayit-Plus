@@ -15,7 +15,7 @@ Uses existing news_scraper infrastructure with Tel Aviv keyword filtering.
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
@@ -537,7 +537,7 @@ class TelAvivContentService:
                 title_he=item.get("title_he"),
                 title_en=item.get("title_en"),
                 url=item.get("url", ""),
-                published_at=item.get("published_at", datetime.utcnow()),
+                published_at=item.get("published_at", datetime.now(timezone.utc)),
                 summary=item.get("summary"),
                 summary_he=item.get("summary_he"),
                 summary_en=item.get("summary_en"),
@@ -555,7 +555,7 @@ class TelAvivContentService:
 
         # Get sources count
         sources = await TelAvivContentSource.find({"is_active": True}).count()
-        last_updated = self._cache.get_last_updated(cache_key) or datetime.utcnow()
+        last_updated = self._cache.get_last_updated(cache_key) or datetime.now(timezone.utc)
 
         return TelAvivContentAggregatedResponse(
             items=response_items,

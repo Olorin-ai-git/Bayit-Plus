@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import stripe
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -324,7 +324,7 @@ async def handle_subscription_updated(stripe_sub: dict):
         stripe_sub["current_period_end"]
     )
     subscription.cancel_at_period_end = stripe_sub.get("cancel_at_period_end", False)
-    subscription.updated_at = datetime.utcnow()
+    subscription.updated_at = datetime.now(timezone.utc)
     await subscription.save()
 
     # Update user
@@ -346,7 +346,7 @@ async def handle_subscription_deleted(stripe_sub: dict):
         return
 
     subscription.status = "canceled"
-    subscription.updated_at = datetime.utcnow()
+    subscription.updated_at = datetime.now(timezone.utc)
     await subscription.save()
 
     # Update user

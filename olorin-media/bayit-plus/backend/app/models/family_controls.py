@@ -5,7 +5,7 @@ Unified parental control system for kids and youngsters content.
 Provides age-based restrictions, content rating limits, and optional time-based controls.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from beanie import Document
@@ -138,7 +138,7 @@ class FamilyControls(Document):
         if viewing_end_hour is not None:
             self.viewing_end_hour = viewing_end_hour
 
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(timezone.utc)
         await self.save()
 
     def is_viewing_allowed_now(self) -> bool:
@@ -151,7 +151,7 @@ class FamilyControls(Document):
         if not self.viewing_hours_enabled:
             return True
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         current_hour = now.hour
 
         # Handle overnight time ranges (e.g., 22:00 to 06:00)

@@ -6,7 +6,7 @@ Functions for scanning, extracting, verifying, and downloading subtitles.
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from beanie import PydanticObjectId
@@ -129,7 +129,7 @@ async def execute_scan_video_subtitles(
 
         content.video_metadata = metadata
         content.embedded_subtitle_count = len(metadata["subtitle_tracks"])
-        content.subtitle_last_checked = datetime.utcnow()
+        content.subtitle_last_checked = datetime.now(timezone.utc)
         await content.save()
 
         languages_found = [

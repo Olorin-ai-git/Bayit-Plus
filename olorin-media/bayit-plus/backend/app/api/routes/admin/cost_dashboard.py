@@ -1,7 +1,7 @@
 """Cost Admin Dashboard API endpoints."""
 
 from decimal import Decimal
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, Query, Request
 from app.core.rate_limiter import limiter
@@ -216,7 +216,7 @@ async def get_beta_cost_overview(
         total_usd_consumed = total_consumed / 100.0
 
         # Get transaction breakdown by feature
-        last_30_days = datetime.utcnow() - timedelta(days=30)
+        last_30_days = datetime.now(timezone.utc) - timedelta(days=30)
         recent_transactions = await BetaCreditTransaction.find(
             BetaCreditTransaction.created_at >= last_30_days
         ).to_list()

@@ -6,7 +6,7 @@ Widgets are only created if they don't already exist (idempotent).
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.models.content import LiveChannel
 from app.models.widget import (Widget, WidgetContent, WidgetContentType,
@@ -64,8 +64,8 @@ async def _create_flight_widgets() -> int:
             target_pages=[],
             order=config["order"],
             created_by="system",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
         )
 
         await widget.insert()
@@ -125,8 +125,8 @@ async def _create_ynet_widget() -> bool:
         target_pages=[],
         order=config["order"],
         created_by="system",
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
     )
 
     await widget.insert()
@@ -190,8 +190,8 @@ async def _create_galei_tzahal_widget() -> bool:
         target_pages=[],  # Empty = visible on all pages
         order=config["order"],
         created_by="system",
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
     )
 
     await widget.insert()
@@ -257,8 +257,8 @@ async def _create_radio_103fm_widget() -> bool:
         target_pages=[],  # Empty = visible on all pages
         order=config["order"],
         created_by="system",
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
     )
 
     await widget.insert()
@@ -322,8 +322,8 @@ async def _create_podcast_widgets() -> int:
             target_pages=[],
             order=config["order"],
             created_by="system",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
         )
 
         await widget.insert()
@@ -391,8 +391,8 @@ async def _create_channel_widgets() -> int:
             target_pages=[],
             order=config["order"],
             created_by="system",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
         )
 
         await widget.insert()

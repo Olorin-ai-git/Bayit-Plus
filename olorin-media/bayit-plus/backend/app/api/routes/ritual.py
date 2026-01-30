@@ -150,7 +150,7 @@ async def update_ritual_preferences(
     for key, value in updates.items():
         current_user.preferences[key] = value
 
-    current_user.updated_at = datetime.utcnow()
+    current_user.updated_at = datetime.now(timezone.utc)
     await current_user.save()
 
     return {

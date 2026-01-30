@@ -1,3 +1,4 @@
+import logger from '@/utils/logger'
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/authStore'
@@ -289,12 +290,12 @@ export default function VideoPlayer({
 
   // Stable callbacks for BufferedLiveDubbingPlayer to prevent re-render loops
   const handleBufferedPlayerReady = useCallback((addSegment: (audio: ArrayBuffer, text: string) => void) => {
-    console.log('[VideoPlayer] Buffered player ready')
+    logger.info('Buffered player ready')
     setBufferedPlayerAddSegment(() => addSegment)
   }, [])
 
   const handleBufferedPlayerError = useCallback((error: string) => {
-    console.error('[VideoPlayer] Buffered dubbing error:', error)
+    logger.error('Buffered dubbing error', { error })
     dubbing.disconnect()
   }, [dubbing])
 

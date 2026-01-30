@@ -5,7 +5,7 @@ Manages live stream recording sessions
 
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -176,7 +176,7 @@ class LiveRecordingService:
 
             # Update session status
             session.status = "processing"
-            session.actual_end_at = datetime.utcnow()
+            session.actual_end_at = datetime.now(timezone.utc)
             await session.save()
 
             # Stop FFmpeg process
@@ -307,7 +307,7 @@ class LiveRecordingService:
             if session and session.status == "recording":
                 session.duration_seconds = duration_seconds
                 session.file_size_bytes = file_size_bytes
-                session.updated_at = datetime.utcnow()
+                session.updated_at = datetime.now(timezone.utc)
                 await session.save()
 
         except Exception as e:
@@ -326,7 +326,7 @@ class LiveRecordingService:
             if session:
                 session.status = "failed"
                 session.error_message = str(error)
-                session.actual_end_at = datetime.utcnow()
+                session.actual_end_at = datetime.now(timezone.utc)
                 await session.save()
 
                 logger.error(

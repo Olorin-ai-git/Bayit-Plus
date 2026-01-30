@@ -18,7 +18,7 @@ Each channel:
 import asyncio
 import logging
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import AsyncIterator, Dict, Optional
 
 from app.services.olorin.dubbing.stt_provider import get_stt_provider
@@ -219,7 +219,7 @@ class ChannelSTTManager:
                 message = TranscriptMessage(
                     text=text,
                     language=language,
-                    timestamp_ms=int(datetime.utcnow().timestamp() * 1000),
+                    timestamp_ms=int(datetime.now(timezone.utc).timestamp() * 1000),
                 )
 
                 # Broadcast to all subscribers

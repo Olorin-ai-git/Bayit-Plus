@@ -141,7 +141,7 @@ class TestSessionValidation:
 
 class TestModeration:
     @pytest.mark.asyncio
-    @patch("app.services.channel_chat_service.ModerationAuditLog")
+    @patch("app.services.channel_chat_moderation.ModerationAuditLog")
     async def test_mute_unmute_user(self, mock_audit, chat_service):
         mock_audit_instance = MagicMock()
         mock_audit_instance.insert = AsyncMock()

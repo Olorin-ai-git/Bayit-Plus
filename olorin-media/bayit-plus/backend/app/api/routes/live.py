@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -61,7 +61,7 @@ async def get_channel(
         raise HTTPException(status_code=404, detail="Channel not found")
 
     # Get today's schedule
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     today_end = today_start + timedelta(days=1)
 
@@ -114,7 +114,7 @@ async def get_epg(
     if date:
         target_date = datetime.strptime(date, "%Y-%m-%d")
     else:
-        target_date = datetime.utcnow()
+        target_date = datetime.now(timezone.utc)
 
     day_start = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
     day_end = day_start + timedelta(days=1)
@@ -129,7 +129,7 @@ async def get_epg(
         .to_list()
     )
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     return {
         "channel_id": channel_id,

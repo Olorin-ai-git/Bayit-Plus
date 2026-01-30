@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from beanie.operators import And, Or
@@ -113,8 +113,8 @@ class StatsService:
         if total_decisive > 0:
             stats.chess_win_rate = (stats.chess_wins / total_decisive) * 100
 
-        stats.last_game_at = datetime.utcnow()
-        stats.updated_at = datetime.utcnow()
+        stats.last_game_at = datetime.now(timezone.utc)
+        stats.updated_at = datetime.now(timezone.utc)
 
         await stats.save()
 

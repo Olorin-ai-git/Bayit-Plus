@@ -5,7 +5,7 @@ Functions for fixing missing or low-quality thumbnails on YouTube content.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from app.models.content import Content
@@ -179,7 +179,7 @@ async def _apply_thumbnail_fix(
         content.thumbnail = new_thumbnail
         content.backdrop = new_thumbnail
         content.poster_url = new_thumbnail
-        content.updated_at = datetime.utcnow()
+        content.updated_at = datetime.now(timezone.utc)
         await content.save()
         results["fixed_items"].append(
             {

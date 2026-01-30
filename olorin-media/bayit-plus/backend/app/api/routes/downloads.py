@@ -3,7 +3,7 @@ Downloads API Routes
 Manage user's downloaded content for offline viewing
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from beanie import Document
@@ -24,7 +24,7 @@ class Download(Document):
     status: str = "completed"  # pending, downloading, completed, failed
     progress: int = 100  # Download progress percentage
     file_size: Optional[int] = None  # Size in bytes
-    downloaded_at: datetime = datetime.utcnow()
+    downloaded_at: datetime = datetime.now(timezone.utc)
     expires_at: Optional[datetime] = None  # For DRM content
 
     class Settings:

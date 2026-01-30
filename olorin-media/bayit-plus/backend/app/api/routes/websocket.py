@@ -4,7 +4,7 @@ Handles WebSocket connections, message routing, and real-time events.
 """
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
@@ -124,7 +124,7 @@ async def party_websocket(websocket: WebSocket, party_id: str, token: str = Quer
 
                 if msg_type == "ping":
                     await connection_manager.send_personal_message(
-                        {"type": "pong", "timestamp": datetime.utcnow().isoformat()},
+                        {"type": "pong", "timestamp": datetime.now(timezone.utc).isoformat()},
                         connection_id,
                     )
 

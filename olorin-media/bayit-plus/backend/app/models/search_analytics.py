@@ -9,7 +9,7 @@ Tracks search queries, user behavior, and search performance for:
 - Filter usage patterns
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 from beanie import Document
@@ -149,7 +149,7 @@ class SearchQuery(Document):
         """
         from datetime import timedelta
 
-        cutoff_date = datetime.utcnow() - timedelta(days=days)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
 
         pipeline = [
             {"$match": {"timestamp": {"$gte": cutoff_date}}},
@@ -184,7 +184,7 @@ class SearchQuery(Document):
         """
         from datetime import timedelta
 
-        cutoff_date = datetime.utcnow() - timedelta(days=days)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
 
         pipeline = [
             {"$match": {"timestamp": {"$gte": cutoff_date}, "result_count": 0}},
@@ -210,7 +210,7 @@ class SearchQuery(Document):
         """
         from datetime import timedelta
 
-        cutoff_date = datetime.utcnow() - timedelta(days=days)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
 
         pipeline = [
             {"$match": {"timestamp": {"$gte": cutoff_date}}},
@@ -246,7 +246,7 @@ class SearchQuery(Document):
         """
         from datetime import timedelta
 
-        cutoff_date = datetime.utcnow() - timedelta(days=days)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
 
         pipeline = [
             {"$match": {"timestamp": {"$gte": cutoff_date}}},
@@ -318,7 +318,7 @@ class SearchPerformanceMetrics(Document):
         from datetime import timedelta
 
         if date is None:
-            date = datetime.utcnow() - timedelta(days=1)
+            date = datetime.now(timezone.utc) - timedelta(days=1)
 
         date_str = date.strftime("%Y-%m-%d")
 

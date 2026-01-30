@@ -15,7 +15,7 @@ import asyncio
 import json
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import anthropic
@@ -264,7 +264,7 @@ Return ONLY JSON, no additional text."""
                 changes_made.append("moderation_status: pending")
 
             if changes_made:
-                content.updated_at = datetime.utcnow()
+                content.updated_at = datetime.now(timezone.utc)
                 await content.save()
 
                 # Log action

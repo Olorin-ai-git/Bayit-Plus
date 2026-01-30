@@ -6,7 +6,7 @@ Sessions are stored in Redis with 2-hour TTL for recovery on reconnect.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from app.core.redis_client import get_redis_client
@@ -78,7 +78,7 @@ class LiveDubbingSessionStore:
         try:
             state = await redis.get(key)
             if state:
-                state["last_activity_at"] = datetime.utcnow().isoformat()
+                state["last_activity_at"] = datetime.now(timezone.utc).isoformat()
                 # Extend TTL to 2 hours from now
                 await redis.set_with_ttl(key, state, 7200)
         except Exception as e:
@@ -142,7 +142,7 @@ class LiveDubbingSessionStore:
                 state["metering"] = state.get("metering", {})
                 state["metering"]["bytes_processed"] = bytes_processed
                 state["metering"]["segments_processed"] = segments_processed
-                state["metering"]["last_metering_at"] = datetime.utcnow().isoformat()
+                state["metering"]["last_metering_at"] = datetime.now(timezone.utc).isoformat()
                 await redis.set_with_ttl(key, state, 7200)
         except Exception as e:
             logger.error(f"Error recording session usage: {e}")

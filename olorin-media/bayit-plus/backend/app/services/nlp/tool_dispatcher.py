@@ -399,13 +399,13 @@ async def execute_bayit_tool(
                    f"- Total: {series_count + movies_count + podcasts_count}"
 
         elif stat_type == "recent":
-            from datetime import datetime, timedelta
+            from datetime import datetime, timedelta, timezone
             time_period = tool_input.get("time_period", "week")
 
             days_map = {"day": 1, "week": 7, "month": 30, "year": 365}
             days = days_map.get(time_period, 7)
 
-            cutoff = datetime.utcnow() - timedelta(days=days)
+            cutoff = datetime.now(timezone.utc) - timedelta(days=days)
             recent_count = await Content.find(
                 Content.created_at >= cutoff
             ).count()

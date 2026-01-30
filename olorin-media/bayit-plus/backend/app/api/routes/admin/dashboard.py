@@ -3,7 +3,7 @@ Admin dashboard endpoints.
 Provides overview statistics and recent activity.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, Query
 
@@ -19,7 +19,7 @@ router = APIRouter()
 @router.get("/dashboard/stats", response_model=DashboardStats)
 async def get_dashboard_stats(current_user: User = Depends(require_admin())):
     """Get dashboard statistics."""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     week_start = today_start - timedelta(days=7)
     month_start = today_start.replace(day=1)

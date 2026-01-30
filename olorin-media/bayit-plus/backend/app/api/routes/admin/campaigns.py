@@ -3,7 +3,7 @@ Admin campaign management endpoints.
 Provides CRUD operations for promotional campaigns.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -178,7 +178,7 @@ async def update_campaign(
     campaign.discount_value = data.discount_value
     campaign.usage_limit = data.usage_limit
     campaign.target_audience = data.target_audience or TargetAudience()
-    campaign.updated_at = datetime.utcnow()
+    campaign.updated_at = datetime.now(timezone.utc)
 
     if data.promo_code and data.promo_code != campaign.promo_code:
         existing = await Campaign.find_one(Campaign.promo_code == data.promo_code)
@@ -211,7 +211,7 @@ async def activate_campaign(
         raise HTTPException(status_code=404, detail="Campaign not found")
 
     campaign.status = CampaignStatus.ACTIVE
-    campaign.updated_at = datetime.utcnow()
+    campaign.updated_at = datetime.now(timezone.utc)
     await campaign.save()
 
     await log_audit(
@@ -238,7 +238,7 @@ async def deactivate_campaign(
         raise HTTPException(status_code=404, detail="Campaign not found")
 
     campaign.status = CampaignStatus.PAUSED
-    campaign.updated_at = datetime.utcnow()
+    campaign.updated_at = datetime.now(timezone.utc)
     await campaign.save()
 
     return {"message": "Campaign deactivated"}
@@ -284,7 +284,7 @@ async def validate_promo_code(
     if campaign.usage_limit and campaign.usage_count >= campaign.usage_limit:
         return {"valid": False, "message": "Usage limit reached"}
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     if campaign.start_date > now:
         return {"valid": False, "message": "Campaign not started"}
     if campaign.end_date and campaign.end_date < now:

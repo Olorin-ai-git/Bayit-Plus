@@ -5,10 +5,11 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { View, Text, Pressable, StyleSheet, Animated } from 'react-native'
+import { View, Text, Pressable, StyleSheet, Animated, I18nManager } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius, fontSize, glass } from '@olorin/design-tokens'
 import { Clock, X, AlertTriangle } from 'lucide-react'
+import { channelChatConfig } from '@/config/channelChatConfig'
 
 interface CatchUpOverlayProps {
   channelId: string
@@ -19,8 +20,6 @@ interface CatchUpOverlayProps {
   onDecline: () => void
   autoDismissSeconds: number
 }
-
-const LOW_BALANCE_THRESHOLD = 10
 
 export default function CatchUpOverlay({
   programName,
@@ -35,7 +34,7 @@ export default function CatchUpOverlay({
   const [isPaused, setIsPaused] = useState(false)
   const fadeAnim = useRef(new Animated.Value(0)).current
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const isLowBalance = creditBalance < LOW_BALANCE_THRESHOLD
+  const isLowBalance = creditBalance < channelChatConfig.lowBalanceThreshold
   const progressWidth = autoDismissSeconds > 0 ? (secondsLeft / autoDismissSeconds) * 100 : 0
 
   useEffect(() => {
@@ -129,7 +128,14 @@ export default function CatchUpOverlay({
 }
 
 const styles = StyleSheet.create({
-  container: { position: 'absolute', bottom: spacing.lg, right: spacing.lg, zIndex: 100, maxWidth: 360 },
+  container: {
+    position: 'absolute',
+    bottom: spacing.lg,
+    ...(I18nManager.isRTL ? { left: spacing.lg } : { right: spacing.lg }),
+    zIndex: 100,
+    width: '90%',
+    maxWidth: 360,
+  },
   card: {
     backgroundColor: glass.bgStrong, borderRadius: borderRadius.lg, padding: spacing.md,
     borderWidth: 1, borderColor: glass.border,
@@ -138,7 +144,7 @@ const styles = StyleSheet.create({
   },
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },
   title: { flex: 1, color: colors.text, fontSize: fontSize.base, fontWeight: '600' },
-  closeButton: { padding: spacing.xs },
+  closeButton: { padding: spacing.xs, minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   description: { color: colors.textSecondary, fontSize: fontSize.sm, marginBottom: spacing.sm, lineHeight: 20 },
   warningRow: {
     flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginBottom: spacing.sm,
@@ -149,16 +155,16 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.sm },
   acceptButton: {
     flex: 1, backgroundColor: colors.primary.DEFAULT, borderRadius: borderRadius.md,
-    paddingVertical: spacing.sm, alignItems: 'center',
+    paddingVertical: spacing.sm, minHeight: 44, alignItems: 'center', justifyContent: 'center',
   },
   acceptText: { color: colors.text, fontSize: fontSize.sm, fontWeight: '600' },
   declineButton: {
     flex: 1, backgroundColor: glass.bgLight, borderRadius: borderRadius.md,
-    paddingVertical: spacing.sm, alignItems: 'center', borderWidth: 1, borderColor: glass.borderLight,
+    paddingVertical: spacing.sm, minHeight: 44, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: glass.borderLight,
   },
   declineText: { color: colors.textSecondary, fontSize: fontSize.sm, fontWeight: '500' },
   progressTrack: {
-    height: 3, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: borderRadius.full, overflow: 'hidden',
+    height: 3, backgroundColor: glass.bgLight, borderRadius: borderRadius.full, overflow: 'hidden',
   },
   progressFill: { height: '100%', backgroundColor: colors.primary[400], borderRadius: borderRadius.full },
 })

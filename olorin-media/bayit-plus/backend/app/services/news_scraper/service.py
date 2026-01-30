@@ -7,7 +7,7 @@ Handles caching and aggregation of headlines from multiple sources.
 
 import asyncio
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict
 
 from app.services.news_scraper.constants import CACHE_TTL_MINUTES
@@ -66,7 +66,7 @@ async def get_cached_headlines() -> ScrapedNews:
     Headlines are cached for the configured TTL (default 30 minutes).
     """
     cache_key = "headlines"
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     if cache_key in _cache:
         cached_data, cached_at = _cache[cache_key]
@@ -102,7 +102,7 @@ class NewsScraperService:
     async def get_headlines(self) -> ScrapedNews:
         """Get headlines with instance-level caching."""
         cache_key = "headlines"
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
 
         if cache_key in self._cache:
             cached_data, cached_at = self._cache[cache_key]
@@ -116,7 +116,7 @@ class NewsScraperService:
     async def refresh_headlines(self) -> ScrapedNews:
         """Force refresh headlines ignoring cache."""
         news = await scrape_all_sources()
-        self._cache["headlines"] = (news, datetime.utcnow())
+        self._cache["headlines"] = (news, datetime.now(timezone.utc))
         return news
 
     def clear_cache(self) -> None:

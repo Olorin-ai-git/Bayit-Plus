@@ -8,7 +8,8 @@ This module handles all initialization tasks that run when the server starts:
 - Configuration validation
 """
 
-from app.services.startup.background_tasks import (start_background_tasks,
+from app.services.startup.background_tasks import (set_database_ready,
+                                                   start_background_tasks,
                                                    stop_background_tasks)
 from app.services.startup.culture_seeder import init_default_cultures
 from app.services.startup.podcast_seeder import init_default_podcasts
@@ -18,6 +19,7 @@ __all__ = [
     "init_default_widgets",
     "init_default_cultures",
     "init_default_podcasts",
+    "set_database_ready",
     "start_background_tasks",
     "stop_background_tasks",
 ]

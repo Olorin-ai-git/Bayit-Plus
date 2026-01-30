@@ -7,7 +7,7 @@ that run after the main upload completes.
 
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Awaitable, Callable, Optional
 
 import httpx
@@ -46,12 +46,12 @@ class BackgroundEnricher:
         try:
             logger.info(f"[Background] Starting IMDB/TMDB lookup for job {job_id}")
 
-            imdb_start_time = datetime.utcnow()
+            imdb_start_time = datetime.now(timezone.utc)
             job = await UploadJob.find_one(UploadJob.job_id == job_id)
             if job:
                 job.stages["imdb_lookup"] = "in_progress"
                 job.stage_timings["imdb_lookup"] = {
-                    "started": datetime.utcnow().isoformat()
+                    "started": datetime.now(timezone.utc).isoformat()
                 }
                 await job.save()
                 await self._broadcast_update()
@@ -128,11 +128,11 @@ class BackgroundEnricher:
 
             # Mark stage as completed
             if job:
-                imdb_duration = (datetime.utcnow() - imdb_start_time).total_seconds()
+                imdb_duration = (datetime.now(timezone.utc) - imdb_start_time).total_seconds()
                 job.stages["imdb_lookup"] = "completed"
                 job.stage_timings["imdb_lookup"][
                     "completed"
-                ] = datetime.utcnow().isoformat()
+                ] = datetime.now(timezone.utc).isoformat()
                 job.stage_timings["imdb_lookup"]["duration_seconds"] = round(
                     imdb_duration, 2
                 )
@@ -206,12 +206,12 @@ class BackgroundEnricher:
         try:
             logger.info(f"[Background] Starting subtitle extraction for job {job_id}")
 
-            subtitle_start_time = datetime.utcnow()
+            subtitle_start_time = datetime.now(timezone.utc)
             job = await UploadJob.find_one(UploadJob.job_id == job_id)
             if job:
                 job.stages["subtitle_extraction"] = "in_progress"
                 job.stage_timings["subtitle_extraction"] = {
-                    "started": datetime.utcnow().isoformat()
+                    "started": datetime.now(timezone.utc).isoformat()
                 }
                 await job.save()
                 await self._broadcast_update()
@@ -277,7 +277,7 @@ class BackgroundEnricher:
 
             if saved_count > 0:
                 content.subtitle_extraction_status = "completed"
-                content.subtitle_last_checked = datetime.utcnow()
+                content.subtitle_last_checked = datetime.now(timezone.utc)
                 existing_languages = set(
                     t.language
                     for t in await SubtitleTrackDoc.get_for_content(content_id)
@@ -292,12 +292,12 @@ class BackgroundEnricher:
             job = await UploadJob.find_one(UploadJob.job_id == job_id)
             if job:
                 subtitle_duration = (
-                    datetime.utcnow() - subtitle_start_time
+                    datetime.now(timezone.utc) - subtitle_start_time
                 ).total_seconds()
                 job.stages["subtitle_extraction"] = "completed"
                 job.stage_timings["subtitle_extraction"][
                     "completed"
-                ] = datetime.utcnow().isoformat()
+                ] = datetime.now(timezone.utc).isoformat()
                 job.stage_timings["subtitle_extraction"]["duration_seconds"] = round(
                     subtitle_duration, 2
                 )

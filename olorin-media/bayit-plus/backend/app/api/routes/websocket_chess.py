@@ -6,7 +6,7 @@ Handles WebSocket connections, chess moves, and chat messages.
 import asyncio
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
@@ -256,7 +256,7 @@ async def chess_websocket(
 
                 if msg_type == "ping":
                     await websocket.send_json(
-                        {"type": "pong", "timestamp": datetime.utcnow().isoformat()}
+                        {"type": "pong", "timestamp": datetime.now(timezone.utc).isoformat()}
                     )
 
                 elif msg_type == "move":
@@ -494,7 +494,7 @@ async def chess_websocket(
             elif game.black_player and game.black_player.user_id == user_id:
                 game.black_player.is_connected = False
 
-            game.updated_at = datetime.utcnow()
+            game.updated_at = datetime.now(timezone.utc)
             await game.save()
             logger.info(
                 f"[Chess] Updated player connection status for {user.name} in game {game_code}"

@@ -2,7 +2,7 @@
 
 import asyncio
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional
 
 from app.core.config import settings
@@ -52,7 +52,7 @@ class TranscriptBuffer:
             self._segments.append(segment)
 
             # Trim segments older than max duration
-            cutoff_time = datetime.utcnow() - timedelta(
+            cutoff_time = datetime.now(timezone.utc) - timedelta(
                 minutes=self.max_duration_minutes
             )
             original_count = len(self._segments)

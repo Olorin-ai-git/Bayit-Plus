@@ -2,7 +2,7 @@
 
 import secrets
 import string
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Tuple
 
 import chess
@@ -112,7 +112,7 @@ class ChessService:
         if game.white_player and game.black_player:
             game.status = GameStatus.ACTIVE
 
-        game.updated_at = datetime.utcnow()
+        game.updated_at = datetime.now(timezone.utc)
         await game.save()
         return game
 
@@ -224,7 +224,7 @@ class ChessService:
         elif board.is_insufficient_material() or board.can_claim_draw():
             game.status = GameStatus.DRAW
 
-        game.updated_at = datetime.utcnow()
+        game.updated_at = datetime.now(timezone.utc)
         await game.save()
 
         # Record game result if game ended
@@ -251,7 +251,7 @@ class ChessService:
             raise ValueError("You are not in this game")
 
         game.status = GameStatus.RESIGNED
-        game.updated_at = datetime.utcnow()
+        game.updated_at = datetime.now(timezone.utc)
         await game.save()
 
         # Record game result
@@ -277,7 +277,7 @@ class ChessService:
             raise ValueError("You are not in this game")
 
         game.status = GameStatus.DRAW
-        game.updated_at = datetime.utcnow()
+        game.updated_at = datetime.now(timezone.utc)
         await game.save()
         return game
 

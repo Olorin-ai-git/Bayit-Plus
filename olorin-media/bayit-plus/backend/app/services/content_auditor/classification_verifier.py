@@ -5,7 +5,7 @@ Classification Verifier - AI-powered classification verification using Claude AP
 import json
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import anthropic
@@ -39,7 +39,7 @@ async def get_cached_verifications(
     """Check cache for existing verification results."""
     cached_misclass: List[Dict[str, Any]] = []
     uncached: List[Content] = []
-    cache_threshold = datetime.utcnow() - timedelta(days=config.cache_ttl_days)
+    cache_threshold = datetime.now(timezone.utc) - timedelta(days=config.cache_ttl_days)
 
     for content in contents:
         cached = await ClassificationVerificationCache.find_one(
@@ -197,8 +197,8 @@ async def cache_verification(
             content_title=content.title,
             content_genre=content.genre,
             category_name=category.name_key if category else None,
-            last_verified=datetime.utcnow(),
-            expires_at=datetime.utcnow() + timedelta(days=config.cache_ttl_days),
+            last_verified=datetime.now(timezone.utc),
+            expires_at=datetime.now(timezone.utc) + timedelta(days=config.cache_ttl_days),
         )
         await cache_entry.insert()
     except Exception as e:

@@ -9,7 +9,7 @@ import asyncio
 import logging
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 import httpx
@@ -46,7 +46,7 @@ class NewsCache:
             return None
 
         items, cached_at = self._cache[key]
-        if datetime.utcnow() - cached_at > timedelta(seconds=CACHE_TTL_SECONDS):
+        if datetime.now(timezone.utc) - cached_at > timedelta(seconds=CACHE_TTL_SECONDS):
             # Cache expired
             del self._cache[key]
             return None
@@ -55,7 +55,7 @@ class NewsCache:
 
     def set(self, key: str, items: List[NewsItem]):
         """Cache items."""
-        self._cache[key] = (items, datetime.utcnow())
+        self._cache[key] = (items, datetime.now(timezone.utc))
 
 
 # Global cache instance
@@ -150,7 +150,7 @@ def get_cache_info() -> dict:
     """Get cache status for debugging."""
     info = {}
     for key, (items, cached_at) in _cache._cache.items():
-        age = (datetime.utcnow() - cached_at).total_seconds()
+        age = (datetime.now(timezone.utc) - cached_at).total_seconds()
         info[key] = {
             "items": len(items),
             "age_seconds": round(age, 1),

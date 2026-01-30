@@ -4,7 +4,7 @@ Orchestrates fetching subtitles from external sources with priority fallback
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from beanie import PydanticObjectId
@@ -229,7 +229,7 @@ class ExternalSubtitleService:
                 source=source,
                 external_id=external_id,
                 external_url=external_url,
-                download_date=datetime.utcnow(),
+                download_date=datetime.now(timezone.utc),
             )
             await subtitle_doc.insert()
 

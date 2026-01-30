@@ -1,6 +1,6 @@
 """Direct messaging REST API routes for friends."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from beanie.operators import And, Or
@@ -232,7 +232,7 @@ async def mark_as_read(message_id: str, user: User = Depends(get_current_user)):
 
     if not message.read:
         message.read = True
-        message.read_at = datetime.utcnow()
+        message.read_at = datetime.now(timezone.utc)
         await message.save()
 
     return {"success": True}
@@ -256,7 +256,7 @@ async def mark_all_as_read(friend_id: str, user: User = Depends(get_current_user
             DirectMessage.receiver_id == user_id,
             DirectMessage.read == False,
         )
-    ).update_many({"$set": {"read": True, "read_at": datetime.utcnow()}})
+    ).update_many({"$set": {"read": True, "read_at": datetime.now(timezone.utc)}})
 
     return {"success": True, "updated_count": result.modified_count if result else 0}
 

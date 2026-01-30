@@ -5,7 +5,7 @@ Manages user sessions and frequency limits for live trivia.
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.models.live_trivia import LiveTriviaSession
 
@@ -51,7 +51,7 @@ class SessionManager:
             session = LiveTriviaSession(
                 user_id=user_id,
                 channel_id=channel_id,
-                session_start=datetime.utcnow(),
+                session_start=datetime.now(timezone.utc),
                 shown_topics=[],
                 shown_fact_ids=[]
             )
@@ -59,7 +59,7 @@ class SessionManager:
             logger.info(f"Created new trivia session for user {user_id} on {channel_id}")
         else:
             # Refresh updated_at to keep session alive (TTL is on updated_at)
-            session.updated_at = datetime.utcnow()
+            session.updated_at = datetime.now(timezone.utc)
             await session.save()
 
         return session
@@ -77,5 +77,5 @@ class SessionManager:
         if not session.last_fact_shown_at:
             return True
 
-        elapsed = (datetime.utcnow() - session.last_fact_shown_at).total_seconds()
+        elapsed = (datetime.now(timezone.utc) - session.last_fact_shown_at).total_seconds()
         return elapsed >= self.min_interval_seconds

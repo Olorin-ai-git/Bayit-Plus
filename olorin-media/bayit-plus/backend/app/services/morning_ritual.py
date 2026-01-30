@@ -237,7 +237,7 @@ async def generate_ai_brief(user: User) -> Dict[str, Any]:
 
         brief = json.loads(response_text)
         brief["israel_context"] = israel_context
-        brief["generated_at"] = datetime.utcnow().isoformat()
+        brief["generated_at"] = datetime.now(timezone.utc).isoformat()
 
         return brief
 
@@ -249,7 +249,7 @@ async def generate_ai_brief(user: User) -> Dict[str, Any]:
             "recommendation": "בוא נתחיל את היום עם חדשות מהארץ",
             "mood": "uplifting",
             "israel_context": israel_context,
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
         }
 
 

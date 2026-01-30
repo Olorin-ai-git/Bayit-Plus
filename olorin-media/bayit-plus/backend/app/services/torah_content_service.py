@@ -11,7 +11,7 @@ import asyncio
 import logging
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from typing import Any, Dict, List, Optional
 
@@ -81,7 +81,7 @@ class TorahCache:
             return None
 
         items, cached_at = self._cache[key]
-        if datetime.utcnow() - cached_at > self._ttl:
+        if datetime.now(timezone.utc) - cached_at > self._ttl:
             del self._cache[key]
             return None
 
@@ -89,7 +89,7 @@ class TorahCache:
 
     def set(self, key: str, items: List[TorahShiur]) -> None:
         """Cache items with current timestamp."""
-        self._cache[key] = (items, datetime.utcnow())
+        self._cache[key] = (items, datetime.now(timezone.utc))
 
     def clear(self) -> None:
         """Clear all cached items."""
@@ -170,7 +170,7 @@ class TorahContentService:
                 continue
 
             # Parse publication date
-            pub_date = datetime.utcnow()
+            pub_date = datetime.now(timezone.utc)
             if pub_date_elem is not None and pub_date_elem.text:
                 try:
                     pub_date = parsedate_to_datetime(pub_date_elem.text)

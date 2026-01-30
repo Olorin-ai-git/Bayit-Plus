@@ -6,7 +6,7 @@ when multiple uploads of the same file are attempted simultaneously.
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from pymongo.errors import DuplicateKeyError
@@ -49,13 +49,13 @@ class UploadLockManager:
             True if lock was acquired, False if hash is already locked
         """
         timeout = timeout_seconds or self._default_timeout
-        expires_at = datetime.utcnow() + timedelta(seconds=timeout)
+        expires_at = datetime.now(timezone.utc) + timedelta(seconds=timeout)
 
         try:
             lock = UploadHashLock(
                 file_hash=file_hash,
                 job_id=job_id,
-                acquired_at=datetime.utcnow(),
+                acquired_at=datetime.now(timezone.utc),
                 expires_at=expires_at,
             )
             await lock.insert()
@@ -136,7 +136,7 @@ class UploadLockManager:
             )
 
             if lock:
-                lock.expires_at = datetime.utcnow() + timedelta(
+                lock.expires_at = datetime.now(timezone.utc) + timedelta(
                     seconds=additional_seconds
                 )
                 await lock.save()
@@ -188,7 +188,7 @@ class UploadLockManager:
                     "acquired_at": lock.acquired_at,
                     "expires_at": lock.expires_at,
                     "remaining_seconds": max(
-                        0, (lock.expires_at - datetime.utcnow()).total_seconds()
+                        0, (lock.expires_at - datetime.now(timezone.utc)).total_seconds()
                     ),
                 }
             return None
@@ -209,7 +209,7 @@ class UploadLockManager:
         """
         try:
             result = await UploadHashLock.find(
-                UploadHashLock.expires_at < datetime.utcnow()
+                UploadHashLock.expires_at < datetime.now(timezone.utc)
             ).delete()
 
             deleted_count = result.deleted_count if result else 0

@@ -5,7 +5,7 @@ System widgets now use an opt-in subscription model. Users must explicitly
 add system widgets to their collection via /widgets/system/add.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from bson import ObjectId
@@ -263,7 +263,7 @@ async def update_personal_widget(
     if data.order is not None:
         widget.order = data.order
 
-    widget.updated_at = datetime.utcnow()
+    widget.updated_at = datetime.now(timezone.utc)
     await widget.save()
 
     return {"message": "Widget updated", "id": widget_id}
@@ -330,7 +330,7 @@ async def update_widget_position(
         if data.height is not None:
             widget.position.height = data.height
 
-        widget.updated_at = datetime.utcnow()
+        widget.updated_at = datetime.now(timezone.utc)
         await widget.save()
     else:
         # For system widgets, update user's subscription preference
@@ -355,7 +355,7 @@ async def update_widget_position(
                     z_index=widget.position.z_index,
                 ),
                 order=widget.order,
-                added_at=datetime.utcnow(),
+                added_at=datetime.now(timezone.utc),
             )
             await subscription.insert()
         else:
@@ -403,7 +403,7 @@ async def close_widget(
         if widget.user_id != user_id:
             raise HTTPException(status_code=403, detail="Access denied")
         widget.is_visible = False
-        widget.updated_at = datetime.utcnow()
+        widget.updated_at = datetime.now(timezone.utc)
         await widget.save()
     else:
         # For system widgets, update user's subscription
@@ -422,7 +422,7 @@ async def close_widget(
                 is_visible=False,  # Closing it
                 position=widget.position,
                 order=widget.order,
-                added_at=datetime.utcnow(),
+                added_at=datetime.now(timezone.utc),
             )
             await subscription.insert()
         else:
@@ -459,7 +459,7 @@ async def toggle_widget_minimize(
         if widget.user_id != user_id:
             raise HTTPException(status_code=403, detail="Access denied")
         widget.is_minimized = is_minimized
-        widget.updated_at = datetime.utcnow()
+        widget.updated_at = datetime.now(timezone.utc)
         await widget.save()
     else:
         # For system widgets, update user's subscription
@@ -478,7 +478,7 @@ async def toggle_widget_minimize(
                 is_visible=True,
                 position=widget.position,
                 order=widget.order,
-                added_at=datetime.utcnow(),
+                added_at=datetime.now(timezone.utc),
             )
             await subscription.insert()
         else:

@@ -5,7 +5,7 @@ Tool execution functions for managing podcasts and episodes.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 from app.models.content import Podcast, PodcastEpisode
@@ -127,7 +127,7 @@ async def execute_manage_podcast_episodes(
                 podcast.episode_count = min(total_episodes, max_episodes_to_keep)
                 if all_episodes:
                     podcast.latest_episode_date = all_episodes[0].published_at
-                podcast.updated_at = datetime.utcnow()
+                podcast.updated_at = datetime.now(timezone.utc)
                 await podcast.save()
 
                 results["podcasts_processed"] += 1

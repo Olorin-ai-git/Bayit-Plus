@@ -2,7 +2,7 @@
 Admin Widget Management Routes - CRUD operations for system widgets
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -250,7 +250,7 @@ async def update_widget(
         changes["order"] = {"old": widget.order, "new": data.order}
         widget.order = data.order
 
-    widget.updated_at = datetime.utcnow()
+    widget.updated_at = datetime.now(timezone.utc)
     await widget.save()
 
     await log_audit(
@@ -310,7 +310,7 @@ async def publish_widget(
         raise HTTPException(status_code=404, detail="Widget not found")
 
     widget.is_active = True
-    widget.updated_at = datetime.utcnow()
+    widget.updated_at = datetime.now(timezone.utc)
     await widget.save()
 
     await log_audit(
@@ -341,7 +341,7 @@ async def unpublish_widget(
         raise HTTPException(status_code=404, detail="Widget not found")
 
     widget.is_active = False
-    widget.updated_at = datetime.utcnow()
+    widget.updated_at = datetime.now(timezone.utc)
     await widget.save()
 
     await log_audit(

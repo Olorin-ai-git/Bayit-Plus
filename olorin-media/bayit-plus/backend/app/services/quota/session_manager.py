@@ -4,7 +4,7 @@ Session Manager - Handles live feature session lifecycle and cost tracking
 
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Optional
 
 from app.core.config import settings
@@ -108,9 +108,9 @@ class SessionManager:
         session.audio_seconds_processed += audio_seconds_delta
         session.segments_processed += segments_delta
         session.duration_seconds = (
-            datetime.utcnow() - session.started_at
+            datetime.now(timezone.utc) - session.started_at
         ).total_seconds()
-        session.last_activity_at = datetime.utcnow()
+        session.last_activity_at = datetime.now(timezone.utc)
 
         # Calculate incremental cost
         minutes_delta = audio_seconds_delta / 60.0
@@ -126,7 +126,7 @@ class SessionManager:
         session.estimated_tts_cost += cost_delta["tts_cost"]
         session.estimated_total_cost += cost_delta["total_cost"]
 
-        session.updated_at = datetime.utcnow()
+        session.updated_at = datetime.now(timezone.utc)
         await session.save()
 
         # Update user quota
@@ -155,7 +155,7 @@ class SessionManager:
         quota.estimated_cost_current_month += cost_delta["total_cost"]
         quota.total_lifetime_cost += cost_delta["total_cost"]
 
-        quota.updated_at = datetime.utcnow()
+        quota.updated_at = datetime.now(timezone.utc)
         await quota.save()
 
     @staticmethod
@@ -170,11 +170,11 @@ class SessionManager:
             return
 
         session.status = status
-        session.ended_at = datetime.utcnow()
+        session.ended_at = datetime.now(timezone.utc)
         session.duration_seconds = (
             session.ended_at - session.started_at
         ).total_seconds()
-        session.updated_at = datetime.utcnow()
+        session.updated_at = datetime.now(timezone.utc)
         await session.save()
 
         logger.info(

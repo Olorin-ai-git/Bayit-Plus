@@ -5,7 +5,7 @@ Stores WebAuthn credentials for passkey authentication and manages
 authenticated sessions for accessing passkey-protected content.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from beanie import Document
@@ -97,7 +97,7 @@ class PasskeySession(Document):
 
     def is_valid(self) -> bool:
         """Check if session is valid (not expired and not revoked)."""
-        return not self.is_revoked and self.expires_at > datetime.utcnow()
+        return not self.is_revoked and self.expires_at > datetime.now(timezone.utc)
 
 
 class PasskeyChallenge(Document):
@@ -141,4 +141,4 @@ class PasskeyChallenge(Document):
 
     def is_valid(self) -> bool:
         """Check if challenge is valid (not expired and not used)."""
-        return not self.is_used and self.expires_at > datetime.utcnow()
+        return not self.is_used and self.expires_at > datetime.now(timezone.utc)

@@ -82,12 +82,12 @@ class LLMSearchService:
         """
         Use Claude to interpret the natural language query and extract search criteria.
         """
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
 
         # Build context for Claude
         context = f"""You are a TV guide search assistant. Interpret the user's natural language query and extract structured search criteria.
 
-Current time: {datetime.utcnow().isoformat()}
+Current time: {datetime.now(timezone.utc).isoformat()}
 User timezone: {timezone}
 """
 
@@ -157,7 +157,7 @@ Respond with a JSON object ONLY (no markdown, no explanation):
             interpretation = json.loads(response_text)
 
             # Add execution time
-            execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
+            execution_time = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
             interpretation["execution_time_ms"] = execution_time
 
             logger.info(
@@ -181,7 +181,7 @@ Respond with a JSON object ONLY (no markdown, no explanation):
                 "needs_ranking": True,
                 "confidence": 0.5,
                 "interpretation_summary": f"Simple keyword search for: {query}",
-                "execution_time_ms": (datetime.utcnow() - start_time).total_seconds()
+                "execution_time_ms": (datetime.now(timezone.utc) - start_time).total_seconds()
                 * 1000,
             }
 
@@ -260,7 +260,7 @@ Respond with a JSON object ONLY (no markdown, no explanation):
         time_range = interpretation.get("time_range", {})
         if time_range:
             relative = time_range.get("relative")
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
 
             if relative == "today":
                 start = now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -302,7 +302,7 @@ Respond with a JSON object ONLY (no markdown, no explanation):
             return And(*conditions)
         else:
             # No specific conditions - return all recent/upcoming programs
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             return {"start_time": {"$gte": now - timedelta(hours=2)}}
 
     async def _execute_search(

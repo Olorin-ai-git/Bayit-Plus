@@ -11,7 +11,7 @@ import json
 import logging
 import os
 import shutil
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -104,10 +104,10 @@ async def _cleanup_upload_sessions_task() -> None:
                 await asyncio.sleep(settings.UPLOAD_SESSION_CLEANUP_INTERVAL_SECONDS)
                 continue
 
-            cutoff_time = datetime.utcnow() - timedelta(
+            cutoff_time = datetime.now(timezone.utc) - timedelta(
                 hours=settings.UPLOAD_SESSION_MAX_AGE_HOURS
             )
-            timeout_cutoff = datetime.utcnow() - timedelta(
+            timeout_cutoff = datetime.now(timezone.utc) - timedelta(
                 hours=settings.UPLOAD_SESSION_TIMEOUT_HOURS
             )
             cleaned_count = 0
@@ -247,6 +247,8 @@ def start_background_tasks() -> None:
     """Start all background tasks."""
     global _running_tasks
 
+    # All background tasks below are DB-dependent (Beanie ODM queries).
+    # Skip all tasks when MongoDB/Beanie failed to initialize.
     if not _database_ready:
         logger.warning(
             "Database not initialized - skipping DB-dependent background tasks "

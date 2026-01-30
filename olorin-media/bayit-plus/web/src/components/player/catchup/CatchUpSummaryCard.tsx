@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react'
-import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, Pressable, StyleSheet, ScrollView, I18nManager } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius, fontSize, glass } from '@olorin/design-tokens'
 import { X, Clock, ChevronRight, Sparkles } from 'lucide-react'
@@ -110,7 +110,14 @@ export default function CatchUpSummaryCard({ summary, onClose }: CatchUpSummaryC
 }
 
 const styles = StyleSheet.create({
-  container: { position: 'absolute', bottom: spacing.lg, right: spacing.lg, zIndex: 100, maxWidth: 400 },
+  container: {
+    position: 'absolute',
+    bottom: spacing.lg,
+    ...(I18nManager.isRTL ? { left: spacing.lg } : { right: spacing.lg }),
+    zIndex: 100,
+    width: '90%',
+    maxWidth: 400,
+  },
   card: {
     backgroundColor: glass.bgStrong, borderRadius: borderRadius.lg, padding: spacing.md,
     borderWidth: 1, borderColor: glass.border,
@@ -120,7 +127,7 @@ const styles = StyleSheet.create({
   cardHovered: { borderColor: glass.borderFocus },
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },
   headerTitle: { flex: 1, color: colors.text, fontSize: fontSize.base, fontWeight: '600' },
-  closeButton: { padding: spacing.xs },
+  closeButton: { padding: spacing.xs, minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   programRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },
   programTitle: { color: colors.text, fontSize: fontSize.sm, fontWeight: '600' },
   genreBadge: {
@@ -135,7 +142,7 @@ const styles = StyleSheet.create({
   keyPointText: { flex: 1, color: colors.textSecondary, fontSize: fontSize.sm, lineHeight: 20 },
   footer: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.08)', paddingTop: spacing.sm,
+    borderTopWidth: 1, borderTopColor: colors.glassBorderWhite, paddingTop: spacing.sm,
   },
   footerLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   footerText: { color: colors.textMuted, fontSize: fontSize.xs },

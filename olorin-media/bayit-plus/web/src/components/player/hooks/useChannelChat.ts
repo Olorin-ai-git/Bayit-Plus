@@ -2,14 +2,10 @@
  * Custom hook for channel chat - WebSocket connection, messages, auto-reconnection
  */
 import { useState, useCallback, useRef, useEffect } from 'react'
+import { channelChatConfig } from '@/config/channelChatConfig'
 import channelChatService, {
   ChatMessageData, ConnectedData, UserJoinData, UserLeftData, ReactionUpdateData,
 } from '@/services/channelChatService'
-
-const MAX_MESSAGES = 200
-const MAX_RETRIES = 5
-const BASE_DELAY = 1000
-const MAX_DELAY = 30000
 
 export interface UseChannelChatOptions { channelId: string; autoConnect?: boolean }
 
@@ -48,7 +44,7 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
   }, [])
 
   const handleMessage = useCallback((message: ChatMessageData) => {
-    setState((prev) => ({ ...prev, messages: [...prev.messages, message].slice(-MAX_MESSAGES) }))
+    setState((prev) => ({ ...prev, messages: [...prev.messages, message].slice(-channelChatConfig.maxMessages) }))
   }, [])
 
   const handleUserJoined = useCallback((data: UserJoinData) => {
@@ -83,8 +79,8 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
     onReactionUpdate: handleReactionUpdate, onError: handleError,
     onDisconnect: () => {
       setState((prev) => ({ ...prev, isConnected: false, isConnecting: false, connectionState: 'disconnected' }))
-      if (retryCountRef.current < MAX_RETRIES) {
-        const delay = Math.min(BASE_DELAY * Math.pow(2, retryCountRef.current), MAX_DELAY)
+      if (retryCountRef.current < channelChatConfig.maxRetries) {
+        const delay = Math.min(channelChatConfig.baseDelay * Math.pow(2, retryCountRef.current), channelChatConfig.maxDelay)
         retryCountRef.current++
         setState((prev) => ({ ...prev, connectionState: 'reconnecting' }))
         setTimeout(() => channelChatService.connect(channelId, buildCallbacks()), delay)
@@ -102,7 +98,7 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
     channelChatService.disconnect()
     sessionTokenRef.current = null
     messageQueueRef.current = []
-    retryCountRef.current = MAX_RETRIES
+    retryCountRef.current = channelChatConfig.maxRetries
     setState((prev) => ({ ...prev, isConnected: false, isConnecting: false, connectionState: 'disconnected' }))
   }, [])
 

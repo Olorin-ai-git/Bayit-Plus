@@ -5,7 +5,7 @@ Uses Claude AI to analyze Israeli news headlines and extract trending topics.
 
 import json
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import anthropic
@@ -259,7 +259,7 @@ async def get_trending_analysis() -> TrendAnalysis:
     Falls back to realistic default if scraping fails.
     """
     cache_key = "trend_analysis"
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     if cache_key in _analysis_cache:
         cached_data, cached_at = _analysis_cache[cache_key]
@@ -338,7 +338,7 @@ def _get_default_trending() -> TrendAnalysis:
         top_story="ממשלה בישראל דנה בחוקים חדשים להנמכת עלויות המחיה",
         headline_count=5,
         sources=["Default Topics", "Israel News"],
-        analyzed_at=datetime.utcnow(),
+        analyzed_at=datetime.now(timezone.utc),
     )
 
 

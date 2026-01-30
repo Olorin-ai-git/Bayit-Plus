@@ -8,7 +8,7 @@ Populates AuditReport fields with content IDs for:
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from beanie import PydanticObjectId
@@ -155,7 +155,7 @@ async def track_fix_result(
             "content_id": content_id,
             "tool_name": tool_name,
             "tool_input": tool_input,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         success = tool_result.get("success", False)

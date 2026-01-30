@@ -8,7 +8,7 @@ Uses in-memory caching with configurable TTL to reduce API calls.
 import asyncio
 import logging
 import xml.etree.ElementTree as ET
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from typing import Any, Dict, List, Optional
 
@@ -113,7 +113,7 @@ class NewsCache:
             return None
 
         items, cached_at = self._cache[key]
-        if datetime.utcnow() - cached_at > self._ttl:
+        if datetime.now(timezone.utc) - cached_at > self._ttl:
             del self._cache[key]
             return None
 
@@ -121,7 +121,7 @@ class NewsCache:
 
     def set(self, key: str, items: List[Dict[str, Any]]) -> None:
         """Cache items with current timestamp."""
-        self._cache[key] = (items, datetime.utcnow())
+        self._cache[key] = (items, datetime.now(timezone.utc))
 
     def clear(self) -> None:
         """Clear all cached items."""
@@ -212,7 +212,7 @@ class JewishNewsService:
                     items = self._parse_atom_items(root, source)
 
                 # Update source fetch status
-                source.last_fetched_at = datetime.utcnow()
+                source.last_fetched_at = datetime.now(timezone.utc)
                 source.fetch_error_count = 0
                 source.last_error_message = None
                 await source.save()
@@ -262,9 +262,9 @@ class JewishNewsService:
                 try:
                     pub_date = parsedate_to_datetime(pub_date_elem.text)
                 except Exception:
-                    pub_date = datetime.utcnow()
+                    pub_date = datetime.now(timezone.utc)
             else:
-                pub_date = datetime.utcnow()
+                pub_date = datetime.now(timezone.utc)
 
             # Extract image URL from description or enclosure
             image_url = None
@@ -360,7 +360,7 @@ class JewishNewsService:
                 )
 
             # Parse publication date
-            pub_date = datetime.utcnow()
+            pub_date = datetime.now(timezone.utc)
             if pub_date_elem is not None and pub_date_elem.text:
                 try:
                     pub_date = datetime.fromisoformat(
@@ -496,7 +496,7 @@ class JewishNewsService:
                 title=item.get("title", ""),
                 title_he=item.get("title_he"),
                 link=item.get("link", ""),
-                published_at=item.get("published_at", datetime.utcnow()),
+                published_at=item.get("published_at", datetime.now(timezone.utc)),
                 summary=item.get("summary"),
                 summary_he=item.get("summary_he"),
                 author=item.get("author"),
@@ -509,7 +509,7 @@ class JewishNewsService:
 
         # Get sources count
         sources = await JewishNewsSource.find({"is_active": True}).count()
-        last_updated = self._cache.get_last_updated(cache_key) or datetime.utcnow()
+        last_updated = self._cache.get_last_updated(cache_key) or datetime.now(timezone.utc)
 
         return JewishNewsAggregatedResponse(
             items=response_items,

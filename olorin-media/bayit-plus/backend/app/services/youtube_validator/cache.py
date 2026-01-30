@@ -6,7 +6,7 @@ Reduces redundant API calls by storing validation results with TTL.
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 from app.models.librarian import StreamValidationCache
@@ -33,7 +33,7 @@ async def filter_cached_youtube(
     """
     uncached = []
     cached_results = []
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     for item in urls:
         cached = await StreamValidationCache.find_one(
@@ -82,14 +82,14 @@ async def cache_youtube_result(result: YouTubeValidationResult) -> None:
 
         cache_entry = StreamValidationCache(
             stream_url=result.url,
-            last_validated=datetime.utcnow(),
+            last_validated=datetime.now(timezone.utc),
             is_valid=result.is_valid,
             status_code=status_code,
             response_time_ms=result.response_time_ms,
             error_message=result.error_message,
             stream_type=STREAM_TYPE_YOUTUBE,
             content_type=CONTENT_TYPE_YOUTUBE,
-            expires_at=datetime.utcnow() + ttl,
+            expires_at=datetime.now(timezone.utc) + ttl,
         )
 
         # Upsert (replace if exists)
@@ -113,7 +113,7 @@ async def get_cached_validation(url: str) -> Optional[Dict[str, Any]]:
     Returns:
         Cached result dict or None if not cached or expired
     """
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     cached = await StreamValidationCache.find_one(
         {"stream_url": url, "expires_at": {"$gt": now}}
     )

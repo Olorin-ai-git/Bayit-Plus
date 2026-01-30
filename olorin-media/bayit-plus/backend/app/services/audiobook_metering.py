@@ -5,7 +5,7 @@ Tracks user audiobook streaming activity for billing and analytics.
 Integrates with Olorin metering service for usage tracking.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from enum import Enum
 
@@ -51,7 +51,7 @@ class AudiobookMeteringService:
             Event log record
         """
         if not timestamp:
-            timestamp = datetime.utcnow()
+            timestamp = datetime.now(timezone.utc)
 
         event = {
             "user_id": user_id,
@@ -92,7 +92,7 @@ class AudiobookMeteringService:
             Event log record
         """
         if not timestamp:
-            timestamp = datetime.utcnow()
+            timestamp = datetime.now(timezone.utc)
 
         event = {
             "user_id": user_id,
@@ -134,7 +134,7 @@ class AudiobookMeteringService:
             Event log record
         """
         if not timestamp:
-            timestamp = datetime.utcnow()
+            timestamp = datetime.now(timezone.utc)
 
         event = {
             "user_id": user_id,
@@ -175,7 +175,7 @@ class AudiobookMeteringService:
             Event log record
         """
         if not timestamp:
-            timestamp = datetime.utcnow()
+            timestamp = datetime.now(timezone.utc)
 
         event = {
             "user_id": user_id,

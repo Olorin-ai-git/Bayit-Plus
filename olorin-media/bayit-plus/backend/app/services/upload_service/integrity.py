@@ -10,7 +10,7 @@ Provides tools for detecting and cleaning up data integrity issues:
 import logging
 import re
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from beanie.operators import In
@@ -123,7 +123,7 @@ class UploadIntegrityService:
         Returns:
             IntegrityStatus with counts of all issues
         """
-        status = IntegrityStatus(last_checked=datetime.utcnow())
+        status = IntegrityStatus(last_checked=datetime.now(timezone.utc))
 
         try:
             # Count orphaned GCS files
@@ -290,7 +290,7 @@ class UploadIntegrityService:
         stuck_jobs = []
 
         try:
-            cutoff_time = datetime.utcnow() - timedelta(minutes=threshold)
+            cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=threshold)
 
             jobs = await UploadJob.find(
                 In(UploadJob.status, [UploadStatus.PROCESSING, UploadStatus.UPLOADING]),
@@ -299,7 +299,7 @@ class UploadIntegrityService:
 
             for job in jobs:
                 stuck_minutes = int(
-                    (datetime.utcnow() - job.started_at).total_seconds() / 60
+                    (datetime.now(timezone.utc) - job.started_at).total_seconds() / 60
                 )
 
                 stuck_jobs.append(
@@ -506,7 +506,7 @@ class UploadIntegrityService:
                                 f"Recovered from stuck state "
                                 f"(stuck for {stuck.stuck_minutes} minutes)"
                             )
-                            job.completed_at = datetime.utcnow()
+                            job.completed_at = datetime.now(timezone.utc)
 
                             # Requeue if retries available
                             if job.retry_count < job.max_retries:
@@ -557,7 +557,7 @@ class UploadIntegrityService:
 
         results = {
             "dry_run": dry_run,
-            "started_at": datetime.utcnow().isoformat(),
+            "started_at": datetime.now(timezone.utc).isoformat(),
             "gcs_cleanup": None,
             "content_cleanup": None,
             "job_recovery": None,
@@ -602,7 +602,7 @@ class UploadIntegrityService:
         if not job_result.success:
             results["overall_success"] = False
 
-        results["completed_at"] = datetime.utcnow().isoformat()
+        results["completed_at"] = datetime.now(timezone.utc).isoformat()
 
         logger.info(
             f"Full cleanup complete: overall_success={results['overall_success']}"

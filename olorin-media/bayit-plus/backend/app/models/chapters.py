@@ -3,7 +3,7 @@ Video Chapters Models.
 Stores AI-generated chapters for content navigation.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from beanie import Document
@@ -78,7 +78,7 @@ class VideoChapters(Document):
             existing.chapters = chapters
             existing.total_duration = total_duration
             existing.source = source
-            existing.updated_at = datetime.utcnow()
+            existing.updated_at = datetime.now(timezone.utc)
             existing.is_approved = False  # Reset approval on update
             await existing.save()
             return existing

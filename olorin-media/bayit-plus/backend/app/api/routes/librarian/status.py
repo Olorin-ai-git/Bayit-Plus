@@ -3,7 +3,7 @@ Librarian status and configuration endpoints.
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -116,13 +116,13 @@ async def get_librarian_status(current_user: User = Depends(require_admin())):
 
             completed_audits = await AuditReport.find(
                 {
-                    "audit_date": {"$gte": datetime.utcnow() - timedelta(days=7)},
+                    "audit_date": {"$gte": datetime.now(timezone.utc) - timedelta(days=7)},
                     "status": "completed",
                 }
             ).count()
             partial_audits = await AuditReport.find(
                 {
-                    "audit_date": {"$gte": datetime.utcnow() - timedelta(days=7)},
+                    "audit_date": {"$gte": datetime.now(timezone.utc) - timedelta(days=7)},
                     "status": "partial",
                 }
             ).count()

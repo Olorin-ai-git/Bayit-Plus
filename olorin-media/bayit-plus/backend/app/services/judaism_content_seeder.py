@@ -6,7 +6,7 @@ YouTube videos from authorized Torah education channels.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict
 
 from app.models.content import Content
@@ -329,8 +329,8 @@ class JudaismContentSeeder:
                     content_type="vod",
                     is_published=True,
                     is_featured=seeded_count < 5,
-                    created_at=datetime.utcnow(),
-                    updated_at=datetime.utcnow(),
+                    created_at=datetime.now(timezone.utc),
+                    updated_at=datetime.now(timezone.utc),
                 )
 
                 await content.insert()

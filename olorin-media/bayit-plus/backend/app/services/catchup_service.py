@@ -4,7 +4,7 @@ Enables time-shifted playback of past programs using recorded streams.
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
 from beanie.operators import And
@@ -44,7 +44,7 @@ class CatchUpService:
                 return None
 
             # Verify program is in the past
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             if program.start_time > now:
                 logger.error(f"Program {program_id} has not aired yet")
                 return None
@@ -161,7 +161,7 @@ class CatchUpService:
                 return {"available": False, "reason": "program_not_found"}
 
             # Check if program is past
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             if program.start_time > now:
                 return {
                     "available": False,
@@ -223,7 +223,7 @@ class CatchUpService:
         """
         try:
             # Get EPG entries within retention period
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             cutoff_date = now - timedelta(days=self.retention_days)
 
             query_conditions = [

@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
   },
   warningRow: {
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    backgroundColor: 'rgba(245, 158, 11, 0.12)',
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.sm,
@@ -123,8 +123,10 @@ const styles = StyleSheet.create({
   },
   sendButton: {
     backgroundColor: colors.buttonPrimary,
-    width: 36,
-    height: 36,
+    minWidth: 44,
+    minHeight: 44,
+    width: 44,
+    height: 44,
     borderRadius: borderRadius.full,
     alignItems: 'center',
     justifyContent: 'center',

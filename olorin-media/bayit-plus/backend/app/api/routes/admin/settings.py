@@ -3,7 +3,7 @@ Admin System Settings
 Endpoints for managing system configuration and feature flags
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query, Request
@@ -98,7 +98,7 @@ async def update_settings(
         changes["privacy_url"] = {"old": settings.privacy_url, "new": data.privacy_url}
         settings.privacy_url = data.privacy_url
 
-    settings.updated_at = datetime.utcnow()
+    settings.updated_at = datetime.now(timezone.utc)
     settings.updated_by = str(current_user.id)
     await settings.save()
 
@@ -175,7 +175,7 @@ async def update_feature_flag(
 
     old_value = settings.feature_flags.get(flag)
     settings.feature_flags[flag] = enabled
-    settings.updated_at = datetime.utcnow()
+    settings.updated_at = datetime.now(timezone.utc)
     settings.updated_by = str(current_user.id)
     await settings.save()
 
@@ -212,7 +212,7 @@ async def clear_cache(
     return {
         "success": True,
         "message": "Cache cleared successfully",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
 
@@ -237,5 +237,5 @@ async def reset_analytics(
     return {
         "success": True,
         "message": "Analytics data reset successfully",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }

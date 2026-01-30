@@ -5,7 +5,7 @@ Tracks real-time dubbing sessions for analytics, billing, and session management
 Part of the Olorin.ai platform capabilities.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import pymongo
@@ -108,7 +108,7 @@ class DubbingMessage(BaseModel):
     data: Optional[Dict[str, Any]] = None
     error: Optional[str] = None
     timestamp_ms: int = Field(
-        default_factory=lambda: int(datetime.utcnow().timestamp() * 1000)
+        default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000)
     )
 
 
@@ -121,7 +121,7 @@ class DubbedAudioMessage(BaseModel):
     translated_text: str = Field(..., description="Translated text")
     sequence: int = Field(..., description="Sequence number for ordering")
     timestamp_ms: int = Field(
-        default_factory=lambda: int(datetime.utcnow().timestamp() * 1000)
+        default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000)
     )
     latency_ms: int = Field(..., description="Total pipeline latency")
 

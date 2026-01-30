@@ -2,7 +2,7 @@
 
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.services.beta.ai_recommendations_service import BetaAIRecommendationsService
 
 # Mark for tests that depend on unimplemented features (marked with TODO in service)
@@ -56,7 +56,7 @@ def mock_viewing_history():
             title="The Detective",
             genres=["thriller", "crime"],
             language="english",
-            watched_at=datetime.utcnow() - timedelta(days=1),
+            watched_at=datetime.now(timezone.utc) - timedelta(days=1),
             watch_duration_seconds=7200,
             completion_percentage=100.0
         ),
@@ -66,7 +66,7 @@ def mock_viewing_history():
             title="Mystery Cases",
             genres=["mystery", "drama"],
             language="english",
-            watched_at=datetime.utcnow() - timedelta(days=3),
+            watched_at=datetime.now(timezone.utc) - timedelta(days=3),
             watch_duration_seconds=3600,
             completion_percentage=85.0
         )
@@ -132,7 +132,7 @@ class TestBuildUserProfile:
                 content_type="movie",
                 genres=["thriller", "action"],
                 language="english",
-                watched_at=datetime.utcnow() - timedelta(days=2)
+                watched_at=datetime.now(timezone.utc) - timedelta(days=2)
             )
         )
 

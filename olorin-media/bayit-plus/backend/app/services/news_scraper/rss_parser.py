@@ -8,7 +8,7 @@ import asyncio
 import logging
 import re
 import urllib.parse
-from datetime import datetime
+from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from typing import List, Optional
 
@@ -412,7 +412,7 @@ async def _parse_rss_item(item: BeautifulSoup, source_name: str, fetch_video: bo
         try:
             pub_date = parsedate_to_datetime(pubdate_elem.get_text(strip=True))
         except Exception:
-            pub_date = datetime.utcnow()
+            pub_date = datetime.now(timezone.utc)
 
     # Extract summary from description
     summary = None

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional, Tuple
 
 from beanie.operators import And, In, Or
@@ -72,7 +72,7 @@ class FriendshipService:
 
         # Update request status
         request.status = FriendRequestStatus.ACCEPTED
-        request.responded_at = datetime.utcnow()
+        request.responded_at = datetime.now(timezone.utc)
         await request.save()
 
         # Create bidirectional friendship
@@ -110,7 +110,7 @@ class FriendshipService:
             raise FriendshipError("Request is not pending")
 
         request.status = FriendRequestStatus.REJECTED
-        request.responded_at = datetime.utcnow()
+        request.responded_at = datetime.now(timezone.utc)
         await request.save()
         return request
 
@@ -128,7 +128,7 @@ class FriendshipService:
             raise FriendshipError("Request is not pending")
 
         request.status = FriendRequestStatus.CANCELLED
-        request.responded_at = datetime.utcnow()
+        request.responded_at = datetime.now(timezone.utc)
         await request.save()
         return request
 

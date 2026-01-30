@@ -5,7 +5,7 @@ Provides the core episode-to-series linking functionality.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from beanie import PydanticObjectId
@@ -95,7 +95,7 @@ async def link_episode_to_series(
             episode.season = final_season
         if final_episode is not None:
             episode.episode = final_episode
-        episode.updated_at = datetime.utcnow()
+        episode.updated_at = datetime.now(timezone.utc)
 
         await episode.save()
 
@@ -117,7 +117,7 @@ async def link_episode_to_series(
                 after_state=after_state,
                 confidence_score=1.0,
                 auto_approved=True,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
             )
             await action.insert()
 

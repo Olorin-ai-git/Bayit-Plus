@@ -2,7 +2,7 @@
 
 import asyncio
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
@@ -43,7 +43,7 @@ async def cost_archival_job() -> None:
             )
 
         # Run monthly on 1st at 3 AM UTC
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         next_month = (now.replace(day=1) + timedelta(days=32)).replace(day=1)
         next_run = next_month.replace(hour=3, minute=0, second=0, microsecond=0)
         sleep_seconds = (next_run - now).total_seconds()
@@ -57,7 +57,7 @@ async def _archive_old_costs() -> None:
         return
 
     warm_days = settings.olorin.cost_aggregation.warm_data_retention_days
-    cutoff_date = datetime.utcnow() - timedelta(days=warm_days)
+    cutoff_date = datetime.now(timezone.utc) - timedelta(days=warm_days)
 
     # Query old cost records
     old_costs = await CostBreakdown.find(

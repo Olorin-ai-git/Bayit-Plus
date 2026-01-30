@@ -9,7 +9,7 @@ Provides:
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 from app.core.config import settings
@@ -261,7 +261,7 @@ class CommunityDirectoryService:
         limit: int = 20,
     ) -> Dict[str, Any]:
         """Get upcoming community events."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         end_date = now + timedelta(days=days)
 
         query: Dict[str, Any] = {
@@ -531,8 +531,8 @@ class CommunityDirectoryService:
             title="Community Shabbaton",
             title_he="שבתון קהילתי",
             description="Join us for a special Shabbat experience with dinner, services, and programming.",
-            start_time=datetime.utcnow() + timedelta(days=7, hours=18),
-            end_time=datetime.utcnow() + timedelta(days=8, hours=22),
+            start_time=datetime.now(timezone.utc) + timedelta(days=7, hours=18),
+            end_time=datetime.now(timezone.utc) + timedelta(days=8, hours=22),
             is_all_day=False,
             location="JCC Manhattan",
             is_virtual=False,

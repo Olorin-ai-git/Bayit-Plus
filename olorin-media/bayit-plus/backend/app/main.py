@@ -32,6 +32,7 @@ from app.services.olorin.content_metadata_service import \
     content_metadata_service
 from app.services.startup import (init_default_cultures, init_default_podcasts,
                                   init_default_widgets,
+                                  set_database_ready,
                                   start_background_tasks,
                                   stop_background_tasks)
 
@@ -158,7 +159,6 @@ async def lifespan(app: FastAPI):
         logger.info("✅ MongoDB connection established")
 
         # Signal to background tasks that database is ready
-        from app.services.startup.background_tasks import set_database_ready
         set_database_ready(True)
     except Exception as e:
         logger.error(f"❌ MongoDB connection failed: {e}", exc_info=True)

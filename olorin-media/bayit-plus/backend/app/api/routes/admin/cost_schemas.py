@@ -1,6 +1,6 @@
 """Request and response schemas for cost dashboard API."""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import List, Optional
@@ -19,13 +19,13 @@ class CostQueryParams(BaseModel):
     """Common cost query parameters with validation."""
 
     start_date: datetime = Field(
-        default_factory=lambda: datetime.utcnow() - timedelta(days=30),
+        default_factory=lambda: datetime.now(timezone.utc) - timedelta(days=30),
         description="Start date for cost query",
     )
     end_date: datetime = Field(
         default_factory=datetime.utcnow,
         description="End date for cost query",
-        le=datetime.utcnow(),
+        le=datetime.now(timezone.utc),
     )
     user_id: Optional[str] = Field(
         None,
@@ -63,7 +63,7 @@ class CostQueryParams(BaseModel):
     @validator("start_date")
     def validate_start_date(cls, v):
         """Validate start date is not too old (max 2 years)."""
-        cutoff = datetime.utcnow() - timedelta(days=730)
+        cutoff = datetime.now(timezone.utc) - timedelta(days=730)
         if v < cutoff:
             raise ValueError(
                 f"Cannot access costs older than 2 years. Please contact support."

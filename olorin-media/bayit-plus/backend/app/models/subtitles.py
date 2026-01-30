@@ -3,7 +3,7 @@ Subtitle Models.
 Stores subtitle tracks and translation cache.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from beanie import Document
@@ -133,7 +133,7 @@ class TranslationCacheDoc(Document):
         )
         if doc:
             doc.lookup_count += 1
-            doc.last_accessed = datetime.utcnow()
+            doc.last_accessed = datetime.now(timezone.utc)
             await doc.save()
         return doc
 
@@ -211,7 +211,7 @@ class SubtitleSearchCacheDoc(Document):
             {
                 "content_id": content_id,
                 "language": language,
-                "expires_at": {"$gt": datetime.utcnow()},
+                "expires_at": {"$gt": datetime.now(timezone.utc)},
             }
         )
         if cache:
@@ -241,7 +241,7 @@ class SubtitleQuotaTrackerDoc(Document):
     @classmethod
     async def get_today(cls) -> "SubtitleQuotaTrackerDoc":
         """Get or create today's quota tracker"""
-        today = datetime.utcnow().strftime("%Y-%m-%d")
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         tracker = await cls.find_one({"date": today})
         if not tracker:
             tracker = cls(date=today)

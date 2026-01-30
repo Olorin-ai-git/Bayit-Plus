@@ -5,7 +5,7 @@ Manages MongoDB persistence of detected topics for live trivia.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.models.live_trivia import LiveTriviaTopic
 
@@ -57,8 +57,8 @@ class TopicTracker:
                         "facts_generated": facts_count,
                     },
                     "$set": {
-                        "last_search_at": datetime.utcnow(),
-                        "updated_at": datetime.utcnow(),
+                        "last_search_at": datetime.now(timezone.utc),
+                        "updated_at": datetime.now(timezone.utc),
                     },
                     "$setOnInsert": {
                         "topic_text": topic_text,
@@ -66,8 +66,8 @@ class TopicTracker:
                         "confidence_score": self.default_confidence,
                         "search_queries": [topic_text],
                         "source_transcript": "",
-                        "detected_at": datetime.utcnow(),
-                        "created_at": datetime.utcnow(),
+                        "detected_at": datetime.now(timezone.utc),
+                        "created_at": datetime.now(timezone.utc),
                     }
                 },
                 upsert=True  # Create if doesn't exist, update if exists

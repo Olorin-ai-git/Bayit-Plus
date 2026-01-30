@@ -5,7 +5,7 @@ Provides core duplicate episode resolution logic.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from beanie import PydanticObjectId
@@ -139,7 +139,7 @@ async def resolve_duplicate_episode_group(
                 after_state: Dict[str, Any] = {"deleted": True}
             else:
                 episode.is_published = False
-                episode.updated_at = datetime.utcnow()
+                episode.updated_at = datetime.now(timezone.utc)
                 await episode.save()
                 after_state = {"is_published": False}
 
@@ -158,7 +158,7 @@ async def resolve_duplicate_episode_group(
                     after_state=after_state,
                     confidence_score=1.0,
                     auto_approved=True,
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
                 await lib_action.insert()
 

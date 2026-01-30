@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: spacing.xs,
     backgroundColor: glass.bgMedium, borderRadius: borderRadius.full,
     paddingHorizontal: spacing.md, paddingVertical: spacing.sm,
+    minHeight: 44,
     borderWidth: 1, borderColor: glass.borderLight,
     // @ts-expect-error backdropFilter is web-only
     backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',

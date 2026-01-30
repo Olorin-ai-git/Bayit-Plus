@@ -3,7 +3,7 @@ Admin Operations - Administrative quota management functions
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class AdminOperations:
 
         quota.estimated_cost_current_month = 0.0
 
-        quota.updated_at = datetime.utcnow()
+        quota.updated_at = datetime.now(timezone.utc)
         await quota.save()
 
         logger.info(f"Reset quota for user {user_id}")
@@ -53,8 +53,8 @@ class AdminOperations:
 
         quota.notes = notes
         quota.limit_extended_by = admin_id
-        quota.limit_extended_at = datetime.utcnow()
-        quota.updated_at = datetime.utcnow()
+        quota.limit_extended_at = datetime.now(timezone.utc)
+        quota.updated_at = datetime.now(timezone.utc)
 
         await quota.save()
 

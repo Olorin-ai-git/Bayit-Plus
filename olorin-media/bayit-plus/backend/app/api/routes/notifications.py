@@ -5,7 +5,7 @@ Provides endpoints for logging notification events and retrieving
 notification history and analytics.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -175,7 +175,7 @@ async def cleanup_old_notifications(
 
     Delete events older than specified number of days.
     """
-    cutoff_date = datetime.utcnow() - timedelta(days=days)
+    cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
 
     result = await NotificationEvent.find(
         NotificationEvent.created_at < cutoff_date

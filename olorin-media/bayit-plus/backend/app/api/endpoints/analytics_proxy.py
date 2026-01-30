@@ -8,7 +8,7 @@ Backend credentials are managed securely and never exposed to the client.
 
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -85,7 +85,7 @@ async def track_analytics_event(
             "timestamp": (
                 event.timestamp.isoformat()
                 if event.timestamp
-                else datetime.utcnow().isoformat()
+                else datetime.now(timezone.utc).isoformat()
             ),
         }
 
@@ -106,7 +106,7 @@ async def track_analytics_event(
 
         return AnalyticsResponse(
             success=True,
-            event_id=f"{event.event_category}_{event.event_name}_{int(datetime.utcnow().timestamp() * 1000)}",
+            event_id=f"{event.event_category}_{event.event_name}_{int(datetime.now(timezone.utc).timestamp() * 1000)}",
             message="Event tracked successfully",
         )
 
@@ -178,7 +178,7 @@ async def track_batch_analytics_events(
                     "timestamp": (
                         event.timestamp.isoformat()
                         if event.timestamp
-                        else datetime.utcnow().isoformat()
+                        else datetime.now(timezone.utc).isoformat()
                     ),
                 }
 
@@ -196,7 +196,7 @@ async def track_batch_analytics_events(
 
                 tracked_events.append(
                     {
-                        "event_id": f"{event.event_category}_{event.event_name}_{int(datetime.utcnow().timestamp() * 1000)}",
+                        "event_id": f"{event.event_category}_{event.event_name}_{int(datetime.now(timezone.utc).timestamp() * 1000)}",
                         "event_name": event.event_name,
                         "status": "tracked",
                     }

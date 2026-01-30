@@ -5,7 +5,7 @@ Publish, unpublish, and feature operations for audiobooks.
 All operations require appropriate admin permissions.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
@@ -35,8 +35,8 @@ async def publish_audiobook(
         )
 
     audiobook.is_published = True
-    audiobook.published_at = datetime.utcnow()
-    audiobook.updated_at = datetime.utcnow()
+    audiobook.published_at = datetime.now(timezone.utc)
+    audiobook.updated_at = datetime.now(timezone.utc)
     await audiobook.save()
 
     await log_audit(
@@ -69,7 +69,7 @@ async def unpublish_audiobook(
         )
 
     audiobook.is_published = False
-    audiobook.updated_at = datetime.utcnow()
+    audiobook.updated_at = datetime.now(timezone.utc)
     await audiobook.save()
 
     await log_audit(
@@ -109,7 +109,7 @@ async def feature_audiobook(
         audiobook.featured_order[section_id] = order
 
     audiobook.is_featured = True
-    audiobook.updated_at = datetime.utcnow()
+    audiobook.updated_at = datetime.now(timezone.utc)
     await audiobook.save()
 
     await log_audit(

@@ -5,7 +5,7 @@ Orchestrates email and phone verification with rate limiting
 
 import logging
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from app.core.config import settings
@@ -30,7 +30,7 @@ class VerificationService:
         if not user.last_verification_attempt:
             return True
 
-        hour_ago = datetime.utcnow() - timedelta(hours=1)
+        hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
         if user.last_verification_attempt > hour_ago:
             if (
                 user.verification_attempts
@@ -58,7 +58,7 @@ class VerificationService:
             raise Exception("Too many verification attempts. Please try again later.")
 
         token = str(uuid.uuid4())
-        expires_at = datetime.utcnow() + timedelta(
+        expires_at = datetime.now(timezone.utc) + timedelta(
             hours=settings.EMAIL_VERIFICATION_TOKEN_EXPIRE_HOURS
         )
 
@@ -72,9 +72,9 @@ class VerificationService:
         await verification_token.insert()
 
         user.email_verification_token = token
-        user.email_verification_sent_at = datetime.utcnow()
+        user.email_verification_sent_at = datetime.now(timezone.utc)
         user.verification_attempts += 1
-        user.last_verification_attempt = datetime.utcnow()
+        user.last_verification_attempt = datetime.now(timezone.utc)
         await user.save()
 
         verification_url = f"{settings.FRONTEND_WEB_URL}/verify-email?token={token}"
@@ -129,12 +129,12 @@ class VerificationService:
             return None
 
         user.email_verified = True
-        user.email_verified_at = datetime.utcnow()
+        user.email_verified_at = datetime.now(timezone.utc)
         user.update_verification_status()
         await user.save()
 
         verification_token.used = True
-        verification_token.used_at = datetime.utcnow()
+        verification_token.used_at = datetime.now(timezone.utc)
         await verification_token.save()
 
         logger.info(f"✅ Email verified for user {user.email}")
@@ -159,7 +159,7 @@ class VerificationService:
             raise Exception("Invalid phone number format")
 
         code = twilio_service.generate_code()
-        expires_at = datetime.utcnow() + timedelta(
+        expires_at = datetime.now(timezone.utc) + timedelta(
             minutes=settings.PHONE_VERIFICATION_CODE_EXPIRE_MINUTES
         )
 
@@ -174,9 +174,9 @@ class VerificationService:
 
         user.phone_number = formatted_phone
         user.phone_verification_code = code
-        user.phone_verification_sent_at = datetime.utcnow()
+        user.phone_verification_sent_at = datetime.now(timezone.utc)
         user.verification_attempts += 1
-        user.last_verification_attempt = datetime.utcnow()
+        user.last_verification_attempt = datetime.now(timezone.utc)
         await user.save()
 
         await twilio_service.send_verification_code(formatted_phone, code)
@@ -201,12 +201,12 @@ class VerificationService:
             return False
 
         user.phone_verified = True
-        user.phone_verified_at = datetime.utcnow()
+        user.phone_verified_at = datetime.now(timezone.utc)
         user.update_verification_status()
         await user.save()
 
         verification_token.used = True
-        verification_token.used_at = datetime.utcnow()
+        verification_token.used_at = datetime.now(timezone.utc)
         await verification_token.save()
 
         logger.info(f"✅ Phone verified for user {user.email}")

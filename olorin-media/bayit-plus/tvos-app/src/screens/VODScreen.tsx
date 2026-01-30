@@ -25,6 +25,7 @@ interface VODItem {
   type: 'movie' | 'series';
   year?: number;
   rating?: string;
+  available_subtitle_languages?: string[];
 }
 
 const CATEGORIES = ['All', 'Movies', 'Series', 'Action', 'Comedy', 'Drama', 'Documentary'];
@@ -67,6 +68,7 @@ export const VODScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       subtitle={item.subtitle || `${item.year || ''} ${item.rating || ''}`.trim()}
       thumbnail={item.thumbnail}
       type={item.type}
+      available_subtitle_languages={item.available_subtitle_languages}
       focused={focusedIndex === index}
       hasTVPreferredFocus={index === 0}
       onPress={() => handleItemSelect(item)}

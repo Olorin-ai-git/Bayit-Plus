@@ -33,9 +33,9 @@ class EPGService:
         """
         # Calculate default time window if not provided
         if start_time is None:
-            start_time = datetime.utcnow() - timedelta(hours=settings.EPG_PAST_HOURS)
+            start_time = datetime.now(timezone.utc) - timedelta(hours=settings.EPG_PAST_HOURS)
         if end_time is None:
-            end_time = datetime.utcnow() + timedelta(hours=settings.EPG_FUTURE_HOURS)
+            end_time = datetime.now(timezone.utc) + timedelta(hours=settings.EPG_FUTURE_HOURS)
 
         # Build query filter
         query_filter: Dict[str, Any] = {
@@ -68,7 +68,7 @@ class EPGService:
         return {
             "programs": programs_data,
             "channels": channels_data,
-            "current_time": datetime.utcnow().isoformat(),
+            "current_time": datetime.now(timezone.utc).isoformat(),
             "time_window": {
                 "start": start_time.isoformat(),
                 "end": end_time.isoformat(),
@@ -137,7 +137,7 @@ class EPGService:
             List of programs for the day
         """
         if date is None:
-            date = datetime.utcnow()
+            date = datetime.now(timezone.utc)
 
         # Calculate day boundaries
         start_of_day = date.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -167,7 +167,7 @@ class EPGService:
         Returns:
             Current program or None
         """
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         program = await EPGEntry.find_one(
             {
                 "channel_id": channel_id,
@@ -188,7 +188,7 @@ class EPGService:
         Returns:
             Next program or None
         """
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         program = await EPGEntry.find_one(
             {"channel_id": channel_id, "start_time": {"$gt": now}},
             sort=[("start_time", 1)],
@@ -215,9 +215,9 @@ class EPGService:
             "rating": program.rating,
             "director": program.director,
             "recording_id": program.recording_id,
-            "is_past": program.end_time < datetime.utcnow(),
-            "is_now": program.start_time <= datetime.utcnow() <= program.end_time,
-            "is_future": program.start_time > datetime.utcnow(),
+            "is_past": program.end_time < datetime.now(timezone.utc),
+            "is_now": program.start_time <= datetime.now(timezone.utc) <= program.end_time,
+            "is_future": program.start_time > datetime.now(timezone.utc),
         }
 
     def _channel_to_dict(self, channel: LiveChannel) -> Dict[str, Any]:

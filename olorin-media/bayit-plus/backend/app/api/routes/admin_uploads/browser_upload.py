@@ -7,7 +7,7 @@ Supports resumable uploads for large files via chunked upload protocol.
 import json
 import logging
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
 
@@ -73,8 +73,8 @@ async def init_browser_upload(
             "chunks_received": 0,
             "bytes_received": 0,
             "status": "initialized",
-            "started_at": datetime.utcnow().isoformat(),
-            "last_activity": datetime.utcnow().isoformat(),
+            "started_at": datetime.now(timezone.utc).isoformat(),
+            "last_activity": datetime.now(timezone.utc).isoformat(),
         }
 
         with open(upload_dir / "metadata.json", "w") as f:
@@ -146,7 +146,7 @@ async def upload_chunk(
         metadata["chunks_received"] += 1
         metadata["bytes_received"] += len(chunk_data)
         metadata["status"] = "uploading"
-        metadata["last_activity"] = datetime.utcnow().isoformat()
+        metadata["last_activity"] = datetime.now(timezone.utc).isoformat()
 
         with open(metadata_path, "w") as f:
             json.dump(metadata, f)
@@ -164,7 +164,7 @@ async def upload_chunk(
         if chunk_index not in session.chunks_received:
             session.chunks_received.append(chunk_index)
         session.bytes_received = metadata["bytes_received"]
-        session.last_activity = datetime.utcnow()
+        session.last_activity = datetime.now(timezone.utc)
         session.status = "uploading"
         await session.save()
 
@@ -258,7 +258,7 @@ async def complete_browser_upload(
         )
         if session:
             session.status = "completed"
-            session.completed_at = datetime.utcnow()
+            session.completed_at = datetime.now(timezone.utc)
             session.job_id = job.job_id
             await session.save()
 
@@ -347,7 +347,7 @@ async def get_resume_info(
             )
 
         # Check if session expired (> 48 hours old)
-        if datetime.utcnow() - session.started_at > timedelta(hours=48):
+        if datetime.now(timezone.utc) - session.started_at > timedelta(hours=48):
             raise HTTPException(
                 status_code=status.HTTP_410_GONE,
                 detail="Session expired (>48 hours old)",
@@ -399,7 +399,7 @@ async def get_active_browser_sessions(
         from beanie.operators import In
 
         # Find all non-completed sessions for this user (within 48 hours)
-        cutoff_time = datetime.utcnow() - timedelta(hours=48)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=48)
 
         sessions = (
             await BrowserUploadSession.find(

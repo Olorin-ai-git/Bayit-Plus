@@ -187,7 +187,7 @@ async def update_content(
         }
         content.is_published = data.is_published
         if data.is_published and not content.published_at:
-            content.published_at = datetime.utcnow()
+            content.published_at = datetime.now(timezone.utc)
     if data.is_featured is not None:
         changes["is_featured"] = {"old": content.is_featured, "new": data.is_featured}
         content.is_featured = data.is_featured
@@ -210,7 +210,7 @@ async def update_content(
         changes["educational_tags"] = {"changed": True}
         content.educational_tags = data.educational_tags
 
-    content.updated_at = datetime.utcnow()
+    content.updated_at = datetime.now(timezone.utc)
     await content.save()
     await log_audit(
         str(current_user.id),
@@ -319,7 +319,7 @@ async def batch_feature_content(
             content = await Content.get(content_id)
             if content:
                 content.is_featured = featured
-                content.updated_at = datetime.utcnow()
+                content.updated_at = datetime.now(timezone.utc)
                 await content.save()
 
                 await log_audit(
@@ -561,7 +561,7 @@ async def batch_save_featured_order(
                     featured_order[section_id] = order
                     content.featured_order = featured_order
                     content.is_featured = True
-                    content.updated_at = datetime.utcnow()
+                    content.updated_at = datetime.now(timezone.utc)
 
                     await content.save()
                     updated_count += 1

@@ -3,7 +3,7 @@ Video Chapters API routes.
 Provides AI-generated chapters for news and long-form content.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
@@ -204,7 +204,7 @@ async def approve_chapters(
 
     chapters.is_approved = True
     chapters.approved_by = str(current_user.id)
-    chapters.approved_at = datetime.utcnow()
+    chapters.approved_at = datetime.now(timezone.utc)
     await chapters.save()
 
     return {

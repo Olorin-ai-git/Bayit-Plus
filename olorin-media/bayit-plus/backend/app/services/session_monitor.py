@@ -5,7 +5,7 @@ Detects stale sessions, implements timeouts, and prevents session hijacking
 
 import asyncio
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from app.core.config import settings
@@ -50,7 +50,7 @@ class SessionMonitor:
 
     async def _cleanup_stale_sessions(self):
         """Mark sessions as interrupted if no activity for threshold period"""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         stale_cutoff = now - timedelta(minutes=self._stale_threshold_minutes)
 
         stale_sessions = await LiveFeatureUsageSession.find(
@@ -75,7 +75,7 @@ class SessionMonitor:
 
     async def _timeout_long_sessions(self):
         """Timeout sessions that exceed maximum duration"""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         timeout_cutoff = now - timedelta(minutes=self._session_timeout_minutes)
 
         long_sessions = await LiveFeatureUsageSession.find(
@@ -115,7 +115,7 @@ class SessionMonitor:
         if session.status != UsageSessionStatus.ACTIVE:
             return False, f"Session is {session.status}"
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
 
         # Check for stale session
         if now - session.last_activity_at > timedelta(
@@ -135,7 +135,7 @@ class SessionMonitor:
             LiveFeatureUsageSession.session_id == session_id
         )
         if session:
-            session.last_activity_at = datetime.utcnow()
+            session.last_activity_at = datetime.now(timezone.utc)
             await session.save()
 
 

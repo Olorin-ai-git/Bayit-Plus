@@ -6,7 +6,7 @@ like ElevenLabs for async transcription processing.
 """
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request
@@ -83,7 +83,7 @@ async def elevenlabs_webhook(
         if event.transcription_id:
             pending_transcriptions[event.transcription_id] = {
                 "status": "processing",
-                "started_at": datetime.utcnow().isoformat(),
+                "started_at": datetime.now(timezone.utc).isoformat(),
                 "metadata": event.metadata,
             }
 

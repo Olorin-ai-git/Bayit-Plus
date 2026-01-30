@@ -5,7 +5,7 @@ Orchestrates daily content library maintenance operations
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 from app.models.content import Content, Podcast, PodcastEpisode
@@ -35,7 +35,7 @@ async def run_content_maintenance_tasks(dry_run: bool = False) -> Dict[str, Any]
         Detailed report of all maintenance operations
     """
     logger.info("🔧 Starting content maintenance tasks...")
-    start_time = datetime.utcnow()
+    start_time = datetime.now(timezone.utc)
 
     results = {
         "status": "completed",
@@ -71,7 +71,7 @@ async def run_content_maintenance_tasks(dry_run: bool = False) -> Dict[str, Any]
         results["total_updates"] += translation_results.get("episodes_queued", 0)
 
         # Summary
-        end_time = datetime.utcnow()
+        end_time = datetime.now(timezone.utc)
         duration = (end_time - start_time).total_seconds()
 
         results["end_time"] = end_time.isoformat()

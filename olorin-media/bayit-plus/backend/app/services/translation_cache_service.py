@@ -3,7 +3,7 @@
 import hashlib
 import logging
 from collections import OrderedDict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 from typing import Dict, Optional, Tuple
 
@@ -101,7 +101,7 @@ class TranslationCacheService:
                 ChatTranslationCacheDoc.message_hash == cache_key
             )
 
-            if doc and doc.expires_at > datetime.utcnow():
+            if doc and doc.expires_at > datetime.now(timezone.utc):
                 # Update hit count
                 doc.hit_count += 1
                 await doc.save()
@@ -143,7 +143,7 @@ class TranslationCacheService:
 
         # Store in MongoDB cache (Tier 2)
         try:
-            expires_at = datetime.utcnow() + timedelta(
+            expires_at = datetime.now(timezone.utc) + timedelta(
                 days=settings.CHAT_TRANSLATION_CACHE_TTL_DAYS
             )
 
@@ -217,7 +217,7 @@ class TranslationCacheService:
         """
         try:
             result = await ChatTranslationCacheDoc.find(
-                ChatTranslationCacheDoc.expires_at < datetime.utcnow()
+                ChatTranslationCacheDoc.expires_at < datetime.now(timezone.utc)
             ).delete()
             count = result.deleted_count if result else 0
             logger.info(f"Cleaned up {count} expired translation cache entries")
@@ -232,7 +232,7 @@ class TranslationCacheService:
         try:
             total = await ChatTranslationCacheDoc.count()
             expired = await ChatTranslationCacheDoc.find(
-                ChatTranslationCacheDoc.expires_at < datetime.utcnow()
+                ChatTranslationCacheDoc.expires_at < datetime.now(timezone.utc)
             ).count()
 
             memory_size = (

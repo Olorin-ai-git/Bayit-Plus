@@ -7,7 +7,7 @@ Maintains audit trail for compliance.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict
 
 from app.core.redis_client import get_redis_client
@@ -36,7 +36,7 @@ async def delete_user_dubbing_data(user_id: str) -> Dict[str, Any]:
 
     deleted_summary = {
         "user_id": user_id,
-        "deleted_at": datetime.utcnow().isoformat(),
+        "deleted_at": datetime.now(timezone.utc).isoformat(),
         "mongodb_sessions_deleted": 0,
         "redis_keys_deleted": 0,
         "errors": [],

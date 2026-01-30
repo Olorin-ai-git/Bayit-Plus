@@ -11,7 +11,7 @@ Endpoints for managing youngsters content (ages 12-17):
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -335,9 +335,9 @@ async def curate_content(
     if data.youngsters_moderation_status is not None:
         content.youngsters_moderation_status = data.youngsters_moderation_status
         content.youngsters_moderated_by = str(current_user.id)
-        content.youngsters_moderated_at = datetime.utcnow()
+        content.youngsters_moderated_at = datetime.now(timezone.utc)
 
-    content.updated_at = datetime.utcnow()
+    content.updated_at = datetime.now(timezone.utc)
     await content.save()
 
     await log_audit(

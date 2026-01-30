@@ -49,10 +49,10 @@ export default function ChannelChatHeader({
         )}
       </View>
       <View style={styles.actions}>
-        <Pressable onPress={onToggleExpand} accessibilityRole="button">
+        <Pressable onPress={onToggleExpand} accessibilityRole="button" style={styles.actionButton}>
           <ExpandIcon size={18} color={colors.textSecondary} />
         </Pressable>
-        <Pressable onPress={onClose} accessibilityRole="button">
+        <Pressable onPress={onClose} accessibilityRole="button" style={styles.actionButton}>
           <X size={18} color={colors.textSecondary} />
         </Pressable>
       </View>
@@ -106,5 +106,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
+  },
+  actionButton: {
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 })

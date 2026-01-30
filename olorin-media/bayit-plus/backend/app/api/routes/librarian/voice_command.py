@@ -4,7 +4,7 @@ Librarian voice command endpoint.
 
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 
@@ -50,7 +50,7 @@ async def execute_voice_command(
 
         audit_report.execution_logs.append(
             {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "level": "info",
                 "message": f"Voice command received: {command}",
                 "source": "Voice Interface",
@@ -102,7 +102,7 @@ Mode: LIVE - You can make real changes to the content library."""
 
                 audit_report.execution_logs.append(
                     {
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
                         "level": "info",
                         "message": f"Executing tool: {tool_name}",
                         "source": "AI Agent",
@@ -129,7 +129,7 @@ Mode: LIVE - You can make real changes to the content library."""
 
                 audit_report.execution_logs.append(
                     {
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
                         "level": "success" if result.get("success") else "error",
                         "message": f"Tool {tool_name} completed",
                         "source": "AI Agent",
@@ -158,7 +158,7 @@ Mode: LIVE - You can make real changes to the content library."""
 
         audit_report.status = "completed"
         audit_report.execution_time_seconds = (
-            datetime.utcnow() - audit_report.audit_date
+            datetime.now(timezone.utc) - audit_report.audit_date
         ).total_seconds()
         await audit_report.save()
 
@@ -174,7 +174,7 @@ Mode: LIVE - You can make real changes to the content library."""
         if "audit_report" in locals():
             audit_report.execution_logs.append(
                 {
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                     "level": "error",
                     "message": f"Voice command failed: {str(e)}",
                     "source": "Voice Interface",

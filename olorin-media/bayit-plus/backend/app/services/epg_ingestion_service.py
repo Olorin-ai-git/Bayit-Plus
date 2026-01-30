@@ -6,7 +6,7 @@ Fetches real EPG data from external sources and updates the database
 import asyncio
 import logging
 import xml.etree.ElementTree as ET
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -443,7 +443,7 @@ class EPGIngestionService:
 
     async def cleanup_old_epg(self, days_to_keep: int = 7):
         """Remove EPG entries older than specified days"""
-        cutoff_date = datetime.utcnow() - timedelta(days=days_to_keep)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_to_keep)
 
         result = await EPGEntry.find({"end_time": {"$lt": cutoff_date}}).delete()
 

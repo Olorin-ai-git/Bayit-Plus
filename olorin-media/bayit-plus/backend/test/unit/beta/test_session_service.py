@@ -2,7 +2,7 @@
 
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.services.beta.session_service import SessionBasedCreditService
 from app.models.beta_session import BetaSession
 from app.core.config import Settings
@@ -112,7 +112,7 @@ class TestCheckpointSession:
         mock_session.user_id = "user-456"
         mock_session.feature = "live_dubbing"
         mock_session.status = "active"
-        mock_session.last_checkpoint = datetime.utcnow() - timedelta(seconds=60)
+        mock_session.last_checkpoint = datetime.now(timezone.utc) - timedelta(seconds=60)
         mock_session.credits_consumed = 100
         mock_session.metadata = {}
         mock_session.save = AsyncMock()
@@ -166,7 +166,7 @@ class TestCheckpointSession:
         mock_session.user_id = "user-456"
         mock_session.feature = "live_dubbing"
         mock_session.status = "active"
-        mock_session.last_checkpoint = datetime.utcnow() - timedelta(seconds=30)
+        mock_session.last_checkpoint = datetime.now(timezone.utc) - timedelta(seconds=30)
         mock_session.credits_consumed = 0
         mock_session.metadata = {}
         mock_session.save = AsyncMock()
@@ -194,8 +194,8 @@ class TestEndSession:
                 self.user_id = "user-456"
                 self.feature = "live_dubbing"
                 self.status = "active"
-                self.start_time = datetime.utcnow() - timedelta(minutes=5)
-                self.last_checkpoint = datetime.utcnow() - timedelta(seconds=15)
+                self.start_time = datetime.now(timezone.utc) - timedelta(minutes=5)
+                self.last_checkpoint = datetime.now(timezone.utc) - timedelta(seconds=15)
                 self.credits_consumed = 100
                 self.metadata = {}
                 self.end_time = None
@@ -242,7 +242,7 @@ class TestEndSession:
         mock_session.user_id = "user-456"
         mock_session.feature = "live_dubbing"
         mock_session.status = "active"
-        mock_session.last_checkpoint = datetime.utcnow()
+        mock_session.last_checkpoint = datetime.now(timezone.utc)
         mock_session.credits_consumed = 100
         mock_session.metadata = {}
         mock_session.save = AsyncMock()

@@ -5,7 +5,7 @@ Functions for cleaning and fixing content titles.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict
 
 from app.services.ai_agent.executors._shared import (create_action_description,
@@ -57,7 +57,7 @@ async def execute_clean_title(
         content.title = cleaned_title
         if cleaned_title_en:
             content.title_en = cleaned_title_en
-        content.updated_at = datetime.utcnow()
+        content.updated_at = datetime.now(timezone.utc)
         await content.save()
 
         description = create_action_description(

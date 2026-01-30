@@ -5,7 +5,7 @@ Prevents abuse and brute force attacks
 
 import asyncio
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from app.core.config import settings
@@ -39,7 +39,7 @@ class LiveFeatureRateLimiter:
         while True:
             try:
                 await asyncio.sleep(60)
-                now = datetime.utcnow()
+                now = datetime.now(timezone.utc)
                 for cache in [self._connection_attempts, self._api_requests]:
                     expired_keys = [
                         k
@@ -58,7 +58,7 @@ class LiveFeatureRateLimiter:
         self, cache: dict, key: str, limit: int, window_seconds: int
     ) -> tuple[bool, int]:
         """Check if key is within rate limit"""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         cutoff = now - timedelta(seconds=window_seconds)
 
         if key not in cache:

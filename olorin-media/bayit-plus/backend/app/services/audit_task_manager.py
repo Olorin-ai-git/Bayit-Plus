@@ -5,7 +5,7 @@ Manages running audit tasks, allowing pause, resume, cancellation, and message i
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Set
 
 logger = logging.getLogger(__name__)
@@ -200,7 +200,7 @@ class AuditTaskManager:
             self._pending_messages[audit_id] = []
 
         self._pending_messages[audit_id].append(
-            {"content": message, "source": source, "timestamp": datetime.utcnow()}
+            {"content": message, "source": source, "timestamp": datetime.now(timezone.utc)}
         )
         logger.info(f"Queued message for audit {audit_id}: {message[:100]}...")
         return True

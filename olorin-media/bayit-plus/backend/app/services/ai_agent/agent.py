@@ -6,7 +6,7 @@ The autonomous agent loop that orchestrates Claude's tool use for library audits
 
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from anthropic import Anthropic
@@ -67,7 +67,7 @@ async def run_ai_agent_audit(
     - language: Language code for insights (en, es, he)
     """
 
-    start_time = datetime.utcnow()
+    start_time = datetime.now(timezone.utc)
 
     # Validate ANTHROPIC_API_KEY is configured
     if not settings.ANTHROPIC_API_KEY:
@@ -277,7 +277,7 @@ Please acknowledge this interjection and adjust your approach accordingly.
             break
 
     # Finalize audit report
-    end_time = datetime.utcnow()
+    end_time = datetime.now(timezone.utc)
     execution_time = (end_time - start_time).total_seconds()
 
     await _finalize_audit_report(
@@ -586,7 +586,7 @@ async def _process_response_blocks(
                     "tool": tool_name,
                     "input": tool_input,
                     "result": result,
-                    "timestamp": datetime.utcnow(),
+                    "timestamp": datetime.now(timezone.utc),
                 }
             )
 

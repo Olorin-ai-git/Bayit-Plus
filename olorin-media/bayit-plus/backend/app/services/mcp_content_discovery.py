@@ -11,7 +11,7 @@ Discovery results are queued for admin review before being added to the library.
 
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -302,7 +302,7 @@ class MCPContentDiscoveryService:
 
         item.status = DiscoveryStatus.APPROVED
         item.reviewed_by = reviewed_by
-        item.reviewed_at = datetime.utcnow()
+        item.reviewed_at = datetime.now(timezone.utc)
         await item.save()
 
         logger.info(f"Approved content: {item.title}")
@@ -333,7 +333,7 @@ class MCPContentDiscoveryService:
 
         item.status = DiscoveryStatus.REJECTED
         item.reviewed_by = reviewed_by
-        item.reviewed_at = datetime.utcnow()
+        item.reviewed_at = datetime.now(timezone.utc)
         item.rejection_reason = reason
         await item.save()
 

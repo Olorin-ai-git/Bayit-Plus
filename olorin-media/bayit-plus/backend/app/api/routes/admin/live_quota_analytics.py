@@ -4,7 +4,7 @@ System-wide usage reports, statistics, and top users analysis
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -94,7 +94,7 @@ async def get_system_stats(
 ):
     """Get system-wide statistics: active sessions, total users, aggregate usage."""
     try:
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         total_users = await LiveFeatureQuota.count()
@@ -156,9 +156,9 @@ async def get_top_users(
     """Get top users by usage for a time period using MongoDB aggregation."""
     try:
         if not start_date:
-            start_date = datetime.utcnow() - timedelta(days=30)
+            start_date = datetime.now(timezone.utc) - timedelta(days=30)
         if not end_date:
-            end_date = datetime.utcnow()
+            end_date = datetime.now(timezone.utc)
         match_stage = {"$match": {"started_at": {"$gte": start_date, "$lte": end_date}}}
         if feature_type:
             match_stage["$match"]["feature_type"] = feature_type

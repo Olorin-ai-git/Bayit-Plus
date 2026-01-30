@@ -1055,6 +1055,37 @@ class CatchUpConfig(BaseSettings):
         description="Auto-dismiss timeout for catch-up overlay",
     )
 
+    credit_cost: float = Field(
+        default=5.0,
+        ge=0.1,
+        le=100.0,
+        description="Credit cost per catch-up summary generation",
+    )
+    max_summary_key_points: int = Field(
+        default=5,
+        ge=1,
+        le=20,
+        description="Maximum number of key points in catch-up summary",
+    )
+    max_summary_chars: int = Field(
+        default=500,
+        ge=100,
+        le=5000,
+        description="Maximum character length for summary text truncation",
+    )
+    min_data_seconds: int = Field(
+        default=60,
+        ge=10,
+        le=600,
+        description="Minimum seconds of transcript data required for catch-up",
+    )
+    retry_after_seconds: int = Field(
+        default=300,
+        ge=30,
+        le=3600,
+        description="Retry-After header value when service is unavailable",
+    )
+
     class Config:
         env_prefix = "CATCHUP_"
 

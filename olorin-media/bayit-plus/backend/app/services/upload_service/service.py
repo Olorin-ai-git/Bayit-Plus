@@ -9,7 +9,7 @@ import asyncio
 import hashlib
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
@@ -199,7 +199,7 @@ class UploadService:
             logger.info(f"Processing job {job.job_id}: {job.filename}")
 
             job.status = UploadStatus.PROCESSING
-            job.started_at = datetime.utcnow()
+            job.started_at = datetime.now(timezone.utc)
             await job.save()
             await self._broadcast_queue_update()
 
@@ -270,7 +270,7 @@ class UploadService:
             # Mark as completed
             job.status = UploadStatus.COMPLETED
             job.progress = 100.0
-            job.completed_at = datetime.utcnow()
+            job.completed_at = datetime.now(timezone.utc)
             await job.save()
             await self._broadcast_queue_update()
 
@@ -354,22 +354,22 @@ class UploadService:
         else:
             job.stages["hash_calculation"] = "in_progress"
             job.stage_timings["hash_calculation"] = {
-                "started": datetime.utcnow().isoformat()
+                "started": datetime.now(timezone.utc).isoformat()
             }
             job.progress = 5.0
             await job.save()
             await self._broadcast_queue_update()
 
             logger.info(f"Calculating hash in background for {job.filename}...")
-            hash_start_time = datetime.utcnow()
+            hash_start_time = datetime.now(timezone.utc)
             job.file_hash = await self._calculate_file_hash(job.source_path)
-            hash_duration = (datetime.utcnow() - hash_start_time).total_seconds()
+            hash_duration = (datetime.now(timezone.utc) - hash_start_time).total_seconds()
             logger.info(f"Hash calculated: {job.file_hash[:16]}...")
 
             job.stages["hash_calculation"] = "completed"
             job.stage_timings["hash_calculation"][
                 "completed"
-            ] = datetime.utcnow().isoformat()
+            ] = datetime.now(timezone.utc).isoformat()
             job.stage_timings["hash_calculation"]["duration_seconds"] = round(
                 hash_duration, 2
             )
@@ -388,7 +388,7 @@ class UploadService:
             )
             job.status = UploadStatus.FAILED
             job.error_message = f"Duplicate: Already in library as '{existing_content.get('title', job.filename)}'"
-            job.completed_at = datetime.utcnow()
+            job.completed_at = datetime.now(timezone.utc)
             await job.save()
             await self._broadcast_queue_update()
             raise ValueError("Duplicate content detected")
@@ -400,13 +400,13 @@ class UploadService:
         """Extract metadata from file."""
         job.stages["metadata_extraction"] = "in_progress"
         job.stage_timings["metadata_extraction"] = {
-            "started": datetime.utcnow().isoformat()
+            "started": datetime.now(timezone.utc).isoformat()
         }
         job.progress = 15.0
         await job.save()
         await self._broadcast_queue_update()
 
-        metadata_start_time = datetime.utcnow()
+        metadata_start_time = datetime.now(timezone.utc)
         if job.type == ContentType.MOVIE:
             metadata = await metadata_extractor.extract_movie_metadata(job)
         elif job.type == ContentType.SERIES:
@@ -415,13 +415,13 @@ class UploadService:
             metadata = await metadata_extractor.extract_podcast_metadata(job)
         else:
             metadata = {}
-        metadata_duration = (datetime.utcnow() - metadata_start_time).total_seconds()
+        metadata_duration = (datetime.now(timezone.utc) - metadata_start_time).total_seconds()
 
         job.metadata.update(metadata)
         job.stages["metadata_extraction"] = "completed"
         job.stage_timings["metadata_extraction"][
             "completed"
-        ] = datetime.utcnow().isoformat()
+        ] = datetime.now(timezone.utc).isoformat()
         job.stage_timings["metadata_extraction"]["duration_seconds"] = round(
             metadata_duration, 2
         )
@@ -433,22 +433,22 @@ class UploadService:
         """Upload file to GCS."""
         job.status = UploadStatus.UPLOADING
         job.stages["gcs_upload"] = "in_progress"
-        job.stage_timings["gcs_upload"] = {"started": datetime.utcnow().isoformat()}
+        job.stage_timings["gcs_upload"] = {"started": datetime.now(timezone.utc).isoformat()}
         await job.save()
         await self._broadcast_queue_update()
 
-        gcs_start_time = datetime.utcnow()
+        gcs_start_time = datetime.now(timezone.utc)
         destination_url = await gcs_uploader.upload_file(
             job, on_progress=lambda p, b, s, e: self._broadcast_queue_update()
         )
-        gcs_duration = (datetime.utcnow() - gcs_start_time).total_seconds()
+        gcs_duration = (datetime.now(timezone.utc) - gcs_start_time).total_seconds()
 
         if not destination_url:
             raise Exception("GCS upload failed")
 
         job.destination_url = destination_url
         job.stages["gcs_upload"] = "completed"
-        job.stage_timings["gcs_upload"]["completed"] = datetime.utcnow().isoformat()
+        job.stage_timings["gcs_upload"]["completed"] = datetime.now(timezone.utc).isoformat()
         job.stage_timings["gcs_upload"]["duration_seconds"] = round(gcs_duration, 2)
         await job.save()
 
@@ -456,7 +456,7 @@ class UploadService:
         """Convert video to HLS format with browser-compatible audio."""
         job.stages["hls_conversion"] = "in_progress"
         job.stage_timings["hls_conversion"] = {
-            "started": datetime.utcnow().isoformat()
+            "started": datetime.now(timezone.utc).isoformat()
         }
         job.progress = 75.0
         await job.save()
@@ -470,7 +470,7 @@ class UploadService:
             await job.save()
             await self._broadcast_queue_update()
 
-        hls_start_time = datetime.utcnow()
+        hls_start_time = datetime.now(timezone.utc)
 
         # Convert from source file (still available during upload pipeline)
         content_title = job.metadata.get("title", Path(job.filename).stem)
@@ -483,7 +483,7 @@ class UploadService:
             on_progress=on_progress,
         )
 
-        hls_duration = (datetime.utcnow() - hls_start_time).total_seconds()
+        hls_duration = (datetime.now(timezone.utc) - hls_start_time).total_seconds()
 
         if not hls_url:
             raise Exception("HLS conversion failed - no playlist URL returned")
@@ -496,7 +496,7 @@ class UploadService:
         job.stages["hls_conversion"] = "completed"
         job.stage_timings["hls_conversion"][
             "completed"
-        ] = datetime.utcnow().isoformat()
+        ] = datetime.now(timezone.utc).isoformat()
         job.stage_timings["hls_conversion"]["duration_seconds"] = round(
             hls_duration, 2
         )
@@ -513,20 +513,20 @@ class UploadService:
         """Create content entry in database."""
         job.stages["database_insert"] = "in_progress"
         job.stage_timings["database_insert"] = {
-            "started": datetime.utcnow().isoformat()
+            "started": datetime.now(timezone.utc).isoformat()
         }
         job.progress = 96.0
         await job.save()
         await self._broadcast_queue_update()
 
-        db_start_time = datetime.utcnow()
+        db_start_time = datetime.now(timezone.utc)
         await content_creator.create_entry(job)
-        db_duration = (datetime.utcnow() - db_start_time).total_seconds()
+        db_duration = (datetime.now(timezone.utc) - db_start_time).total_seconds()
 
         job.stages["database_insert"] = "completed"
         job.stage_timings["database_insert"][
             "completed"
-        ] = datetime.utcnow().isoformat()
+        ] = datetime.now(timezone.utc).isoformat()
         job.stage_timings["database_insert"]["duration_seconds"] = round(db_duration, 2)
         job.progress = 98.0
         await job.save()
@@ -603,7 +603,7 @@ class UploadService:
         job.status = UploadStatus.FAILED
         job.error_message = str(error)
         job.retry_count += 1
-        job.completed_at = datetime.utcnow()
+        job.completed_at = datetime.now(timezone.utc)
         await job.save()
 
         # Check for specific error types that should not be retried

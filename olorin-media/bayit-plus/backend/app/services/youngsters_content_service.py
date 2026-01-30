@@ -507,7 +507,7 @@ class YoungstersContentService:
 
         # Get sources count
         sources_count = await YoungstersContentSource.find({"is_active": True}).count()
-        last_updated = self._cache.get_last_updated(cache_key) or datetime.utcnow()
+        last_updated = self._cache.get_last_updated(cache_key) or datetime.now(timezone.utc)
 
         return YoungstersContentAggregatedResponse(
             items=response_items,
@@ -669,7 +669,7 @@ class YoungstersContentService:
                 items=[],
                 pagination={"page": page, "limit": limit, "total": 0, "pages": 0},
                 sources_count=0,
-                last_updated=datetime.utcnow(),
+                last_updated=datetime.now(timezone.utc),
             )
 
     async def get_age_groups(self) -> YoungstersAgeGroupsResponse:
@@ -708,7 +708,7 @@ class YoungstersContentService:
                 items=[],
                 pagination={"page": page, "limit": limit, "total": 0, "pages": 0},
                 sources_count=0,
-                last_updated=datetime.utcnow(),
+                last_updated=datetime.now(timezone.utc),
             )
 
         min_age, max_age = age_range

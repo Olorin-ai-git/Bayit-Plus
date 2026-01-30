@@ -7,7 +7,7 @@ the live streaming STT pipeline and the transcript buffer system.
 """
 
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Optional
 
 from app.core.config import settings
@@ -294,7 +294,7 @@ class TranscriptFeeder:
         """
         segment = TranscriptSegment(
             text=text,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             language=language,
         )
 

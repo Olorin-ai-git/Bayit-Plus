@@ -5,7 +5,7 @@ Functions for recategorizing content and changing content types.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict
 
 from app.services.ai_agent.executors._shared import (
@@ -52,7 +52,7 @@ async def execute_recategorize_content(
 
         content.category_id = str(category.id)
         content.category_name = category.name
-        content.updated_at = datetime.utcnow()
+        content.updated_at = datetime.now(timezone.utc)
         await content.save()
 
         await log_librarian_action(
@@ -112,7 +112,7 @@ async def execute_reclassify_as_series(
         content.category_name = "Series"
         content.is_series = True
         content.content_type = "series"
-        content.updated_at = datetime.utcnow()
+        content.updated_at = datetime.now(timezone.utc)
         await content.save()
 
         await log_librarian_action(
@@ -154,7 +154,7 @@ async def execute_reclassify_as_movie(
         content.category_name = "Movies"
         content.is_series = False
         content.content_type = "vod"
-        content.updated_at = datetime.utcnow()
+        content.updated_at = datetime.now(timezone.utc)
         await content.save()
 
         return {"success": True, "updated": True}

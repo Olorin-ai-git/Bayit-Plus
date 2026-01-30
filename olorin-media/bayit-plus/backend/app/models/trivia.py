@@ -3,7 +3,7 @@ Trivia Models.
 Stores trivia facts and fun facts for content during video playback.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 from uuid import uuid4
 
@@ -107,7 +107,7 @@ class ContentTrivia(Document):
         is_enriched: bool = False,
     ) -> "ContentTrivia":
         """Create new trivia or update existing using atomic find_one_and_update."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         facts_dicts = [f.model_dump() for f in facts]
 
         update_data = {

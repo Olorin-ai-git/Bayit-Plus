@@ -3,7 +3,7 @@ Admin Audit Logs
 Endpoints for viewing and exporting audit logs
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
@@ -100,7 +100,7 @@ async def export_audit_logs(
             }
             for log in logs
         ],
-        "exported_at": datetime.utcnow().isoformat(),
+        "exported_at": datetime.now(timezone.utc).isoformat(),
         "exported_by": str(current_user.id),
         "total_records": len(logs),
     }

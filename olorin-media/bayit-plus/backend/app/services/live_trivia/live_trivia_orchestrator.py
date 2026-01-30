@@ -2,7 +2,7 @@
 
 import asyncio
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional
 
 from anthropic import AsyncAnthropic
@@ -179,8 +179,8 @@ class LiveTriviaOrchestrator:
                     "$addToSet": {"shown_topics": topic_hash},
                     "$push": {"shown_fact_ids": {"$each": [f.fact_id for f in facts], "$slice": -100}},
                     "$set": {
-                        "last_fact_shown_at": datetime.utcnow(),
-                        "updated_at": datetime.utcnow()
+                        "last_fact_shown_at": datetime.now(timezone.utc),
+                        "updated_at": datetime.now(timezone.utc)
                     }
                 }
             )

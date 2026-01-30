@@ -7,7 +7,7 @@ import asyncio
 import logging
 import random
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 from beanie import PydanticObjectId
@@ -71,7 +71,7 @@ async def run_daily_audit(
     4. Generate comprehensive report
     5. Send notifications
     """
-    start_time = datetime.utcnow()
+    start_time = datetime.now(timezone.utc)
     logger.info("=" * 80)
     logger.info(f"🤖 Starting Librarian AI Agent - {audit_type}")
     logger.info(f"   Dry run: {dry_run}")
@@ -300,7 +300,7 @@ async def run_daily_audit(
             audit_report.ai_insights = []
 
         # Step 5: Finalize report
-        end_time = datetime.utcnow()
+        end_time = datetime.now(timezone.utc)
         audit_report.execution_time_seconds = (end_time - start_time).total_seconds()
         audit_report.status = "completed"
         audit_report.completed_at = end_time
@@ -355,7 +355,7 @@ async def determine_audit_scope(
     - tmdb_posters_only: Only items needing TMDB poster/metadata updates
     """
     scope = AuditScope(audit_type=audit_type)
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     # Build base query filters
     base_query = {"is_published": True}
@@ -468,7 +468,7 @@ async def get_audit_statistics(days: int = 30) -> Dict[str, Any]:
     still perform valuable work. Counts actual LibrarianAction records for
     accurate fix counts instead of relying on incomplete summaries.
     """
-    cutoff_date = datetime.utcnow() - timedelta(days=days)
+    cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
 
     # Count all audits (completed and partial) - they all did work
     reports = await AuditReport.find({"audit_date": {"$gte": cutoff_date}}).to_list(

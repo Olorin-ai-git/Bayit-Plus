@@ -59,7 +59,7 @@ class JewishCalendarService:
             JewishCalendarCache.cache_key == cache_key
         )
 
-        if cached and cached.expires_at > datetime.utcnow():
+        if cached and cached.expires_at > datetime.now(timezone.utc):
             return cached.data
 
         if cached:
@@ -71,7 +71,7 @@ class JewishCalendarService:
         self, cache_key: str, data: Dict[str, Any], api_source: str
     ) -> None:
         """Cache API response."""
-        expires_at = datetime.utcnow() + timedelta(
+        expires_at = datetime.now(timezone.utc) + timedelta(
             hours=settings.JEWISH_CALENDAR_CACHE_TTL_HOURS
         )
 

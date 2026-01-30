@@ -224,9 +224,6 @@ class LiveChannelMonitor:
             f"Starting live channel monitor (interval: {self.check_interval_seconds}s)"
         )
 
-        # Wait for server initialization (database, Beanie ODM)
-        await asyncio.sleep(30)
-
         while True:
             try:
                 await self.monitor_all_channels()

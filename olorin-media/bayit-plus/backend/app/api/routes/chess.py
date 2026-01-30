@@ -193,7 +193,7 @@ async def invite_player(
 
     The invited player will see a notification and can join using the game code.
     """
-    from datetime import datetime
+    from datetime import datetime, timezone
 
     # Search for the friend by name
     friend = await User.find_one(
@@ -233,7 +233,7 @@ async def invite_player(
             inviter_id=str(current_user.id),
             inviter_name=current_user.name,
             invitee_id=str(friend.id),
-            created_at=datetime.utcnow().isoformat(),
+            created_at=datetime.now(timezone.utc).isoformat(),
         )
 
         # Log the invite (in production, send via WebSocket to the invitee)

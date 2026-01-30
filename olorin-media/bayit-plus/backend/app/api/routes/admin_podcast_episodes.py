@@ -3,7 +3,7 @@ Admin Podcast Episode Management Routes
 CRUD operations for podcast episodes
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
@@ -105,7 +105,7 @@ async def create_podcast_episode(
 
     podcast.episode_count += 1
     podcast.latest_episode_date = data.published_at
-    podcast.updated_at = datetime.utcnow()
+    podcast.updated_at = datetime.now(timezone.utc)
     await podcast.save()
 
     await log_audit(
@@ -179,7 +179,7 @@ async def update_podcast_episode(
 
     await episode.save()
     if data.published_at is not None:
-        podcast.updated_at = datetime.utcnow()
+        podcast.updated_at = datetime.now(timezone.utc)
         await podcast.save()
 
     await log_audit(
@@ -214,7 +214,7 @@ async def delete_podcast_episode(
         raise HTTPException(status_code=404, detail="Episode not found")
 
     podcast.episode_count = max(0, podcast.episode_count - 1)
-    podcast.updated_at = datetime.utcnow()
+    podcast.updated_at = datetime.now(timezone.utc)
     await podcast.save()
 
     await log_audit(

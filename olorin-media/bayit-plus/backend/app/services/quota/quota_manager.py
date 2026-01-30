@@ -3,7 +3,7 @@ Quota Manager - Handles quota creation, window resets, and rollover logic
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict
 
 from app.core.config import settings
@@ -66,7 +66,7 @@ class QuotaManager:
         Reset time windows if expired and handle rollover accumulation.
         Returns True if any window was reset.
         """
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         updated = False
 
         # Hourly reset with rollover

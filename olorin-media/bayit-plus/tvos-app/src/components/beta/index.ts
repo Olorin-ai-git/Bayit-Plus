@@ -5,3 +5,5 @@
  */
 
 export { CreditBalanceWidget } from './CreditBalanceWidget';
+export { AISearchScreen } from './AISearchScreen';
+export { AIRecommendationsScreen } from './AIRecommendationsScreen';

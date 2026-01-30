@@ -15,7 +15,7 @@ import asyncio
 import json
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from typing import Any, Dict, List, Optional
 
@@ -342,7 +342,7 @@ class KidsPodcastService:
                         existing_podcast.latest_episode_date = podcast_data.episodes[
                             0
                         ].published_date
-                    existing_podcast.updated_at = datetime.utcnow()
+                    existing_podcast.updated_at = datetime.now(timezone.utc)
                     await existing_podcast.save()
                     podcast_id = str(existing_podcast.id)
                 else:
@@ -363,8 +363,8 @@ class KidsPodcastService:
                             else None
                         ),
                         is_active=True,
-                        created_at=datetime.utcnow(),
-                        updated_at=datetime.utcnow(),
+                        created_at=datetime.now(timezone.utc),
+                        updated_at=datetime.now(timezone.utc),
                     )
                     await podcast.insert()
                     podcast_id = str(podcast.id)
@@ -391,7 +391,7 @@ class KidsPodcastService:
                         description=ep_data.description,
                         audio_url=ep_data.audio_url,
                         duration=ep_data.duration,
-                        published_at=ep_data.published_date or datetime.utcnow(),
+                        published_at=ep_data.published_date or datetime.now(timezone.utc),
                         guid=ep_data.guid,
                     )
                     await episode.insert()

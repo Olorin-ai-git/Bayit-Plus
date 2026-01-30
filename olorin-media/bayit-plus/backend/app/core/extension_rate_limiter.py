@@ -5,7 +5,7 @@ Per-user rate limiting for Chrome Extension endpoints to prevent abuse.
 Uses in-memory storage (can be upgraded to Redis for production).
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, Tuple
 
 from fastapi import HTTPException, Request, status
@@ -34,7 +34,7 @@ class ExtensionRateLimiter:
         if key not in self._requests:
             return
 
-        cutoff = datetime.utcnow() - timedelta(seconds=window_seconds)
+        cutoff = datetime.now(timezone.utc) - timedelta(seconds=window_seconds)
         self._requests[key] = [
             ts for ts in self._requests[key] if ts > cutoff
         ]
@@ -76,7 +76,7 @@ class ExtensionRateLimiter:
             )
 
         # Record request
-        self._requests[key].append(datetime.utcnow())
+        self._requests[key].append(datetime.now(timezone.utc))
 
     def get_remaining(
         self,

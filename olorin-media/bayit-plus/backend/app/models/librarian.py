@@ -4,7 +4,7 @@ Models for audit reports, actions, and stream validation cache
 """
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from beanie import Document
@@ -185,7 +185,7 @@ class StreamValidationCache(Document):
     first_segment_accessible: Optional[bool] = None  # First .ts segment check
 
     # TTL management
-    expires_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    expires_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Settings:
         name = "stream_validation_cache"
@@ -221,7 +221,7 @@ class ClassificationVerificationCache(Document):
     category_name: Optional[str] = None
 
     # TTL management
-    expires_at: datetime = Field(default_factory=lambda: datetime.utcnow())
+    expires_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Settings:
         name = "classification_verification_cache"

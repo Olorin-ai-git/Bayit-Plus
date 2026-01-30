@@ -119,9 +119,6 @@ class BetaCheckpointWorker:
 
     async def _checkpoint_loop(self):
         """Main checkpoint loop - runs every N seconds."""
-        # Wait for server initialization (database, Beanie ODM)
-        await asyncio.sleep(15)
-
         while self.running:
             try:
                 await self._process_checkpoints()

@@ -8,7 +8,7 @@ content resolution, webhook processing, and signature verification.
 import hashlib
 import hmac
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional
 
 import anthropic
@@ -450,7 +450,7 @@ async def process_transcription_completed(
                 "text": text,
                 "language_code": language_code,
                 "audio_duration": audio_duration,
-                "completed_at": datetime.utcnow().isoformat(),
+                "completed_at": datetime.now(timezone.utc).isoformat(),
             }
         )
 

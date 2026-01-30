@@ -4,7 +4,7 @@ Allows TV apps to generate QR codes that companion devices (phones) can scan
 to authenticate the TV session without typing credentials on the TV.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import (APIRouter, Depends, HTTPException, WebSocket,
@@ -131,7 +131,7 @@ async def companion_connect(request: CompanionConnectRequest):
     device_info = {
         "device_type": request.device_type,
         "browser": request.browser,
-        "connected_at": datetime.utcnow().isoformat(),
+        "connected_at": datetime.now(timezone.utc).isoformat(),
     }
 
     success = await pairing_manager.connect_companion(request.session_id, device_info)
@@ -180,7 +180,7 @@ async def complete_auth(request: CompleteAuthRequest):
         )
 
     # Update last login
-    user.last_login = datetime.utcnow()
+    user.last_login = datetime.now(timezone.utc)
     await user.save()
 
     # Create token

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from beanie import Document
@@ -10,7 +10,7 @@ class WatchlistItem(Document):
     profile_id: Optional[str] = None  # Links to Profile for per-profile watchlists
     content_id: str
     content_type: str  # vod, live, podcast
-    added_at: datetime = Field(default_factory=datetime.utcnow)
+    added_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Settings:
         name = "watchlist"
@@ -35,8 +35,8 @@ class WatchHistory(Document):
     completed: bool = False
 
     # Timestamps
-    started_at: datetime = Field(default_factory=datetime.utcnow)
-    last_watched_at: datetime = Field(default_factory=datetime.utcnow)
+    started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_watched_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Settings:
         name = "watch_history"
@@ -54,8 +54,8 @@ class Conversation(Document):
     user_id: str
     messages: list[dict] = Field(default_factory=list)  # {role, content, timestamp}
     context: dict = Field(default_factory=dict)  # AI context
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Settings:
         name = "conversations"

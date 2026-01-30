@@ -1,7 +1,7 @@
 """Cost data reconciliation job."""
 
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 from app.core.logging_config import get_logger
@@ -41,7 +41,7 @@ async def cost_reconciliation_job() -> None:
             )
 
         # Run daily at 2 AM UTC
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         tomorrow_2am = (now + timedelta(days=1)).replace(
             hour=2, minute=0, second=0, microsecond=0
         )
@@ -51,7 +51,7 @@ async def cost_reconciliation_job() -> None:
 
 async def _reconcile_recent_costs(days: int = 7) -> None:
     """Reconcile costs for the last N days."""
-    end_date = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    end_date = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     start_date = end_date - timedelta(days=days)
 
     # Query daily cost breakdowns

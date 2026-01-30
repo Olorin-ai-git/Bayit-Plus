@@ -16,7 +16,7 @@ Categories:
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
@@ -482,7 +482,7 @@ class YoungstersContentSeeder:
                     )
                     existing.section_ids = [section_id]
                     existing.primary_section_id = section_id
-                    existing.updated_at = datetime.utcnow()
+                    existing.updated_at = datetime.now(timezone.utc)
 
                     await existing.save()
 
@@ -517,8 +517,8 @@ class YoungstersContentSeeder:
                         audience_id="youngsters",
                         # Legacy category field (for backward compatibility)
                         category_id=section_id,
-                        created_at=datetime.utcnow(),
-                        updated_at=datetime.utcnow(),
+                        created_at=datetime.now(timezone.utc),
+                        updated_at=datetime.now(timezone.utc),
                     )
 
                     await content.insert()

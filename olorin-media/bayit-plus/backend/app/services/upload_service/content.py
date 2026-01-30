@@ -7,7 +7,7 @@ Episodes are auto-linked to parent series.
 
 import logging
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from app.core.config import settings
@@ -274,8 +274,8 @@ class ContentEntryCreator:
                 category_id=str(category.id),
                 category_name="Series",
                 stream_url="",
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
             )
             await series.insert()
             logger.info(f"Created series container: {name}")

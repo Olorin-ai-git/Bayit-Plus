@@ -5,7 +5,7 @@ Provides series container creation from TMDB data.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 from app.models.content import Content
@@ -94,8 +94,8 @@ async def create_series_from_tmdb(
             is_published=True,
             category_id=category_id,
             stream_url="",  # Series container doesn't need a stream URL
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
         )
 
         await new_series.insert()

@@ -223,7 +223,7 @@ async def get_channel_schedule(channel_id: str, date: Optional[str] = Query(None
         return {
             "programs": programs,
             "channel_id": channel_id,
-            "date": date or datetime.utcnow().strftime("%Y-%m-%d"),
+            "date": date or datetime.now(timezone.utc).strftime("%Y-%m-%d"),
             "total": len(programs),
         }
     except Exception as e:

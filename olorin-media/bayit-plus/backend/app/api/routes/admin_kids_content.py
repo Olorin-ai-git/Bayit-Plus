@@ -10,7 +10,7 @@ Endpoints for managing kids content:
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -289,7 +289,7 @@ async def curate_content(
     if data.educational_tags is not None:
         content.educational_tags = data.educational_tags
 
-    content.updated_at = datetime.utcnow()
+    content.updated_at = datetime.now(timezone.utc)
     await content.save()
 
     await log_audit(

@@ -3,7 +3,7 @@ Admin Analytics
 Endpoints for analytics and reporting
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends
@@ -24,7 +24,7 @@ async def get_churn_analytics(
     current_user: User = Depends(has_permission(Permission.ANALYTICS_READ)),
 ):
     """Get churn analytics."""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     # Monthly churn rate
     active_start = await User.find(
@@ -71,11 +71,11 @@ async def get_audience_count(
         count = await User.find(User.subscription_tier == "basic").count()
     elif segment == "inactive_30":
         count = await User.find(
-            User.last_login <= datetime.utcnow() - timedelta(days=30)
+            User.last_login <= datetime.now(timezone.utc) - timedelta(days=30)
         ).count()
     elif segment == "new_users":
         count = await User.find(
-            User.created_at >= datetime.utcnow() - timedelta(days=7)
+            User.created_at >= datetime.now(timezone.utc) - timedelta(days=7)
         ).count()
     else:
         count = await User.find(User.is_active == True).count()

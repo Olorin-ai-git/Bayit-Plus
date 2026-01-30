@@ -3,7 +3,7 @@ Favorites API Routes
 Manage user's favorite content items
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from beanie import Document
@@ -20,7 +20,7 @@ class Favorite(Document):
     user_id: str
     content_id: str
     content_type: str  # vod, live, podcast, movie, series, channel, radio
-    added_at: datetime = datetime.utcnow()
+    added_at: datetime = datetime.now(timezone.utc)
 
     class Settings:
         name = "favorites"

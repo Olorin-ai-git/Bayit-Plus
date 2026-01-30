@@ -5,7 +5,7 @@ Handles seeding taxonomy and migrating existing content from legacy categories.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
 from app.models.content import Content
@@ -512,8 +512,8 @@ async def seed_sections() -> Dict[str, str]:
                 show_on_homepage=section_data.get("show_on_homepage", False),
                 show_on_nav=section_data.get("show_on_nav", True),
                 is_active=True,
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
             )
             await section.insert()
             section_map[section_data["slug"]] = str(section.id)
@@ -642,7 +642,7 @@ async def migrate_content_to_new_taxonomy(
             # Update content item
             if not dry_run:
                 item.category_id = section_map[section_slug]
-                item.updated_at = datetime.utcnow()
+                item.updated_at = datetime.now(timezone.utc)
                 await item.save()
 
             migrated_count += 1

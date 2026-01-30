@@ -2,7 +2,7 @@
 Admin billing and transaction management endpoints.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -29,7 +29,7 @@ async def get_billing_overview(
     current_user: User = Depends(has_permission(Permission.BILLING_READ)),
 ):
     """Get billing overview stats."""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     week_start = today_start - timedelta(days=7)
     month_start = today_start.replace(day=1)
@@ -233,7 +233,7 @@ async def approve_refund(
 
     refund.status = RefundStatus.APPROVED
     refund.processed_by = str(current_user.id)
-    refund.processed_at = datetime.utcnow()
+    refund.processed_at = datetime.now(timezone.utc)
     await refund.save()
 
     await log_audit(
@@ -265,7 +265,7 @@ async def reject_refund(
 
     refund.status = RefundStatus.REJECTED
     refund.processed_by = str(current_user.id)
-    refund.processed_at = datetime.utcnow()
+    refund.processed_at = datetime.now(timezone.utc)
     await refund.save()
 
     await log_audit(

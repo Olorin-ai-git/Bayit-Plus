@@ -5,7 +5,7 @@ Automatically fetches and updates podcast episodes from RSS feeds on server star
 
 import asyncio
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 import httpx
@@ -115,7 +115,7 @@ async def fetch_rss_episodes(
                 return None
 
             episodes = []
-            base_date = datetime.utcnow()
+            base_date = datetime.now(timezone.utc)
 
             for i, item in enumerate(items):
                 title_elem = item.find("title")
@@ -254,7 +254,7 @@ async def sync_podcast_episodes(podcast: Podcast, max_episodes: int = 20) -> int
         podcast.episode_count = total_episodes
         if latest_episodes:
             podcast.latest_episode_date = latest_episodes[0].published_at
-        podcast.updated_at = datetime.utcnow()
+        podcast.updated_at = datetime.now(timezone.utc)
 
         try:
             await podcast.save()

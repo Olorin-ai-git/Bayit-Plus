@@ -5,7 +5,7 @@
  * Supports multi-language chat messages with local caching per channel.
  *
  * Features:
- * - Per-channel message storage (max 200 messages per channel)
+ * - Per-channel message storage (max messages per channel from config)
  * - Chat visibility and expand/collapse state
  * - Active channel tracking
  * - Persistent UI preferences (visibility, expansion)
@@ -13,6 +13,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { channelChatConfig } from '@/config/channelChatConfig';
 
 export interface ChatMessage {
   id: string;
@@ -41,8 +42,6 @@ interface ChannelChatState {
   reset: () => void;
 }
 
-const MAX_MESSAGES_PER_CHANNEL = 200;
-
 export const useChannelChatStore = create<ChannelChatState>()(
   persist(
     (set, get) => ({
@@ -54,7 +53,7 @@ export const useChannelChatStore = create<ChannelChatState>()(
 
       /**
        * Add a new message to a channel's message list.
-       * Automatically caps at 200 messages per channel (FIFO).
+       * Automatically caps at configured max messages per channel (FIFO).
        *
        * @param channelId - Channel identifier
        * @param message - Message object to add
@@ -63,8 +62,8 @@ export const useChannelChatStore = create<ChannelChatState>()(
         const currentMessages = get().messagesByChannel[channelId] || [];
         const updatedMessages = [...currentMessages, message];
 
-        // Cap at MAX_MESSAGES_PER_CHANNEL (remove oldest if exceeded)
-        if (updatedMessages.length > MAX_MESSAGES_PER_CHANNEL) {
+        // Cap at configured max (remove oldest if exceeded)
+        if (updatedMessages.length > channelChatConfig.maxMessages) {
           updatedMessages.shift();
         }
 
@@ -81,10 +80,10 @@ export const useChannelChatStore = create<ChannelChatState>()(
        * Used for initial load or full refresh.
        *
        * @param channelId - Channel identifier
-       * @param messages - Array of messages (capped at 200)
+       * @param messages - Array of messages (capped at configured max)
        */
       setMessages: (channelId: string, messages: ChatMessage[]) => {
-        const cappedMessages = messages.slice(-MAX_MESSAGES_PER_CHANNEL);
+        const cappedMessages = messages.slice(-channelChatConfig.maxMessages);
 
         set({
           messagesByChannel: {

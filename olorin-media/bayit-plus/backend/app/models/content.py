@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Union
 
 import pymongo
@@ -654,7 +654,7 @@ class TranslationStageMetrics(Document):
             metric.sample_count += 1
             metric.total_duration_seconds += duration_seconds
             metric.avg_duration_seconds = metric.total_duration_seconds / metric.sample_count
-            metric.last_updated = datetime.utcnow()
+            metric.last_updated = datetime.now(timezone.utc)
             await metric.save()
         else:
             await cls(

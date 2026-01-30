@@ -11,8 +11,9 @@ from typing import Any, Dict, List, Optional
 from anthropic import AsyncAnthropic
 
 from app.core.config import settings
-from app.models.content import Content, PodcastEpisode
+from app.models.content import Content, PodcastEpisode, Podcast, RadioStation
 from app.models.user import User
+from app.models.watchlist import WatchHistory
 from app.services.beta.credit_service import BetaCreditService
 
 logger = logging.getLogger(__name__)
@@ -153,13 +154,48 @@ class BetaAIRecommendationsService:
         - Languages
         - Patterns and preferences
         """
-        # TODO: Implement actual user history analysis
-        # For now, return a placeholder profile
+        # Fetch user's watch history (last 90 days)
+        ninety_days_ago = datetime.now(timezone.utc) - timedelta(days=90)
+        history = await WatchHistory.find(
+            WatchHistory.user_id == self.user_id,
+            WatchHistory.last_watched_at >= ninety_days_ago
+        ).sort("-last_watched_at").limit(100).to_list()
+
+        if not history:
+            # No history - return generic profile
+            return {
+                "summary": "New user with no viewing history",
+                "favorite_genres": [],
+                "languages": ["en"],
+                "recent_activity": [],
+                "content_types": [],
+            }
+
+        # Analyze content types
+        content_types = {}
+        genres_count = {}
+        languages_set = set()
+        recent_activity = []
+
+        for item in history[:20]:  # Last 20 items for summary
+            content_types[item.content_type] = content_types.get(item.content_type, 0) + 1
+            recent_activity.append({
+                "content_id": item.content_id,
+                "content_type": item.content_type,
+                "watched_at": item.last_watched_at.isoformat(),
+                "completed": item.completed,
+            })
+
+        # Build summary
+        most_watched_type = max(content_types.items(), key=lambda x: x[1])[0] if content_types else "movies"
+        content_type_summary = ", ".join([f"{k} ({v})" for k, v in sorted(content_types.items(), key=lambda x: -x[1])[:3]])
+
         return {
-            "summary": "User enjoys action movies and technology podcasts",
-            "favorite_genres": ["action", "thriller", "documentary"],
-            "languages": ["en", "he"],
-            "recent_activity": [],
+            "summary": f"User primarily watches {most_watched_type}. Activity: {content_type_summary}",
+            "favorite_genres": list(genres_count.keys())[:5] if genres_count else [],
+            "languages": list(languages_set) if languages_set else ["en"],
+            "recent_activity": recent_activity[:10],
+            "content_types": list(content_types.keys()),
         }
 
     async def _get_candidate_content(
@@ -178,7 +214,7 @@ class BetaAIRecommendationsService:
         if content_type in ["movies", "all"]:
             movies = await Content.find(
                 Content.content_format == "movie"
-            ).sort("-created_at").limit(limit // 2).to_list()
+            ).sort("-created_at").limit(limit // 3).to_list()
             for movie in movies:
                 candidates.append({
                     "type": "movie",
@@ -189,7 +225,55 @@ class BetaAIRecommendationsService:
                     "year": movie.year if hasattr(movie, "year") else None,
                 })
 
-        # TODO: Add Series, Podcasts, Audiobooks
+        # Fetch series if requested (series are Content with is_series=True)
+        if content_type in ["series", "all"]:
+            try:
+                series_list = await Content.find(
+                    Content.is_series == True
+                ).sort("-created_at").limit(limit // 3).to_list()
+                for series in series_list:
+                    candidates.append({
+                        "type": "series",
+                        "id": str(series.id),
+                        "title": series.title_en or series.title,
+                        "description": (series.description_en or series.description or "")[:200],
+                        "genres": series.genres if hasattr(series, "genres") else [],
+                        "year": series.year if hasattr(series, "year") else None,
+                    })
+            except Exception as e:
+                logger.warning(f"Could not fetch series: {e}")
+
+        # Fetch podcasts if requested
+        if content_type in ["podcasts", "all"]:
+            try:
+                podcasts = await PodcastEpisode.find().sort("-published_at").limit(limit // 3).to_list()
+                for podcast in podcasts:
+                    candidates.append({
+                        "type": "podcast",
+                        "id": str(podcast.id),
+                        "title": podcast.title_en or podcast.title,
+                        "description": (podcast.description_en or podcast.description or "")[:200],
+                        "genres": [],
+                        "year": None,
+                    })
+            except Exception as e:
+                logger.warning(f"Could not fetch podcasts: {e}")
+
+        # Fetch radio stations if requested
+        if content_type in ["radio", "all"]:
+            try:
+                stations = await RadioStation.find().sort("-created_at").limit(limit // 3).to_list()
+                for station in stations:
+                    candidates.append({
+                        "type": "radio",
+                        "id": str(station.id),
+                        "title": station.name_en or station.name,
+                        "description": (station.description_en or station.description or "")[:200],
+                        "genres": [],
+                        "year": None,
+                    })
+            except Exception as e:
+                logger.warning(f"Could not fetch radio stations: {e}")
 
         return candidates
 

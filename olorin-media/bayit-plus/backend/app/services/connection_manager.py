@@ -6,7 +6,7 @@ Manages WebSocket connections for watch parties and live features.
 import asyncio
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Set
 
 from fastapi import WebSocket
@@ -41,7 +41,7 @@ class ConnectionManager:
 
     def _generate_connection_id(self, user_id: str) -> str:
         """Generate a unique connection ID"""
-        return f"{user_id}_{datetime.utcnow().timestamp()}"
+        return f"{user_id}_{datetime.now(timezone.utc).timestamp()}"
 
     async def connect(
         self,

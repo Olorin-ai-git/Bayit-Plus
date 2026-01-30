@@ -15,7 +15,7 @@ import hmac
 import logging
 import shutil
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse
@@ -111,7 +111,7 @@ class PodcastTranslationService:
         """
         try:
             # Atomic status update to prevent duplicate processing
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             result = await PodcastEpisode.find_one(
                 {
                     "_id": episode.id,
@@ -500,7 +500,7 @@ class PodcastTranslationService:
                 "duration": str(
                     await self.audio_processor.get_audio_duration(translated_audio_path)
                 ),
-                "created_at": datetime.utcnow(),
+                "created_at": datetime.now(timezone.utc),
                 "file_size": Path(translated_audio_path).stat().st_size,
             }
 
@@ -516,7 +516,7 @@ class PodcastTranslationService:
                         "translation_status": "completed",
                         "translation_progress": 100.0,
                         "translation_eta_seconds": 0,
-                        "updated_at": datetime.utcnow(),
+                        "updated_at": datetime.now(timezone.utc),
                         "retry_count": 0,
                         "translation_stages": {},  # Clear stages on success
                     }
@@ -531,7 +531,7 @@ class PodcastTranslationService:
 
             # Send translation.completed webhook
             duration = (
-                (datetime.utcnow() - episode.translation_started_at).total_seconds()
+                (datetime.now(timezone.utc) - episode.translation_started_at).total_seconds()
                 if episode.translation_started_at
                 else None
             )
@@ -545,7 +545,7 @@ class PodcastTranslationService:
                     "target_language": target_lang_code,
                     "audio_url": translated_url,
                     "duration_seconds": duration,
-                    "completed_at": datetime.utcnow().isoformat(),
+                    "completed_at": datetime.now(timezone.utc).isoformat(),
                 },
             )
 
@@ -560,7 +560,7 @@ class PodcastTranslationService:
                 {
                     "$set": {
                         "translation_status": "failed",
-                        "updated_at": datetime.utcnow(),
+                        "updated_at": datetime.now(timezone.utc),
                     },
                     "$inc": {"retry_count": 1},
                 }
@@ -581,14 +581,14 @@ class PodcastTranslationService:
                     "error": str(e),
                     "retry_count": episode.retry_count if episode else 0,
                     "will_retry": will_retry,
-                    "failed_at": datetime.utcnow().isoformat(),
+                    "failed_at": datetime.now(timezone.utc).isoformat(),
                 },
             )
             raise
 
     async def _save_stage(self, episode_id: str, stage_name: str, stage_data: dict):
         """Save completed stage data to database for resumption."""
-        stage_data["timestamp"] = datetime.utcnow().isoformat()
+        stage_data["timestamp"] = datetime.now(timezone.utc).isoformat()
         await PodcastEpisode.find_one({"_id": episode_id}).update(
             {"$set": {f"translation_stages.{stage_name}": stage_data}}
         )
@@ -596,7 +596,7 @@ class PodcastTranslationService:
 
     async def _start_stage(self, episode_id: str, stage_name: str):
         """Mark the start of a translation stage for timing."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         await PodcastEpisode.find_one({"_id": episode_id}).update(
             {
                 "$set": {
@@ -617,7 +617,7 @@ class PodcastTranslationService:
             stage_name: Stage name
             stage_data: Optional stage data to save for resumption
         """
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         episode = await PodcastEpisode.get(episode_id)
 
         if not episode:
@@ -1268,7 +1268,7 @@ Respond ONLY with valid JSON, no other text."""
             Public URL to uploaded audio with cache-busting query parameter
         """
         # Use timestamped path to avoid CDN caching old versions
-        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         gcs_path = f"podcasts/translations/{episode_id}/{language}_{timestamp}.mp3"
         url = await self.storage.upload_file(audio_path, gcs_path)
         logger.info(f"Uploaded translated audio to: {url}")

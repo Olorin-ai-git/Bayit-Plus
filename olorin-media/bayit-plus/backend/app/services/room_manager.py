@@ -5,7 +5,7 @@ Handles watch party creation, joining, leaving, and state management.
 
 import secrets
 import string
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from app.models.realtime import (ChatMessage, ChatMessageCreate,
@@ -50,7 +50,7 @@ class RoomManager:
             chat_enabled=data.chat_enabled,
             sync_playback=data.sync_playback,
             participants=[ParticipantState(user_id=host_id, user_name=host_name)],
-            started_at=datetime.utcnow(),
+            started_at=datetime.now(timezone.utc),
         )
 
         await party.insert()
@@ -136,7 +136,7 @@ class RoomManager:
 
         # If no participants left, end the party
         if not party.participants:
-            party.ended_at = datetime.utcnow()
+            party.ended_at = datetime.now(timezone.utc)
         else:
             # Notify remaining participants
             await connection_manager.broadcast_to_party(
@@ -157,7 +157,7 @@ class RoomManager:
         if not party or party.host_id != user_id:
             return False
 
-        party.ended_at = datetime.utcnow()
+        party.ended_at = datetime.now(timezone.utc)
         await party.save()
 
         # Notify all participants
@@ -335,7 +335,7 @@ class RoomManager:
                 "type": "playback_sync",
                 "position": position,
                 "is_playing": is_playing,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             party_id,
             exclude_user_id=user_id,

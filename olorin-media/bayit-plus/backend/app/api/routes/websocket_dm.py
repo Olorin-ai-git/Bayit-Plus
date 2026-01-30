@@ -5,7 +5,7 @@ Handles WebSocket connections, message sending, and read receipts.
 
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
@@ -184,7 +184,7 @@ async def dm_websocket(websocket: WebSocket, friend_id: str, token: str = Query(
 
                 if msg_type == "ping":
                     await websocket.send_json(
-                        {"type": "pong", "timestamp": datetime.utcnow().isoformat()}
+                        {"type": "pong", "timestamp": datetime.now(timezone.utc).isoformat()}
                     )
 
                 elif msg_type == "message":
@@ -258,7 +258,7 @@ async def dm_websocket(websocket: WebSocket, friend_id: str, token: str = Query(
                             "type": "typing",
                             "user_id": user_id,
                             "user_name": user.name,
-                            "timestamp": datetime.utcnow().isoformat(),
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
                         },
                     )
 
@@ -269,7 +269,7 @@ async def dm_websocket(websocket: WebSocket, friend_id: str, token: str = Query(
                         dm = await DirectMessage.get(message_id)
                         if dm and dm.receiver_id == user_id and not dm.read:
                             dm.read = True
-                            dm.read_at = datetime.utcnow()
+                            dm.read_at = datetime.now(timezone.utc)
                             await dm.save()
 
                             # Notify sender

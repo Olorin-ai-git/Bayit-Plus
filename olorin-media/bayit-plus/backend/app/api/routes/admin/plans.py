@@ -3,7 +3,7 @@ Admin Subscription Plans Management
 Endpoints for managing subscription plan configuration
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -103,7 +103,7 @@ async def update_plan(
     plan.features = data.features
     plan.max_devices = data.max_devices
     plan.is_active = data.is_active
-    plan.updated_at = datetime.utcnow()
+    plan.updated_at = datetime.now(timezone.utc)
     await plan.save()
 
     return {"message": "Plan updated"}

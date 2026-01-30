@@ -3,7 +3,7 @@ Verification Token Model
 Manages temporary tokens for email and phone verification
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from beanie import Document
@@ -33,4 +33,4 @@ class VerificationToken(Document):
 
     def is_valid(self) -> bool:
         """Check if token is valid (not used and not expired)."""
-        return not self.used and self.expires_at > datetime.utcnow()
+        return not self.used and self.expires_at > datetime.now(timezone.utc)

@@ -10,7 +10,7 @@ Admin endpoints for managing the content classification system:
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -160,7 +160,7 @@ async def admin_update_section(
 
     update_data = data.model_dump(exclude_unset=True)
     if update_data:
-        update_data["updated_at"] = datetime.utcnow()
+        update_data["updated_at"] = datetime.now(timezone.utc)
         await section.set(update_data)
 
         await log_audit(
@@ -185,7 +185,7 @@ async def admin_delete_section(
         raise HTTPException(status_code=404, detail="Section not found")
 
     # Soft delete
-    await section.set({"is_active": False, "updated_at": datetime.utcnow()})
+    await section.set({"is_active": False, "updated_at": datetime.now(timezone.utc)})
 
     await log_audit(
         action="delete_section",
@@ -207,7 +207,7 @@ async def admin_reorder_sections(
     for item in order:
         section = await ContentSection.get(item["id"])
         if section:
-            await section.set({"order": item["order"], "updated_at": datetime.utcnow()})
+            await section.set({"order": item["order"], "updated_at": datetime.now(timezone.utc)})
 
     await log_audit(
         action="reorder_sections",

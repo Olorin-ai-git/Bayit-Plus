@@ -1,7 +1,7 @@
 """Cost aggregation service for admin dashboard."""
 
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from typing import List, Optional
 
@@ -53,7 +53,7 @@ class CostAggregationService:
 
         Called by background job every hour.
         """
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         period_end = now.replace(minute=0, second=0, microsecond=0)
         period_start = period_end - timedelta(hours=1)
 

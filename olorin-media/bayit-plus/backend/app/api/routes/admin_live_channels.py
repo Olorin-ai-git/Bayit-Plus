@@ -2,7 +2,7 @@
 Admin Live Channel Management Routes - CRUD operations for live TV channels
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -212,7 +212,7 @@ async def update_live_channel(
             "new": data.available_translation_languages,
         }
         channel.available_translation_languages = data.available_translation_languages
-    channel.updated_at = datetime.utcnow()
+    channel.updated_at = datetime.now(timezone.utc)
     await channel.save()
     await log_audit(
         str(current_user.id),

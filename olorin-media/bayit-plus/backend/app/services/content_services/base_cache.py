@@ -5,7 +5,7 @@ Provides in-memory caching with TTL support and stale fallback for content servi
 This module is used by youngsters, kids, and tel_aviv content services.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 
@@ -36,7 +36,7 @@ class ContentCache:
             return None
 
         items, cached_at = self._cache[key]
-        if datetime.utcnow() - cached_at > self._ttl:
+        if datetime.now(timezone.utc) - cached_at > self._ttl:
             # Don't delete - keep for stale fallback
             return None
 
@@ -50,7 +50,7 @@ class ContentCache:
             key: Cache key
             items: List of items to cache
         """
-        self._cache[key] = (items, datetime.utcnow())
+        self._cache[key] = (items, datetime.now(timezone.utc))
 
     def get_stale(self, key: str) -> Optional[List[Dict[str, Any]]]:
         """
