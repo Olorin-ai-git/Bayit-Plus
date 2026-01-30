@@ -822,7 +822,10 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(107, 33, 168, 0.3)',
     borderTopColor: colors.primary.DEFAULT,
     // @ts-ignore - Web animation
-    animation: 'spin 1s linear infinite',
+    animationName: 'spin',
+    animationDuration: '1s',
+    animationTimingFunction: 'linear',
+    animationIterationCount: 'infinite',
   },
   loadingText: {
     fontSize: 16,

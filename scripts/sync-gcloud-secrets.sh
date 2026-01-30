@@ -19,13 +19,13 @@ set -euo pipefail
 #   - Backup: timestamped backup of existing .env
 #
 # Usage:
-#   ./scripts/sync-gcloud-secrets.sh [backend|web|all] [--dry-run] [--force] [--project PROJECT_ID]
+#   ./scripts/sync-gcloud-secrets.sh [--dry-run] [--force] [--project PROJECT_ID]
 #
 # Examples:
-#   ./scripts/sync-gcloud-secrets.sh backend                    # Sync backend
-#   ./scripts/sync-gcloud-secrets.sh backend --dry-run          # Preview changes
-#   ./scripts/sync-gcloud-secrets.sh all --project bayit-plus   # Sync both
-#   ./scripts/sync-gcloud-secrets.sh backend --force            # Skip validation
+#   ./scripts/sync-gcloud-secrets.sh                            # Sync backend
+#   ./scripts/sync-gcloud-secrets.sh --dry-run                  # Preview changes
+#   ./scripts/sync-gcloud-secrets.sh --project bayit-plus       # Explicit project
+#   ./scripts/sync-gcloud-secrets.sh --force                    # Skip validation
 
 # Colors for output
 RED='\033[0;31m'
@@ -41,7 +41,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 MANIFEST_FILE="$SCRIPT_DIR/config/secrets-manifest.json"
 
 # Defaults
-TARGET="all"
+TARGET="backend"
 DRY_RUN=false
 FORCE=false
 PROJECT_ID=""
@@ -49,7 +49,7 @@ PROJECT_ID=""
 # Parse arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        backend|web|all)
+        backend)
             TARGET="$1"
             shift
             ;;
@@ -70,10 +70,10 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         -h|--help)
-            echo "Usage: $0 [backend|web|all] [--dry-run] [--force] [--project PROJECT_ID]"
+            echo "Usage: $0 [backend] [--dry-run] [--force] [--project PROJECT_ID]"
             echo ""
             echo "Options:"
-            echo "  backend|web|all   Target platform (default: all)"
+            echo "  backend           Target platform (default: backend)"
             echo "  --dry-run         Preview changes without writing"
             echo "  --force           Write .env even if validation fails"
             echo "  --project ID      Google Cloud project ID"
@@ -360,19 +360,7 @@ EOF
 # Execute sync based on target
 EXIT_CODE=0
 
-case "$TARGET" in
-    backend)
-        sync_platform "backend" || EXIT_CODE=$?
-        ;;
-    web)
-        sync_platform "web" || EXIT_CODE=$?
-        ;;
-    all)
-        sync_platform "backend" || EXIT_CODE=$?
-        echo ""
-        sync_platform "web" || EXIT_CODE=$?
-        ;;
-esac
+sync_platform "backend" || EXIT_CODE=$?
 
 echo -e "${BLUE}============================================${NC}"
 if [ $EXIT_CODE -eq 0 ]; then
@@ -386,20 +374,13 @@ echo ""
 if ! $DRY_RUN && [ $EXIT_CODE -eq 0 ]; then
     echo -e "${BLUE}Next steps:${NC}"
     echo ""
-    if [[ "$TARGET" =~ ^(backend|all)$ ]]; then
-        echo -e "  1. Verify backend .env:"
-        echo -e "     ${GREEN}wc -l backend/.env${NC}"
-        echo -e "     ${GREEN}grep -c '=' backend/.env${NC}"
-        echo ""
-        echo -e "  2. Restart backend:"
-        echo -e "     ${GREEN}cd backend && poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload${NC}"
-        echo ""
-    fi
-    if [[ "$TARGET" =~ ^(web|all)$ ]]; then
-        echo -e "  3. Restart web:"
-        echo -e "     ${GREEN}cd web && npm run dev${NC}"
-        echo ""
-    fi
+    echo -e "  1. Verify backend .env:"
+    echo -e "     ${GREEN}wc -l backend/.env${NC}"
+    echo -e "     ${GREEN}grep -c '=' backend/.env${NC}"
+    echo ""
+    echo -e "  2. Restart backend:"
+    echo -e "     ${GREEN}cd backend && poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload${NC}"
+    echo ""
 fi
 
 exit $EXIT_CODE

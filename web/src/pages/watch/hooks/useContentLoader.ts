@@ -89,6 +89,15 @@ export function useContentLoader(
         if (data.related) {
           setRelated(data.related);
         }
+
+        // For live channels, use stream_url from channel metadata directly
+        // (the getChannel endpoint already returns it without auth)
+        if (contentType === 'live' && (data as any).stream_url) {
+          logger.debug('Using stream URL from channel metadata', 'useContentLoader', { contentId });
+          setStreamUrl((data as any).stream_url);
+          setLoading(false);
+          return;
+        }
       } catch (error: any) {
         logger.error('Failed to load content metadata', 'useContentLoader', error);
         setLoading(false);

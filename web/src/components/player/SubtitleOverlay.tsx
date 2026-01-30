@@ -4,7 +4,7 @@
  */
 
 import { useMemo } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Platform } from 'react-native'
 import { SubtitleCue, SubtitleSettings, getLanguageInfo } from '@/types/subtitle'
 
 interface SubtitleOverlayProps {
@@ -125,8 +125,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     lineHeight: 28,
     textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 0.95)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
+    ...Platform.select({
+      web: { textShadow: '1px 1px 3px rgba(0, 0, 0, 0.95)' },
+      default: {
+        textShadowColor: 'rgba(0, 0, 0, 0.95)',
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 3,
+      },
+    }),
   },
 });

@@ -261,7 +261,10 @@ const styles = StyleSheet.create({
     // @ts-ignore - Web CSS
     transform: [{ scale: 1.15 }],
     boxShadow: '0 0 24px rgba(139, 92, 246, 0.8), 0 0 48px rgba(139, 92, 246, 0.4)',
-    animation: 'pulse 1s ease-in-out infinite',
+    animationName: 'pulse',
+    animationDuration: '1s',
+    animationTimingFunction: 'ease-in-out',
+    animationIterationCount: 'infinite',
   } as any,
 
   iconEmoji: {
@@ -324,8 +327,12 @@ const styles = StyleSheet.create({
     marginLeft: -6,
     width: 0,
     height: 0,
-    borderLeft: '6px solid transparent',
-    borderRight: '6px solid transparent',
-    borderTop: `6px solid ${glass.border}`,
+    borderLeftWidth: 6,
+    borderLeftColor: 'transparent',
+    borderRightWidth: 6,
+    borderRightColor: 'transparent',
+    borderTopWidth: 6,
+    borderTopColor: glass.border,
+    borderStyle: 'solid',
   } as any,
 });

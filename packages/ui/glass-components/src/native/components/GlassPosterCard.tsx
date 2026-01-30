@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     height: '50%',
     // @ts-ignore - Web-specific
     ...(Platform.OS === 'web' && {
-      background: 'linear-gradient(transparent, rgba(0, 0, 0, 0.9))',
+      backgroundImage: 'linear-gradient(transparent, rgba(0, 0, 0, 0.9))',
     }),
     // Native fallback
     ...(Platform.OS !== 'web' && {

@@ -95,6 +95,14 @@ Platform-specific development documentation:
 - [Accessibility Guide](guides/ACCESSIBILITY_GUIDE.md) - WCAG AA compliance
 - [Contributing Guide](guides/CONTRIBUTING.md) - How to contribute
 
+**AI Integration Guides:**
+- [Web AI Integration](guides/AI_INTEGRATION_WEB.md) - React 18 + Zustand + TailwindCSS ⭐ **NEW**
+- [Mobile AI Integration](guides/AI_INTEGRATION_MOBILE.md) - React Native iOS/Android + AsyncStorage ⭐ **NEW**
+- [tvOS AI Integration](guides/AI_INTEGRATION_TVOS.md) - Apple TV + Focus Navigation ⭐ **NEW**
+
+**AI Support:**
+- [AI Troubleshooting](guides/AI_TROUBLESHOOTING.md) - Common issues and solutions ⭐ **NEW**
+
 ---
 
 ### Technical Reference (`/technical/`)
@@ -103,7 +111,8 @@ Deep-dive technical documentation:
 
 - [Database Schema Reference](technical/DATABASE_SCHEMA_REFERENCE.md) - MongoDB Atlas, 64+ collections ⭐ **NEW**
 - [Shared Components Reference](technical/SHARED_COMPONENTS_REFERENCE.md) - Glass UI library ⭐ **NEW**
-- Credit System Architecture
+- [Credit System Architecture](technical/CREDIT_SYSTEM.md) - Beta 500 credit metering and transactions ⭐ **NEW**
+- [AI Agent System](technical/AI_AGENT_SYSTEM.md) - 50+ tools for automation ⭐ **NEW**
 - Content Intelligence
 - Search Infrastructure
 
@@ -127,7 +136,7 @@ Deployment guides and infrastructure:
 - [Deployment Guide](deployment/DEPLOYMENT_GUIDE.md) - Production deployment
 - [CI/CD Pipeline](deployment/CI_CD_PIPELINE.md) - GitHub Actions workflows
 - [Secrets Management](deployment/SECRETS_MANAGEMENT.md) - Google Cloud secrets
-- [LLM Configuration](deployment/LLM_CONFIGURATION.md) - AI model setup
+- [LLM Configuration](deployment/LLM_CONFIGURATION.md) - AI model setup and cost optimization ⭐ **NEW**
 - Firebase Hosting configuration
 - Google Cloud Run setup
 
