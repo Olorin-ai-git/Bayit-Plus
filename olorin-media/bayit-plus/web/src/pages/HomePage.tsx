@@ -27,6 +27,7 @@ import { contentService, liveService, historyService, ritualService } from '@/se
 import { ShabbatModeBanner, ShabbatEveSection } from '@/components/judaism';
 import IsraelisInCitySection from '@/components/home/IsraelisInCitySection';
 import IsraeliBusinessesSection from '@/components/home/IsraeliBusinessesSection';
+import HeroGreeting from '@/components/home/HeroGreeting';
 import { colors, spacing } from '@olorin/design-tokens';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
@@ -298,13 +299,16 @@ export default function HomePage() {
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
       {/* Page Header */}
-      <View style={styles.headerSection}>
+      <View style={[styles.headerSection, isRTL && styles.headerSectionRTL]}>
         <GlassPageHeader
           title={t('nav.home')}
           pageType="home"
           isRTL={isRTL}
         />
       </View>
+
+      {/* Hero Greeting Section */}
+      <HeroGreeting />
 
       {/* Header Bar - Culture Time Clocks */}
       <View style={[styles.headerBar, isRTL && styles.headerBarRTL]}>
@@ -492,11 +496,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
     paddingTop: spacing.lg,
   },
+  headerSectionRTL: {
+  },
   // Header Bar - Compact clocks
   headerBar: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: spacing.lg,
     paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md,
     paddingTop: spacing.sm,

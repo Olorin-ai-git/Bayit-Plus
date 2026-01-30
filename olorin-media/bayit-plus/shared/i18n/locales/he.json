@@ -4378,7 +4378,8 @@
         "warningCritical": "קריטי: נגמרים הקרדיטים",
         "warningLow": "אזהרה: יתרת קרדיטים נמוכה",
         "upgrade": "שדרג תוכנית",
-        "upgradeAction": "שדרג כדי לקבל קרדיטים נוספים"
+        "upgradeAction": "שדרג כדי לקבל קרדיטים נוספים",
+        "remainingCredits": "זיכויים"
       },
       "settings": {
         "title": "תוכניות בטא",
@@ -4423,5 +4424,11 @@
         "enrollmentError": "לא ניתן להירשם. נסה שוב מאוחר יותר."
       }
     }
+  },
+  "greeting": {
+    "morning": "בוקר טוב",
+    "afternoon": "צהריים טובים",
+    "evening": "ערב טוב",
+    "night": "לילה טוב"
   }
 }

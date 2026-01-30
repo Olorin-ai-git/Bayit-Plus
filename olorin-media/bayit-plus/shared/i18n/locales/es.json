@@ -2183,7 +2183,7 @@
         "dropFiles": "Suelta archivos aquí",
         "acceptedFormats": "Formatos aceptados",
         "maxSize": "Tamaño máximo de archivo",
-        "invalidFiles": "{{count}} archivo(s) rechazado(s)",
+        "invalidFiles": "{{count}} file(s) rejected - invalid type or too large",
         "selectFolder": "Seleccionar Carpeta",
         "supportedFormats": "Soporta archivos de video (mp4, mkv, avi, mov, webm)",
         "selectedFiles": "Archivos Seleccionados",
@@ -2200,7 +2200,6 @@
         "filesCount": "{{count}} archivo(s) seleccionado(s)",
         "pendingRestore": "{{count}} archivo(s) pendiente(s) de sesión anterior",
         "pendingRestoreHint": "Arrastra o selecciona los mismos archivos para restaurar la cola de carga",
-        "invalidFiles": "{{count}} file(s) rejected - invalid type or too large",
         "validationFailed": "Validation Failed",
         "uploadFailedDetails": "Failed: {{files}}",
         "uploadFiles": "Upload {{count}} file(s)",
@@ -3874,7 +3873,8 @@
         "warningCritical": "Crítico: Créditos casi agotados",
         "warningLow": "Advertencia: Saldo de créditos bajo",
         "upgrade": "Actualizar Plan",
-        "upgradeAction": "Actualizar para obtener más créditos"
+        "upgradeAction": "Actualizar para obtener más créditos",
+        "remainingCredits": "Créditos"
       },
       "settings": {
         "title": "Programas Beta",
@@ -3919,5 +3919,11 @@
         "enrollmentError": "No se puede inscribir. Por favor, inténtalo de nuevo más tarde."
       }
     }
+  },
+  "greeting": {
+    "morning": "Buenos días",
+    "afternoon": "Buenas tardes",
+    "evening": "Buenas tardes",
+    "night": "Buenas noches"
   }
 }

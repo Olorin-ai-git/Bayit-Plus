@@ -223,6 +223,33 @@ export function GlassPageHeader({
     return null;
   };
 
+  const iconElement = renderIcon();
+  const titleElement = (
+    <View style={[styles.titleContainer, isRTL && styles.titleContainerRTL]}>
+      <Text
+        style={[
+          styles.title,
+          isRTL && styles.titleRTL,
+          titleStyle,
+        ]}
+        numberOfLines={1}
+      >
+        {title}
+      </Text>
+      {subtitle && (
+        <Text
+          style={[
+            styles.subtitle,
+            isRTL && styles.subtitleRTL,
+          ]}
+          numberOfLines={1}
+        >
+          {subtitle}
+        </Text>
+      )}
+    </View>
+  );
+
   return (
     <View
       style={[
@@ -231,30 +258,17 @@ export function GlassPageHeader({
         style,
       ]}
     >
-      {renderIcon()}
-      <View style={[styles.titleContainer, isRTL && styles.titleContainerRTL]}>
-        <Text
-          style={[
-            styles.title,
-            isRTL && styles.titleRTL,
-            titleStyle,
-          ]}
-          numberOfLines={1}
-        >
-          {title}
-        </Text>
-        {subtitle && (
-          <Text
-            style={[
-              styles.subtitle,
-              isRTL && styles.subtitleRTL,
-            ]}
-            numberOfLines={1}
-          >
-            {subtitle}
-          </Text>
-        )}
-      </View>
+      {isRTL ? (
+        <>
+          {titleElement}
+          {iconElement}
+        </>
+      ) : (
+        <>
+          {iconElement}
+          {titleElement}
+        </>
+      )}
       {badge !== undefined && (
         <View style={styles.badgeContainer}>
           <Text style={styles.badgeText}>{badge}</Text>
@@ -275,9 +289,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     marginBottom: spacing.lg,
+    width: '100%',
   },
   headerRTL: {
     flexDirection: 'row-reverse',
+    justifyContent: 'flex-start',
   },
   iconContainer: {
     width: 48,
@@ -292,7 +308,6 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   titleContainerRTL: {
-    alignItems: 'flex-end',
   },
   title: {
     fontSize: fontSize['3xl'],

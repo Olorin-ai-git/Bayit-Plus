@@ -4442,14 +4442,16 @@
     },
     "beta": {
       "credits": {
-        "loading": "Loading credit balance...",
-        "error": "Unable to load credit balance",
-        "label": "AI Credits",
-        "remaining": "Credits Remaining",
-        "warningCritical": "Critical: Running low on credits",
-        "warningLow": "Warning: Credit balance is low",
-        "upgrade": "Upgrade Plan",
-        "upgradeAction": "Upgrade to get more credits"
+        "balance": "Beta Credits",
+        "subtitle": "Your AI feature credits",
+        "charged": "Charged",
+        "remaining": "Remaining",
+        "criticalLow": "Credit balance critically low! You have less than 10% remaining.",
+        "runningLow": "Your credit balance is running low. Consider budgeting your usage.",
+        "expiresOn": "Credits expire on {{date}}",
+        "usdValue": "USD Value",
+        "refresh": "Refresh Balance",
+        "remainingCredits": "Credits"
       },
       "settings": {
         "title": "Beta Programs",
@@ -4534,21 +4536,16 @@
         "noRecommendations": "No recommendations available. Try adjusting your preferences.",
         "emptyState": "Get personalized recommendations based on your viewing history"
       },
-      "credits": {
-        "balance": "Beta Credits",
-        "subtitle": "Your AI feature credits",
-        "charged": "Charged",
-        "remaining": "Remaining",
-        "criticalLow": "Credit balance critically low! You have less than 10% remaining.",
-        "runningLow": "Your credit balance is running low. Consider budgeting your usage.",
-        "expiresOn": "Credits expire on {{date}}",
-        "usdValue": "USD Value",
-        "refresh": "Refresh Balance"
-      },
       "status": {
         "active": "Active",
         "pending": "Pending Verification"
       }
     }
+  },
+  "greeting": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening",
+    "night": "Good night"
   }
 }
