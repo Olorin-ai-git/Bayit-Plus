@@ -1,0 +1,39 @@
+{% extends "categories/marketing.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block marketing_body %}
+{% for section in sections %}
+<div style="margin: 32px 0;">
+  <h2 style="color: #60a5fa; font-size: 22px; font-weight: 600; margin: 0 0 16px 0; border-bottom: 2px solid rgba(96, 165, 250, 0.3); padding-bottom: 8px;">
+    {{ section.title }}
+  </h2>
+
+  <div style="color: rgba(255, 255, 255, 0.9); font-size: 15px; line-height: 1.7; margin: 0 0 16px 0;">
+    {{ section.content | safe }}
+  </div>
+
+  {% if section.cta_url %}
+  <a href="{{ section.cta_url }}" style="color: #60a5fa; font-size: 14px; text-decoration: none; font-weight: 600;">
+    {{ section.cta_text | default(t('email.newsletter.read_more', default='Read more →', lang=lang)) }}
+  </a>
+  {% endif %}
+</div>
+
+{% if not loop.last %}
+<hr style="border: none; border-top: 1px solid rgba(255, 255, 255, 0.1); margin: 32px 0;" />
+{% endif %}
+{% endfor %}
+{% endblock %}
+
+{% block marketing_cta %}
+<div style="margin: 40px 0; text-align: center; padding: 24px; background: rgba(96, 165, 250, 0.1); border-radius: 12px;">
+  <p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; margin: 0 0 16px 0;">
+    {{ t('email.newsletter.cta_text', default='Explore more on Bayit+', lang=lang) }}
+  </p>
+  {{ button(
+    text=t('email.newsletter.cta_button', default='Visit Bayit+', lang=lang),
+    url=header_url,
+    primary=true
+  ) }}
+</div>
+{% endblock %}

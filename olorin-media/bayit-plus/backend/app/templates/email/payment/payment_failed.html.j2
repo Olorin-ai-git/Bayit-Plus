@@ -1,0 +1,39 @@
+{% extends "categories/payment.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block body_content %}
+<div style="margin: 0 0 24px 0; padding: 16px; background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; border-radius: 8px;">
+  <p style="color: #ef4444; font-size: 16px; font-weight: 600; margin: 0 0 8px 0;">
+    {{ t('email.payment_failed.title', default='Payment Failed', lang=lang) }}
+  </p>
+  <p style="color: rgba(255, 255, 255, 0.9); font-size: 14px; margin: 0;">
+    {{ t('email.payment_failed.intro', default='We couldn\'t process your payment for {plan_name}.', lang=lang, plan_name=plan_name) }}
+  </p>
+</div>
+
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 16px 0;">
+  <strong>{{ t('email.payment_failed.amount_label', default='Amount', lang=lang) }}:</strong> {{ amount }} {{ currency }}
+</p>
+
+{% if failure_reason %}
+<p style="color: rgba(255, 255, 255, 0.7); font-size: 14px; margin: 0 0 24px 0;">
+  <strong>{{ t('email.payment_failed.reason', default='Reason', lang=lang) }}:</strong> {{ failure_reason }}
+</p>
+{% endif %}
+
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+  {{ t('email.payment_failed.action_needed', default='Please update your payment method to continue enjoying uninterrupted service.', lang=lang) }}
+</p>
+{% endblock %}
+
+{% block payment_cta %}
+{% if retry_url %}
+<div style="margin: 32px 0;">
+  {{ button(
+    text=t('email.payment_failed.retry_cta', default='Update Payment Method', lang=lang),
+    url=retry_url,
+    primary=true
+  ) }}
+</div>
+{% endif %}
+{% endblock %}

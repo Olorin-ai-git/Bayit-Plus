@@ -22,6 +22,8 @@ import ta from './locales/ta.json';
 import bn from './locales/bn.json';
 import ja from './locales/ja.json';
 
+// Web-specific search translations are now merged into main translation files
+
 import type { LanguageCode, LanguageInfo } from './types';
 import { getInitialLanguageWeb } from './web';
 
@@ -62,6 +64,8 @@ i18n
     resources,
     lng: initialLang,
     fallbackLng: 'he',
+    ns: ['translation'],
+    defaultNS: 'translation',
     interpolation: {
       escapeValue: false,
     },
@@ -88,6 +92,14 @@ export const loadSavedLanguage = async (): Promise<void> => {
     // Try web first
     if (typeof window !== 'undefined' && window.localStorage) {
       savedLang = window.localStorage.getItem('@olorin_language');
+    } else {
+      // Try AsyncStorage for React Native
+      try {
+        const AsyncStorage = (await import(/* webpackIgnore: true */ '@react-native-async-storage/async-storage')).default;
+        savedLang = await AsyncStorage.getItem('@olorin_language');
+      } catch {
+        // AsyncStorage not available
+      }
     }
 
     if (savedLang) {
@@ -115,6 +127,14 @@ export const saveLanguage = async (lang: LanguageCode): Promise<void> => {
     // Try web first
     if (typeof window !== 'undefined' && window.localStorage) {
       window.localStorage.setItem('@olorin_language', lang);
+    } else {
+      // Try AsyncStorage for React Native
+      try {
+        const AsyncStorage = (await import(/* webpackIgnore: true */ '@react-native-async-storage/async-storage')).default;
+        await AsyncStorage.setItem('@olorin_language', lang);
+      } catch {
+        // AsyncStorage not available
+      }
     }
 
     await i18n.changeLanguage(lang);

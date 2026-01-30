@@ -1,0 +1,23 @@
+# Source files
+*.ts
+!*.d.ts
+
+# Config files
+tsconfig.json
+tsup.config.ts
+.eslintrc.js
+.prettierrc
+
+# Development
+node_modules
+.DS_Store
+*.log
+.vscode
+.idea
+
+# Only include dist directory
+*
+!dist/**
+!package.json
+!README.md
+!LICENSE

@@ -10,6 +10,7 @@ packages = [
     { include = "bayit_voice", from = "bayit-voice-pipeline" },
     { include = "olorin", from = "olorin-python-core" },
     { include = "olorin_config", from = "olorin-config" },
+    { include = "olorin_email", from = "olorin-email" },
 ]
 
 [tool.poetry.dependencies]
@@ -17,6 +18,8 @@ python = "^3.11"
 pydantic = "^2.5.0"
 pydantic-settings = "^2.1.0"
 httpx = "^0.26.0"
+jinja2 = "^3.1.0"
+beanie = "^1.25.0"
 google-cloud-storage = "^2.14.0"
 firebase-admin = "^6.4.0"
 openai = "^1.10.0"

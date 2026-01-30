@@ -51,7 +51,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 extension_subscriptions,
                                 family_controls, favorites, friends, health,
                                 history, jerusalem, judaism, librarian, live,
-                                live_dubbing, live_quota, location, location_consent, media_proxy, news, nlp,
+                                live_dubbing, live_quota, live_trivia, location, location_consent, media_proxy, news, nlp,
                                 notifications,
                                 onboarding, party, password_reset,
                                 playback_session, podcasts, profile_stats,
@@ -68,6 +68,12 @@ def register_all_routers(app: FastAPI) -> None:
                                 zman)
     from app.api.routes.admin.recordings import \
         router as admin_recordings_router
+    from app.api.routes.admin.email_analytics import \
+        router as admin_email_analytics_router
+    from app.api.routes.admin.email_templates import \
+        router as admin_email_templates_router
+    from app.api.routes.webhooks.email import \
+        router as email_webhook_router
     from app.api.routes.olorin import legacy_router as olorin_legacy_router
     from app.api.routes.olorin import router as olorin_router
     # Beta 500 routes
@@ -307,7 +313,27 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(
         admin_taxonomy.router, prefix=f"{prefix}/admin", tags=["admin-taxonomy"]
     )
+    app.include_router(
+        admin_email_analytics_router,
+        prefix=f"{prefix}/admin",
+        tags=["admin-email-analytics"],
+    )
+    app.include_router(
+        admin_email_templates_router,
+        prefix=f"{prefix}/admin",
+        tags=["admin-email-templates"],
+    )
     logger.debug("Registered admin routes")
+
+    # ============================================
+    # Webhook Routes
+    # ============================================
+    app.include_router(
+        email_webhook_router,
+        prefix=prefix,
+        tags=["webhooks", "email"],
+    )
+    logger.debug("Registered webhook routes")
 
     # ============================================
     # WebSocket Routes
@@ -323,6 +349,11 @@ def register_all_routers(app: FastAPI) -> None:
         websocket_live_dubbing.router,
         prefix=prefix,
         tags=["websocket", "live-dubbing"],
+    )
+    app.include_router(
+        live_trivia.router,
+        prefix=f"{prefix}/live-trivia",
+        tags=["live-trivia"],
     )
     app.include_router(
         websocket_chess.router, prefix=prefix, tags=["websocket", "chess"]

@@ -1,0 +1,40 @@
+{% extends "base/bayit_base.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{# Marketing emails: campaigns, newsletters, reengagement #}
+
+{% block email_body %}
+{% block hero_section %}
+{# Optional hero image banner #}
+{% if hero_image_url %}
+<div style="margin: 24px 0; border-radius: 16px; overflow: hidden;">
+  <img src="{{ hero_image_url }}" alt="{{ headline | default('') }}" style="width: 100%; height: auto; display: block;" />
+</div>
+{% endif %}
+{% endblock %}
+
+<div style="padding: 40px 24px; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(16px); border-radius: 16px; margin: 24px 0;">
+  {% block marketing_headline %}
+  <h1 style="color: #ffffff; font-size: 32px; font-weight: 700; margin: 0 0 24px 0; line-height: 1.2;">
+    {% block headline_text %}{{ headline | default('') }}{% endblock %}
+  </h1>
+  {% endblock %}
+
+  {% block marketing_body %}
+  {# Main marketing content #}
+  {% endblock %}
+
+  {% block marketing_cta %}
+  {# Primary call-to-action #}
+  {% endblock %}
+
+  {% block marketing_footer %}
+  <p style="color: rgba(255, 255, 255, 0.5); font-size: 13px; margin: 32px 0 0 0; text-align: center;">
+    {{ t('email.marketing.unsubscribe', default='Not interested?', lang=lang) }}
+    <a href="{{ unsubscribe_url }}" style="color: rgba(255, 255, 255, 0.6); text-decoration: underline;">
+      {{ t('email.marketing.unsubscribe_link', default='Unsubscribe', lang=lang) }}
+    </a>
+  </p>
+  {% endblock %}
+</div>
+{% endblock %}

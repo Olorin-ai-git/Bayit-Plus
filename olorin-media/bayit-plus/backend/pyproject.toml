@@ -55,17 +55,15 @@ dependencies = [
     "sentry-sdk[fastapi] (>=1.40.0,<2.0.0)",
     "webauthn (>=2.2.0,<3.0.0)",
     "pinecone-client (>=3.0.0,<4.0.0)",
-    "bayit-voice-pipeline",
-    "bayit-translation",
-    "olorin-core",
-    "olorin-shared",
-    "olorin-i18n",
     "demucs (>=4.0.1,<5.0.0)",
     "torchcodec (>=0.10.0,<0.11.0)",
     "pydub (>=0.25.1,<0.26.0)",
     "google-cloud-texttospeech (>=2.34.0,<3.0.0)",
     "tavily-python (>=0.7.20,<0.8.0)",
-    "exa-py (>=2.2.0,<3.0.0)"
+    "exa-py (>=2.2.0,<3.0.0)",
+    "spacy (>=3.8.0,<4.0.0)",
+    "jinja2 (>=3.1.0,<4.0.0)",
+    "html2text (>=2024.2.0,<2026.0.0)"
 ]
 
 
@@ -75,6 +73,7 @@ bayit-translation = { path = "../packages/bayit-translation", develop = true }
 olorin-core = { path = "../packages/olorin-core", develop = true }
 olorin-shared = { path = "../packages/olorin-shared", develop = true }
 olorin-i18n = { path = "../packages/python/olorin-i18n", develop = true }
+olorin-email = { path = "../packages/olorin-email", develop = true }
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

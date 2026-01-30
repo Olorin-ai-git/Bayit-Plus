@@ -1,0 +1,38 @@
+{% extends "categories/notification.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block notification_title %}
+{{ t('email.content_digest.title', default='Your {digest_period} Digest', lang=lang, digest_period=digest_period | title) }}
+{% endblock %}
+
+{% block notification_content %}
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+  {{ t('email.content_digest.intro', default='Here\'s what\'s new this {digest_period}.', lang=lang, digest_period=digest_period) }}
+</p>
+
+{% for item in items %}
+<div style="margin: 16px 0; padding: 16px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
+  <h3 style="color: #60a5fa; font-size: 16px; font-weight: 600; margin: 0 0 8px 0;">
+    {{ item.title }}
+  </h3>
+  <p style="color: rgba(255, 255, 255, 0.8); font-size: 14px; line-height: 1.6; margin: 0 0 12px 0;">
+    {{ item.description }}
+  </p>
+  {% if item.url %}
+  <a href="{{ item.url }}" style="color: #60a5fa; font-size: 14px; text-decoration: none;">
+    {{ t('email.content_digest.learn_more', default='Learn more →', lang=lang) }}
+  </a>
+  {% endif %}
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block notification_action %}
+<div style="margin: 32px 0;">
+  {{ button(
+    text=t('email.content_digest.explore_cta', default='Explore More', lang=lang),
+    url=header_url,
+    primary=true
+  ) }}
+</div>
+{% endblock %}

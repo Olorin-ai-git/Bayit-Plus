@@ -1,0 +1,44 @@
+{% extends "categories/notification.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block notification_title %}
+{{ t('email.support.resolved_title', default='Ticket Resolved', lang=lang) }}
+{% endblock %}
+
+{% block notification_content %}
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+  {{ t('email.support.resolved_intro', default='Great news! Ticket #{ticket_id} has been resolved.', lang=lang, ticket_id=ticket_id) }}
+</p>
+
+<div style="margin: 24px 0; padding: 16px; background: rgba(34, 197, 94, 0.1); border-left: 3px solid #22c55e; border-radius: 8px;">
+  <p style="color: rgba(255, 255, 255, 0.6); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0;">
+    {{ t('email.support.ticket_subject', default='Subject', lang=lang) }}
+  </p>
+  <p style="color: #ffffff; font-size: 16px; font-weight: 600; margin: 0 0 16px 0;">
+    {{ ticket_subject }}
+  </p>
+
+  {% if resolution_summary %}
+  <p style="color: rgba(255, 255, 255, 0.6); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0;">
+    {{ t('email.support.resolution', default='Resolution', lang=lang) }}
+  </p>
+  <p style="color: rgba(255, 255, 255, 0.9); font-size: 14px; line-height: 1.6; margin: 0;">
+    {{ resolution_summary }}
+  </p>
+  {% endif %}
+</div>
+
+<p style="color: rgba(255, 255, 255, 0.7); font-size: 15px; line-height: 1.6; margin: 0;">
+  {{ t('email.support.resolved_reopen', default='If you need further assistance, you can reopen this ticket at any time.', lang=lang) }}
+</p>
+{% endblock %}
+
+{% block notification_action %}
+<div style="margin: 32px 0;">
+  {{ button(
+    text=t('email.support.view_resolution', default='View Resolution', lang=lang),
+    url=ticket_url,
+    primary=false
+  ) }}
+</div>
+{% endblock %}

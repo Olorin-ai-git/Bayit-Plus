@@ -1,0 +1,38 @@
+{% extends "categories/transactional.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block body_content %}
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 18px; line-height: 1.6; margin: 0 0 16px 0; font-weight: 600;">
+  {{ t('email.beta_invitation.intro', default='You\'ve been invited to join the exclusive Bayit+ Beta 500 program!', lang=lang) }}
+</p>
+
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+  {{ t('email.beta_invitation.description', default='Get early access to groundbreaking AI features and help shape the future of Bayit+.', lang=lang) }}
+</p>
+
+<div style="margin: 24px 0; padding: 20px; background: linear-gradient(135deg, rgba(96, 165, 250, 0.15), rgba(139, 92, 246, 0.15)); border-radius: 12px; border: 1px solid rgba(96, 165, 250, 0.3);">
+  <h3 style="color: #60a5fa; font-size: 18px; font-weight: 600; margin: 0 0 12px 0;">
+    {{ t('email.beta_invitation.benefits_title', default='Beta Benefits', lang=lang) }}
+  </h3>
+  <ul style="color: rgba(255, 255, 255, 0.9); font-size: 15px; line-height: 1.8; margin: 0; padding-left: 20px;">
+    <li>{{ t('email.beta_invitation.benefit_credits', default='{beta_credits} free AI credits', lang=lang, beta_credits=beta_credits) }}</li>
+    <li>{{ t('email.beta_invitation.benefit_duration', default='{beta_duration_days} days of exclusive access', lang=lang, beta_duration_days=beta_duration_days) }}</li>
+    <li>{{ t('email.beta_invitation.benefit_features', default='Early access to AI-powered features', lang=lang) }}</li>
+    <li>{{ t('email.beta_invitation.benefit_support', default='Priority support from our team', lang=lang) }}</li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block cta_section %}
+<div style="margin: 32px 0;">
+  {{ button(
+    text=t('email.beta_invitation.cta', default='Accept Invitation', lang=lang),
+    url=invitation_url,
+    primary=true
+  ) }}
+</div>
+
+<p style="color: rgba(255, 255, 255, 0.6); font-size: 13px; text-align: center; margin: 16px 0 0 0;">
+  {{ t('email.beta_invitation.limited', default='Limited to 500 users. Invitation expires in 7 days.', lang=lang) }}
+</p>
+{% endblock %}

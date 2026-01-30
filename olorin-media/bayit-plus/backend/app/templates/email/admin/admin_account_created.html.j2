@@ -1,0 +1,44 @@
+{% extends "categories/transactional.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block body_content %}
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+  {{ t('email.admin.account_created_intro', default='An administrator account has been created for you on Bayit+.', lang=lang) }}
+</p>
+
+<div style="margin: 24px 0; padding: 20px; background: rgba(139, 92, 246, 0.1); border-left: 3px solid #8b5cf6; border-radius: 8px;">
+  <p style="color: rgba(255, 255, 255, 0.6); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0;">
+    {{ t('email.admin.account_details', default='Account Details', lang=lang) }}
+  </p>
+  <p style="color: #ffffff; font-size: 14px; margin: 0 0 8px 0;">
+    <strong>{{ t('email.admin.email', default='Email', lang=lang) }}:</strong> {{ admin_email }}
+  </p>
+  <p style="color: #ffffff; font-size: 14px; margin: 0;">
+    <strong>{{ t('email.admin.role', default='Role', lang=lang) }}:</strong> {{ role | title }}
+  </p>
+</div>
+
+{% if temp_password %}
+<div style="margin: 24px 0; padding: 16px; background: rgba(251, 146, 60, 0.1); border-left: 3px solid #fb923c; border-radius: 8px;">
+  <p style="color: #fb923c; font-size: 14px; font-weight: 600; margin: 0 0 8px 0;">
+    {{ t('email.admin.temp_password_label', default='Temporary Password', lang=lang) }}
+  </p>
+  <p style="color: #ffffff; font-size: 16px; font-family: monospace; background: rgba(0, 0, 0, 0.3); padding: 12px; border-radius: 6px; margin: 0 0 8px 0;">
+    {{ temp_password }}
+  </p>
+  <p style="color: rgba(255, 255, 255, 0.8); font-size: 13px; margin: 0;">
+    {{ t('email.admin.change_password_notice', default='Please change this password immediately after your first login.', lang=lang) }}
+  </p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block cta_section %}
+<div style="margin: 32px 0;">
+  {{ button(
+    text=t('email.admin.login_cta', default='Login to Admin Panel', lang=lang),
+    url=login_url,
+    primary=true
+  ) }}
+</div>
+{% endblock %}

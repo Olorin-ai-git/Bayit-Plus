@@ -1,0 +1,29 @@
+{% extends "base/bayit_base.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{# Transactional emails: welcome, verification, password reset, etc. #}
+
+{% block email_body %}
+<div style="padding: 40px 24px; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(16px); border-radius: 16px; margin: 24px 0;">
+  {% block greeting %}
+  <h2 style="color: #ffffff; font-size: 24px; font-weight: 600; margin: 0 0 16px 0;">
+    {{ t('email.greeting', default='Hello', lang=lang) }}{% if recipient_name %} {{ recipient_name }}{% endif %}
+  </h2>
+  {% endblock %}
+
+  {% block body_content %}
+  {# Override this block in specific templates #}
+  {% endblock %}
+
+  {% block cta_section %}
+  {# Optional CTA button - override in specific templates #}
+  {% endblock %}
+
+  {% block footer_text %}
+  <p style="color: rgba(255, 255, 255, 0.6); font-size: 14px; margin: 24px 0 0 0;">
+    {{ t('email.regards', default='Best regards', lang=lang) }},<br/>
+    {{ t('email.team_name', default='The Bayit+ Team', lang=lang) }}
+  </p>
+  {% endblock %}
+</div>
+{% endblock %}

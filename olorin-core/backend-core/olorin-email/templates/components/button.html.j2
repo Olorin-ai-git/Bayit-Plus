@@ -1,0 +1,31 @@
+{# CTA Button Macro - Glassmorphism Dark Theme #}
+{% macro button(url, text, variant='primary') %}
+{% if variant == 'primary' %}
+{% set bg_color = '#7e22ce' %}
+{% set bg_gradient = 'background: linear-gradient(135deg, #4f46e5, #7c3aed);' %}
+{% elif variant == 'secondary' %}
+{% set bg_color = '#374151' %}
+{% set bg_gradient = 'background: linear-gradient(135deg, #374151, #4b5563);' %}
+{% elif variant == 'danger' %}
+{% set bg_color = '#dc2626' %}
+{% set bg_gradient = 'background: linear-gradient(135deg, #dc2626, #ef4444);' %}
+{% elif variant == 'success' %}
+{% set bg_color = '#059669' %}
+{% set bg_gradient = 'background: linear-gradient(135deg, #059669, #10b981);' %}
+{% else %}
+{% set bg_color = '#7e22ce' %}
+{% set bg_gradient = 'background: linear-gradient(135deg, #4f46e5, #7c3aed);' %}
+{% endif %}
+<!--[if mso]>
+<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{ url }}" style="height:48px;v-text-anchor:middle;width:220px;" arcsize="12%" stroke="f" fillcolor="{{ bg_color }}">
+<w:anchorlock/>
+<center>
+<![endif]-->
+<a href="{{ url }}" target="_blank" style="display: inline-block; {{ bg_gradient }} color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 16px; font-weight: 600; text-align: center; text-decoration: none; padding: 14px 32px; border-radius: 8px; mso-padding-alt: 0;">
+    {{ text }}
+</a>
+<!--[if mso]>
+</center>
+</v:roundrect>
+<![endif]-->
+{% endmacro %}

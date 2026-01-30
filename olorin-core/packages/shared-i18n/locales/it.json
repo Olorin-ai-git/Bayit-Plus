@@ -1,4 +1,171 @@
 {
+  "account": {
+    "title": "Il mio account",
+    "profile": "Profilo",
+    "settings": "Impostazioni",
+    "subscription": "Abbonamento",
+    "manageSubscription": "Gestisci abbonamento",
+    "personalDetails": "Dettagli personali",
+    "billing": "Fatturazione e pagamento",
+    "logout": "Esci",
+    "login": "Accedi",
+    "register": "Registrati",
+    "email": "Email",
+    "password": "Password",
+    "name": "Nome",
+    "guest": "Ospite",
+    "premium": "Premium",
+    "basic": "Base"
+  },
+  "admin": {
+    "brand": {
+      "title": "Bayit+ Admin",
+      "subtitle": "Gestione sistema"
+    },
+    "backToApp": "Torna all'app",
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Utenti",
+      "content": "Contenuti",
+      "settings": "Impostazioni",
+      "diagnostics": "Diagnostica di Sistema"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Panoramica del sistema"
+    },
+    "content": {
+      "noEpisodes": "Nessun Episodio",
+      "type": {
+        "movie": "Film",
+        "series": "Serie"
+      },
+      "filters": {
+        "title": "Filtri",
+        "contentType": "Tipo di Contenuto",
+        "all": "Tutto",
+        "allContent": "Tutto",
+        "series": "Serie",
+        "movies": "Film",
+        "podcasts": "Podcast",
+        "radioStations": "Stazioni Radio",
+        "status": "Stato",
+        "allStatus": "Tutti gli Stati",
+        "subtitles": "Sottotitoli"
+      },
+      "podcastsComingSoon": "Gestione podcast in arrivo. Usa la sezione Podcast.",
+      "radioComingSoon": "Gestione stazioni radio in arrivo. Usa la sezione Stazioni Radio."
+    },
+    "users": {
+      "roles": {
+        "superAdmin": "Super Amministratore",
+        "admin": "Amministratore",
+        "moderator": "Moderatore",
+        "user": "Utente"
+      }
+    },
+    "featured": {
+      "title": "Contenuti in Evidenza",
+      "subtitle": "Gestisci l'ordine del carousel trascinando gli elementi",
+      "empty": "Nessun contenuto in evidenza",
+      "emptyHint": "Aggiungi contenuti in evidenza dalla Libreria dei Contenuti",
+      "count": "{{count}} elementi",
+      "confirmUnfeature": "Rimuovere da in evidenza?",
+      "remove": "Rimuovi",
+      "unsavedChanges": "Hai modifiche non salvate",
+      "addContent": "Aggiungi Contenuto",
+      "addContentToSection": "Aggiungi Contenuto a {{section}}",
+      "selectContentToAdd": "Seleziona il contenuto da aggiungere",
+      "addSelected": "Aggiungi Selezionati ({{count}})",
+      "noContentAvailable": "Nessun contenuto disponibile",
+      "contentAdded": "Aggiunti {{count}} elementi",
+      "failedToAdd": "Errore nell'aggiunta del contenuto",
+      "publishedOnly": "Pubblicato"
+    },
+    "translation": {
+      "status": {
+        "pending": "In sospeso",
+        "processing": "In elaborazione",
+        "completed": "Completato",
+        "failed": "Fallito"
+      }
+    },
+    "podcasts": {
+      "translate": "Traduci",
+      "translateEpisode": "Traduci episodio",
+      "translateAllEpisodes": "Traduci tutti gli episodi",
+      "translateAll": "Traduci tutto",
+      "filterByStatus": "Filtra per stato",
+      "editEpisode": "Modifica episodio",
+      "deleteEpisode": "Elimina episodio",
+      "newEpisode": "Nuovo episodio"
+    },
+    "diagnostics": {
+      "title": "Diagnostica di Sistema",
+      "servicesOverview": "Panoramica dei Servizi",
+      "performanceMetrics": "Metriche di Prestazioni",
+      "systemActivity": "Attività del Sistema",
+      "servicesDetails": "Dettagli dei Servizi",
+      "cpu": "Utilizzo CPU",
+      "memory": "Utilizzo Memoria",
+      "disk": "Utilizzo Disco",
+      "allSystemsOperational": "Tutti i Sistemi Operativi",
+      "systemDegraded": "Sistema Degradato",
+      "systemDown": "Sistema Non Funzionante",
+      "lastUpdated": "Ultimo aggiornamento: {{time}}",
+      "ping": "Ping",
+      "restart": "Riavvia",
+      "online": "Online",
+      "offline": "Offline",
+      "degraded": "Degradato",
+      "latency": "Latenza: {{ms}}ms",
+      "healthy": "Sano",
+      "unhealthy": "Non Sano"
+    }
+  },
+  "chatbot": {
+    "title": "Assistente Bayit+",
+    "greeting": "Ciao! Sono l'assistente intelligente Bayit+. Come posso aiutarti oggi? Clicca sul microfono e parla, o digita un messaggio.",
+    "openChat": "Apri chat",
+    "welcome": "Ciao! Sono l'assistente intelligente Bayit+. Come posso aiutarti oggi? Clicca sul microfono e parla, o digita un messaggio.",
+    "placeholder": "Digita qui...",
+    "recording": "Registrazione... clicca di nuovo per fermare",
+    "transcribing": "Trascrizione...",
+    "stopRecording": "Ferma registrazione",
+    "startRecording": "Avvia registrazione vocale",
+    "recommendations": "Ecco alcuni consigli:",
+    "errors": {
+      "micPermission": "Impossibile accedere al microfono. Verifica i permessi del microfono nel browser.",
+      "transcribeFailed": "Impossibile trascrivere la registrazione. Riprova.",
+      "general": "Spiacente, si è verificato un problema. Riprova."
+    },
+    "suggestions": {
+      "whatToWatch": "Cosa guardare oggi?",
+      "israeliMovies": "Film israeliani consigliati",
+      "whatsOnNow": "Cosa c'è in onda ora?",
+      "popularPodcasts": "Podcast popolari"
+    }
+  },
+  "children": {
+    "title": "Bambini",
+    "items": "elementi",
+    "empty": "Nessun contenuto disponibile",
+    "emptyHint": "Prova un'altra categoria",
+    "exitKidsMode": "Esci dalla modalità bambini",
+    "exitDescription": "Inserisci il codice genitore per uscire",
+    "parentCode": "Codice genitore",
+    "confirm": "Conferma",
+    "wrongCode": "Codice errato",
+    "categories": {
+      "all": "Tutto",
+      "cartoons": "Cartoni animati",
+      "educational": "Educativo",
+      "music": "Musica",
+      "hebrew": "Ebraico",
+      "stories": "Storie",
+      "jewish": "Ebraico"
+    }
+  },
   "common": {
     "loading": "Caricamento...",
     "error": "Errore",
@@ -54,383 +221,8 @@
     "expand": "Espandi",
     "collapse": "Comprimi",
     "upgrade": "Passa a Premium",
-    "skip": "Salta"
-  },
-  "demo": {
-    "banner": "MODALITÀ DEMO",
-    "bannerSubtext": "Utilizzo dati simulati - Nessuna chiamata API",
-    "days": {
-      "sunday": "Domenica",
-      "monday": "Lunedì",
-      "tuesday": "Martedì",
-      "wednesday": "Mercoledì",
-      "thursday": "Giovedì",
-      "friday": "Venerdì",
-      "saturday": "Sabato"
-    },
-    "shabbat": "Shabbat",
-    "until_shabbat": "Fino a Shabbat",
-    "search_interpretation": "Ricerca per \"{{query}}\"",
-    "suggestions": {
-      "0": "Fauda",
-      "1": "Shtisel",
-      "2": "Teheran",
-      "3": "L'Arbitro",
-      "4": "Labour"
-    },
-    "premium_plan": "Premium",
-    "assistant_response": "Consiglio Fauda - un'eccellente serie thriller!",
-    "morning_greeting": "Buongiorno! Oggi il tempo è bello, ci sono notizie importanti da Israele e ho selezionato contenuti speciali per te."
-  },
-  "hero": {
-    "watch": "Guarda",
-    "moreInfo": "Altre info",
-    "addToList": "Aggiungi alla lista"
-  },
-  "login": {
-    "title": "Bentornato",
-    "subtitle": "Accedi per continuare su Bayit+",
-    "tagline": "La Tua Casa negli USA",
-    "email": "Email",
-    "emailPlaceholder": "Inserisci la tua email",
-    "password": "Password",
-    "passwordPlaceholder": "Inserisci la tua password",
-    "submit": "Accedi",
-    "loggingIn": "Accesso in corso...",
-    "or": "o",
-    "forgotPassword": "Password dimenticata?",
-    "continueWithGoogle": "Continua con Google",
-    "noAccount": "Non hai un account?",
-    "signUp": "Registrati",
-    "register": "Registrati",
-    "name": "Nome",
-    "termsNotice": "Accedendo, accetti i nostri Termini di Servizio e l'Informativa sulla Privacy",
-    "errors": {
-      "emailRequired": "L'email è obbligatoria",
-      "passwordRequired": "La password è obbligatoria",
-      "loginFailed": "Accesso fallito. Verifica le tue credenziali.",
-      "googleFailed": "Accesso con Google fallito. Riprova.",
-      "fillAllFields": "Compila tutti i campi"
-    },
-    "qrInstructions": "Scansiona il codice con il telefono per un accesso rapido",
-    "methodQR": "Codice QR",
-    "methodVoice": "Voce",
-    "methodTraditional": "Email",
-    "qrTitle": "Scansiona per accedere",
-    "qrDescription": "Scansiona questo codice QR con il telefono per accedere senza digitare",
-    "expiresIn": "Scade tra 5 minuti",
-    "companionConnected": "Telefono connesso!",
-    "authenticating": "Accesso in corso...",
-    "sessionExpired": "Sessione scaduta",
-    "refreshQR": "Genera nuovo codice",
-    "generatingQR": "Generazione codice QR...",
-    "howItWorks": "Come funziona:",
-    "step1": "Apri la fotocamera sul telefono",
-    "step2": "Scansiona il codice QR sopra",
-    "step3": "Accedi sul telefono",
-    "step4": "La TV accede automaticamente!",
-    "voicePlaceholder": "Digita la tua risposta...",
-    "send": "Invia",
-    "createAccount": "Crea account",
-    "bayitThinking": "Bayit sta pensando...",
-    "unexpectedError": "Si è verificato un errore imprevisto"
-  },
-  "register": {
-    "title": "Crea account",
-    "subtitle": "Unisciti a Bayit+ per guardare i tuoi contenuti preferiti",
-    "name": "Nome completo",
-    "namePlaceholder": "Mario Rossi",
-    "email": "Email",
-    "emailPlaceholder": "tua@email.com",
-    "password": "Password",
-    "passwordPlaceholder": "Almeno 8 caratteri",
-    "confirmPassword": "Conferma password",
-    "confirmPasswordPlaceholder": "Reinserisci la password",
-    "submit": "Registrati",
-    "registering": "Registrazione...",
-    "acceptTerms": "Accetto i",
-    "termsOfService": "Termini di Servizio",
-    "and": "e",
-    "privacyPolicy": "l'Informativa sulla Privacy",
-    "continueWithGoogle": "Registrati con Google",
-    "haveAccount": "Hai già un account?",
-    "signIn": "Accedi",
-    "fullName": "Nome completo",
-    "loginLink": "Accedi",
-    "errors": {
-      "nameRequired": "Il nome è obbligatorio",
-      "emailRequired": "L'email è obbligatoria",
-      "passwordRequired": "La password è obbligatoria",
-      "passwordTooShort": "La password deve essere di almeno 8 caratteri",
-      "passwordMismatch": "Le password non corrispondono",
-      "acceptTerms": "Devi accettare i Termini di Servizio e l'Informativa sulla Privacy",
-      "fillAllFields": "Compila tutti i campi",
-      "registrationFailed": "Registrazione fallita. Riprova.",
-      "googleFailed": "Registrazione con Google fallita. Riprova."
-    }
-  },
-  "nav": {
-    "home": "Home",
-    "vod": "VOD",
-    "liveTV": "TV in diretta",
-    "epg": "Guida TV",
-    "radio": "Radio",
-    "podcasts": "Podcast",
-    "flows": "Flussi",
-    "judaism": "Ebraismo",
-    "children": "Bambini",
-    "profile": "Profilo",
-    "search": "Cerca",
-    "settings": "Impostazioni",
-    "favorites": "Preferiti",
-    "watchlist": "Lista",
-    "downloads": "Download",
-    "recordings": "Registrazioni",
-    "widgets": "Widget",
-    "help": "Aiuto e supporto",
-    "discover": "Scopri",
-    "account": "Account",
-    "subscribe": "Abbonati",
-    "plans": "Piani",
-    "admin": "Admin",
-    "games": "Giochi",
-    "friends": "Amici"
-  },
-  "epg": {
-    "title": "Guida TV",
-    "subtitle": "Sfoglia la programmazione TV in diretta",
-    "gridView": "Vista griglia",
-    "listView": "Vista lista",
-    "israelTime": "Ora di Israele",
-    "localTime": "Ora locale",
-    "il": "IL",
-    "local": "Locale",
-    "jumpToNow": "Vai a ora",
-    "goBack": "← {{hours}}h",
-    "goForward": "{{hours}}h →",
-    "toggleTimezone": "Cambia fuso orario",
-    "errorTitle": "Impossibile caricare la Guida TV",
-    "errorLoading": "Impossibile caricare i dati della guida TV",
-    "noPrograms": "Nessun programma trovato",
-    "noChannels": "Nessun canale disponibile",
-    "recordProgram": "Registra programma",
-    "channel": "Canale",
-    "enableSubtitles": "Abilita sottotitoli",
-    "subtitleLanguage": "Lingua sottotitoli",
-    "smartSearch": "Ricerca intelligente",
-    "smartSearchSubtitle": "Fai domande in linguaggio naturale",
-    "searchPlaceholder": "Cerca programmi, canali, attori...",
-    "premiumRequired": "Funzione Premium",
-    "searchWithAI": "Cerca con AI",
-    "searching": "Ricerca in corso...",
-    "tryThese": "Prova questi esempi",
-    "aiDisclaimer": "Powered by Claude AI. I risultati possono variare.",
-    "interpretationTitle": "Quello che ho capito",
-    "noResultsFound": "Nessun programma trovato"
-  },
-  "home": {
-    "continueWatching": "Continua a guardare",
-    "featuredContent": "In evidenza",
-    "liveTV": "TV in diretta",
-    "allChannels": "Tutti i canali",
-    "liveChannels": "Canali in diretta",
-    "showOnlyWithSubtitles": "Mostra solo con sottotitoli",
-    "israeliMovies": "Film israeliani",
-    "israeli-movies": "Film israeliani",
-    "israeli-series": "Serie israeliane",
-    "action": "Azione e Thriller",
-    "comedy": "Commedia",
-    "drama": "Drammatico",
-    "documentaries": "Documentari",
-    "loadingContent": "Caricamento contenuti...",
-    "liveNow": "In onda ora",
-    "trendingInIsrael": "Di tendenza in Israele",
-    "jerusalemConnection": "Connessione Gerusalemme",
-    "telAvivConnection": "Connessione Tel Aviv",
-    "categories": "Categorie",
-    "nearYou": "Israeliani Vicino a Te"
-  },
-  "search": {
-    "title": "Cerca",
-    "subtitle": "Trova film, serie, canali, radio e podcast",
-    "placeholder": "Cerca contenuti...",
-    "voicePlaceholder": "Parla ora...",
-    "searching": "Ricerca in corso...",
-    "listening": "In ascolto...",
-    "noResults": "Nessun risultato trovato",
-    "noResultsHint": "Prova parole chiave diverse o modifica i filtri",
-    "tryDifferent": "Prova altri termini di ricerca",
-    "resultsFor": "risultati per",
-    "resultsFound": "{{count}} risultati trovati per \"{{query}}\"",
-    "recentSearches": "Ricerche recenti",
-    "clearAll": "Cancella tutto",
-    "trending": "Ricerche di tendenza",
-    "promptTitle": "Cosa stai cercando?",
-    "promptDescription": "Cerca i tuoi contenuti preferiti o usa la ricerca vocale",
-    "filters": {
-      "all": "Tutto",
-      "vod": "Film e Serie",
-      "live": "Canali",
-      "radio": "Radio",
-      "podcast": "Podcast",
-      "moviesAndSeries": "Film e Serie",
-      "channels": "Canali",
-      "podcasts": "Podcast"
-    },
-    "suggestions": {
-      "movies": "Film",
-      "series": "Serie",
-      "liveTV": "TV in diretta",
-      "news": "Notizie",
-      "sports": "Sport",
-      "kids": "Bambini"
-    }
-  },
-  "liveTV": {
-    "title": "TV in diretta",
-    "channels": "Canali",
-    "nowPlaying": "In onda",
-    "loadError": "Impossibile caricare i canali",
-    "categories": {
-      "all": "Tutto",
-      "news": "Notizie",
-      "sports": "Sport",
-      "entertainment": "Intrattenimento",
-      "kids": "Bambini",
-      "documentary": "Documentari"
-    }
-  },
-  "radio": {
-    "title": "Radio",
-    "categories": {
-      "all": "Tutto",
-      "music": "Musica",
-      "news": "Notizie",
-      "talk": "Talk",
-      "jewish": "Ebraica"
-    },
-    "noStations": "Nessuna stazione radio disponibile",
-    "tryLater": "Riprova più tardi",
-    "playing": "IN RIPRODUZIONE",
-    "fmSuffix": "FM"
-  },
-  "podcasts": {
-    "title": "Podcast",
-    "episodes": "episodi",
-    "categories": {
-      "all": "Tutto",
-      "general": "Generale",
-      "news": "Notizie",
-      "politics": "Politica",
-      "tech": "Tecnologia",
-      "business": "Business",
-      "jewish": "Ebraico",
-      "entertainment": "Intrattenimento",
-      "sports": "Sport",
-      "history": "Storia",
-      "educational": "Educativo"
-    },
-    "noPodcasts": "Nessun podcast disponibile",
-    "tryLater": "Riprova più tardi"
-  },
-  "vod": {
-    "title": "Film e Serie",
-    "movies": "Film",
-    "series": "Serie",
-    "searchPlaceholder": "Cerca film e serie...",
-    "noMovies": "Nessun film trovato",
-    "noSeries": "Nessuna serie trovata",
-    "loadError": "Impossibile caricare i contenuti",
-    "showOnlyWithSubtitles": "Mostra solo con sottotitoli",
-    "categories": {
-      "all": "Tutto",
-      "drama": "Drammatico",
-      "comedy": "Commedia",
-      "action": "Azione",
-      "documentary": "Documentario",
-      "kids": "Bambini"
-    },
-    "allCategories": "Tutto",
-    "emptyTitle": "Nessun contenuto disponibile",
-    "emptyDescription": "Prova a selezionare un'altra categoria"
-  },
-  "account": {
-    "title": "Il mio account",
-    "profile": "Profilo",
-    "settings": "Impostazioni",
-    "subscription": "Abbonamento",
-    "manageSubscription": "Gestisci abbonamento",
-    "personalDetails": "Dettagli personali",
-    "billing": "Fatturazione e pagamento",
-    "logout": "Esci",
-    "login": "Accedi",
-    "register": "Registrati",
-    "email": "Email",
-    "password": "Password",
-    "name": "Nome",
-    "guest": "Ospite",
-    "premium": "Premium",
-    "basic": "Base"
-  },
-  "settings": {
-    "title": "Impostazioni",
-    "language": "Lingua",
-    "appLanguage": "Lingua dell'app",
-    "selectLanguage": "Seleziona lingua",
-    "languages": {
-      "en": "English",
-      "he": "עברית",
-      "es": "Español",
-      "zh": "中文",
-      "fr": "Français",
-      "it": "Italiano",
-      "hi": "हिन्दी",
-      "ta": "தமிழ்",
-      "bn": "বাংলা",
-      "ja": "日本語"
-    },
-    "chatTranslation": "Traduzione chat",
-    "autoTranslate": "Traduci automaticamente i messaggi",
-    "autoTranslateDescription": "Traduci automaticamente i messaggi nella tua lingua preferita",
-    "notifications": "Notifiche",
-    "pushNotifications": "Notifiche push",
-    "playback": "Riproduzione",
-    "quality": "Qualità",
-    "subtitles": "Sottotitoli",
-    "autoplay": "Riproduzione automatica",
-    "appearance": "Aspetto",
-    "darkMode": "Modalità scura",
-    "privacy": "Privacy",
-    "privacyPolicy": "Informativa sulla Privacy",
-    "termsOfService": "Termini di Servizio",
-    "about": "Informazioni"
-  },
-  "player": {
-    "loading": "Caricamento...",
-    "retry": "Riprova",
-    "error": "Errore riproduzione video",
-    "back": "← Indietro",
-    "liveBadge": "LIVE",
-    "noStream": "Stream non disponibile",
-    "loadError": "Impossibile caricare lo stream",
-    "settings": "Impostazioni",
-    "subtitles": "Sottotitoli",
-    "playbackSpeed": "Velocità di riproduzione",
-    "quality": "Qualità",
-    "auto": "Auto",
-    "previousChapter": "Capitolo precedente",
-    "nextChapter": "Capitolo successivo",
-    "skipBackward": "Indietro di 30 secondi",
-    "skipForward": "Avanti di 30 secondi",
-    "restart": "Riavvia dall'inizio",
-    "subtitlesOff": "Disattivati",
-    "speed": "Velocità",
-    "subscription": {
-      "requiredTitle": "Abbonamento richiesto",
-      "requiredMessage": "richiede un abbonamento a pagamento",
-      "upgradeInfo": "Aggiorna il tuo abbonamento per accedere ai contenuti premium",
-      "upgrade": "Aggiorna ora"
-    }
+    "skip": "Salta",
+    "disconnect": "Disconnetti"
   },
   "content": {
     "play": "Riproduci",
@@ -466,6 +258,317 @@
     "notFound": "Contenuto non trovato",
     "availableSubtitles": "Sottotitoli disponibili",
     "subtitleSelected": "Selezionato: {{language}}"
+  },
+  "cultureCities": {
+    "connectionTo": "Connessione {{city}}",
+    "noContent": "Nessun contenuto disponibile",
+    "sources": "Fonti",
+    "viewMore": "Vedi altro",
+    "categories": {
+      "all": "Tutto",
+      "news": "Notizie",
+      "culture": "Cultura",
+      "food": "Gastronomia",
+      "tech": "Tecnologia",
+      "entertainment": "Intrattenimento",
+      "sports": "Sport",
+      "business": "Business"
+    }
+  },
+  "cultureClock": {
+    "timeIn": "Ora in {{location}}",
+    "localTime": "Ora locale",
+    "shabbat": "Shabbat",
+    "weekend": "Fine settimana",
+    "weekday": "Giorno feriale"
+  },
+  "cultureTrending": {
+    "title": "Tendenze",
+    "whatsHotIn": "Tendenze in {{location}}",
+    "noTopics": "Nessun argomento di tendenza disponibile",
+    "sources": "Fonti",
+    "topStory": "In primo piano",
+    "refreshing": "Aggiornamento...",
+    "lastUpdated": "Ultimo aggiornamento"
+  },
+  "cultures": {
+    "title": "Culture",
+    "select": "Seleziona una cultura",
+    "selectCulture": "Seleziona la tua cultura",
+    "selectCultureDescription": "Scegli una cultura per personalizzare i tuoi contenuti",
+    "changeCulture": "Cambia cultura",
+    "current": "Cultura attuale",
+    "israeli": {
+      "name": "Israeliana",
+      "description": "Contenuti per la comunità israeliana"
+    },
+    "chinese": {
+      "name": "Cinese",
+      "description": "Contenuti per la comunità cinese"
+    },
+    "japanese": {
+      "name": "Giapponese",
+      "description": "Contenuti per la comunità giapponese"
+    },
+    "korean": {
+      "name": "Coreana",
+      "description": "Contenuti per la comunità coreana"
+    },
+    "indian": {
+      "name": "Indiana",
+      "description": "Contenuti per la comunità indiana"
+    }
+  },
+  "demo": {
+    "banner": "MODALITÀ DEMO",
+    "bannerSubtext": "Utilizzo dati simulati - Nessuna chiamata API",
+    "days": {
+      "sunday": "Domenica",
+      "monday": "Lunedì",
+      "tuesday": "Martedì",
+      "wednesday": "Mercoledì",
+      "thursday": "Giovedì",
+      "friday": "Venerdì",
+      "saturday": "Sabato"
+    },
+    "shabbat": "Shabbat",
+    "until_shabbat": "Fino a Shabbat",
+    "search_interpretation": "Ricerca per \"{{query}}\"",
+    "suggestions": {
+      "0": "Fauda",
+      "1": "Shtisel",
+      "2": "Teheran",
+      "3": "L'Arbitro",
+      "4": "Labour"
+    },
+    "premium_plan": "Premium",
+    "assistant_response": "Consiglio Fauda - un'eccellente serie thriller!",
+    "morning_greeting": "Buongiorno! Oggi il tempo è bello, ci sono notizie importanti da Israele e ho selezionato contenuti speciali per te."
+  },
+  "downloads": {
+    "title": "Download",
+    "items": "elementi",
+    "storage": "Spazio",
+    "empty": "Nessun download",
+    "emptyHint": "Scarica contenuti per la visione offline",
+    "paused": "In pausa"
+  },
+  "email": {
+    "greeting": "Hello",
+    "footer": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "support": "Support",
+      "unsubscribe": "Unsubscribe from these emails"
+    },
+    "welcome": {
+      "subject": "Welcome to Bayit+!",
+      "title": "Welcome to Bayit+",
+      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
+      "cta": "Go to Dashboard"
+    },
+    "verification": {
+      "subject": "Verify Your Email",
+      "title": "Verify Your Email Address",
+      "body": "Please click the button below to verify your email address.",
+      "cta": "Verify Email",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't create an account, you can safely ignore this email."
+    },
+    "verification_resend": {
+      "subject": "Email Verification (Resent)",
+      "title": "Verify Your Email Address",
+      "body": "Here's a new verification link as requested.",
+      "cta": "Verify Email"
+    },
+    "password_reset": {
+      "subject": "Reset Your Password",
+      "title": "Reset Your Password",
+      "body": "We received a request to reset your password. Click the button below to create a new password.",
+      "cta": "Reset Password",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+    },
+    "password_changed": {
+      "subject": "Password Changed",
+      "title": "Your Password Has Been Changed",
+      "body": "Your password was successfully changed.",
+      "security": "If you didn't make this change, please contact support immediately."
+    },
+    "account_locked": {
+      "subject": "Account Locked",
+      "title": "Your Account Has Been Locked",
+      "body": "Your account has been temporarily locked due to security concerns.",
+      "cta": "Unlock Account"
+    },
+    "beta_invitation": {
+      "subject": "You're Invited to Bayit+ Beta!",
+      "title": "You're Invited to the Beta Program",
+      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
+      "credits": "{credits} AI credits included",
+      "duration": "Access for {days} days",
+      "cta": "Join Beta Program"
+    },
+    "beta_welcome": {
+      "subject": "Welcome to Bayit+ Beta!",
+      "title": "Welcome to the Beta Program",
+      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
+      "cta": "Get Started"
+    },
+    "payment_confirmation": {
+      "subject": "Payment Confirmation",
+      "title": "Payment Received",
+      "body": "Your payment has been processed successfully.",
+      "transaction": "Transaction ID",
+      "plan": "Plan",
+      "amount": "Amount",
+      "date": "Payment Date",
+      "next_billing": "Next Billing Date"
+    },
+    "subscription_activated": {
+      "subject": "Subscription Activated",
+      "title": "Your Subscription is Active",
+      "body": "Your subscription has been activated. Here's what you get:",
+      "cta": "Start Watching"
+    },
+    "subscription_cancelled": {
+      "subject": "Subscription Cancelled",
+      "title": "Subscription Cancelled",
+      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
+      "cta": "Reactivate Subscription"
+    },
+    "payment_failed": {
+      "subject": "Payment Failed",
+      "title": "Payment Failed",
+      "body": "We were unable to process your payment. Please update your payment method.",
+      "cta": "Update Payment Method"
+    },
+    "trial_expiring": {
+      "subject": "Your Trial is Expiring Soon",
+      "title": "Trial Ending in {days_remaining} Days",
+      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
+      "cta": "Upgrade Now"
+    },
+    "support": {
+      "created_subject": "Ticket #{ticket_id} Created",
+      "created_title": "Support Ticket Created",
+      "created_body": "Your support ticket has been created. We'll get back to you soon.",
+      "response_subject": "New Response on Ticket #{ticket_id}",
+      "response_title": "New Response on Your Ticket",
+      "escalation_subject": "Ticket #{ticket_id} Escalated",
+      "escalation_title": "Your Ticket Has Been Escalated",
+      "resolved_subject": "Ticket #{ticket_id} Resolved",
+      "resolved_title": "Your Ticket Has Been Resolved",
+      "resolved_body": "Your support ticket has been resolved."
+    },
+    "new_message": {
+      "subject": "New Message from {sender_name}",
+      "title": "You Have a New Message",
+      "cta": "Read Message"
+    },
+    "content_digest": {
+      "subject": "Your {digest_period} Content Digest",
+      "title": "Your Content Digest",
+      "cta": "Browse Content"
+    },
+    "gdpr": {
+      "deletion_subject": "Data Deletion Confirmation",
+      "deletion_title": "Your Data Has Been Deleted",
+      "deletion_body": "As requested, your personal data has been permanently deleted.",
+      "categories_label": "Deleted Data Categories"
+    },
+    "admin": {
+      "account_created_subject": "Admin Account Created",
+      "account_created_title": "Admin Account Created",
+      "role_change_subject": "Role Changed",
+      "role_change_title": "Your Role Has Been Updated"
+    },
+    "campaign": {
+      "default_subject": "News from Bayit+"
+    },
+    "newsletter": {
+      "default_subject": "Bayit+ Newsletter"
+    },
+    "reengagement": {
+      "subject": "We Miss You!",
+      "title": "It's Been a While",
+      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
+      "cta": "Come Back"
+    }
+  },
+  "empty": {
+    "noContent": {
+      "title": "Nessun contenuto ancora",
+      "description": "Il contenuto apparirà qui quando disponibile"
+    },
+    "noResults": {
+      "title": "Nessun risultato trovato",
+      "description": "Prova con parole chiave o filtri diversi"
+    },
+    "noQuery": {
+      "title": "Inizia a cercare",
+      "description": "Inserisci parole chiave per trovare contenuti"
+    },
+    "error": {
+      "title": "Qualcosa è andato storto",
+      "description": "Impossibile caricare il contenuto. Riprova."
+    },
+    "loading": {
+      "title": "Caricamento...",
+      "description": "Attendi mentre carichiamo il tuo contenuto"
+    },
+    "noFavorites": {
+      "title": "Nessun preferito ancora",
+      "description": "Aggiungi contenuti ai preferiti per vederli qui"
+    },
+    "noDownloads": {
+      "title": "Nessun download",
+      "description": "Scarica contenuti per guardare offline"
+    },
+    "sectionEmpty": {
+      "title": "Nessun elemento",
+      "description": "Questa sezione è vuota"
+    },
+    "noData": {
+      "title": "Nessun dato disponibile",
+      "description": "I dati appariranno qui quando disponibili"
+    },
+    "permissionDenied": {
+      "title": "Accesso negato",
+      "description": "Non hai il permesso di visualizzare questo contenuto"
+    }
+  },
+  "epg": {
+    "title": "Guida TV",
+    "subtitle": "Sfoglia la programmazione TV in diretta",
+    "gridView": "Vista griglia",
+    "listView": "Vista lista",
+    "israelTime": "Ora di Israele",
+    "localTime": "Ora locale",
+    "il": "IL",
+    "local": "Locale",
+    "jumpToNow": "Vai a ora",
+    "goBack": "← {{hours}}h",
+    "goForward": "{{hours}}h →",
+    "toggleTimezone": "Cambia fuso orario",
+    "errorTitle": "Impossibile caricare la Guida TV",
+    "errorLoading": "Impossibile caricare i dati della guida TV",
+    "noPrograms": "Nessun programma trovato",
+    "noChannels": "Nessun canale disponibile",
+    "recordProgram": "Registra programma",
+    "channel": "Canale",
+    "enableSubtitles": "Abilita sottotitoli",
+    "subtitleLanguage": "Lingua sottotitoli",
+    "smartSearch": "Ricerca intelligente",
+    "smartSearchSubtitle": "Fai domande in linguaggio naturale",
+    "searchPlaceholder": "Cerca programmi, canali, attori...",
+    "premiumRequired": "Funzione Premium",
+    "searchWithAI": "Cerca con AI",
+    "searching": "Ricerca in corso...",
+    "tryThese": "Prova questi esempi",
+    "aiDisclaimer": "Powered by Claude AI. I risultati possono variare.",
+    "interpretationTitle": "Quello che ho capito",
+    "noResultsFound": "Nessun programma trovato"
   },
   "errors": {
     "networkError": "Errore di rete",
@@ -509,29 +612,186 @@
     "empty": "Nessun preferito ancora",
     "emptyHint": "Aggiungi elementi ai tuoi preferiti"
   },
-  "downloads": {
-    "title": "Download",
-    "items": "elementi",
-    "storage": "Spazio",
-    "empty": "Nessun download",
-    "emptyHint": "Scarica contenuti per la visione offline",
-    "paused": "In pausa"
+  "footer": {
+    "brandDescription": "La tua casa negli USA. Trasmissioni TV, VOD, radio e podcast in ebraico.",
+    "browse": "Sfoglia",
+    "account": "Account",
+    "support": "Supporto",
+    "legal": "Legale",
+    "location": "New York, USA",
+    "copyright": "© {{year}} Bayit+. Tutti i diritti riservati.",
+    "poweredBy": "Powered by"
   },
-  "watchlist": {
-    "filters": {
-      "all": "Tutto",
-      "continue": "Continua a guardare",
-      "movies": "Film",
-      "series": "Serie",
-      "kids": "Bambini",
-      "judaism": "Ebraismo",
-      "podcasts": "Podcast",
-      "radio": "Radio"
-    },
-    "title": "Lista",
+  "hero": {
+    "watch": "Guarda",
+    "moreInfo": "Altre info",
+    "addToList": "Aggiungi alla lista"
+  },
+  "home": {
+    "continueWatching": "Continua a guardare",
+    "featuredContent": "In evidenza",
+    "liveTV": "TV in diretta",
+    "allChannels": "Tutti i canali",
+    "liveChannels": "Canali in diretta",
+    "showOnlyWithSubtitles": "Mostra solo con sottotitoli",
+    "israeliMovies": "Film israeliani",
+    "israeli-movies": "Film israeliani",
+    "israeli-series": "Serie israeliane",
+    "action": "Azione e Thriller",
+    "comedy": "Commedia",
+    "drama": "Drammatico",
+    "documentaries": "Documentari",
+    "loadingContent": "Caricamento contenuti...",
+    "liveNow": "In onda ora",
+    "trendingInIsrael": "Di tendenza in Israele",
+    "jerusalemConnection": "Connessione Gerusalemme",
+    "telAvivConnection": "Connessione Tel Aviv",
+    "categories": "Categorie",
+    "audiobooks": "Audiolibri",
+    "nearYou": "Vicino a te",
+    "israelis_in_city": "Israeliani a {{city}}, {{state}}",
+    "israeli_businesses": "Imprese Israeliane a {{city}}, {{state}}",
+    "israeli_businesses_nearby": "Imprese Israeliane Vicino a Te - Da {{city}}",
+    "searching_businesses": "Ricerca di imprese israeliane a {{city}}...",
+    "no_businesses_found": "Nessuna impresa israeliana trovata a {{city}}",
+    "businesses_load_error": "Impossibile caricare gli elenchi delle imprese. Riprova."
+  },
+  "judaism": {
+    "title": "Ebraismo",
     "items": "elementi",
-    "empty": "La tua lista è vuota",
-    "emptyHint": "Inizia a guardare e gli elementi appariranno qui"
+    "empty": "Nessun contenuto disponibile",
+    "emptyHint": "Prova a selezionare un'altra categoria",
+    "dashboard": "La tua dashboard ebraica",
+    "categories": {
+      "news": "Notizie ebraiche",
+      "community": "Comunità"
+    },
+    "shabbat": {
+      "title": "Orari Shabbat",
+      "shabbatShalom": "Shabbat Shalom!",
+      "shabbatMode": "Modalità Shabbat",
+      "endsIn": "Lo Shabbat termina tra",
+      "candleLighting": "Accensione candele",
+      "havdalah": "Havdalah",
+      "parashat": "Parashat",
+      "friday": "Venerdì",
+      "saturday": "Sabato",
+      "noData": "Impossibile caricare gli orari dello Shabbat"
+    }
+  },
+  "liveTV": {
+    "title": "TV in diretta",
+    "channels": "Canali",
+    "nowPlaying": "In onda",
+    "loadError": "Impossibile caricare i canali",
+    "categories": {
+      "all": "Tutto",
+      "news": "Notizie",
+      "sports": "Sport",
+      "entertainment": "Intrattenimento",
+      "kids": "Bambini",
+      "documentary": "Documentari"
+    }
+  },
+  "login": {
+    "title": "Bentornato",
+    "subtitle": "Accedi per continuare su Bayit+",
+    "tagline": "La Tua Casa negli USA",
+    "email": "Email",
+    "emailPlaceholder": "Inserisci la tua email",
+    "password": "Password",
+    "passwordPlaceholder": "Inserisci la tua password",
+    "submit": "Accedi",
+    "loggingIn": "Accesso in corso...",
+    "or": "o",
+    "forgotPassword": "Password dimenticata?",
+    "continueWithGoogle": "Continua con Google",
+    "noAccount": "Non hai un account?",
+    "signUp": "Registrati",
+    "register": "Registrati",
+    "name": "Nome",
+    "termsNotice": "Accedendo, accetti i nostri Termini di Servizio e l'Informativa sulla Privacy",
+    "errors": {
+      "emailRequired": "L'email è obbligatoria",
+      "passwordRequired": "La password è obbligatoria",
+      "loginFailed": "Accesso fallito. Verifica le tue credenziali.",
+      "googleFailed": "Accesso con Google fallito. Riprova.",
+      "fillAllFields": "Compila tutti i campi",
+      "noAccount": "Non hai un account?"
+    },
+    "qrInstructions": "Scansiona il codice con il telefono per un accesso rapido",
+    "methodQR": "Codice QR",
+    "methodVoice": "Voce",
+    "methodTraditional": "Email",
+    "qrTitle": "Scansiona per accedere",
+    "qrDescription": "Scansiona questo codice QR con il telefono per accedere senza digitare",
+    "expiresIn": "Scade tra 5 minuti",
+    "companionConnected": "Telefono connesso!",
+    "authenticating": "Accesso in corso...",
+    "sessionExpired": "Sessione scaduta",
+    "refreshQR": "Genera nuovo codice",
+    "generatingQR": "Generazione codice QR...",
+    "howItWorks": "Come funziona:",
+    "step1": "Apri la fotocamera sul telefono",
+    "step2": "Scansiona il codice QR sopra",
+    "step3": "Accedi sul telefono",
+    "step4": "La TV accede automaticamente!",
+    "voicePlaceholder": "Digita la tua risposta...",
+    "send": "Invia",
+    "createAccount": "Crea account",
+    "bayitThinking": "Bayit sta pensando...",
+    "unexpectedError": "Si è verificato un errore imprevisto",
+    "signUpNow": "Iscriviti ora"
+  },
+  "nav": {
+    "home": "Home",
+    "vod": "VOD",
+    "liveTV": "TV in diretta",
+    "epg": "Guida TV",
+    "radio": "Radio",
+    "podcasts": "Podcast",
+    "audiobooks": "Audiolibri",
+    "flows": "Flussi",
+    "judaism": "Ebraismo",
+    "children": "Bambini",
+    "profile": "Profilo",
+    "search": "Cerca",
+    "settings": "Impostazioni",
+    "favorites": "Preferiti",
+    "watchlist": "Lista",
+    "downloads": "Download",
+    "recordings": "Registrazioni",
+    "widgets": "Widget",
+    "help": "Aiuto e supporto",
+    "discover": "Scopri",
+    "account": "Account",
+    "subscribe": "Abbonati",
+    "plans": "Piani",
+    "admin": "Admin",
+    "games": "Giochi",
+    "friends": "Amici"
+  },
+  "payment": {
+    "pending": {
+      "title": "Completa Il Tuo Abbonamento",
+      "description": "Scegli un piano per iniziare la tua prova gratuita di 7 giorni e accedere a tutto Bayit+",
+      "timeElapsed": "Controllo stato pagamento... ({{seconds}}s)",
+      "takingLonger": "La conferma del pagamento sta richiedendo più tempo del previsto. Prova ad aggiornare o contatta il supporto se hai già pagato.",
+      "helpText": "Serve aiuto? Contatta support@bayit.tv o aggiorna questa pagina se hai già completato il pagamento."
+    },
+    "continueToPayment": "Continua al Pagamento",
+    "success": {
+      "title": "Pagamento Riuscito!",
+      "description": "Benvenuto su Bayit+! Il tuo abbonamento è ora attivo.",
+      "redirecting": "Reindirizzamento tra {{seconds}} secondi...",
+      "continue": "Continua su Bayit+"
+    },
+    "cancelled": {
+      "title": "Pagamento Annullato",
+      "description": "Il tuo abbonamento non è stato completato. Puoi riprovare quando sei pronto.",
+      "retry": "Riprova",
+      "helpText": "Domande? Contatta support@bayit.tv per assistenza."
+    }
   },
   "plans": {
     "basic": {
@@ -576,278 +836,100 @@
         "Download offline"
       ],
       "notIncluded": []
-    }
-  },
-  "subscribe": {
-    "title": "Scegli il tuo piano",
-    "subtitle": "7 giorni di prova gratuita per qualsiasi piano. Annulla quando vuoi.",
-    "monthly": "Mensile",
-    "yearly": "Annuale",
-    "save2Months": "Risparmia 2 mesi",
-    "popular": "Più popolare",
-    "period": "/mese",
-    "perYear": "/anno",
-    "select": "Seleziona piano",
-    "selected": "Selezionato",
-    "processing": "Elaborazione...",
-    "startTrial": "Inizia prova gratuita",
-    "noCharge": "La tua carta non verrà addebitata durante il periodo di prova"
-  },
-  "footer": {
-    "brandDescription": "La tua casa negli USA. Trasmissioni TV, VOD, radio e podcast in ebraico.",
-    "browse": "Sfoglia",
-    "account": "Account",
-    "support": "Supporto",
-    "legal": "Legale",
-    "location": "New York, USA",
-    "copyright": "© {{year}} Bayit+. Tutti i diritti riservati.",
-    "poweredBy": "Powered by"
-  },
-  "children": {
-    "title": "Bambini",
-    "items": "elementi",
-    "empty": "Nessun contenuto disponibile",
-    "emptyHint": "Prova un'altra categoria",
-    "exitKidsMode": "Esci dalla modalità bambini",
-    "exitDescription": "Inserisci il codice genitore per uscire",
-    "parentCode": "Codice genitore",
-    "confirm": "Conferma",
-    "wrongCode": "Codice errato",
-    "categories": {
-      "all": "Tutto",
-      "cartoons": "Cartoni animati",
-      "educational": "Educativo",
-      "music": "Musica",
-      "hebrew": "Ebraico",
-      "stories": "Storie",
-      "jewish": "Ebraico"
-    }
-  },
-  "judaism": {
-    "title": "Ebraismo",
-    "items": "elementi",
-    "empty": "Nessun contenuto disponibile",
-    "emptyHint": "Prova a selezionare un'altra categoria",
-    "dashboard": "La tua dashboard ebraica",
-    "categories": {
-      "news": "Notizie ebraiche",
-      "community": "Comunità"
     },
-    "shabbat": {
-      "title": "Orari Shabbat",
-      "shabbatShalom": "Shabbat Shalom!",
-      "shabbatMode": "Modalità Shabbat",
-      "endsIn": "Lo Shabbat termina tra",
-      "candleLighting": "Accensione candele",
-      "havdalah": "Havdalah",
-      "parashat": "Parashat",
-      "friday": "Venerdì",
-      "saturday": "Sabato",
-      "noData": "Impossibile caricare gli orari dello Shabbat"
-    }
-  },
-  "chatbot": {
-    "title": "Assistente Bayit+",
-    "greeting": "Ciao! Sono l'assistente intelligente Bayit+. Come posso aiutarti oggi? Clicca sul microfono e parla, o digita un messaggio.",
-    "openChat": "Apri chat",
-    "welcome": "Ciao! Sono l'assistente intelligente Bayit+. Come posso aiutarti oggi? Clicca sul microfono e parla, o digita un messaggio.",
-    "placeholder": "Digita qui...",
-    "recording": "Registrazione... clicca di nuovo per fermare",
-    "transcribing": "Trascrizione...",
-    "stopRecording": "Ferma registrazione",
-    "startRecording": "Avvia registrazione vocale",
-    "recommendations": "Ecco alcuni consigli:",
-    "errors": {
-      "micPermission": "Impossibile accedere al microfono. Verifica i permessi del microfono nel browser.",
-      "transcribeFailed": "Impossibile trascrivere la registrazione. Riprova.",
-      "general": "Spiacente, si è verificato un problema. Riprova."
+    "non_registered": {
+      "name": "Solo navigazione",
+      "description": "Esplora la nostra libreria di contenuti"
     },
-    "suggestions": {
-      "whatToWatch": "Cosa guardare oggi?",
-      "israeliMovies": "Film israeliani consigliati",
-      "whatsOnNow": "Cosa c'è in onda ora?",
-      "popularPodcasts": "Podcast popolari"
-    }
-  },
-  "support": {
-    "title": "Centro assistenza",
-    "subtitle": "Come possiamo aiutarti oggi?",
-    "tabs": {
-      "docs": "Documentazione",
-      "faq": "FAQ",
-      "contact": "Contatti",
-      "tickets": "I miei ticket"
+    "registered_free": {
+      "name": "Account gratuito",
+      "description": "Crea un account per funzionalità gratuite"
     },
-    "faq": {
-      "title": "Domande frequenti",
-      "loading": "Caricamento FAQ...",
-      "loadError": "Impossibile caricare le FAQ",
+    "comparison": {
+      "title": "Confronta i piani",
+      "subtitle": "Trova il piano perfetto per le tue esigenze",
       "categories": {
-        "all": "Tutti gli argomenti",
-        "general": "Generale",
-        "billing": "Fatturazione",
-        "technical": "Tecnico",
-        "features": "Funzionalità"
-      }
-    },
-    "contact": {
-      "voiceTitle": "Supporto vocale",
-      "voiceDescription": "Clicca sul pulsante avatar o dì \"Jarvis\" per iniziare una conversazione vocale.",
-      "ticketTitle": "Crea ticket di supporto",
-      "ticketDescription": "Hai bisogno di assistenza umana? Crea un ticket e il nostro team risponderà entro 24 ore.",
-      "createTicket": "Crea ticket",
-      "emailTitle": "Supporto email",
-      "emailDescription": "Preferisci l'email? Contattaci a support@bayit.tv."
-    }
-  },
-  "admin": {
-    "brand": {
-      "title": "Bayit+ Admin",
-      "subtitle": "Gestione sistema"
-    },
-    "backToApp": "Torna all'app",
-    "nav": {
-      "dashboard": "Dashboard",
-      "users": "Utenti",
-      "content": "Contenuti",
-      "settings": "Impostazioni"
-    },
-    "dashboard": {
-      "title": "Dashboard",
-      "subtitle": "Panoramica del sistema"
-    },
-    "content": {
-      "filters": {
-        "title": "Filtri",
-        "contentType": "Tipo di Contenuto",
-        "all": "Tutto",
-        "allContent": "Tutto",
-        "series": "Serie",
-        "movies": "Film",
-        "podcasts": "Podcast",
-        "radioStations": "Stazioni Radio",
-        "status": "Stato",
-        "allStatus": "Tutti gli Stati",
-        "subtitles": "Sottotitoli"
+        "content": "Accesso ai contenuti",
+        "quality": "Qualità e prestazioni",
+        "devices": "Dispositivi e streaming",
+        "features": "Funzionalità premium",
+        "support": "Supporto clienti"
       },
-      "podcastsComingSoon": "Gestione podcast in arrivo. Usa la sezione Podcast.",
-      "radioComingSoon": "Gestione stazioni radio in arrivo. Usa la sezione Stazioni Radio."
+      "features": {
+        "browseContent": "Sfoglia la libreria di contenuti",
+        "vodAccess": "Film e serie on demand",
+        "liveChannels": "Canali TV in diretta",
+        "radioPodcasts": "Radio e podcast",
+        "videoQuality": "Qualità video",
+        "simultaneousDevices": "Dispositivi simultanei",
+        "aiAssistant": "Assistente intelligente IA",
+        "familyProfiles": "Profili famiglia",
+        "offlineDownloads": "Scarica per offline",
+        "customerSupport": "Supporto clienti"
+      }
     }
   },
-  "cultures": {
-    "title": "Culture",
-    "select": "Seleziona una cultura",
-    "selectCulture": "Seleziona la tua cultura",
-    "selectCultureDescription": "Scegli una cultura per personalizzare i tuoi contenuti",
-    "changeCulture": "Cambia cultura",
-    "current": "Cultura attuale",
-    "israeli": {
-      "name": "Israeliana",
-      "description": "Contenuti per la comunità israeliana"
+  "player": {
+    "loading": "Caricamento...",
+    "retry": "Riprova",
+    "error": "Errore riproduzione video",
+    "back": "← Indietro",
+    "liveBadge": "LIVE",
+    "noStream": "Stream non disponibile",
+    "loadError": "Impossibile caricare lo stream",
+    "settings": "Impostazioni",
+    "subtitles": "Sottotitoli",
+    "playbackSpeed": "Velocità di riproduzione",
+    "quality": "Qualità",
+    "auto": "Auto",
+    "previousChapter": "Capitolo precedente",
+    "nextChapter": "Capitolo successivo",
+    "skipBackward": "Indietro di 30 secondi",
+    "skipForward": "Avanti di 30 secondi",
+    "restart": "Riavvia dall'inizio",
+    "subtitlesOff": "Disattivati",
+    "speed": "Velocità",
+    "subscription": {
+      "requiredTitle": "Abbonamento richiesto",
+      "requiredMessage": "richiede un abbonamento a pagamento",
+      "upgradeInfo": "Aggiorna il tuo abbonamento per accedere ai contenuti premium",
+      "upgrade": "Aggiorna ora"
     },
-    "chinese": {
-      "name": "Cinese",
-      "description": "Contenuti per la comunità cinese"
+    "streamLimit": {
+      "title": "Limite di streaming raggiunto",
+      "message": "Hai raggiunto il numero massimo di streaming simultanei ({{maxStreams}}) per il tuo piano.",
+      "activeDevices": "Attualmente in streaming su {{count}} dispositivo(i):",
+      "hint": "Disconnetti un dispositivo per liberare uno slot di streaming, o aggiorna il tuo piano per più streaming simultanei.",
+      "manageDevices": "Gestisci dispositivi"
     },
-    "japanese": {
-      "name": "Giapponese",
-      "description": "Contenuti per la comunità giapponese"
-    },
-    "korean": {
-      "name": "Coreana",
-      "description": "Contenuti per la comunità coreana"
-    },
-    "indian": {
-      "name": "Indiana",
-      "description": "Contenuti per la comunità indiana"
+    "cast": {
+      "start": "Trasmetti alla TV",
+      "connected": "Trasmissione a {{device}}",
+      "disconnect": "Disconnetti da {{device}}",
+      "connecting": "Connessione al dispositivo di trasmissione...",
+      "error": "Impossibile connettersi al dispositivo di trasmissione",
+      "noDevices": "Nessun dispositivo di trasmissione trovato",
+      "unsupported": "La trasmissione non è disponibile per questo contenuto"
     }
   },
-  "cultureTrending": {
-    "title": "Tendenze",
-    "whatsHotIn": "Tendenze in {{location}}",
-    "noTopics": "Nessun argomento di tendenza disponibile",
-    "sources": "Fonti",
-    "topStory": "In primo piano",
-    "refreshing": "Aggiornamento...",
-    "lastUpdated": "Ultimo aggiornamento"
-  },
-  "cultureClock": {
-    "timeIn": "Ora in {{location}}",
-    "localTime": "Ora locale",
-    "shabbat": "Shabbat",
-    "weekend": "Fine settimana",
-    "weekday": "Giorno feriale"
-  },
-  "cultureCities": {
-    "connectionTo": "Connessione {{city}}",
-    "noContent": "Nessun contenuto disponibile",
-    "sources": "Fonti",
-    "viewMore": "Vedi altro",
+  "podcasts": {
+    "title": "Podcast",
+    "episodes": "episodi",
     "categories": {
       "all": "Tutto",
+      "general": "Generale",
       "news": "Notizie",
-      "culture": "Cultura",
-      "food": "Gastronomia",
+      "politics": "Politica",
       "tech": "Tecnologia",
+      "business": "Business",
+      "jewish": "Ebraico",
       "entertainment": "Intrattenimento",
       "sports": "Sport",
-      "business": "Business"
-    }
-  },
-  "profile": {
-    "complimentaryPremium": "ACCESSO PREMIUM GRATUITO",
-    "emailVerified": "Email verificata",
-    "emailUnverified": "Email non verificata",
-    "phoneVerified": "Telefono verificato",
-    "phoneUnverified": "Telefono non verificato",
-    "completeVerification": "Completa la verifica per sbloccare tutte le funzionalità",
-    "unlockPremium": "Sblocca Funzionalità Premium",
-    "unlockPremiumDescription": "Effettua l'upgrade per goderti contenuti e funzionalità esclusive"
-  },
-  "voiceOnboarding": {
-    "welcome": {
-      "title": "Benvenuto al Controllo Vocale",
-      "description": "Controlla Bayit+ con la tua voce per un'esperienza a mani libere"
+      "history": "Storia",
+      "educational": "Educativo"
     },
-    "features": {
-      "voiceCommands": "Comandi Vocali",
-      "voiceCommandsDesc": "Naviga, cerca e controlla la riproduzione con il linguaggio naturale",
-      "tts": "Sintesi Vocale",
-      "ttsDesc": "Ascolta le risposte e le descrizioni dei contenuti ad alta voce",
-      "wakeWord": "Parola di Attivazione",
-      "wakeWordDesc": "Dì 'Bayit' per attivare il controllo vocale in qualsiasi momento"
-    },
-    "getStarted": "Inizia",
-    "permissions": {
-      "title": "Accesso al Microfono",
-      "description": "Il controllo vocale richiede l'accesso al microfono per sentire i tuoi comandi",
-      "privacy": "I tuoi dati vocali vengono elaborati in modo sicuro e non vengono mai memorizzati"
-    },
-    "permissionsGranted": "Accesso al microfono concesso",
-    "permissionRequired": {
-      "title": "Permesso Richiesto",
-      "message": "Abilita l'accesso al microfono nelle impostazioni del tuo dispositivo per usare il controllo vocale"
-    },
-    "grantPermissions": "Concedi Permessi",
-    "testWakeWord": {
-      "title": "Testa la Parola di Attivazione",
-      "description": "Dì 'Bayit' per testare l'attivazione vocale",
-      "success": "Ottimo! L'attivazione vocale funziona"
-    },
-    "startTest": "Inizia Test",
-    "complete": {
-      "title": "Tutto Pronto!",
-      "description": "Il controllo vocale è ora abilitato. Prova questi comandi:",
-      "tryCommands": "Prova Questi Comandi",
-      "examples": {
-        "search": "\"Cerca Fauda\"",
-        "play": "\"Riproduci le notizie\"",
-        "navigate": "\"Vai alla TV in Diretta\"",
-        "control": "\"Pausa\" o \"Alza il volume\""
-      },
-      "startUsing": "Inizia a Usare il Controllo Vocale"
-    },
-    "skip": "Salta per ora"
+    "noPodcasts": "Nessun podcast disponibile",
+    "tryLater": "Riprova più tardi"
   },
   "portal": {
     "nav": {
@@ -988,6 +1070,259 @@
       }
     }
   },
+  "profile": {
+    "complimentaryPremium": "ACCESSO PREMIUM GRATUITO",
+    "emailVerified": "Email verificata",
+    "emailUnverified": "Email non verificata",
+    "phoneVerified": "Telefono verificato",
+    "phoneUnverified": "Telefono non verificato",
+    "completeVerification": "Completa la verifica per sbloccare tutte le funzionalità",
+    "unlockPremium": "Sblocca Funzionalità Premium",
+    "unlockPremiumDescription": "Effettua l'upgrade per goderti contenuti e funzionalità esclusive",
+    "tabs": {
+      "devices": "Dispositivi"
+    },
+    "devices": {
+      "registeredDevices": "Dispositivi Registrati",
+      "description": "Gestisci i dispositivi che hanno accesso al tuo account. Puoi disconnettere i dispositivi per liberare slot di streaming.",
+      "noDevices": "Nessun dispositivo connesso",
+      "noDevicesDescription": "I dispositivi appariranno qui quando accedi su piattaforme diverse",
+      "activeNow": "Attivo ora",
+      "minutesAgo": "{{count}} minuti fa",
+      "hoursAgo": "{{count}} ore fa",
+      "daysAgo": "{{count}} giorni fa",
+      "disconnect": "Disconnetti",
+      "confirmDisconnect": "Disconnettere il Dispositivo?",
+      "confirmDisconnectMessage": "Questo terminerà tutte le sessioni di riproduzione attive su questo dispositivo e lo rimuoverà dal tuo account.",
+      "disconnectSuccess": "Dispositivo Disconnesso",
+      "disconnectSuccessMessage": "Il dispositivo è stato disconnesso con successo.",
+      "disconnectSuccessWithSessions": "Dispositivo disconnesso e {{count}} sessione/i attiva/e terminata/e.",
+      "thisDevice": "Questo dispositivo",
+      "loading": "Caricamento dispositivi..."
+    }
+  },
+  "radio": {
+    "title": "Radio",
+    "categories": {
+      "all": "Tutto",
+      "music": "Musica",
+      "news": "Notizie",
+      "talk": "Talk",
+      "jewish": "Ebraica"
+    },
+    "noStations": "Nessuna stazione radio disponibile",
+    "tryLater": "Riprova più tardi",
+    "playing": "IN RIPRODUZIONE",
+    "fmSuffix": "FM"
+  },
+  "register": {
+    "title": "Crea account",
+    "subtitle": "Unisciti a Bayit+ per guardare i tuoi contenuti preferiti",
+    "name": "Nome completo",
+    "namePlaceholder": "Mario Rossi",
+    "email": "Email",
+    "emailPlaceholder": "tua@email.com",
+    "password": "Password",
+    "passwordPlaceholder": "Almeno 8 caratteri",
+    "confirmPassword": "Conferma password",
+    "confirmPasswordPlaceholder": "Reinserisci la password",
+    "submit": "Registrati",
+    "registering": "Registrazione...",
+    "acceptTerms": "Accetto i",
+    "termsOfService": "Termini di Servizio",
+    "and": "e",
+    "privacyPolicy": "l'Informativa sulla Privacy",
+    "continueWithGoogle": "Registrati con Google",
+    "haveAccount": "Hai già un account?",
+    "signIn": "Accedi",
+    "fullName": "Nome completo",
+    "loginLink": "Accedi",
+    "errors": {
+      "nameRequired": "Il nome è obbligatorio",
+      "emailRequired": "L'email è obbligatoria",
+      "passwordRequired": "La password è obbligatoria",
+      "passwordTooShort": "La password deve essere di almeno 8 caratteri",
+      "passwordMismatch": "Le password non corrispondono",
+      "acceptTerms": "Devi accettare i Termini di Servizio e l'Informativa sulla Privacy",
+      "fillAllFields": "Compila tutti i campi",
+      "registrationFailed": "Registrazione fallita. Riprova.",
+      "googleFailed": "Registrazione con Google fallita. Riprova."
+    }
+  },
+  "search": {
+    "title": "Cerca",
+    "subtitle": "Trova film, serie, canali, radio e podcast",
+    "placeholder": "Cerca contenuti...",
+    "voicePlaceholder": "Parla ora...",
+    "searching": "Ricerca in corso...",
+    "listening": "In ascolto...",
+    "noResults": "Nessun risultato trovato",
+    "noResultsHint": "Prova parole chiave diverse o modifica i filtri",
+    "tryDifferent": "Prova altri termini di ricerca",
+    "resultsFor": "risultati per",
+    "resultsFound": "{{count}} risultati trovati per \"{{query}}\"",
+    "recentSearches": "Ricerche recenti",
+    "clearAll": "Cancella tutto",
+    "trending": "Ricerche di tendenza",
+    "promptTitle": "Cosa stai cercando?",
+    "promptDescription": "Cerca i tuoi contenuti preferiti o usa la ricerca vocale",
+    "filters": {
+      "all": "Tutto",
+      "vod": "Film e Serie",
+      "live": "Canali",
+      "radio": "Radio",
+      "podcast": "Podcast",
+      "moviesAndSeries": "Film e Serie",
+      "channels": "Canali",
+      "podcasts": "Podcast"
+    },
+    "suggestions": {
+      "trendingTitle": "Trending Searches",
+      "categoriesTitle": "Browse Categories",
+      "recentTitle": "Recent Searches",
+      "clearRecent": "Clear",
+      "movies": "Film",
+      "series": "Serie",
+      "liveTV": "TV in diretta",
+      "news": "Notizie",
+      "sports": "Sport",
+      "kids": "Bambini"
+    },
+    "controls": {
+      "placeholder": "Search for content...",
+      "hints": {
+        "searchInput": "Enter keywords to search"
+      }
+    },
+    "semantic": {
+      "keyword": "Keyword",
+      "semantic": "AI Search",
+      "infoTitle": "AI-Powered Search",
+      "info": "AI search understands context and finds exact moments in videos by analyzing scenes, dialogue, and visual content."
+    },
+    "empty": {
+      "clearSearch": "Clear search"
+    }
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "language": "Lingua",
+    "appLanguage": "Lingua dell'app",
+    "selectLanguage": "Seleziona lingua",
+    "languages": {
+      "en": "English",
+      "he": "עברית",
+      "es": "Español",
+      "zh": "中文",
+      "fr": "Français",
+      "it": "Italiano",
+      "hi": "हिन्दी",
+      "ta": "தமிழ்",
+      "bn": "বাংলা",
+      "ja": "日本語"
+    },
+    "chatTranslation": "Traduzione chat",
+    "autoTranslate": "Traduci automaticamente i messaggi",
+    "autoTranslateDescription": "Traduci automaticamente i messaggi nella tua lingua preferita",
+    "notifications": "Notifiche",
+    "pushNotifications": "Notifiche push",
+    "playback": "Riproduzione",
+    "quality": "Qualità",
+    "subtitles": "Sottotitoli",
+    "autoplay": "Riproduzione automatica",
+    "appearance": "Aspetto",
+    "darkMode": "Modalità scura",
+    "privacy": "Privacy",
+    "privacyPolicy": "Informativa sulla Privacy",
+    "termsOfService": "Termini di Servizio",
+    "about": "Informazioni"
+  },
+  "subscribe": {
+    "title": "Scegli il tuo piano",
+    "subtitle": "7 giorni di prova gratuita per qualsiasi piano. Annulla quando vuoi.",
+    "monthly": "Mensile",
+    "yearly": "Annuale",
+    "save2Months": "Risparmia 2 mesi",
+    "popular": "Più popolare",
+    "period": "/mese",
+    "perYear": "/anno",
+    "select": "Seleziona piano",
+    "selected": "Selezionato",
+    "processing": "Elaborazione...",
+    "startTrial": "Inizia prova gratuita",
+    "noCharge": "La tua carta non verrà addebitata durante il periodo di prova",
+    "viewComparison": "Vedi confronto completo",
+    "viewCards": "Vedi piani",
+    "premiumShowcase": {
+      "title": "Sperimenta l'Intelligenza Premium",
+      "subtitle": "Funzionalità basate sull'IA che si adattano al tuo modo di guardare",
+      "videoTitle": "Vedi i Widget in Azione",
+      "videoDescription": "Guarda la nostra introduzione di 2 minuti ai widget flottanti",
+      "widgetTitle": "Demo Interattiva dal Vivo",
+      "widgetDescription": "Trascina, ridimensiona e multitasking con Kan11",
+      "aiAssistant": {
+        "title": "Assistente Intelligente AI",
+        "description": "Raccomandazioni personalizzate basate sull'apprendimento automatico"
+      },
+      "floatingWidgets": {
+        "title": "Widget Flottanti",
+        "description": "Guarda più canali mentre navighi nei contenuti"
+      },
+      "a11y": {
+        "playVideo": "Riproduci video introduttivo dei widget",
+        "playVideoHint": "Apre dimostrazione video a schermo intero"
+      },
+      "badges": {
+        "aiPowered": "ALIMENTATO DA IA",
+        "interactiveDemo": "DEMO INTERATTIVA"
+      }
+    },
+    "comparison": {
+      "title": "Confronta i Piani",
+      "subtitle": "Trova il piano perfetto per te",
+      "features": "Caratteristiche",
+      "perMonth": "/mese",
+      "scrollHint": "← Scorri per vedere tutti i piani →",
+      "categories": {
+        "content": "Accesso ai Contenuti",
+        "quality": "Qualità e Prestazioni",
+        "devices": "Dispositivi e Streaming",
+        "features": "Caratteristiche",
+        "support": "Supporto"
+      }
+    }
+  },
+  "support": {
+    "title": "Centro assistenza",
+    "subtitle": "Come possiamo aiutarti oggi?",
+    "tabs": {
+      "docs": "Documentazione",
+      "faq": "FAQ",
+      "contact": "Contatti",
+      "tickets": "I miei ticket"
+    },
+    "faq": {
+      "title": "Domande frequenti",
+      "loading": "Caricamento FAQ...",
+      "loadError": "Impossibile caricare le FAQ",
+      "categories": {
+        "all": "Tutti gli argomenti",
+        "general": "Generale",
+        "billing": "Fatturazione",
+        "technical": "Tecnico",
+        "features": "Funzionalità"
+      }
+    },
+    "contact": {
+      "voiceTitle": "Supporto vocale",
+      "voiceDescription": "Clicca sul pulsante avatar o dì \"Jarvis\" per iniziare una conversazione vocale.",
+      "ticketTitle": "Crea ticket di supporto",
+      "ticketDescription": "Hai bisogno di assistenza umana? Crea un ticket e il nostro team risponderà entro 24 ore.",
+      "createTicket": "Crea ticket",
+      "emailTitle": "Supporto email",
+      "emailDescription": "Preferisci l'email? Contattaci a support@bayit.tv."
+    }
+  },
   "trivia": {
     "didYouKnow": "Lo Sapevi?",
     "dismissHint": "Chiudi curiosità",
@@ -998,5 +1333,87 @@
       "selectLanguage": "Seleziona questa lingua",
       "deselectLanguage": "Deseleziona questa lingua"
     }
+  },
+  "vod": {
+    "title": "Film e Serie",
+    "movies": "Film",
+    "series": "Serie",
+    "searchPlaceholder": "Cerca film e serie...",
+    "noMovies": "Nessun film trovato",
+    "noSeries": "Nessuna serie trovata",
+    "loadError": "Impossibile caricare i contenuti",
+    "showOnlyWithSubtitles": "Mostra solo con sottotitoli",
+    "categories": {
+      "all": "Tutto",
+      "drama": "Drammatico",
+      "comedy": "Commedia",
+      "action": "Azione",
+      "documentary": "Documentario",
+      "kids": "Bambini"
+    },
+    "allCategories": "Tutto",
+    "emptyTitle": "Nessun contenuto disponibile",
+    "emptyDescription": "Prova a selezionare un'altra categoria"
+  },
+  "voiceOnboarding": {
+    "welcome": {
+      "title": "Benvenuto al Controllo Vocale",
+      "description": "Controlla Bayit+ con la tua voce per un'esperienza a mani libere"
+    },
+    "features": {
+      "voiceCommands": "Comandi Vocali",
+      "voiceCommandsDesc": "Naviga, cerca e controlla la riproduzione con il linguaggio naturale",
+      "tts": "Sintesi Vocale",
+      "ttsDesc": "Ascolta le risposte e le descrizioni dei contenuti ad alta voce",
+      "wakeWord": "Parola di Attivazione",
+      "wakeWordDesc": "Dì 'Bayit' per attivare il controllo vocale in qualsiasi momento"
+    },
+    "getStarted": "Inizia",
+    "permissions": {
+      "title": "Accesso al Microfono",
+      "description": "Il controllo vocale richiede l'accesso al microfono per sentire i tuoi comandi",
+      "privacy": "I tuoi dati vocali vengono elaborati in modo sicuro e non vengono mai memorizzati"
+    },
+    "permissionsGranted": "Accesso al microfono concesso",
+    "permissionRequired": {
+      "title": "Permesso Richiesto",
+      "message": "Abilita l'accesso al microfono nelle impostazioni del tuo dispositivo per usare il controllo vocale"
+    },
+    "grantPermissions": "Concedi Permessi",
+    "testWakeWord": {
+      "title": "Testa la Parola di Attivazione",
+      "description": "Dì 'Bayit' per testare l'attivazione vocale",
+      "success": "Ottimo! L'attivazione vocale funziona"
+    },
+    "startTest": "Inizia Test",
+    "complete": {
+      "title": "Tutto Pronto!",
+      "description": "Il controllo vocale è ora abilitato. Prova questi comandi:",
+      "tryCommands": "Prova Questi Comandi",
+      "examples": {
+        "search": "\"Cerca Fauda\"",
+        "play": "\"Riproduci le notizie\"",
+        "navigate": "\"Vai alla TV in Diretta\"",
+        "control": "\"Pausa\" o \"Alza il volume\""
+      },
+      "startUsing": "Inizia a Usare il Controllo Vocale"
+    },
+    "skip": "Salta per ora"
+  },
+  "watchlist": {
+    "filters": {
+      "all": "Tutto",
+      "continue": "Continua a guardare",
+      "movies": "Film",
+      "series": "Serie",
+      "kids": "Bambini",
+      "judaism": "Ebraismo",
+      "podcasts": "Podcast",
+      "radio": "Radio"
+    },
+    "title": "Lista",
+    "items": "elementi",
+    "empty": "La tua lista è vuota",
+    "emptyHint": "Inizia a guardare e gli elementi appariranno qui"
   }
 }

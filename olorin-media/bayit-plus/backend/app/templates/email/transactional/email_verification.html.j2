@@ -1,0 +1,26 @@
+{% extends "categories/transactional.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block body_content %}
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 16px 0;">
+  {{ t('email.verification.intro', default='Please verify your email address to activate your Bayit+ account.', lang=lang) }}
+</p>
+
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+  {{ t('email.verification.description', default='Click the button below to confirm your email address. This link expires in {expiry_hours} hours.', lang=lang, expiry_hours=expiry_hours) }}
+</p>
+{% endblock %}
+
+{% block cta_section %}
+<div style="margin: 32px 0;">
+  {{ button(
+    text=t('email.verification.cta', default='Verify Email Address', lang=lang),
+    url=verification_url,
+    primary=true
+  ) }}
+</div>
+
+<p style="color: rgba(255, 255, 255, 0.6); font-size: 14px; margin: 16px 0 0 0;">
+  {{ t('email.verification.no_action', default='If you didn\'t create a Bayit+ account, you can safely ignore this email.', lang=lang) }}
+</p>
+{% endblock %}

@@ -1,4 +1,144 @@
 {
+  "account": {
+    "title": "আমার অ্যাকাউন্ট",
+    "profile": "প্রোফাইল",
+    "settings": "সেটিংস",
+    "subscription": "সাবস্ক্রিপশন",
+    "logout": "লগআউট",
+    "login": "লগইন",
+    "guest": "অতিথি",
+    "premium": "প্রিমিয়াম",
+    "basic": "বেসিক"
+  },
+  "admin": {
+    "brand": {
+      "title": "Bayit+ অ্যাডমিন",
+      "subtitle": "সিস্টেম ম্যানেজমেন্ট"
+    },
+    "backToApp": "অ্যাপে ফিরে যান",
+    "dashboard": {
+      "title": "ড্যাশবোর্ড",
+      "subtitle": "সিস্টেম ওভারভিউ",
+      "refresh": "রিফ্রেশ",
+      "users": "ব্যবহারকারী",
+      "revenue": "রাজস্ব",
+      "subscriptions": "সাবস্ক্রিপশন"
+    },
+    "nav": {
+      "dashboard": "ড্যাশবোর্ড",
+      "users": "ব্যবহারকারী",
+      "content": "কন্টেন্ট",
+      "settings": "সেটিংস",
+      "diagnostics": "সিস্টেম ডায়াগনস্টিকস"
+    },
+    "content": {
+      "noEpisodes": "কোন পর্ব নেই",
+      "type": {
+        "movie": "সিনেমা",
+        "series": "সিরিজ"
+      },
+      "filters": {
+        "title": "ফিল্টার",
+        "contentType": "কন্টেন্ট টাইপ",
+        "all": "সব",
+        "allContent": "সব",
+        "series": "সিরিজ",
+        "movies": "সিনেমা",
+        "podcasts": "পডকাস্ট",
+        "radioStations": "রেডিও স্টেশন",
+        "status": "স্ট্যাটাস",
+        "allStatus": "সব স্ট্যাটাস",
+        "subtitles": "সাবটাইটেল"
+      },
+      "podcastsComingSoon": "পডকাস্ট ম্যানেজমেন্ট শীঘ্রই আসছে। পডকাস্ট বিভাগ ব্যবহার করুন।",
+      "radioComingSoon": "রেডিও স্টেশন ম্যানেজমেন্ট শীঘ্রই আসছে। রেডিও স্টেশন বিভাগ ব্যবহার করুন।"
+    },
+    "users": {
+      "roles": {
+        "superAdmin": "সুপার অ্যাডমিন",
+        "admin": "অ্যাডমিন",
+        "moderator": "মডারেটর",
+        "user": "ব্যবহারকারী"
+      }
+    },
+    "featured": {
+      "title": "বৈশিষ্ট্যযুক্ত বিষয়বস্তু",
+      "subtitle": "আইটেম টেনে ক্যারোসেল অর্ডার পরিচালনা করুন",
+      "empty": "কোনো বৈশিষ্ট্যযুক্ত বিষয়বস্তু নেই",
+      "emptyHint": "বিষয়বস্তু লাইব্রেরি থেকে বৈশিষ্ট্যযুক্ত বিষয়বস্তু যোগ করুন",
+      "count": "{{count}} আইটেম",
+      "confirmUnfeature": "বৈশিষ্ট্যযুক্ত থেকে সরান?",
+      "remove": "সরান",
+      "unsavedChanges": "আপনার অসংরক্ষিত পরিবর্তন রয়েছে",
+      "addContent": "বিষয়বস্তু যোগ করুন",
+      "addContentToSection": "{{section}} এ বিষয়বস্তু যোগ করুন",
+      "selectContentToAdd": "যোগ করার জন্য বিষয়বস্তু নির্বাচন করুন",
+      "addSelected": "নির্বাচিত যোগ করুন ({{count}})",
+      "noContentAvailable": "কোনো বিষয়বস্তু উপলব্ধ নেই",
+      "contentAdded": "{{count}} আইটেম যোগ করা হয়েছে",
+      "failedToAdd": "বিষয়বস্তু যোগ করতে ব্যর্থ",
+      "publishedOnly": "প্রকাশিত"
+    },
+    "translation": {
+      "status": {
+        "pending": "পেন্ডিং",
+        "processing": "প্রক্রিয়াকরণ",
+        "completed": "সম্পূর্ণ",
+        "failed": "ব্যর্থ"
+      }
+    },
+    "podcasts": {
+      "translate": "অনুবাদ করুন",
+      "translateEpisode": "এপিসোড অনুবাদ করুন",
+      "translateAllEpisodes": "সমস্ত এপিসোড অনুবাদ করুন",
+      "translateAll": "সব অনুবাদ করুন",
+      "filterByStatus": "স্ট্যাটাস দ্বারা ফিল্টার করুন",
+      "editEpisode": "এপিসোড সম্পাদনা করুন",
+      "deleteEpisode": "এপিসোড মুছুন",
+      "newEpisode": "নতুন এপিসোড"
+    },
+    "diagnostics": {
+      "title": "সিস্টেম ডায়াগনস্টিকস",
+      "servicesOverview": "সেবা সংক্ষিপ্তসার",
+      "performanceMetrics": "পারফরম্যান্স মেট্রিক্স",
+      "systemActivity": "সিস্টেম কার্যকলাপ",
+      "servicesDetails": "সেবা বিবরণ",
+      "cpu": "CPU ব্যবহার",
+      "memory": "মেমরি ব্যবহার",
+      "disk": "ডিস্ক ব্যবহার",
+      "allSystemsOperational": "সমস্ত সিস্টেম চালু",
+      "systemDegraded": "সিস্টেম অবনতি",
+      "systemDown": "সিস্টেম ডাউন",
+      "lastUpdated": "শেষ আপডেট: {{time}}",
+      "ping": "পিং",
+      "restart": "পুনরায় চালু করুন",
+      "online": "অনলাইন",
+      "offline": "অফলাইন",
+      "degraded": "অবনত",
+      "latency": "বিলম্বিতা: {{ms}}ms",
+      "healthy": "সুস্থ",
+      "unhealthy": "অসুস্থ"
+    }
+  },
+  "chatbot": {
+    "title": "Bayit+ সহায়ক",
+    "greeting": "হ্যালো! আমি Bayit+ স্মার্ট সহায়ক। আজ আমি আপনাকে কীভাবে সাহায্য করতে পারি?",
+    "placeholder": "এখানে টাইপ করুন..."
+  },
+  "children": {
+    "title": "শিশু",
+    "items": "আইটেম",
+    "empty": "কোনো কন্টেন্ট নেই",
+    "exitKidsMode": "কিডস মোড থেকে বের হন",
+    "categories": {
+      "all": "সব",
+      "cartoons": "কার্টুন",
+      "educational": "শিক্ষামূলক",
+      "music": "সংগীত",
+      "stories": "গল্প",
+      "jewish": "ইহুদি"
+    }
+  },
   "common": {
     "loading": "লোড হচ্ছে...",
     "error": "ত্রুটি",
@@ -53,7 +193,31 @@
     "expand": "বিস্তারিত দেখুন",
     "collapse": "সংক্ষিপ্ত করুন",
     "upgrade": "প্রিমিয়ামে আপগ্রেড করুন",
-    "skip": "এড়িয়ে যান"
+    "skip": "এড়িয়ে যান",
+    "disconnect": "সংযোগ বিচ্ছিন্ন করুন"
+  },
+  "content": {
+    "play": "চালান",
+    "addToList": "তালিকায় যোগ করুন",
+    "inList": "তালিকায় আছে",
+    "details": "বিবরণ",
+    "synopsis": "সারাংশ",
+    "genre": "জনরা",
+    "runtime": "সময়কাল",
+    "director": "পরিচালক",
+    "cast": "কাস্ট",
+    "season": "সিজন",
+    "episode": "পর্ব",
+    "episodes": "পর্বসমূহ",
+    "rating": "রেটিং",
+    "watchTrailer": "ট্রেলার দেখুন",
+    "relatedContent": "সম্পর্কিত কন্টেন্ট",
+    "notFound": "কন্টেন্ট পাওয়া যায়নি"
+  },
+  "cultureClock": {
+    "timeIn": "{{location}} সময়",
+    "shabbat": "শাব্বাত",
+    "weekend": "সপ্তাহান্ত"
   },
   "demo": {
     "banner": "ডেমো মোড",
@@ -71,10 +235,288 @@
     "until_shabbat": "শাব্বাত পর্যন্ত",
     "premium_plan": "প্রিমিয়াম"
   },
+  "downloads": {
+    "title": "ডাউনলোড",
+    "items": "আইটেম",
+    "empty": "কোনো ডাউনলোড নেই",
+    "emptyHint": "অফলাইনে দেখার জন্য কন্টেন্ট ডাউনলোড করুন"
+  },
+  "email": {
+    "greeting": "Hello",
+    "footer": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "support": "Support",
+      "unsubscribe": "Unsubscribe from these emails"
+    },
+    "welcome": {
+      "subject": "Welcome to Bayit+!",
+      "title": "Welcome to Bayit+",
+      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
+      "cta": "Go to Dashboard"
+    },
+    "verification": {
+      "subject": "Verify Your Email",
+      "title": "Verify Your Email Address",
+      "body": "Please click the button below to verify your email address.",
+      "cta": "Verify Email",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't create an account, you can safely ignore this email."
+    },
+    "verification_resend": {
+      "subject": "Email Verification (Resent)",
+      "title": "Verify Your Email Address",
+      "body": "Here's a new verification link as requested.",
+      "cta": "Verify Email"
+    },
+    "password_reset": {
+      "subject": "Reset Your Password",
+      "title": "Reset Your Password",
+      "body": "We received a request to reset your password. Click the button below to create a new password.",
+      "cta": "Reset Password",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+    },
+    "password_changed": {
+      "subject": "Password Changed",
+      "title": "Your Password Has Been Changed",
+      "body": "Your password was successfully changed.",
+      "security": "If you didn't make this change, please contact support immediately."
+    },
+    "account_locked": {
+      "subject": "Account Locked",
+      "title": "Your Account Has Been Locked",
+      "body": "Your account has been temporarily locked due to security concerns.",
+      "cta": "Unlock Account"
+    },
+    "beta_invitation": {
+      "subject": "You're Invited to Bayit+ Beta!",
+      "title": "You're Invited to the Beta Program",
+      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
+      "credits": "{credits} AI credits included",
+      "duration": "Access for {days} days",
+      "cta": "Join Beta Program"
+    },
+    "beta_welcome": {
+      "subject": "Welcome to Bayit+ Beta!",
+      "title": "Welcome to the Beta Program",
+      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
+      "cta": "Get Started"
+    },
+    "payment_confirmation": {
+      "subject": "Payment Confirmation",
+      "title": "Payment Received",
+      "body": "Your payment has been processed successfully.",
+      "transaction": "Transaction ID",
+      "plan": "Plan",
+      "amount": "Amount",
+      "date": "Payment Date",
+      "next_billing": "Next Billing Date"
+    },
+    "subscription_activated": {
+      "subject": "Subscription Activated",
+      "title": "Your Subscription is Active",
+      "body": "Your subscription has been activated. Here's what you get:",
+      "cta": "Start Watching"
+    },
+    "subscription_cancelled": {
+      "subject": "Subscription Cancelled",
+      "title": "Subscription Cancelled",
+      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
+      "cta": "Reactivate Subscription"
+    },
+    "payment_failed": {
+      "subject": "Payment Failed",
+      "title": "Payment Failed",
+      "body": "We were unable to process your payment. Please update your payment method.",
+      "cta": "Update Payment Method"
+    },
+    "trial_expiring": {
+      "subject": "Your Trial is Expiring Soon",
+      "title": "Trial Ending in {days_remaining} Days",
+      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
+      "cta": "Upgrade Now"
+    },
+    "support": {
+      "created_subject": "Ticket #{ticket_id} Created",
+      "created_title": "Support Ticket Created",
+      "created_body": "Your support ticket has been created. We'll get back to you soon.",
+      "response_subject": "New Response on Ticket #{ticket_id}",
+      "response_title": "New Response on Your Ticket",
+      "escalation_subject": "Ticket #{ticket_id} Escalated",
+      "escalation_title": "Your Ticket Has Been Escalated",
+      "resolved_subject": "Ticket #{ticket_id} Resolved",
+      "resolved_title": "Your Ticket Has Been Resolved",
+      "resolved_body": "Your support ticket has been resolved."
+    },
+    "new_message": {
+      "subject": "New Message from {sender_name}",
+      "title": "You Have a New Message",
+      "cta": "Read Message"
+    },
+    "content_digest": {
+      "subject": "Your {digest_period} Content Digest",
+      "title": "Your Content Digest",
+      "cta": "Browse Content"
+    },
+    "gdpr": {
+      "deletion_subject": "Data Deletion Confirmation",
+      "deletion_title": "Your Data Has Been Deleted",
+      "deletion_body": "As requested, your personal data has been permanently deleted.",
+      "categories_label": "Deleted Data Categories"
+    },
+    "admin": {
+      "account_created_subject": "Admin Account Created",
+      "account_created_title": "Admin Account Created",
+      "role_change_subject": "Role Changed",
+      "role_change_title": "Your Role Has Been Updated"
+    },
+    "campaign": {
+      "default_subject": "News from Bayit+"
+    },
+    "newsletter": {
+      "default_subject": "Bayit+ Newsletter"
+    },
+    "reengagement": {
+      "subject": "We Miss You!",
+      "title": "It's Been a While",
+      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
+      "cta": "Come Back"
+    }
+  },
+  "empty": {
+    "noContent": {
+      "title": "এখনও কোনও বিষয়বস্তু নেই",
+      "description": "বিষয়বস্তু উপলব্ধ হলে এখানে প্রদর্শিত হবে"
+    },
+    "noResults": {
+      "title": "কোনও ফলাফল পাওয়া যায়নি",
+      "description": "বিভিন্ন কীওয়ার্ড বা ফিল্টার চেষ্টা করুন"
+    },
+    "noQuery": {
+      "title": "অনুসন্ধান শুরু করুন",
+      "description": "বিষয়বস্তু খুঁজে পেতে কীওয়ার্ড লিখুন"
+    },
+    "error": {
+      "title": "কিছু ভুল হয়েছে",
+      "description": "বিষয়বস্তু লোড করতে অক্ষম। অনুগ্রহ করে আবার চেষ্টা করুন।"
+    },
+    "loading": {
+      "title": "লোড হচ্ছে...",
+      "description": "আমরা আপনার বিষয়বস্তু লোড করার সময় অপেক্ষা করুন"
+    },
+    "noFavorites": {
+      "title": "এখনও কোনও প্রিয় নেই",
+      "description": "এখানে দেখতে প্রিয়তে বিষয়বস্তু যোগ করুন"
+    },
+    "noDownloads": {
+      "title": "কোনও ডাউনলোড নেই",
+      "description": "অফলাইনে দেখতে বিষয়বস্তু ডাউনলোড করুন"
+    },
+    "sectionEmpty": {
+      "title": "কোনও আইটেম নেই",
+      "description": "এই বিভাগটি খালি"
+    },
+    "noData": {
+      "title": "কোনও ডেটা উপলব্ধ নেই",
+      "description": "ডেটা উপলব্ধ হলে এখানে প্রদর্শিত হবে"
+    },
+    "permissionDenied": {
+      "title": "অ্যাক্সেস অস্বীকৃত",
+      "description": "এই বিষয়বস্তু দেখার অনুমতি আপনার নেই"
+    }
+  },
+  "epg": {
+    "title": "TV গাইড",
+    "subtitle": "লাইভ TV প্রোগ্রাম সময়সূচী",
+    "gridView": "গ্রিড ভিউ",
+    "listView": "তালিকা ভিউ",
+    "israelTime": "ইসরায়েল সময়",
+    "localTime": "স্থানীয় সময়",
+    "jumpToNow": "এখনে যান",
+    "errorTitle": "TV গাইড লোড করতে ব্যর্থ",
+    "noPrograms": "কোনো প্রোগ্রাম নেই",
+    "noChannels": "কোনো চ্যানেল নেই"
+  },
+  "errors": {
+    "networkError": "নেটওয়ার্ক ত্রুটি",
+    "loadingFailed": "লোড করা ব্যর্থ",
+    "tryAgain": "পুনরায় চেষ্টা করুন",
+    "offline": {
+      "title": "ইন্টারনেট সংযোগ নেই",
+      "message": "আপনি বর্তমানে অফলাইনে আছেন।"
+    },
+    "online": {
+      "title": "সংযোগ পুনরুদ্ধার",
+      "message": "আপনি আবার অনলাইনে আছেন।"
+    }
+  },
+  "favorites": {
+    "title": "প্রিয়",
+    "items": "আইটেম",
+    "empty": "কোনো প্রিয় নেই",
+    "emptyHint": "আপনার প্রিয়তে আইটেম যোগ করুন"
+  },
+  "footer": {
+    "brandDescription": "USA-তে আপনার বাড়ি। হিব্রুতে TV সম্প্রচার, VOD, রেডিও এবং পডকাস্ট।",
+    "browse": "ব্রাউজ করুন",
+    "account": "অ্যাকাউন্ট",
+    "support": "সাপোর্ট",
+    "legal": "আইনি",
+    "copyright": "© {{year}} Bayit+. সর্বস্বত্ব সংরক্ষিত।",
+    "poweredBy": "দ্বারা চালিত"
+  },
   "hero": {
     "watch": "দেখুন",
     "moreInfo": "আরও তথ্য",
     "addToList": "তালিকায় যোগ করুন"
+  },
+  "home": {
+    "continueWatching": "দেখা চালিয়ে যান",
+    "featuredContent": "ফিচার্ড",
+    "liveTV": "লাইভ TV",
+    "allChannels": "সব চ্যানেল",
+    "liveChannels": "লাইভ চ্যানেল",
+    "israeliMovies": "ইসরায়েলি সিনেমা",
+    "comedy": "কমেডি",
+    "drama": "ড্রামা",
+    "documentaries": "ডকুমেন্টারি",
+    "loadingContent": "কন্টেন্ট লোড হচ্ছে...",
+    "liveNow": "এখন লাইভ",
+    "categories": "বিভাগ",
+    "audiobooks": "অডিওবুক",
+    "nearYou": "আপনার কাছাকাছি",
+    "israelis_in_city": "{{city}}, {{state}} এ ইসরায়েলিরা",
+    "israeli_businesses": "{{city}}, {{state}} এ ইসরায়েলি ব্যবসা",
+    "israeli_businesses_nearby": "আপনার কাছে ইসরায়েলি ব্যবসা - {{city}} থেকে",
+    "searching_businesses": "{{city}} এ ইসরায়েলি ব্যবসা খুঁজছে...",
+    "no_businesses_found": "{{city}} এ কোন ইসরায়েলি ব্যবসা পাওয়া যায়নি",
+    "businesses_load_error": "ব্যবসা তালিকা লোড করা যায়নি। আবার চেষ্টা করুন।"
+  },
+  "judaism": {
+    "title": "ইহুদি ধর্ম",
+    "items": "আইটেম",
+    "empty": "কোনো কন্টেন্ট নেই",
+    "shabbat": {
+      "title": "শাব্বাত সময়",
+      "shabbatShalom": "শাব্বাত শালোম!",
+      "candleLighting": "মোমবাতি জ্বালানো",
+      "havdalah": "হাভদালা"
+    }
+  },
+  "liveTV": {
+    "title": "লাইভ TV",
+    "channels": "চ্যানেল",
+    "nowPlaying": "এখন চলছে",
+    "loadError": "চ্যানেল লোড করতে ব্যর্থ",
+    "categories": {
+      "all": "সব",
+      "news": "সংবাদ",
+      "sports": "খেলাধুলা",
+      "entertainment": "বিনোদন",
+      "kids": "শিশু",
+      "documentary": "ডকুমেন্টারি"
+    }
   },
   "login": {
     "title": "স্বাগতম",
@@ -97,23 +539,10 @@
       "emailRequired": "ইমেইল প্রয়োজন",
       "passwordRequired": "পাসওয়ার্ড প্রয়োজন",
       "loginFailed": "লগইন ব্যর্থ।",
-      "fillAllFields": "সব ফিল্ড পূরণ করুন"
-    }
-  },
-  "register": {
-    "title": "অ্যাকাউন্ট তৈরি করুন",
-    "subtitle": "আপনার পছন্দের কন্টেন্ট দেখতে Bayit+-এ যোগ দিন",
-    "name": "পুরো নাম",
-    "email": "ইমেইল",
-    "password": "পাসওয়ার্ড",
-    "confirmPassword": "পাসওয়ার্ড নিশ্চিত করুন",
-    "submit": "সাইন আপ করুন",
-    "acceptTerms": "আমি সম্মত",
-    "termsOfService": "সেবার শর্তাবলী",
-    "and": "এবং",
-    "privacyPolicy": "গোপনীয়তা নীতি",
-    "haveAccount": "ইতিমধ্যে অ্যাকাউন্ট আছে?",
-    "signIn": "সাইন ইন করুন"
+      "fillAllFields": "সব ফিল্ড পূরণ করুন",
+      "noAccount": "অ্যাকাউন্ট নেই?"
+    },
+    "signUpNow": "এখনই সাইন আপ করুন"
   },
   "nav": {
     "home": "হোম",
@@ -122,6 +551,7 @@
     "epg": "TV গাইড",
     "radio": "রেডিও",
     "podcasts": "পডকাস্ট",
+    "audiobooks": "অডিওবুক",
     "flows": "ফ্লো",
     "judaism": "ইহুদি ধর্ম",
     "children": "শিশু",
@@ -140,319 +570,33 @@
     "games": "গেমস",
     "friends": "বন্ধুরা"
   },
-  "epg": {
-    "title": "TV গাইড",
-    "subtitle": "লাইভ TV প্রোগ্রাম সময়সূচী",
-    "gridView": "গ্রিড ভিউ",
-    "listView": "তালিকা ভিউ",
-    "israelTime": "ইসরায়েল সময়",
-    "localTime": "স্থানীয় সময়",
-    "jumpToNow": "এখনে যান",
-    "errorTitle": "TV গাইড লোড করতে ব্যর্থ",
-    "noPrograms": "কোনো প্রোগ্রাম নেই",
-    "noChannels": "কোনো চ্যানেল নেই"
-  },
-  "home": {
-    "continueWatching": "দেখা চালিয়ে যান",
-    "featuredContent": "ফিচার্ড",
-    "liveTV": "লাইভ TV",
-    "allChannels": "সব চ্যানেল",
-    "liveChannels": "লাইভ চ্যানেল",
-    "israeliMovies": "ইসরায়েলি সিনেমা",
-    "comedy": "কমেডি",
-    "drama": "ড্রামা",
-    "documentaries": "ডকুমেন্টারি",
-    "loadingContent": "কন্টেন্ট লোড হচ্ছে...",
-    "liveNow": "এখন লাইভ",
-    "categories": "বিভাগ",
-    "nearYou": "কাছাকাছি ইসরায়েলীয়"
-  },
-  "search": {
-    "title": "খুঁজুন",
-    "subtitle": "সিনেমা, সিরিজ, চ্যানেল, রেডিও এবং পডকাস্ট খুঁজুন",
-    "placeholder": "কন্টেন্ট খুঁজুন...",
-    "searching": "খুঁজছে...",
-    "listening": "শুনছে...",
-    "noResults": "কোনো ফলাফল নেই",
-    "recentSearches": "সাম্প্রতিক অনুসন্ধান",
-    "clearAll": "সব মুছুন",
-    "filters": {
-      "all": "সব",
-      "vod": "সিনেমা ও সিরিজ",
-      "live": "চ্যানেল",
-      "radio": "রেডিও",
-      "podcast": "পডকাস্ট"
-    }
-  },
-  "liveTV": {
-    "title": "লাইভ TV",
-    "channels": "চ্যানেল",
-    "nowPlaying": "এখন চলছে",
-    "loadError": "চ্যানেল লোড করতে ব্যর্থ",
-    "categories": {
-      "all": "সব",
-      "news": "সংবাদ",
-      "sports": "খেলাধুলা",
-      "entertainment": "বিনোদন",
-      "kids": "শিশু",
-      "documentary": "ডকুমেন্টারি"
-    }
-  },
-  "radio": {
-    "title": "রেডিও",
-    "noStations": "কোনো রেডিও স্টেশন নেই",
-    "tryLater": "পরে আবার চেষ্টা করুন",
-    "categories": {
-      "all": "সব",
-      "music": "সংগীত",
-      "news": "সংবাদ",
-      "talk": "টক",
-      "jewish": "ইহুদি"
-    },
-    "playing": "চলছে",
-    "fmSuffix": "FM"
-  },
-  "podcasts": {
-    "title": "পডকাস্ট",
-    "episodes": "পর্ব",
-    "noPodcasts": "কোনো পডকাস্ট নেই",
-    "categories": {
-      "all": "সব",
-      "general": "সাধারণ",
-      "news": "সংবাদ",
-      "politics": "রাজনীতি",
-      "tech": "প্রযুক্তি",
-      "business": "ব্যবসা",
-      "jewish": "ইহুদি",
-      "entertainment": "বিনোদন",
-      "sports": "খেলাধুলা",
-      "history": "ইতিহাস",
-      "educational": "শিক্ষামূলক"
-    }
-  },
-  "vod": {
-    "title": "সিনেমা ও সিরিজ",
-    "movies": "সিনেমা",
-    "series": "সিরিজ",
-    "searchPlaceholder": "সিনেমা ও সিরিজ খুঁজুন...",
-    "noMovies": "কোনো সিনেমা নেই",
-    "noSeries": "কোনো সিরিজ নেই",
-    "loadError": "কন্টেন্ট লোড করতে ব্যর্থ",
-    "categories": {
-      "all": "সব",
-      "drama": "ড্রামা",
-      "comedy": "কমেডি",
-      "action": "অ্যাকশন",
-      "documentary": "ডকুমেন্টারি",
-      "kids": "শিশু"
-    }
-  },
-  "account": {
-    "title": "আমার অ্যাকাউন্ট",
-    "profile": "প্রোফাইল",
-    "settings": "সেটিংস",
-    "subscription": "সাবস্ক্রিপশন",
-    "logout": "লগআউট",
-    "login": "লগইন",
-    "guest": "অতিথি",
-    "premium": "প্রিমিয়াম",
-    "basic": "বেসিক"
-  },
-  "profile": {
-    "title": "আমার প্রোফাইল",
-    "name": "নাম",
-    "notSet": "সেট করা হয়নি",
-    "email": "ইমেইল",
-    "editProfile": "প্রোফাইল সম্পাদনা করুন",
-    "logout": "লগ আউট",
-    "premium": "প্রিমিয়াম",
-    "basic": "বেসিক",
-    "upgrade": "প্রিমিয়ামে আপগ্রেড করুন",
-    "complimentaryPremium": "বিনামূল্যে প্রিমিয়াম অ্যাক্সেস",
-    "emailVerified": "ইমেল যাচাই করা হয়েছে",
-    "emailUnverified": "ইমেল যাচাই করা হয়নি",
-    "phoneVerified": "ফোন যাচাই করা হয়েছে",
-    "phoneUnverified": "ফোন যাচাই করা হয়নি",
-    "completeVerification": "সমস্ত বৈশিষ্ট্য আনলক করতে যাচাই সম্পূর্ণ করুন",
-    "unlockPremium": "প্রিমিয়াম বৈশিষ্ট্য আনলক করুন",
-    "unlockPremiumDescription": "একচেটিয়া বিষয়বস্তু এবং বৈশিষ্ট্য উপভোগ করতে আপগ্রেড করুন"
-  },
-  "settings": {
-    "title": "সেটিংস",
-    "language": "ভাষা",
-    "appLanguage": "অ্যাপ ভাষা",
-    "selectLanguage": "ভাষা নির্বাচন করুন",
-    "languages": {
-      "en": "English",
-      "he": "עברית",
-      "es": "Español",
-      "zh": "中文",
-      "fr": "Français",
-      "it": "Italiano",
-      "hi": "हिन्दी",
-      "ta": "தமிழ்",
-      "bn": "বাংলা",
-      "ja": "日本語"
-    },
-    "notifications": "বিজ্ঞপ্তি",
-    "playback": "প্লেব্যাক",
-    "quality": "মান",
-    "subtitles": "সাবটাইটেল",
-    "autoplay": "অটোপ্লে",
-    "appearance": "চেহারা",
-    "darkMode": "ডার্ক মোড",
-    "privacy": "গোপনীয়তা",
-    "privacyPolicy": "গোপনীয়তা নীতি",
-    "termsOfService": "সেবার শর্তাবলী",
-    "about": "সম্পর্কে"
-  },
-  "player": {
-    "loading": "লোড হচ্ছে...",
-    "retry": "পুনরায় চেষ্টা করুন",
-    "error": "ভিডিও চালাতে ত্রুটি",
-    "back": "← পিছনে",
-    "liveBadge": "লাইভ",
-    "noStream": "স্ট্রিম নেই",
-    "settings": "সেটিংস",
-    "subtitles": "সাবটাইটেল",
-    "quality": "মান",
-    "auto": "অটো",
-    "restart": "পুনরায় শুরু করুন",
-    "subtitlesOff": "বন্ধ",
-    "speed": "গতি"
-  },
-  "content": {
-    "play": "চালান",
-    "addToList": "তালিকায় যোগ করুন",
-    "inList": "তালিকায় আছে",
-    "details": "বিবরণ",
-    "synopsis": "সারাংশ",
-    "genre": "জনরা",
-    "runtime": "সময়কাল",
-    "director": "পরিচালক",
-    "cast": "কাস্ট",
-    "season": "সিজন",
-    "episode": "পর্ব",
-    "episodes": "পর্বসমূহ",
-    "rating": "রেটিং",
-    "watchTrailer": "ট্রেলার দেখুন",
-    "relatedContent": "সম্পর্কিত কন্টেন্ট",
-    "notFound": "কন্টেন্ট পাওয়া যায়নি"
-  },
-  "errors": {
-    "networkError": "নেটওয়ার্ক ত্রুটি",
-    "loadingFailed": "লোড করা ব্যর্থ",
-    "tryAgain": "পুনরায় চেষ্টা করুন",
-    "offline": {
-      "title": "ইন্টারনেট সংযোগ নেই",
-      "message": "আপনি বর্তমানে অফলাইনে আছেন।"
-    },
-    "online": {
-      "title": "সংযোগ পুনরুদ্ধার",
-      "message": "আপনি আবার অনলাইনে আছেন।"
-    }
-  },
-  "favorites": {
-    "title": "প্রিয়",
-    "items": "আইটেম",
-    "empty": "কোনো প্রিয় নেই",
-    "emptyHint": "আপনার প্রিয়তে আইটেম যোগ করুন"
-  },
-  "downloads": {
-    "title": "ডাউনলোড",
-    "items": "আইটেম",
-    "empty": "কোনো ডাউনলোড নেই",
-    "emptyHint": "অফলাইনে দেখার জন্য কন্টেন্ট ডাউনলোড করুন"
-  },
-  "watchlist": {
-    "title": "ওয়াচলিস্ট",
-    "items": "আইটেম",
-    "empty": "আপনার ওয়াচলিস্ট খালি",
-    "filters": {
-      "all": "সব",
-      "movies": "সিনেমা",
-      "series": "সিরিজ",
-      "kids": "শিশু"
-    }
-  },
-  "children": {
-    "title": "শিশু",
-    "items": "আইটেম",
-    "empty": "কোনো কন্টেন্ট নেই",
-    "exitKidsMode": "কিডস মোড থেকে বের হন",
-    "categories": {
-      "all": "সব",
-      "cartoons": "কার্টুন",
-      "educational": "শিক্ষামূলক",
-      "music": "সংগীত",
-      "stories": "গল্প",
-      "jewish": "ইহুদি"
-    }
-  },
-  "judaism": {
-    "title": "ইহুদি ধর্ম",
-    "items": "আইটেম",
-    "empty": "কোনো কন্টেন্ট নেই",
-    "shabbat": {
-      "title": "শাব্বাত সময়",
-      "shabbatShalom": "শাব্বাত শালোম!",
-      "candleLighting": "মোমবাতি জ্বালানো",
-      "havdalah": "হাভদালা"
-    }
-  },
-  "chatbot": {
-    "title": "Bayit+ সহায়ক",
-    "greeting": "হ্যালো! আমি Bayit+ স্মার্ট সহায়ক। আজ আমি আপনাকে কীভাবে সাহায্য করতে পারি?",
-    "placeholder": "এখানে টাইপ করুন..."
-  },
-  "subscribe": {
-    "title": "আপনার প্ল্যান বেছে নিন",
-    "subtitle": "যেকোনো প্ল্যানে ৭ দিনের বিনামূল্যে ট্রায়াল। যেকোনো সময় বাতিল করুন।",
-    "monthly": "মাসিক",
-    "yearly": "বার্ষিক",
-    "popular": "সবচেয়ে জনপ্রিয়",
-    "period": "/মাস",
-    "select": "প্ল্যান নির্বাচন করুন",
-    "startTrial": "বিনামূল্যে ট্রায়াল শুরু করুন"
-  },
-  "footer": {
-    "brandDescription": "USA-তে আপনার বাড়ি। হিব্রুতে TV সম্প্রচার, VOD, রেডিও এবং পডকাস্ট।",
-    "browse": "ব্রাউজ করুন",
-    "account": "অ্যাকাউন্ট",
-    "support": "সাপোর্ট",
-    "legal": "আইনি",
-    "copyright": "© {{year}} Bayit+. সর্বস্বত্ব সংরক্ষিত।",
-    "poweredBy": "দ্বারা চালিত"
-  },
-  "support": {
-    "title": "সাপোর্ট সেন্টার",
-    "subtitle": "আজ আমরা কীভাবে আপনাকে সাহায্য করতে পারি?",
-    "tabs": {
-      "docs": "ডকুমেন্টেশন",
-      "faq": "FAQ",
-      "contact": "যোগাযোগ",
-      "tickets": "আমার টিকেট"
-    }
-  },
   "notFound": {
     "title": "পৃষ্ঠা পাওয়া যায়নি",
     "description": "আপনি যে পৃষ্ঠাটি খুঁজছেন তা বিদ্যমান নেই।",
     "homeButton": "হোমে যান",
     "searchButton": "খুঁজুন"
   },
-  "recordings": {
-    "title": "আমার রেকর্ডিং",
-    "subtitle": "আপনার রেকর্ড করা লাইভ স্ট্রিম দেখুন এবং পরিচালনা করুন",
-    "record": "রেকর্ড",
-    "recording": "রেকর্ডিং হচ্ছে",
-    "noRecordings": "কোনো রেকর্ডিং নেই"
-  },
-  "voice": {
-    "listening": "শুনছে...",
-    "speaking": "বলছে",
-    "ready": "প্রস্তুত",
-    "tapToSpeak": "বলতে ট্যাপ করুন",
-    "processing": "প্রক্রিয়াকরণ হচ্ছে..."
+  "payment": {
+    "pending": {
+      "title": "আপনার সাবস্ক্রিপশন সম্পূর্ণ করুন",
+      "description": "7 দিনের বিনামূল্যে ট্রায়াল শুরু করতে এবং সমস্ত Bayit+ কন্টেন্ট অ্যাক্সেস করতে একটি প্ল্যান বেছে নিন",
+      "timeElapsed": "পেমেন্ট স্ট্যাটাস চেক করা হচ্ছে... ({{seconds}}সেকেন্ড)",
+      "takingLonger": "পেমেন্ট নিশ্চিতকরণ প্রত্যাশিত সময়ের চেয়ে বেশি সময় নিচ্ছে। আপনি ইতিমধ্যে পেমেন্ট করে থাকলে রিফ্রেশ করার চেষ্টা করুন বা সাপোর্টে যোগাযোগ করুন।",
+      "helpText": "সাহায্য প্রয়োজন? support@bayit.tv এ যোগাযোগ করুন বা আপনি ইতিমধ্যে পেমেন্ট সম্পূর্ণ করে থাকলে এই পেজটি রিফ্রেশ করুন।"
+    },
+    "continueToPayment": "পেমেন্টে চালিয়ে যান",
+    "success": {
+      "title": "পেমেন্ট সফল!",
+      "description": "Bayit+ এ স্বাগতম! আপনার সাবস্ক্রিপশন এখন সক্রিয়।",
+      "redirecting": "{{seconds}} সেকেন্ডে পুনঃনির্দেশিত হচ্ছে...",
+      "continue": "Bayit+ এ চালিয়ে যান"
+    },
+    "cancelled": {
+      "title": "পেমেন্ট বাতিল",
+      "description": "আপনার সাবস্ক্রিপশন সম্পূর্ণ হয়নি। আপনি প্রস্তুত হলে আবার চেষ্টা করতে পারেন।",
+      "retry": "আবার চেষ্টা করুন",
+      "helpText": "প্রশ্ন আছে? সাহায্যের জন্য support@bayit.tv এ যোগাযোগ করুন।"
+    }
   },
   "plans": {
     "basic": {
@@ -484,95 +628,87 @@
         "4K মান",
         "৫টি ফ্যামিলি প্রোফাইল"
       ]
+    },
+    "non_registered": {
+      "name": "শুধুমাত্র ব্রাউজ করুন",
+      "description": "আমাদের কন্টেন্ট লাইব্রেরি অন্বেষণ করুন"
+    },
+    "registered_free": {
+      "name": "বিনামূল্যে অ্যাকাউন্ট",
+      "description": "বিনামূল্যে বৈশিষ্ট্যের জন্য অ্যাকাউন্ট তৈরি করুন"
+    },
+    "comparison": {
+      "title": "পরিকল্পনা তুলনা করুন",
+      "subtitle": "আপনার প্রয়োজনের জন্য নিখুঁত পরিকল্পনা খুঁজুন",
+      "categories": {
+        "content": "কন্টেন্ট অ্যাক্সেস",
+        "quality": "মান এবং কর্মক্ষমতা",
+        "devices": "ডিভাইস এবং স্ট্রিমিং",
+        "features": "প্রিমিয়াম বৈশিষ্ট্য",
+        "support": "গ্রাহক সহায়তা"
+      },
+      "features": {
+        "browseContent": "কন্টেন্ট লাইব্রেরি ব্রাউজ করুন",
+        "vodAccess": "অন-ডিমান্ড মুভি এবং সিরিজ",
+        "liveChannels": "লাইভ টিভি চ্যানেল",
+        "radioPodcasts": "রেডিও এবং পডকাস্ট",
+        "videoQuality": "ভিডিও মান",
+        "simultaneousDevices": "একযোগে ডিভাইস",
+        "aiAssistant": "AI স্মার্ট সহায়ক",
+        "familyProfiles": "পারিবারিক প্রোফাইল",
+        "offlineDownloads": "অফলাইনের জন্য ডাউনলোড করুন",
+        "customerSupport": "গ্রাহক সহায়তা"
+      }
     }
   },
-  "admin": {
-    "brand": {
-      "title": "Bayit+ অ্যাডমিন",
-      "subtitle": "সিস্টেম ম্যানেজমেন্ট"
+  "player": {
+    "loading": "লোড হচ্ছে...",
+    "retry": "পুনরায় চেষ্টা করুন",
+    "error": "ভিডিও চালাতে ত্রুটি",
+    "back": "← পিছনে",
+    "liveBadge": "লাইভ",
+    "noStream": "স্ট্রিম নেই",
+    "settings": "সেটিংস",
+    "subtitles": "সাবটাইটেল",
+    "quality": "মান",
+    "auto": "অটো",
+    "restart": "পুনরায় শুরু করুন",
+    "subtitlesOff": "বন্ধ",
+    "speed": "গতি",
+    "streamLimit": {
+      "title": "স্ট্রিমিং সীমা পৌঁছেছে",
+      "message": "আপনি আপনার পরিকল্পনার সর্বাধিক সমকালীন স্ট্রিম ({{maxStreams}}) এ পৌঁছেছেন।",
+      "activeDevices": "বর্তমানে {{count}} ডিভাইসে স্ট্রিমিং:",
+      "hint": "একটি স্ট্রিমিং স্লট মুক্ত করতে একটি ডিভাইস সংযোগ বিচ্ছিন্ন করুন, বা আরও সমকালীন স্ট্রিমের জন্য আপনার পরিকল্পনা আপগ্রেড করুন।",
+      "manageDevices": "ডিভাইস পরিচালনা করুন"
     },
-    "backToApp": "অ্যাপে ফিরে যান",
-    "dashboard": {
-      "title": "ড্যাশবোর্ড",
-      "subtitle": "সিস্টেম ওভারভিউ",
-      "refresh": "রিফ্রেশ",
-      "users": "ব্যবহারকারী",
-      "revenue": "রাজস্ব",
-      "subscriptions": "সাবস্ক্রিপশন"
-    },
-    "nav": {
-      "dashboard": "ড্যাশবোর্ড",
-      "users": "ব্যবহারকারী",
-      "content": "কন্টেন্ট",
-      "settings": "সেটিংস"
-    },
-    "content": {
-      "filters": {
-        "title": "ফিল্টার",
-        "contentType": "কন্টেন্ট টাইপ",
-        "all": "সব",
-        "allContent": "সব",
-        "series": "সিরিজ",
-        "movies": "সিনেমা",
-        "podcasts": "পডকাস্ট",
-        "radioStations": "রেডিও স্টেশন",
-        "status": "স্ট্যাটাস",
-        "allStatus": "সব স্ট্যাটাস",
-        "subtitles": "সাবটাইটেল"
-      },
-      "podcastsComingSoon": "পডকাস্ট ম্যানেজমেন্ট শীঘ্রই আসছে। পডকাস্ট বিভাগ ব্যবহার করুন।",
-      "radioComingSoon": "রেডিও স্টেশন ম্যানেজমেন্ট শীঘ্রই আসছে। রেডিও স্টেশন বিভাগ ব্যবহার করুন।"
+    "cast": {
+      "start": "টিভিতে কাস্ট করুন",
+      "connected": "{{device}} এ কাস্ট হচ্ছে",
+      "disconnect": "{{device}} থেকে সংযোগ বিচ্ছিন্ন করুন",
+      "connecting": "কাস্ট ডিভাইসের সাথে সংযোগ করা হচ্ছে...",
+      "error": "কাস্ট ডিভাইসের সাথে সংযোগ করতে ব্যর্থ",
+      "noDevices": "কোনো কাস্ট ডিভাইস পাওয়া যায়নি",
+      "unsupported": "এই বিষয়বস্তুর জন্য কাস্টিং উপলব্ধ নয়"
     }
   },
-  "cultureClock": {
-    "timeIn": "{{location}} সময়",
-    "shabbat": "শাব্বাত",
-    "weekend": "সপ্তাহান্ত"
-  },
-  "voiceOnboarding": {
-    "welcome": {
-      "title": "ভয়েস কন্ট্রোলে স্বাগতম",
-      "description": "হ্যান্ডস-ফ্রি অভিজ্ঞতার জন্য আপনার কণ্ঠ দিয়ে Bayit+ নিয়ন্ত্রণ করুন"
-    },
-    "features": {
-      "voiceCommands": "ভয়েস কমান্ড",
-      "voiceCommandsDesc": "স্বাভাবিক কথার মাধ্যমে নেভিগেট করুন, অনুসন্ধান করুন এবং প্লেব্যাক নিয়ন্ত্রণ করুন",
-      "tts": "টেক্সট-টু-স্পিচ",
-      "ttsDesc": "উচ্চস্বরে প্রতিক্রিয়া এবং বিষয়বস্তু বিবরণ শুনুন",
-      "wakeWord": "ওয়েক ওয়ার্ড",
-      "wakeWordDesc": "যেকোনো সময় ভয়েস কন্ট্রোল সক্রিয় করতে 'Bayit' বলুন"
-    },
-    "getStarted": "শুরু করুন",
-    "permissions": {
-      "title": "মাইক্রোফোন অ্যাক্সেস",
-      "description": "আপনার কমান্ড শুনতে ভয়েস কন্ট্রোলের জন্য মাইক্রোফোন অ্যাক্সেস প্রয়োজন",
-      "privacy": "আপনার ভয়েস ডেটা নিরাপদে প্রক্রিয়া করা হয় এবং কখনও সংরক্ষণ করা হয় না"
-    },
-    "permissionsGranted": "মাইক্রোফোন অ্যাক্সেস দেওয়া হয়েছে",
-    "permissionRequired": {
-      "title": "অনুমতি প্রয়োজন",
-      "message": "ভয়েস কন্ট্রোল ব্যবহার করতে আপনার ডিভাইস সেটিংসে মাইক্রোফোন অ্যাক্সেস সক্ষম করুন"
-    },
-    "grantPermissions": "অনুমতি দিন",
-    "testWakeWord": {
-      "title": "ওয়েক ওয়ার্ড পরীক্ষা করুন",
-      "description": "ভয়েস অ্যাক্টিভেশন পরীক্ষা করতে 'Bayit' বলুন",
-      "success": "চমৎকার! ভয়েস অ্যাক্টিভেশন কাজ করছে"
-    },
-    "startTest": "পরীক্ষা শুরু করুন",
-    "complete": {
-      "title": "সব প্রস্তুত!",
-      "description": "ভয়েস কন্ট্রোল এখন সক্রিয়। এই কমান্ডগুলি চেষ্টা করুন:",
-      "tryCommands": "এই কমান্ডগুলি চেষ্টা করুন",
-      "examples": {
-        "search": "\"Fauda খুঁজুন\"",
-        "play": "\"সংবাদ চালান\"",
-        "navigate": "\"লাইভ টিভিতে যান\"",
-        "control": "\"থামুন\" বা \"ভলিউম বাড়ান\""
-      },
-      "startUsing": "ভয়েস কন্ট্রোল ব্যবহার শুরু করুন"
-    },
-    "skip": "এখন এড়িয়ে যান"
+  "podcasts": {
+    "title": "পডকাস্ট",
+    "episodes": "পর্ব",
+    "noPodcasts": "কোনো পডকাস্ট নেই",
+    "categories": {
+      "all": "সব",
+      "general": "সাধারণ",
+      "news": "সংবাদ",
+      "politics": "রাজনীতি",
+      "tech": "প্রযুক্তি",
+      "business": "ব্যবসা",
+      "jewish": "ইহুদি",
+      "entertainment": "বিনোদন",
+      "sports": "খেলাধুলা",
+      "history": "ইতিহাস",
+      "educational": "শিক্ষামূলক"
+    }
   },
   "portal": {
     "nav": {
@@ -713,6 +849,209 @@
       }
     }
   },
+  "profile": {
+    "title": "আমার প্রোফাইল",
+    "name": "নাম",
+    "notSet": "সেট করা হয়নি",
+    "email": "ইমেইল",
+    "editProfile": "প্রোফাইল সম্পাদনা করুন",
+    "logout": "লগ আউট",
+    "premium": "প্রিমিয়াম",
+    "basic": "বেসিক",
+    "upgrade": "প্রিমিয়ামে আপগ্রেড করুন",
+    "complimentaryPremium": "বিনামূল্যে প্রিমিয়াম অ্যাক্সেস",
+    "emailVerified": "ইমেল যাচাই করা হয়েছে",
+    "emailUnverified": "ইমেল যাচাই করা হয়নি",
+    "phoneVerified": "ফোন যাচাই করা হয়েছে",
+    "phoneUnverified": "ফোন যাচাই করা হয়নি",
+    "completeVerification": "সমস্ত বৈশিষ্ট্য আনলক করতে যাচাই সম্পূর্ণ করুন",
+    "unlockPremium": "প্রিমিয়াম বৈশিষ্ট্য আনলক করুন",
+    "unlockPremiumDescription": "একচেটিয়া বিষয়বস্তু এবং বৈশিষ্ট্য উপভোগ করতে আপগ্রেড করুন",
+    "tabs": {
+      "devices": "ডিভাইস"
+    },
+    "devices": {
+      "registeredDevices": "নিবন্ধিত ডিভাইস",
+      "description": "আপনার অ্যাকাউন্টে অ্যাক্সেস আছে এমন ডিভাইসগুলি পরিচালনা করুন। স্ট্রিমিং স্লট খালি করতে আপনি ডিভাইসগুলি সংযোগ বিচ্ছিন্ন করতে পারেন।",
+      "noDevices": "কোনো ডিভাইস সংযুক্ত নেই",
+      "noDevicesDescription": "যখন আপনি বিভিন্ন প্ল্যাটফর্মে লগইন করবেন তখন ডিভাইসগুলি এখানে প্রদর্শিত হবে",
+      "activeNow": "এখন সক্রিয়",
+      "minutesAgo": "{{count}} মিনিট আগে",
+      "hoursAgo": "{{count}} ঘণ্টা আগে",
+      "daysAgo": "{{count}} দিন আগে",
+      "disconnect": "সংযোগ বিচ্ছিন্ন করুন",
+      "confirmDisconnect": "ডিভাইস সংযোগ বিচ্ছিন্ন করবেন?",
+      "confirmDisconnectMessage": "এটি এই ডিভাইসে সমস্ত সক্রিয় প্লেব্যাক সেশন শেষ করবে এবং আপনার অ্যাকাউন্ট থেকে এটি সরিয়ে দেবে।",
+      "disconnectSuccess": "ডিভাইস সংযোগ বিচ্ছিন্ন হয়েছে",
+      "disconnectSuccessMessage": "ডিভাইসটি সফলভাবে সংযোগ বিচ্ছিন্ন হয়েছে।",
+      "disconnectSuccessWithSessions": "ডিভাইস সংযোগ বিচ্ছিন্ন হয়েছে এবং {{count}}টি সক্রিয় সেশন শেষ হয়েছে।",
+      "thisDevice": "এই ডিভাইস",
+      "loading": "ডিভাইস লোড হচ্ছে..."
+    }
+  },
+  "radio": {
+    "title": "রেডিও",
+    "noStations": "কোনো রেডিও স্টেশন নেই",
+    "tryLater": "পরে আবার চেষ্টা করুন",
+    "categories": {
+      "all": "সব",
+      "music": "সংগীত",
+      "news": "সংবাদ",
+      "talk": "টক",
+      "jewish": "ইহুদি"
+    },
+    "playing": "চলছে",
+    "fmSuffix": "FM"
+  },
+  "recordings": {
+    "title": "আমার রেকর্ডিং",
+    "subtitle": "আপনার রেকর্ড করা লাইভ স্ট্রিম দেখুন এবং পরিচালনা করুন",
+    "record": "রেকর্ড",
+    "recording": "রেকর্ডিং হচ্ছে",
+    "noRecordings": "কোনো রেকর্ডিং নেই"
+  },
+  "register": {
+    "title": "অ্যাকাউন্ট তৈরি করুন",
+    "subtitle": "আপনার পছন্দের কন্টেন্ট দেখতে Bayit+-এ যোগ দিন",
+    "name": "পুরো নাম",
+    "email": "ইমেইল",
+    "password": "পাসওয়ার্ড",
+    "confirmPassword": "পাসওয়ার্ড নিশ্চিত করুন",
+    "submit": "সাইন আপ করুন",
+    "acceptTerms": "আমি সম্মত",
+    "termsOfService": "সেবার শর্তাবলী",
+    "and": "এবং",
+    "privacyPolicy": "গোপনীয়তা নীতি",
+    "haveAccount": "ইতিমধ্যে অ্যাকাউন্ট আছে?",
+    "signIn": "সাইন ইন করুন"
+  },
+  "search": {
+    "title": "খুঁজুন",
+    "subtitle": "সিনেমা, সিরিজ, চ্যানেল, রেডিও এবং পডকাস্ট খুঁজুন",
+    "placeholder": "কন্টেন্ট খুঁজুন...",
+    "searching": "খুঁজছে...",
+    "listening": "শুনছে...",
+    "noResults": "কোনো ফলাফল নেই",
+    "recentSearches": "সাম্প্রতিক অনুসন্ধান",
+    "clearAll": "সব মুছুন",
+    "filters": {
+      "all": "সব",
+      "vod": "সিনেমা ও সিরিজ",
+      "live": "চ্যানেল",
+      "radio": "রেডিও",
+      "podcast": "পডকাস্ট"
+    },
+    "controls": {
+      "placeholder": "Search for content...",
+      "hints": {
+        "searchInput": "Enter keywords to search"
+      }
+    },
+    "semantic": {
+      "keyword": "Keyword",
+      "semantic": "AI Search",
+      "infoTitle": "AI-Powered Search",
+      "info": "AI search understands context and finds exact moments in videos by analyzing scenes, dialogue, and visual content."
+    },
+    "suggestions": {
+      "trendingTitle": "Trending Searches",
+      "categoriesTitle": "Browse Categories",
+      "recentTitle": "Recent Searches",
+      "clearRecent": "Clear"
+    },
+    "empty": {
+      "clearSearch": "Clear search"
+    }
+  },
+  "settings": {
+    "title": "সেটিংস",
+    "language": "ভাষা",
+    "appLanguage": "অ্যাপ ভাষা",
+    "selectLanguage": "ভাষা নির্বাচন করুন",
+    "languages": {
+      "en": "English",
+      "he": "עברית",
+      "es": "Español",
+      "zh": "中文",
+      "fr": "Français",
+      "it": "Italiano",
+      "hi": "हिन्दी",
+      "ta": "தமிழ்",
+      "bn": "বাংলা",
+      "ja": "日本語"
+    },
+    "notifications": "বিজ্ঞপ্তি",
+    "playback": "প্লেব্যাক",
+    "quality": "মান",
+    "subtitles": "সাবটাইটেল",
+    "autoplay": "অটোপ্লে",
+    "appearance": "চেহারা",
+    "darkMode": "ডার্ক মোড",
+    "privacy": "গোপনীয়তা",
+    "privacyPolicy": "গোপনীয়তা নীতি",
+    "termsOfService": "সেবার শর্তাবলী",
+    "about": "সম্পর্কে"
+  },
+  "subscribe": {
+    "title": "আপনার প্ল্যান বেছে নিন",
+    "subtitle": "যেকোনো প্ল্যানে ৭ দিনের বিনামূল্যে ট্রায়াল। যেকোনো সময় বাতিল করুন।",
+    "monthly": "মাসিক",
+    "yearly": "বার্ষিক",
+    "popular": "সবচেয়ে জনপ্রিয়",
+    "period": "/মাস",
+    "select": "প্ল্যান নির্বাচন করুন",
+    "startTrial": "বিনামূল্যে ট্রায়াল শুরু করুন",
+    "viewComparison": "সম্পূর্ণ তুলনা দেখুন",
+    "viewCards": "পরিকল্পনা দেখুন",
+    "premiumShowcase": {
+      "title": "প্রিমিয়াম ইন্টেলিজেন্স অভিজ্ঞতা করুন",
+      "subtitle": "AI-চালিত বৈশিষ্ট্যগুলি যা আপনার দেখার পদ্ধতির সাথে খাপ খায়",
+      "videoTitle": "কার্যকলাপে উইজেট দেখুন",
+      "videoDescription": "ফ্লোটিং উইজেটগুলির জন্য আমাদের 2-মিনিটের পরিচিতি দেখুন",
+      "widgetTitle": "ইন্টারঅ্যাক্টিভ লাইভ ডেমো",
+      "widgetDescription": "Kan11 এর সাথে টেনে আনুন, আকার পরিবর্তন করুন এবং মাল্টিটাস্ক করুন",
+      "aiAssistant": {
+        "title": "AI স্মার্ট সহায়ক",
+        "description": "মেশিন লার্নিং দ্বারা চালিত ব্যক্তিগত সুপারিশ"
+      },
+      "floatingWidgets": {
+        "title": "ফ্লোটিং উইজেট",
+        "description": "কন্টেন্ট ব্রাউজ করার সময় একাধিক চ্যানেল দেখুন"
+      },
+      "a11y": {
+        "playVideo": "উইজেট পরিচিতি ভিডিও চালান",
+        "playVideoHint": "সম্পূর্ণ স্ক্রীন ভিডিও প্রদর্শনী খোলে"
+      },
+      "badges": {
+        "aiPowered": "AI দ্বারা চালিত",
+        "interactiveDemo": "ইন্টারঅ্যাক্টিভ ডেমো"
+      }
+    },
+    "comparison": {
+      "title": "পরিকল্পনা তুলনা করুন",
+      "subtitle": "আপনার জন্য নিখুঁত পরিকল্পনা খুঁজুন",
+      "features": "বৈশিষ্ট্যসমূহ",
+      "perMonth": "/মাস",
+      "scrollHint": "← সমস্ত পরিকল্পনা দেখতে স্ক্রোল করুন →",
+      "categories": {
+        "content": "কন্টেন্ট অ্যাক্সেস",
+        "quality": "মান এবং কর্মক্ষমতা",
+        "devices": "ডিভাইস এবং স্ট্রিমিং",
+        "features": "বৈশিষ্ট্যসমূহ",
+        "support": "সহায়তা"
+      }
+    }
+  },
+  "support": {
+    "title": "সাপোর্ট সেন্টার",
+    "subtitle": "আজ আমরা কীভাবে আপনাকে সাহায্য করতে পারি?",
+    "tabs": {
+      "docs": "ডকুমেন্টেশন",
+      "faq": "FAQ",
+      "contact": "যোগাযোগ",
+      "tickets": "আমার টিকেট"
+    }
+  },
   "trivia": {
     "didYouKnow": "আপনি কি জানেন?",
     "dismissHint": "তথ্য বন্ধ করুন",
@@ -722,6 +1061,86 @@
       "language": "ভাষা",
       "selectLanguage": "এই ভাষা নির্বাচন করুন",
       "deselectLanguage": "এই ভাষা অনির্বাচন করুন"
+    }
+  },
+  "vod": {
+    "title": "সিনেমা ও সিরিজ",
+    "movies": "সিনেমা",
+    "series": "সিরিজ",
+    "searchPlaceholder": "সিনেমা ও সিরিজ খুঁজুন...",
+    "noMovies": "কোনো সিনেমা নেই",
+    "noSeries": "কোনো সিরিজ নেই",
+    "loadError": "কন্টেন্ট লোড করতে ব্যর্থ",
+    "categories": {
+      "all": "সব",
+      "drama": "ড্রামা",
+      "comedy": "কমেডি",
+      "action": "অ্যাকশন",
+      "documentary": "ডকুমেন্টারি",
+      "kids": "শিশু"
+    }
+  },
+  "voice": {
+    "listening": "শুনছে...",
+    "speaking": "বলছে",
+    "ready": "প্রস্তুত",
+    "tapToSpeak": "বলতে ট্যাপ করুন",
+    "processing": "প্রক্রিয়াকরণ হচ্ছে..."
+  },
+  "voiceOnboarding": {
+    "welcome": {
+      "title": "ভয়েস কন্ট্রোলে স্বাগতম",
+      "description": "হ্যান্ডস-ফ্রি অভিজ্ঞতার জন্য আপনার কণ্ঠ দিয়ে Bayit+ নিয়ন্ত্রণ করুন"
+    },
+    "features": {
+      "voiceCommands": "ভয়েস কমান্ড",
+      "voiceCommandsDesc": "স্বাভাবিক কথার মাধ্যমে নেভিগেট করুন, অনুসন্ধান করুন এবং প্লেব্যাক নিয়ন্ত্রণ করুন",
+      "tts": "টেক্সট-টু-স্পিচ",
+      "ttsDesc": "উচ্চস্বরে প্রতিক্রিয়া এবং বিষয়বস্তু বিবরণ শুনুন",
+      "wakeWord": "ওয়েক ওয়ার্ড",
+      "wakeWordDesc": "যেকোনো সময় ভয়েস কন্ট্রোল সক্রিয় করতে 'Bayit' বলুন"
+    },
+    "getStarted": "শুরু করুন",
+    "permissions": {
+      "title": "মাইক্রোফোন অ্যাক্সেস",
+      "description": "আপনার কমান্ড শুনতে ভয়েস কন্ট্রোলের জন্য মাইক্রোফোন অ্যাক্সেস প্রয়োজন",
+      "privacy": "আপনার ভয়েস ডেটা নিরাপদে প্রক্রিয়া করা হয় এবং কখনও সংরক্ষণ করা হয় না"
+    },
+    "permissionsGranted": "মাইক্রোফোন অ্যাক্সেস দেওয়া হয়েছে",
+    "permissionRequired": {
+      "title": "অনুমতি প্রয়োজন",
+      "message": "ভয়েস কন্ট্রোল ব্যবহার করতে আপনার ডিভাইস সেটিংসে মাইক্রোফোন অ্যাক্সেস সক্ষম করুন"
+    },
+    "grantPermissions": "অনুমতি দিন",
+    "testWakeWord": {
+      "title": "ওয়েক ওয়ার্ড পরীক্ষা করুন",
+      "description": "ভয়েস অ্যাক্টিভেশন পরীক্ষা করতে 'Bayit' বলুন",
+      "success": "চমৎকার! ভয়েস অ্যাক্টিভেশন কাজ করছে"
+    },
+    "startTest": "পরীক্ষা শুরু করুন",
+    "complete": {
+      "title": "সব প্রস্তুত!",
+      "description": "ভয়েস কন্ট্রোল এখন সক্রিয়। এই কমান্ডগুলি চেষ্টা করুন:",
+      "tryCommands": "এই কমান্ডগুলি চেষ্টা করুন",
+      "examples": {
+        "search": "\"Fauda খুঁজুন\"",
+        "play": "\"সংবাদ চালান\"",
+        "navigate": "\"লাইভ টিভিতে যান\"",
+        "control": "\"থামুন\" বা \"ভলিউম বাড়ান\""
+      },
+      "startUsing": "ভয়েস কন্ট্রোল ব্যবহার শুরু করুন"
+    },
+    "skip": "এখন এড়িয়ে যান"
+  },
+  "watchlist": {
+    "title": "ওয়াচলিস্ট",
+    "items": "আইটেম",
+    "empty": "আপনার ওয়াচলিস্ট খালি",
+    "filters": {
+      "all": "সব",
+      "movies": "সিনেমা",
+      "series": "সিরিজ",
+      "kids": "শিশু"
     }
   }
 }

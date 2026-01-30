@@ -1,0 +1,34 @@
+{% extends "categories/payment.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block body_content %}
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 16px 0;">
+  {{ t('email.subscription_cancelled.intro', default='Your {plan_name} subscription has been cancelled.', lang=lang, plan_name=plan_name) }}
+</p>
+
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+  {{ t('email.subscription_cancelled.access_until', default='You\'ll continue to have access until {access_until}.', lang=lang, access_until=access_until) }}
+</p>
+
+{% if reason %}
+<div style="margin: 24px 0; padding: 16px; background: rgba(251, 146, 60, 0.1); border-left: 3px solid #fb923c; border-radius: 8px;">
+  <p style="color: rgba(255, 255, 255, 0.9); font-size: 14px; margin: 0;">
+    <strong>{{ t('email.subscription_cancelled.reason', default='Cancellation Reason', lang=lang) }}:</strong> {{ reason }}
+  </p>
+</div>
+{% endif %}
+
+<p style="color: rgba(255, 255, 255, 0.7); font-size: 15px; margin: 24px 0 0 0;">
+  {{ t('email.subscription_cancelled.feedback', default='We\'re sorry to see you go. Your feedback helps us improve.', lang=lang) }}
+</p>
+{% endblock %}
+
+{% block payment_cta %}
+<div style="margin: 32px 0;">
+  {{ button(
+    text=t('email.subscription_cancelled.feedback_cta', default='Share Feedback', lang=lang),
+    url=support_url,
+    primary=false
+  ) }}
+</div>
+{% endblock %}

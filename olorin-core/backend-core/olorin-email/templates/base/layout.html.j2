@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="{{ lang | default('en') }}" dir="{{ get_dir(lang | default('en')) }}" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="x-apple-disable-message-reformatting">
+    <meta name="color-scheme" content="dark">
+    <meta name="supported-color-schemes" content="dark">
+    <title>{{ subject | default('') }}</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style type="text/css">
+        /* Dark mode overrides */
+        :root { color-scheme: dark; supported-color-schemes: dark; }
+        body, .body-bg { background-color: #0a0a0a !important; }
+        /* Reset */
+        body { margin: 0; padding: 0; width: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table { border-spacing: 0; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { border: 0; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+        a { color: #a78bfa; text-decoration: none; }
+        a:hover { color: #c4b5fd; }
+        /* Responsive */
+        @media only screen and (max-width: 600px) {
+            .container { width: 100% !important; padding: 0 16px !important; }
+            .glass-card { padding: 24px 20px !important; }
+        }
+    </style>
+</head>
+<body class="body-bg" style="margin: 0; padding: 0; background-color: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+    {# Preheader text (visible in inbox preview) #}
+    {% block preheader %}{% endblock %}
+    <div style="display: none; max-height: 0; overflow: hidden;">{% block preheader_text %}{% endblock %}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
+
+    {# Outer wrapper #}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #0a0a0a;">
+        <tr>
+            <td align="center" style="padding: 32px 16px;">
+                {# Container #}
+                <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; width: 100%;">
+                    {# Header / Logo #}
+                    <tr>
+                        <td>
+                            {% block header_logo %}{% endblock %}
+                        </td>
+                    </tr>
+
+                    {# Glass Card #}
+                    <tr>
+                        <td>
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="glass-card" style="background-color: #1a0a2e; border: 1px solid rgba(126, 34, 206, 0.25); border-radius: 16px; padding: 32px;">
+                                <tr>
+                                    <td style="text-align: {{ 'right' if get_dir(lang | default('en')) == 'rtl' else 'left' }};">
+                                        {# Content Title #}
+                                        {% block content_title %}{% endblock %}
+
+                                        {# Content Body #}
+                                        {% block content_body %}{% endblock %}
+
+                                        {# CTA Button #}
+                                        {% block content_cta %}{% endblock %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    {# Footer #}
+                    <tr>
+                        <td style="padding-top: 24px;">
+                            {# Social Links #}
+                            {% block footer_social %}{% endblock %}
+
+                            {# Legal Footer #}
+                            {% block footer_legal %}{% endblock %}
+
+                            {# Unsubscribe #}
+                            {% block footer_unsubscribe %}{% endblock %}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

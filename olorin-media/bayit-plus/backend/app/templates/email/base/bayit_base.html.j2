@@ -1,0 +1,20 @@
+{% extends "base/layout.html.j2" %}
+{% from "components/header.html.j2" import header %}
+{% from "components/footer.html.j2" import footer %}
+{% from "components/button.html.j2" import button %}
+
+{# Bayit+ branded base - all Bayit templates extend this #}
+{% block header_logo %}
+{{ header(logo_url | default(''), platform_name | default('Bayit+'), header_url | default('')) }}
+{% endblock %}
+
+{% block footer_legal %}
+{{ footer(
+    unsubscribe_url=unsubscribe_url | default(''),
+    privacy_url=privacy_url | default(''),
+    terms_url=terms_url | default(''),
+    support_url=support_url | default(''),
+    company_name=company_name | default('Bayit+ by Olorin.ai'),
+    address=address | default('')
+) }}
+{% endblock %}

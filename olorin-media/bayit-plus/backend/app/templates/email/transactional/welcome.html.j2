@@ -1,0 +1,22 @@
+{% extends "categories/transactional.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block body_content %}
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 16px 0;">
+  {{ t('email.welcome.intro', default='Welcome to Bayit+! We\'re thrilled to have you join our community.', lang=lang) }}
+</p>
+
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+  {{ t('email.welcome.description', default='Your account is ready. Get started by exploring your personalized dashboard.', lang=lang) }}
+</p>
+{% endblock %}
+
+{% block cta_section %}
+<div style="margin: 32px 0;">
+  {{ button(
+    text=t('email.welcome.cta', default='Go to Dashboard', lang=lang),
+    url=dashboard_url,
+    primary=true
+  ) }}
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "categories/notification.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block notification_title %}
+{{ t('email.new_message.title', default='New Message', lang=lang) }}
+{% endblock %}
+
+{% block notification_content %}
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+  {{ t('email.new_message.intro', default='You have a new message from {sender_name}.', lang=lang, sender_name=sender_name) }}
+</p>
+
+<div style="margin: 24px 0; padding: 20px; background: rgba(96, 165, 250, 0.1); border-left: 3px solid #60a5fa; border-radius: 8px;">
+  <p style="color: rgba(255, 255, 255, 0.6); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0;">
+    {{ t('email.new_message.preview', default='Message Preview', lang=lang) }}
+  </p>
+  <p style="color: rgba(255, 255, 255, 0.9); font-size: 15px; line-height: 1.6; margin: 0;">
+    {{ message_preview }}
+  </p>
+</div>
+{% endblock %}
+
+{% block notification_action %}
+<div style="margin: 32px 0;">
+  {{ button(
+    text=t('email.new_message.read_cta', default='Read Message', lang=lang),
+    url=message_url,
+    primary=true
+  ) }}
+</div>
+{% endblock %}

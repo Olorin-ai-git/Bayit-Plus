@@ -1,0 +1,57 @@
+{% extends "categories/notification.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block notification_title %}
+{{ t('email.admin.role_change_title', default='Your Role Has Changed', lang=lang) }}
+{% endblock %}
+
+{% block notification_content %}
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+  {{ t('email.admin.role_change_intro', default='Your account role has been updated.', lang=lang) }}
+</p>
+
+<div style="margin: 24px 0; padding: 20px; background: rgba(139, 92, 246, 0.1); border-radius: 8px; border: 1px solid rgba(139, 92, 246, 0.3);">
+  <table style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <td style="padding: 8px 0; color: rgba(255, 255, 255, 0.6); font-size: 14px; width: 40%;">
+        {{ t('email.admin.previous_role', default='Previous Role', lang=lang) }}
+      </td>
+      <td style="padding: 8px 0; color: #ffffff; font-size: 14px; font-weight: 600;">
+        {{ old_role | title }}
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 8px 0; color: rgba(255, 255, 255, 0.6); font-size: 14px;">
+        {{ t('email.admin.new_role', default='New Role', lang=lang) }}
+      </td>
+      <td style="padding: 8px 0; color: #8b5cf6; font-size: 16px; font-weight: 700;">
+        {{ new_role | title }}
+      </td>
+    </tr>
+    {% if changed_by %}
+    <tr>
+      <td style="padding: 8px 0; color: rgba(255, 255, 255, 0.6); font-size: 14px;">
+        {{ t('email.admin.changed_by', default='Changed By', lang=lang) }}
+      </td>
+      <td style="padding: 8px 0; color: rgba(255, 255, 255, 0.8); font-size: 14px;">
+        {{ changed_by }}
+      </td>
+    </tr>
+    {% endif %}
+  </table>
+</div>
+
+<p style="color: rgba(255, 255, 255, 0.7); font-size: 14px; line-height: 1.6; margin: 0;">
+  {{ t('email.admin.permissions_notice', default='Your permissions and access levels have been updated accordingly.', lang=lang) }}
+</p>
+{% endblock %}
+
+{% block notification_action %}
+<div style="margin: 32px 0;">
+  {{ button(
+    text=t('email.admin.view_permissions', default='View Permissions', lang=lang),
+    url=header_url,
+    primary=true
+  ) }}
+</div>
+{% endblock %}

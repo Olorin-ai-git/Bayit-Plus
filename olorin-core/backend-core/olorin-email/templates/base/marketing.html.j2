@@ -1,0 +1,61 @@
+{% extends "base/layout.html.j2" %}
+{% from "components/button.html.j2" import button %}
+{% from "components/header.html.j2" import header %}
+{% from "components/footer.html.j2" import footer %}
+
+{% block preheader_text %}{{ preheader | default('') }}{% endblock %}
+
+{% block header_logo %}
+{{ header(logo_url | default(''), platform_name | default('Olorin'), header_url | default('')) }}
+{% endblock %}
+
+{% block content_title %}
+{# Hero image #}
+{% block hero_image %}
+{% if hero_image_url | default('') %}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">
+    <tr>
+        <td>
+            <img src="{{ hero_image_url }}" alt="" width="536" style="display: block; width: 100%; max-width: 536px; height: auto; border-radius: 12px; border: 0;" />
+        </td>
+    </tr>
+</table>
+{% endif %}
+{% endblock %}
+
+{# Headline #}
+<h1 style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 28px; font-weight: 700; color: #ffffff; margin: 0 0 8px 0; line-height: 1.2;">
+    {% block headline %}{% endblock %}
+</h1>
+{% endblock %}
+
+{% block content_body %}
+{# Subheadline #}
+{% block subheadline %}{% endblock %}
+
+{# Body content (supports multi-column) #}
+{% block body %}{% endblock %}
+
+{# Primary CTA #}
+{% block primary_cta %}{% endblock %}
+
+{# Secondary content #}
+{% block secondary_content %}{% endblock %}
+
+{# Secondary CTA #}
+{% block secondary_cta %}{% endblock %}
+{% endblock %}
+
+{% block content_cta %}{% endblock %}
+
+{% block footer_legal %}
+{# Mandatory unsubscribe for marketing emails #}
+{{ footer(
+    unsubscribe_url=unsubscribe_url | default(''),
+    privacy_url=privacy_url | default(''),
+    terms_url=terms_url | default(''),
+    support_url=support_url | default(''),
+    company_name=company_name | default(''),
+    address=address | default('')
+) }}
+{% endblock %}

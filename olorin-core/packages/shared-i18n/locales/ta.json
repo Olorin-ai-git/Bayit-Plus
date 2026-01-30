@@ -1,4 +1,144 @@
 {
+  "account": {
+    "title": "என் கணக்கு",
+    "profile": "சுயவிவரம்",
+    "settings": "அமைப்புகள்",
+    "subscription": "சந்தா",
+    "logout": "வெளியேறு",
+    "login": "உள்நுழை",
+    "guest": "விருந்தினர்",
+    "premium": "பிரீமியம்",
+    "basic": "அடிப்படை"
+  },
+  "admin": {
+    "brand": {
+      "title": "Bayit+ நிர்வாகி",
+      "subtitle": "அமைப்பு மேலாண்மை"
+    },
+    "backToApp": "பயன்பாட்டுக்குத் திரும்பு",
+    "dashboard": {
+      "title": "டாஷ்போர்டு",
+      "subtitle": "அமைப்பு கண்ணோட்டம்",
+      "refresh": "புதுப்பி",
+      "users": "பயனர்கள்",
+      "revenue": "வருவாய்",
+      "subscriptions": "சந்தாக்கள்"
+    },
+    "nav": {
+      "dashboard": "டாஷ்போர்டு",
+      "users": "பயனர்கள்",
+      "content": "உள்ளடக்கம்",
+      "settings": "அமைப்புகள்",
+      "diagnostics": "அமைப்பு நோயறிதல்"
+    },
+    "content": {
+      "noEpisodes": "எபிசோட்கள் இல்லை",
+      "type": {
+        "movie": "திரைப்படம்",
+        "series": "தொடர்"
+      },
+      "filters": {
+        "title": "வடிப்பான்கள்",
+        "contentType": "உள்ளடக்க வகை",
+        "all": "அனைத்தும்",
+        "allContent": "அனைத்தும்",
+        "series": "தொடர்கள்",
+        "movies": "திரைப்படங்கள்",
+        "podcasts": "பாட்காஸ்ட்கள்",
+        "radioStations": "வானொலி நிலையங்கள்",
+        "status": "நிலை",
+        "allStatus": "அனைத்து நிலைகள்",
+        "subtitles": "வசன வரிகள்"
+      },
+      "podcastsComingSoon": "பாட்காஸ்ட் மேலாண்மை விரைவில் வருகிறது. பாட்காஸ்ட் பகுதியைப் பயன்படுத்தவும்.",
+      "radioComingSoon": "வானொலி நிலைய மேலாண்மை விரைவில் வருகிறது. வானொலி நிலையங்கள் பகுதியைப் பயன்படுத்தவும்."
+    },
+    "users": {
+      "roles": {
+        "superAdmin": "சூப்பர் நிர்வாகி",
+        "admin": "நிர்வாகி",
+        "moderator": "மதிப்பீட்டாளர்",
+        "user": "பயனர்"
+      }
+    },
+    "featured": {
+      "title": "இணைக்கப்பட்ட உள்ளடக்கம்",
+      "subtitle": "உருப்படிகளை இழுப்பதன் மூலம் கேரோசல் ஆர்டர் நிர்வகிக்கவும்",
+      "empty": "இணைக்கப்பட்ட உள்ளடக்கம் இல்லை",
+      "emptyHint": "உள்ளடக்க நூலகத்திலிருந்து இணைக்கப்பட்ட உள்ளடக்கத்தைச் சேர்க்கவும்",
+      "count": "{{count}} உருப்படிகள்",
+      "confirmUnfeature": "இணைக்கப்பட்ட இடத்தில் இருந்து அகற்றவா?",
+      "remove": "அகற்று",
+      "unsavedChanges": "உங்களிடம் சேமிக்கப்படாத மாற்றங்கள் உள்ளன",
+      "addContent": "உள்ளடக்கம் சேர்க்கவும்",
+      "addContentToSection": "{{section}} இல் உள்ளடக்கம் சேர்க்கவும்",
+      "selectContentToAdd": "சேர்க்க உள்ளடக்கம் தேர்ந்தெடுக்கவும்",
+      "addSelected": "தேர்ந்தெடுக்கப்பட்டவை சேர்க்கவும் ({{count}})",
+      "noContentAvailable": "கிடைக்கும் உள்ளடக்கம் இல்லை",
+      "contentAdded": "{{count}} உருப்படிகள் சேர்க்கப்பட்டுள்ளன",
+      "failedToAdd": "உள்ளடக்கம் சேர்க்க தவறியது",
+      "publishedOnly": "வெளியிடப்பட்டது"
+    },
+    "translation": {
+      "status": {
+        "pending": "நிலுவையில்",
+        "processing": "செயலாக்கம்",
+        "completed": "முடிந்தது",
+        "failed": "தோல்வி"
+      }
+    },
+    "podcasts": {
+      "translate": "மொழிபெயர்க்க",
+      "translateEpisode": "எப்பிசோடை மொழிபெயர்க்க",
+      "translateAllEpisodes": "அனைத்து எப்பிசோடுகளை மொழிபெயர்க்க",
+      "translateAll": "அனைத்தையும் மொழிபெயர்க்க",
+      "filterByStatus": "நிலை மூலம் வடிகட்ட",
+      "editEpisode": "எப்பிசோடை தொகு",
+      "deleteEpisode": "எப்பிசோடை நீக்கு",
+      "newEpisode": "புதிய எப்பிசோடு"
+    },
+    "diagnostics": {
+      "title": "அமைப்பு நோயறிதல்",
+      "servicesOverview": "சேவைகள் கண்ணோட்டம்",
+      "performanceMetrics": "செயல்திறன் அளவீடுகள்",
+      "systemActivity": "அமைப்பு செயல்பாடு",
+      "servicesDetails": "சேவை விவரங்கள்",
+      "cpu": "CPU பயன்பாடு",
+      "memory": "நினைவக பயன்பாடு",
+      "disk": "வட்டு பயன்பாடு",
+      "allSystemsOperational": "அனைத்து அமைப்புகளும் செயல்பாட்டில்",
+      "systemDegraded": "அமைப்பு தரம் குறைந்துள்ளது",
+      "systemDown": "அமைப்பு செயலிழந்துள்ளது",
+      "lastUpdated": "கடைசி புதுப்பிப்பு: {{time}}",
+      "ping": "பிங்",
+      "restart": "மறுதொடக்கம்",
+      "online": "ஆன்லைன்",
+      "offline": "ஆஃப்லைன்",
+      "degraded": "தரம் குறைந்தது",
+      "latency": "தாமதம்: {{ms}}ms",
+      "healthy": "ஆரோக்கியமான",
+      "unhealthy": "ஆரோக்கியமற்ற"
+    }
+  },
+  "chatbot": {
+    "title": "Bayit+ உதவியாளர்",
+    "greeting": "வணக்கம்! நான் Bayit+ ஸ்மார்ட் உதவியாளர். இன்று நான் உங்களுக்கு எப்படி உதவ முடியும்?",
+    "placeholder": "இங்கே தட்டச்சு செய்யவும்..."
+  },
+  "children": {
+    "title": "குழந்தைகள்",
+    "items": "உருப்படிகள்",
+    "empty": "உள்ளடக்கம் இல்லை",
+    "exitKidsMode": "குழந்தைகள் பயன்முறையிலிருந்து வெளியேறு",
+    "categories": {
+      "all": "அனைத்தும்",
+      "cartoons": "கார்ட்டூன்கள்",
+      "educational": "கல்வி",
+      "music": "இசை",
+      "stories": "கதைகள்",
+      "jewish": "யூத"
+    }
+  },
   "common": {
     "loading": "ஏற்றுகிறது...",
     "error": "பிழை",
@@ -53,7 +193,31 @@
     "expand": "விரிவாக்கு",
     "collapse": "சுருக்கு",
     "upgrade": "பிரீமியத்திற்கு மேம்படுத்து",
-    "skip": "தவிர்"
+    "skip": "தவிர்",
+    "disconnect": "துண்டி"
+  },
+  "content": {
+    "play": "இயக்கு",
+    "addToList": "பட்டியலில் சேர்",
+    "inList": "பட்டியலில் உள்ளது",
+    "details": "விவரங்கள்",
+    "synopsis": "சுருக்கம்",
+    "genre": "வகை",
+    "runtime": "கால அளவு",
+    "director": "இயக்குநர்",
+    "cast": "நடிகர்கள்",
+    "season": "சீசன்",
+    "episode": "அத்தியாயம்",
+    "episodes": "அத்தியாயங்கள்",
+    "rating": "மதிப்பீடு",
+    "watchTrailer": "டிரெய்லர் பார்",
+    "relatedContent": "தொடர்புடைய உள்ளடக்கம்",
+    "notFound": "உள்ளடக்கம் இல்லை"
+  },
+  "cultureClock": {
+    "timeIn": "{{location}} நேரம்",
+    "shabbat": "ஷப்பத்",
+    "weekend": "வார இறுதி"
   },
   "demo": {
     "banner": "டெமோ பயன்முறை",
@@ -71,10 +235,288 @@
     "until_shabbat": "ஷப்பத் வரை",
     "premium_plan": "பிரீமியம்"
   },
+  "downloads": {
+    "title": "பதிவிறக்கங்கள்",
+    "items": "உருப்படிகள்",
+    "empty": "பதிவிறக்கங்கள் இல்லை",
+    "emptyHint": "ஆஃப்லைன் பார்வைக்கு உள்ளடக்கத்தைப் பதிவிறக்கவும்"
+  },
+  "email": {
+    "greeting": "Hello",
+    "footer": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "support": "Support",
+      "unsubscribe": "Unsubscribe from these emails"
+    },
+    "welcome": {
+      "subject": "Welcome to Bayit+!",
+      "title": "Welcome to Bayit+",
+      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
+      "cta": "Go to Dashboard"
+    },
+    "verification": {
+      "subject": "Verify Your Email",
+      "title": "Verify Your Email Address",
+      "body": "Please click the button below to verify your email address.",
+      "cta": "Verify Email",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't create an account, you can safely ignore this email."
+    },
+    "verification_resend": {
+      "subject": "Email Verification (Resent)",
+      "title": "Verify Your Email Address",
+      "body": "Here's a new verification link as requested.",
+      "cta": "Verify Email"
+    },
+    "password_reset": {
+      "subject": "Reset Your Password",
+      "title": "Reset Your Password",
+      "body": "We received a request to reset your password. Click the button below to create a new password.",
+      "cta": "Reset Password",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+    },
+    "password_changed": {
+      "subject": "Password Changed",
+      "title": "Your Password Has Been Changed",
+      "body": "Your password was successfully changed.",
+      "security": "If you didn't make this change, please contact support immediately."
+    },
+    "account_locked": {
+      "subject": "Account Locked",
+      "title": "Your Account Has Been Locked",
+      "body": "Your account has been temporarily locked due to security concerns.",
+      "cta": "Unlock Account"
+    },
+    "beta_invitation": {
+      "subject": "You're Invited to Bayit+ Beta!",
+      "title": "You're Invited to the Beta Program",
+      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
+      "credits": "{credits} AI credits included",
+      "duration": "Access for {days} days",
+      "cta": "Join Beta Program"
+    },
+    "beta_welcome": {
+      "subject": "Welcome to Bayit+ Beta!",
+      "title": "Welcome to the Beta Program",
+      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
+      "cta": "Get Started"
+    },
+    "payment_confirmation": {
+      "subject": "Payment Confirmation",
+      "title": "Payment Received",
+      "body": "Your payment has been processed successfully.",
+      "transaction": "Transaction ID",
+      "plan": "Plan",
+      "amount": "Amount",
+      "date": "Payment Date",
+      "next_billing": "Next Billing Date"
+    },
+    "subscription_activated": {
+      "subject": "Subscription Activated",
+      "title": "Your Subscription is Active",
+      "body": "Your subscription has been activated. Here's what you get:",
+      "cta": "Start Watching"
+    },
+    "subscription_cancelled": {
+      "subject": "Subscription Cancelled",
+      "title": "Subscription Cancelled",
+      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
+      "cta": "Reactivate Subscription"
+    },
+    "payment_failed": {
+      "subject": "Payment Failed",
+      "title": "Payment Failed",
+      "body": "We were unable to process your payment. Please update your payment method.",
+      "cta": "Update Payment Method"
+    },
+    "trial_expiring": {
+      "subject": "Your Trial is Expiring Soon",
+      "title": "Trial Ending in {days_remaining} Days",
+      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
+      "cta": "Upgrade Now"
+    },
+    "support": {
+      "created_subject": "Ticket #{ticket_id} Created",
+      "created_title": "Support Ticket Created",
+      "created_body": "Your support ticket has been created. We'll get back to you soon.",
+      "response_subject": "New Response on Ticket #{ticket_id}",
+      "response_title": "New Response on Your Ticket",
+      "escalation_subject": "Ticket #{ticket_id} Escalated",
+      "escalation_title": "Your Ticket Has Been Escalated",
+      "resolved_subject": "Ticket #{ticket_id} Resolved",
+      "resolved_title": "Your Ticket Has Been Resolved",
+      "resolved_body": "Your support ticket has been resolved."
+    },
+    "new_message": {
+      "subject": "New Message from {sender_name}",
+      "title": "You Have a New Message",
+      "cta": "Read Message"
+    },
+    "content_digest": {
+      "subject": "Your {digest_period} Content Digest",
+      "title": "Your Content Digest",
+      "cta": "Browse Content"
+    },
+    "gdpr": {
+      "deletion_subject": "Data Deletion Confirmation",
+      "deletion_title": "Your Data Has Been Deleted",
+      "deletion_body": "As requested, your personal data has been permanently deleted.",
+      "categories_label": "Deleted Data Categories"
+    },
+    "admin": {
+      "account_created_subject": "Admin Account Created",
+      "account_created_title": "Admin Account Created",
+      "role_change_subject": "Role Changed",
+      "role_change_title": "Your Role Has Been Updated"
+    },
+    "campaign": {
+      "default_subject": "News from Bayit+"
+    },
+    "newsletter": {
+      "default_subject": "Bayit+ Newsletter"
+    },
+    "reengagement": {
+      "subject": "We Miss You!",
+      "title": "It's Been a While",
+      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
+      "cta": "Come Back"
+    }
+  },
+  "empty": {
+    "noContent": {
+      "title": "இன்னும் உள்ளடக்கம் இல்லை",
+      "description": "உள்ளடக்கம் கிடைக்கும்போது இங்கே தோன்றும்"
+    },
+    "noResults": {
+      "title": "முடிவுகள் எதுவும் கிடைக்கவில்லை",
+      "description": "வெவ்வேறு முக்கிய வார்த்தைகள் அல்லது வடிப்பான்களை முயற்சிக்கவும்"
+    },
+    "noQuery": {
+      "title": "தேடலைத் தொடங்கவும்",
+      "description": "உள்ளடக்கத்தைக் கண்டறிய முக்கிய வார்த்தைகளை உள்ளிடவும்"
+    },
+    "error": {
+      "title": "ஏதோ தவறு நடந்துவிட்டது",
+      "description": "உள்ளடக்கத்தை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
+    },
+    "loading": {
+      "title": "ஏற்றுகிறது...",
+      "description": "உங்கள் உள்ளடக்கத்தை ஏற்றும்போது காத்திருக்கவும்"
+    },
+    "noFavorites": {
+      "title": "இன்னும் விருப்பங்கள் இல்லை",
+      "description": "இங்கே பார்க்க விருப்பங்களில் உள்ளடக்கத்தைச் சேர்க்கவும்"
+    },
+    "noDownloads": {
+      "title": "பதிவிறக்கங்கள் இல்லை",
+      "description": "ஆஃப்லைனில் பார்க்க உள்ளடக்கத்தைப் பதிவிறக்கவும்"
+    },
+    "sectionEmpty": {
+      "title": "உருப்படிகள் இல்லை",
+      "description": "இந்த பிரிவு காலியாக உள்ளது"
+    },
+    "noData": {
+      "title": "தரவு கிடைக்கவில்லை",
+      "description": "தரவு கிடைக்கும்போது இங்கே தோன்றும்"
+    },
+    "permissionDenied": {
+      "title": "அணுகல் மறுக்கப்பட்டது",
+      "description": "இந்த உள்ளடக்கத்தைப் பார்க்க உங்களுக்கு அனுமதி இல்லை"
+    }
+  },
+  "epg": {
+    "title": "TV வழிகாட்டி",
+    "subtitle": "நேரலை TV நிரல் அட்டவணை",
+    "gridView": "கிரிட் பார்வை",
+    "listView": "பட்டியல் பார்வை",
+    "israelTime": "இஸ்ரேல் நேரம்",
+    "localTime": "உள்ளூர் நேரம்",
+    "jumpToNow": "இப்போதுக்கு செல்",
+    "errorTitle": "TV வழிகாட்டி ஏற்ற முடியவில்லை",
+    "noPrograms": "நிரல்கள் இல்லை",
+    "noChannels": "சேனல்கள் இல்லை"
+  },
+  "errors": {
+    "networkError": "நெட்வொர்க் பிழை",
+    "loadingFailed": "ஏற்றுவது தோல்வி",
+    "tryAgain": "மீண்டும் முயற்சிக்கவும்",
+    "offline": {
+      "title": "இணைய இணைப்பு இல்லை",
+      "message": "நீங்கள் தற்போது ஆஃப்லைனில் உள்ளீர்கள்."
+    },
+    "online": {
+      "title": "இணைப்பு மீட்டமைக்கப்பட்டது",
+      "message": "நீங்கள் மீண்டும் ஆன்லைனில் உள்ளீர்கள்."
+    }
+  },
+  "favorites": {
+    "title": "பிடித்தவை",
+    "items": "உருப்படிகள்",
+    "empty": "பிடித்தவை இல்லை",
+    "emptyHint": "உங்கள் பிடித்தவைகளில் உருப்படிகளைச் சேர்க்கவும்"
+  },
+  "footer": {
+    "brandDescription": "USA இல் உங்கள் வீடு. ஹீப்ரூவில் TV ஒளிபரப்புகள், VOD, வானொலி மற்றும் பாட்காஸ்ட்கள்.",
+    "browse": "உலாவு",
+    "account": "கணக்கு",
+    "support": "ஆதரவு",
+    "legal": "சட்ட",
+    "copyright": "© {{year}} Bayit+. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.",
+    "poweredBy": "மூலம் இயக்கப்படுகிறது"
+  },
   "hero": {
     "watch": "பார்",
     "moreInfo": "மேலும் தகவல்",
     "addToList": "பட்டியலில் சேர்"
+  },
+  "home": {
+    "continueWatching": "தொடர்ந்து பாருங்கள்",
+    "featuredContent": "சிறப்பு",
+    "liveTV": "நேரலை TV",
+    "allChannels": "அனைத்து சேனல்கள்",
+    "liveChannels": "நேரலை சேனல்கள்",
+    "israeliMovies": "இஸ்ரேலி திரைப்படங்கள்",
+    "comedy": "நகைச்சுவை",
+    "drama": "நாடகம்",
+    "documentaries": "ஆவணப்படங்கள்",
+    "loadingContent": "உள்ளடக்கம் ஏற்றுகிறது...",
+    "liveNow": "இப்போது நேரலை",
+    "categories": "வகைகள்",
+    "audiobooks": "ஆடியோ புத்தகங்கள்",
+    "nearYou": "உங்களுக்கு அருகில்",
+    "israelis_in_city": "{{city}}, {{state}} இல் இஸ்ரேலியர்கள்",
+    "israeli_businesses": "{{city}}, {{state}} இல் இஸ்ரேலிய வணிகங்கள்",
+    "israeli_businesses_nearby": "உங்களுக்கு அருகில் இஸ்ரேலிய வணிகங்கள் - {{city}} இலிருந்து",
+    "searching_businesses": "{{city}} இல் இஸ்ரேலிய வணிகங்களைத் தேடுகிறது...",
+    "no_businesses_found": "{{city}} இல் இஸ்ரேலிய வணிகங்கள் எதுவும் இல்லை",
+    "businesses_load_error": "வணிக பட்டியல்களை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
+  },
+  "judaism": {
+    "title": "யூதமதம்",
+    "items": "உருப்படிகள்",
+    "empty": "உள்ளடக்கம் இல்லை",
+    "shabbat": {
+      "title": "ஷப்பத் நேரங்கள்",
+      "shabbatShalom": "ஷப்பத் ஷாலோம்!",
+      "candleLighting": "மெழுகுவர்த்தி ஏற்றுதல்",
+      "havdalah": "ஹவ்தலா"
+    }
+  },
+  "liveTV": {
+    "title": "நேரலை TV",
+    "channels": "சேனல்கள்",
+    "nowPlaying": "இப்போது இயங்குகிறது",
+    "loadError": "சேனல்களை ஏற்ற முடியவில்லை",
+    "categories": {
+      "all": "அனைத்தும்",
+      "news": "செய்திகள்",
+      "sports": "விளையாட்டு",
+      "entertainment": "பொழுதுபோக்கு",
+      "kids": "குழந்தைகள்",
+      "documentary": "ஆவணப்படம்"
+    }
   },
   "login": {
     "title": "மீண்டும் வரவேற்கிறோம்",
@@ -97,23 +539,10 @@
       "emailRequired": "மின்னஞ்சல் தேவை",
       "passwordRequired": "கடவுச்சொல் தேவை",
       "loginFailed": "உள்நுழைவு தோல்வி.",
-      "fillAllFields": "அனைத்து புலங்களையும் நிரப்பவும்"
-    }
-  },
-  "register": {
-    "title": "கணக்கை உருவாக்கு",
-    "subtitle": "உங்கள் விருப்பமான உள்ளடக்கத்தைப் பார்க்க Bayit+ இல் சேரவும்",
-    "name": "முழு பெயர்",
-    "email": "மின்னஞ்சல்",
-    "password": "கடவுச்சொல்",
-    "confirmPassword": "கடவுச்சொல்லை உறுதிப்படுத்து",
-    "submit": "பதிவு செய்",
-    "acceptTerms": "நான் ஒப்புக்கொள்கிறேன்",
-    "termsOfService": "சேவை விதிமுறைகள்",
-    "and": "மற்றும்",
-    "privacyPolicy": "தனியுரிமைக் கொள்கை",
-    "haveAccount": "ஏற்கனவே கணக்கு உள்ளதா?",
-    "signIn": "உள்நுழையவும்"
+      "fillAllFields": "அனைத்து புலங்களையும் நிரப்பவும்",
+      "noAccount": "கணக்கு இல்லையா?"
+    },
+    "signUpNow": "இப்போது பதிவு செய்க"
   },
   "nav": {
     "home": "முகப்பு",
@@ -122,6 +551,7 @@
     "epg": "TV வழிகாட்டி",
     "radio": "வானொலி",
     "podcasts": "பாட்காஸ்ட்கள்",
+    "audiobooks": "ஒலிப்புத்தகங்கள்",
     "flows": "ஃப்ளோக்கள்",
     "judaism": "யூதமதம்",
     "children": "குழந்தைகள்",
@@ -140,318 +570,33 @@
     "games": "விளையாட்டுகள்",
     "friends": "நண்பர்கள்"
   },
-  "epg": {
-    "title": "TV வழிகாட்டி",
-    "subtitle": "நேரலை TV நிரல் அட்டவணை",
-    "gridView": "கிரிட் பார்வை",
-    "listView": "பட்டியல் பார்வை",
-    "israelTime": "இஸ்ரேல் நேரம்",
-    "localTime": "உள்ளூர் நேரம்",
-    "jumpToNow": "இப்போதுக்கு செல்",
-    "errorTitle": "TV வழிகாட்டி ஏற்ற முடியவில்லை",
-    "noPrograms": "நிரல்கள் இல்லை",
-    "noChannels": "சேனல்கள் இல்லை"
-  },
-  "home": {
-    "continueWatching": "தொடர்ந்து பாருங்கள்",
-    "featuredContent": "சிறப்பு",
-    "liveTV": "நேரலை TV",
-    "allChannels": "அனைத்து சேனல்கள்",
-    "liveChannels": "நேரலை சேனல்கள்",
-    "israeliMovies": "இஸ்ரேலி திரைப்படங்கள்",
-    "comedy": "நகைச்சுவை",
-    "drama": "நாடகம்",
-    "documentaries": "ஆவணப்படங்கள்",
-    "loadingContent": "உள்ளடக்கம் ஏற்றுகிறது...",
-    "liveNow": "இப்போது நேரலை",
-    "categories": "வகைகள்",
-    "nearYou": "அருகிலுள்ள இஸ்ரேலியர்கள்"
-  },
-  "search": {
-    "title": "தேடு",
-    "subtitle": "திரைப்படங்கள், தொடர்கள், சேனல்கள், வானொலி மற்றும் பாட்காஸ்ட்களைத் தேடுங்கள்",
-    "placeholder": "உள்ளடக்கத்தைத் தேடு...",
-    "searching": "தேடுகிறது...",
-    "listening": "கேட்கிறது...",
-    "noResults": "முடிவுகள் இல்லை",
-    "recentSearches": "சமீபத்திய தேடல்கள்",
-    "clearAll": "அனைத்தையும் அழி",
-    "filters": {
-      "all": "அனைத்தும்",
-      "vod": "திரைப்படங்கள் & தொடர்கள்",
-      "live": "சேனல்கள்",
-      "radio": "வானொலி",
-      "podcast": "பாட்காஸ்ட்"
-    }
-  },
-  "liveTV": {
-    "title": "நேரலை TV",
-    "channels": "சேனல்கள்",
-    "nowPlaying": "இப்போது இயங்குகிறது",
-    "loadError": "சேனல்களை ஏற்ற முடியவில்லை",
-    "categories": {
-      "all": "அனைத்தும்",
-      "news": "செய்திகள்",
-      "sports": "விளையாட்டு",
-      "entertainment": "பொழுதுபோக்கு",
-      "kids": "குழந்தைகள்",
-      "documentary": "ஆவணப்படம்"
-    }
-  },
-  "radio": {
-    "title": "வானொலி",
-    "noStations": "வானொலி நிலையங்கள் இல்லை",
-    "tryLater": "பின்னர் மீண்டும் முயற்சிக்கவும்",
-    "playing": "இயங்குகிறது",
-    "fmSuffix": "FM",
-    "categories": {
-      "all": "அனைத்தும்",
-      "music": "இசை",
-      "news": "செய்திகள்",
-      "talk": "பேச்சு",
-      "jewish": "யூத"
-    }
-  },
-  "podcasts": {
-    "title": "பாட்காஸ்ட்கள்",
-    "episodes": "அத்தியாயங்கள்",
-    "noPodcasts": "பாட்காஸ்ட்கள் இல்லை",
-    "categories": {
-      "all": "அனைத்தும்",
-      "general": "பொது",
-      "news": "செய்திகள்",
-      "politics": "அரசியல்",
-      "tech": "தொழில்நுட்பம்",
-      "business": "வணிகம்",
-      "jewish": "யூத",
-      "entertainment": "பொழுதுபோக்கு",
-      "sports": "விளையாட்டு",
-      "history": "வரலாறு",
-      "educational": "கல்வி"
-    }
-  },
-  "vod": {
-    "title": "திரைப்படங்கள் & தொடர்கள்",
-    "movies": "திரைப்படங்கள்",
-    "series": "தொடர்கள்",
-    "searchPlaceholder": "திரைப்படங்கள் & தொடர்களைத் தேடு...",
-    "noMovies": "திரைப்படங்கள் இல்லை",
-    "noSeries": "தொடர்கள் இல்லை",
-    "loadError": "உள்ளடக்கத்தை ஏற்ற முடியவில்லை",
-    "categories": {
-      "all": "அனைத்தும்",
-      "drama": "நாடகம்",
-      "comedy": "நகைச்சுவை",
-      "action": "அதிரடி",
-      "documentary": "ஆவணப்படம்",
-      "kids": "குழந்தைகள்"
-    }
-  },
-  "account": {
-    "title": "என் கணக்கு",
-    "profile": "சுயவிவரம்",
-    "settings": "அமைப்புகள்",
-    "subscription": "சந்தா",
-    "logout": "வெளியேறு",
-    "login": "உள்நுழை",
-    "guest": "விருந்தினர்",
-    "premium": "பிரீமியம்",
-    "basic": "அடிப்படை"
-  },
-  "profile": {
-    "title": "என் சுயவிவரம்",
-    "name": "பெயர்",
-    "notSet": "அமைக்கப்படவில்லை",
-    "email": "மின்னஞ்சல்",
-    "editProfile": "சுயவிவரத்தை திருத்து",
-    "logout": "வெளியேறு",
-    "premium": "பிரீமியம்",
-    "basic": "அடிப்படை",
-    "upgrade": "பிரீமியத்திற்கு மேம்படுத்து",
-    "complimentaryPremium": "இலவச பிரீமியம் அணுகல்",
-    "emailVerified": "மின்னஞ்சல் சரிபார்க்கப்பட்டது",
-    "emailUnverified": "மின்னஞ்சல் சரிபார்க்கப்படவில்லை",
-    "phoneVerified": "தொலைபேசி சரிபார்க்கப்பட்டது",
-    "phoneUnverified": "தொலைபேசி சரிபார்க்கப்படவில்லை",
-    "completeVerification": "அனைத்து அம்சங்களையும் திறக்க சரிபார்ப்பை நிறைவு செய்யுங்கள்",
-    "unlockPremium": "பிரீமியம் அம்சங்களைத் திறக்கவும்",
-    "unlockPremiumDescription": "பிரத்யேக உள்ளடக்கம் மற்றும் அம்சங்களை அனுபவிக்க மேம்படுத்தவும்"
-  },
-  "settings": {
-    "title": "அமைப்புகள்",
-    "language": "மொழி",
-    "appLanguage": "பயன்பாட்டு மொழி",
-    "selectLanguage": "மொழியைத் தேர்ந்தெடு",
-    "languages": {
-      "en": "English",
-      "he": "עברית",
-      "es": "Español",
-      "zh": "中文",
-      "fr": "Français",
-      "it": "Italiano",
-      "hi": "हिन्दी",
-      "ta": "தமிழ்",
-      "bn": "বাংলা",
-      "ja": "日本語"
-    },
-    "notifications": "அறிவிப்புகள்",
-    "playback": "பின்னணி",
-    "quality": "தரம்",
-    "subtitles": "வசனங்கள்",
-    "autoplay": "தானியங்கி",
-    "appearance": "தோற்றம்",
-    "darkMode": "இருள் பயன்முறை",
-    "privacy": "தனியுரிமை",
-    "privacyPolicy": "தனியுரிமைக் கொள்கை",
-    "termsOfService": "சேவை விதிமுறைகள்",
-    "about": "பற்றி"
-  },
-  "player": {
-    "loading": "ஏற்றுகிறது...",
-    "retry": "மீண்டும் முயற்சிக்கவும்",
-    "error": "வீடியோ இயக்க பிழை",
-    "back": "← பின்",
-    "liveBadge": "நேரலை",
-    "noStream": "ஸ்ட்ரீம் இல்லை",
-    "settings": "அமைப்புகள்",
-    "subtitles": "வசனங்கள்",
-    "quality": "தரம்",
-    "auto": "தானியங்கி",
-    "subtitlesOff": "அணைக்கவும்",
-    "speed": "வேகம்"
-  },
-  "content": {
-    "play": "இயக்கு",
-    "addToList": "பட்டியலில் சேர்",
-    "inList": "பட்டியலில் உள்ளது",
-    "details": "விவரங்கள்",
-    "synopsis": "சுருக்கம்",
-    "genre": "வகை",
-    "runtime": "கால அளவு",
-    "director": "இயக்குநர்",
-    "cast": "நடிகர்கள்",
-    "season": "சீசன்",
-    "episode": "அத்தியாயம்",
-    "episodes": "அத்தியாயங்கள்",
-    "rating": "மதிப்பீடு",
-    "watchTrailer": "டிரெய்லர் பார்",
-    "relatedContent": "தொடர்புடைய உள்ளடக்கம்",
-    "notFound": "உள்ளடக்கம் இல்லை"
-  },
-  "errors": {
-    "networkError": "நெட்வொர்க் பிழை",
-    "loadingFailed": "ஏற்றுவது தோல்வி",
-    "tryAgain": "மீண்டும் முயற்சிக்கவும்",
-    "offline": {
-      "title": "இணைய இணைப்பு இல்லை",
-      "message": "நீங்கள் தற்போது ஆஃப்லைனில் உள்ளீர்கள்."
-    },
-    "online": {
-      "title": "இணைப்பு மீட்டமைக்கப்பட்டது",
-      "message": "நீங்கள் மீண்டும் ஆன்லைனில் உள்ளீர்கள்."
-    }
-  },
-  "favorites": {
-    "title": "பிடித்தவை",
-    "items": "உருப்படிகள்",
-    "empty": "பிடித்தவை இல்லை",
-    "emptyHint": "உங்கள் பிடித்தவைகளில் உருப்படிகளைச் சேர்க்கவும்"
-  },
-  "downloads": {
-    "title": "பதிவிறக்கங்கள்",
-    "items": "உருப்படிகள்",
-    "empty": "பதிவிறக்கங்கள் இல்லை",
-    "emptyHint": "ஆஃப்லைன் பார்வைக்கு உள்ளடக்கத்தைப் பதிவிறக்கவும்"
-  },
-  "watchlist": {
-    "title": "கண்காணிப்பு பட்டியல்",
-    "items": "உருப்படிகள்",
-    "empty": "உங்கள் கண்காணிப்பு பட்டியல் காலியாக உள்ளது",
-    "filters": {
-      "all": "அனைத்தும்",
-      "movies": "திரைப்படங்கள்",
-      "series": "தொடர்கள்",
-      "kids": "குழந்தைகள்"
-    }
-  },
-  "children": {
-    "title": "குழந்தைகள்",
-    "items": "உருப்படிகள்",
-    "empty": "உள்ளடக்கம் இல்லை",
-    "exitKidsMode": "குழந்தைகள் பயன்முறையிலிருந்து வெளியேறு",
-    "categories": {
-      "all": "அனைத்தும்",
-      "cartoons": "கார்ட்டூன்கள்",
-      "educational": "கல்வி",
-      "music": "இசை",
-      "stories": "கதைகள்",
-      "jewish": "யூத"
-    }
-  },
-  "judaism": {
-    "title": "யூதமதம்",
-    "items": "உருப்படிகள்",
-    "empty": "உள்ளடக்கம் இல்லை",
-    "shabbat": {
-      "title": "ஷப்பத் நேரங்கள்",
-      "shabbatShalom": "ஷப்பத் ஷாலோம்!",
-      "candleLighting": "மெழுகுவர்த்தி ஏற்றுதல்",
-      "havdalah": "ஹவ்தலா"
-    }
-  },
-  "chatbot": {
-    "title": "Bayit+ உதவியாளர்",
-    "greeting": "வணக்கம்! நான் Bayit+ ஸ்மார்ட் உதவியாளர். இன்று நான் உங்களுக்கு எப்படி உதவ முடியும்?",
-    "placeholder": "இங்கே தட்டச்சு செய்யவும்..."
-  },
-  "subscribe": {
-    "title": "உங்கள் திட்டத்தைத் தேர்ந்தெடுக்கவும்",
-    "subtitle": "எந்த திட்டத்திற்கும் 7 நாள் இலவச சோதனை. எப்போது வேண்டுமானாலும் ரத்து செய்யலாம்.",
-    "monthly": "மாதாந்திர",
-    "yearly": "வருடாந்திர",
-    "popular": "மிகவும் பிரபலமான",
-    "period": "/மாதம்",
-    "select": "திட்டத்தைத் தேர்ந்தெடு",
-    "startTrial": "இலவச சோதனையைத் தொடங்கு"
-  },
-  "footer": {
-    "brandDescription": "USA இல் உங்கள் வீடு. ஹீப்ரூவில் TV ஒளிபரப்புகள், VOD, வானொலி மற்றும் பாட்காஸ்ட்கள்.",
-    "browse": "உலாவு",
-    "account": "கணக்கு",
-    "support": "ஆதரவு",
-    "legal": "சட்ட",
-    "copyright": "© {{year}} Bayit+. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.",
-    "poweredBy": "மூலம் இயக்கப்படுகிறது"
-  },
-  "support": {
-    "title": "ஆதரவு மையம்",
-    "subtitle": "இன்று நாங்கள் உங்களுக்கு எப்படி உதவ முடியும்?",
-    "tabs": {
-      "docs": "ஆவணங்கள்",
-      "faq": "FAQ",
-      "contact": "தொடர்பு",
-      "tickets": "என் டிக்கெட்கள்"
-    }
-  },
   "notFound": {
     "title": "பக்கம் கிடைக்கவில்லை",
     "description": "நீங்கள் தேடும் பக்கம் இல்லை.",
     "homeButton": "முகப்புக்கு செல்",
     "searchButton": "தேடு"
   },
-  "recordings": {
-    "title": "என் பதிவுகள்",
-    "subtitle": "உங்கள் பதிவுசெய்த நேரலை ஸ்ட்ரீம்களைப் பார்க்கவும் நிர்வகிக்கவும்",
-    "record": "பதிவு",
-    "recording": "பதிவு செய்கிறது",
-    "noRecordings": "பதிவுகள் இல்லை"
-  },
-  "voice": {
-    "listening": "கேட்கிறது...",
-    "speaking": "பேசுகிறது",
-    "ready": "தயார்",
-    "tapToSpeak": "பேச தட்டவும்",
-    "processing": "செயலாக்குகிறது..."
+  "payment": {
+    "pending": {
+      "title": "உங்கள் சந்தாவை நிறைவு செய்யுங்கள்",
+      "description": "7 நாள் இலவச சோதனையைத் தொடங்க மற்றும் அனைத்து Bayit+ உள்ளடக்கங்களையும் அணுக ஒரு திட்டத்தைத் தேர்ந்தெடுக்கவும்",
+      "timeElapsed": "கட்டண நிலையைச் சரிபார்க்கிறது... ({{seconds}}வி)",
+      "takingLonger": "கட்டண உறுதிப்படுத்தல் எதிர்பார்த்ததை விட அதிக நேரம் எடுக்கிறது. நீங்கள் ஏற்கனவே பணம் செலுத்தியிருந்தால், புதுப்பிக்க முயற்சிக்கவும் அல்லது ஆதரவைத் தொடர்பு கொள்ளவும்.",
+      "helpText": "உதவி தேவையா? support@bayit.tv ஐத் தொடர்பு கொள்ளவும் அல்லது நீங்கள் ஏற்கனவே பணம் செலுத்தியிருந்தால் இந்தப் பக்கத்தைப் புதுப்பிக்கவும்."
+    },
+    "continueToPayment": "கட்டணத்திற்குத் தொடரவும்",
+    "success": {
+      "title": "கட்டணம் வெற்றிகரமாக முடிந்தது!",
+      "description": "Bayit+ க்கு வரவேற்கிறோம்! உங்கள் சந்தா இப்போது செயலில் உள்ளது.",
+      "redirecting": "{{seconds}} விநாடிகளில் திருப்பி விடப்படுகிறது...",
+      "continue": "Bayit+ க்குத் தொடரவும்"
+    },
+    "cancelled": {
+      "title": "கட்டணம் ரத்து செய்யப்பட்டது",
+      "description": "உங்கள் சந்தா நிறைவடையவில்லை. நீங்கள் தயாராக இருக்கும்போது மீண்டும் முயற்சி செய்யலாம்.",
+      "retry": "மீண்டும் முயற்சிக்கவும்",
+      "helpText": "கேள்விகள் உள்ளனவா? உதவிக்காக support@bayit.tv ஐத் தொடர்பு கொள்ளவும்."
+    }
   },
   "plans": {
     "basic": {
@@ -483,95 +628,86 @@
         "4K தரம்",
         "5 குடும்ப சுயவிவரங்கள்"
       ]
+    },
+    "non_registered": {
+      "name": "உலாவல் மட்டும்",
+      "description": "எங்கள் உள்ளடக்க நூலகத்தை ஆராயுங்கள்"
+    },
+    "registered_free": {
+      "name": "இலவச கணக்கு",
+      "description": "இலவச அம்சங்களுக்காக கணக்கை உருவாக்கவும்"
+    },
+    "comparison": {
+      "title": "திட்டங்களை ஒப்பிடுக",
+      "subtitle": "உங்கள் தேவைகளுக்கு ஏற்ற திட்டத்தைக் கண்டறியுங்கள்",
+      "categories": {
+        "content": "உள்ளடக்க அணுகல்",
+        "quality": "தரம் மற்றும் செயல்திறன்",
+        "devices": "சாதனங்கள் மற்றும் ஸ்ட்ரீமிங்",
+        "features": "பிரீமியம் அம்சங்கள்",
+        "support": "வாடிக்கையாளர் ஆதரவு"
+      },
+      "features": {
+        "browseContent": "உள்ளடக்க நூலகத்தை உலாவவும்",
+        "vodAccess": "தேவைக்கேற்ற திரைப்படங்கள் மற்றும் தொடர்கள்",
+        "liveChannels": "நேரடி டிவி சேனல்கள்",
+        "radioPodcasts": "வானொலி மற்றும் பாட்காஸ்ட்கள்",
+        "videoQuality": "வீடியோ தரம்",
+        "simultaneousDevices": "ஒரே நேரத்தில் சாதனங்கள்",
+        "aiAssistant": "AI ஸ்மார்ட் உதவியாளர்",
+        "familyProfiles": "குடும்ப சுயவிவரங்கள்",
+        "offlineDownloads": "ஆஃப்லைனுக்கு பதிவிறக்கவும்",
+        "customerSupport": "வாடிக்கையாளர் ஆதரவு"
+      }
     }
   },
-  "admin": {
-    "brand": {
-      "title": "Bayit+ நிர்வாகி",
-      "subtitle": "அமைப்பு மேலாண்மை"
+  "player": {
+    "loading": "ஏற்றுகிறது...",
+    "retry": "மீண்டும் முயற்சிக்கவும்",
+    "error": "வீடியோ இயக்க பிழை",
+    "back": "← பின்",
+    "liveBadge": "நேரலை",
+    "noStream": "ஸ்ட்ரீம் இல்லை",
+    "settings": "அமைப்புகள்",
+    "subtitles": "வசனங்கள்",
+    "quality": "தரம்",
+    "auto": "தானியங்கி",
+    "subtitlesOff": "அணைக்கவும்",
+    "speed": "வேகம்",
+    "streamLimit": {
+      "title": "ஸ்ட்ரீமிங் வரம்பை அடைந்துவிட்டது",
+      "message": "உங்கள் திட்டத்திற்கான அதிகபட்ச ஒரே நேர ஸ்ட்ரீம்களை ({{maxStreams}}) நீங்கள் அடைந்துவிட்டீர்கள்.",
+      "activeDevices": "தற்போது {{count}} சாதனங்களில் ஸ்ட்ரீமிங் செய்யப்படுகிறது:",
+      "hint": "ஸ்ட்ரீமிங் இடத்தை விடுவிக்க ஒரு சாதனத்தை துண்டிக்கவும், அல்லது அதிக ஒரே நேர ஸ்ட்ரீம்களுக்கு உங்கள் திட்டத்தை மேம்படுத்தவும்.",
+      "manageDevices": "சாதனங்களை நிர்வகி"
     },
-    "backToApp": "பயன்பாட்டுக்குத் திரும்பு",
-    "dashboard": {
-      "title": "டாஷ்போர்டு",
-      "subtitle": "அமைப்பு கண்ணோட்டம்",
-      "refresh": "புதுப்பி",
-      "users": "பயனர்கள்",
-      "revenue": "வருவாய்",
-      "subscriptions": "சந்தாக்கள்"
-    },
-    "nav": {
-      "dashboard": "டாஷ்போர்டு",
-      "users": "பயனர்கள்",
-      "content": "உள்ளடக்கம்",
-      "settings": "அமைப்புகள்"
-    },
-    "content": {
-      "filters": {
-        "title": "வடிப்பான்கள்",
-        "contentType": "உள்ளடக்க வகை",
-        "all": "அனைத்தும்",
-        "allContent": "அனைத்தும்",
-        "series": "தொடர்கள்",
-        "movies": "திரைப்படங்கள்",
-        "podcasts": "பாட்காஸ்ட்கள்",
-        "radioStations": "வானொலி நிலையங்கள்",
-        "status": "நிலை",
-        "allStatus": "அனைத்து நிலைகள்",
-        "subtitles": "வசன வரிகள்"
-      },
-      "podcastsComingSoon": "பாட்காஸ்ட் மேலாண்மை விரைவில் வருகிறது. பாட்காஸ்ட் பகுதியைப் பயன்படுத்தவும்.",
-      "radioComingSoon": "வானொலி நிலைய மேலாண்மை விரைவில் வருகிறது. வானொலி நிலையங்கள் பகுதியைப் பயன்படுத்தவும்."
+    "cast": {
+      "start": "டிவியில் காட்டு",
+      "connected": "{{device}} இல் காட்டப்படுகிறது",
+      "disconnect": "{{device}} இலிருந்து துண்டி",
+      "connecting": "காஸ்ட் சாதனத்துடன் இணைக்கப்படுகிறது...",
+      "error": "காஸ்ட் சாதனத்துடன் இணைக்க முடியவில்லை",
+      "noDevices": "காஸ்ட் சாதனங்கள் எதுவும் கிடைக்கவில்லை",
+      "unsupported": "இந்த உள்ளடக்கத்திற்கு காஸ்டிங் கிடைக்கவில்லை"
     }
   },
-  "cultureClock": {
-    "timeIn": "{{location}} நேரம்",
-    "shabbat": "ஷப்பத்",
-    "weekend": "வார இறுதி"
-  },
-  "voiceOnboarding": {
-    "welcome": {
-      "title": "குரல் கட்டுப்பாட்டிற்கு வரவேற்கிறோம்",
-      "description": "கைகள் இல்லாத அனுபவத்திற்காக உங்கள் குரலால் Bayit+ ஐ கட்டுப்படுத்துங்கள்"
-    },
-    "features": {
-      "voiceCommands": "குரல் கட்டளைகள்",
-      "voiceCommandsDesc": "இயற்கையான பேச்சுடன் வழிசெலுத்தவும், தேடவும், பின்னணியை கட்டுப்படுத்தவும்",
-      "tts": "உரை-இருந்து-பேச்சு",
-      "ttsDesc": "பதில்களையும் உள்ளடக்க விவரங்களையும் சத்தமாகக் கேளுங்கள்",
-      "wakeWord": "எழுப்பு வார்த்தை",
-      "wakeWordDesc": "எப்போது வேண்டுமானாலும் குரல் கட்டுப்பாட்டை செயல்படுத்த 'Bayit' என்று சொல்லுங்கள்"
-    },
-    "getStarted": "தொடங்குங்கள்",
-    "permissions": {
-      "title": "மைக்ரோஃபோன் அணுகல்",
-      "description": "உங்கள் கட்டளைகளைக் கேட்க குரல் கட்டுப்பாட்டிற்கு மைக்ரோஃபோன் அணுகல் தேவை",
-      "privacy": "உங்கள் குரல் தரவு பாதுகாப்பாக செயலாக்கப்பட்டு ஒருபோதும் சேமிக்கப்படாது"
-    },
-    "permissionsGranted": "மைக்ரோஃபோன் அணுகல் வழங்கப்பட்டது",
-    "permissionRequired": {
-      "title": "அனுமதி தேவை",
-      "message": "குரல் கட்டுப்பாட்டைப் பயன்படுத்த உங்கள் சாதன அமைப்புகளில் மைக்ரோஃபோன் அணுகலை இயக்கவும்"
-    },
-    "grantPermissions": "அனுமதிகளை வழங்கு",
-    "testWakeWord": {
-      "title": "எழுப்பு வார்த்தையை சோதியுங்கள்",
-      "description": "குரல் செயல்படுத்தலை சோதிக்க 'Bayit' என்று சொல்லுங்கள்",
-      "success": "அருமை! குரல் செயல்படுத்தல் வேலை செய்கிறது"
-    },
-    "startTest": "சோதனையைத் தொடங்கு",
-    "complete": {
-      "title": "எல்லாம் தயார்!",
-      "description": "குரல் கட்டுப்பாடு இப்போது இயக்கப்பட்டது. இந்த கட்டளைகளை முயற்சிக்கவும்:",
-      "tryCommands": "இந்த கட்டளைகளை முயற்சிக்கவும்",
-      "examples": {
-        "search": "\"Fauda தேடு\"",
-        "play": "\"செய்திகளை இயக்கு\"",
-        "navigate": "\"நேரடி டிவிக்கு செல்\"",
-        "control": "\"இடைநிறுத்து\" அல்லது \"ஒலியை அதிகரி\""
-      },
-      "startUsing": "குரல் கட்டுப்பாட்டைப் பயன்படுத்தத் தொடங்குங்கள்"
-    },
-    "skip": "இப்போது தவிர்"
+  "podcasts": {
+    "title": "பாட்காஸ்ட்கள்",
+    "episodes": "அத்தியாயங்கள்",
+    "noPodcasts": "பாட்காஸ்ட்கள் இல்லை",
+    "categories": {
+      "all": "அனைத்தும்",
+      "general": "பொது",
+      "news": "செய்திகள்",
+      "politics": "அரசியல்",
+      "tech": "தொழில்நுட்பம்",
+      "business": "வணிகம்",
+      "jewish": "யூத",
+      "entertainment": "பொழுதுபோக்கு",
+      "sports": "விளையாட்டு",
+      "history": "வரலாறு",
+      "educational": "கல்வி"
+    }
   },
   "portal": {
     "nav": {
@@ -712,6 +848,209 @@
       }
     }
   },
+  "profile": {
+    "title": "என் சுயவிவரம்",
+    "name": "பெயர்",
+    "notSet": "அமைக்கப்படவில்லை",
+    "email": "மின்னஞ்சல்",
+    "editProfile": "சுயவிவரத்தை திருத்து",
+    "logout": "வெளியேறு",
+    "premium": "பிரீமியம்",
+    "basic": "அடிப்படை",
+    "upgrade": "பிரீமியத்திற்கு மேம்படுத்து",
+    "complimentaryPremium": "இலவச பிரீமியம் அணுகல்",
+    "emailVerified": "மின்னஞ்சல் சரிபார்க்கப்பட்டது",
+    "emailUnverified": "மின்னஞ்சல் சரிபார்க்கப்படவில்லை",
+    "phoneVerified": "தொலைபேசி சரிபார்க்கப்பட்டது",
+    "phoneUnverified": "தொலைபேசி சரிபார்க்கப்படவில்லை",
+    "completeVerification": "அனைத்து அம்சங்களையும் திறக்க சரிபார்ப்பை நிறைவு செய்யுங்கள்",
+    "unlockPremium": "பிரீமியம் அம்சங்களைத் திறக்கவும்",
+    "unlockPremiumDescription": "பிரத்யேக உள்ளடக்கம் மற்றும் அம்சங்களை அனுபவிக்க மேம்படுத்தவும்",
+    "tabs": {
+      "devices": "சாதனங்கள்"
+    },
+    "devices": {
+      "registeredDevices": "பதிவுசெய்யப்பட்ட சாதனங்கள்",
+      "description": "உங்கள் கணக்கிற்கு அணுகல் உள்ள சாதனங்களை நிர்வகிக்கவும். ஸ்ட்ரீமிங் இடங்களை விடுவிக்க சாதனங்களைத் துண்டிக்கலாம்.",
+      "noDevices": "இணைக்கப்பட்ட சாதனங்கள் இல்லை",
+      "noDevicesDescription": "வெவ்வேறு இயங்குதளங்களில் உள்நுழையும்போது சாதனங்கள் இங்கே தோன்றும்",
+      "activeNow": "இப்போது செயலில் உள்ளது",
+      "minutesAgo": "{{count}} நிமிடங்களுக்கு முன்பு",
+      "hoursAgo": "{{count}} மணி நேரத்திற்கு முன்பு",
+      "daysAgo": "{{count}} நாட்களுக்கு முன்பு",
+      "disconnect": "துண்டிக்கவும்",
+      "confirmDisconnect": "சாதனத்தைத் துண்டிக்கவா?",
+      "confirmDisconnectMessage": "இது இந்தச் சாதனத்தில் உள்ள அனைத்து செயலில் உள்ள பிளேபேக் அமர்வுகளையும் முடித்து, உங்கள் கணக்கிலிருந்து அதை அகற்றும்.",
+      "disconnectSuccess": "சாதனம் துண்டிக்கப்பட்டது",
+      "disconnectSuccessMessage": "சாதனம் வெற்றிகரமாக துண்டிக்கப்பட்டது.",
+      "disconnectSuccessWithSessions": "சாதனம் துண்டிக்கப்பட்டது மற்றும் {{count}} செயலில் உள்ள அமர்வுகள் முடிந்தன.",
+      "thisDevice": "இந்தச் சாதனம்",
+      "loading": "சாதனங்கள் ஏற்றப்படுகின்றன..."
+    }
+  },
+  "radio": {
+    "title": "வானொலி",
+    "noStations": "வானொலி நிலையங்கள் இல்லை",
+    "tryLater": "பின்னர் மீண்டும் முயற்சிக்கவும்",
+    "playing": "இயங்குகிறது",
+    "fmSuffix": "FM",
+    "categories": {
+      "all": "அனைத்தும்",
+      "music": "இசை",
+      "news": "செய்திகள்",
+      "talk": "பேச்சு",
+      "jewish": "யூத"
+    }
+  },
+  "recordings": {
+    "title": "என் பதிவுகள்",
+    "subtitle": "உங்கள் பதிவுசெய்த நேரலை ஸ்ட்ரீம்களைப் பார்க்கவும் நிர்வகிக்கவும்",
+    "record": "பதிவு",
+    "recording": "பதிவு செய்கிறது",
+    "noRecordings": "பதிவுகள் இல்லை"
+  },
+  "register": {
+    "title": "கணக்கை உருவாக்கு",
+    "subtitle": "உங்கள் விருப்பமான உள்ளடக்கத்தைப் பார்க்க Bayit+ இல் சேரவும்",
+    "name": "முழு பெயர்",
+    "email": "மின்னஞ்சல்",
+    "password": "கடவுச்சொல்",
+    "confirmPassword": "கடவுச்சொல்லை உறுதிப்படுத்து",
+    "submit": "பதிவு செய்",
+    "acceptTerms": "நான் ஒப்புக்கொள்கிறேன்",
+    "termsOfService": "சேவை விதிமுறைகள்",
+    "and": "மற்றும்",
+    "privacyPolicy": "தனியுரிமைக் கொள்கை",
+    "haveAccount": "ஏற்கனவே கணக்கு உள்ளதா?",
+    "signIn": "உள்நுழையவும்"
+  },
+  "search": {
+    "title": "தேடு",
+    "subtitle": "திரைப்படங்கள், தொடர்கள், சேனல்கள், வானொலி மற்றும் பாட்காஸ்ட்களைத் தேடுங்கள்",
+    "placeholder": "உள்ளடக்கத்தைத் தேடு...",
+    "searching": "தேடுகிறது...",
+    "listening": "கேட்கிறது...",
+    "noResults": "முடிவுகள் இல்லை",
+    "recentSearches": "சமீபத்திய தேடல்கள்",
+    "clearAll": "அனைத்தையும் அழி",
+    "filters": {
+      "all": "அனைத்தும்",
+      "vod": "திரைப்படங்கள் & தொடர்கள்",
+      "live": "சேனல்கள்",
+      "radio": "வானொலி",
+      "podcast": "பாட்காஸ்ட்"
+    },
+    "controls": {
+      "placeholder": "Search for content...",
+      "hints": {
+        "searchInput": "Enter keywords to search"
+      }
+    },
+    "semantic": {
+      "keyword": "Keyword",
+      "semantic": "AI Search",
+      "infoTitle": "AI-Powered Search",
+      "info": "AI search understands context and finds exact moments in videos by analyzing scenes, dialogue, and visual content."
+    },
+    "suggestions": {
+      "trendingTitle": "Trending Searches",
+      "categoriesTitle": "Browse Categories",
+      "recentTitle": "Recent Searches",
+      "clearRecent": "Clear"
+    },
+    "empty": {
+      "clearSearch": "Clear search"
+    }
+  },
+  "settings": {
+    "title": "அமைப்புகள்",
+    "language": "மொழி",
+    "appLanguage": "பயன்பாட்டு மொழி",
+    "selectLanguage": "மொழியைத் தேர்ந்தெடு",
+    "languages": {
+      "en": "English",
+      "he": "עברית",
+      "es": "Español",
+      "zh": "中文",
+      "fr": "Français",
+      "it": "Italiano",
+      "hi": "हिन्दी",
+      "ta": "தமிழ்",
+      "bn": "বাংলা",
+      "ja": "日本語"
+    },
+    "notifications": "அறிவிப்புகள்",
+    "playback": "பின்னணி",
+    "quality": "தரம்",
+    "subtitles": "வசனங்கள்",
+    "autoplay": "தானியங்கி",
+    "appearance": "தோற்றம்",
+    "darkMode": "இருள் பயன்முறை",
+    "privacy": "தனியுரிமை",
+    "privacyPolicy": "தனியுரிமைக் கொள்கை",
+    "termsOfService": "சேவை விதிமுறைகள்",
+    "about": "பற்றி"
+  },
+  "subscribe": {
+    "title": "உங்கள் திட்டத்தைத் தேர்ந்தெடுக்கவும்",
+    "subtitle": "எந்த திட்டத்திற்கும் 7 நாள் இலவச சோதனை. எப்போது வேண்டுமானாலும் ரத்து செய்யலாம்.",
+    "monthly": "மாதாந்திர",
+    "yearly": "வருடாந்திர",
+    "popular": "மிகவும் பிரபலமான",
+    "period": "/மாதம்",
+    "select": "திட்டத்தைத் தேர்ந்தெடு",
+    "startTrial": "இலவச சோதனையைத் தொடங்கு",
+    "viewComparison": "முழு ஒப்பீட்டைக் காண்க",
+    "viewCards": "திட்டங்களைக் காண்க",
+    "premiumShowcase": {
+      "title": "பிரீமியம் நுண்ணறிவை அனுபவிக்கவும்",
+      "subtitle": "நீங்கள் பார்க்கும் விதத்திற்கு ஏற்ப AI-இயக்கப்படும் அம்சங்கள்",
+      "videoTitle": "செயலில் விட்ஜெட்களைப் பார்க்கவும்",
+      "videoDescription": "மிதக்கும் விட்ஜெட்களுக்கான எங்கள் 2-நிமிட அறிமுகத்தைப் பார்க்கவும்",
+      "widgetTitle": "இன்டராக்டிவ் லைவ் டெமோ",
+      "widgetDescription": "Kan11 உடன் இழுக்கவும், அளவை மாற்றவும், பல்பணிகள் செய்யவும்",
+      "aiAssistant": {
+        "title": "AI ஸ்மார்ட் உதவியாளர்",
+        "description": "இயந்திர கற்றல் மூலம் இயக்கப்படும் தனிப்பயனாக்கப்பட்ட பரிந்துரைகள்"
+      },
+      "floatingWidgets": {
+        "title": "மிதக்கும் விட்ஜெட்கள்",
+        "description": "உள்ளடக்கத்தை உலாவும் போது பல சேனல்களைப் பார்க்கவும்"
+      },
+      "a11y": {
+        "playVideo": "விட்ஜெட்கள் அறிமுக வீடியோவை இயக்கவும்",
+        "playVideoHint": "முழு திரை வீடியோ ஆர்ப்பாட்டத்தைத் திறக்கிறது"
+      },
+      "badges": {
+        "aiPowered": "AI மூலம் இயக்கப்படுகிறது",
+        "interactiveDemo": "இன்டராக்டிவ் டெமோ"
+      }
+    },
+    "comparison": {
+      "title": "திட்டங்களை ஒப்பிடவும்",
+      "subtitle": "உங்களுக்கு ஏற்ற திட்டத்தைக் கண்டறியவும்",
+      "features": "அம்சங்கள்",
+      "perMonth": "/மாதம்",
+      "scrollHint": "← அனைத்து திட்டங்களையும் பார்க்க உருட்டவும் →",
+      "categories": {
+        "content": "உள்ளடக்க அணுகல்",
+        "quality": "தரம் மற்றும் செயல்திறன்",
+        "devices": "சாதனங்கள் மற்றும் ஸ்ட்ரீமிங்",
+        "features": "அம்சங்கள்",
+        "support": "ஆதரவு"
+      }
+    }
+  },
+  "support": {
+    "title": "ஆதரவு மையம்",
+    "subtitle": "இன்று நாங்கள் உங்களுக்கு எப்படி உதவ முடியும்?",
+    "tabs": {
+      "docs": "ஆவணங்கள்",
+      "faq": "FAQ",
+      "contact": "தொடர்பு",
+      "tickets": "என் டிக்கெட்கள்"
+    }
+  },
   "trivia": {
     "didYouKnow": "உங்களுக்குத் தெரியுமா?",
     "dismissHint": "உண்மையை மூடவும்",
@@ -721,6 +1060,86 @@
       "language": "மொழி",
       "selectLanguage": "இந்த மொழியைத் தேர்ந்தெடுக்கவும்",
       "deselectLanguage": "இந்த மொழியை நீக்கவும்"
+    }
+  },
+  "vod": {
+    "title": "திரைப்படங்கள் & தொடர்கள்",
+    "movies": "திரைப்படங்கள்",
+    "series": "தொடர்கள்",
+    "searchPlaceholder": "திரைப்படங்கள் & தொடர்களைத் தேடு...",
+    "noMovies": "திரைப்படங்கள் இல்லை",
+    "noSeries": "தொடர்கள் இல்லை",
+    "loadError": "உள்ளடக்கத்தை ஏற்ற முடியவில்லை",
+    "categories": {
+      "all": "அனைத்தும்",
+      "drama": "நாடகம்",
+      "comedy": "நகைச்சுவை",
+      "action": "அதிரடி",
+      "documentary": "ஆவணப்படம்",
+      "kids": "குழந்தைகள்"
+    }
+  },
+  "voice": {
+    "listening": "கேட்கிறது...",
+    "speaking": "பேசுகிறது",
+    "ready": "தயார்",
+    "tapToSpeak": "பேச தட்டவும்",
+    "processing": "செயலாக்குகிறது..."
+  },
+  "voiceOnboarding": {
+    "welcome": {
+      "title": "குரல் கட்டுப்பாட்டிற்கு வரவேற்கிறோம்",
+      "description": "கைகள் இல்லாத அனுபவத்திற்காக உங்கள் குரலால் Bayit+ ஐ கட்டுப்படுத்துங்கள்"
+    },
+    "features": {
+      "voiceCommands": "குரல் கட்டளைகள்",
+      "voiceCommandsDesc": "இயற்கையான பேச்சுடன் வழிசெலுத்தவும், தேடவும், பின்னணியை கட்டுப்படுத்தவும்",
+      "tts": "உரை-இருந்து-பேச்சு",
+      "ttsDesc": "பதில்களையும் உள்ளடக்க விவரங்களையும் சத்தமாகக் கேளுங்கள்",
+      "wakeWord": "எழுப்பு வார்த்தை",
+      "wakeWordDesc": "எப்போது வேண்டுமானாலும் குரல் கட்டுப்பாட்டை செயல்படுத்த 'Bayit' என்று சொல்லுங்கள்"
+    },
+    "getStarted": "தொடங்குங்கள்",
+    "permissions": {
+      "title": "மைக்ரோஃபோன் அணுகல்",
+      "description": "உங்கள் கட்டளைகளைக் கேட்க குரல் கட்டுப்பாட்டிற்கு மைக்ரோஃபோன் அணுகல் தேவை",
+      "privacy": "உங்கள் குரல் தரவு பாதுகாப்பாக செயலாக்கப்பட்டு ஒருபோதும் சேமிக்கப்படாது"
+    },
+    "permissionsGranted": "மைக்ரோஃபோன் அணுகல் வழங்கப்பட்டது",
+    "permissionRequired": {
+      "title": "அனுமதி தேவை",
+      "message": "குரல் கட்டுப்பாட்டைப் பயன்படுத்த உங்கள் சாதன அமைப்புகளில் மைக்ரோஃபோன் அணுகலை இயக்கவும்"
+    },
+    "grantPermissions": "அனுமதிகளை வழங்கு",
+    "testWakeWord": {
+      "title": "எழுப்பு வார்த்தையை சோதியுங்கள்",
+      "description": "குரல் செயல்படுத்தலை சோதிக்க 'Bayit' என்று சொல்லுங்கள்",
+      "success": "அருமை! குரல் செயல்படுத்தல் வேலை செய்கிறது"
+    },
+    "startTest": "சோதனையைத் தொடங்கு",
+    "complete": {
+      "title": "எல்லாம் தயார்!",
+      "description": "குரல் கட்டுப்பாடு இப்போது இயக்கப்பட்டது. இந்த கட்டளைகளை முயற்சிக்கவும்:",
+      "tryCommands": "இந்த கட்டளைகளை முயற்சிக்கவும்",
+      "examples": {
+        "search": "\"Fauda தேடு\"",
+        "play": "\"செய்திகளை இயக்கு\"",
+        "navigate": "\"நேரடி டிவிக்கு செல்\"",
+        "control": "\"இடைநிறுத்து\" அல்லது \"ஒலியை அதிகரி\""
+      },
+      "startUsing": "குரல் கட்டுப்பாட்டைப் பயன்படுத்தத் தொடங்குங்கள்"
+    },
+    "skip": "இப்போது தவிர்"
+  },
+  "watchlist": {
+    "title": "கண்காணிப்பு பட்டியல்",
+    "items": "உருப்படிகள்",
+    "empty": "உங்கள் கண்காணிப்பு பட்டியல் காலியாக உள்ளது",
+    "filters": {
+      "all": "அனைத்தும்",
+      "movies": "திரைப்படங்கள்",
+      "series": "தொடர்கள்",
+      "kids": "குழந்தைகள்"
     }
   }
 }

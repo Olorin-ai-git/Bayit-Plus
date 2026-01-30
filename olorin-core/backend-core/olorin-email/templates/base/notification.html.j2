@@ -1,0 +1,68 @@
+{% extends "base/layout.html.j2" %}
+{% from "components/button.html.j2" import button %}
+{% from "components/header.html.j2" import header %}
+{% from "components/footer.html.j2" import footer %}
+
+{% block preheader_text %}{{ preheader | default('') }}{% endblock %}
+
+{% block header_logo %}
+{{ header(logo_url | default(''), platform_name | default('Olorin'), header_url | default('')) }}
+{% endblock %}
+
+{% block content_title %}
+{# Severity banner #}
+{% block severity_banner %}
+{% if severity | default('') %}
+{% set severity_colors = {
+    'critical': '#dc2626',
+    'high': '#ea580c',
+    'warning': '#d97706',
+    'info': '#2563eb',
+    'success': '#059669'
+} %}
+{% set banner_color = severity_colors.get(severity, '#2563eb') %}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
+    <tr>
+        <td style="background-color: {{ banner_color }}; padding: 10px 16px; border-radius: 8px;">
+            <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; font-weight: 600; color: #ffffff; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                {{ severity | upper }}
+            </p>
+        </td>
+    </tr>
+</table>
+{% endif %}
+{% endblock %}
+
+<h1 style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 22px; font-weight: 700; color: #ffffff; margin: 0 0 8px 0; line-height: 1.3;">
+    {% block title %}{% endblock %}
+</h1>
+{% endblock %}
+
+{% block content_body %}
+{# Summary #}
+{% block summary %}{% endblock %}
+
+{# Metrics row #}
+{% block metrics %}{% endblock %}
+
+{# Detail section #}
+{% block details %}{% endblock %}
+
+{# Action items #}
+{% block action_items %}{% endblock %}
+{% endblock %}
+
+{% block content_cta %}
+{% block cta %}{% endblock %}
+{% endblock %}
+
+{% block footer_legal %}
+{{ footer(
+    unsubscribe_url=unsubscribe_url | default(''),
+    privacy_url=privacy_url | default(''),
+    terms_url=terms_url | default(''),
+    support_url=support_url | default(''),
+    company_name=company_name | default(''),
+    address=address | default('')
+) }}
+{% endblock %}

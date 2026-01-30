@@ -1,0 +1,31 @@
+{% extends "base/bayit_base.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{# Payment-related emails: confirmations, receipts, subscription changes #}
+
+{% block email_body %}
+<div style="padding: 40px 24px; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(16px); border-radius: 16px; margin: 24px 0;">
+  {% block greeting %}
+  <h2 style="color: #ffffff; font-size: 24px; font-weight: 600; margin: 0 0 16px 0;">
+    {{ t('email.greeting', default='Hello', lang=lang) }}{% if recipient_name %} {{ recipient_name }}{% endif %}
+  </h2>
+  {% endblock %}
+
+  {% block payment_details %}
+  {# Override for transaction details table #}
+  {% endblock %}
+
+  {% block body_content %}
+  {# Additional payment information #}
+  {% endblock %}
+
+  {% block payment_cta %}
+  {# Optional action button #}
+  {% endblock %}
+
+  <p style="color: rgba(255, 255, 255, 0.6); font-size: 14px; margin: 24px 0 0 0;">
+    {{ t('email.payment.questions', default='Questions about your payment?', lang=lang) }}
+    <a href="{{ support_url }}" style="color: #60a5fa; text-decoration: none;">{{ t('email.contact_support', default='Contact Support', lang=lang) }}</a>
+  </p>
+</div>
+{% endblock %}

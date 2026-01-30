@@ -1,0 +1,33 @@
+{% extends "categories/notification.html.j2" %}
+
+{% block notification_title %}
+{{ t('email.gdpr.deletion_title', default='Data Deletion Confirmation', lang=lang) }}
+{% endblock %}
+
+{% block notification_content %}
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+  {{ t('email.gdpr.deletion_intro', default='Your personal data has been permanently deleted from our systems as requested.', lang=lang) }}
+</p>
+
+<div style="margin: 24px 0; padding: 16px; background: rgba(34, 197, 94, 0.1); border-left: 3px solid #22c55e; border-radius: 8px;">
+  <p style="color: rgba(255, 255, 255, 0.6); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0;">
+    {{ t('email.gdpr.deletion_date_label', default='Deletion Date', lang=lang) }}
+  </p>
+  <p style="color: #ffffff; font-size: 14px; font-weight: 600; margin: 0 0 16px 0;">
+    {{ deletion_date }}
+  </p>
+
+  <p style="color: rgba(255, 255, 255, 0.6); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0;">
+    {{ t('email.gdpr.data_categories_label', default='Data Categories Deleted', lang=lang) }}
+  </p>
+  <ul style="color: rgba(255, 255, 255, 0.9); font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
+    {% for category in data_categories %}
+    <li>{{ category }}</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<p style="color: rgba(255, 255, 255, 0.7); font-size: 14px; line-height: 1.6; margin: 0;">
+  {{ t('email.gdpr.final_notice', default='This is your final confirmation. No further action is required.', lang=lang) }}
+</p>
+{% endblock %}

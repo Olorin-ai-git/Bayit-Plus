@@ -1,0 +1,52 @@
+{% extends "categories/notification.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block severity_banner %}
+<div style="margin: 24px 0; padding: 16px; background: rgba(251, 146, 60, 0.2); border-left: 4px solid #fb923c; border-radius: 8px;">
+  <p style="color: #fb923c; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0;">
+    ⚠️ {{ t('email.support.escalation_banner', default='Ticket Escalated', lang=lang) }}
+  </p>
+</div>
+{% endblock %}
+
+{% block notification_title %}
+{{ t('email.support.escalation_title', default='Ticket Escalated to Senior Support', lang=lang) }}
+{% endblock %}
+
+{% block notification_content %}
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+  {{ t('email.support.escalation_intro', default='Your ticket #{ticket_id} has been escalated to our senior support team for priority handling.', lang=lang, ticket_id=ticket_id) }}
+</p>
+
+<div style="margin: 24px 0; padding: 16px; background: rgba(96, 165, 250, 0.1); border-left: 3px solid #60a5fa; border-radius: 8px;">
+  <p style="color: rgba(255, 255, 255, 0.6); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0;">
+    {{ t('email.support.ticket_subject', default='Subject', lang=lang) }}
+  </p>
+  <p style="color: #ffffff; font-size: 16px; font-weight: 600; margin: 0 0 16px 0;">
+    {{ ticket_subject }}
+  </p>
+
+  {% if escalation_reason %}
+  <p style="color: rgba(255, 255, 255, 0.6); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0;">
+    {{ t('email.support.escalation_reason', default='Escalation Reason', lang=lang) }}
+  </p>
+  <p style="color: rgba(255, 255, 255, 0.9); font-size: 14px; margin: 0;">
+    {{ escalation_reason }}
+  </p>
+  {% endif %}
+</div>
+
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 15px; line-height: 1.6; margin: 0;">
+  {{ t('email.support.escalation_response', default='A senior support specialist will review your case and respond as soon as possible.', lang=lang) }}
+</p>
+{% endblock %}
+
+{% block notification_action %}
+<div style="margin: 32px 0;">
+  {{ button(
+    text=t('email.support.view_ticket', default='View Ticket', lang=lang),
+    url=ticket_url,
+    primary=true
+  ) }}
+</div>
+{% endblock %}

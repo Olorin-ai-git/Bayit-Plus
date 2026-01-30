@@ -1,0 +1,53 @@
+{% extends "categories/payment.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block body_content %}
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+  {{ t('email.payment_confirmation.intro', default='Thank you for your payment! Your transaction was successful.', lang=lang) }}
+</p>
+{% endblock %}
+
+{% block payment_details %}
+<table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+  <tr>
+    <td style="padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.6); font-size: 14px;">
+      {{ t('email.payment_confirmation.transaction_id', default='Transaction ID', lang=lang) }}
+    </td>
+    <td style="padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; font-size: 14px; text-align: right; font-family: monospace;">
+      {{ transaction_id }}
+    </td>
+  </tr>
+  <tr>
+    <td style="padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.6); font-size: 14px;">
+      {{ t('email.payment_confirmation.plan', default='Plan', lang=lang) }}
+    </td>
+    <td style="padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; font-size: 14px; text-align: right;">
+      {{ plan_name }}
+    </td>
+  </tr>
+  <tr>
+    <td style="padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.6); font-size: 14px;">
+      {{ t('email.payment_confirmation.amount', default='Amount', lang=lang) }}
+    </td>
+    <td style="padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #22c55e; font-size: 18px; font-weight: 600; text-align: right;">
+      {{ amount }} {{ currency }}
+    </td>
+  </tr>
+  <tr>
+    <td style="padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.6); font-size: 14px;">
+      {{ t('email.payment_confirmation.date', default='Payment Date', lang=lang) }}
+    </td>
+    <td style="padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; font-size: 14px; text-align: right;">
+      {{ payment_date }}
+    </td>
+  </tr>
+  <tr>
+    <td style="padding: 12px 0; color: rgba(255, 255, 255, 0.6); font-size: 14px;">
+      {{ t('email.payment_confirmation.next_billing', default='Next Billing Date', lang=lang) }}
+    </td>
+    <td style="padding: 12px 0; color: #ffffff; font-size: 14px; text-align: right;">
+      {{ next_billing_date }}
+    </td>
+  </tr>
+</table>
+{% endblock %}

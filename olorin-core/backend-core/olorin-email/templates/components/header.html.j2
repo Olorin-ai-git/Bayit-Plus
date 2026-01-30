@@ -1,0 +1,29 @@
+{# Email Header - Logo and Platform Name #}
+{% macro header(logo_url, platform_name, header_url='') %}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">
+    <tr>
+        <td align="center" style="padding: 24px 0 16px 0;">
+            {% if header_url %}
+            <a href="{{ header_url }}" target="_blank" style="text-decoration: none;">
+            {% endif %}
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                    {% if logo_url %}
+                    <td style="padding-right: 12px; vertical-align: middle;">
+                        <img src="{{ logo_url }}" alt="{{ platform_name }}" width="40" height="40" style="display: block; border: 0; outline: none; width: 40px; height: 40px; border-radius: 8px;" />
+                    </td>
+                    {% endif %}
+                    <td style="vertical-align: middle;">
+                        <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 22px; font-weight: 700; color: #ffffff; letter-spacing: -0.3px;">
+                            {{ platform_name }}
+                        </span>
+                    </td>
+                </tr>
+            </table>
+            {% if header_url %}
+            </a>
+            {% endif %}
+        </td>
+    </tr>
+</table>
+{% endmacro %}

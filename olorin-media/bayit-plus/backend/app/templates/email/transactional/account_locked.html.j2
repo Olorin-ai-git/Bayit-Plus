@@ -1,0 +1,41 @@
+{% extends "categories/transactional.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block body_content %}
+<div style="margin: 0 0 24px 0; padding: 16px; background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; border-radius: 8px;">
+  <p style="color: #ef4444; font-size: 16px; font-weight: 600; margin: 0 0 8px 0;">
+    {{ t('email.account_locked.title', default='Your Account Has Been Locked', lang=lang) }}
+  </p>
+  <p style="color: rgba(255, 255, 255, 0.9); font-size: 14px; margin: 0;">
+    {% if reason %}
+      {{ t('email.account_locked.reason', default='Reason: {reason}', lang=lang, reason=reason) }}
+    {% else %}
+      {{ t('email.account_locked.default_reason', default='Your account was temporarily locked for security reasons.', lang=lang) }}
+    {% endif %}
+  </p>
+</div>
+
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+  {{ t('email.account_locked.description', default='To regain access, please verify your identity using the unlock link below.', lang=lang) }}
+</p>
+{% endblock %}
+
+{% block cta_section %}
+{% if unlock_url %}
+<div style="margin: 32px 0;">
+  {{ button(
+    text=t('email.account_locked.unlock_cta', default='Unlock My Account', lang=lang),
+    url=unlock_url,
+    primary=true
+  ) }}
+</div>
+{% else %}
+<div style="margin: 32px 0;">
+  {{ button(
+    text=t('email.account_locked.support_cta', default='Contact Support', lang=lang),
+    url=support_url,
+    primary=true
+  ) }}
+</div>
+{% endif %}
+{% endblock %}

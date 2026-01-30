@@ -1,0 +1,34 @@
+{% extends "categories/payment.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block body_content %}
+<p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+  {{ t('email.trial_expiring.intro', default='Your {plan_name} trial expires in {days_remaining} days.', lang=lang, plan_name=plan_name, days_remaining=days_remaining) }}
+</p>
+
+<div style="margin: 24px 0; padding: 20px; background: linear-gradient(135deg, rgba(251, 146, 60, 0.15), rgba(239, 68, 68, 0.15)); border-radius: 12px; border: 1px solid rgba(251, 146, 60, 0.3);">
+  <h3 style="color: #fb923c; font-size: 18px; font-weight: 600; margin: 0 0 12px 0;">
+    {{ t('email.trial_expiring.why_upgrade', default='Why Upgrade?', lang=lang) }}
+  </h3>
+  <ul style="color: rgba(255, 255, 255, 0.9); font-size: 15px; line-height: 1.8; margin: 0; padding-left: 20px;">
+    <li>{{ t('email.trial_expiring.benefit1', default='Uninterrupted access to all features', lang=lang) }}</li>
+    <li>{{ t('email.trial_expiring.benefit2', default='Priority customer support', lang=lang) }}</li>
+    <li>{{ t('email.trial_expiring.benefit3', default='Early access to new features', lang=lang) }}</li>
+    <li>{{ t('email.trial_expiring.benefit4', default='Cancel anytime, no commitment', lang=lang) }}</li>
+  </ul>
+</div>
+
+<p style="color: rgba(255, 255, 255, 0.7); font-size: 14px; margin: 16px 0 0 0;">
+  {{ t('email.trial_expiring.auto_downgrade', default='After your trial ends, you\'ll be downgraded to the free plan.', lang=lang) }}
+</p>
+{% endblock %}
+
+{% block payment_cta %}
+<div style="margin: 32px 0;">
+  {{ button(
+    text=t('email.trial_expiring.upgrade_cta', default='Upgrade Now', lang=lang),
+    url=upgrade_url,
+    primary=true
+  ) }}
+</div>
+{% endblock %}

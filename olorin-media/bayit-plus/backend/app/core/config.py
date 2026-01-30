@@ -190,6 +190,12 @@ class Settings(BaseSettings):
     # ==========================================
     # BETA 500 CLOSED BETA PROGRAM
     # ==========================================
+    BETA_FEATURES_ENABLED: bool = Field(
+        default=True,
+        env="BETA_FEATURES_ENABLED",
+        description="Enable Beta 500 program features and background checkpoint worker"
+    )
+
     BETA_MAX_USERS: int = Field(
         default=500,
         env="BETA_MAX_USERS",
@@ -705,9 +711,17 @@ class Settings(BaseSettings):
     # REQUIRED for email functionality - no production defaults
     FRONTEND_URL: str = ""
 
-    # Email Service (for Librarian AI Agent notifications)
+    # Email Service (SendGrid + Olorin Email Core)
     SENDGRID_API_KEY: str = ""
     SENDGRID_FROM_EMAIL: str = "noreply@bayitplus.com"
+    SENDGRID_FROM_NAME: str = "Bayit+"
+    SENDGRID_WEBHOOK_VERIFICATION_KEY: str = ""
+    EMAIL_DEFAULT_REPLY_TO: str = ""
+    EMAIL_UNSUBSCRIBE_URL: str = ""
+    EMAIL_LOGO_URL: str = ""
+    EMAIL_PRIVACY_URL: str = ""
+    EMAIL_TERMS_URL: str = ""
+    EMAIL_SUPPORT_URL: str = ""
     ADMIN_EMAIL_ADDRESSES: str = ""  # Comma-separated list of admin emails
 
     # TMDB (The Movie Database) API

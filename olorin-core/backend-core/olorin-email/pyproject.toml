@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "olorin-email"
+version = "1.0.0"
+description = "Olorin Email Service - Shared email infrastructure with SendGrid, Jinja2 templates, and tracking"
+authors = ["Olorin.ai <dev@olorin.ai>"]
+license = "UNLICENSED"
+packages = [
+    { include = "olorin_email" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pydantic = "^2.5.0"
+pydantic-settings = "^2.1.0"
+httpx = "^0.26.0"
+jinja2 = "^3.1.0"
+beanie = "^1.25.0"
+fastapi = "^0.128.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.0.2,<10.0.0)",
+    "pytest-asyncio (>=1.3.0,<2.0.0)"
+]

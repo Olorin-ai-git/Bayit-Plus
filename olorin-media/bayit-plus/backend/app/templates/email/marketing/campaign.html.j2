@@ -1,0 +1,18 @@
+{% extends "categories/marketing.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{% block marketing_body %}
+<div style="color: rgba(255, 255, 255, 0.9); font-size: 16px; line-height: 1.8;">
+  {{ body_html | safe }}
+</div>
+{% endblock %}
+
+{% block marketing_cta %}
+<div style="margin: 40px 0; text-align: center;">
+  {{ button(
+    text=cta_text,
+    url=cta_url,
+    primary=true
+  ) }}
+</div>
+{% endblock %}

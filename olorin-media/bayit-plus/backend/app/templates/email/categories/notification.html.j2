@@ -1,0 +1,30 @@
+{% extends "base/bayit_base.html.j2" %}
+{% from "components/button.html.j2" import button %}
+
+{# Notification emails: support tickets, messages, digests, GDPR #}
+
+{% block email_body %}
+{% block severity_banner %}
+{# Optional severity indicator for escalations/alerts #}
+{% endblock %}
+
+<div style="padding: 40px 24px; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(16px); border-radius: 16px; margin: 24px 0;">
+  {% block notification_header %}
+  <h2 style="color: #ffffff; font-size: 24px; font-weight: 600; margin: 0 0 16px 0;">
+    {% block notification_title %}{{ t('email.notification.title', default='Notification', lang=lang) }}{% endblock %}
+  </h2>
+  {% endblock %}
+
+  {% block notification_content %}
+  {# Main notification message #}
+  {% endblock %}
+
+  {% block notification_action %}
+  {# Action button (view ticket, reply, etc.) #}
+  {% endblock %}
+
+  <p style="color: rgba(255, 255, 255, 0.6); font-size: 14px; margin: 24px 0 0 0; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 16px;">
+    {{ t('email.notification.footer', default='This is an automated notification from Bayit+', lang=lang) }}
+  </p>
+</div>
+{% endblock %}

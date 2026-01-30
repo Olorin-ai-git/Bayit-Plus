@@ -66,6 +66,7 @@ from app.models.tel_aviv_content import (TelAvivContentItem,
                                          TelAvivContentSource)
 from app.models.trending import ContentTrendMatch, TrendingSnapshot
 from app.models.trivia import ContentTrivia
+from app.models.live_trivia import LiveTriviaTopic, LiveTriviaSession
 from app.models.upload import (BrowserUploadSession, MonitoredFolder,
                                UploadHashLock, UploadJob, UploadStats)
 # Models
@@ -86,6 +87,13 @@ from app.models.migration import MigrationRecord, RollbackData
 from app.models.nlp_session import NLPConversationSession
 from app.models.user_audible_account import UserAudibleAccount
 from app.models.diagnostics import ClientHeartbeat, ClientHealthHistory, ClientAlert
+# Beta 500 Program models
+from app.models.beta_user import BetaUser
+from app.models.beta_credit import BetaCredit
+from app.models.beta_credit_transaction import BetaCreditTransaction
+from app.models.beta_session import BetaSession
+# Email tracking models
+from olorin_email.tracking.models import EmailEvent
 
 
 class Database:
@@ -143,6 +151,9 @@ async def connect_to_mongo():
         VideoChapters,
         # Trivia models
         ContentTrivia,
+        # Live Trivia models
+        LiveTriviaTopic,
+        LiveTriviaSession,
         # Subtitle models
         SubtitleTrackDoc,
         TranslationCacheDoc,
@@ -252,6 +263,13 @@ async def connect_to_mongo():
         UserAudibleAccount,
         # Location cache model
         LocationCache,
+        # Beta 500 Program models
+        BetaUser,
+        BetaCredit,
+        BetaCreditTransaction,
+        BetaSession,
+        # Email tracking models
+        EmailEvent,
     ]
 
     # Conditionally add Olorin models based on database separation setting
