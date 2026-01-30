@@ -178,7 +178,10 @@ class LiveTriviaOrchestrator:
                 {
                     "$addToSet": {"shown_topics": topic_hash},
                     "$push": {"shown_fact_ids": {"$each": [f.fact_id for f in facts], "$slice": -100}},
-                    "$set": {"last_fact_shown_at": datetime.utcnow()}
+                    "$set": {
+                        "last_fact_shown_at": datetime.utcnow(),
+                        "updated_at": datetime.utcnow()
+                    }
                 }
             )
             return facts

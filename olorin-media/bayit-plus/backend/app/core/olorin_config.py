@@ -333,6 +333,93 @@ class DubbingConfig(BaseSettings):
         env_prefix = "DUBBING_"
 
 
+class SimplifiedHebrewConfig(BaseSettings):
+    """Configuration for Ivrit Kalla (simplified Hebrew audio track)."""
+
+    enabled: bool = Field(
+        default=False,
+        description="Enable simplified Hebrew audio track feature",
+    )
+    speaking_rate: float = Field(
+        default=0.8,
+        ge=0.5,
+        le=1.0,
+        description="Speaking rate for simplified Hebrew TTS (0.7-0.9 = slower pace)",
+    )
+    voice_id: str = Field(
+        default="",
+        description="ElevenLabs voice ID for clear Hebrew narration. REQUIRED if enabled.",
+    )
+    vocabulary_level: str = Field(
+        default="alef",
+        pattern="^(alef|bet|gimel)$",
+        description="Default vocabulary complexity level: 'alef' (basic), 'bet' (intermediate), 'gimel' (advanced)",
+    )
+    claude_model: str = Field(
+        default="claude-3-haiku-20240307",
+        description="Claude model used for Hebrew simplification",
+    )
+    claude_max_tokens: int = Field(
+        default=500,
+        ge=100,
+        le=2000,
+        description="Max tokens for Claude simplification response",
+    )
+    claude_temperature: float = Field(
+        default=0.2,
+        ge=0.0,
+        le=1.0,
+        description="Temperature for simplification (low = more consistent)",
+    )
+
+    class Config:
+        env_prefix = "DUBBING_SIMPLIFIED_HEBREW_"
+
+
+class SmartSubsConfig(BaseSettings):
+    """Configuration for Smart Subs (dual-view subtitles with shoresh highlighting)."""
+
+    enabled: bool = Field(
+        default=False,
+        description="Enable Smart Subs dual-view subtitle feature",
+    )
+    shoresh_highlight_color: str = Field(
+        default="#FFD700",
+        description="Highlight color for Hebrew root letters (gold hex)",
+    )
+    shoresh_cache_ttl_seconds: int = Field(
+        default=86400,
+        ge=3600,
+        le=604800,
+        description="Redis cache TTL for shoresh analysis results (default 24h)",
+    )
+    shoresh_claude_model: str = Field(
+        default="claude-3-haiku-20240307",
+        description="Claude model for shoresh fallback analysis",
+    )
+    shoresh_claude_max_tokens: int = Field(
+        default=200,
+        ge=50,
+        le=500,
+        description="Max tokens for Claude shoresh analysis",
+    )
+    dual_subtitle_display_duration_ms: int = Field(
+        default=5000,
+        ge=2000,
+        le=15000,
+        description="Display duration for dual subtitle cues (milliseconds)",
+    )
+    min_age_for_smart_subs: int = Field(
+        default=10,
+        ge=0,
+        le=18,
+        description="Minimum age recommendation for Smart Subs feature",
+    )
+
+    class Config:
+        env_prefix = "SMART_SUBS_"
+
+
 class RecapConfig(BaseSettings):
     """Recap agent configuration for live broadcast summaries."""
 
@@ -903,6 +990,14 @@ class OlorinSettings(BaseSettings):
     live_trivia: LiveTriviaConfig = Field(
         default_factory=LiveTriviaConfig,
         description="Live trivia configuration for real-time broadcast trivia",
+    )
+    simplified_hebrew: SimplifiedHebrewConfig = Field(
+        default_factory=SimplifiedHebrewConfig,
+        description="Ivrit Kalla simplified Hebrew audio track configuration",
+    )
+    smart_subs: SmartSubsConfig = Field(
+        default_factory=SmartSubsConfig,
+        description="Smart Subs dual-view subtitle with shoresh highlighting",
     )
 
     class Config:

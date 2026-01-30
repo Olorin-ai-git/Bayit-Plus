@@ -48,9 +48,11 @@ class LiveTriviaTopic(Document):
     class Settings:
         name = "live_trivia_topics"
         indexes = [
-            "topic_hash",
-            "channel_id",
-            [("channel_id", 1), ("topic_hash", 1)],  # Compound unique index
+            # Unique compound index prevents duplicate topics per channel
+            IndexModel(
+                [("channel_id", 1), ("topic_hash", 1)],
+                unique=True
+            ),
             "detected_at",
         ]
 
@@ -91,10 +93,9 @@ class LiveTriviaSession(Document):
         indexes = [
             "user_id",
             [("user_id", 1), ("channel_id", 1)],
-            "session_start",
-            # TTL index: auto-delete sessions after 24 hours
+            # TTL index: auto-delete sessions 24 hours after last activity
             IndexModel(
-                [("session_start", ASCENDING)],
+                [("updated_at", ASCENDING)],
                 expireAfterSeconds=86400  # 24 hours
             ),
         ]

@@ -45,43 +45,33 @@ class TopicTracker:
             facts_count: Number of facts generated
         """
         try:
-            # Check if topic already exists
-            existing_topic = await LiveTriviaTopic.find_one(
-                LiveTriviaTopic.topic_hash == topic_hash,
-                LiveTriviaTopic.channel_id == channel_id
-            )
-
-            if existing_topic:
-                # Update existing with atomic operations to prevent race conditions
-                await LiveTriviaTopic.get_motor_collection().update_one(
-                    {
-                        "_id": existing_topic.id,
+            # Atomic upsert: create or update in single operation (no race condition)
+            await LiveTriviaTopic.get_motor_collection().update_one(
+                {
+                    "channel_id": channel_id,
+                    "topic_hash": topic_hash
+                },
+                {
+                    "$inc": {
+                        "mention_count": 1,
+                        "facts_generated": facts_count,
                     },
-                    {
-                        "$inc": {
-                            "mention_count": 1,
-                            "facts_generated": facts_count,
-                        },
-                        "$set": {
-                            "last_search_at": datetime.utcnow(),
-                            "updated_at": datetime.utcnow(),
-                        }
+                    "$set": {
+                        "last_search_at": datetime.utcnow(),
+                        "updated_at": datetime.utcnow(),
+                    },
+                    "$setOnInsert": {
+                        "topic_text": topic_text,
+                        "entity_type": entity_type,
+                        "confidence_score": self.default_confidence,
+                        "search_queries": [topic_text],
+                        "source_transcript": "",
+                        "detected_at": datetime.utcnow(),
+                        "created_at": datetime.utcnow(),
                     }
-                )
-            else:
-                # Create new
-                topic = LiveTriviaTopic(
-                    topic_text=topic_text,
-                    topic_hash=topic_hash,
-                    entity_type=entity_type,
-                    channel_id=channel_id,
-                    source_transcript="",  # Could store last transcript snippet
-                    confidence_score=self.default_confidence,
-                    search_queries=[topic_text],
-                    facts_generated=facts_count,
-                    last_search_at=datetime.utcnow()
-                )
-                await topic.insert()
+                },
+                upsert=True  # Create if doesn't exist, update if exists
+            )
 
         except Exception as e:
             logger.error(f"Error tracking topic in database: {e}")

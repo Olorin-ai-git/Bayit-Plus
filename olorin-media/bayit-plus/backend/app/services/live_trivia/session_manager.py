@@ -57,6 +57,10 @@ class SessionManager:
             )
             await session.save()
             logger.info(f"Created new trivia session for user {user_id} on {channel_id}")
+        else:
+            # Refresh updated_at to keep session alive (TTL is on updated_at)
+            session.updated_at = datetime.utcnow()
+            await session.save()
 
         return session
 

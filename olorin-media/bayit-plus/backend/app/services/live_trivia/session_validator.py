@@ -111,8 +111,8 @@ class SessionValidator:
             facts_count: Number of facts shown
         """
         try:
-            # Deduct quota
-            await live_feature_quota_service.deduct_trivia_quota(user_id, facts_count)
+            # Deduct quota (increment usage counters)
+            await live_feature_quota_service.increment_trivia_usage(user_id, facts_count)
 
             # Set cooldown
             await self.mention_tracker.set_topic_cooldown(user_id, topic_hash)
