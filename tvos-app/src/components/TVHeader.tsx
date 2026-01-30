@@ -39,6 +39,7 @@ const navLinkKeys = [
   { route: 'Flows', key: 'nav.flows', iconName: 'discover' },
   { route: 'Judaism', key: 'nav.judaism', iconName: 'judaism' },
   { route: 'Children', key: 'nav.children', iconName: 'children' },
+  { route: 'BetaAI', key: 'nav.betaAI', iconName: 'ai' },
 ];
 
 interface TVHeaderProps {

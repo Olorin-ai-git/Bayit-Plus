@@ -21,6 +21,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './src/config/queryClient';
 import { SvgXml } from 'react-native-svg';
+import { AISearchScreen, AIRecommendationsScreen } from './src/components/beta';
 
 // API Configuration - Using fixed URL
 const API_BASE_URL = 'https://bayit.tv/api/v1';
@@ -115,6 +116,7 @@ const TVHeader: React.FC<{
     { key: 'Podcasts', label: 'Podcasts' },
     { key: 'Judaism', label: 'Judaism' },
     { key: 'Children', label: 'Children' },
+    { key: 'BetaAI', label: 'Beta AI' },
   ];
 
   return (
@@ -458,6 +460,11 @@ function AppContent() {
         return <JudaismScreen />;
       case 'Children':
         return <ChildrenScreen />;
+      case 'BetaAI':
+      case 'AISearch':
+        return <AISearchScreen isEnrolled onBack={() => handleNavigate('Home')} />;
+      case 'AIRecommendations':
+        return <AIRecommendationsScreen isEnrolled onBack={() => handleNavigate('Home')} />;
       default:
         return <HomeScreen onNavigate={handleNavigate} />;
     }

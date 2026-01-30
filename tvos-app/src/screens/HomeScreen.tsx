@@ -23,6 +23,7 @@ import { TVHeader } from '../components/TVHeader';
 import { MultiWindowManager } from '../components/windows/MultiWindowManager';
 import { useVoiceTV } from '../hooks/useVoiceTV';
 import { useLocationTV } from '../hooks/useLocationTV';
+import { CreditBalanceWidget } from '../components/beta';
 import { queryKeys } from '../config/queryClient';
 import { config } from '../config/appConfig';
 
@@ -150,6 +151,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             />
           )
         )}
+
+        {/* Beta 500 Credit Balance */}
+        {user && <CreditBalanceWidget />}
 
         {/* Continue Watching (authenticated only) */}
         {user && continueWatchingData && continueWatchingData.length > 0 && (
