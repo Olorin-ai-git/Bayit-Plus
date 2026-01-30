@@ -89,8 +89,8 @@ const styles = StyleSheet.create({
     zIndex: 9999,
   },
   button: {
-    width: 48,
-    height: 48,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,

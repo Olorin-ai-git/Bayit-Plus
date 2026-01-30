@@ -6,7 +6,7 @@
 import React from 'react'
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Play, Trash2, Calendar, HardDrive } from 'lucide-react'
+import { Play, Trash2, Calendar, HardDrive, Volume2, Repeat, Subtitles } from 'lucide-react'
 import { useNavigation } from '@react-navigation/native'
 import { GlassView } from '@bayit/shared/ui'
 import { NativeIcon } from '@olorin/shared-icons/native'
@@ -96,11 +96,33 @@ export const RecordingCard: React.FC<RecordingCardProps> = ({
           </Text>
         </View>
 
-        {recording.subtitle_url && (
-          <View style={styles.subtitleBadge}>
-            <Text style={styles.subtitleText}>{t('recordings.subtitlesAvailable')}</Text>
-          </View>
-        )}
+        {/* Feature Badges */}
+        <View style={styles.featureBadges}>
+          {recording.subtitle_url && (
+            <View style={styles.subtitleBadge}>
+              <Subtitles size={12} color={colors.primary.DEFAULT} />
+              <Text style={styles.subtitleText}>{t('recordings.subtitlesAvailable')}</Text>
+            </View>
+          )}
+
+          {recording.dubbed_audio_url && (
+            <View style={styles.dubbedBadge}>
+              <Volume2 size={12} color="#22c55e" />
+              <Text style={styles.dubbedText}>
+                {recording.dubbed_audio_language
+                  ? t('recordings.dubbedAudioLang', { language: recording.dubbed_audio_language.toUpperCase() })
+                  : t('recordings.dubbedAudio')}
+              </Text>
+            </View>
+          )}
+
+          {recording.series_rule_id && (
+            <View style={styles.seriesBadge}>
+              <Repeat size={12} color="#a855f7" />
+              <Text style={styles.seriesText}>{t('recordings.seriesRecording')}</Text>
+            </View>
+          )}
+        </View>
 
         <View style={styles.actions}>
           <Pressable onPress={handlePlay} style={styles.playButton}>
@@ -178,17 +200,52 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginHorizontal: spacing.xs,
   },
-  subtitleBadge: {
-    backgroundColor: `${colors.primary}30`,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: borderRadius.sm,
-    alignSelf: 'flex-start',
+  featureBadges: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
     marginTop: spacing.sm,
     marginBottom: spacing.md,
   },
+  subtitleBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: `${colors.primary}20`,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: borderRadius.sm,
+  },
   subtitleText: {
     color: colors.primary.DEFAULT,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  dubbedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: borderRadius.sm,
+  },
+  dubbedText: {
+    color: '#22c55e',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  seriesBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(168, 85, 247, 0.15)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: borderRadius.sm,
+  },
+  seriesText: {
+    color: '#a855f7',
     fontSize: 12,
     fontWeight: '600',
   },

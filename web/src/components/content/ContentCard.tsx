@@ -273,7 +273,7 @@ export default function ContentCard({ content, showProgress = false, showActions
             styles.thumbnailContainer,
             content.type === 'podcast' || content.type === 'audiobook'
               ? styles.thumbnailSquare
-              : (content.type === 'article' || content.type === 'event')
+              : (content.type === 'article' || content.type === 'event' || isScrapedArticle)
               ? styles.thumbnailSquare
               : styles.thumbnailPortrait
           ]}>

@@ -1,0 +1,321 @@
+{
+  "email": {
+    "greeting": "Hello",
+    "footer": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "support": "Support",
+      "unsubscribe": "Unsubscribe from these emails"
+    },
+    "welcome": {
+      "subject": "Welcome to Bayit+!",
+      "title": "Welcome to Bayit+",
+      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
+      "cta": "Go to Dashboard"
+    },
+    "verification": {
+      "subject": "Verify Your Email",
+      "title": "Verify Your Email Address",
+      "body": "Please click the button below to verify your email address.",
+      "cta": "Verify Email",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't create an account, you can safely ignore this email."
+    },
+    "verification_resend": {
+      "subject": "Email Verification (Resent)",
+      "title": "Verify Your Email Address",
+      "body": "Here's a new verification link as requested.",
+      "cta": "Verify Email"
+    },
+    "password_reset": {
+      "subject": "Reset Your Password",
+      "title": "Reset Your Password",
+      "body": "We received a request to reset your password. Click the button below to create a new password.",
+      "cta": "Reset Password",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+    },
+    "password_changed": {
+      "subject": "Password Changed",
+      "title": "Your Password Has Been Changed",
+      "body": "Your password was successfully changed.",
+      "security": "If you didn't make this change, please contact support immediately."
+    },
+    "account_locked": {
+      "subject": "Account Locked",
+      "title": "Your Account Has Been Locked",
+      "body": "Your account has been temporarily locked due to security concerns.",
+      "cta": "Unlock Account"
+    },
+    "beta_invitation": {
+      "subject": "You're Invited to Bayit+ Beta!",
+      "title": "You're Invited to the Beta Program",
+      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
+      "credits": "{credits} AI credits included",
+      "duration": "Access for {days} days",
+      "cta": "Join Beta Program"
+    },
+    "beta_welcome": {
+      "subject": "Welcome to Bayit+ Beta!",
+      "title": "Welcome to the Beta Program",
+      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
+      "cta": "Get Started"
+    },
+    "payment_confirmation": {
+      "subject": "Payment Confirmation",
+      "title": "Payment Received",
+      "body": "Your payment has been processed successfully.",
+      "transaction": "Transaction ID",
+      "plan": "Plan",
+      "amount": "Amount",
+      "date": "Payment Date",
+      "next_billing": "Next Billing Date"
+    },
+    "subscription_activated": {
+      "subject": "Subscription Activated",
+      "title": "Your Subscription is Active",
+      "body": "Your subscription has been activated. Here's what you get:",
+      "cta": "Start Watching"
+    },
+    "subscription_cancelled": {
+      "subject": "Subscription Cancelled",
+      "title": "Subscription Cancelled",
+      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
+      "cta": "Reactivate Subscription"
+    },
+    "payment_failed": {
+      "subject": "Payment Failed",
+      "title": "Payment Failed",
+      "body": "We were unable to process your payment. Please update your payment method.",
+      "cta": "Update Payment Method"
+    },
+    "trial_expiring": {
+      "subject": "Your Trial is Expiring Soon",
+      "title": "Trial Ending in {days_remaining} Days",
+      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
+      "cta": "Upgrade Now"
+    },
+    "support": {
+      "created_subject": "Ticket #{ticket_id} Created",
+      "created_title": "Support Ticket Created",
+      "created_body": "Your support ticket has been created. We'll get back to you soon.",
+      "response_subject": "New Response on Ticket #{ticket_id}",
+      "response_title": "New Response on Your Ticket",
+      "escalation_subject": "Ticket #{ticket_id} Escalated",
+      "escalation_title": "Your Ticket Has Been Escalated",
+      "resolved_subject": "Ticket #{ticket_id} Resolved",
+      "resolved_title": "Your Ticket Has Been Resolved",
+      "resolved_body": "Your support ticket has been resolved."
+    },
+    "new_message": {
+      "subject": "New Message from {sender_name}",
+      "title": "You Have a New Message",
+      "cta": "Read Message"
+    },
+    "content_digest": {
+      "subject": "Your {digest_period} Content Digest",
+      "title": "Your Content Digest",
+      "cta": "Browse Content"
+    },
+    "gdpr": {
+      "deletion_subject": "Data Deletion Confirmation",
+      "deletion_title": "Your Data Has Been Deleted",
+      "deletion_body": "As requested, your personal data has been permanently deleted.",
+      "categories_label": "Deleted Data Categories"
+    },
+    "admin": {
+      "account_created_subject": "Admin Account Created",
+      "account_created_title": "Admin Account Created",
+      "role_change_subject": "Role Changed",
+      "role_change_title": "Your Role Has Been Updated"
+    },
+    "campaign": {
+      "default_subject": "News from Bayit+"
+    },
+    "newsletter": {
+      "default_subject": "Bayit+ Newsletter"
+    },
+    "reengagement": {
+      "subject": "We Miss You!",
+      "title": "It's Been a While",
+      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
+      "cta": "Come Back"
+    }
+  },
+  "payment": {
+    "pending": {
+      "title": "আপনার সাবস্ক্রিপশন সম্পূর্ণ করুন",
+      "description": "7 দিনের বিনামূল্যে ট্রায়াল শুরু করতে এবং সমস্ত Bayit+ কন্টেন্ট অ্যাক্সেস করতে একটি প্ল্যান বেছে নিন",
+      "timeElapsed": "পেমেন্ট স্ট্যাটাস চেক করা হচ্ছে... ({{seconds}}সেকেন্ড)",
+      "takingLonger": "পেমেন্ট নিশ্চিতকরণ প্রত্যাশিত সময়ের চেয়ে বেশি সময় নিচ্ছে। আপনি ইতিমধ্যে পেমেন্ট করে থাকলে রিফ্রেশ করার চেষ্টা করুন বা সাপোর্টে যোগাযোগ করুন।",
+      "helpText": "সাহায্য প্রয়োজন? support@bayit.tv এ যোগাযোগ করুন বা আপনি ইতিমধ্যে পেমেন্ট সম্পূর্ণ করে থাকলে এই পেজটি রিফ্রেশ করুন।"
+    },
+    "continueToPayment": "পেমেন্টে চালিয়ে যান",
+    "success": {
+      "title": "পেমেন্ট সফল!",
+      "description": "Bayit+ এ স্বাগতম! আপনার সাবস্ক্রিপশন এখন সক্রিয়।",
+      "redirecting": "{{seconds}} সেকেন্ডে পুনঃনির্দেশিত হচ্ছে...",
+      "continue": "Bayit+ এ চালিয়ে যান"
+    },
+    "cancelled": {
+      "title": "পেমেন্ট বাতিল",
+      "description": "আপনার সাবস্ক্রিপশন সম্পূর্ণ হয়নি। আপনি প্রস্তুত হলে আবার চেষ্টা করতে পারেন।",
+      "retry": "আবার চেষ্টা করুন",
+      "helpText": "প্রশ্ন আছে? সাহায্যের জন্য support@bayit.tv এ যোগাযোগ করুন।"
+    }
+  },
+  "portal": {
+    "nav": {
+      "home": "হোম",
+      "features": "বৈশিষ্ট্য",
+      "solutions": "সমাধান",
+      "pricing": "মূল্য নির্ধারণ",
+      "demo": "লাইভ ডেমো",
+      "contact": "যোগাযোগ",
+      "getStarted": "শুরু করুন"
+    },
+    "hero": {
+      "ctaExplore": "বৈশিষ্ট্য দেখুন",
+      "ctaDemo": "ডেমো অনুরোধ করুন"
+    },
+    "cta": {
+      "title": "শুরু করতে প্রস্তুত?",
+      "subtitle": "আসুন আলোচনা করি কীভাবে আমরা আপনার ব্যবসা রূপান্তরিত করতে সাহায্য করতে পারি",
+      "button": "আমাদের সাথে যোগাযোগ করুন"
+    },
+    "contactPage": {
+      "title": "যোগাযোগ করুন",
+      "subtitle": "আমাদের সমাধানে আগ্রহী? আসুন কথা বলি",
+      "formTitle": "আমাদের একটি বার্তা পাঠান",
+      "infoTitle": "যোগাযোগের তথ্য",
+      "form": {
+        "name": "সম্পূর্ণ নাম",
+        "email": "ইমেল ঠিকানা",
+        "company": "কোম্পানির নাম",
+        "phone": "ফোন নম্বর",
+        "message": "আপনার বার্তা",
+        "messagePlaceholder": "আপনার প্রয়োজন সম্পর্কে আমাদের বলুন..."
+      },
+      "submit": "বার্তা পাঠান",
+      "sending": "পাঠানো হচ্ছে...",
+      "success": "বার্তা সফলভাবে পাঠানো হয়েছে! আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।",
+      "error": "বার্তা পাঠাতে ব্যর্থ। অনুগ্রহ করে পুনরায় চেষ্টা করুন।",
+      "scheduleTitle": "কল শিডিউল করতে পছন্দ করেন?",
+      "scheduleSubtitle": "আমাদের দলের সাথে একটি ব্যক্তিগত ডেমো বুক করুন",
+      "scheduleCta": "ডেমো কল শিডিউল করুন"
+    },
+    "pricingPage": {
+      "title": "সাশ্রয়ী",
+      "titleHighlight": "মূল্য পরিকল্পনা",
+      "subtitle": "আপনার প্রয়োজন অনুসারে পরিকল্পনা চয়ন করুন",
+      "comparisonTitle": "বৈশিষ্ট্য তুলনা",
+      "faqTitle": "প্রায়শই জিজ্ঞাসিত প্রশ্ন",
+      "faq": {
+        "q1": "মূল্য নির্ধারণ কীভাবে গণনা করা হয়?",
+        "a1": "মূল্য নির্ধারণ আপনার নির্দিষ্ট প্রয়োজন এবং ব্যবহারের উপর ভিত্তি করে। কাস্টম উদ্ধৃতির জন্য আমাদের সাথে যোগাযোগ করুন।",
+        "q2": "আমি কি পরে আমার পরিকল্পনা আপগ্রেড করতে পারি?",
+        "a2": "হ্যাঁ, আপনি যেকোনো সময় আপগ্রেড করতে পারেন। আমরা আপনার ডেটা নির্বিঘ্নে স্থানান্তরিত করতে সাহায্য করব।",
+        "q3": "কোন সমর্থন অন্তর্ভুক্ত?",
+        "a3": "সমস্ত পরিকল্পনায় ইমেল সমর্থন অন্তর্ভুক্ত। পেশাদার এবং এন্টারপ্রাইজ পরিকল্পনায় নিবেদিত অ্যাকাউন্ট ম্যানেজারদের সাথে অগ্রাধিকার সমর্থন অন্তর্ভুক্ত।"
+      },
+      "professional": {
+        "name": "পেশাদার",
+        "price": "উদ্ধৃতির জন্য যোগাযোগ করুন",
+        "priceNote": "কাস্টম মূল্য নির্ধারণ",
+        "description": "উন্নত প্রয়োজন সহ ক্রমবর্ধমান ব্যবসার জন্য",
+        "cta": "উদ্ধৃতি পান"
+      },
+      "enterprise": {
+        "name": "এন্টারপ্রাইজ",
+        "price": "কাস্টম",
+        "priceNote": "ভলিউম ভিত্তিক",
+        "description": "বড় সংস্থা এবং এন্টারপ্রাইজ স্থাপনার জন্য",
+        "cta": "বিক্রয়ের সাথে যোগাযোগ করুন"
+      },
+      "ctaTitle": "শুরু করতে প্রস্তুত?",
+      "ctaSubtitle": "আসুন আপনার প্রয়োজনীয়তা নিয়ে আলোচনা করি এবং নিখুঁত পরিকল্পনা খুঁজে পাই",
+      "ctaButton": "বিক্রয়ের সাথে যোগাযোগ করুন"
+    },
+    "featuresPage": {
+      "title": "শক্তিশালী",
+      "titleHighlight": "বৈশিষ্ট্য",
+      "subtitle": "সফল হওয়ার জন্য আপনার যা প্রয়োজন সব",
+      "techSpecsTitle": "প্রযুক্তিগত স্পেসিফিকেশন",
+      "workflowTitle": "এটি কিভাবে কাজ করে",
+      "workflow": {
+        "s1": {
+          "title": "আমদানি",
+          "description": "আপনার সামগ্রী আপলোড এবং সংগঠিত করুন"
+        },
+        "s2": {
+          "title": "কনফিগার করুন",
+          "description": "আপনার পছন্দ এবং সেটিংস সেট করুন"
+        },
+        "s3": {
+          "title": "স্থাপন করুন",
+          "description": "আপনার সমাধান নিয়ে লাইভ যান"
+        },
+        "s4": {
+          "title": "মনিটর করুন",
+          "description": "কর্মক্ষমতা ট্র্যাক এবং অপ্টিমাইজ করুন"
+        }
+      },
+      "ctaTitle": "বৈশিষ্ট্য অন্বেষণ করতে প্রস্তুত?",
+      "ctaSubtitle": "ব্যক্তিগত ডেমো সহ কর্মে সমস্ত বৈশিষ্ট্য দেখুন",
+      "ctaButton": "ডেমো শিডিউল করুন"
+    },
+    "demoPage": {
+      "title": "আমাদের দেখুন",
+      "titleHighlight": "প্ল্যাটফর্ম",
+      "subtitle": "আমাদের সমাধানের শক্তি অনুভব করুন",
+      "scheduleCta": "লাইভ ডেমো শিডিউল করুন",
+      "stepsTitle": "এটি কিভাবে কাজ করে",
+      "steps": {
+        "analyze": {
+          "title": "বিশ্লেষণ করুন",
+          "description": "কর্মক্ষমতা ট্র্যাক এবং উন্নত করুন"
+        }
+      },
+      "featuresTitle": "প্ল্যাটফর্ম হাইলাইট",
+      "platformsTitle": "উপলব্ধ",
+      "ctaTitle": "আপনার কাস্টম ডেমোর জন্য প্রস্তুত?",
+      "ctaSubtitle": "আপনার প্রয়োজন অনুসারে একটি ব্যক্তিগত প্রদর্শন শিডিউল করুন",
+      "ctaButton": "ডেমো শিডিউল করুন"
+    },
+    "workflow": {
+      "sectionTitle": "বুদ্ধিমান ওয়ার্কফ্লো",
+      "sectionSubtitle": "৪ ধাপে সুবিন্যস্ত প্রক্রিয়া",
+      "step1": {
+        "title": "সেটআপ",
+        "description": "আপনার অ্যাকাউন্ট এবং পছন্দ কনফিগার করুন"
+      },
+      "step2": {
+        "title": "কাস্টমাইজ করুন",
+        "description": "আপনার প্রয়োজনের জন্য সেটিংস কাস্টমাইজ করুন"
+      },
+      "step3": {
+        "title": "স্থাপন করুন",
+        "description": "আপনার সমাধান চালু করুন"
+      },
+      "step4": {
+        "title": "মনিটর করুন",
+        "description": "কর্মক্ষমতা ট্র্যাক এবং অপ্টিমাইজ করুন"
+      }
+    }
+  },
+  "channelChat": {
+    "title": "লাইভ চ্যাট",
+    "participants": "{{count}} জন দেখছেন",
+    "inputPlaceholder": "একটি বার্তা লিখুন...",
+    "sendButton": "পাঠান",
+    "rateLimitWarning": "ধীরে! {{seconds}} সেকেন্ড অপেক্ষা করুন",
+    "autoTranslationBadge": "স্বয়ংক্রিয় অনুবাদ (বিটা)",
+    "showOriginal": "মূল দেখান",
+    "showTranslation": "অনুবাদ দেখান",
+    "error": "চ্যাট অনুপলব্ধ",
+    "retry": "পুনরায় চেষ্টা করুন",
+    "upgradeBeta": "স্বয়ংক্রিয় অনুবাদের জন্য Beta 500 তে আপগ্রেড করুন",
+    "inputLabel": "চ্যাট বার্তা ইনপুট",
+    "moderationDelete": "মডারেটর দ্বারা বার্তা মুছে ফেলা হয়েছে"
+  }
+}

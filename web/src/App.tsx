@@ -1,6 +1,6 @@
 import { useEffect, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { initWebI18n, setupWebDirectionListener } from '@bayit/shared-i18n/web'
+import { initBayitI18nWeb } from '@bayit/i18n/web'
 import { useDirection } from '@/hooks/useDirection'
 import { VoiceListeningProvider } from '@bayit/shared-contexts'
 import { NotificationProvider } from '@olorin/glass-ui/contexts'
@@ -280,12 +280,10 @@ function App() {
         const urlParams = new URLSearchParams(window.location.search)
         const langParam = urlParams.get('lng')
 
-        await initWebI18n()
-        setupWebDirectionListener()
+        const i18n = await initBayitI18nWeb()
 
         // If language is specified in URL, switch to it
         if (langParam) {
-          const i18n = await import('@bayit/shared-i18n').then(m => m.default)
           const validLanguages = ['he', 'en', 'es', 'zh', 'fr', 'it', 'hi', 'ta', 'bn', 'ja']
 
           if (validLanguages.includes(langParam)) {

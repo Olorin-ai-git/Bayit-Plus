@@ -307,6 +307,11 @@
     "podcasts": "פודקאסטים",
     "audiobooks": "ספרי אודיו",
     "israelis_in_city": "ישראלים ב{{city}}, {{state}}",
+    "israeli_businesses": "עסקים ישראליים ב{{city}}, {{state}}",
+    "israeli_businesses_nearby": "עסקים ישראליים קרובים אליך - מ{{city}}",
+    "searching_businesses": "מחפש עסקים ישראליים ב{{city}}...",
+    "no_businesses_found": "לא נמצאו עסקים ישראליים ב{{city}}",
+    "businesses_load_error": "לא ניתן לטעון רשימות עסקים. נסה שוב.",
     "carousel": {
       "fauda": {
         "title": "פאודה",
@@ -1151,6 +1156,10 @@
     "restart": "התחל מההתחלה",
     "subtitlesOff": "כבוי",
     "speed": "מהירות",
+    "liveChat": "צ׳אט חי",
+    "liveTrivia": "טריוויה חיה",
+    "showAIFeatures": "הצג תכונות AI",
+    "hideAIFeatures": "הסתר תכונות AI",
     "selectQuality": "בחר איכות וידאו",
     "quality4k": "4K Ultra HD",
     "quality1080p": "1080p Full HD",
@@ -3772,7 +3781,55 @@
     "error": "שגיאת הקלטה",
     "startFailed": "התחלת ההקלטה נכשלה. אנא נסה שוב.",
     "stopFailed": "עצירת ההקלטה נכשלה. אנא נסה שוב.",
-    "page": "עמוד"
+    "page": "עמוד",
+    "loading": "טוען הקלטות...",
+    "loadingRules": "טוען כללי סדרות...",
+    "recordOptions": "אפשרויות הקלטה",
+    "includeSubtitles": "כלול כתוביות",
+    "includeDubbedAudio": "כלול אודיו מדובב",
+    "subtitleLanguage": "שפת כתוביות",
+    "dubbingLanguage": "שפת דיבוב",
+    "startRecording": "התחל הקלטה",
+    "seriesRecording": "הקלטת סדרה",
+    "thisEpisode": "פרק זה בלבד",
+    "thisSeason": "העונה הזו",
+    "allSeasons": "כל העונות",
+    "scheduleRecording": "תזמן הקלטה",
+    "cancelSchedule": "בטל תזמון",
+    "conflict": "התנגשות בתזמון",
+    "storageQuota": "מכסת אחסון",
+    "audioTracks": "רצועות אודיו",
+    "originalAudio": "אודיו מקורי",
+    "originalAudioDesc": "אודיו שידור מקורי",
+    "dubbedAudio": "אודיו מדובב",
+    "dubbedAudioDesc": "רצועת אודיו מתורגמת בינה מלאכותית",
+    "dubbedAudioLang": "דיבוב ({{language}})",
+    "seriesRules": "כללי סדרות",
+    "seriesRulesDesc": "הקלט אוטומטית תוכניות תואמות מלוח השידורים",
+    "noSeriesRules": "אין כללי סדרות",
+    "noSeriesRulesHint": "צור כלל סדרה כדי להקליט תוכניות אוטומטית!",
+    "deleteRule": "מחק כלל",
+    "confirmDeleteRule": "למחוק כלל סדרה זה? כל ההקלטות המתוזמנות הממתינות יבוטלו.",
+    "ruleDeleted": "כלל הסדרה נמחק",
+    "ruleDeleteFailed": "מחיקת הכלל נכשלה",
+    "deleted": "ההקלטה נמחקה",
+    "nextRecording": "ההקלטה הבאה",
+    "recordingsCount": "{{count}} הקלטות",
+    "lastMatched": "התאמה אחרונה",
+    "pauseRule": "השהה",
+    "resumeRule": "חדש",
+    "activeRules": "כללים פעילים",
+    "matchExact": "התאמה מדויקת",
+    "matchContains": "מכיל",
+    "matchStartsWith": "מתחיל ב",
+    "filterAll": "הכל",
+    "filterManual": "ידני",
+    "filterScheduled": "מתוזמן",
+    "filterSeries": "סדרות",
+    "sortDate": "תאריך",
+    "sortSize": "גודל",
+    "sortDuration": "משך",
+    "sortTitle": "כותרת"
   },
   "chess": {
     "title": "שחמט",
@@ -4422,6 +4479,35 @@
         "enrollmentSuccess": "ברוך הבא ל-Beta 500! בדוק את האימייל שלך כדי לאמת את החשבון.",
         "enrollmentError": "לא ניתן להירשם. נסה שוב מאוחר יותר."
       }
+    }
+  },
+  "catchup": {
+    "overlay": {
+      "title": "הצטרפת עכשיו?",
+      "description": "הצטרפת ל-{{programName}} באמצע השידור",
+      "creditContext": "זה ישתמש ב-{{cost}} מתוך {{balance}} הקרדיטים שלך",
+      "lowBalanceWarning": "נותרו מעט קרדיטים",
+      "acceptButton": "עדכן אותי ({{cost}} קרדיטים)",
+      "declineButton": "לא תודה"
+    },
+    "button": {
+      "credits": "עדכון ({{cost}} קרדיטים)",
+      "label": "סיכום עדכון",
+      "title": "עדכון"
+    },
+    "generating": "מייצר סיכום...",
+    "summary": {
+      "title": "מה פספסת",
+      "keyPoints": "נקודות עיקריות",
+      "windowInfo": "{{minutes}} הדקות האחרונות",
+      "creditsUsed": "השתמשת ב-{{count}} קרדיטים",
+      "creditsRemaining": "נותרו {{count}} קרדיטים",
+      "close": "סגור"
+    },
+    "error": {
+      "failed": "לא ניתן לייצר סיכום",
+      "retry": "נסה שוב",
+      "insufficientCredits": "אין מספיק קרדיטים"
     }
   }
 }

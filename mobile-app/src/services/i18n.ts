@@ -1,33 +1,33 @@
 /**
  * Bayit+ Internationalization (i18n) Service
- * Wraps @olorin/shared-i18n for mobile app integration
+ * Uses @bayit/i18n/native which merges:
+ * - 74 core keys from @olorin/shared-i18n
+ * - 8 platform keys from @bayit/i18n
  * Supports: Hebrew (RTL), English, Spanish, Chinese, French, Italian, Hindi, Tamil, Bengali, Japanese
  */
 
-import i18n from '@olorin/shared-i18n';
+import { initBayitI18nNative, saveLanguageNative, loadLanguageNative } from '@bayit/i18n/native';
 import type { TFunction } from 'i18next';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { BayitLanguage } from '@bayit/i18n';
+
+// i18n instance (initialized on first call)
+let i18n: Awaited<ReturnType<typeof initBayitI18nNative>> | null = null;
 
 /**
  * Initialize i18n for React Native mobile app
  * Loads user's preferred language from AsyncStorage
- * Falls back to device locale, then English
+ * Falls back to Hebrew (default)
  */
 export async function initializeI18n(): Promise<void> {
   try {
-    // Load saved language preference
-    const savedLanguage = await AsyncStorage.getItem('bayit_language');
+    // Initialize with merged resources (Olorin core + Bayit+ platform)
+    i18n = await initBayitI18nNative();
 
-    if (savedLanguage && isSupportedLanguage(savedLanguage)) {
-      await i18n.changeLanguage(savedLanguage);
-    } else {
-      // Default to English if no preference saved
-      await i18n.changeLanguage('en');
-    }
+    // Note: initBayitI18nNative() already loads saved language from AsyncStorage
+    // and sets it as the initial language, so no additional loading needed
   } catch (error) {
     console.error('Failed to initialize i18n:', error);
-    // Gracefully fallback to English
-    await i18n.changeLanguage('en');
+    throw error; // Re-throw to let caller handle
   }
 }
 
@@ -36,13 +36,18 @@ export async function initializeI18n(): Promise<void> {
  */
 export async function setLanguage(languageCode: string): Promise<boolean> {
   try {
+    if (!i18n) {
+      console.error('i18n not initialized. Call initializeI18n() first.');
+      return false;
+    }
+
     if (!isSupportedLanguage(languageCode)) {
       console.warn(`Unsupported language: ${languageCode}`);
       return false;
     }
 
     await i18n.changeLanguage(languageCode);
-    await AsyncStorage.setItem('bayit_language', languageCode);
+    await saveLanguageNative(languageCode as BayitLanguage);
     return true;
   } catch (error) {
     console.error('Failed to set language:', error);
@@ -54,7 +59,7 @@ export async function setLanguage(languageCode: string): Promise<boolean> {
  * Get current language
  */
 export function getCurrentLanguage(): string {
-  return i18n.language || 'en';
+  return i18n?.language || 'he'; // Default to Hebrew (Bayit+ default)
 }
 
 /**
@@ -99,6 +104,10 @@ export function isSupportedLanguage(code: string): boolean {
  * Get translation function (same as i18n.t)
  */
 export function t(key: string, options?: Record<string, any>): string {
+  if (!i18n) {
+    console.warn('i18n not initialized. Returning key as-is.');
+    return key;
+  }
   return i18n.t(key, options) as string;
 }
 
@@ -106,6 +115,9 @@ export function t(key: string, options?: Record<string, any>): string {
  * Get i18n instance for advanced usage
  */
 export function getI18n() {
+  if (!i18n) {
+    throw new Error('i18n not initialized. Call initializeI18n() first.');
+  }
   return i18n;
 }
 
@@ -113,6 +125,10 @@ export function getI18n() {
  * Translate with namespace
  */
 export function tNS(namespace: string, key: string, options?: Record<string, any>): string {
+  if (!i18n) {
+    console.warn('i18n not initialized. Returning key as-is.');
+    return `${namespace}:${key}`;
+  }
   return i18n.t(`${namespace}:${key}`, options) as string;
 }
 
@@ -120,6 +136,7 @@ export function tNS(namespace: string, key: string, options?: Record<string, any
  * Check if translation key exists
  */
 export function hasTranslation(key: string): boolean {
+  if (!i18n) return false;
   return i18n.exists(key);
 }
 
@@ -127,6 +144,7 @@ export function hasTranslation(key: string): boolean {
  * Get all translations for a namespace
  */
 export function getNamespaceTranslations(namespace: string): Record<string, any> {
+  if (!i18n) return {};
   const resources = i18n.getResourceBundle(getCurrentLanguage(), namespace);
   return resources || {};
 }
@@ -177,4 +195,7 @@ export function formatCurrency(amount: number, currency: string = 'USD'): string
   return formatter.format(amount);
 }
 
-export default i18n;
+/**
+ * Note: No default export. Use getI18n() after calling initializeI18n()
+ * or use the exported utility functions (t, setLanguage, etc.)
+ */

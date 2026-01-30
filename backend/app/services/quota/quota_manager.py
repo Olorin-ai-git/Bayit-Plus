@@ -19,7 +19,7 @@ class QuotaManager:
     @staticmethod
     async def get_or_create_quota(user_id: str) -> LiveFeatureQuota:
         """Get quota for user, create with defaults if doesn't exist"""
-        quota = await LiveFeatureQuota.find_one(LiveFeatureQuota.user_id == user_id)
+        quota = await LiveFeatureQuota.find_one({"user_id": user_id})
 
         if not quota:
             try:

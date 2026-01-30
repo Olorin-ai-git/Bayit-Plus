@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import i18n from '@bayit/shared-i18n';
+import { useTranslation } from 'react-i18next';
 import { announceToScreenReader, getLanguageName } from '../utils/accessibility';
 
 type Direction = 'rtl' | 'ltr';
@@ -26,6 +26,7 @@ const isRTLLanguage = (lng: string): boolean => {
 };
 
 export const useDirection = (): DirectionResult => {
+  const { i18n } = useTranslation();
   const [isRTL, setIsRTL] = useState(() => {
     return isRTLLanguage(i18n.language);
   });

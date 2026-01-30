@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { WatchPartyButton } from '@/components/watchparty'
 import SubtitleControls from '../SubtitleControls'
 import LiveSubtitleControls from '../LiveSubtitleControls'
@@ -6,6 +7,9 @@ import { DubbingControls } from '../dubbing'
 import { RecordButton } from '../RecordButton'
 import CastButton from '../controls/CastButton'
 import CatchUpButton from '../catchup/CatchUpButton'
+import LiveFeatureButton from '../controls/LiveFeatureButton'
+import { MessageCircle, Lightbulb } from 'lucide-react'
+import { colors } from '@olorin/design-tokens'
 import liveSubtitleService from '@/services/liveSubtitleService'
 import { SubtitleTrack, SubtitleSettings } from '@/types/subtitle'
 import { UseLiveDubbingState } from './useLiveDubbing'
@@ -115,18 +119,11 @@ export function usePlayerControlRenderers({
   onShowUpgrade,
   onHoveredButtonChange,
 }: UsePlayerControlRenderersParams) {
+  const { t } = useTranslation()
   const isPremium = user?.subscription?.plan === 'premium' || user?.subscription?.plan === 'family'
 
-  const renderWatchPartyButton = useCallback(() =>
-    user && contentId ? (
-      <WatchPartyButton
-        hasActiveParty={!!party}
-        onCreateClick={() => setShowCreateModal(true)}
-        onJoinClick={() => setShowJoinModal(true)}
-        onPanelToggle={() => setShowPartyPanel(!showPartyPanel)}
-      />
-    ) : null
-  , [user, contentId, party, showPartyPanel, setShowCreateModal, setShowJoinModal, setShowPartyPanel])
+  const renderWatchPartyButton = useCallback(() => null
+  , [])
 
   const renderSubtitleControls = useCallback(() =>
     !isLive && contentId ? (
@@ -231,35 +228,35 @@ export function usePlayerControlRenderers({
     ) : null
   , [cast, onHoveredButtonChange])
 
-  const renderChannelChatButton = useCallback(() =>
-    isLive && channelChat ? (
-      <CatchUpButton
-        label="Chat"
+  const renderChannelChatButton = useCallback(() => {
+    if (!isLive || !channelChat) return null
+    return (
+      <LiveFeatureButton
+        label={t('player.liveChat', 'Live Chat')}
+        icon={<MessageCircle size={18} color={channelChat.showChat ? colors.text : colors.textSecondary} />}
         isActive={channelChat.showChat}
-        onClick={channelChat.toggleChat}
-        hasNotification={channelChat.hasUnreadMessages}
+        onPress={channelChat.toggleChat}
       />
-    ) : null
-  , [isLive, channelChat])
+    )
+  }, [isLive, channelChat, t])
 
-  const renderLiveTriviaButton = useCallback(() =>
-    isLive && liveTrivia ? (
-      <CatchUpButton
-        label="Trivia"
+  const renderLiveTriviaButton = useCallback(() => {
+    if (!isLive || !liveTrivia) return null
+    return (
+      <LiveFeatureButton
+        label={t('player.liveTrivia', 'Live Trivia')}
+        icon={<Lightbulb size={18} color={liveTrivia.enabled ? colors.text : colors.textSecondary} />}
         isActive={liveTrivia.enabled}
-        onClick={liveTrivia.toggleEnabled}
-        hasNotification={liveTrivia.hasActiveFact}
+        onPress={liveTrivia.toggleEnabled}
       />
-    ) : null
-  , [isLive, liveTrivia])
+    )
+  }, [isLive, liveTrivia, t])
 
   const renderCatchUpButton = useCallback(() =>
     isLive && catchUp ? (
       <CatchUpButton
-        label="Catch Up"
-        isActive={catchUp.showSummary}
-        onClick={catchUp.toggleSummary}
-        disabled={!catchUp.canRequest}
+        onPress={catchUp.toggleSummary}
+        isLoading={false}
       />
     ) : null
   , [isLive, catchUp])

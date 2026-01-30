@@ -216,5 +216,7 @@ const styles = StyleSheet.create({
     borderRadius: 0,
     borderBottomLeftRadius: borderRadius.lg,
     borderBottomRightRadius: borderRadius.lg,
+    overflow: 'visible',
+    zIndex: 20,
   },
 })

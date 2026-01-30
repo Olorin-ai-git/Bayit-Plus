@@ -782,149 +782,6 @@
     "emptyHint": "下载内容以供离线观看",
     "paused": "已暂停"
   },
-  "email": {
-    "greeting": "Hello",
-    "footer": {
-      "privacy": "Privacy Policy",
-      "terms": "Terms of Service",
-      "support": "Support",
-      "unsubscribe": "Unsubscribe from these emails"
-    },
-    "welcome": {
-      "subject": "Welcome to Bayit+!",
-      "title": "Welcome to Bayit+",
-      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
-      "cta": "Go to Dashboard"
-    },
-    "verification": {
-      "subject": "Verify Your Email",
-      "title": "Verify Your Email Address",
-      "body": "Please click the button below to verify your email address.",
-      "cta": "Verify Email",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't create an account, you can safely ignore this email."
-    },
-    "verification_resend": {
-      "subject": "Email Verification (Resent)",
-      "title": "Verify Your Email Address",
-      "body": "Here's a new verification link as requested.",
-      "cta": "Verify Email"
-    },
-    "password_reset": {
-      "subject": "Reset Your Password",
-      "title": "Reset Your Password",
-      "body": "We received a request to reset your password. Click the button below to create a new password.",
-      "cta": "Reset Password",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't request this, your account is still safe. You can ignore this email."
-    },
-    "password_changed": {
-      "subject": "Password Changed",
-      "title": "Your Password Has Been Changed",
-      "body": "Your password was successfully changed.",
-      "security": "If you didn't make this change, please contact support immediately."
-    },
-    "account_locked": {
-      "subject": "Account Locked",
-      "title": "Your Account Has Been Locked",
-      "body": "Your account has been temporarily locked due to security concerns.",
-      "cta": "Unlock Account"
-    },
-    "beta_invitation": {
-      "subject": "You're Invited to Bayit+ Beta!",
-      "title": "You're Invited to the Beta Program",
-      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
-      "credits": "{credits} AI credits included",
-      "duration": "Access for {days} days",
-      "cta": "Join Beta Program"
-    },
-    "beta_welcome": {
-      "subject": "Welcome to Bayit+ Beta!",
-      "title": "Welcome to the Beta Program",
-      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
-      "cta": "Get Started"
-    },
-    "payment_confirmation": {
-      "subject": "Payment Confirmation",
-      "title": "Payment Received",
-      "body": "Your payment has been processed successfully.",
-      "transaction": "Transaction ID",
-      "plan": "Plan",
-      "amount": "Amount",
-      "date": "Payment Date",
-      "next_billing": "Next Billing Date"
-    },
-    "subscription_activated": {
-      "subject": "Subscription Activated",
-      "title": "Your Subscription is Active",
-      "body": "Your subscription has been activated. Here's what you get:",
-      "cta": "Start Watching"
-    },
-    "subscription_cancelled": {
-      "subject": "Subscription Cancelled",
-      "title": "Subscription Cancelled",
-      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
-      "cta": "Reactivate Subscription"
-    },
-    "payment_failed": {
-      "subject": "Payment Failed",
-      "title": "Payment Failed",
-      "body": "We were unable to process your payment. Please update your payment method.",
-      "cta": "Update Payment Method"
-    },
-    "trial_expiring": {
-      "subject": "Your Trial is Expiring Soon",
-      "title": "Trial Ending in {days_remaining} Days",
-      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
-      "cta": "Upgrade Now"
-    },
-    "support": {
-      "created_subject": "Ticket #{ticket_id} Created",
-      "created_title": "Support Ticket Created",
-      "created_body": "Your support ticket has been created. We'll get back to you soon.",
-      "response_subject": "New Response on Ticket #{ticket_id}",
-      "response_title": "New Response on Your Ticket",
-      "escalation_subject": "Ticket #{ticket_id} Escalated",
-      "escalation_title": "Your Ticket Has Been Escalated",
-      "resolved_subject": "Ticket #{ticket_id} Resolved",
-      "resolved_title": "Your Ticket Has Been Resolved",
-      "resolved_body": "Your support ticket has been resolved."
-    },
-    "new_message": {
-      "subject": "New Message from {sender_name}",
-      "title": "You Have a New Message",
-      "cta": "Read Message"
-    },
-    "content_digest": {
-      "subject": "Your {digest_period} Content Digest",
-      "title": "Your Content Digest",
-      "cta": "Browse Content"
-    },
-    "gdpr": {
-      "deletion_subject": "Data Deletion Confirmation",
-      "deletion_title": "Your Data Has Been Deleted",
-      "deletion_body": "As requested, your personal data has been permanently deleted.",
-      "categories_label": "Deleted Data Categories"
-    },
-    "admin": {
-      "account_created_subject": "Admin Account Created",
-      "account_created_title": "Admin Account Created",
-      "role_change_subject": "Role Changed",
-      "role_change_title": "Your Role Has Been Updated"
-    },
-    "campaign": {
-      "default_subject": "News from Bayit+"
-    },
-    "newsletter": {
-      "default_subject": "Bayit+ Newsletter"
-    },
-    "reengagement": {
-      "subject": "We Miss You!",
-      "title": "It's Been a While",
-      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
-      "cta": "Come Back"
-    }
-  },
   "empty": {
     "noContent": "无可用内容",
     "tryAnotherCategory": "尝试选择其他分类",
@@ -1557,28 +1414,6 @@
     "vodLabel": "电影",
     "podcastsLabel": "播客"
   },
-  "payment": {
-    "pending": {
-      "title": "完成您的订阅",
-      "description": "选择计划开始7天免费试用并访问所有Bayit+内容",
-      "timeElapsed": "正在检查付款状态... ({{seconds}}秒)",
-      "takingLonger": "付款确认时间比预期长。如果您已付款，请尝试刷新或联系支持。",
-      "helpText": "需要帮助？请联系 support@bayit.tv 或刷新此页面（如果您已完成付款）。"
-    },
-    "continueToPayment": "继续付款",
-    "success": {
-      "title": "付款成功！",
-      "description": "欢迎使用Bayit+！您的订阅现已激活。",
-      "redirecting": "{{seconds}}秒后重定向...",
-      "continue": "继续访问Bayit+"
-    },
-    "cancelled": {
-      "title": "付款已取消",
-      "description": "您的订阅未完成。准备好后可以重试。",
-      "retry": "重试",
-      "helpText": "有疑问？请联系 support@bayit.tv 获取帮助。"
-    }
-  },
   "placeholder": {
     "email": "your@email.com",
     "password": "••••••••",
@@ -1744,145 +1579,6 @@
     },
     "noPodcasts": "无可用播客",
     "tryLater": "请稍后重试"
-  },
-  "portal": {
-    "nav": {
-      "home": "首页",
-      "features": "功能",
-      "solutions": "解决方案",
-      "pricing": "定价",
-      "demo": "实时演示",
-      "contact": "联系我们",
-      "getStarted": "开始使用"
-    },
-    "hero": {
-      "ctaExplore": "探索功能",
-      "ctaDemo": "请求演示"
-    },
-    "cta": {
-      "title": "准备好开始了吗？",
-      "subtitle": "让我们讨论如何帮助改变您的业务",
-      "button": "联系我们"
-    },
-    "contactPage": {
-      "title": "联系我们",
-      "subtitle": "对我们的解决方案感兴趣？让我们交谈",
-      "formTitle": "给我们发消息",
-      "infoTitle": "联系信息",
-      "form": {
-        "name": "全名",
-        "email": "电子邮件地址",
-        "company": "公司名称",
-        "phone": "电话号码",
-        "message": "您的消息",
-        "messagePlaceholder": "告诉我们您的需求..."
-      },
-      "submit": "发送消息",
-      "sending": "发送中...",
-      "success": "消息已成功发送！我们很快会与您联系。",
-      "error": "发送消息失败。请重试。",
-      "scheduleTitle": "更喜欢安排通话？",
-      "scheduleSubtitle": "与我们的团队预订个性化演示",
-      "scheduleCta": "安排演示通话"
-    },
-    "pricingPage": {
-      "title": "实惠的",
-      "titleHighlight": "定价计划",
-      "subtitle": "选择适合您需求的计划",
-      "comparisonTitle": "功能比较",
-      "faqTitle": "常见问题",
-      "faq": {
-        "q1": "定价如何计算？",
-        "a1": "定价基于您的具体需求和使用情况。联系我们获取定制报价。",
-        "q2": "我以后可以升级我的计划吗？",
-        "a2": "是的，您可以随时升级。我们将帮助您无缝迁移数据。",
-        "q3": "包含什么支持？",
-        "a3": "所有计划都包括电子邮件支持。专业版和企业版计划包括专属客户经理的优先支持。"
-      },
-      "professional": {
-        "name": "专业版",
-        "price": "联系获取报价",
-        "priceNote": "定制定价",
-        "description": "适用于有高级需求的成长型企业",
-        "cta": "获取报价"
-      },
-      "enterprise": {
-        "name": "企业版",
-        "price": "定制",
-        "priceNote": "基于使用量",
-        "description": "适用于大型组织和企业部署",
-        "cta": "联系销售"
-      },
-      "ctaTitle": "准备好开始了吗？",
-      "ctaSubtitle": "让我们讨论您的需求并找到完美的计划",
-      "ctaButton": "联系销售"
-    },
-    "featuresPage": {
-      "title": "强大的",
-      "titleHighlight": "功能",
-      "subtitle": "成功所需的一切",
-      "techSpecsTitle": "技术规格",
-      "workflowTitle": "工作原理",
-      "workflow": {
-        "s1": {
-          "title": "导入",
-          "description": "上传和组织您的内容"
-        },
-        "s2": {
-          "title": "配置",
-          "description": "设置您的偏好和设置"
-        },
-        "s3": {
-          "title": "部署",
-          "description": "启动您的解决方案"
-        },
-        "s4": {
-          "title": "监控",
-          "description": "跟踪性能并优化"
-        }
-      },
-      "ctaTitle": "准备好探索功能了吗？",
-      "ctaSubtitle": "通过个性化演示查看所有功能的实际应用",
-      "ctaButton": "安排演示"
-    },
-    "demoPage": {
-      "title": "查看我们的",
-      "titleHighlight": "平台",
-      "subtitle": "体验我们解决方案的强大功能",
-      "scheduleCta": "安排实时演示",
-      "stepsTitle": "工作原理",
-      "steps": {
-        "analyze": {
-          "title": "分析",
-          "description": "跟踪和改进性能"
-        }
-      },
-      "featuresTitle": "平台亮点",
-      "platformsTitle": "可用平台",
-      "ctaTitle": "准备好您的定制演示了吗？",
-      "ctaSubtitle": "安排根据您的需求定制的个性化演示",
-      "ctaButton": "安排演示"
-    },
-    "workflow": {
-      "sectionTitle": "智能工作流",
-      "sectionSubtitle": "4步精简流程",
-      "step1": {
-        "title": "设置",
-        "description": "配置您的帐户和偏好"
-      },
-      "step2": {
-        "title": "自定义",
-        "description": "根据您的需求自定义设置"
-      },
-      "step3": {
-        "title": "部署",
-        "description": "启动您的解决方案"
-      },
-      "step4": {
-        "title": "监控",
-        "description": "跟踪性能并优化"
-      }
-    }
   },
   "profile": {
     "title": "我的资料",
@@ -2793,20 +2489,18 @@
       "change": "更改"
     }
   },
-  "channelChat": {
-    "title": "实时聊天",
-    "participants": "{{count}} 人正在观看",
-    "inputPlaceholder": "输入消息...",
-    "sendButton": "发送",
-    "rateLimitWarning": "请稍慢！等待 {{seconds}} 秒",
-    "autoTranslationBadge": "自动翻译（测试版）",
-    "showOriginal": "显示原文",
-    "showTranslation": "显示翻译",
-    "error": "聊天不可用",
-    "retry": "重试",
-    "upgradeBeta": "升级到 Beta 500 以使用自动翻译",
-    "inputLabel": "聊天消息输入",
-    "moderationDelete": "消息已被管理员删除"
+  "beta": {
+    "credits": {
+      "loading": "正在加载信用余额...",
+      "error": "无法加载信用余额",
+      "label": "AI积分",
+      "remaining": "剩余",
+      "warningCritical": "🚨 严重：积分即将用完",
+      "warningLow": "⚠️ 警告：积分余额不足",
+      "upgrade": "升级套餐",
+      "upgradeAction": "升级以获取更多积分",
+      "remainingCredits": "积分"
+    }
   },
   "catchup": {
     "overlay": {

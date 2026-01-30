@@ -479,6 +479,31 @@ function AppContent() {
 }
 
 export default function App() {
+  const [i18nReady, setI18nReady] = React.useState(false);
+
+  React.useEffect(() => {
+    // Initialize i18n with merged resources (Olorin core + Bayit+ platform)
+    import('./src/services/i18n')
+      .then(({ initializeI18n }) => initializeI18n())
+      .then(() => {
+        setI18nReady(true);
+      })
+      .catch((error) => {
+        console.error('Failed to initialize i18n:', error);
+        // Even if initialization fails, render the app (it will fall back to keys)
+        setI18nReady(true);
+      });
+  }, []);
+
+  if (!i18nReady) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#A855F7" />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <AppContent />
@@ -491,6 +516,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0a0a0f',
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#0a0a0f',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 20,
+    fontSize: 18,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   header: {
     flexDirection: 'row',

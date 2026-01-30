@@ -3,14 +3,15 @@
  * Button to start/stop recording live streams
  */
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { View, Text, Pressable, StyleSheet } from 'react-native'
-import { Circle, Square } from 'lucide-react'
+import { Circle, Square, ChevronUp } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens'
 import { recordingApi, RecordingSession } from '../../services/recordingApi'
 import { useAuthStore } from '../../store/authStore'
 import { useNotifications } from '@olorin/glass-ui/hooks'
+import { RecordOptionsPopover, RecordingOptions } from './RecordOptionsPopover'
 import logger from '@/utils/logger'
 
 interface RecordButtonProps {
@@ -32,9 +33,17 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
   const notifications = useNotifications()
   const [isRecording, setIsRecording] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
+  const [showOptions, setShowOptions] = useState(false)
   const [session, setSession] = useState<RecordingSession | null>(null)
   const [duration, setDuration] = useState(0)
+  const [recordingOptions, setRecordingOptions] = useState<RecordingOptions>({
+    subtitleEnabled: true,
+    subtitleTargetLanguage: 'en',
+    dubbingEnabled: false,
+    dubbingTargetLanguage: 'en',
+  })
   const durationInterval = useRef<NodeJS.Timeout | null>(null)
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     return () => {
@@ -88,16 +97,45 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
     if (isRecording) {
       await stopRecording()
     } else {
-      await startRecording()
+      await startRecordingWithOptions(recordingOptions)
     }
   }
 
-  const startRecording = async () => {
+  const handleLongPressIn = useCallback(() => {
+    if (isRecording) return
+    longPressTimer.current = setTimeout(() => {
+      if (isPremium) {
+        setShowOptions(true)
+      }
+    }, 500)
+  }, [isRecording, isPremium])
+
+  const handleLongPressOut = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current)
+      longPressTimer.current = null
+    }
+  }, [])
+
+  const handleContextMenu = useCallback((e: any) => {
+    if (!isPremium || isRecording) return
+    e.preventDefault?.()
+    setShowOptions(true)
+  }, [isPremium, isRecording])
+
+  const handleStartWithOptions = async (options: RecordingOptions) => {
+    setRecordingOptions(options)
+    await startRecordingWithOptions(options)
+  }
+
+  const startRecordingWithOptions = async (options: RecordingOptions) => {
     try {
       const newSession = await recordingApi.startRecording({
         channel_id: channelId,
-        subtitle_enabled: true,
-        subtitle_target_language: 'en'
+        subtitle_enabled: options.subtitleEnabled,
+        subtitle_target_language: options.subtitleTargetLanguage,
+        dubbing_enabled: options.dubbingEnabled,
+        dubbing_target_language: options.dubbingTargetLanguage,
       })
 
       setSession(newSession)
@@ -157,52 +195,118 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
   if (!isLive) return null
 
   return (
-    <Pressable
-      onPress={handlePress}
-      onHoverIn={() => setIsHovered(true)}
-      onHoverOut={() => setIsHovered(false)}
-      style={[
-        styles.button,
-        isRecording ? styles.buttonRecording : styles.buttonIdle,
-        isHovered && !isRecording && styles.buttonHovered,
-      ]}
-    >
-      {isRecording ? (
-        <>
-          <Square size={16} color="white" fill="white" />
-          <Text style={styles.buttonText}>{formatDuration(duration)}</Text>
-        </>
-      ) : (
-        <>
-          <Circle size={16} color="white" />
-          <Text style={styles.buttonText}>{t('recordings.record')}</Text>
-        </>
-      )}
-    </Pressable>
+    <View style={styles.wrapper}>
+      <RecordOptionsPopover
+        visible={showOptions}
+        onClose={() => setShowOptions(false)}
+        options={recordingOptions}
+        onOptionsChange={setRecordingOptions}
+        onStartRecording={handleStartWithOptions}
+      />
+
+      <View style={[styles.buttonGroup, { flexDirection: 'row' }]}>
+        <Pressable
+          onPress={handlePress}
+          onPressIn={handleLongPressIn}
+          onPressOut={handleLongPressOut}
+          onContextMenu={handleContextMenu}
+          onHoverIn={() => setIsHovered(true)}
+          onHoverOut={() => setIsHovered(false)}
+          style={[
+            styles.button,
+            isRecording ? styles.buttonRecording : styles.buttonIdle,
+            isHovered && !isRecording && styles.buttonHovered,
+          ]}
+        >
+          {isRecording ? (
+            <>
+              <Square size={16} color="white" fill="white" />
+              <Text style={styles.buttonText}>{formatDuration(duration)}</Text>
+            </>
+          ) : (
+            <>
+              <Circle size={16} color="white" />
+              <Text style={styles.buttonText}>{t('recordings.record')}</Text>
+            </>
+          )}
+        </Pressable>
+
+        {!isRecording && isPremium && (
+          <Pressable
+            onPress={() => setShowOptions(!showOptions)}
+            style={[
+              styles.optionsToggle,
+              isHovered && styles.buttonHovered,
+            ]}
+          >
+            <ChevronUp size={14} color="white" />
+          </Pressable>
+        )}
+      </View>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    position: 'relative',
+    zIndex: 200,
+  },
+  buttonGroup: {
+    alignItems: 'center',
+    gap: 1,
+  },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    borderRadius: 999,
+    borderRadius: borderRadius.xl,
+    backgroundColor: 'rgba(17, 17, 34, 0.85)',
+    backdropFilter: 'blur(20px)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(139, 92, 246, 0.3)',
+    minHeight: 40,
+    shadowColor: 'rgba(139, 92, 246, 1)',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 2,
   },
   buttonRecording: {
-    backgroundColor: 'rgba(239, 68, 68, 0.9)',
+    backgroundColor: 'rgba(239, 68, 68, 0.3)',
+    borderColor: 'rgba(239, 68, 68, 0.6)',
+    shadowColor: 'rgba(239, 68, 68, 1)',
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
   },
   buttonIdle: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
   },
   buttonHovered: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(139, 92, 246, 0.35)',
+    borderColor: 'rgba(139, 92, 246, 0.7)',
+    transform: [{ scale: 1.03 }],
   },
   buttonText: {
     color: colors.text,
-    fontSize: fontSize.sm,
-    fontWeight: '500',
+    fontSize: 13,
+    fontWeight: '600',
+    whiteSpace: 'nowrap',
+  },
+  optionsToggle: {
+    backgroundColor: 'rgba(17, 17, 34, 0.85)',
+    backdropFilter: 'blur(20px)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+    borderTopRightRadius: borderRadius.xl,
+    borderBottomRightRadius: borderRadius.xl,
+    borderWidth: 1.5,
+    borderColor: 'rgba(139, 92, 246, 0.3)',
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(139, 92, 246, 0.3)',
+    minHeight: 40,
   },
 })

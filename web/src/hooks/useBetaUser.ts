@@ -40,7 +40,35 @@ export function useBetaUser(userId: string | undefined): BetaUserStatus {
 
     const checkBetaStatus = async () => {
       try {
-        const response = await fetch(`/api/v1/beta/credits/balance/${userId}`);
+        // Get auth token from localStorage
+        const authData = localStorage.getItem('bayit-auth');
+        if (!authData) {
+          setStatus({
+            isBetaUser: false,
+            isLoading: false,
+            remainingCredits: 0,
+            totalCredits: 0,
+          });
+          return;
+        }
+
+        const token = JSON.parse(authData)?.state?.token;
+        if (!token) {
+          setStatus({
+            isBetaUser: false,
+            isLoading: false,
+            remainingCredits: 0,
+            totalCredits: 0,
+          });
+          return;
+        }
+
+        // Call authenticated endpoint (no user_id needed)
+        const response = await fetch('/api/v1/beta/credits/balance', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
 
         if (response.ok) {
           // User has credit record - is a beta user

@@ -18,6 +18,9 @@ export default defineConfig({
       '@bayit/shared-hooks': path.resolve(__dirname, '../shared/hooks'),
       '@bayit/shared-services': path.resolve(__dirname, '../shared/services'),
       '@bayit/shared-utils': path.resolve(__dirname, '../shared/utils'),
+      '@bayit/i18n': path.resolve(__dirname, '../packages/ui/bayit-i18n/dist/index.mjs'),
+      '@bayit/i18n/web': path.resolve(__dirname, '../packages/ui/bayit-i18n/dist/web.mjs'),
+      '@olorin/shared-i18n': path.resolve(__dirname, '../packages/ui/shared-i18n/dist/index.mjs'),
     },
   },
   server: {

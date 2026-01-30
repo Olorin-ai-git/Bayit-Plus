@@ -312,6 +312,11 @@
     "podcasts": "Podcasts",
     "audiobooks": "Audiobooks",
     "israelis_in_city": "Israelis in {{city}}, {{state}}",
+    "israeli_businesses": "Israeli Businesses in {{city}}, {{state}}",
+    "israeli_businesses_nearby": "Israeli Businesses Near You - From {{city}}",
+    "searching_businesses": "Searching for Israeli businesses in {{city}}...",
+    "no_businesses_found": "No Israeli businesses found in {{city}}",
+    "businesses_load_error": "Unable to load business listings. Please try again.",
     "carousel": {
       "fauda": {
         "title": "Fauda",
@@ -1158,6 +1163,10 @@
     "restart": "Restart from beginning",
     "subtitlesOff": "Off",
     "speed": "Speed",
+    "liveChat": "Live Chat",
+    "liveTrivia": "Live Trivia",
+    "showAIFeatures": "Show AI Features",
+    "hideAIFeatures": "Hide AI Features",
     "subscription": {
       "requiredTitle": "Subscription Required",
       "requiredMessage": "requires a paid subscription",
@@ -3843,7 +3852,55 @@
     "error": "Recording Error",
     "startFailed": "Failed to start recording. Please try again.",
     "stopFailed": "Failed to stop recording. Please try again.",
-    "page": "Page"
+    "page": "Page",
+    "loading": "Loading recordings...",
+    "loadingRules": "Loading series rules...",
+    "recordOptions": "Recording Options",
+    "includeSubtitles": "Include Subtitles",
+    "includeDubbedAudio": "Include Dubbed Audio",
+    "subtitleLanguage": "Subtitle Language",
+    "dubbingLanguage": "Dubbing Language",
+    "startRecording": "Start Recording",
+    "seriesRecording": "Series Recording",
+    "thisEpisode": "This Episode Only",
+    "thisSeason": "This Season",
+    "allSeasons": "All Seasons",
+    "scheduleRecording": "Schedule Recording",
+    "cancelSchedule": "Cancel Schedule",
+    "conflict": "Schedule Conflict",
+    "storageQuota": "Storage Quota",
+    "audioTracks": "Audio Tracks",
+    "originalAudio": "Original Audio",
+    "originalAudioDesc": "Original broadcast audio",
+    "dubbedAudio": "Dubbed Audio",
+    "dubbedAudioDesc": "AI-translated audio track",
+    "dubbedAudioLang": "Dubbed ({{language}})",
+    "seriesRules": "Series Rules",
+    "seriesRulesDesc": "Automatically record matching programs from the EPG",
+    "noSeriesRules": "No Series Rules",
+    "noSeriesRulesHint": "Create a series rule to automatically record shows!",
+    "deleteRule": "Delete Rule",
+    "confirmDeleteRule": "Delete this series rule? All pending scheduled recordings will be cancelled.",
+    "ruleDeleted": "Series rule deleted",
+    "ruleDeleteFailed": "Failed to delete rule",
+    "deleted": "Recording deleted",
+    "nextRecording": "Next Recording",
+    "recordingsCount": "{{count}} recordings",
+    "lastMatched": "Last matched",
+    "pauseRule": "Pause",
+    "resumeRule": "Resume",
+    "activeRules": "Active Rules",
+    "matchExact": "Exact match",
+    "matchContains": "Contains",
+    "matchStartsWith": "Starts with",
+    "filterAll": "All",
+    "filterManual": "Manual",
+    "filterScheduled": "Scheduled",
+    "filterSeries": "Series",
+    "sortDate": "Date",
+    "sortSize": "Size",
+    "sortDuration": "Duration",
+    "sortTitle": "Title"
   },
   "chess": {
     "title": "Chess",
@@ -4493,6 +4550,35 @@
         "enrollmentSuccess": "Welcome to Beta 500! Check your email to verify your account.",
         "enrollmentError": "Unable to enroll. Please try again later."
       }
+    }
+  },
+  "catchup": {
+    "overlay": {
+      "title": "Just joined?",
+      "description": "You joined {{programName}} in progress",
+      "creditContext": "This will use {{cost}} of your {{balance}} credits",
+      "lowBalanceWarning": "Low credits remaining",
+      "acceptButton": "Catch Me Up ({{cost}} credits)",
+      "declineButton": "No Thanks"
+    },
+    "button": {
+      "credits": "Catch Up ({{cost}} credits)",
+      "label": "Catch up summary",
+      "title": "Catch Up"
+    },
+    "generating": "Generating summary...",
+    "summary": {
+      "title": "What You Missed",
+      "keyPoints": "Key Points",
+      "windowInfo": "Last {{minutes}} minutes",
+      "creditsUsed": "Used {{count}} credits",
+      "creditsRemaining": "{{count}} credits remaining",
+      "close": "Close"
+    },
+    "error": {
+      "failed": "Could not generate summary",
+      "retry": "Try Again",
+      "insufficientCredits": "Not enough credits"
     }
   }
 }

@@ -77,3 +77,12 @@ export const formatFileSize = (bytes: number): string => {
   if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
 };
+
+export const formatBytes = formatFileSize;
+
+export const formatDateLocalized = (dateStr: string, isRTL = false): string => {
+  const locale = isRTL ? 'he-IL' : 'en-US';
+  return new Date(dateStr).toLocaleDateString(locale, {
+    month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit',
+  });
+};

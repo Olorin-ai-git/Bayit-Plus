@@ -9,7 +9,7 @@ import { View, Text, Pressable, useWindowDimensions, Platform, Image, Animated, 
 import { Chess } from 'chess.js';
 import { colors, spacing } from '@olorin/design-tokens';
 import { useTranslation } from 'react-i18next';
-import { isRTL as checkIsRTL } from '@bayit/shared-i18n';
+import { isRTL as checkIsRTL } from '@bayit/i18n/web';
 import logger from '@/utils/logger';
 
 interface ChessBoardProps {

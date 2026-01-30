@@ -8,7 +8,7 @@ import { colors, spacing } from '@olorin/design-tokens';
 import { AnimatedLogo } from '@bayit/shared';
 import { GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
-import { languages } from '@bayit/shared-i18n';
+import { languages } from '@bayit/i18n';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;

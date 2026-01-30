@@ -55,6 +55,8 @@ class RecordingCleanupService:
                 await storage.delete_file(recording.video_url)
             if recording.subtitle_url:
                 await storage.delete_file(recording.subtitle_url)
+            if getattr(recording, "dubbed_audio_url", None):
+                await storage.delete_file(recording.dubbed_audio_url)
 
             # Delete the recording document
             await recording.delete()

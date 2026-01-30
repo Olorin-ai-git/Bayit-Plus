@@ -268,6 +268,37 @@ class EPGIngestionService:
             results[channel.name] = count
 
         logger.info(f"EPG ingestion complete: {results}")
+
+        # Process newly ingested entries against series recording rules
+        total_ingested = sum(results.values())
+        if total_ingested > 0:
+            try:
+                from app.services.series_recording_rule_service import (
+                    series_recording_rule_service,
+                )
+
+                # Get recent EPG entries (ingested in last hour to avoid re-processing)
+                now = datetime.utcnow()
+                recent_entries = await EPGEntry.find(
+                    EPGEntry.start_time > now,
+                ).to_list()
+
+                if recent_entries:
+                    schedules_created = (
+                        await series_recording_rule_service.process_new_epg_entries(
+                            recent_entries
+                        )
+                    )
+                    if schedules_created > 0:
+                        logger.info(
+                            f"Series rules matched {schedules_created} "
+                            f"new EPG entries for recording"
+                        )
+            except Exception as e:
+                logger.warning(
+                    f"Failed to process EPG entries against series rules: {e}"
+                )
+
         return results
 
     async def _fetch_channel_epg(

@@ -53,6 +53,7 @@ from app.models.profile import Profile
 from app.models.realtime import ChatMessage, WatchParty
 from app.models.recording import (Recording, RecordingSchedule,
                                   RecordingSession, RecordingSubtitleCue)
+from app.models.series_recording_rule import SeriesRecordingRule
 from app.models.search_analytics import SearchQuery
 from app.models.security_audit import SecurityAuditLog
 from app.models.subscription import Invoice, Subscription
@@ -185,6 +186,7 @@ async def connect_to_mongo():
         Recording,
         RecordingSchedule,
         RecordingSubtitleCue,
+        SeriesRecordingRule,
         # Upload models
         UploadJob,
         MonitoredFolder,

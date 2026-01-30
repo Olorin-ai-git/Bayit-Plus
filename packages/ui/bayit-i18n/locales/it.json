@@ -1,0 +1,321 @@
+{
+  "email": {
+    "greeting": "Hello",
+    "footer": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "support": "Support",
+      "unsubscribe": "Unsubscribe from these emails"
+    },
+    "welcome": {
+      "subject": "Welcome to Bayit+!",
+      "title": "Welcome to Bayit+",
+      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
+      "cta": "Go to Dashboard"
+    },
+    "verification": {
+      "subject": "Verify Your Email",
+      "title": "Verify Your Email Address",
+      "body": "Please click the button below to verify your email address.",
+      "cta": "Verify Email",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't create an account, you can safely ignore this email."
+    },
+    "verification_resend": {
+      "subject": "Email Verification (Resent)",
+      "title": "Verify Your Email Address",
+      "body": "Here's a new verification link as requested.",
+      "cta": "Verify Email"
+    },
+    "password_reset": {
+      "subject": "Reset Your Password",
+      "title": "Reset Your Password",
+      "body": "We received a request to reset your password. Click the button below to create a new password.",
+      "cta": "Reset Password",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+    },
+    "password_changed": {
+      "subject": "Password Changed",
+      "title": "Your Password Has Been Changed",
+      "body": "Your password was successfully changed.",
+      "security": "If you didn't make this change, please contact support immediately."
+    },
+    "account_locked": {
+      "subject": "Account Locked",
+      "title": "Your Account Has Been Locked",
+      "body": "Your account has been temporarily locked due to security concerns.",
+      "cta": "Unlock Account"
+    },
+    "beta_invitation": {
+      "subject": "You're Invited to Bayit+ Beta!",
+      "title": "You're Invited to the Beta Program",
+      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
+      "credits": "{credits} AI credits included",
+      "duration": "Access for {days} days",
+      "cta": "Join Beta Program"
+    },
+    "beta_welcome": {
+      "subject": "Welcome to Bayit+ Beta!",
+      "title": "Welcome to the Beta Program",
+      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
+      "cta": "Get Started"
+    },
+    "payment_confirmation": {
+      "subject": "Payment Confirmation",
+      "title": "Payment Received",
+      "body": "Your payment has been processed successfully.",
+      "transaction": "Transaction ID",
+      "plan": "Plan",
+      "amount": "Amount",
+      "date": "Payment Date",
+      "next_billing": "Next Billing Date"
+    },
+    "subscription_activated": {
+      "subject": "Subscription Activated",
+      "title": "Your Subscription is Active",
+      "body": "Your subscription has been activated. Here's what you get:",
+      "cta": "Start Watching"
+    },
+    "subscription_cancelled": {
+      "subject": "Subscription Cancelled",
+      "title": "Subscription Cancelled",
+      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
+      "cta": "Reactivate Subscription"
+    },
+    "payment_failed": {
+      "subject": "Payment Failed",
+      "title": "Payment Failed",
+      "body": "We were unable to process your payment. Please update your payment method.",
+      "cta": "Update Payment Method"
+    },
+    "trial_expiring": {
+      "subject": "Your Trial is Expiring Soon",
+      "title": "Trial Ending in {days_remaining} Days",
+      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
+      "cta": "Upgrade Now"
+    },
+    "support": {
+      "created_subject": "Ticket #{ticket_id} Created",
+      "created_title": "Support Ticket Created",
+      "created_body": "Your support ticket has been created. We'll get back to you soon.",
+      "response_subject": "New Response on Ticket #{ticket_id}",
+      "response_title": "New Response on Your Ticket",
+      "escalation_subject": "Ticket #{ticket_id} Escalated",
+      "escalation_title": "Your Ticket Has Been Escalated",
+      "resolved_subject": "Ticket #{ticket_id} Resolved",
+      "resolved_title": "Your Ticket Has Been Resolved",
+      "resolved_body": "Your support ticket has been resolved."
+    },
+    "new_message": {
+      "subject": "New Message from {sender_name}",
+      "title": "You Have a New Message",
+      "cta": "Read Message"
+    },
+    "content_digest": {
+      "subject": "Your {digest_period} Content Digest",
+      "title": "Your Content Digest",
+      "cta": "Browse Content"
+    },
+    "gdpr": {
+      "deletion_subject": "Data Deletion Confirmation",
+      "deletion_title": "Your Data Has Been Deleted",
+      "deletion_body": "As requested, your personal data has been permanently deleted.",
+      "categories_label": "Deleted Data Categories"
+    },
+    "admin": {
+      "account_created_subject": "Admin Account Created",
+      "account_created_title": "Admin Account Created",
+      "role_change_subject": "Role Changed",
+      "role_change_title": "Your Role Has Been Updated"
+    },
+    "campaign": {
+      "default_subject": "News from Bayit+"
+    },
+    "newsletter": {
+      "default_subject": "Bayit+ Newsletter"
+    },
+    "reengagement": {
+      "subject": "We Miss You!",
+      "title": "It's Been a While",
+      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
+      "cta": "Come Back"
+    }
+  },
+  "payment": {
+    "pending": {
+      "title": "Completa Il Tuo Abbonamento",
+      "description": "Scegli un piano per iniziare la tua prova gratuita di 7 giorni e accedere a tutto Bayit+",
+      "timeElapsed": "Controllo stato pagamento... ({{seconds}}s)",
+      "takingLonger": "La conferma del pagamento sta richiedendo più tempo del previsto. Prova ad aggiornare o contatta il supporto se hai già pagato.",
+      "helpText": "Serve aiuto? Contatta support@bayit.tv o aggiorna questa pagina se hai già completato il pagamento."
+    },
+    "continueToPayment": "Continua al Pagamento",
+    "success": {
+      "title": "Pagamento Riuscito!",
+      "description": "Benvenuto su Bayit+! Il tuo abbonamento è ora attivo.",
+      "redirecting": "Reindirizzamento tra {{seconds}} secondi...",
+      "continue": "Continua su Bayit+"
+    },
+    "cancelled": {
+      "title": "Pagamento Annullato",
+      "description": "Il tuo abbonamento non è stato completato. Puoi riprovare quando sei pronto.",
+      "retry": "Riprova",
+      "helpText": "Domande? Contatta support@bayit.tv per assistenza."
+    }
+  },
+  "portal": {
+    "nav": {
+      "home": "Home",
+      "features": "Caratteristiche",
+      "solutions": "Soluzioni",
+      "pricing": "Prezzi",
+      "demo": "Demo dal Vivo",
+      "contact": "Contatto",
+      "getStarted": "Inizia"
+    },
+    "hero": {
+      "ctaExplore": "Esplora le Caratteristiche",
+      "ctaDemo": "Richiedi Demo"
+    },
+    "cta": {
+      "title": "Pronto per Iniziare?",
+      "subtitle": "Parliamo di come possiamo aiutare a trasformare il tuo business",
+      "button": "Contattaci"
+    },
+    "contactPage": {
+      "title": "Mettiti in Contatto",
+      "subtitle": "Interessato alle nostre soluzioni? Parliamone",
+      "formTitle": "Inviaci un Messaggio",
+      "infoTitle": "Informazioni di Contatto",
+      "form": {
+        "name": "Nome Completo",
+        "email": "Indirizzo Email",
+        "company": "Nome Azienda",
+        "phone": "Numero di Telefono",
+        "message": "Il Tuo Messaggio",
+        "messagePlaceholder": "Raccontaci delle tue esigenze..."
+      },
+      "submit": "Invia Messaggio",
+      "sending": "Invio in corso...",
+      "success": "Messaggio inviato con successo! Ti ricontatteremo presto.",
+      "error": "Invio del messaggio fallito. Riprova.",
+      "scheduleTitle": "Preferisci Programmare una Chiamata?",
+      "scheduleSubtitle": "Prenota una demo personalizzata con il nostro team",
+      "scheduleCta": "Programma Chiamata Demo"
+    },
+    "pricingPage": {
+      "title": "Conveniente",
+      "titleHighlight": "Piani Tariffari",
+      "subtitle": "Scegli il piano adatto alle tue esigenze",
+      "comparisonTitle": "Confronto delle Caratteristiche",
+      "faqTitle": "Domande Frequenti",
+      "faq": {
+        "q1": "Come viene calcolato il prezzo?",
+        "a1": "Il prezzo si basa sulle tue esigenze specifiche e sull'utilizzo. Contattaci per un preventivo personalizzato.",
+        "q2": "Posso aggiornare il mio piano più tardi?",
+        "a2": "Sì, puoi aggiornare in qualsiasi momento. Ti aiuteremo a migrare i tuoi dati senza problemi.",
+        "q3": "Quale supporto è incluso?",
+        "a3": "Tutti i piani includono supporto via email. I piani Professional ed Enterprise includono supporto prioritario con account manager dedicati."
+      },
+      "professional": {
+        "name": "Professionale",
+        "price": "Contatta per Preventivo",
+        "priceNote": "Prezzi personalizzati",
+        "description": "Per aziende in crescita con esigenze avanzate",
+        "cta": "Ottieni Preventivo"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Personalizzato",
+        "priceNote": "Basato sul volume",
+        "description": "Per grandi organizzazioni e implementazioni aziendali",
+        "cta": "Contatta Vendite"
+      },
+      "ctaTitle": "Pronto per Iniziare?",
+      "ctaSubtitle": "Parliamo delle tue esigenze e troviamo il piano perfetto",
+      "ctaButton": "Contatta Vendite"
+    },
+    "featuresPage": {
+      "title": "Potenti",
+      "titleHighlight": "Caratteristiche",
+      "subtitle": "Tutto ciò di cui hai bisogno per avere successo",
+      "techSpecsTitle": "Specifiche Tecniche",
+      "workflowTitle": "Come Funziona",
+      "workflow": {
+        "s1": {
+          "title": "Importa",
+          "description": "Carica e organizza i tuoi contenuti"
+        },
+        "s2": {
+          "title": "Configura",
+          "description": "Imposta le tue preferenze e impostazioni"
+        },
+        "s3": {
+          "title": "Distribuisci",
+          "description": "Vai online con la tua soluzione"
+        },
+        "s4": {
+          "title": "Monitora",
+          "description": "Traccia le prestazioni e ottimizza"
+        }
+      },
+      "ctaTitle": "Pronto per Esplorare le Caratteristiche?",
+      "ctaSubtitle": "Vedi tutte le caratteristiche in azione con una demo personalizzata",
+      "ctaButton": "Programma Demo"
+    },
+    "demoPage": {
+      "title": "Vedi la Nostra",
+      "titleHighlight": "Piattaforma",
+      "subtitle": "Sperimenta la potenza della nostra soluzione",
+      "scheduleCta": "Programma Demo dal Vivo",
+      "stepsTitle": "Come Funziona",
+      "steps": {
+        "analyze": {
+          "title": "Analizza",
+          "description": "Traccia e migliora le prestazioni"
+        }
+      },
+      "featuresTitle": "Punti Salienti della Piattaforma",
+      "platformsTitle": "Disponibile Su",
+      "ctaTitle": "Pronto per la Tua Demo Personalizzata?",
+      "ctaSubtitle": "Programma una dimostrazione personalizzata su misura per le tue esigenze",
+      "ctaButton": "Programma Demo"
+    },
+    "workflow": {
+      "sectionTitle": "Flusso di Lavoro Intelligente",
+      "sectionSubtitle": "Processo semplificato in 4 passaggi",
+      "step1": {
+        "title": "Configura",
+        "description": "Configura il tuo account e le preferenze"
+      },
+      "step2": {
+        "title": "Personalizza",
+        "description": "Personalizza le impostazioni per le tue esigenze"
+      },
+      "step3": {
+        "title": "Lancia",
+        "description": "Avvia la tua soluzione"
+      },
+      "step4": {
+        "title": "Monitora",
+        "description": "Traccia le prestazioni e ottimizza"
+      }
+    }
+  },
+  "channelChat": {
+    "title": "Chat dal vivo",
+    "participants": "{{count}} stanno guardando",
+    "inputPlaceholder": "Scrivi un messaggio...",
+    "sendButton": "Invia",
+    "rateLimitWarning": "Piano! Attendi {{seconds}}s",
+    "autoTranslationBadge": "Traduzione automatica (Beta)",
+    "showOriginal": "Mostra originale",
+    "showTranslation": "Mostra traduzione",
+    "error": "Chat non disponibile",
+    "retry": "Riprova",
+    "upgradeBeta": "Passa a Beta 500 per la traduzione automatica",
+    "inputLabel": "Campo di inserimento messaggio",
+    "moderationDelete": "Messaggio rimosso dal moderatore"
+  }
+}

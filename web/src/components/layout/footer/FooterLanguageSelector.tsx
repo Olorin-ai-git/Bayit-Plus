@@ -18,8 +18,7 @@ import { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Globe, ChevronUp } from 'lucide-react';
-import { languages } from '@bayit/shared-i18n';
-import type { LanguageInfo } from '@bayit/shared-i18n/types';
+import { languages, type LanguageInfo } from '@bayit/i18n';
 
 interface FooterLanguageSelectorProps {
   languageCodes?: LanguageInfo[];

@@ -9,6 +9,8 @@ from pydantic import BaseModel
 
 from app.core.config import Settings, get_settings
 from app.core.database import get_database
+from app.core.security import get_current_user
+from app.models.user import User
 from app.services.beta.credit_service import BetaCreditService
 from app.services.olorin.metering.service import MeteringService
 from app.core.logging_config import get_logger
@@ -55,13 +57,67 @@ async def get_credit_service(
     )
 
 
+@router.get("/balance", response_model=CreditBalanceResponse)
+async def get_current_user_credit_balance(
+    current_user: User = Depends(get_current_user),
+    credit_service: BetaCreditService = Depends(get_credit_service)
+):
+    """
+    Get current authenticated user's credit balance.
+
+    Returns:
+        Credit balance details for the current user
+    """
+    try:
+        from app.models.beta_credit import BetaCredit
+
+        user_id = str(current_user.id)
+
+        # Get credit record
+        credit = await BetaCredit.find_one(
+            BetaCredit.user_id == user_id,
+            BetaCredit.is_expired == False
+        )
+
+        if not credit:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Credit record not found"
+            )
+
+        # Check thresholds
+        is_low, _ = await credit_service.is_low_balance(user_id)
+        is_critical, _ = await credit_service.is_critical_balance(user_id)
+
+        return CreditBalanceResponse(
+            user_id=user_id,
+            remaining_credits=credit.remaining_credits,
+            total_credits=credit.total_credits,
+            used_credits=credit.used_credits,
+            is_low=is_low,
+            is_critical=is_critical
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(
+            "Error fetching credit balance",
+            extra={"user_id": user_id, "error": str(e)}
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch credit balance"
+        )
+
+
 @router.get("/balance/{user_id}", response_model=CreditBalanceResponse)
 async def get_credit_balance(
     user_id: str,
     credit_service: BetaCreditService = Depends(get_credit_service)
 ):
     """
-    Get user's credit balance.
+    Get user's credit balance (admin endpoint).
 
     Args:
         user_id: User ID

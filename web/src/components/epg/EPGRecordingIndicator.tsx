@@ -1,8 +1,8 @@
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
-import { Circle, Clock, CheckCircle } from 'lucide-react'
+import { Circle, Clock, CheckCircle, Repeat } from 'lucide-react'
 
-export type RecordingStatus = 'none' | 'scheduled' | 'active' | 'completed'
+export type RecordingStatus = 'none' | 'scheduled' | 'active' | 'completed' | 'series'
 
 interface EPGRecordingIndicatorProps {
   status: RecordingStatus
@@ -49,6 +49,12 @@ const EPGRecordingIndicator: React.FC<EPGRecordingIndicatorProps> = ({
           <CheckCircle size={iconSize} color="#ffffff" />
         </View>
       )}
+
+      {status === 'series' && (
+        <View style={[styles.badge, styles.badgeSeries, sizeStyle]} title="Series Recording">
+          <Repeat size={iconSize} color="#ffffff" />
+        </View>
+      )}
     </View>
   )
 }
@@ -78,6 +84,9 @@ const styles = StyleSheet.create({
   },
   badgeCompleted: {
     backgroundColor: 'rgba(34, 197, 94, 0.9)',
+  },
+  badgeSeries: {
+    backgroundColor: 'rgba(168, 85, 247, 0.9)',
   },
   sizeSmall: {
     width: 20,

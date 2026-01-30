@@ -217,6 +217,15 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Failed to start audit recovery monitoring: {e}")
 
+    # Initialize recording scheduler (EPG-scheduled recordings)
+    from app.services.recording_scheduler_service import recording_scheduler_service
+
+    try:
+        await recording_scheduler_service.initialize()
+        logger.info("Recording scheduler initialized")
+    except Exception as e:
+        logger.warning(f"Failed to initialize recording scheduler: {e}")
+
     logger.info("Server startup complete - Ready to accept connections")
 
     yield
@@ -225,6 +234,13 @@ async def lifespan(app: FastAPI):
     # Shutdown
     # ============================================
     logger.info("Shutting down server...")
+
+    # Stop recording scheduler
+    try:
+        await recording_scheduler_service.shutdown()
+        logger.info("Recording scheduler stopped")
+    except Exception as e:
+        logger.warning(f"Failed to stop recording scheduler: {e}")
 
     # Stop audit recovery monitoring
     try:

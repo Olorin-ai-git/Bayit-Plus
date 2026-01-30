@@ -178,8 +178,8 @@ export default function HeaderActions({
       <Link to="/search" style={{ textDecoration: 'none' }}>
         <View
           className={platformClass(
-            `w-11 h-11 justify-center items-center rounded-full bg-white/5 hover:bg-white/10 transition-colors`,
-            `w-11 h-11 justify-center items-center rounded-full bg-white/5`
+            `w-11 h-11 justify-center items-center rounded-lg bg-white/5 hover:bg-white/10 transition-colors`,
+            `w-11 h-11 justify-center items-center rounded-lg bg-white/5`
           )}
         >
           <Search size={IS_TV_BUILD ? 32 : 20} color="rgba(255, 255, 255, 0.9)" />

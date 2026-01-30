@@ -1,0 +1,333 @@
+{
+  "auth": {
+    "loginRequired": "Inicio de sesión requerido",
+    "loginToWatch": "Por favor inicia sesión para ver {{title}}",
+    "login": "Iniciar sesión",
+    "signUp": "Registrarse"
+  },
+  "email": {
+    "greeting": "Hello",
+    "footer": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "support": "Support",
+      "unsubscribe": "Unsubscribe from these emails"
+    },
+    "welcome": {
+      "subject": "Welcome to Bayit+!",
+      "title": "Welcome to Bayit+",
+      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
+      "cta": "Go to Dashboard"
+    },
+    "verification": {
+      "subject": "Verify Your Email",
+      "title": "Verify Your Email Address",
+      "body": "Please click the button below to verify your email address.",
+      "cta": "Verify Email",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't create an account, you can safely ignore this email."
+    },
+    "verification_resend": {
+      "subject": "Email Verification (Resent)",
+      "title": "Verify Your Email Address",
+      "body": "Here's a new verification link as requested.",
+      "cta": "Verify Email"
+    },
+    "password_reset": {
+      "subject": "Reset Your Password",
+      "title": "Reset Your Password",
+      "body": "We received a request to reset your password. Click the button below to create a new password.",
+      "cta": "Reset Password",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+    },
+    "password_changed": {
+      "subject": "Password Changed",
+      "title": "Your Password Has Been Changed",
+      "body": "Your password was successfully changed.",
+      "security": "If you didn't make this change, please contact support immediately."
+    },
+    "account_locked": {
+      "subject": "Account Locked",
+      "title": "Your Account Has Been Locked",
+      "body": "Your account has been temporarily locked due to security concerns.",
+      "cta": "Unlock Account"
+    },
+    "beta_invitation": {
+      "subject": "You're Invited to Bayit+ Beta!",
+      "title": "You're Invited to the Beta Program",
+      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
+      "credits": "{credits} AI credits included",
+      "duration": "Access for {days} days",
+      "cta": "Join Beta Program"
+    },
+    "beta_welcome": {
+      "subject": "Welcome to Bayit+ Beta!",
+      "title": "Welcome to the Beta Program",
+      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
+      "cta": "Get Started"
+    },
+    "payment_confirmation": {
+      "subject": "Payment Confirmation",
+      "title": "Payment Received",
+      "body": "Your payment has been processed successfully.",
+      "transaction": "Transaction ID",
+      "plan": "Plan",
+      "amount": "Amount",
+      "date": "Payment Date",
+      "next_billing": "Next Billing Date"
+    },
+    "subscription_activated": {
+      "subject": "Subscription Activated",
+      "title": "Your Subscription is Active",
+      "body": "Your subscription has been activated. Here's what you get:",
+      "cta": "Start Watching"
+    },
+    "subscription_cancelled": {
+      "subject": "Subscription Cancelled",
+      "title": "Subscription Cancelled",
+      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
+      "cta": "Reactivate Subscription"
+    },
+    "payment_failed": {
+      "subject": "Payment Failed",
+      "title": "Payment Failed",
+      "body": "We were unable to process your payment. Please update your payment method.",
+      "cta": "Update Payment Method"
+    },
+    "trial_expiring": {
+      "subject": "Your Trial is Expiring Soon",
+      "title": "Trial Ending in {days_remaining} Days",
+      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
+      "cta": "Upgrade Now"
+    },
+    "support": {
+      "created_subject": "Ticket #{ticket_id} Created",
+      "created_title": "Support Ticket Created",
+      "created_body": "Your support ticket has been created. We'll get back to you soon.",
+      "response_subject": "New Response on Ticket #{ticket_id}",
+      "response_title": "New Response on Your Ticket",
+      "escalation_subject": "Ticket #{ticket_id} Escalated",
+      "escalation_title": "Your Ticket Has Been Escalated",
+      "resolved_subject": "Ticket #{ticket_id} Resolved",
+      "resolved_title": "Your Ticket Has Been Resolved",
+      "resolved_body": "Your support ticket has been resolved."
+    },
+    "new_message": {
+      "subject": "New Message from {sender_name}",
+      "title": "You Have a New Message",
+      "cta": "Read Message"
+    },
+    "content_digest": {
+      "subject": "Your {digest_period} Content Digest",
+      "title": "Your Content Digest",
+      "cta": "Browse Content"
+    },
+    "gdpr": {
+      "deletion_subject": "Data Deletion Confirmation",
+      "deletion_title": "Your Data Has Been Deleted",
+      "deletion_body": "As requested, your personal data has been permanently deleted.",
+      "categories_label": "Deleted Data Categories"
+    },
+    "admin": {
+      "account_created_subject": "Admin Account Created",
+      "account_created_title": "Admin Account Created",
+      "role_change_subject": "Role Changed",
+      "role_change_title": "Your Role Has Been Updated"
+    },
+    "campaign": {
+      "default_subject": "News from Bayit+"
+    },
+    "newsletter": {
+      "default_subject": "Bayit+ Newsletter"
+    },
+    "reengagement": {
+      "subject": "We Miss You!",
+      "title": "It's Been a While",
+      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
+      "cta": "Come Back"
+    }
+  },
+  "greeting": {
+    "morning": "Buenos días",
+    "afternoon": "Buenas tardes",
+    "evening": "Buenas tardes",
+    "night": "Buenas noches"
+  },
+  "payment": {
+    "pending": {
+      "title": "Completa Tu Suscripción",
+      "description": "Elige un plan para comenzar tu prueba gratuita de 7 días y acceder a todo Bayit+",
+      "timeElapsed": "Verificando estado del pago... ({{seconds}}s)",
+      "takingLonger": "La confirmación del pago está tardando más de lo esperado. Por favor, intenta actualizar o contacta al soporte si ya pagaste.",
+      "helpText": "¿Necesitas ayuda? Contacta a support@bayit.tv o actualiza esta página si ya completaste el pago."
+    },
+    "continueToPayment": "Continuar al Pago",
+    "success": {
+      "title": "¡Pago Exitoso!",
+      "description": "¡Bienvenido a Bayit+! Tu suscripción está activa ahora.",
+      "redirecting": "Redirigiendo en {{seconds}} segundos...",
+      "continue": "Continuar a Bayit+"
+    },
+    "cancelled": {
+      "title": "Pago Cancelado",
+      "description": "Tu suscripción no se completó. Puedes intentarlo de nuevo cuando estés listo.",
+      "retry": "Intentar de Nuevo",
+      "helpText": "¿Preguntas? Contacta a support@bayit.tv para asistencia."
+    }
+  },
+  "portal": {
+    "nav": {
+      "home": "Inicio",
+      "features": "Características",
+      "solutions": "Soluciones",
+      "pricing": "Precios",
+      "demo": "Demo en Vivo",
+      "contact": "Contacto",
+      "getStarted": "Comenzar"
+    },
+    "hero": {
+      "ctaExplore": "Explorar Características",
+      "ctaDemo": "Solicitar Demo"
+    },
+    "cta": {
+      "title": "¿Listo para Comenzar?",
+      "subtitle": "Hablemos sobre cómo podemos ayudar a transformar su negocio",
+      "button": "Contáctenos"
+    },
+    "contactPage": {
+      "title": "Póngase en Contacto",
+      "subtitle": "¿Interesado en nuestras soluciones? Hablemos",
+      "formTitle": "Envíenos un Mensaje",
+      "infoTitle": "Información de Contacto",
+      "form": {
+        "name": "Nombre Completo",
+        "email": "Correo Electrónico",
+        "company": "Nombre de la Empresa",
+        "phone": "Número de Teléfono",
+        "message": "Su Mensaje",
+        "messagePlaceholder": "Cuéntenos sobre sus necesidades..."
+      },
+      "submit": "Enviar Mensaje",
+      "sending": "Enviando...",
+      "success": "¡Mensaje enviado con éxito! Nos pondremos en contacto pronto.",
+      "error": "Error al enviar el mensaje. Por favor, inténtelo de nuevo.",
+      "scheduleTitle": "¿Prefiere Programar una Llamada?",
+      "scheduleSubtitle": "Reserve una demo personalizada con nuestro equipo",
+      "scheduleCta": "Programar Llamada de Demo"
+    },
+    "pricingPage": {
+      "title": "Asequible",
+      "titleHighlight": "Planes de Precios",
+      "subtitle": "Elija el plan que se adapte a sus necesidades",
+      "comparisonTitle": "Comparación de Características",
+      "faqTitle": "Preguntas Frecuentes",
+      "faq": {
+        "q1": "¿Cómo se calcula el precio?",
+        "a1": "El precio se basa en sus necesidades específicas y uso. Contáctenos para un presupuesto personalizado.",
+        "q2": "¿Puedo actualizar mi plan más tarde?",
+        "a2": "Sí, puede actualizar en cualquier momento. Ayudaremos a migrar sus datos sin problemas.",
+        "q3": "¿Qué soporte está incluido?",
+        "a3": "Todos los planes incluyen soporte por correo electrónico. Los planes Professional y Enterprise incluyen soporte prioritario con gerentes de cuenta dedicados."
+      },
+      "professional": {
+        "name": "Profesional",
+        "price": "Contacte para Presupuesto",
+        "priceNote": "Precio personalizado",
+        "description": "Para empresas en crecimiento con necesidades avanzadas",
+        "cta": "Obtener Presupuesto"
+      },
+      "enterprise": {
+        "name": "Empresarial",
+        "price": "Personalizado",
+        "priceNote": "Basado en volumen",
+        "description": "Para grandes organizaciones e implementaciones empresariales",
+        "cta": "Contactar Ventas"
+      },
+      "ctaTitle": "¿Listo para Comenzar?",
+      "ctaSubtitle": "Hablemos sobre sus necesidades y encontremos el plan perfecto",
+      "ctaButton": "Contactar Ventas"
+    },
+    "featuresPage": {
+      "title": "Poderosas",
+      "titleHighlight": "Características",
+      "subtitle": "Todo lo que necesita para tener éxito",
+      "techSpecsTitle": "Especificaciones Técnicas",
+      "workflowTitle": "Cómo Funciona",
+      "workflow": {
+        "s1": {
+          "title": "Importar",
+          "description": "Suba y organice su contenido"
+        },
+        "s2": {
+          "title": "Configurar",
+          "description": "Establezca sus preferencias y ajustes"
+        },
+        "s3": {
+          "title": "Implementar",
+          "description": "Ponga en marcha su solución"
+        },
+        "s4": {
+          "title": "Monitorear",
+          "description": "Rastree el rendimiento y optimice"
+        }
+      },
+      "ctaTitle": "¿Listo para Explorar las Características?",
+      "ctaSubtitle": "Vea todas las características en acción con una demo personalizada",
+      "ctaButton": "Programar Demo"
+    },
+    "demoPage": {
+      "title": "Vea Nuestra",
+      "titleHighlight": "Plataforma",
+      "subtitle": "Experimente el poder de nuestra solución",
+      "scheduleCta": "Programar Demo en Vivo",
+      "stepsTitle": "Cómo Funciona",
+      "steps": {
+        "analyze": {
+          "title": "Analizar",
+          "description": "Rastree y mejore el rendimiento"
+        }
+      },
+      "featuresTitle": "Aspectos Destacados de la Plataforma",
+      "platformsTitle": "Disponible En",
+      "ctaTitle": "¿Listo para Su Demo Personalizada?",
+      "ctaSubtitle": "Programe una demostración personalizada adaptada a sus necesidades",
+      "ctaButton": "Programar Demo"
+    },
+    "workflow": {
+      "sectionTitle": "Flujo de Trabajo Inteligente",
+      "sectionSubtitle": "Proceso optimizado en 4 pasos",
+      "step1": {
+        "title": "Configurar",
+        "description": "Configure su cuenta y preferencias"
+      },
+      "step2": {
+        "title": "Personalizar",
+        "description": "Personalice ajustes para sus necesidades"
+      },
+      "step3": {
+        "title": "Implementar",
+        "description": "Lance su solución"
+      },
+      "step4": {
+        "title": "Monitorear",
+        "description": "Rastree el rendimiento y optimice"
+      }
+    }
+  },
+  "channelChat": {
+    "title": "Chat en vivo",
+    "participants": "{{count}} viendo",
+    "inputPlaceholder": "Escribe un mensaje...",
+    "sendButton": "Enviar",
+    "rateLimitWarning": "¡Más despacio! Espera {{seconds}}s",
+    "autoTranslationBadge": "Traducción automática (Beta)",
+    "showOriginal": "Mostrar original",
+    "showTranslation": "Mostrar traducción",
+    "error": "Chat no disponible",
+    "retry": "Reintentar",
+    "upgradeBeta": "Actualiza a Beta 500 para traducción automática",
+    "inputLabel": "Campo de mensaje del chat",
+    "moderationDelete": "Mensaje eliminado por el moderador"
+  }
+}

@@ -55,7 +55,9 @@ def register_all_routers(app: FastAPI) -> None:
                                 notifications,
                                 onboarding, party, password_reset,
                                 playback_session, podcasts, profile_stats,
-                                profiles, radio, recordings, ritual, search,
+                                profiles, radio, recording_queries, recording_schedule_queries, recording_schedules, recordings,
+                                ritual, search,
+                                series_recording_rules,
                                 search_analytics, search_llm, search_scenes,
                                 search_suggestions, stats, subscriptions,
                                 subtitle_preferences, subtitles, support,
@@ -162,6 +164,24 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(history.router, prefix=f"{prefix}/history", tags=["history"])
     app.include_router(
         recordings.router, prefix=f"{prefix}/recordings", tags=["recordings"]
+    )
+    app.include_router(
+        recording_queries.router, prefix=f"{prefix}/recordings", tags=["recordings"]
+    )
+    app.include_router(
+        recording_schedules.router,
+        prefix=f"{prefix}/recordings",
+        tags=["recording-schedules"],
+    )
+    app.include_router(
+        recording_schedule_queries.router,
+        prefix=f"{prefix}/recordings",
+        tags=["recording-schedules"],
+    )
+    app.include_router(
+        series_recording_rules.router,
+        prefix=f"{prefix}/recordings",
+        tags=["series-recording-rules"],
     )
     app.include_router(profiles.router, prefix=f"{prefix}/profiles", tags=["profiles"])
     app.include_router(children.router, prefix=f"{prefix}/children", tags=["children"])

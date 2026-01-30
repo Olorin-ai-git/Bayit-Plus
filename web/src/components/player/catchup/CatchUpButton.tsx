@@ -4,21 +4,19 @@
  * Displays credit cost, handles disabled/loading states.
  */
 
-import React, { useState } from 'react'
-import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native'
+import { useState } from 'react'
+import { Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius, fontSize, glass } from '@olorin/design-tokens'
 import { Clock } from 'lucide-react'
 
 interface CatchUpButtonProps {
-  creditCost: number
   disabled?: boolean
   isLoading?: boolean
   onPress: () => void
 }
 
 export default function CatchUpButton({
-  creditCost,
   disabled = false,
   isLoading = false,
   onPress,
@@ -38,7 +36,7 @@ export default function CatchUpButton({
         disabled && styles.buttonDisabled,
       ]}
       accessibilityRole="button"
-      accessibilityLabel={t('catchup.button.label', { cost: creditCost })}
+      accessibilityLabel={t('catchup.button.label')}
       accessibilityState={{ disabled }}
     >
       {isLoading ? (
@@ -47,7 +45,7 @@ export default function CatchUpButton({
         <Clock size={18} color={disabled ? colors.textDisabled : colors.text} />
       )}
       <Text style={[styles.label, disabled && styles.labelDisabled]}>
-        {t('catchup.button.credits', { cost: creditCost })}
+        {t('catchup.button.title', 'Catch Up')}
       </Text>
     </Pressable>
   )

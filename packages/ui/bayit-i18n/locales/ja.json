@@ -1,0 +1,321 @@
+{
+  "email": {
+    "greeting": "Hello",
+    "footer": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "support": "Support",
+      "unsubscribe": "Unsubscribe from these emails"
+    },
+    "welcome": {
+      "subject": "Welcome to Bayit+!",
+      "title": "Welcome to Bayit+",
+      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
+      "cta": "Go to Dashboard"
+    },
+    "verification": {
+      "subject": "Verify Your Email",
+      "title": "Verify Your Email Address",
+      "body": "Please click the button below to verify your email address.",
+      "cta": "Verify Email",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't create an account, you can safely ignore this email."
+    },
+    "verification_resend": {
+      "subject": "Email Verification (Resent)",
+      "title": "Verify Your Email Address",
+      "body": "Here's a new verification link as requested.",
+      "cta": "Verify Email"
+    },
+    "password_reset": {
+      "subject": "Reset Your Password",
+      "title": "Reset Your Password",
+      "body": "We received a request to reset your password. Click the button below to create a new password.",
+      "cta": "Reset Password",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+    },
+    "password_changed": {
+      "subject": "Password Changed",
+      "title": "Your Password Has Been Changed",
+      "body": "Your password was successfully changed.",
+      "security": "If you didn't make this change, please contact support immediately."
+    },
+    "account_locked": {
+      "subject": "Account Locked",
+      "title": "Your Account Has Been Locked",
+      "body": "Your account has been temporarily locked due to security concerns.",
+      "cta": "Unlock Account"
+    },
+    "beta_invitation": {
+      "subject": "You're Invited to Bayit+ Beta!",
+      "title": "You're Invited to the Beta Program",
+      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
+      "credits": "{credits} AI credits included",
+      "duration": "Access for {days} days",
+      "cta": "Join Beta Program"
+    },
+    "beta_welcome": {
+      "subject": "Welcome to Bayit+ Beta!",
+      "title": "Welcome to the Beta Program",
+      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
+      "cta": "Get Started"
+    },
+    "payment_confirmation": {
+      "subject": "Payment Confirmation",
+      "title": "Payment Received",
+      "body": "Your payment has been processed successfully.",
+      "transaction": "Transaction ID",
+      "plan": "Plan",
+      "amount": "Amount",
+      "date": "Payment Date",
+      "next_billing": "Next Billing Date"
+    },
+    "subscription_activated": {
+      "subject": "Subscription Activated",
+      "title": "Your Subscription is Active",
+      "body": "Your subscription has been activated. Here's what you get:",
+      "cta": "Start Watching"
+    },
+    "subscription_cancelled": {
+      "subject": "Subscription Cancelled",
+      "title": "Subscription Cancelled",
+      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
+      "cta": "Reactivate Subscription"
+    },
+    "payment_failed": {
+      "subject": "Payment Failed",
+      "title": "Payment Failed",
+      "body": "We were unable to process your payment. Please update your payment method.",
+      "cta": "Update Payment Method"
+    },
+    "trial_expiring": {
+      "subject": "Your Trial is Expiring Soon",
+      "title": "Trial Ending in {days_remaining} Days",
+      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
+      "cta": "Upgrade Now"
+    },
+    "support": {
+      "created_subject": "Ticket #{ticket_id} Created",
+      "created_title": "Support Ticket Created",
+      "created_body": "Your support ticket has been created. We'll get back to you soon.",
+      "response_subject": "New Response on Ticket #{ticket_id}",
+      "response_title": "New Response on Your Ticket",
+      "escalation_subject": "Ticket #{ticket_id} Escalated",
+      "escalation_title": "Your Ticket Has Been Escalated",
+      "resolved_subject": "Ticket #{ticket_id} Resolved",
+      "resolved_title": "Your Ticket Has Been Resolved",
+      "resolved_body": "Your support ticket has been resolved."
+    },
+    "new_message": {
+      "subject": "New Message from {sender_name}",
+      "title": "You Have a New Message",
+      "cta": "Read Message"
+    },
+    "content_digest": {
+      "subject": "Your {digest_period} Content Digest",
+      "title": "Your Content Digest",
+      "cta": "Browse Content"
+    },
+    "gdpr": {
+      "deletion_subject": "Data Deletion Confirmation",
+      "deletion_title": "Your Data Has Been Deleted",
+      "deletion_body": "As requested, your personal data has been permanently deleted.",
+      "categories_label": "Deleted Data Categories"
+    },
+    "admin": {
+      "account_created_subject": "Admin Account Created",
+      "account_created_title": "Admin Account Created",
+      "role_change_subject": "Role Changed",
+      "role_change_title": "Your Role Has Been Updated"
+    },
+    "campaign": {
+      "default_subject": "News from Bayit+"
+    },
+    "newsletter": {
+      "default_subject": "Bayit+ Newsletter"
+    },
+    "reengagement": {
+      "subject": "We Miss You!",
+      "title": "It's Been a While",
+      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
+      "cta": "Come Back"
+    }
+  },
+  "payment": {
+    "pending": {
+      "title": "サブスクリプションを完了",
+      "description": "プランを選択して7日間の無料トライアルを開始し、Bayit+のすべてにアクセスしましょう",
+      "timeElapsed": "お支払い状況を確認中... ({{seconds}}秒)",
+      "takingLonger": "お支払いの確認に通常より時間がかかっています。既にお支払いが完了している場合は、ページを更新するかサポートにお問い合わせください。",
+      "helpText": "サポートが必要ですか？ support@bayit.tv までご連絡いただくか、既にお支払いが完了している場合はこのページを更新してください。"
+    },
+    "continueToPayment": "お支払いに進む",
+    "success": {
+      "title": "お支払い完了！",
+      "description": "Bayit+へようこそ！サブスクリプションが有効になりました。",
+      "redirecting": "{{seconds}}秒後にリダイレクトします...",
+      "continue": "Bayit+へ進む"
+    },
+    "cancelled": {
+      "title": "お支払いキャンセル",
+      "description": "サブスクリプションは完了しませんでした。準備ができたらもう一度お試しください。",
+      "retry": "もう一度試す",
+      "helpText": "ご質問がありますか？ support@bayit.tv までお問い合わせください。"
+    }
+  },
+  "portal": {
+    "nav": {
+      "home": "ホーム",
+      "features": "機能",
+      "solutions": "ソリューション",
+      "pricing": "料金",
+      "demo": "ライブデモ",
+      "contact": "お問い合わせ",
+      "getStarted": "始める"
+    },
+    "hero": {
+      "ctaExplore": "機能を見る",
+      "ctaDemo": "デモを依頼"
+    },
+    "cta": {
+      "title": "始める準備はできましたか？",
+      "subtitle": "ビジネスの変革をお手伝いする方法について話し合いましょう",
+      "button": "お問い合わせ"
+    },
+    "contactPage": {
+      "title": "お問い合わせ",
+      "subtitle": "当社のソリューションに興味がありますか？お話ししましょう",
+      "formTitle": "メッセージを送信",
+      "infoTitle": "連絡先情報",
+      "form": {
+        "name": "フルネーム",
+        "email": "メールアドレス",
+        "company": "会社名",
+        "phone": "電話番号",
+        "message": "メッセージ",
+        "messagePlaceholder": "ニーズについて教えてください..."
+      },
+      "submit": "メッセージを送信",
+      "sending": "送信中...",
+      "success": "メッセージが正常に送信されました！すぐにご連絡いたします。",
+      "error": "メッセージの送信に失敗しました。もう一度お試しください。",
+      "scheduleTitle": "通話をスケジュールしますか？",
+      "scheduleSubtitle": "チームとパーソナライズされたデモを予約",
+      "scheduleCta": "デモ通話をスケジュール"
+    },
+    "pricingPage": {
+      "title": "手頃な",
+      "titleHighlight": "料金プラン",
+      "subtitle": "ニーズに合ったプランを選択",
+      "comparisonTitle": "機能比較",
+      "faqTitle": "よくある質問",
+      "faq": {
+        "q1": "料金はどのように計算されますか？",
+        "a1": "料金は、特定のニーズと使用状況に基づいています。カスタム見積もりについてはお問い合わせください。",
+        "q2": "後でプランをアップグレードできますか？",
+        "a2": "はい、いつでもアップグレードできます。データのスムーズな移行をお手伝いします。",
+        "q3": "どのようなサポートが含まれていますか？",
+        "a3": "すべてのプランにメールサポートが含まれています。プロフェッショナルプランとエンタープライズプランには、専任のアカウントマネージャーによる優先サポートが含まれています。"
+      },
+      "professional": {
+        "name": "プロフェッショナル",
+        "price": "見積もりはお問い合わせください",
+        "priceNote": "カスタム料金",
+        "description": "高度なニーズを持つ成長企業向け",
+        "cta": "見積もりを取得"
+      },
+      "enterprise": {
+        "name": "エンタープライズ",
+        "price": "カスタム",
+        "priceNote": "ボリュームベース",
+        "description": "大規模組織とエンタープライズ展開向け",
+        "cta": "営業に連絡"
+      },
+      "ctaTitle": "始める準備はできましたか？",
+      "ctaSubtitle": "ニーズについて話し合い、最適なプランを見つけましょう",
+      "ctaButton": "営業に連絡"
+    },
+    "featuresPage": {
+      "title": "強力な",
+      "titleHighlight": "機能",
+      "subtitle": "成功に必要なすべて",
+      "techSpecsTitle": "技術仕様",
+      "workflowTitle": "仕組み",
+      "workflow": {
+        "s1": {
+          "title": "インポート",
+          "description": "コンテンツをアップロードして整理"
+        },
+        "s2": {
+          "title": "構成",
+          "description": "設定と環境設定を設定"
+        },
+        "s3": {
+          "title": "展開",
+          "description": "ソリューションでライブに"
+        },
+        "s4": {
+          "title": "監視",
+          "description": "パフォーマンスを追跡して最適化"
+        }
+      },
+      "ctaTitle": "機能を探索する準備はできましたか？",
+      "ctaSubtitle": "パーソナライズされたデモですべての機能を確認",
+      "ctaButton": "デモをスケジュール"
+    },
+    "demoPage": {
+      "title": "当社の",
+      "titleHighlight": "プラットフォーム",
+      "subtitle": "ソリューションの力を体験",
+      "scheduleCta": "ライブデモをスケジュール",
+      "stepsTitle": "仕組み",
+      "steps": {
+        "analyze": {
+          "title": "分析",
+          "description": "パフォーマンスを追跡して改善"
+        }
+      },
+      "featuresTitle": "プラットフォームのハイライト",
+      "platformsTitle": "利用可能",
+      "ctaTitle": "カスタムデモの準備はできましたか？",
+      "ctaSubtitle": "ニーズに合わせたパーソナライズされたデモをスケジュール",
+      "ctaButton": "デモをスケジュール"
+    },
+    "workflow": {
+      "sectionTitle": "インテリジェントワークフロー",
+      "sectionSubtitle": "4ステップの合理化されたプロセス",
+      "step1": {
+        "title": "セットアップ",
+        "description": "アカウントと設定を構成"
+      },
+      "step2": {
+        "title": "カスタマイズ",
+        "description": "ニーズに合わせて設定をカスタマイズ"
+      },
+      "step3": {
+        "title": "展開",
+        "description": "ソリューションを開始"
+      },
+      "step4": {
+        "title": "監視",
+        "description": "パフォーマンスを追跡して最適化"
+      }
+    }
+  },
+  "channelChat": {
+    "title": "ライブチャット",
+    "participants": "{{count}} 人が視聴中",
+    "inputPlaceholder": "メッセージを入力...",
+    "sendButton": "送信",
+    "rateLimitWarning": "少々お待ちください！{{seconds}}秒後に再試行",
+    "autoTranslationBadge": "自動翻訳（ベータ）",
+    "showOriginal": "原文を表示",
+    "showTranslation": "翻訳を表示",
+    "error": "チャットを利用できません",
+    "retry": "再試行",
+    "upgradeBeta": "自動翻訳を利用するにはBeta 500にアップグレード",
+    "inputLabel": "チャットメッセージ入力",
+    "moderationDelete": "モデレーターによりメッセージが削除されました"
+  }
+}

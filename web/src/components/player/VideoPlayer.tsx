@@ -184,7 +184,7 @@ export default function VideoPlayer({
   } = usePlayerPanels()
 
   // Check if user is Beta 500 user
-  const { isBetaUser } = useBetaUser(user?.id)
+  const { isBetaUser, isLoading: isBetaUserLoading } = useBetaUser(user?.id)
 
   // Live trivia for live TV
   const liveTrivia = useLiveTrivia({
@@ -312,7 +312,7 @@ export default function VideoPlayer({
     setRecordingDuration,
     channelChat: isLive ? channelChat : undefined,
     liveTrivia: isLive ? liveTrivia : undefined,
-    catchUp: isLive && isBetaUser ? {
+    catchUp: isLive && isBetaUser && !isBetaUserLoading ? {
       showSummary: catchUp.showSummary,
       toggleSummary: () => catchUp.showSummary ? catchUp.closeSummary() : catchUp.fetchSummary(),
       canRequest: catchUp.isAvailable && catchUp.hasCredits && !catchUp.isLoading,

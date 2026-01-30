@@ -76,6 +76,10 @@ const config = {
       '@olorin/shared-services': path.resolve(packagesRoot, 'shared-services'),
       '@olorin/shared-stores': path.resolve(packagesRoot, 'shared-stores'),
 
+      // @bayit/i18n - Bayit+ platform-specific i18n (8 keys)
+      '@bayit/i18n': path.resolve(packagesRoot, 'bayit-i18n'),
+      '@bayit/i18n/native': path.resolve(packagesRoot, 'bayit-i18n/native.ts'),
+
       // Glass UI components for React Native
       '@olorin/glass-ui': path.resolve(packagesRoot, 'glass-components/src/native'),
       '@olorin/glass-ui/native': path.resolve(packagesRoot, 'glass-components/src/native'),

@@ -761,6 +761,63 @@ class Settings(BaseSettings):
     EPG_CACHE_TTL_SECONDS: int = 300
     EPG_INGESTION_INTERVAL_HOURS: int = 6
 
+    # Recording Storage
+    RECORDING_GCS_PATH_PREFIX: str = Field(
+        default="recordings",
+        env="RECORDING_GCS_PATH_PREFIX",
+        description="GCS path prefix for recording files",
+    )
+    RECORDING_AUTO_DELETE_DAYS: int = Field(
+        default=30,
+        env="RECORDING_AUTO_DELETE_DAYS",
+        description="Days before auto-deleting recordings",
+    )
+    RECORDING_SCHEDULER_BUFFER_SECONDS: int = Field(
+        default=30,
+        env="RECORDING_SCHEDULER_BUFFER_SECONDS",
+        description="Seconds to start recording before EPG scheduled time",
+    )
+    RECORDING_MAX_SERIES_RULES_PER_USER: int = Field(
+        default=10,
+        env="RECORDING_MAX_SERIES_RULES_PER_USER",
+        description="Maximum series recording rules per user",
+    )
+    RECORDING_RULE_SCAN_INTERVAL_MINUTES: int = Field(
+        default=60,
+        env="RECORDING_RULE_SCAN_INTERVAL_MINUTES",
+        description="Interval in minutes to re-scan EPG for series rule matches",
+    )
+    RECORDING_RECOVERY_INTERVAL_MINUTES: int = Field(
+        default=15,
+        env="RECORDING_RECOVERY_INTERVAL_MINUTES",
+        description="Interval in minutes for recovery service to check stuck sessions",
+    )
+    RECORDING_STUCK_TIMEOUT_MINUTES: int = Field(
+        default=30,
+        env="RECORDING_STUCK_TIMEOUT_MINUTES",
+        description="Minutes after which a processing session is considered stuck",
+    )
+    RECORDING_ORPHAN_FILE_HOURS: int = Field(
+        default=24,
+        env="RECORDING_ORPHAN_FILE_HOURS",
+        description="Hours after which orphaned temp recording files are cleaned up",
+    )
+    RECORDING_TEMP_DIR: str = Field(
+        default="/tmp/recordings",
+        env="RECORDING_TEMP_DIR",
+        description="Temporary directory for recording files",
+    )
+    RECORDING_MISFIRE_GRACE_TIME_SECONDS: int = Field(
+        default=300,
+        env="RECORDING_MISFIRE_GRACE_TIME_SECONDS",
+        description="Grace time in seconds for misfired APScheduler recording jobs",
+    )
+    RECORDING_QUERY_LIMIT: int = Field(
+        default=500,
+        env="RECORDING_QUERY_LIMIT",
+        description="Maximum number of documents to return in unbounded recording queries",
+    )
+
     # Catch-Up TV
     CATCHUP_RETENTION_DAYS: int = 7
     CATCHUP_MAX_DURATION_HOURS: int = 4

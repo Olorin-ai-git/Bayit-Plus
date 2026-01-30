@@ -1,0 +1,321 @@
+{
+  "email": {
+    "greeting": "Hello",
+    "footer": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "support": "Support",
+      "unsubscribe": "Unsubscribe from these emails"
+    },
+    "welcome": {
+      "subject": "Welcome to Bayit+!",
+      "title": "Welcome to Bayit+",
+      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
+      "cta": "Go to Dashboard"
+    },
+    "verification": {
+      "subject": "Verify Your Email",
+      "title": "Verify Your Email Address",
+      "body": "Please click the button below to verify your email address.",
+      "cta": "Verify Email",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't create an account, you can safely ignore this email."
+    },
+    "verification_resend": {
+      "subject": "Email Verification (Resent)",
+      "title": "Verify Your Email Address",
+      "body": "Here's a new verification link as requested.",
+      "cta": "Verify Email"
+    },
+    "password_reset": {
+      "subject": "Reset Your Password",
+      "title": "Reset Your Password",
+      "body": "We received a request to reset your password. Click the button below to create a new password.",
+      "cta": "Reset Password",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+    },
+    "password_changed": {
+      "subject": "Password Changed",
+      "title": "Your Password Has Been Changed",
+      "body": "Your password was successfully changed.",
+      "security": "If you didn't make this change, please contact support immediately."
+    },
+    "account_locked": {
+      "subject": "Account Locked",
+      "title": "Your Account Has Been Locked",
+      "body": "Your account has been temporarily locked due to security concerns.",
+      "cta": "Unlock Account"
+    },
+    "beta_invitation": {
+      "subject": "You're Invited to Bayit+ Beta!",
+      "title": "You're Invited to the Beta Program",
+      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
+      "credits": "{credits} AI credits included",
+      "duration": "Access for {days} days",
+      "cta": "Join Beta Program"
+    },
+    "beta_welcome": {
+      "subject": "Welcome to Bayit+ Beta!",
+      "title": "Welcome to the Beta Program",
+      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
+      "cta": "Get Started"
+    },
+    "payment_confirmation": {
+      "subject": "Payment Confirmation",
+      "title": "Payment Received",
+      "body": "Your payment has been processed successfully.",
+      "transaction": "Transaction ID",
+      "plan": "Plan",
+      "amount": "Amount",
+      "date": "Payment Date",
+      "next_billing": "Next Billing Date"
+    },
+    "subscription_activated": {
+      "subject": "Subscription Activated",
+      "title": "Your Subscription is Active",
+      "body": "Your subscription has been activated. Here's what you get:",
+      "cta": "Start Watching"
+    },
+    "subscription_cancelled": {
+      "subject": "Subscription Cancelled",
+      "title": "Subscription Cancelled",
+      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
+      "cta": "Reactivate Subscription"
+    },
+    "payment_failed": {
+      "subject": "Payment Failed",
+      "title": "Payment Failed",
+      "body": "We were unable to process your payment. Please update your payment method.",
+      "cta": "Update Payment Method"
+    },
+    "trial_expiring": {
+      "subject": "Your Trial is Expiring Soon",
+      "title": "Trial Ending in {days_remaining} Days",
+      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
+      "cta": "Upgrade Now"
+    },
+    "support": {
+      "created_subject": "Ticket #{ticket_id} Created",
+      "created_title": "Support Ticket Created",
+      "created_body": "Your support ticket has been created. We'll get back to you soon.",
+      "response_subject": "New Response on Ticket #{ticket_id}",
+      "response_title": "New Response on Your Ticket",
+      "escalation_subject": "Ticket #{ticket_id} Escalated",
+      "escalation_title": "Your Ticket Has Been Escalated",
+      "resolved_subject": "Ticket #{ticket_id} Resolved",
+      "resolved_title": "Your Ticket Has Been Resolved",
+      "resolved_body": "Your support ticket has been resolved."
+    },
+    "new_message": {
+      "subject": "New Message from {sender_name}",
+      "title": "You Have a New Message",
+      "cta": "Read Message"
+    },
+    "content_digest": {
+      "subject": "Your {digest_period} Content Digest",
+      "title": "Your Content Digest",
+      "cta": "Browse Content"
+    },
+    "gdpr": {
+      "deletion_subject": "Data Deletion Confirmation",
+      "deletion_title": "Your Data Has Been Deleted",
+      "deletion_body": "As requested, your personal data has been permanently deleted.",
+      "categories_label": "Deleted Data Categories"
+    },
+    "admin": {
+      "account_created_subject": "Admin Account Created",
+      "account_created_title": "Admin Account Created",
+      "role_change_subject": "Role Changed",
+      "role_change_title": "Your Role Has Been Updated"
+    },
+    "campaign": {
+      "default_subject": "News from Bayit+"
+    },
+    "newsletter": {
+      "default_subject": "Bayit+ Newsletter"
+    },
+    "reengagement": {
+      "subject": "We Miss You!",
+      "title": "It's Been a While",
+      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
+      "cta": "Come Back"
+    }
+  },
+  "payment": {
+    "pending": {
+      "title": "உங்கள் சந்தாவை நிறைவு செய்யுங்கள்",
+      "description": "7 நாள் இலவச சோதனையைத் தொடங்க மற்றும் அனைத்து Bayit+ உள்ளடக்கங்களையும் அணுக ஒரு திட்டத்தைத் தேர்ந்தெடுக்கவும்",
+      "timeElapsed": "கட்டண நிலையைச் சரிபார்க்கிறது... ({{seconds}}வி)",
+      "takingLonger": "கட்டண உறுதிப்படுத்தல் எதிர்பார்த்ததை விட அதிக நேரம் எடுக்கிறது. நீங்கள் ஏற்கனவே பணம் செலுத்தியிருந்தால், புதுப்பிக்க முயற்சிக்கவும் அல்லது ஆதரவைத் தொடர்பு கொள்ளவும்.",
+      "helpText": "உதவி தேவையா? support@bayit.tv ஐத் தொடர்பு கொள்ளவும் அல்லது நீங்கள் ஏற்கனவே பணம் செலுத்தியிருந்தால் இந்தப் பக்கத்தைப் புதுப்பிக்கவும்."
+    },
+    "continueToPayment": "கட்டணத்திற்குத் தொடரவும்",
+    "success": {
+      "title": "கட்டணம் வெற்றிகரமாக முடிந்தது!",
+      "description": "Bayit+ க்கு வரவேற்கிறோம்! உங்கள் சந்தா இப்போது செயலில் உள்ளது.",
+      "redirecting": "{{seconds}} விநாடிகளில் திருப்பி விடப்படுகிறது...",
+      "continue": "Bayit+ க்குத் தொடரவும்"
+    },
+    "cancelled": {
+      "title": "கட்டணம் ரத்து செய்யப்பட்டது",
+      "description": "உங்கள் சந்தா நிறைவடையவில்லை. நீங்கள் தயாராக இருக்கும்போது மீண்டும் முயற்சி செய்யலாம்.",
+      "retry": "மீண்டும் முயற்சிக்கவும்",
+      "helpText": "கேள்விகள் உள்ளனவா? உதவிக்காக support@bayit.tv ஐத் தொடர்பு கொள்ளவும்."
+    }
+  },
+  "portal": {
+    "nav": {
+      "home": "முகப்பு",
+      "features": "அம்சங்கள்",
+      "solutions": "தீர்வுகள்",
+      "pricing": "விலை நிர்ணயம்",
+      "demo": "நேரடி டெமோ",
+      "contact": "தொடர்பு கொள்ளவும்",
+      "getStarted": "தொடங்குங்கள்"
+    },
+    "hero": {
+      "ctaExplore": "அம்சங்களை ஆராயுங்கள்",
+      "ctaDemo": "டெமோவை கோருங்கள்"
+    },
+    "cta": {
+      "title": "தொடங்க தயாரா?",
+      "subtitle": "உங்கள் வணிகத்தை மாற்ற நாங்கள் எவ்வாறு உதவ முடியும் என்பது குறித்து பேசுவோம்",
+      "button": "எங்களைத் தொடர்பு கொள்ளுங்கள்"
+    },
+    "contactPage": {
+      "title": "தொடர்பில் இருங்கள்",
+      "subtitle": "எங்கள் தீர்வுகளில் ஆர்வமா? பேசுவோம்",
+      "formTitle": "எங்களுக்கு ஒரு செய்தி அனுப்புங்கள்",
+      "infoTitle": "தொடர்பு தகவல்",
+      "form": {
+        "name": "முழு பெயர்",
+        "email": "மின்னஞ்சல் முகவரி",
+        "company": "நிறுவனத்தின் பெயர்",
+        "phone": "தொலைபேசி எண்",
+        "message": "உங்கள் செய்தி",
+        "messagePlaceholder": "உங்கள் தேவைகளை எங்களுக்குத் தெரிவிக்கவும்..."
+      },
+      "submit": "செய்தி அனுப்பு",
+      "sending": "அனுப்புகிறது...",
+      "success": "செய்தி வெற்றிகரமாக அனுப்பப்பட்டது! நாங்கள் விரைவில் உங்களைத் தொடர்பு கொள்வோம்.",
+      "error": "செய்தி அனுப்புவதில் தோல்வி. மீண்டும் முயற்சிக்கவும்.",
+      "scheduleTitle": "அழைப்பை திட்டமிட விரும்புகிறீர்களா?",
+      "scheduleSubtitle": "எங்கள் குழுவுடன் தனிப்பயனாக்கப்பட்ட டெமோவை பதிவு செய்யுங்கள்",
+      "scheduleCta": "டெமோ அழைப்பை திட்டமிடுங்கள்"
+    },
+    "pricingPage": {
+      "title": "மலிவு",
+      "titleHighlight": "விலை திட்டங்கள்",
+      "subtitle": "உங்கள் தேவைகளுக்கு ஏற்ற திட்டத்தைத் தேர்ந்தெடுக்கவும்",
+      "comparisonTitle": "அம்சங்களின் ஒப்பீடு",
+      "faqTitle": "அடிக்கடி கேட்கப்படும் கேள்விகள்",
+      "faq": {
+        "q1": "விலை நிர்ணயம் எவ்வாறு கணக்கிடப்படுகிறது?",
+        "a1": "விலை நிர்ணயம் உங்கள் குறிப்பிட்ட தேவைகள் மற்றும் பயன்பாட்டின் அடிப்படையில் அமைந்துள்ளது. தனிப்பயனாக்கப்பட்ட மேற்கோளுக்கு எங்களைத் தொடர்பு கொள்ளுங்கள்.",
+        "q2": "நான் பிறகு என் திட்டத்தை மேம்படுத்தலாமா?",
+        "a2": "ஆம், நீங்கள் எந்த நேரத்திலும் மேம்படுத்தலாம். உங்கள் தரவை தடையின்றி இடம்பெயர்த்த நாங்கள் உதவுவோம்.",
+        "q3": "என்ன ஆதரவு சேர்க்கப்பட்டுள்ளது?",
+        "a3": "அனைத்து திட்டங்களிலும் மின்னஞ்சல் ஆதரவு சேர்க்கப்பட்டுள்ளது. தொழில்முறை மற்றும் நிறுவன திட்டங்களில் பிரத்யேக கணக்கு மேலாளர்களுடன் முன்னுரிமை ஆதரவு சேர்க்கப்பட்டுள்ளது."
+      },
+      "professional": {
+        "name": "தொழில்முறை",
+        "price": "மேற்கோளுக்கு தொடர்பு கொள்ளவும்",
+        "priceNote": "தனிப்பயன் விலை நிர்ணயம்",
+        "description": "மேம்பட்ட தேவைகளுடன் வளரும் வணிகங்களுக்கு",
+        "cta": "மேற்கோள் பெறுங்கள்"
+      },
+      "enterprise": {
+        "name": "நிறுவனம்",
+        "price": "தனிப்பயனாக்கப்பட்ட",
+        "priceNote": "அளவு அடிப்படையிலான",
+        "description": "பெரிய நிறுவனங்கள் மற்றும் நிறுவன வரிசைப்படுத்தல்களுக்கு",
+        "cta": "விற்பனையைத் தொடர்பு கொள்ளவும்"
+      },
+      "ctaTitle": "தொடங்க தயாரா?",
+      "ctaSubtitle": "உங்கள் தேவைகளைப் பற்றி பேசுவோம் மற்றும் சரியான திட்டத்தைக் கண்டறியவும்",
+      "ctaButton": "விற்பனையைத் தொடர்பு கொள்ளவும்"
+    },
+    "featuresPage": {
+      "title": "சக்திவாய்ந்த",
+      "titleHighlight": "அம்சங்கள்",
+      "subtitle": "வெற்றி பெற உங்களுக்குத் தேவையான அனைத்தும்",
+      "techSpecsTitle": "தொழில்நுட்ப விவரக்குறிப்புகள்",
+      "workflowTitle": "இது எவ்வாறு செயல்படுகிறது",
+      "workflow": {
+        "s1": {
+          "title": "இறக்குமதி",
+          "description": "உங்கள் உள்ளடக்கத்தைப் பதிவேற்றி ஒழுங்கமைக்கவும்"
+        },
+        "s2": {
+          "title": "உள்ளமைக்கவும்",
+          "description": "உங்கள் விருப்பத்தேர்வுகள் மற்றும் அமைப்புகளை அமைக்கவும்"
+        },
+        "s3": {
+          "title": "வரிசைப்படுத்தவும்",
+          "description": "உங்கள் தீர்வுடன் நேரடியாகச் செல்லுங்கள்"
+        },
+        "s4": {
+          "title": "கண்காணிக்கவும்",
+          "description": "செயல்திறனைக் கண்காணித்து உகந்ததாக்கவும்"
+        }
+      },
+      "ctaTitle": "அம்சங்களை ஆராய தயாரா?",
+      "ctaSubtitle": "தனிப்பயனாக்கப்பட்ட டெமோவுடன் அனைத்து அம்சங்களையும் செயல்பாட்டில் பார்க்கவும்",
+      "ctaButton": "டெமோவை திட்டமிடுங்கள்"
+    },
+    "demoPage": {
+      "title": "எங்களைப் பார்க்கவும்",
+      "titleHighlight": "தளம்",
+      "subtitle": "எங்கள் தீர்வின் வலிமையை அனுபவிக்கவும்",
+      "scheduleCta": "நேரடி டெமோவை திட்டமிடுங்கள்",
+      "stepsTitle": "இது எவ்வாறு செயல்படுகிறது",
+      "steps": {
+        "analyze": {
+          "title": "பகுப்பாய்வு",
+          "description": "செயல்திறனைக் கண்காணித்து மேம்படுத்தவும்"
+        }
+      },
+      "featuresTitle": "தள சிறப்பம்சங்கள்",
+      "platformsTitle": "இதில் கிடைக்கும்",
+      "ctaTitle": "உங்கள் தனிப்பயன் டெமோவுக்குத் தயாரா?",
+      "ctaSubtitle": "உங்கள் தேவைகளுக்கு ஏற்ற தனிப்பயனாக்கப்பட்ட விளக்கத்தை திட்டமிடுங்கள்",
+      "ctaButton": "டெமோவை திட்டமிடுங்கள்"
+    },
+    "workflow": {
+      "sectionTitle": "அறிவார்ந்த பணிப்பாய்வு",
+      "sectionSubtitle": "4 படிகளில் நெறிப்படுத்தப்பட்ட செயல்முறை",
+      "step1": {
+        "title": "அமைவு",
+        "description": "உங்கள் கணக்கு மற்றும் விருப்பத்தேர்வுகளை உள்ளமைக்கவும்"
+      },
+      "step2": {
+        "title": "தனிப்பயனாக்கவும்",
+        "description": "உங்கள் தேவைகளுக்கு அமைப்புகளை தனிப்பயனாக்கவும்"
+      },
+      "step3": {
+        "title": "வரிசைப்படுத்தவும்",
+        "description": "உங்கள் தீர்வைத் தொடங்கவும்"
+      },
+      "step4": {
+        "title": "கண்காணிக்கவும்",
+        "description": "செயல்திறனைக் கண்காணித்து உகந்ததாக்கவும்"
+      }
+    }
+  },
+  "channelChat": {
+    "title": "நேரடி அரட்டை",
+    "participants": "{{count}} பார்க்கிறார்கள்",
+    "inputPlaceholder": "ஒரு செய்தியை எழுதுங்கள்...",
+    "sendButton": "அனுப்பு",
+    "rateLimitWarning": "மெதுவாக! {{seconds}} வினாடிகள் காத்திருங்கள்",
+    "autoTranslationBadge": "தானியங்கு மொழிபெயர்ப்பு (பீட்டா)",
+    "showOriginal": "மூலத்தைக் காட்டு",
+    "showTranslation": "மொழிபெயர்ப்பைக் காட்டு",
+    "error": "அரட்டை கிடைக்கவில்லை",
+    "retry": "மீண்டும் முயற்சிக்கவும்",
+    "upgradeBeta": "தானியங்கு மொழிபெயர்ப்புக்கு Beta 500 க்கு மேம்படுத்தவும்",
+    "inputLabel": "அரட்டை செய்தி உள்ளீடு",
+    "moderationDelete": "நிர்வாகியால் செய்தி அகற்றப்பட்டது"
+  }
+}

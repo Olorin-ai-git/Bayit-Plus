@@ -75,13 +75,39 @@ export default function RightControls({
 
   const smallIconSize = isTV ? 24 : 18
 
+  const isLiveWithPanel = isLive && onSettingsToggle && renderLiveSubtitleControls && renderDubbingControls
+
+  if (isLiveWithPanel) {
+    return (
+      <View style={styles.rightControls}>
+        {renderWatchPartyButton && renderWatchPartyButton()}
+        {renderCastButton && renderCastButton()}
+        {renderRecordButton && renderRecordButton()}
+
+        {/* Glass Live AI Panel (all AI features inside) */}
+        <GlassLiveControlsPanel
+          isExpanded={showSettings}
+          onToggleExpand={onSettingsToggle}
+          currentLanguage={liveSubtitleLang}
+          availableLanguages={availableLanguages}
+          onLanguageChange={onLanguageChange}
+          isFullscreen={state.isFullscreen}
+          onToggleFullscreen={toggleFullscreen}
+          isDubbingActive={isDubbingActive}
+          renderLiveSubtitleControls={renderLiveSubtitleControls}
+          renderDubbingControls={renderDubbingControls}
+          renderCatchUpButton={renderCatchUpButton}
+          renderChannelChatButton={renderChannelChatButton}
+          renderLiveTriviaButton={renderLiveTriviaButton}
+        />
+      </View>
+    )
+  }
+
   return (
     <View style={styles.rightControls}>
       {renderWatchPartyButton && renderWatchPartyButton()}
       {renderCastButton && renderCastButton()}
-      {renderChannelChatButton && renderChannelChatButton()}
-      {renderLiveTriviaButton && renderLiveTriviaButton()}
-      {renderCatchUpButton && renderCatchUpButton()}
 
       {/* Chapters */}
       {!isLive && hasChapters && onChaptersPanelToggle && (
@@ -140,78 +166,60 @@ export default function RightControls({
       {renderSubtitleControls && renderSubtitleControls()}
       {renderRecordButton && renderRecordButton()}
 
-      {/* Live Channel Controls Panel - includes fullscreen button */}
-      {isLive && onSettingsToggle && renderLiveSubtitleControls && renderDubbingControls ? (
-        <GlassLiveControlsPanel
-          isExpanded={showSettings}
-          onToggleExpand={onSettingsToggle}
-          currentLanguage={liveSubtitleLang}
-          availableLanguages={availableLanguages}
-          onLanguageChange={onLanguageChange}
-          isFullscreen={state.isFullscreen}
-          onToggleFullscreen={toggleFullscreen}
-          isDubbingActive={isDubbingActive}
-          renderLiveSubtitleControls={renderLiveSubtitleControls}
-          renderDubbingControls={renderDubbingControls}
-        />
-      ) : (
-        <>
-          {/* Regular Settings button for VOD */}
-          {onSettingsToggle && (
-            <Pressable
-              onPress={(e) => {
-                e.stopPropagation?.()
-                onSettingsToggle()
-              }}
-              onFocus={settingsFocus.handleFocus}
-              onBlur={settingsFocus.handleBlur}
-              focusable={true}
-              style={({ hovered }) => [
-                styles.controlButton,
-                hovered && styles.controlButtonHovered,
-                showSettings && styles.controlButtonActive,
-                settingsFocus.isFocused && settingsFocus.focusStyle,
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel={t('player.settings')}
-              accessibilityState={{ expanded: showSettings }}
-            >
-              <Settings
-                size={smallIconSize}
-                color={showSettings ? colors.primary : colors.text}
-              />
-            </Pressable>
-          )}
-
-          {/* Fullscreen for VOD */}
-          <Pressable
-            onPress={(e) => {
-              e.stopPropagation?.()
-              toggleFullscreen()
-            }}
-            onFocus={fullscreenFocus.handleFocus}
-            onBlur={fullscreenFocus.handleBlur}
-            focusable={true}
-            style={({ hovered }) => [
-              styles.controlButton,
-              hovered && styles.controlButtonHovered,
-              fullscreenFocus.isFocused && fullscreenFocus.focusStyle,
-            ]}
-            accessibilityRole="button"
-            accessibilityLabel={
-              state.isFullscreen
-                ? t('player.exitFullscreen')
-                : t('player.enterFullscreen')
-            }
-          >
-            {state.isFullscreen ? (
-              <Minimize size={smallIconSize} color={colors.text} />
-            ) : (
-              <Maximize size={smallIconSize} color={colors.text} />
-            )}
-          </Pressable>
-        </>
+      {/* Regular Settings button for VOD */}
+      {onSettingsToggle && (
+        <Pressable
+          onPress={(e) => {
+            e.stopPropagation?.()
+            onSettingsToggle()
+          }}
+          onFocus={settingsFocus.handleFocus}
+          onBlur={settingsFocus.handleBlur}
+          focusable={true}
+          style={({ hovered }) => [
+            styles.controlButton,
+            hovered && styles.controlButtonHovered,
+            showSettings && styles.controlButtonActive,
+            settingsFocus.isFocused && settingsFocus.focusStyle,
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel={t('player.settings')}
+          accessibilityState={{ expanded: showSettings }}
+        >
+          <Settings
+            size={smallIconSize}
+            color={showSettings ? colors.primary : colors.text}
+          />
+        </Pressable>
       )}
+
+      {/* Fullscreen for VOD */}
+      <Pressable
+        onPress={(e) => {
+          e.stopPropagation?.()
+          toggleFullscreen()
+        }}
+        onFocus={fullscreenFocus.handleFocus}
+        onBlur={fullscreenFocus.handleBlur}
+        focusable={true}
+        style={({ hovered }) => [
+          styles.controlButton,
+          hovered && styles.controlButtonHovered,
+          fullscreenFocus.isFocused && fullscreenFocus.focusStyle,
+        ]}
+        accessibilityRole="button"
+        accessibilityLabel={
+          state.isFullscreen
+            ? t('player.exitFullscreen')
+            : t('player.enterFullscreen')
+        }
+      >
+        {state.isFullscreen ? (
+          <Minimize size={smallIconSize} color={colors.text} />
+        ) : (
+          <Maximize size={smallIconSize} color={colors.text} />
+        )}
+      </Pressable>
     </View>
   )
 }

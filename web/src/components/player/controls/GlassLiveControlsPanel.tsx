@@ -7,7 +7,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { View, Text, Pressable, Animated, StyleSheet, Modal } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Languages, Maximize, Minimize, Sparkles, X } from 'lucide-react'
+import { Maximize, Minimize, Sparkles, X } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
@@ -39,6 +39,9 @@ interface GlassLiveControlsPanelProps {
   onHoveredButtonChange?: (button: string | null) => void
   renderLiveSubtitleControls?: () => React.ReactNode
   renderDubbingControls?: () => React.ReactNode
+  renderCatchUpButton?: () => React.ReactNode
+  renderChannelChatButton?: () => React.ReactNode
+  renderLiveTriviaButton?: () => React.ReactNode
 }
 
 export function GlassLiveControlsPanel({
@@ -53,14 +56,25 @@ export function GlassLiveControlsPanel({
   onHoveredButtonChange,
   renderLiveSubtitleControls,
   renderDubbingControls,
+  renderCatchUpButton,
+  renderChannelChatButton,
+  renderLiveTriviaButton,
 }: GlassLiveControlsPanelProps) {
   const { t } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
   const [showLanguagePicker, setShowLanguagePicker] = useState(false)
   const expandAnim = useRef(new Animated.Value(0)).current
   const fullscreenFocus = useTVFocus({ styleType: 'button' })
+  const MIN_PANEL_WIDTH = 140
+  const MAX_PANEL_WIDTH = 1200
+  const DEFAULT_EXPANDED_WIDTH = 820
+  const [dragWidth, setDragWidth] = useState<number | null>(null)
+  const isDragging = useRef(false)
+  const dragStartX = useRef(0)
+  const dragStartWidth = useRef(0)
 
   useEffect(() => {
+    setDragWidth(null)
     Animated.timing(expandAnim, {
       toValue: isExpanded ? 1 : 0,
       duration: 300,
@@ -68,10 +82,40 @@ export function GlassLiveControlsPanel({
     }).start()
   }, [isExpanded, expandAnim])
 
-  const panelWidth = expandAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [300, 720],
-  })
+  const dragHandleRef = useRef<View>(null)
+
+  useEffect(() => {
+    const node = dragHandleRef.current as unknown as HTMLElement | null
+    if (!node) return
+
+    const onPointerDown = (e: PointerEvent) => {
+      isDragging.current = true
+      dragStartX.current = e.clientX
+      dragStartWidth.current = dragWidth ?? (isExpanded ? DEFAULT_EXPANDED_WIDTH : MIN_PANEL_WIDTH)
+      node.setPointerCapture(e.pointerId)
+      e.preventDefault()
+    }
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!isDragging.current) return
+      const delta = e.clientX - dragStartX.current
+      const newWidth = Math.max(MIN_PANEL_WIDTH, Math.min(MAX_PANEL_WIDTH, dragStartWidth.current + delta))
+      setDragWidth(newWidth)
+    }
+
+    const onPointerUp = () => {
+      isDragging.current = false
+    }
+
+    node.addEventListener('pointerdown', onPointerDown)
+    node.addEventListener('pointermove', onPointerMove)
+    node.addEventListener('pointerup', onPointerUp)
+    return () => {
+      node.removeEventListener('pointerdown', onPointerDown)
+      node.removeEventListener('pointermove', onPointerMove)
+      node.removeEventListener('pointerup', onPointerUp)
+    }
+  }, [dragWidth, isExpanded])
 
   const contentOpacity = expandAnim.interpolate({
     inputRange: [0, 0.5, 1],
@@ -87,8 +131,8 @@ export function GlassLiveControlsPanel({
         return t('player.selectLanguage', 'Select Language')
       case 'expand':
         return isExpanded
-          ? t('player.hideLanguageControls', 'Hide Language Controls')
-          : t('player.showLanguageControls', 'Show Language Controls')
+          ? t('player.hideAIFeatures', 'Hide AI Features')
+          : t('player.showAIFeatures', 'Show AI Features')
       case 'fullscreen':
         return isFullscreen
           ? t('player.exitFullscreen', 'Exit Fullscreen')
@@ -113,11 +157,11 @@ export function GlassLiveControlsPanel({
 
   return (
     <View style={styles.wrapper}>
-      <Animated.View style={[styles.panelContainer, { width: panelWidth }]}>
+      <Animated.View style={[styles.panelContainer, { width: dragWidth != null ? dragWidth : 'fit-content' as any }]}>
         {/* Glass background with single clean border */}
         <View style={styles.glassBackground}>
           <View style={styles.contentRow}>
-            {/* Live Language Magic Toggle Button */}
+            {/* AI Toggle Button */}
             <View style={styles.languageSettingsButton}>
               <Pressable
                 onPress={() => setShowLanguagePicker(true)}
@@ -144,22 +188,9 @@ export function GlassLiveControlsPanel({
                 accessibilityLabel={t('player.liveLanguageMagic', 'Live Language Magic')}
                 accessibilityState={{ expanded: isExpanded }}
               >
-                <Languages
-                  size={isTV ? 24 : 20}
-                  color={isExpanded ? colors.primary : colors.text}
-                />
-                <Text
-                  style={[
-                    styles.languageSettingsText,
-                    isExpanded && styles.textActive,
-                  ]}
-                >
-                  {t('player.liveLanguageMagic', 'Live Language Magic')}
-                </Text>
                 <Sparkles
-                  size={isTV ? 18 : 16}
-                  color={colors.primary.DEFAULT}
-                  style={styles.premiumIcon}
+                  size={isTV ? 22 : 20}
+                  color={isExpanded ? colors.primary.DEFAULT : colors.primary.DEFAULT}
                 />
               </Pressable>
             </View>
@@ -183,9 +214,32 @@ export function GlassLiveControlsPanel({
                     {renderDubbingControls()}
                   </View>
                 )}
+
+                {/* Catch-Up AI Summary (Beta 500) */}
+                {renderCatchUpButton && (
+                  <View style={styles.controlItem}>
+                    {renderCatchUpButton()}
+                  </View>
+                )}
+
+                {/* Channel Chat (Live TV) */}
+                {renderChannelChatButton && (
+                  <View style={styles.controlItem}>
+                    {renderChannelChatButton()}
+                  </View>
+                )}
+
+                {/* Live Trivia */}
+                {renderLiveTriviaButton && (
+                  <View style={styles.controlItem}>
+                    {renderLiveTriviaButton()}
+                  </View>
+                )}
               </Animated.View>
             )}
           </View>
+          {/* Right-edge drag handle for resizing */}
+          <View ref={dragHandleRef} style={styles.dragHandle} />
         </View>
       </Animated.View>
 
@@ -283,7 +337,7 @@ export function GlassLiveControlsPanel({
         </Modal>
       )}
 
-      {/* Single Glass Tooltip Below Container */}
+      {/* Single Glass Tooltip Above Container */}
       {tooltipText && (
         <GlassView style={styles.tooltip} intensity="high">
           <Text style={styles.tooltipText}>{tooltipText}</Text>
@@ -305,7 +359,7 @@ const styles = StyleSheet.create({
   },
   glassBackground: {
     flex: 1,
-    width: 'fit-content',
+    flexDirection: 'row',
     borderRadius: borderRadius.xl,
     backgroundColor: 'rgba(17, 17, 34, 0.95)',
     backdropFilter: 'blur(20px)',
@@ -317,6 +371,12 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
     overflow: 'hidden',
+  },
+  dragHandle: {
+    width: 6,
+    alignSelf: 'stretch',
+    cursor: 'ew-resize',
+    backgroundColor: 'transparent',
   },
   contentRow: {
     flex: 1,
@@ -344,18 +404,6 @@ const styles = StyleSheet.create({
   },
   buttonHovered: {
     backgroundColor: 'rgba(139, 92, 246, 0.2)',
-  },
-  languageSettingsText: {
-    fontSize: isTV ? 15 : 13,
-    fontWeight: '600',
-    color: colors.text,
-    whiteSpace: 'nowrap',
-  },
-  textActive: {
-    color: colors.primary.DEFAULT,
-  },
-  premiumIcon: {
-    marginLeft: spacing.xs / 2,
   },
   flagBadge: {
     minWidth: 32,
@@ -477,10 +525,10 @@ const styles = StyleSheet.create({
   },
   tooltip: {
     position: 'absolute',
-    top: '100%',
+    bottom: '100%',
     left: '50%',
     transform: [{ translateX: '-50%' }],
-    marginTop: spacing.sm,
+    marginBottom: spacing.sm,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.lg,

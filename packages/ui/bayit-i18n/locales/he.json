@@ -1,0 +1,333 @@
+{
+  "auth": {
+    "loginRequired": "נדרשת התחברות",
+    "loginToWatch": "אנא התחבר כדי לצפות ב{{title}}",
+    "login": "התחבר",
+    "signUp": "הרשם"
+  },
+  "email": {
+    "greeting": "שלום",
+    "footer": {
+      "privacy": "מדיניות פרטיות",
+      "terms": "תנאי שימוש",
+      "support": "תמיכה",
+      "unsubscribe": "ביטול הרשמה לדוא\"ל"
+    },
+    "welcome": {
+      "subject": "!ברוכים הבאים ל-Bayit+",
+      "title": "ברוכים הבאים ל-Bayit+",
+      "body": "תודה שהצטרפתם ל-Bayit+. אנחנו שמחים לקבל אתכם!",
+      "cta": "לוח בקרה"
+    },
+    "verification": {
+      "subject": "אימות כתובת דוא\"ל",
+      "title": "אמתו את כתובת הדוא\"ל שלכם",
+      "body": "לחצו על הכפתור למטה כדי לאמת את כתובת הדוא\"ל.",
+      "cta": "אמת דוא\"ל",
+      "expiry": "קישור זה יפוג בעוד {expiry_hours} שעות.",
+      "security": "אם לא יצרתם חשבון, ניתן להתעלם מהודעה זו."
+    },
+    "verification_resend": {
+      "subject": "אימות דוא\"ל (נשלח מחדש)",
+      "title": "אמתו את כתובת הדוא\"ל שלכם",
+      "body": "הנה קישור אימות חדש כפי שביקשתם.",
+      "cta": "אמת דוא\"ל"
+    },
+    "password_reset": {
+      "subject": "איפוס סיסמה",
+      "title": "איפוס הסיסמה שלכם",
+      "body": "קיבלנו בקשה לאיפוס סיסמה. לחצו למטה ליצירת סיסמה חדשה.",
+      "cta": "איפוס סיסמה",
+      "expiry": "קישור זה יפוג בעוד {expiry_hours} שעות.",
+      "security": "אם לא ביקשתם זאת, החשבון שלכם בטוח. ניתן להתעלם מהודעה זו."
+    },
+    "password_changed": {
+      "subject": "סיסמה שונתה",
+      "title": "הסיסמה שלכם שונתה",
+      "body": "הסיסמה שלכם שונתה בהצלחה.",
+      "security": "אם לא ביצעתם שינוי זה, פנו לתמיכה מיידית."
+    },
+    "account_locked": {
+      "subject": "חשבון נעול",
+      "title": "החשבון שלכם ננעל",
+      "body": "החשבון שלכם ננעל זמנית מסיבות אבטחה.",
+      "cta": "ביטול נעילה"
+    },
+    "beta_invitation": {
+      "subject": "!הוזמנתם לבטא של Bayit+",
+      "title": "הוזמנתם לתוכנית הבטא",
+      "body": "מזל טוב! נבחרתם לתוכנית הבטא הבלעדית של Bayit+ 500.",
+      "credits": "{credits} קרדיטים של AI כלולים",
+      "duration": "גישה ל-{days} ימים",
+      "cta": "הצטרפו לבטא"
+    },
+    "beta_welcome": {
+      "subject": "!ברוכים הבאים לבטא של Bayit+",
+      "title": "ברוכים הבאים לתוכנית הבטא",
+      "body": "!אתם עכשיו חלק מקהילת הבטא 500 הבלעדית של Bayit+",
+      "cta": "התחילו"
+    },
+    "payment_confirmation": {
+      "subject": "אישור תשלום",
+      "title": "התשלום התקבל",
+      "body": "התשלום שלכם עובד בהצלחה.",
+      "transaction": "מזהה עסקה",
+      "plan": "תוכנית",
+      "amount": "סכום",
+      "date": "תאריך תשלום",
+      "next_billing": "תאריך חיוב הבא"
+    },
+    "subscription_activated": {
+      "subject": "המנוי הופעל",
+      "title": "המנוי שלכם פעיל",
+      "body": "המנוי שלכם הופעל. הנה מה שמקבלים:",
+      "cta": "התחילו לצפות"
+    },
+    "subscription_cancelled": {
+      "subject": "המנוי בוטל",
+      "title": "המנוי בוטל",
+      "body": "המנוי שלכם בוטל. תמשיכו לקבל גישה עד {access_until}.",
+      "cta": "הפעלה מחדש"
+    },
+    "payment_failed": {
+      "subject": "התשלום נכשל",
+      "title": "התשלום נכשל",
+      "body": "לא הצלחנו לעבד את התשלום. עדכנו את אמצעי התשלום.",
+      "cta": "עדכון תשלום"
+    },
+    "trial_expiring": {
+      "subject": "תקופת הניסיון מסתיימת בקרוב",
+      "title": "הניסיון מסתיים בעוד {days_remaining} ימים",
+      "body": "תקופת הניסיון החינמית מסתיימת בקרוב. שדרגו עכשיו.",
+      "cta": "שדרגו עכשיו"
+    },
+    "support": {
+      "created_subject": "פנייה #{ticket_id} נפתחה",
+      "created_title": "פנייה נפתחה",
+      "created_body": "הפנייה שלכם נפתחה. נחזור אליכם בקרוב.",
+      "response_subject": "תגובה חדשה בפנייה #{ticket_id}",
+      "response_title": "תגובה חדשה בפנייה",
+      "escalation_subject": "פנייה #{ticket_id} הועלתה",
+      "escalation_title": "הפנייה הועלתה לדרג גבוה",
+      "resolved_subject": "פנייה #{ticket_id} נפתרה",
+      "resolved_title": "הפנייה נפתרה",
+      "resolved_body": "פניית התמיכה שלכם נפתרה."
+    },
+    "new_message": {
+      "subject": "הודעה חדשה מ-{sender_name}",
+      "title": "יש לכם הודעה חדשה",
+      "cta": "קראו הודעה"
+    },
+    "content_digest": {
+      "subject": "סיכום התוכן ה{digest_period} שלכם",
+      "title": "סיכום תוכן",
+      "cta": "דפדפו בתוכן"
+    },
+    "gdpr": {
+      "deletion_subject": "אישור מחיקת נתונים",
+      "deletion_title": "הנתונים שלכם נמחקו",
+      "deletion_body": "כפי שביקשתם, המידע האישי שלכם נמחק לצמיתות.",
+      "categories_label": "קטגוריות נתונים שנמחקו"
+    },
+    "admin": {
+      "account_created_subject": "חשבון מנהל נוצר",
+      "account_created_title": "חשבון מנהל נוצר",
+      "role_change_subject": "תפקיד שונה",
+      "role_change_title": "התפקיד שלכם עודכן"
+    },
+    "campaign": {
+      "default_subject": "חדשות מ-Bayit+"
+    },
+    "newsletter": {
+      "default_subject": "ניוזלטר Bayit+"
+    },
+    "reengagement": {
+      "subject": "!התגעגענו אליכם",
+      "title": "עבר זמן",
+      "body": "שמנו לב שלא ביקרתם כבר {days_inactive} ימים. הנה מה שפספסתם:",
+      "cta": "חזרו אלינו"
+    }
+  },
+  "greeting": {
+    "morning": "בוקר טוב",
+    "afternoon": "צהריים טובים",
+    "evening": "ערב טוב",
+    "night": "לילה טוב"
+  },
+  "payment": {
+    "pending": {
+      "title": "השלם את המנוי שלך",
+      "description": "בחר תוכנית להתחיל את תקופת הניסיון החינמית למשך 7 ימים ולגשת לכל תכני Bayit+",
+      "timeElapsed": "בודק את סטטוס התשלום... ({{seconds}} שניות)",
+      "takingLonger": "אישור התשלום לוקח זמן רב מהצפוי. אנא נסה לרענן את הדף או פנה לתמיכה אם כבר שילמת.",
+      "helpText": "צריך עזרה? פנה לתמיכה בכתובת support@bayit.tv או רענן את הדף אם כבר השלמת את התשלום."
+    },
+    "continueToPayment": "המשך לתשלום",
+    "success": {
+      "title": "התשלום בוצע בהצלחה!",
+      "description": "ברוך הבא ל-Bayit+! המנוי שלך פעיל כעת.",
+      "redirecting": "מפנה בעוד {{seconds}} שניות...",
+      "continue": "המשך אל Bayit+"
+    },
+    "cancelled": {
+      "title": "התשלום בוטל",
+      "description": "המנוי שלך לא הושלם. תוכל לנסות שוב כשתהיה מוכן.",
+      "retry": "נסה שוב",
+      "helpText": "יש שאלות? פנה לתמיכה בכתובת support@bayit.tv לקבלת עזרה."
+    }
+  },
+  "portal": {
+    "nav": {
+      "home": "בית",
+      "features": "תכונות",
+      "solutions": "פתרונות",
+      "pricing": "תמחור",
+      "demo": "הדגמה חיה",
+      "contact": "צור קשר",
+      "getStarted": "התחל"
+    },
+    "hero": {
+      "ctaExplore": "גלה תכונות",
+      "ctaDemo": "בקש הדגמה"
+    },
+    "cta": {
+      "title": "מוכן להתחיל?",
+      "subtitle": "בוא נדבר איך אנחנו יכולים לעזור לשנות את העסק שלך",
+      "button": "צור קשר"
+    },
+    "contactPage": {
+      "title": "צור קשר",
+      "subtitle": "מעוניין בפתרונות שלנו? בוא נדבר",
+      "formTitle": "שלח לנו הודעה",
+      "infoTitle": "פרטי התקשרות",
+      "form": {
+        "name": "שם מלא",
+        "email": "כתובת דוא\"ל",
+        "company": "שם החברה",
+        "phone": "מספר טלפון",
+        "message": "ההודעה שלך",
+        "messagePlaceholder": "ספר לנו על הצרכים שלך..."
+      },
+      "submit": "שלח הודעה",
+      "sending": "שולח...",
+      "success": "ההודעה נשלחה בהצלחה! נחזור אליך בקרוב.",
+      "error": "שליחת ההודעה נכשלה. נסה שוב.",
+      "scheduleTitle": "מעדיף לתזמן שיחה?",
+      "scheduleSubtitle": "הזמן הדגמה אישית עם הצוות שלנו",
+      "scheduleCta": "תזמן שיחת הדגמה"
+    },
+    "pricingPage": {
+      "title": "משתלם",
+      "titleHighlight": "תוכניות תמחור",
+      "subtitle": "בחר את התוכנית המתאימה לצרכים שלך",
+      "comparisonTitle": "השוואת תכונות",
+      "faqTitle": "שאלות נפוצות",
+      "faq": {
+        "q1": "איך מחושב התמחור?",
+        "a1": "התמחור מבוסס על הצרכים והשימוש הספציפיים שלך. צור קשר לקבלת הצעת מחיר מותאמת.",
+        "q2": "האם אוכל לשדרג את התוכנית שלי מאוחר יותר?",
+        "a2": "כן, אתה יכול לשדרג בכל עת. נעזור להעביר את הנתונים שלך בצורה חלקה.",
+        "q3": "איזה תמיכה כלולה?",
+        "a3": "כל התוכניות כוללות תמיכה בדוא\"ל. תוכניות Professional ו-Enterprise כוללות תמיכה עדיפה עם מנהלי חשבונות ייעודיים."
+      },
+      "professional": {
+        "name": "מקצועי",
+        "price": "צור קשר לקבלת הצעת מחיר",
+        "priceNote": "תמחור מותאם",
+        "description": "לעסקים צומחים עם צרכים מתקדמים",
+        "cta": "קבל הצעת מחיר"
+      },
+      "enterprise": {
+        "name": "ארגוני",
+        "price": "מותאם אישית",
+        "priceNote": "מבוסס נפח",
+        "description": "לארגונים גדולים ופריסות ארגוניות",
+        "cta": "צור קשר עם המכירות"
+      },
+      "ctaTitle": "מוכן להתחיל?",
+      "ctaSubtitle": "בוא נדבר על הצרכים שלך ונמצא את התוכנית המושלמת",
+      "ctaButton": "צור קשר עם המכירות"
+    },
+    "featuresPage": {
+      "title": "עוצמתי",
+      "titleHighlight": "תכונות",
+      "subtitle": "כל מה שאתה צריך להצליח",
+      "techSpecsTitle": "מפרטים טכניים",
+      "workflowTitle": "איך זה עובד",
+      "workflow": {
+        "s1": {
+          "title": "ייבוא",
+          "description": "העלה וארגן את התוכן שלך"
+        },
+        "s2": {
+          "title": "הגדר",
+          "description": "קבע את ההעדפות וההגדרות שלך"
+        },
+        "s3": {
+          "title": "פרוס",
+          "description": "עלה לאוויר עם הפתרון שלך"
+        },
+        "s4": {
+          "title": "עקוב",
+          "description": "עקוב אחר ביצועים ובצע אופטימיזציה"
+        }
+      },
+      "ctaTitle": "מוכן לגלות תכונות?",
+      "ctaSubtitle": "ראה את כל התכונות בפעולה עם הדגמה אישית",
+      "ctaButton": "תזמן הדגמה"
+    },
+    "demoPage": {
+      "title": "ראה את",
+      "titleHighlight": "הפלטפורמה שלנו",
+      "subtitle": "חווה את העוצמה של הפתרון שלנו",
+      "scheduleCta": "תזמן הדגמה חיה",
+      "stepsTitle": "איך זה עובד",
+      "steps": {
+        "analyze": {
+          "title": "נתח",
+          "description": "עקוב ושפר ביצועים"
+        }
+      },
+      "featuresTitle": "נקודות בולטות של הפלטפורמה",
+      "platformsTitle": "זמין ב",
+      "ctaTitle": "מוכן להדגמה מותאמת אישית?",
+      "ctaSubtitle": "תזמן הדגמה אישית המותאמת לצרכים שלך",
+      "ctaButton": "תזמן הדגמה"
+    },
+    "workflow": {
+      "sectionTitle": "זרימת עבודה חכמה",
+      "sectionSubtitle": "תהליך מייעל ב-4 שלבים",
+      "step1": {
+        "title": "הגדר",
+        "description": "הגדר את החשבון וההעדפות שלך"
+      },
+      "step2": {
+        "title": "התאם אישית",
+        "description": "התאם הגדרות לצרכים שלך"
+      },
+      "step3": {
+        "title": "השק",
+        "description": "השק את הפתרון שלך"
+      },
+      "step4": {
+        "title": "עקוב",
+        "description": "עקוב אחר ביצועים ובצע אופטימיזציה"
+      }
+    }
+  },
+  "channelChat": {
+    "title": "צ'אט חי",
+    "participants": "{{count}} צופים",
+    "inputPlaceholder": "כתוב הודעה...",
+    "sendButton": "שלח",
+    "rateLimitWarning": "לאט! המתן {{seconds}} שניות",
+    "autoTranslationBadge": "תרגום אוטומטי (בטא)",
+    "showOriginal": "הצג מקור",
+    "showTranslation": "הצג תרגום",
+    "error": "הצ'אט לא זמין",
+    "retry": "נסה שוב",
+    "upgradeBeta": "שדרג לבטא 500 לתרגום אוטומטי",
+    "inputLabel": "שדה הודעת צ'אט",
+    "moderationDelete": "ההודעה הוסרה על ידי מנהל"
+  }
+}

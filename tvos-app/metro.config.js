@@ -47,6 +47,9 @@ const config = {
       '@olorin/shared-icons': path.resolve(packagesRoot, 'shared-icons/src'),
       '@olorin/shared-services': path.resolve(packagesRoot, 'shared-services/src'),
       '@olorin/shared-stores': path.resolve(packagesRoot, 'shared-stores/src'),
+      // @bayit/i18n - Bayit+ platform-specific i18n (8 keys)
+      '@bayit/i18n': path.resolve(packagesRoot, 'bayit-i18n/src'),
+      '@bayit/i18n/native': path.resolve(packagesRoot, 'bayit-i18n/native.ts'),
       // Shared package aliases
       '@bayit/shared': path.resolve(sharedRoot, 'components'),
       '@bayit/shared-screens': path.resolve(sharedRoot, 'screens'),

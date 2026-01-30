@@ -2030,12 +2030,6 @@
       "trySearch": "Try searching for an audiobook by title, author, or narrator"
     }
   },
-  "auth": {
-    "loginRequired": "Login Required",
-    "loginToWatch": "Please sign in to watch {{title}}",
-    "login": "Login",
-    "signUp": "Sign Up"
-  },
   "breadcrumbs": {
     "series": "Series",
     "movie": "Movie",
@@ -2296,15 +2290,22 @@
     },
     "beta": {
       "credits": {
+        "loading": "Loading credit balance...",
+        "error": "Failed to load credit balance",
+        "label": "AI Credits",
         "balance": "Beta Credits",
         "subtitle": "Your AI feature credits",
         "charged": "Charged",
         "remaining": "Remaining",
         "criticalLow": "Credit balance critically low! You have less than 10% remaining.",
         "runningLow": "Your credit balance is running low. Consider budgeting your usage.",
+        "warningCritical": "🚨 Critical: Running out of credits",
+        "warningLow": "⚠️ Warning: Low credit balance",
         "expiresOn": "Credits expire on {{date}}",
         "usdValue": "USD Value",
         "refresh": "Refresh Balance",
+        "upgrade": "Upgrade Plan",
+        "upgradeAction": "Upgrade to get more credits",
         "remainingCredits": "Credits"
       },
       "settings": {
@@ -2710,149 +2711,6 @@
       "premiumRequired": "Premium subscription required"
     }
   },
-  "email": {
-    "greeting": "Hello",
-    "footer": {
-      "privacy": "Privacy Policy",
-      "terms": "Terms of Service",
-      "support": "Support",
-      "unsubscribe": "Unsubscribe from these emails"
-    },
-    "welcome": {
-      "subject": "Welcome to Bayit+!",
-      "title": "Welcome to Bayit+",
-      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
-      "cta": "Go to Dashboard"
-    },
-    "verification": {
-      "subject": "Verify Your Email",
-      "title": "Verify Your Email Address",
-      "body": "Please click the button below to verify your email address.",
-      "cta": "Verify Email",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't create an account, you can safely ignore this email."
-    },
-    "verification_resend": {
-      "subject": "Email Verification (Resent)",
-      "title": "Verify Your Email Address",
-      "body": "Here's a new verification link as requested.",
-      "cta": "Verify Email"
-    },
-    "password_reset": {
-      "subject": "Reset Your Password",
-      "title": "Reset Your Password",
-      "body": "We received a request to reset your password. Click the button below to create a new password.",
-      "cta": "Reset Password",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't request this, your account is still safe. You can ignore this email."
-    },
-    "password_changed": {
-      "subject": "Password Changed",
-      "title": "Your Password Has Been Changed",
-      "body": "Your password was successfully changed.",
-      "security": "If you didn't make this change, please contact support immediately."
-    },
-    "account_locked": {
-      "subject": "Account Locked",
-      "title": "Your Account Has Been Locked",
-      "body": "Your account has been temporarily locked due to security concerns.",
-      "cta": "Unlock Account"
-    },
-    "beta_invitation": {
-      "subject": "You're Invited to Bayit+ Beta!",
-      "title": "You're Invited to the Beta Program",
-      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
-      "credits": "{credits} AI credits included",
-      "duration": "Access for {days} days",
-      "cta": "Join Beta Program"
-    },
-    "beta_welcome": {
-      "subject": "Welcome to Bayit+ Beta!",
-      "title": "Welcome to the Beta Program",
-      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
-      "cta": "Get Started"
-    },
-    "payment_confirmation": {
-      "subject": "Payment Confirmation",
-      "title": "Payment Received",
-      "body": "Your payment has been processed successfully.",
-      "transaction": "Transaction ID",
-      "plan": "Plan",
-      "amount": "Amount",
-      "date": "Payment Date",
-      "next_billing": "Next Billing Date"
-    },
-    "subscription_activated": {
-      "subject": "Subscription Activated",
-      "title": "Your Subscription is Active",
-      "body": "Your subscription has been activated. Here's what you get:",
-      "cta": "Start Watching"
-    },
-    "subscription_cancelled": {
-      "subject": "Subscription Cancelled",
-      "title": "Subscription Cancelled",
-      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
-      "cta": "Reactivate Subscription"
-    },
-    "payment_failed": {
-      "subject": "Payment Failed",
-      "title": "Payment Failed",
-      "body": "We were unable to process your payment. Please update your payment method.",
-      "cta": "Update Payment Method"
-    },
-    "trial_expiring": {
-      "subject": "Your Trial is Expiring Soon",
-      "title": "Trial Ending in {days_remaining} Days",
-      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
-      "cta": "Upgrade Now"
-    },
-    "support": {
-      "created_subject": "Ticket #{ticket_id} Created",
-      "created_title": "Support Ticket Created",
-      "created_body": "Your support ticket has been created. We'll get back to you soon.",
-      "response_subject": "New Response on Ticket #{ticket_id}",
-      "response_title": "New Response on Your Ticket",
-      "escalation_subject": "Ticket #{ticket_id} Escalated",
-      "escalation_title": "Your Ticket Has Been Escalated",
-      "resolved_subject": "Ticket #{ticket_id} Resolved",
-      "resolved_title": "Your Ticket Has Been Resolved",
-      "resolved_body": "Your support ticket has been resolved."
-    },
-    "new_message": {
-      "subject": "New Message from {sender_name}",
-      "title": "You Have a New Message",
-      "cta": "Read Message"
-    },
-    "content_digest": {
-      "subject": "Your {digest_period} Content Digest",
-      "title": "Your Content Digest",
-      "cta": "Browse Content"
-    },
-    "gdpr": {
-      "deletion_subject": "Data Deletion Confirmation",
-      "deletion_title": "Your Data Has Been Deleted",
-      "deletion_body": "As requested, your personal data has been permanently deleted.",
-      "categories_label": "Deleted Data Categories"
-    },
-    "admin": {
-      "account_created_subject": "Admin Account Created",
-      "account_created_title": "Admin Account Created",
-      "role_change_subject": "Role Changed",
-      "role_change_title": "Your Role Has Been Updated"
-    },
-    "campaign": {
-      "default_subject": "News from Bayit+"
-    },
-    "newsletter": {
-      "default_subject": "Bayit+ Newsletter"
-    },
-    "reengagement": {
-      "subject": "We Miss You!",
-      "title": "It's Been a While",
-      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
-      "cta": "Come Back"
-    }
-  },
   "empty": {
     "noContent": "No content available",
     "tryAnotherCategory": "Try selecting another category",
@@ -3246,12 +3104,6 @@
     "redirecting": "Redirecting to login page...",
     "connecting": "Connecting with Google..."
   },
-  "greeting": {
-    "morning": "Good morning",
-    "afternoon": "Good afternoon",
-    "evening": "Good evening",
-    "night": "Good night"
-  },
   "help": {
     "subtitle": "How can we help you?",
     "email": "Email Support",
@@ -3465,35 +3317,6 @@
       "documentary": "Documentary"
     }
   },
-  "location": {
-    "consentModal": {
-      "title": "Enable Location Services",
-      "description": "We'd like to show you content relevant to your area.\n\nWe will:\n• Detect your city and state\n• Show local Israeli community content\n• Cache your location for 24 hours\n\nWe will NOT:\n• Track your exact location\n• Share your location with third parties\n• Store your location permanently without consent\n\nYou can change this anytime in settings.",
-      "accept": "Allow Location Access",
-      "decline": "Not Now",
-      "privacyNote": "Your privacy is important. Location data is encrypted and never sold."
-    },
-    "permissionBanner": {
-      "title": "Discover Israeli Content Near You",
-      "description": "Enable location services to see Israeli community events, news, and stories from your area. Your privacy is protected - we only detect your city.",
-      "enable": "Enable Location",
-      "notNow": "Not Now",
-      "close": "Close"
-    },
-    "status": {
-      "detecting": "Detecting your location...",
-      "detected": "Location detected: {{city}}, {{state}}",
-      "denied": "Location access denied",
-      "unavailable": "Location services unavailable",
-      "error": "Failed to detect location"
-    },
-    "errors": {
-      "permissionDenied": "Location access denied. Please enable location in your browser settings.",
-      "timeout": "Location request timed out. Please try again.",
-      "unavailable": "Location services are not available in your browser.",
-      "failed": "Failed to get location. Please try again."
-    }
-  },
   "login": {
     "title": "Welcome Back",
     "subtitle": "Sign in to continue to Bayit+",
@@ -3652,28 +3475,6 @@
       "instruction": "Open the camera on your phone and scan the QR code to authenticate",
       "error": "Failed to generate QR code",
       "expired": "QR code expired. Please try again."
-    }
-  },
-  "payment": {
-    "pending": {
-      "title": "Complete Your Subscription",
-      "description": "Choose a plan to start your 7-day free trial and access all of Bayit+",
-      "timeElapsed": "Checking payment status... ({{seconds}}s)",
-      "takingLonger": "Payment confirmation is taking longer than expected. Please try refreshing or contact support if you've already paid.",
-      "helpText": "Need help? Contact support@bayit.tv or refresh this page if you already completed payment."
-    },
-    "continueToPayment": "Continue to Payment",
-    "success": {
-      "title": "Payment Successful!",
-      "description": "Welcome to Bayit+! Your subscription is now active.",
-      "redirecting": "Redirecting in {{seconds}} seconds...",
-      "continue": "Continue to Bayit+"
-    },
-    "cancelled": {
-      "title": "Payment Cancelled",
-      "description": "Your subscription was not completed. You can try again when you're ready.",
-      "retry": "Try Again",
-      "helpText": "Questions? Contact support@bayit.tv for assistance."
     }
   },
   "placeholder": {
@@ -3934,145 +3735,6 @@
       "downloadTitle": "Listen Offline",
       "downloadDescription": "Download episodes to listen without internet connection.",
       "gotIt": "Got it"
-    }
-  },
-  "portal": {
-    "nav": {
-      "home": "Home",
-      "features": "Features",
-      "solutions": "Solutions",
-      "pricing": "Pricing",
-      "demo": "Live Demo",
-      "contact": "Contact",
-      "getStarted": "Get Started"
-    },
-    "hero": {
-      "ctaExplore": "Explore Features",
-      "ctaDemo": "Request Demo"
-    },
-    "cta": {
-      "title": "Ready to Get Started?",
-      "subtitle": "Let's discuss how we can help transform your business",
-      "button": "Contact Us"
-    },
-    "contactPage": {
-      "title": "Get In Touch",
-      "subtitle": "Interested in our solutions? Let's talk",
-      "formTitle": "Send Us a Message",
-      "infoTitle": "Contact Information",
-      "form": {
-        "name": "Full Name",
-        "email": "Email Address",
-        "company": "Company Name",
-        "phone": "Phone Number",
-        "message": "Your Message",
-        "messagePlaceholder": "Tell us about your needs..."
-      },
-      "submit": "Send Message",
-      "sending": "Sending...",
-      "success": "Message sent successfully! We'll get back to you soon.",
-      "error": "Failed to send message. Please try again.",
-      "scheduleTitle": "Prefer to Schedule a Call?",
-      "scheduleSubtitle": "Book a personalized demo with our team",
-      "scheduleCta": "Schedule Demo Call"
-    },
-    "pricingPage": {
-      "title": "Affordable",
-      "titleHighlight": "Pricing Plans",
-      "subtitle": "Choose the plan that fits your needs",
-      "comparisonTitle": "Feature Comparison",
-      "faqTitle": "Frequently Asked Questions",
-      "faq": {
-        "q1": "How is pricing calculated?",
-        "a1": "Pricing is based on your specific needs and usage. Contact us for a custom quote.",
-        "q2": "Can I upgrade my plan later?",
-        "a2": "Yes, you can upgrade at any time. We'll help migrate your data seamlessly.",
-        "q3": "What support is included?",
-        "a3": "All plans include email support. Professional and Enterprise plans include priority support with dedicated account managers."
-      },
-      "professional": {
-        "name": "Professional",
-        "price": "Contact for Quote",
-        "priceNote": "Custom pricing",
-        "description": "For growing businesses with advanced needs",
-        "cta": "Get Quote"
-      },
-      "enterprise": {
-        "name": "Enterprise",
-        "price": "Custom",
-        "priceNote": "Volume-based",
-        "description": "For large organizations and enterprise deployments",
-        "cta": "Contact Sales"
-      },
-      "ctaTitle": "Ready to Get Started?",
-      "ctaSubtitle": "Let's discuss your needs and find the perfect plan",
-      "ctaButton": "Contact Sales"
-    },
-    "featuresPage": {
-      "title": "Powerful",
-      "titleHighlight": "Features",
-      "subtitle": "Everything you need to succeed",
-      "techSpecsTitle": "Technical Specifications",
-      "workflowTitle": "How It Works",
-      "workflow": {
-        "s1": {
-          "title": "Import",
-          "description": "Upload and organize your content"
-        },
-        "s2": {
-          "title": "Configure",
-          "description": "Set up your preferences and settings"
-        },
-        "s3": {
-          "title": "Deploy",
-          "description": "Go live with your solution"
-        },
-        "s4": {
-          "title": "Monitor",
-          "description": "Track performance and optimize"
-        }
-      },
-      "ctaTitle": "Ready to Explore Features?",
-      "ctaSubtitle": "See all features in action with a personalized demo",
-      "ctaButton": "Schedule Demo"
-    },
-    "demoPage": {
-      "title": "See Our",
-      "titleHighlight": "Platform",
-      "subtitle": "Experience the power of our solution",
-      "scheduleCta": "Schedule Live Demo",
-      "stepsTitle": "How It Works",
-      "steps": {
-        "analyze": {
-          "title": "Analyze",
-          "description": "Track and improve performance"
-        }
-      },
-      "featuresTitle": "Platform Highlights",
-      "platformsTitle": "Available On",
-      "ctaTitle": "Ready for Your Custom Demo?",
-      "ctaSubtitle": "Schedule a personalized demonstration tailored to your needs",
-      "ctaButton": "Schedule Demo"
-    },
-    "workflow": {
-      "sectionTitle": "Intelligent Workflow",
-      "sectionSubtitle": "Streamlined process in 4 steps",
-      "step1": {
-        "title": "Setup",
-        "description": "Configure your account and preferences"
-      },
-      "step2": {
-        "title": "Configure",
-        "description": "Customize settings for your needs"
-      },
-      "step3": {
-        "title": "Deploy",
-        "description": "Launch your solution"
-      },
-      "step4": {
-        "title": "Monitor",
-        "description": "Track performance and optimize"
-      }
     }
   },
   "profile": {
@@ -4392,6 +4054,7 @@
     "confirmDelete": "Are you sure you want to delete this recording? This action cannot be undone.",
     "deleteRecording": "Delete Recording",
     "deleteFailed": "Failed to delete recording",
+    "deleted": "Recording deleted",
     "expires": "Expires",
     "subtitlesAvailable": "Subtitles Available",
     "recordingSaved": "Recording Saved!",
@@ -4400,7 +4063,54 @@
     "error": "Recording Error",
     "startFailed": "Failed to start recording. Please try again.",
     "stopFailed": "Failed to stop recording. Please try again.",
-    "page": "Page"
+    "page": "Page",
+    "loading": "Loading recordings...",
+    "loadingRules": "Loading series rules...",
+    "recordOptions": "Recording Options",
+    "includeSubtitles": "Include Subtitles",
+    "includeDubbedAudio": "Include Dubbed Audio",
+    "subtitleLanguage": "Subtitle Language",
+    "dubbingLanguage": "Dubbing Language",
+    "startRecording": "Start Recording",
+    "seriesRecording": "Series Recording",
+    "thisEpisode": "This Episode Only",
+    "thisSeason": "This Season",
+    "allSeasons": "All Seasons",
+    "scheduleRecording": "Schedule Recording",
+    "cancelSchedule": "Cancel Schedule",
+    "conflict": "Schedule Conflict",
+    "storageQuota": "Storage Quota",
+    "audioTracks": "Audio Tracks",
+    "originalAudio": "Original Audio",
+    "originalAudioDesc": "Original broadcast audio",
+    "dubbedAudio": "Dubbed Audio",
+    "dubbedAudioDesc": "AI-translated audio track",
+    "dubbedAudioLang": "Dubbed ({{language}})",
+    "seriesRules": "Series Rules",
+    "seriesRulesDesc": "Automatically record matching programs from the EPG",
+    "noSeriesRules": "No Series Rules",
+    "noSeriesRulesHint": "Create a series rule to automatically record shows!",
+    "deleteRule": "Delete Rule",
+    "confirmDeleteRule": "Delete this series rule? All pending scheduled recordings will be cancelled.",
+    "ruleDeleted": "Series rule deleted",
+    "ruleDeleteFailed": "Failed to delete rule",
+    "nextRecording": "Next Recording",
+    "recordingsCount": "{{count}} recordings",
+    "lastMatched": "Last matched",
+    "pauseRule": "Pause",
+    "resumeRule": "Resume",
+    "activeRules": "Active Rules",
+    "matchExact": "Exact match",
+    "matchContains": "Contains",
+    "matchStartsWith": "Starts with",
+    "filterAll": "All",
+    "filterManual": "Manual",
+    "filterScheduled": "Scheduled",
+    "filterSeries": "Series",
+    "sortDate": "Date",
+    "sortSize": "Size",
+    "sortDuration": "Duration",
+    "sortTitle": "Title"
   },
   "register": {
     "title": "Create Account",
@@ -4976,291 +4686,6 @@
     "securityNote": "Your credentials are sent securely and are never stored on the TV.",
     "footer": "Having trouble? Make sure you scanned a fresh QR code from your TV."
   },
-  "uploads": {
-    "title": "Upload Management",
-    "subtitle": "Monitor folders and manage content uploads",
-    "queueDashboard": {
-      "title": "Upload Queue Dashboard",
-      "stats": "Queue Statistics",
-      "total": "Total",
-      "queued": "Queued",
-      "active": "Active",
-      "done": "Done",
-      "activeJob": "Active Upload",
-      "queuedJobs": "Queued Uploads",
-      "recentCompleted": "Recent Completions",
-      "noActiveJob": "No active uploads",
-      "noActiveJobDescription": "Queue is empty. Upload files or scan monitored folders to begin processing.",
-      "noQueuedJobs": "No pending uploads",
-      "noQueuedJobsDescription": "All files have been processed. Add more files to continue.",
-      "noRecentCompleted": "No recent completions",
-      "noRecentCompletedDescription": "Successfully uploaded files will appear here.",
-      "queuePausedWarning": "Queue is paused: {{reason}}",
-      "resumeQueue": "Resume Queue",
-      "pauseQueue": "Pause Queue",
-      "clearQueue": "Clear Queue"
-    },
-    "manualUpload": {
-      "title": "Manual Upload",
-      "subtitle": "Upload files directly from your device",
-      "browserUpload": "Browser Upload",
-      "urlUpload": "URL Import",
-      "contentType": "Content Type",
-      "contentTypeHelp": "Select the type of content being uploaded",
-      "contentTypeRequired": "Please select a content type",
-      "dropZone": "Drop Zone",
-      "dropZoneAriaLabel": "File upload dropzone. Click or press Enter to select files, or drag files here",
-      "dropHere": "Drag video files here or click to browse",
-      "dropHereActive": "Drop files to upload",
-      "tapToSelect": "Tap to select files",
-      "browseFiles": "Browse Files",
-      "selectFiles": "Select Files",
-      "supportedFormats": "Supported: MP4, MKV, AVI, MOV, WEBM (max {{maxSize}})",
-      "fileList": "Selected files for upload",
-      "fileListEmpty": "No files selected",
-      "fileListEmptyDescription": "Use the file selector above to choose files for upload",
-      "fileItem": "File: {{name}}, Size: {{size}}, Progress: {{progress}}%",
-      "fileName": "File Name",
-      "fileSize": "Size",
-      "fileType": "Type",
-      "fileProgress": "Progress",
-      "fileStatus": "Status",
-      "removeFile": "Remove {{name}}",
-      "removeFileHint": "Remove this file from upload queue",
-      "fileRemoved": "Removed {{name}} from upload queue",
-      "selectedFiles": "{{count}} file(s) selected",
-      "selectedFilesOne": "1 file selected",
-      "selectedFilesOther": "{{count}} files selected",
-      "totalSize": "Total size: {{size}}",
-      "clearAll": "Clear All",
-      "clearAllHint": "Remove all files from upload queue",
-      "clearAllConfirm": "Remove all {{count}} files?",
-      "uploadFiles": "Upload Files",
-      "uploading": "Uploading...",
-      "uploadingFiles": "Uploading {{count}} file(s)...",
-      "uploadProgress": "Uploading: {{percent}}% complete",
-      "uploadComplete": "Upload Complete",
-      "uploadSuccess": "Successfully uploaded {{count}} file(s)",
-      "uploadSuccessOne": "Successfully uploaded 1 file",
-      "uploadSuccessOther": "Successfully uploaded {{count}} files",
-      "uploadPartialSuccess": "Uploaded {{successful}} of {{total}} files. {{failed}} failed.",
-      "uploadFailed": "Upload failed: {{error}}",
-      "cancelUpload": "Cancel Upload",
-      "retryUpload": "Retry Upload",
-      "retryFailed": "Retry Failed Files"
-    },
-    "urlUpload": {
-      "title": "Import from URL",
-      "subtitle": "Import video files from remote URLs",
-      "urlLabel": "Video URL",
-      "urlPlaceholder": "https://example.com/video.mp4",
-      "urlHelp": "Enter a direct URL to a video file",
-      "urlRequired": "URL is required",
-      "importButton": "Import from URL",
-      "importing": "Importing...",
-      "importSuccess": "Successfully imported from URL",
-      "importFailed": "Import failed: {{error}}",
-      "invalidUrl": "Please enter a valid URL",
-      "urlMustBeHttps": "URL must use HTTPS protocol",
-      "emptyUrlList": "No URLs imported",
-      "emptyUrlListDescription": "Enter URLs above to import video files from remote sources",
-      "addUrl": "Add URL",
-      "removeUrl": "Remove URL"
-    },
-    "monitoredFolders": {
-      "title": "Monitored Folders",
-      "subtitle": "Configure folders to automatically detect and upload content",
-      "noFolders": "No monitored folders",
-      "noFoldersDescription": "Add folders to enable automatic content detection and upload",
-      "addFolder": "Add Folder",
-      "editFolder": "Edit Folder",
-      "deleteFolder": "Delete Folder",
-      "scanFolder": "Scan Folder",
-      "scanFolderHint": "Check folder for new files and queue uploads",
-      "scanning": "Scanning...",
-      "scanComplete": "Scan complete: Found {{count}} file(s)",
-      "scanCompleteOne": "Scan complete: Found 1 file",
-      "scanCompleteOther": "Scan complete: Found {{count}} files",
-      "noFilesFound": "No new files found in folder",
-      "scanFailed": "Scan failed: {{error}}",
-      "folderName": "Folder Name",
-      "folderPath": "Folder Path",
-      "folderStatus": "Status",
-      "folderEnabled": "Enabled",
-      "folderDisabled": "Disabled",
-      "lastScan": "Last Scan",
-      "neverScanned": "Never scanned",
-      "filesDetected": "{{count}} file(s) detected",
-      "confirmDelete": "Delete {{name}}?",
-      "confirmDeleteMessage": "This will stop monitoring this folder. Existing uploads will not be affected.",
-      "deleteSuccess": "Folder deleted successfully",
-      "deleteFailed": "Failed to delete folder: {{error}}",
-      "form": {
-        "title": "Folder Configuration",
-        "name": "Folder Name",
-        "namePlaceholder": "e.g., Movies Archive",
-        "nameRequired": "Folder name is required",
-        "nameHelp": "Descriptive name for this folder",
-        "path": "Folder Path",
-        "pathPlaceholder": "/path/to/folder",
-        "pathHelp": "Enter the full path to monitor",
-        "pathRequired": "Folder path is required",
-        "pathInvalid": "Invalid folder path",
-        "pathReadOnly": "Path cannot be changed after creation",
-        "enabled": "Enabled",
-        "enabledHelp": "Enable or disable monitoring for this folder",
-        "autoUpload": "Auto Upload",
-        "autoUploadHelp": "Automatically upload new files detected in this folder",
-        "contentType": "Content Type",
-        "contentTypeHelp": "Type of content in this folder",
-        "saveButton": "Save Folder",
-        "cancelButton": "Cancel",
-        "saving": "Saving..."
-      }
-    },
-    "dryRun": {
-      "title": "Dry Run Mode",
-      "enabled": "Dry Run Enabled",
-      "disabled": "Dry Run Disabled",
-      "description": "Preview upload without actually transferring files",
-      "descriptionDetailed": "When enabled, files will be validated and metadata extracted, but not uploaded to storage. Use this to test uploads without committing changes.",
-      "toggle": "Enable Dry Run",
-      "toggleHint": "Toggle dry run mode for safe upload testing",
-      "previewTitle": "Dry Run Results",
-      "previewDescription": "Review what will happen if you proceed with upload",
-      "validFiles": "Valid Files ({{count}})",
-      "invalidFiles": "Invalid Files ({{count}})",
-      "warnings": "Warnings ({{count}})",
-      "proceedButton": "Proceed with Upload",
-      "proceedHint": "Disable dry run and perform actual upload",
-      "cancelButton": "Cancel",
-      "noResults": "No dry run results available"
-    },
-    "connectionStatus": {
-      "connected": "Connected",
-      "disconnected": "Disconnected",
-      "reconnecting": "Reconnecting...",
-      "reconnectAttempt": "Reconnecting (attempt {{current}} of {{max}})",
-      "connectionLost": "Real-time updates unavailable",
-      "connectionLostDescription": "The connection to the server was lost. Attempting to reconnect...",
-      "connectionLostAnnouncement": "Connection lost. Real-time updates paused. Use Refresh button for manual updates.",
-      "connectedAnnouncement": "Connected to upload service. Real-time updates active.",
-      "reconnectingAnnouncement": "Reconnecting to upload service. Attempt {{attempt}} of {{maxAttempts}}.",
-      "troubleshooting": "Troubleshooting",
-      "troubleshootingSteps": [
-        "Check your internet connection",
-        "Verify the server is running",
-        "Check your authentication token",
-        "Try refreshing the page"
-      ],
-      "manualRefresh": "Refresh Manually",
-      "manualRefreshHint": "Manually refresh queue data",
-      "refreshing": "Refreshing..."
-    },
-    "contentTypes": {
-      "movie": "Movie",
-      "series": "Series",
-      "podcast": "Podcast",
-      "other": "Other"
-    },
-    "stages": {
-      "browserUpload": "Browser Upload",
-      "hashCalculation": "Hash Calculation",
-      "duplicateCheck": "Duplicate Check",
-      "metadataExtraction": "Metadata Extraction",
-      "gcsUpload": "Cloud Upload",
-      "databaseInsert": "Database Insert",
-      "complete": "Complete",
-      "failed": "Failed"
-    },
-    "status": {
-      "queued": "Queued",
-      "processing": "Processing",
-      "uploading": "Uploading",
-      "complete": "Complete",
-      "failed": "Failed",
-      "cancelled": "Cancelled",
-      "skipped": "Skipped (Duplicate)"
-    },
-    "actions": {
-      "pauseQueue": "Pause Queue",
-      "resumeQueue": "Resume Queue",
-      "clearQueue": "Clear Queue",
-      "clearQueueConfirm": "Clear Upload Queue?",
-      "clearQueueConfirmMessage": "This will cancel {{count}} pending upload(s). This action cannot be undone.",
-      "triggerUpload": "Scan Folders",
-      "triggerUploadHint": "Scan all monitored folders for new files",
-      "triggerUploadSuccess": "Found {{files_found}} file(s) to upload",
-      "triggerUploadFailed": "Scan failed: {{error}}",
-      "refresh": "Refresh",
-      "refreshHint": "Reload queue data",
-      "cancel": "Cancel",
-      "retry": "Retry",
-      "remove": "Remove"
-    },
-    "errors": {
-      "loadFailed": "Failed to load upload data",
-      "loadFailedDescription": "Unable to fetch upload queue. Please try refreshing.",
-      "saveFailed": "Failed to save folder configuration",
-      "saveFailedDescription": "Unable to save monitored folder. Please try again.",
-      "deleteFailed": "Failed to delete monitored folder",
-      "uploadFailed": "Upload failed",
-      "uploadFailedDescription": "One or more files failed to upload. Check the file list for details.",
-      "resumeFailed": "Failed to resume queue",
-      "clearFailed": "Failed to clear queue",
-      "triggerFailed": "Failed to trigger upload scan",
-      "pathRequired": "Folder path is required",
-      "invalidPath": "Invalid folder path",
-      "pathTraversal": "Path contains invalid characters or traversal attempts",
-      "networkError": "Network error. Please check your connection.",
-      "authError": "Authentication error. Please log in again.",
-      "serverError": "Server error. Please try again later.",
-      "fileTooBig": "File exceeds maximum size of {{maxSize}}",
-      "invalidFileType": "Invalid file type. Supported formats: {{formats}}",
-      "duplicateFile": "This file has already been uploaded",
-      "rateLimitExceeded": "Rate limit exceeded. Please wait before uploading more files.",
-      "configValidationFailed": "Configuration validation failed. Check console for details.",
-      "websocketAuthFailed": "WebSocket authentication failed",
-      "unsupportedBrowser": "Your browser doesn't support required features"
-    },
-    "mobile": {
-      "dataWarning": "You're on cellular data. Uploading {{size}} may use significant data.",
-      "dataWarningProceed": "Proceed Anyway",
-      "dataWarningCancel": "Cancel Upload",
-      "lowMemoryWarning": "Device memory is low. Large uploads may fail.",
-      "batteryLowWarning": "Battery is low ({{percent}}%). Uploads may be interrupted.",
-      "networkChanged": "Network changed. Reconnecting...",
-      "mobileBrowserNotSupported": "Some features may not work on mobile browsers"
-    },
-    "accessibility": {
-      "pageDescription": "Upload management interface with queue monitoring, manual uploads, and folder monitoring",
-      "pageTitle": "Admin Uploads Page",
-      "sectionQueue": "Queue dashboard section",
-      "sectionManualUpload": "Manual upload section",
-      "sectionMonitoredFolders": "Monitored folders section",
-      "loadingQueue": "Loading upload queue...",
-      "queueLoaded": "Upload queue loaded with {{count}} items",
-      "queueLoadedOne": "Upload queue loaded with 1 item",
-      "queueLoadedOther": "Upload queue loaded with {{count}} items",
-      "uploadStarted": "Upload started for {{count}} files",
-      "uploadStartedOne": "Upload started for 1 file",
-      "uploadStartedOther": "Upload started for {{count}} files",
-      "uploadProgressUpdate": "Upload progress: {{percent}}% complete",
-      "uploadProgressMilestone": "Upload {{percent}}% complete",
-      "uploadCompleted": "Upload completed successfully",
-      "uploadFailed": "Upload failed",
-      "folderAdded": "Folder {{name}} added to monitoring",
-      "folderRemoved": "Folder {{name}} removed from monitoring",
-      "folderScanned": "Folder {{name}} scanned, found {{count}} files",
-      "emptyStateAction": "Press Enter to perform action",
-      "connectionStatusRegion": "Connection status information",
-      "queueStatsRegion": "Queue statistics region",
-      "shortcuts": {
-        "uploadFocused": "Upload input focused. Press Enter to select files.",
-        "queueRefreshed": "Queue refreshed manually."
-      }
-    }
-  },
   "video": {
     "watchTrailer": "Watch Trailer",
     "closeTrailer": "Close Trailer",
@@ -5574,21 +4999,6 @@
       "tagVod": "Tag VOD",
       "pendingModeration": "Pending Moderation"
     }
-  },
-  "channelChat": {
-    "title": "Live Chat",
-    "participants": "{{count}} watching",
-    "inputPlaceholder": "Type a message...",
-    "sendButton": "Send",
-    "rateLimitWarning": "Slow down! Wait {{seconds}}s",
-    "autoTranslationBadge": "Auto-Translation (Beta)",
-    "showOriginal": "Show Original",
-    "showTranslation": "Show Translation",
-    "error": "Chat unavailable",
-    "retry": "Retry",
-    "upgradeBeta": "Upgrade to Beta 500 for auto-translation",
-    "inputLabel": "Chat message input",
-    "moderationDelete": "Message removed by moderator"
   },
   "catchup": {
     "overlay": {

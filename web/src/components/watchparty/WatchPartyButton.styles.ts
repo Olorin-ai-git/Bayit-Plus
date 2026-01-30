@@ -10,6 +10,7 @@ import { isTV } from '@bayit/shared/utils/platform'
 export const styles = StyleSheet.create({
   container: {
     position: 'relative',
+    zIndex: 200,
   },
   button: {
     flexDirection: 'row',
@@ -103,7 +104,7 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 8,
-    zIndex: 50,
+    zIndex: 1000,
   },
   dropdownItem: {
     flexDirection: 'row',

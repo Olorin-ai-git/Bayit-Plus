@@ -39,6 +39,15 @@ class RecordingSession(Document):
     file_size_bytes: int = 0
     duration_seconds: int = 0
 
+    # Dubbing capture
+    dubbing_enabled: bool = False
+    dubbing_target_language: Optional[str] = None
+    dubbed_audio_path: Optional[str] = None
+
+    # EPG/Series linkage
+    series_rule_id: Optional[str] = None
+    epg_entry_id: Optional[str] = None
+
     # Metadata
     trigger_type: str = "manual"  # 'manual' or 'scheduled'
     schedule_id: Optional[str] = None
@@ -53,6 +62,8 @@ class RecordingSession(Document):
             [("user_id", 1), ("status", 1)],
             [("channel_id", 1), ("status", 1)],
             [("recording_id", 1)],
+            [("status", 1), ("updated_at", 1)],
+            [("status", 1), ("ffmpeg_pid", 1)],
         ]
 
 
@@ -78,7 +89,14 @@ class Recording(Document):
     # Storage
     video_url: str
     subtitle_url: Optional[str] = None
+    dubbed_audio_url: Optional[str] = None
+    dubbed_audio_language: Optional[str] = None
     file_size_bytes: int
+
+    # EPG/Series linkage
+    epg_entry_id: Optional[str] = None
+    program_title: Optional[str] = None
+    series_rule_id: Optional[str] = None
 
     # Access & lifecycle
     is_private: bool = True
@@ -136,6 +154,12 @@ class RecordingSchedule(Document):
     # Settings
     subtitle_enabled: bool = False
     subtitle_target_language: Optional[str] = None
+    dubbing_enabled: bool = False
+    dubbing_target_language: Optional[str] = None
+
+    # EPG/Series linkage
+    series_rule_id: Optional[str] = None
+    epg_entry_id: Optional[str] = None
 
     # Status
     status: str = (
@@ -152,6 +176,10 @@ class RecordingSchedule(Document):
         indexes = [
             [("user_id", 1), ("status", 1)],
             [("start_time", 1), ("status", 1)],
+            [("user_id", 1), ("status", 1), ("start_time", 1), ("end_time", 1)],
+            [("status", 1), ("end_time", 1)],
+            [("series_rule_id", 1), ("status", 1)],
+            [("user_id", 1), ("epg_entry_id", 1), ("status", 1)],
         ]
 
 

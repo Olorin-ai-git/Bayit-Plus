@@ -174,8 +174,8 @@ const styles = StyleSheet.create({
     zIndex: 9999,
   },
   button: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,

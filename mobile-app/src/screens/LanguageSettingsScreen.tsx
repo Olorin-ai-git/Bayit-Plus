@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
-import { languages as sharedLanguages } from '@bayit/shared-i18n';
+import { languages as sharedLanguages } from '@bayit/i18n';
 import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { spacing, colors, typography, touchTarget } from '@olorin/design-tokens';
 
