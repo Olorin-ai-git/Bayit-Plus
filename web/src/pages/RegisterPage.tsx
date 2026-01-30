@@ -8,16 +8,11 @@ import { colors, spacing } from '@olorin/design-tokens';
 import { AnimatedLogo } from '@bayit/shared';
 import { GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
+import { languages } from '@bayit/shared-i18n';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
-
-const LANGUAGE_CODES = [
-  { code: 'en', flag: '🇺🇸' },
-  { code: 'he', flag: '🇮🇱' },
-  { code: 'es', flag: '🇪🇸' },
-];
 
 export default function RegisterPage() {
   const { t, i18n } = useTranslation();
@@ -35,7 +30,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
 
-  const currentLanguage = LANGUAGE_CODES.find(lang => lang.code === i18n.language) || LANGUAGE_CODES[0];
+  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
   const currentLanguageLabel = t(`settings.languages.${i18n.language}`);
 
   const handleLanguageChange = (langCode: string) => {
@@ -124,7 +119,7 @@ export default function RegisterPage() {
 
           {showLanguageMenu && (
             <View style={styles.languageMenu}>
-              {LANGUAGE_CODES.map((lang) => (
+              {languages.map((lang) => (
                 <Pressable
                   key={lang.code}
                   style={[
@@ -247,16 +242,20 @@ export default function RegisterPage() {
               ]}>
                 {acceptTerms && <Check size={14} color="#000" strokeWidth={3} />}
               </View>
-              <Text style={styles.termsText}>
-                {t('register.acceptTerms')}{' '}
-                <Link to="/terms" style={{ textDecoration: 'none' }}>
-                  <Text style={styles.termsLink}>{t('register.termsOfService')}</Text>
-                </Link>
-                {' '}{t('register.and')}{' '}
-                <Link to="/privacy" style={{ textDecoration: 'none' }}>
-                  <Text style={styles.termsLink}>{t('register.privacyPolicy')}</Text>
-                </Link>
-              </Text>
+              <View style={styles.termsTextContainer}>
+                <Text style={styles.termsText}>
+                  {t('register.acceptTerms')}{' '}
+                  <Link to="/terms" style={{ textDecoration: 'none' }}>
+                    <Text style={styles.termsLink}>{t('register.termsOfService')}</Text>
+                  </Link>
+                </Text>
+                <Text style={styles.termsText}>
+                  {t('register.and')}{' '}
+                  <Link to="/privacy" style={{ textDecoration: 'none' }}>
+                    <Text style={styles.termsLink}>{t('register.privacyPolicy')}</Text>
+                  </Link>
+                </Text>
+              </View>
             </Pressable>
 
             {/* Register Button */}
@@ -419,8 +418,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
-    overflow: 'hidden',
+    overflow: 'auto',
     minWidth: 160,
+    maxHeight: 320,
     // Use filter instead of backdrop-blur
     filter: 'blur(0)',
     backdropFilter: 'blur(20px)',
@@ -537,8 +537,11 @@ const styles = StyleSheet.create({
     borderColor: colors.primary.DEFAULT,
     backgroundColor: colors.primary[600],
   },
-  termsText: {
+  termsTextContainer: {
     flex: 1,
+    flexDirection: 'column',
+  },
+  termsText: {
     fontSize: 13,
     lineHeight: 20,
     color: colors.textSecondary,

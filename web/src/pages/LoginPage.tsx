@@ -8,16 +8,11 @@ import { colors, spacing } from '@olorin/design-tokens';
 import { AnimatedLogo } from '@bayit/shared';
 import { GlassInput } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
+import { languages } from '@bayit/shared-i18n';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
-
-const LANGUAGE_CODES = [
-  { code: 'en', flag: '🇺🇸' },
-  { code: 'he', flag: '🇮🇱' },
-  { code: 'es', flag: '🇪🇸' },
-];
 
 export default function LoginPage() {
   const { t, i18n } = useTranslation();
@@ -37,7 +32,7 @@ export default function LoginPage() {
   const redirectParam = searchParams.get('redirect');
   const from = redirectParam || (location.state as any)?.from?.pathname || '/';
 
-  const currentLanguage = LANGUAGE_CODES.find(lang => lang.code === i18n.language) || LANGUAGE_CODES[0];
+  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
   const currentLanguageLabel = t(`settings.languages.${i18n.language}`);
 
   const handleLanguageChange = (langCode: string) => {
@@ -98,7 +93,7 @@ export default function LoginPage() {
 
         {showLanguageMenu && (
           <View style={styles.languageMenu}>
-            {LANGUAGE_CODES.map((lang) => (
+            {languages.map((lang) => (
               <Pressable
                 key={lang.code}
                 style={[
@@ -362,8 +357,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
-    overflow: 'hidden',
+    overflow: 'auto',
     minWidth: 160,
+    maxHeight: 320,
     // Use filter instead of backdrop-blur
     filter: 'blur(0)',
     backdropFilter: 'blur(12px)',

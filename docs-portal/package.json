@@ -1,0 +1,20 @@
+{
+  "name": "bayit-plus-docs-portal",
+  "version": "1.0.0",
+  "description": "Bayit+ Documentation Portal",
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "dependencies": {
+    "vitepress": "^1.0.0",
+    "vue": "^3.4.0",
+    "flexsearch": "^0.7.43",
+    "@vueuse/core": "^10.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5"
+  }
+}

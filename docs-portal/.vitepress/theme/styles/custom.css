@@ -1,0 +1,196 @@
+/**
+ * Custom VitePress Theme Overrides
+ * Applies Glass UI design system to VitePress components
+ */
+
+/* Layout */
+.VPDoc {
+  background: var(--vp-c-bg);
+}
+
+.VPNavBar {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--vp-blur-xl));
+  -webkit-backdrop-filter: blur(var(--vp-blur-xl));
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.VPSidebar {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--vp-blur-lg));
+  -webkit-backdrop-filter: blur(var(--vp-blur-lg));
+  border-right: 1px solid var(--glass-border);
+}
+
+/* Cards */
+.vp-doc .custom-block {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--vp-blur-md));
+  -webkit-backdrop-filter: blur(var(--vp-blur-md));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--vp-border-radius-md);
+}
+
+/* Code Blocks */
+.vp-doc div[class*='language-'] {
+  background: var(--vp-code-bg) !important;
+  backdrop-filter: blur(var(--vp-blur-md));
+  -webkit-backdrop-filter: blur(var(--vp-blur-md));
+  border: 1px solid var(--vp-code-border);
+  border-radius: var(--vp-border-radius-md);
+}
+
+.vp-doc div[class*='language-'] code {
+  background: transparent !important;
+}
+
+/* Tables */
+.vp-doc table {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--vp-blur-md));
+  -webkit-backdrop-filter: blur(var(--vp-blur-md));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--vp-border-radius-md);
+  overflow: hidden;
+}
+
+.vp-doc th,
+.vp-doc td {
+  border-color: var(--glass-border);
+}
+
+.vp-doc th {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Buttons */
+.VPButton {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--vp-blur-md));
+  -webkit-backdrop-filter: blur(var(--vp-blur-md));
+  border: 1px solid var(--glass-border);
+  transition: all var(--vp-transition-base);
+}
+
+.VPButton:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  transform: translateY(-2px);
+}
+
+/* Search */
+.VPLocalSearchBox {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--vp-blur-xl));
+  -webkit-backdrop-filter: blur(var(--vp-blur-xl));
+  border: 1px solid var(--glass-border);
+}
+
+.VPLocalSearchBox .result {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--vp-border-radius-sm);
+  transition: all var(--vp-transition-fast);
+}
+
+.VPLocalSearchBox .result:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+}
+
+/* Navigation Links */
+.VPLink {
+  transition: all var(--vp-transition-fast);
+}
+
+.VPLink:hover {
+  color: var(--vp-c-brand-light);
+}
+
+/* Sidebar Links */
+.VPSidebarLink {
+  border-radius: var(--vp-border-radius-sm);
+  transition: all var(--vp-transition-fast);
+}
+
+.VPSidebarLink:hover {
+  background: var(--glass-bg-hover);
+}
+
+.VPSidebarLink.active {
+  background: var(--glass-bg);
+  border-left: 3px solid var(--vp-c-brand);
+}
+
+/* Footer */
+.VPFooter {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--vp-blur-lg));
+  -webkit-backdrop-filter: blur(var(--vp-blur-lg));
+  border-top: 1px solid var(--glass-border);
+}
+
+/* Home Page Hero */
+.VPHero {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+  backdrop-filter: blur(var(--vp-blur-xl));
+  -webkit-backdrop-filter: blur(var(--vp-blur-xl));
+  border-radius: var(--vp-border-radius-xl);
+  padding: var(--vp-space-16);
+  margin: var(--vp-space-8) 0;
+}
+
+/* Feature Cards */
+.VPFeature {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--vp-blur-md));
+  -webkit-backdrop-filter: blur(var(--vp-blur-md));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--vp-border-radius-lg);
+  transition: all var(--vp-transition-base);
+}
+
+.VPFeature:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  transform: translateY(-4px);
+  box-shadow: var(--vp-shadow-2);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--glass-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-border-hover);
+}
+
+/* Dark mode specific adjustments */
+.dark {
+  color-scheme: dark;
+}
+
+/* Smooth transitions */
+* {
+  transition-property: background-color, border-color, color, transform;
+  transition-duration: var(--vp-transition-base);
+  transition-timing-function: ease;
+}
+
+/* Focus states for accessibility */
+:focus-visible {
+  outline: 2px solid var(--vp-c-brand);
+  outline-offset: 2px;
+  border-radius: var(--vp-border-radius-sm);
+}
