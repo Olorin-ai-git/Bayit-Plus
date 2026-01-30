@@ -176,3 +176,31 @@ jobs:
         with:
           name: bandit-security-report
           path: backend/bandit-report.json
+
+      - name: Run Safety dependency scan
+        working-directory: backend
+        run: |
+          pip install safety
+          poetry export -f requirements.txt | safety check --stdin
+        continue-on-error: true
+
+  deploy-staging:
+    needs: [backend-tests, frontend-tests, code-quality, security-scan]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Staging
+        run: |
+          echo "🚀 Deploying Beta 500 to staging environment..."
+          # Deployment commands would be configured here
+          # Example: firebase deploy --only hosting:staging
+
+      - name: Run Smoke Tests
+        run: |
+          echo "✅ Running smoke tests on staging..."
+          # Smoke test commands would be configured here
+          # Example: curl -f https://staging.bayit.plus/api/v1/health

@@ -47,7 +47,11 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7  # 7 days for refresh tokens
     ALGORITHM: str = "HS256"
-    CSRF_ENABLED: bool = False  # CSRF protection disabled by default
+    CSRF_ENABLED: bool = Field(
+        default=True,  # Enabled by default for security
+        env="CSRF_ENABLED",
+        description="Enable CSRF protection middleware (recommended for production)"
+    )
 
     # MongoDB (REQUIRED - no defaults for connection strings)
     MONGODB_URI: str  # Required, must be set via environment

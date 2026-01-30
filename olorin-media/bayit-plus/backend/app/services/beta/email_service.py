@@ -88,22 +88,43 @@ class EmailVerificationService:
         """
         Verify HMAC-SHA256 token and extract email.
 
+        Security: Uses constant-time comparison and enforces minimum response time
+        to prevent timing attacks.
+
         Args:
             token: Verification token
 
         Returns:
             Tuple of (valid: bool, email: Optional[str], error: Optional[str])
         """
+        import time
+        start_time = time.time()
+
         try:
             # Parse token: email|expiry|hmac
             parts = token.split("|")
-            
+
             if len(parts) != 3:
+                logger.warning("Invalid token format detected", extra={"token_parts": len(parts)})
+                self._enforce_min_response_time(start_time, 0.1)
                 return (False, None, "invalid_format")
 
             email, expiry_str, provided_signature = parts
+            payload = f"{email}|{expiry_str}"
 
-            # Verify expiry
+            # VERIFY SIGNATURE FIRST (constant-time comparison)
+            expected_signature = hmac.new(
+                self.settings.EMAIL_VERIFICATION_SECRET_KEY.encode(),
+                payload.encode(),
+                hashlib.sha256
+            ).hexdigest()
+
+            if not hmac.compare_digest(expected_signature, provided_signature):
+                logger.warning("Invalid token signature", extra={"email": email})
+                self._enforce_min_response_time(start_time, 0.1)
+                return (False, None, "invalid_signature")
+
+            # THEN check expiry (after signature verified)
             try:
                 expiry_timestamp = int(expiry_str)
                 expiry = datetime.fromtimestamp(expiry_timestamp, tz=timezone.utc)
@@ -113,31 +134,18 @@ class EmailVerificationService:
                         "Token expired",
                         extra={"email": email, "expired_at": expiry.isoformat()}
                     )
+                    self._enforce_min_response_time(start_time, 0.1)
                     return (False, None, "expired")
-                    
+
             except ValueError:
+                self._enforce_min_response_time(start_time, 0.1)
                 return (False, None, "invalid_expiry")
-
-            # Verify HMAC signature
-            payload = f"{email}|{expiry_str}"
-            expected_signature = hmac.new(
-                self.settings.EMAIL_VERIFICATION_SECRET_KEY.encode(),
-                payload.encode(),
-                hashlib.sha256
-            ).hexdigest()
-
-            if not hmac.compare_digest(expected_signature, provided_signature):
-                logger.warning(
-                    "Invalid token signature",
-                    extra={"email": email}
-                )
-                return (False, None, "invalid_signature")
 
             logger.info(
                 "Token verified successfully",
                 extra={"email": email}
             )
-            
+            self._enforce_min_response_time(start_time, 0.1)
             return (True, email, None)
 
         except Exception as e:
@@ -145,7 +153,21 @@ class EmailVerificationService:
                 "Token verification error",
                 extra={"error": str(e)}
             )
+            self._enforce_min_response_time(start_time, 0.1)
             return (False, None, "verification_error")
+
+    def _enforce_min_response_time(self, start_time: float, min_time: float = 0.1):
+        """
+        Enforce minimum response time to prevent timing attacks.
+
+        Args:
+            start_time: Time when operation started
+            min_time: Minimum response time in seconds (default: 0.1s = 100ms)
+        """
+        import time
+        elapsed = time.time() - start_time
+        if elapsed < min_time:
+            time.sleep(min_time - elapsed)
 
     async def send_verification_email(
         self,

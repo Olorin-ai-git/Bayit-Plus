@@ -68,9 +68,13 @@ export default function LivePage() {
     }
   };
 
-  const filteredChannels = selectedCategory === 'all'
+  const filteredChannels = (selectedCategory === 'all'
     ? channels
-    : channels.filter(c => c.category === selectedCategory);
+    : channels.filter(c => c.category === selectedCategory))
+    .filter(c => {
+      const name = c.name.toLowerCase();
+      return name.includes('i24') || name.includes('kan11');
+    });
 
   if (loading) {
     return (

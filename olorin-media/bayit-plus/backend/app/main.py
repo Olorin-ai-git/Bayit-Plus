@@ -156,6 +156,10 @@ async def lifespan(app: FastAPI):
     try:
         await connect_to_mongo()
         logger.info("✅ MongoDB connection established")
+
+        # Signal to background tasks that database is ready
+        from app.services.startup.background_tasks import set_database_ready
+        set_database_ready(True)
     except Exception as e:
         logger.error(f"❌ MongoDB connection failed: {e}", exc_info=True)
         logger.error("Server will start in DEGRADED mode - database operations will fail")

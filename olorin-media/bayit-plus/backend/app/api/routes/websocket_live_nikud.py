@@ -148,22 +148,38 @@ async def websocket_live_nikud(
         last_usage_update = asyncio.get_event_loop().time()
 
         # Process incoming data
+        # Max text message size (bytes) to prevent abuse
+        max_message_size = 4096
+
         try:
             while True:
                 data = await websocket.receive()
 
                 if "bytes" in data:
-                    # Binary audio chunk - feeds into STT pipeline
-                    pass
+                    # Binary audio chunks are forwarded to the STT pipeline
+                    # (ElevenLabs Scribe v2) which runs inside the integration.
+                    # The STT pipeline emits transcript text that is then
+                    # processed through the nikud pipeline internally.
+                    # Direct binary audio processing is handled by the
+                    # integration's audio ingestion method.
+                    audio_bytes = data["bytes"]
+                    if audio_bytes and len(audio_bytes) <= 32768:
+                        await integration.ingest_audio(audio_bytes)
                 elif "text" in data:
-                    msg = json.loads(data["text"])
+                    raw_text = data["text"]
+                    if len(raw_text) > max_message_size:
+                        await websocket.send_json(
+                            {"type": "error", "message": "Message too large", "recoverable": True}
+                        )
+                        continue
+                    msg = json.loads(raw_text)
                     if msg.get("type") == "transcript":
                         # Process transcript through nikud pipeline
-                        cue = await integration.process_transcript(
-                            msg.get("text", "")
-                        )
-                        if cue:
-                            await websocket.send_json(cue.to_dict())
+                        transcript_text = msg.get("text", "")
+                        if transcript_text and len(transcript_text) <= 500:
+                            cue = await integration.process_transcript(transcript_text)
+                            if cue:
+                                await websocket.send_json(cue.to_dict())
 
                 # Update quota periodically
                 quota_ok, last_usage_update = await update_quota_during_session(
@@ -192,7 +208,7 @@ async def websocket_live_nikud(
         await end_quota_session(quota_session, UsageSessionStatus.ERROR)
         try:
             await websocket.send_json(
-                {"type": "error", "message": str(e), "recoverable": False}
+                {"type": "error", "message": "Internal server error", "recoverable": False}
             )
         except Exception:
             pass

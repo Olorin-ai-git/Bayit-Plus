@@ -6,6 +6,7 @@
  */
 
 import { View, Text, StyleSheet } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 interface NikudCueData {
   text: string
@@ -19,6 +20,8 @@ interface NikudSubtitleOverlayProps {
 }
 
 export default function NikudSubtitleOverlay({ cues }: NikudSubtitleOverlayProps) {
+  const { t } = useTranslation()
+
   if (cues.length === 0) {
     return null
   }
@@ -31,7 +34,9 @@ export default function NikudSubtitleOverlay({ cues }: NikudSubtitleOverlayProps
         <Text
           style={styles.nikudText}
           accessibilityRole="text"
-          accessibilityLabel={`Hebrew with nikud: ${currentCue.text_nikud}`}
+          accessibilityLabel={t('subtitles.nikudSubtitleLabel', {
+            text: currentCue.text_nikud,
+          })}
         >
           {currentCue.text_nikud}
         </Text>

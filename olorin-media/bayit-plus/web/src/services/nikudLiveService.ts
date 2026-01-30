@@ -57,11 +57,21 @@ class NikudLiveService {
     platform: string = 'web',
   ): Promise<void> {
     return new Promise((resolve, reject) => {
+      let settled = false
+
+      const settle = (action: 'resolve' | 'reject', value?: Error) => {
+        if (settled) return
+        settled = true
+        clearTimeout(connectionTimeout)
+        if (action === 'resolve') resolve()
+        else reject(value)
+      }
+
       try {
         const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
         const token = authData?.state?.token
         if (!token) {
-          reject(new Error('Not authenticated'))
+          settle('reject', new Error('Not authenticated'))
           return
         }
 
@@ -75,7 +85,7 @@ class NikudLiveService {
           if (!this.isConnected) {
             logger.error('Connection timeout', 'nikudLiveService')
             this.disconnect()
-            reject(new Error('Connection timeout'))
+            settle('reject', new Error('Connection timeout'))
           }
         }, 10000)
 
@@ -89,22 +99,19 @@ class NikudLiveService {
             const msg = JSON.parse(event.data)
             if (msg.type === 'connected') {
               this.isConnected = true
-              clearTimeout(connectionTimeout)
               onConnected(msg)
               await this.startAudioCapture(videoElement)
-              resolve()
+              settle('resolve')
             } else if (msg.type === 'nikud_subtitle') {
               onCue(msg)
             } else if (msg.type === 'quota_exceeded') {
-              clearTimeout(connectionTimeout)
               onError(`Usage limit reached: ${msg.message}`, false)
               this.disconnect()
-              reject(new Error(msg.message))
+              settle('reject', new Error(msg.message))
             } else if (msg.type === 'error') {
-              clearTimeout(connectionTimeout)
               onError(msg.message, msg.recoverable ?? false)
               if (!msg.recoverable) {
-                reject(new Error(msg.message))
+                settle('reject', new Error(msg.message))
               }
             }
           } catch (error) {
@@ -114,10 +121,9 @@ class NikudLiveService {
 
         this.ws.onerror = (error) => {
           logger.error('WebSocket error', 'nikudLiveService', error)
-          clearTimeout(connectionTimeout)
           onError('Connection error', false)
           this.isConnected = false
-          reject(new Error('Connection error'))
+          settle('reject', new Error('Connection error'))
         }
 
         this.ws.onclose = () => {
@@ -128,7 +134,7 @@ class NikudLiveService {
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'Connection failed'
         onError(errorMsg, false)
-        reject(error)
+        settle('reject', error instanceof Error ? error : new Error(errorMsg))
       }
     })
   }

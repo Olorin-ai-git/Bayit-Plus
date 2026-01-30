@@ -7,18 +7,18 @@ Mirrors BetaSmartSubsIntegration architecture.
 """
 
 import asyncio
-import logging
 from datetime import datetime, timezone
 from typing import Optional
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
 from app.models.content import LiveChannel
 from app.models.user import User
 from app.services.beta.credit_service import BetaCreditService
 from app.services.beta.nikud_live_service import NikudLiveService, NikudSubtitleCue
 from app.services.beta.session_service import SessionBasedCreditService
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class BetaNikudLiveIntegration:
@@ -191,6 +191,20 @@ class BetaNikudLiveIntegration:
             result["mode"] = "standard_quota"
 
         return result
+
+    async def ingest_audio(self, audio_bytes: bytes) -> None:
+        """
+        Ingest raw audio bytes into the STT pipeline.
+
+        Audio is 16kHz mono LINEAR16 PCM from the client.
+        The STT pipeline (ElevenLabs Scribe v2) processes the audio
+        and emits transcript text that feeds into the nikud pipeline.
+
+        Args:
+            audio_bytes: Raw PCM audio data.
+        """
+        if self._nikud_service and self._running:
+            await self._nikud_service.ingest_audio(audio_bytes)
 
     async def process_transcript(
         self, hebrew_transcript: str
