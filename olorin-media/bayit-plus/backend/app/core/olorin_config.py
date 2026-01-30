@@ -420,6 +420,40 @@ class SmartSubsConfig(BaseSettings):
         env_prefix = "SMART_SUBS_"
 
 
+class LiveNikudConfig(BaseSettings):
+    """Configuration for real-time nikud (vocalization marks) on live Hebrew subtitles."""
+
+    enabled: bool = Field(
+        default=False,
+        description="Enable live nikud subtitle feature",
+    )
+    claude_model: str = Field(
+        default="claude-3-haiku-20240307",
+        description="Claude model used for nikud vocalization",
+    )
+    claude_max_tokens: int = Field(
+        default=500,
+        ge=100,
+        le=2000,
+        description="Max tokens for Claude nikud response",
+    )
+    cache_ttl_seconds: int = Field(
+        default=86400,
+        ge=3600,
+        le=604800,
+        description="Redis cache TTL for nikud results (default 24h)",
+    )
+    display_duration_ms: int = Field(
+        default=5000,
+        ge=2000,
+        le=15000,
+        description="Display duration for nikud subtitle cues (milliseconds)",
+    )
+
+    class Config:
+        env_prefix = "LIVE_NIKUD_"
+
+
 class RecapConfig(BaseSettings):
     """Recap agent configuration for live broadcast summaries."""
 
@@ -887,6 +921,144 @@ class DatabaseConfig(BaseSettings):
         env_prefix = "OLORIN_"
 
 
+class ChannelChatConfig(BaseSettings):
+    """Channel live chat configuration for real-time public chat on live channels."""
+
+    max_messages_per_minute: int = Field(
+        default=10,
+        ge=1,
+        le=60,
+        description="Maximum messages per minute per user per channel",
+    )
+    max_message_length: int = Field(
+        default=500,
+        ge=1,
+        le=2000,
+        description="Maximum character length for chat messages",
+    )
+    history_limit: int = Field(
+        default=50,
+        ge=10,
+        le=200,
+        description="Number of recent messages to load for late joiners",
+    )
+    translation_timeout_seconds: float = Field(
+        default=5.0,
+        ge=1.0,
+        le=30.0,
+        description="Timeout for on-demand translation requests",
+    )
+    idle_timeout_minutes: int = Field(
+        default=30,
+        ge=5,
+        le=120,
+        description="WebSocket idle timeout before auto-disconnect",
+    )
+    message_retention_days: int = Field(
+        default=90,
+        ge=1,
+        le=365,
+        description="TTL for chat messages in days",
+    )
+    translation_enabled: bool = Field(
+        default=True,
+        description="Enable chat translation for Beta 500 users",
+    )
+    max_global_connections: int = Field(
+        default=10000,
+        ge=100,
+        le=100000,
+        description="Maximum total WebSocket connections server-wide",
+    )
+    max_connections_per_ip: int = Field(
+        default=5,
+        ge=1,
+        le=50,
+        description="Maximum WebSocket connections per IP address",
+    )
+    max_connections_per_user: int = Field(
+        default=3,
+        ge=1,
+        le=10,
+        description="Maximum WebSocket connections per authenticated user",
+    )
+    heartbeat_interval_seconds: int = Field(
+        default=30,
+        ge=10,
+        le=120,
+        description="Server-side ping interval for WebSocket heartbeat",
+    )
+    heartbeat_timeout_seconds: int = Field(
+        default=90,
+        ge=30,
+        le=300,
+        description="Timeout for pong response before disconnecting stale client",
+    )
+    auto_dismiss_seconds: int = Field(
+        default=22,
+        ge=5,
+        le=60,
+        description="Auto-dismiss timeout for chat UI overlays",
+    )
+
+    class Config:
+        env_prefix = "CHANNEL_CHAT_"
+
+
+class CatchUpConfig(BaseSettings):
+    """AI catch-up summary configuration for live channel recap (Beta 500)."""
+
+    enabled: bool = Field(
+        default=True,
+        description="Enable catch-up summary feature globally",
+    )
+    auto_trigger_minutes: int = Field(
+        default=5,
+        ge=1,
+        le=30,
+        description="Minutes a channel must be live before auto-prompting catch-up",
+    )
+    default_window_minutes: int = Field(
+        default=15,
+        ge=1,
+        le=30,
+        description="Default transcript window for catch-up summary",
+    )
+    cache_ttl_seconds: int = Field(
+        default=180,
+        ge=30,
+        le=600,
+        description="Cache TTL for generated summaries",
+    )
+    max_summary_tokens: int = Field(
+        default=300,
+        ge=100,
+        le=1000,
+        description="Maximum tokens for generated catch-up summary",
+    )
+    window_quantization_seconds: int = Field(
+        default=60,
+        ge=10,
+        le=300,
+        description="Quantization interval for cache key alignment",
+    )
+    transcript_buffer_max_minutes: int = Field(
+        default=15,
+        ge=5,
+        le=60,
+        description="Maximum rolling transcript buffer per channel",
+    )
+    auto_dismiss_seconds: int = Field(
+        default=22,
+        ge=5,
+        le=60,
+        description="Auto-dismiss timeout for catch-up overlay",
+    )
+
+    class Config:
+        env_prefix = "CATCHUP_"
+
+
 class OlorinSettings(BaseSettings):
     """
     Olorin.ai Platform Configuration.
@@ -998,6 +1170,18 @@ class OlorinSettings(BaseSettings):
     smart_subs: SmartSubsConfig = Field(
         default_factory=SmartSubsConfig,
         description="Smart Subs dual-view subtitle with shoresh highlighting",
+    )
+    live_nikud: LiveNikudConfig = Field(
+        default_factory=LiveNikudConfig,
+        description="Live nikud (vocalization marks) for real-time Hebrew subtitles",
+    )
+    channel_chat: ChannelChatConfig = Field(
+        default_factory=ChannelChatConfig,
+        description="Channel live chat with auto-translation for Beta 500",
+    )
+    catchup: CatchUpConfig = Field(
+        default_factory=CatchUpConfig,
+        description="AI catch-up summary for live channels (Beta 500)",
     )
 
     class Config:

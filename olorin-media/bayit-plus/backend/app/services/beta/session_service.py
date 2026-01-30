@@ -4,7 +4,7 @@ Session-Based Credit Service
 Manages dubbing sessions with periodic credit checkpointing (not per-second polling).
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 import uuid
 
@@ -95,8 +95,8 @@ class SessionBasedCreditService:
                 user_id=user_id,
                 feature=feature,
                 status="active",
-                start_time=datetime.utcnow(),
-                last_checkpoint=datetime.utcnow(),
+                start_time=datetime.now(timezone.utc),
+                last_checkpoint=datetime.now(timezone.utc),
                 credits_consumed=0,
                 metadata=metadata
             )
@@ -152,7 +152,7 @@ class SessionBasedCreditService:
                 return None
 
             # Calculate seconds since last checkpoint
-            elapsed = (datetime.utcnow() - session.last_checkpoint).total_seconds()
+            elapsed = (datetime.now(timezone.utc) - session.last_checkpoint).total_seconds()
 
             # Deduct credits atomically
             success, remaining = await self.credit_service.deduct_credits(
@@ -168,7 +168,7 @@ class SessionBasedCreditService:
 
             if success:
                 # Update checkpoint timestamp
-                session.last_checkpoint = datetime.utcnow()
+                session.last_checkpoint = datetime.now(timezone.utc)
                 session.credits_consumed += int(elapsed * await self.credit_service.get_credit_rate(session.feature))
                 await session.save()
 
@@ -255,7 +255,7 @@ class SessionBasedCreditService:
                 return None
 
             # Calculate final elapsed time
-            elapsed = (datetime.utcnow() - session.last_checkpoint).total_seconds()
+            elapsed = (datetime.now(timezone.utc) - session.last_checkpoint).total_seconds()
 
             # Final deduction (if any time elapsed since last checkpoint)
             remaining = 0
@@ -276,7 +276,7 @@ class SessionBasedCreditService:
 
             # Update session status
             session.status = "ended"
-            session.end_time = datetime.utcnow()
+            session.end_time = datetime.now(timezone.utc)
             await session.save()
 
             # Calculate total duration
@@ -345,7 +345,7 @@ class SessionBasedCreditService:
         """
         try:
             # Find active sessions that haven't checkpointed recently
-            timeout_threshold = datetime.utcnow()
+            timeout_threshold = datetime.now(timezone.utc)
             
             sessions = await BetaSession.find(
                 BetaSession.status == "active"

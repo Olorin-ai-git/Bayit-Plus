@@ -37,6 +37,9 @@ _translation_worker: PodcastTranslationWorker | None = None
 # Global Beta checkpoint worker instance
 _beta_checkpoint_worker = None
 
+# Global live channel monitor instance
+_channel_monitor = None
+
 
 async def _scan_monitored_folders_task() -> None:
     """Periodically scan monitored folders for new content."""
@@ -290,10 +293,18 @@ def start_background_tasks() -> None:
             f"(interval: {settings.SESSION_CHECKPOINT_INTERVAL_SECONDS}s)"
         )
 
+    # Live channel stream monitor (always runs)
+    from app.services.live_channel_monitor import get_channel_monitor
+    global _channel_monitor
+    _channel_monitor = get_channel_monitor()
+    task = asyncio.create_task(_channel_monitor.run_monitor_loop())
+    _running_tasks.append(task)
+    logger.info("Started live channel stream monitor (checks every 1 hour)")
+
 
 async def stop_background_tasks() -> None:
     """Stop all running background tasks gracefully."""
-    global _running_tasks, _translation_worker, _beta_checkpoint_worker
+    global _running_tasks, _translation_worker, _beta_checkpoint_worker, _channel_monitor
 
     # Stop translation worker first
     if _translation_worker:
@@ -306,6 +317,11 @@ async def stop_background_tasks() -> None:
         logger.info("Stopping Beta 500 checkpoint worker...")
         await _beta_checkpoint_worker.stop()
         _beta_checkpoint_worker = None
+
+    # Stop channel monitor
+    if _channel_monitor:
+        logger.info("Stopping live channel monitor...")
+        _channel_monitor = None
 
     # Stop session monitor
     from app.services.session_monitor import shutdown_session_monitor

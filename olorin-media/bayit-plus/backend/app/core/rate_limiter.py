@@ -44,6 +44,12 @@ try:
         "location_content": "60/minute",  # Content discovery queries
         # Voice Interaction - Protection for AI inference and real-time processing
         "voice_unified": "60/minute",  # Voice command processing (intent classification + execution)
+        # Admin Beta 500 endpoints - Protection for privileged operations
+        "admin_beta_list": "30/minute",  # List users
+        "admin_beta_details": "60/minute",  # Get user details
+        "admin_beta_adjust": "10/minute",  # CRITICAL: Credit adjustment
+        "admin_beta_deactivate": "5/minute",  # Deactivate user
+        "admin_beta_analytics": "10/minute",  # Analytics dashboard
     }
 
     RATE_LIMITING_ENABLED = True

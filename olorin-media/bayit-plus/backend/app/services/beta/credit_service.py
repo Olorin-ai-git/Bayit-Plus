@@ -77,6 +77,10 @@ class BetaCreditService:
             "live_dubbing": self.settings.CREDIT_RATE_LIVE_DUBBING,
             "ai_search": self.settings.CREDIT_RATE_AI_SEARCH,
             "ai_recommendations": self.settings.CREDIT_RATE_AI_RECOMMENDATIONS,
+            "simplified_dubbing": self.settings.CREDIT_RATE_SIMPLIFIED_DUBBING,
+            "smart_subs": self.settings.CREDIT_RATE_SMART_SUBS,
+            "live_nikud": self.settings.CREDIT_RATE_LIVE_NIKUD,
+            "catchup_summary": self.settings.CREDIT_RATE_CATCHUP_SUMMARY,
         }
         
         if feature not in rate_mapping:
@@ -507,6 +511,30 @@ class BetaCreditService:
                 extra={"user_id": user_id, "error": str(e)}
             )
 
+    async def is_beta_user(self, user_id: str) -> bool:
+        """
+        Check if user is an active Beta 500 participant.
+
+        Args:
+            user_id: User ID
+
+        Returns:
+            True if user has active (non-expired) beta credits
+        """
+        try:
+            credit = await BetaCredit.find_one(
+                BetaCredit.user_id == user_id,
+                BetaCredit.is_expired == False
+            )
+            return credit is not None
+
+        except Exception as e:
+            logger.error(
+                "Error checking beta user status",
+                extra={"user_id": user_id, "error": str(e)}
+            )
+            return False
+
     async def get_balance(self, user_id: str) -> Optional[int]:
         """
         Get user's current credit balance.
@@ -590,7 +618,7 @@ class BetaCreditService:
             amount=total_credits,
             balance_after=total_credits,
             metadata={"event": "initial_allocation"},
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc)
         )
         await transaction.insert()
 

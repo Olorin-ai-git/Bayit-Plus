@@ -2,7 +2,7 @@
 
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import hmac
 import hashlib
 from app.services.beta.email_service import EmailVerificationService
@@ -59,10 +59,10 @@ class TestGenerateVerificationToken:
 
         parts = token.split('|')
         expiry_timestamp = int(parts[1])
-        expiry_datetime = datetime.fromtimestamp(expiry_timestamp)
+        expiry_datetime = datetime.fromtimestamp(expiry_timestamp, tz=timezone.utc)
 
         # Should expire approximately 24 hours from now (within 1 minute tolerance)
-        expected_expiry = datetime.utcnow() + timedelta(hours=24)
+        expected_expiry = datetime.now(timezone.utc) + timedelta(hours=24)
         time_diff = abs((expiry_datetime - expected_expiry).total_seconds())
         assert time_diff < 60  # Within 1 minute
 
@@ -93,7 +93,7 @@ class TestVerifyToken:
         email = "test@example.com"
 
         # Manually create expired token (1 hour ago)
-        expiry = datetime.utcnow() - timedelta(hours=1)
+        expiry = datetime.now(timezone.utc) - timedelta(hours=1)
         payload = f"{email}|{int(expiry.timestamp())}"
         signature = hmac.new(
             email_service.settings.EMAIL_VERIFICATION_SECRET_KEY.encode(),
@@ -111,7 +111,7 @@ class TestVerifyToken:
     def test_verify_invalid_signature(self, email_service):
         """Test verification of token with invalid signature."""
         email = "test@example.com"
-        expiry = datetime.utcnow() + timedelta(hours=24)
+        expiry = datetime.now(timezone.utc) + timedelta(hours=24)
         payload = f"{email}|{int(expiry.timestamp())}"
         # Wrong signature (not matching the payload)
         wrong_signature = "0" * 64

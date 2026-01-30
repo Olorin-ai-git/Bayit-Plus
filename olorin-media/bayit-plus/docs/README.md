@@ -31,7 +31,8 @@ Deployment guides and status:
 - **Google Cloud Secrets: Dubbing Pipeline Improvements** (`GCLOUD_SECRETS_DUBBING_IMPROVEMENTS.md`) - Secrets management documentation for 18 new dubbing configuration variables across P0 security, P1 scalability, P2 performance improvements with GCloud commands, service account access, and tuning guide - 2026-01-29 **NEW**
 - **Google Cloud Secrets: Beta 500 Program** (`GCLOUD_SECRETS_BETA_500.md`) - Secrets management documentation for 16 Beta 500 closed beta program configuration variables (fraud detection, email verification, credit system, session tracking) with GCloud commands, service account access, and sync workflow - 2026-01-29 **NEW**
 - **Beta 500 Monitoring Setup** (`MONITORING_SETUP.md`) - Prometheus/Grafana/Alertmanager monitoring infrastructure for Beta 500 program with 30+ business and system metrics, alert rules for credit thresholds, fraud detection, session tracking, and dashboard templates - 2026-01-29 **NEW**
-- **Google Cloud Secrets: Location Service** (`GCLOUD_SECRETS_LOCATION_SERVICE.md`) - Secrets management documentation for GEONAMES_USERNAME configuration required for reverse geocoding via GeoNames API, includes GCloud commands, service account access, verification steps, and troubleshooting guide - 2026-01-30 **NEW**
+- **Google Cloud Secrets: Location Service** (`GCLOUD_SECRETS_LOCATION_SERVICE.md`) - Secrets management documentation for GEONAMES_USERNAME configuration required for reverse geocoding via GeoNames API, includes GCloud commands, service account access, verification steps, and troubleshooting guide - 2026-01-30
+- **Google Cloud Secrets: Simplified Hebrew & Smart Subs** (`GCLOUD_SECRETS_SIMPLIFIED_HEBREW.md`) - Secrets management documentation for 13 configuration variables across Simplified Hebrew (Ivrit Kalla) audio track and Smart Subs dual-view subtitles with shoresh highlighting - 2026-01-30 **NEW**
 
 ### `/testing/`
 Testing documentation and checklists:
@@ -75,6 +76,8 @@ Implementation notes and session reports:
   - `CONTENT_ADMIN_REBUILD_COMPLETION_SUMMARY.md` - Comprehensive completion summary for Phase 1-3 implementation covering all 4 refactored pages, code quality verification, build success, and production readiness status - ✅ BUILD SUCCESSFUL - 2026-01-25
 - **Radio Stations**:
   - `RADIO_STATIONS_BULK_UPDATE_SUMMARY.md` - Implementation summary for Israeli radio stations bulk update: 2 scripts created (app context + direct MongoDB), all 33 stations with verified HLS stream URLs, 103FM timeout fixed, comprehensive documentation and monitoring recommendations - ✅ READY FOR DEPLOYMENT - 2026-01-26 **NEW**
+- **i24News Live Channels**:
+  - `I24NEWS_LIVE_CHANNELS.md` - Complete implementation of i24News bilingual live streaming with official Brightcove/Akamai CDN streams (English + Hebrew), automatic health monitoring, system widgets, 720p quality, no URL expiration, background task integration - ✅ PRODUCTION READY - 2026-01-30 **NEW**
 
 ### `/operations/`
 Database operations and maintenance:

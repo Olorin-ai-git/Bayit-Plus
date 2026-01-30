@@ -365,6 +365,16 @@ class LiveChannel(Document):
     default_dubbing_voice_id: Optional[str] = None  # Override default ElevenLabs voice
     dubbing_sync_delay_ms: int = 600  # Default sync delay for this channel
 
+    # Simplified Hebrew audio track support (Ivrit Kalla)
+    supports_simplified_hebrew: bool = False
+    simplified_hebrew_voice_id: Optional[str] = None  # Override default simplified voice
+
+    # Smart Subs (dual-view subtitle with shoresh highlighting)
+    supports_smart_subs: bool = False
+
+    # Live Nikud (vocalized Hebrew subtitles)
+    supports_live_nikud: bool = False
+
     # Visibility
     is_active: bool = True
     order: int = 0

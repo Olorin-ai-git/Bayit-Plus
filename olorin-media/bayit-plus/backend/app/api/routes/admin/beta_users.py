@@ -9,9 +9,10 @@ Authentication:
 """
 
 from typing import List, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
+from pymongo import ReturnDocument
 
 from app.core.security import get_current_admin_user
 from app.models.user import User
@@ -19,8 +20,10 @@ from app.models.beta_user import BetaUser
 from app.models.beta_credit import BetaCredit
 from app.models.beta_credit_transaction import BetaCreditTransaction
 from app.services.beta.credit_service import BetaCreditService
+from app.services.beta.email_service import EmailVerificationService
 from app.core.database import get_database
 from app.core.config import get_settings
+from app.core.rate_limiter import limiter
 
 
 # Pydantic response models
@@ -92,6 +95,7 @@ router = APIRouter(
 
 
 @router.get("/users", response_model=List[BetaUserSummary])
+@limiter.limit("30/minute")
 async def list_beta_users(
     status: Optional[str] = Query(None, description="Filter by status: active, pending_verification, inactive"),
     min_credits: Optional[int] = Query(None, description="Filter by minimum credits remaining"),
@@ -129,7 +133,7 @@ async def list_beta_users(
             results.append(BetaUserSummary(
                 user_id=str(beta_user.id),
                 email=beta_user.email,
-                name=getattr(beta_user, 'name', None),
+                name=beta_user.name,
                 status=beta_user.status,
                 is_beta_user=beta_user.is_beta_user,
                 credits_remaining=credit.remaining_credits,
@@ -143,6 +147,7 @@ async def list_beta_users(
 
 
 @router.get("/users/{user_id}", response_model=BetaUserDetail)
+@limiter.limit("60/minute")
 async def get_beta_user(
     user_id: str,
     current_admin: User = Depends(get_current_admin_user),
@@ -171,16 +176,16 @@ async def get_beta_user(
     return BetaUserDetail(
         user_id=user_id,
         email=beta_user.email,
-        name=getattr(beta_user, 'name', None),
+        name=beta_user.name,
         status=beta_user.status,
         is_beta_user=beta_user.is_beta_user,
         credits_remaining=credit.remaining_credits,
         credits_total=credit.total_credits,
         credits_used=credit.used_credits,
         enrolled_at=beta_user.created_at,
-        verified_at=getattr(beta_user, 'verified_at', None),
+        verified_at=beta_user.verified_at,
         last_activity=credit.updated_at,
-        invitation_code=getattr(beta_user, 'invitation_code', None),
+        invitation_code=beta_user.invitation_code,
         usage_percentage=credit.usage_percentage(),
     )
 
@@ -207,16 +212,16 @@ async def get_user_credit_history(
     # Get transactions
     transactions = await BetaCreditTransaction.find(
         BetaCreditTransaction.user_id == user_id
-    ).sort("-timestamp").limit(limit).to_list()
+    ).sort("-created_at").limit(limit).to_list()
 
     return [
         CreditTransaction(
             transaction_id=str(txn.id),
-            feature=txn.feature,
-            credits_used=txn.credits_used,
-            remaining_after=txn.remaining_after,
-            timestamp=txn.timestamp,
-            metadata=txn.metadata,
+            feature=txn.feature if txn.feature else "unknown",
+            credits_used=abs(txn.amount),
+            remaining_after=txn.balance_after,
+            timestamp=txn.created_at,
+            metadata=txn.metadata if txn.metadata else {},
         )
         for txn in transactions
     ]
@@ -234,6 +239,8 @@ async def adjust_user_credits(
 
     Admin-only endpoint for customer support interventions.
     """
+    settings = get_settings()
+
     # Verify user exists
     beta_user = await BetaUser.find_one(BetaUser.id == user_id)
     if not beta_user:
@@ -242,25 +249,15 @@ async def adjust_user_credits(
             detail=f"Beta user {user_id} not found"
         )
 
-    # Get current credits
-    credit = await BetaCredit.find_one(BetaCredit.user_id == user_id)
-    if not credit:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Credits not found for user {user_id}"
-        )
+    # Build conditional filter based on adjustment direction
+    filter_query = {"user_id": user_id}
+    if adjustment.amount < 0:
+        # For negative adjustments, ensure sufficient balance
+        filter_query["remaining_credits"] = {"$gte": abs(adjustment.amount)}
 
-    # Validate adjustment won't make credits negative
-    new_balance = credit.remaining_credits + adjustment.amount
-    if new_balance < 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Adjustment would result in negative balance: {new_balance}"
-        )
-
-    # Perform atomic adjustment
+    # Atomic update with conditional guard (prevents race conditions)
     result = await db.beta_credits.find_one_and_update(
-        {"user_id": user_id},
+        filter_query,
         {
             "$inc": {
                 "total_credits": adjustment.amount if adjustment.amount > 0 else 0,
@@ -268,26 +265,40 @@ async def adjust_user_credits(
                 "version": 1,
             },
             "$set": {
-                "updated_at": datetime.utcnow(),
+                "updated_at": datetime.now(timezone.utc),
             }
         },
-        return_document=True,
+        return_document=ReturnDocument.AFTER
     )
 
+    # Check if update succeeded
     if not result:
+        # Fetch current credit to provide helpful error message
+        credit = await BetaCredit.find_one(BetaCredit.user_id == user_id)
+        if not credit:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Credits not found for user {user_id}"
+            )
+
+        # Adjustment would have resulted in negative balance
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to adjust credits"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Insufficient credits. Current balance: {credit.remaining_credits}, Requested adjustment: {adjustment.amount}"
         )
+
+    # Calculate previous balance
+    previous_balance = result["remaining_credits"] - adjustment.amount
 
     # Record transaction
     transaction = BetaCreditTransaction(
         user_id=user_id,
-        credit_id=str(credit.id),
+        credit_id=str(result["_id"]),
+        transaction_type="credit" if adjustment.amount > 0 else "debit",
+        amount=adjustment.amount,
         feature="admin_adjustment",
-        credits_used=-adjustment.amount,  # Negative for additions
-        remaining_after=result["remaining_credits"],
-        timestamp=datetime.utcnow(),
+        balance_after=result["remaining_credits"],
+        created_at=datetime.now(timezone.utc),
         metadata={
             "adjusted_by": str(current_admin.id),
             "admin_email": current_admin.email,
@@ -296,15 +307,34 @@ async def adjust_user_credits(
     )
     await transaction.insert()
 
-    # TODO: Send notification email if requested
+    # Send notification email if requested
     if adjustment.notify_user:
-        # Email notification not yet implemented
-        pass
+        email_service = EmailVerificationService(settings)
+        user_name = beta_user.name if hasattr(beta_user, 'name') and beta_user.name else beta_user.email.split('@')[0]
+
+        # Send email (non-blocking - don't fail transaction if email fails)
+        try:
+            await email_service.send_credit_adjustment_notification(
+                email=beta_user.email,
+                user_name=user_name,
+                adjustment_amount=adjustment.amount,
+                new_balance=result["remaining_credits"],
+                reason=adjustment.reason,
+                adjusted_by=current_admin.email
+            )
+        except Exception as e:
+            # Log error but don't fail the transaction
+            from app.core.logging_config import get_logger
+            logger = get_logger(__name__)
+            logger.warning(
+                "Failed to send credit adjustment notification email",
+                extra={"user_id": user_id, "error": str(e)}
+            )
 
     return {
         "success": True,
         "user_id": user_id,
-        "previous_balance": credit.remaining_credits,
+        "previous_balance": previous_balance,
         "adjustment": adjustment.amount,
         "new_balance": result["remaining_credits"],
         "reason": adjustment.reason,
@@ -401,7 +431,7 @@ async def get_beta_analytics(
         {
             "$group": {
                 "_id": "$feature",
-                "total_credits": {"$sum": "$credits_used"},
+                "total_credits": {"$sum": {"$abs": "$amount"}},
                 "usage_count": {"$sum": 1}
             }
         },
@@ -419,7 +449,7 @@ async def get_beta_analytics(
     ]
 
     # Enrollment trend (last 30 days)
-    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
     enrollment_trend_data = await db.beta_users.aggregate([
         {
             "$match": {

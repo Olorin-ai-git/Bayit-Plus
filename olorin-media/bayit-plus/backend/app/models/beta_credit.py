@@ -4,7 +4,7 @@ Beta Credit Model
 Tracks AI credit allocation and usage for Beta 500 users.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from beanie import Document, Indexed
 from pydantic import Field, field_validator
@@ -35,8 +35,8 @@ class BetaCredit(Document):
     low_balance_email_sent: bool = Field(default=False)
     depleted_email_sent: bool = Field(default=False)
 
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Settings:
         name = "beta_credits"

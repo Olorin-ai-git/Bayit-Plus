@@ -5,7 +5,7 @@ Detects and prevents abuse in the Beta 500 program.
 """
 
 import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, Optional
 
 from app.core.config import Settings
@@ -63,20 +63,24 @@ class FraudDetectionService:
 
         # Check for multiple accounts with same fingerprint
         try:
-            # Query BetaUser collection for accounts with same fingerprint
-            # In real implementation, would need device_fingerprint field in BetaUser model
+            # Query BetaUser collection for accounts with same device fingerprint
             existing_count = await BetaUser.find(
-                # Placeholder query - would check fingerprint field when model is updated
+                BetaUser.device_fingerprint == fingerprint,
+                BetaUser.is_beta_user == True
             ).count()
 
             if existing_count >= 3:
                 logger.warning(
-                    "Multiple accounts from same device",
+                    "Multiple accounts from same device detected",
                     extra={"fingerprint": fingerprint, "count": existing_count}
                 )
                 flags.append("multiple_accounts")
-        except Exception:
+        except Exception as e:
             # If database query fails, continue with other checks
+            logger.debug(
+                "Could not check device fingerprint (field may not exist yet)",
+                extra={"error": str(e)}
+            )
             pass
 
         # Determine risk level and passed status
@@ -118,7 +122,7 @@ class FraudDetectionService:
         """
         try:
             # Check last hour of usage
-            one_hour_ago = datetime.utcnow() - timedelta(hours=1)
+            one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
             
             recent_usage = await BetaCreditTransaction.find(
                 BetaCreditTransaction.user_id == user_id,
@@ -162,11 +166,11 @@ class FraudDetectionService:
             user_id: User ID
             credits_used: Credits used in suspicious period
         """
-        # TODO: Implement admin alerting (email, Slack, PagerDuty)
         logger.critical(
-            "ADMIN ALERT: Potential credit abuse",
+            "Fraud detected - Admin alerting not yet configured",
             extra={
                 "user_id": user_id,
-                "credits_used_last_hour": credits_used
+                "credits_used_last_hour": credits_used,
+                "action_required": "Configure admin alerting via email/Slack/PagerDuty"
             }
         )

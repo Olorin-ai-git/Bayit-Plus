@@ -64,8 +64,14 @@ def register_all_routers(app: FastAPI) -> None:
                                 voice, watchlist, webauthn, websocket,
                                 websocket_chess, websocket_dm,
                                 websocket_live_dubbing,
-                                websocket_live_subtitles, widgets, youngsters,
+                                websocket_live_subtitles,
+                                websocket_simplified_dubbing,
+                                websocket_smart_subs,
+                                websocket_channel_chat,
+                                websocket_live_nikud,
+                                widgets, youngsters,
                                 zman)
+    from app.api.routes import (catchup, channel_chat, channel_chat_moderation)
     from app.api.routes.admin.recordings import \
         router as admin_recordings_router
     from app.api.routes.admin.email_analytics import \
@@ -351,6 +357,21 @@ def register_all_routers(app: FastAPI) -> None:
         tags=["websocket", "live-dubbing"],
     )
     app.include_router(
+        websocket_simplified_dubbing.router,
+        prefix=prefix,
+        tags=["websocket", "simplified-hebrew"],
+    )
+    app.include_router(
+        websocket_smart_subs.router,
+        prefix=prefix,
+        tags=["websocket", "smart-subs"],
+    )
+    app.include_router(
+        websocket_live_nikud.router,
+        prefix=prefix,
+        tags=["websocket", "live-nikud"],
+    )
+    app.include_router(
         live_trivia.router,
         prefix=f"{prefix}/live-trivia",
         tags=["live-trivia"],
@@ -360,6 +381,11 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(
         websocket_dm.router, prefix=prefix, tags=["websocket", "direct-messages"]
+    )
+    app.include_router(
+        websocket_channel_chat.router,
+        prefix=prefix,
+        tags=["websocket", "channel-chat"],
     )
     logger.debug("Registered websocket routes")
 
@@ -399,7 +425,10 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(status.router, prefix=prefix, tags=["beta-status"])
     app.include_router(ai_search.router, prefix=prefix, tags=["beta-search"])
     app.include_router(ai_recommendations.router, prefix=prefix, tags=["beta-recommendations"])
-    logger.debug("Registered Beta 500 routes (signup, credits, sessions, status, ai_search, ai_recommendations)")
+    app.include_router(channel_chat.router, prefix=prefix, tags=["channel-chat"])
+    app.include_router(channel_chat_moderation.router, prefix=prefix, tags=["channel-chat-moderation"])
+    app.include_router(catchup.router, prefix=prefix, tags=["catchup"])
+    logger.debug("Registered Beta 500 routes (signup, credits, sessions, status, ai_search, ai_recommendations, chat, catchup)")
 
     logger.info(f"All API routers registered with prefix {prefix}")
 

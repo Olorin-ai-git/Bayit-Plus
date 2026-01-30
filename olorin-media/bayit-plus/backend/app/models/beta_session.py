@@ -4,7 +4,7 @@ Beta Session Model
 Tracks active dubbing sessions for credit checkpointing.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 from beanie import Document, Indexed
 from pydantic import Field
@@ -35,9 +35,9 @@ class BetaSession(Document):
         default="active",
         pattern="^(active|paused|ended)$"
     )
-    start_time: datetime = Field(default_factory=datetime.utcnow)
+    start_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     end_time: Optional[datetime] = None
-    last_checkpoint: datetime = Field(default_factory=datetime.utcnow)
+    last_checkpoint: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     credits_consumed: int = Field(default=0, ge=0)
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
 
@@ -70,13 +70,13 @@ class BetaSession(Document):
 
     def duration_seconds(self) -> float:
         """Calculate session duration in seconds."""
-        end = self.end_time or datetime.utcnow()
+        end = self.end_time or datetime.now(timezone.utc)
         delta = end - self.start_time
         return delta.total_seconds()
 
     def checkpoint_lag_seconds(self) -> float:
         """Calculate time since last checkpoint in seconds."""
-        delta = datetime.utcnow() - self.last_checkpoint
+        delta = datetime.now(timezone.utc) - self.last_checkpoint
         return delta.total_seconds()
 
     def is_active(self) -> bool:

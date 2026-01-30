@@ -7,7 +7,7 @@ Provides pre-authorization and real-time credit deduction during dubbing session
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from app.core.config import settings
@@ -100,7 +100,7 @@ class BetaDubbingIntegration:
                     )
 
                 # Step 3: Create credit session
-                self._credit_session_id = f"beta_dub_{self.user_id}_{datetime.utcnow().timestamp()}"
+                self._credit_session_id = f"beta_dub_{self.user_id}_{datetime.now(timezone.utc).timestamp()}"
                 await self._session_service.start_dubbing_session(
                     user_id=self.user_id,
                     session_id=self._credit_session_id

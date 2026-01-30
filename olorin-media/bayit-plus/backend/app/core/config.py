@@ -233,6 +233,30 @@ class Settings(BaseSettings):
         description="Credits per AI recommendation generation"
     )
 
+    CREDIT_RATE_SIMPLIFIED_DUBBING: float = Field(
+        default=0.8,
+        env="CREDIT_RATE_SIMPLIFIED_DUBBING",
+        description="Credits consumed per second of simplified Hebrew dubbing (lower than full dubbing - no target lang translation)"
+    )
+
+    CREDIT_RATE_SMART_SUBS: float = Field(
+        default=0.6,
+        env="CREDIT_RATE_SMART_SUBS",
+        description="Credits consumed per second of Smart Subs (STT + simplification + translation + shoresh analysis)"
+    )
+
+    CREDIT_RATE_LIVE_NIKUD: float = Field(
+        default=0.4,
+        env="CREDIT_RATE_LIVE_NIKUD",
+        description="Credits consumed per second of live nikud (lower than smart_subs - no translation, just nikud addition)"
+    )
+
+    CREDIT_RATE_CATCHUP_SUMMARY: float = Field(
+        default=5.0,
+        env="CREDIT_RATE_CATCHUP_SUMMARY",
+        description="Credits consumed per catch-up summary generation (Claude API call)"
+    )
+
     # Credit Thresholds
     BETA_CREDIT_WARNING_THRESHOLD: int = Field(
         default=500,

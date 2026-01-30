@@ -17,6 +17,10 @@ class FeatureType(str, Enum):
     SUBTITLE = "subtitle"
     DUBBING = "dubbing"
     TRIVIA = "trivia"
+    SIMPLIFIED_DUBBING = "simplified_dubbing"
+    SMART_SUBS = "smart_subs"
+    LIVE_NIKUD = "live_nikud"
+    CATCHUP_RECAP = "catchup_recap"
 
 
 class UsageSessionStatus(str, Enum):

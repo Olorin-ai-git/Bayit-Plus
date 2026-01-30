@@ -2602,6 +2602,17 @@
       "rateLimitExceededMessage": "אנא חכה לפני ניסיון שוב",
       "sessionTimeout": "פעילות פג תוקף",
       "sessionTimeoutMessage": "הפעילות של דיבוב שלך פג תוקף"
+    },
+    "simplifiedHebrew": {
+      "title": "עברית קלה",
+      "description": "עברית פשוטה יותר, בקצב איטי עם אוצר מילים מופשט",
+      "vocabularyLevel": "רמת אוצר מילים",
+      "alef": "אלף (מתחילים)",
+      "bet": "בית (בינוני)",
+      "gimel": "גימל (מתקדם)",
+      "active": "עברית קלה פעילה",
+      "clickToEnable": "לחץ להפעלת שמע עברית קלה",
+      "premiumRequired": "נדרש מנוי פרימיום"
     }
   },
   "email": {
@@ -4501,7 +4512,17 @@
     "downloading": "מחפש ב-OpenSubtitles...",
     "opensubtitlesSource": "מ-OpenSubtitles.com",
     "downloadSuccess": "הורדו {{count}} כתוביות",
-    "noSubtitlesFound": "לא נמצאו כתוביות לתוכן זה"
+    "noSubtitlesFound": "לא נמצאו כתוביות לתוכן זה",
+    "smartSubs": "כתוביות חכמות",
+    "smartSubsDescription": "תצוגה כפולה: עברית מפושטת + אנגלית עם הדגשת שורשים",
+    "smartSubsDualView": "תצוגה כפולה",
+    "shoreshToggle": "הדגשת שורשים",
+    "shoreshOn": "הדגשת שורשים מופעלת",
+    "shoreshOff": "הדגשת שורשים כבויה",
+    "nikudLive": "עברית עם ניקוד",
+    "nikudLiveDescription": "כתוביות עברית מנוקדות לקריאה קלה יותר",
+    "nikudEnabled": "כתוביות ניקוד מופעלות",
+    "nikudDisabled": "כתוביות ניקוד כבויות"
   },
   "support": {
     "title": "מרכז תמיכה",

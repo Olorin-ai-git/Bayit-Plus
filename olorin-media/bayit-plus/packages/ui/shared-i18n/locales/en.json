@@ -2697,6 +2697,17 @@
       "rateLimitExceededMessage": "Please wait before trying again",
       "sessionTimeout": "Session Expired",
       "sessionTimeoutMessage": "Your dubbing session has expired"
+    },
+    "simplifiedHebrew": {
+      "title": "Simplified Hebrew",
+      "description": "Slower, clearer Hebrew with simplified vocabulary",
+      "vocabularyLevel": "Vocabulary Level",
+      "alef": "Alef (Beginner)",
+      "bet": "Bet (Intermediate)",
+      "gimel": "Gimel (Advanced)",
+      "active": "Simplified Hebrew Active",
+      "clickToEnable": "Click to enable simplified Hebrew audio",
+      "premiumRequired": "Premium subscription required"
     }
   },
   "email": {
@@ -4649,7 +4660,17 @@
     "downloading": "Searching OpenSubtitles...",
     "opensubtitlesSource": "From OpenSubtitles.com",
     "downloadSuccess": "Downloaded {{count}} subtitle(s)",
-    "noSubtitlesFound": "No subtitles found for this content"
+    "noSubtitlesFound": "No subtitles found for this content",
+    "smartSubs": "Smart Subs",
+    "smartSubsDescription": "Dual-view: Simplified Hebrew + English with root highlighting",
+    "smartSubsDualView": "Dual View",
+    "shoreshToggle": "Root Highlighting",
+    "shoreshOn": "Shoresh highlighting enabled",
+    "shoreshOff": "Shoresh highlighting disabled",
+    "nikudLive": "Hebrew with Nikud",
+    "nikudLiveDescription": "Vocalized Hebrew subtitles with diacritical marks for easier reading",
+    "nikudEnabled": "Nikud subtitles enabled",
+    "nikudDisabled": "Nikud subtitles disabled"
   },
   "support": {
     "title": "Support Center",

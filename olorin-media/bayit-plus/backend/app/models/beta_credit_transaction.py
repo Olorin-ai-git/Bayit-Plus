@@ -4,7 +4,7 @@ Beta Credit Transaction Model
 Audit trail for all credit operations (deductions, refunds, expirations).
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 from beanie import Document
 from pydantic import Field
@@ -34,7 +34,7 @@ class BetaCreditTransaction(Document):
     feature: Optional[str] = None
     balance_after: int = Field(ge=0)
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Settings:
         name = "beta_credit_transactions"

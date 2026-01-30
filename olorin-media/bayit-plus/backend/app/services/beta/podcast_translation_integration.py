@@ -6,7 +6,7 @@ Provides pre-authorization and stage-based credit deduction during translation p
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Optional
 
 from app.core.config import settings
@@ -226,7 +226,7 @@ class BetaPodcastTranslationIntegration:
             metadata={
                 "stage": stage,
                 "episode_id": episode_id,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
         )
 

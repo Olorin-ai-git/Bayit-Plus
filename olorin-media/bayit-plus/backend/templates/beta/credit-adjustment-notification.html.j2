@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Adjustment Notification - Bayit+</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .content {
+            padding: 40px 30px;
+            color: #333;
+        }
+        .greeting {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+        .message {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        .stats-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            border-right: 4px solid #667eea;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        .stat-label {
+            font-weight: 600;
+            color: #667eea;
+        }
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+        .stat-value.positive {
+            color: #10b981;
+        }
+        .stat-value.negative {
+            color: #ef4444;
+        }
+        .reason-box {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px dashed #667eea;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .reason-label {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .reason-text {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        .admin-info {
+            font-size: 13px;
+            color: #888;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 25px;
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                {% if adjustment_type == "added" %}
+                ✨ קרדיטים נוספו לחשבונך
+                {% else %}
+                📝 עדכון קרדיטים
+                {% endif %}
+            </h1>
+        </div>
+
+        <div class="content">
+            <div class="greeting">שלום {{ user_name }},</div>
+
+            <div class="message">
+                {% if adjustment_type == "added" %}
+                <p>שמחים לעדכן שנוספו קרדיטים לחשבון Beta 500 שלך! 🎉</p>
+                <p>התוספת בוצעה על ידי צוות התמיכה שלנו לאחר בחינת חשבונך.</p>
+                {% else %}
+                <p>קרדיטים הוסרו מחשבון Beta 500 שלך על ידי מנהל המערכת.</p>
+                <p>העדכון בוצע לאחר בחינת פעילות החשבון שלך.</p>
+                {% endif %}
+            </div>
+
+            <div class="stats-box">
+                <div class="stat-item">
+                    <span class="stat-label">סכום השינוי:</span>
+                    <span class="stat-value {% if adjustment_type == 'added' %}positive{% else %}negative{% endif %}">
+                        {% if adjustment_type == "added" %}+{% else %}-{% endif %}{{ adjustment_amount }} קרדיטים
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">יתרה חדשה:</span>
+                    <span class="stat-value">{{ new_balance }} קרדיטים</span>
+                </div>
+            </div>
+
+            <div class="reason-box">
+                <div class="reason-label">סיבת העדכון</div>
+                <div class="reason-text">{{ reason }}</div>
+                <div class="admin-info">
+                    <strong>בוצע על ידי:</strong> {{ adjusted_by }}
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="{{ support_url }}" class="cta-button">
+                    {% if adjustment_type == "added" %}
+                    התחל להשתמש בקרדיטים שלך
+                    {% else %}
+                    צור קשר עם תמיכה
+                    {% endif %}
+                </a>
+            </div>
+
+            <div class="message" style="margin-top: 30px;">
+                <p style="font-size: 14px; color: #666;">
+                    <strong>תזכורת:</strong> קרדיטי Beta 500 שלך תקפים למשך תקופת הביטא בלבד.
+                    השתמש בהם כדי לנסות את תכונות ה-AI החדשניות ביותר שלנו!
+                </p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>
+                <strong>Bayit+ Beta 500</strong> | פלטפורמת הסטרימינג היהודית המובילה
+            </p>
+            <p>
+                שאלות? <a href="{{ support_url }}">צור קשר עם התמיכה שלנו</a>
+            </p>
+            <p style="margin-top: 15px; font-size: 12px; color: #999;">
+                אימייל זה נשלח אליך כחלק מתוכנית Beta 500.<br>
+                אינך יכול להשיב ישירות למייל זה.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

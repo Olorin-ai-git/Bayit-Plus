@@ -6,7 +6,7 @@ Powered by OpenAI embeddings + semantic search.
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from anthropic import AsyncAnthropic
@@ -106,7 +106,7 @@ class BetaAISearchService:
             metadata={
                 "query": query[:100],  # Truncate for privacy
                 "content_types": content_types,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
         )
 

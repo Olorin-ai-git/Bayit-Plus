@@ -8,7 +8,7 @@ Uses olorin-email shared package for email delivery.
 import hmac
 import hashlib
 import httpx
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Tuple
 
 from olorin_email import (
@@ -48,7 +48,7 @@ class EmailVerificationService:
         Generate HMAC-SHA256 verification token.
 
         Token format: email|expiry|hmac
-        
+
         Args:
             email: User email address
 
@@ -56,7 +56,7 @@ class EmailVerificationService:
             Verification token string
         """
         # Calculate expiry timestamp
-        expiry = datetime.utcnow() + timedelta(
+        expiry = datetime.now(timezone.utc) + timedelta(
             hours=self.settings.EMAIL_VERIFICATION_TOKEN_EXPIRY_HOURS
         )
         expiry_timestamp = int(expiry.timestamp())
@@ -106,9 +106,9 @@ class EmailVerificationService:
             # Verify expiry
             try:
                 expiry_timestamp = int(expiry_str)
-                expiry = datetime.fromtimestamp(expiry_timestamp)
-                
-                if datetime.utcnow() > expiry:
+                expiry = datetime.fromtimestamp(expiry_timestamp, tz=timezone.utc)
+
+                if datetime.now(timezone.utc) > expiry:
                     logger.warning(
                         "Token expired",
                         extra={"email": email, "expired_at": expiry.isoformat()}
@@ -488,6 +488,105 @@ class EmailVerificationService:
             )
             return False
 
+    async def send_credit_adjustment_notification(
+        self,
+        email: str,
+        user_name: str,
+        adjustment_amount: int,
+        new_balance: int,
+        reason: str,
+        adjusted_by: str
+    ) -> bool:
+        """
+        Send email notification when admin adjusts credits.
+
+        Args:
+            email: Recipient email
+            user_name: User's display name
+            adjustment_amount: Credits added (positive) or removed (negative)
+            new_balance: New credit balance after adjustment
+            reason: Admin's reason for adjustment
+            adjusted_by: Admin email who made the adjustment
+
+        Returns:
+            True if sent successfully, False otherwise
+        """
+        try:
+            from pathlib import Path
+            backend_templates = str(Path(__file__).resolve().parents[3] / "templates")
+
+            email_settings = EmailSettings(
+                SENDGRID_API_KEY=self.settings.SENDGRID_API_KEY,
+                SENDGRID_FROM_EMAIL=self.settings.SENDGRID_FROM_EMAIL,
+                SENDGRID_FROM_NAME=self.settings.SENDGRID_FROM_NAME,
+                EMAIL_TEMPLATE_DIRS=[backend_templates]
+            )
+
+            http_client = httpx.AsyncClient()
+            try:
+                provider = SendGridProvider(http_client, email_settings)
+                template_engine = TemplateEngine(email_settings)
+                sender = EmailSender(email_settings, provider, template_engine)
+
+                # Determine subject and template context based on adjustment type
+                if adjustment_amount > 0:
+                    subject = "✨ Credits Added to Your Account - Bayit+ Beta 500"
+                    adjustment_type = "added"
+                else:
+                    subject = "Credits Adjusted - Bayit+ Beta 500"
+                    adjustment_type = "removed"
+
+                result = await sender.send(
+                    EmailBuilder(email_settings)
+                    .to(email)
+                    .subject(subject)
+                    .template("beta/credit-adjustment-notification.html.j2", {
+                        "user_name": user_name,
+                        "adjustment_amount": abs(adjustment_amount),
+                        "adjustment_type": adjustment_type,
+                        "new_balance": new_balance,
+                        "reason": reason,
+                        "adjusted_by": adjusted_by,
+                        "support_url": f"{self.settings.FRONTEND_URL}/support"
+                    })
+                    .category("beta")
+                    .tag("credit-adjustment")
+                    .custom_arg("email", email)
+                    .custom_arg("adjustment_amount", str(adjustment_amount))
+                    .custom_arg("new_balance", str(new_balance))
+                )
+
+                if result.success:
+                    logger.info(
+                        "Credit adjustment notification sent",
+                        extra={
+                            "email": email,
+                            "message_id": result.message_id,
+                            "adjustment_amount": adjustment_amount,
+                            "new_balance": new_balance
+                        }
+                    )
+                    return True
+                else:
+                    logger.error(
+                        "Failed to send credit adjustment notification",
+                        extra={
+                            "email": email,
+                            "error": result.error
+                        }
+                    )
+                    return False
+
+            finally:
+                await http_client.aclose()
+
+        except Exception as e:
+            logger.error(
+                "Failed to send credit adjustment notification",
+                extra={"email": email, "error": str(e)}
+            )
+            return False
+
     async def verify_user_email(self, token: str) -> Tuple[bool, Optional[str]]:
         """
         Verify token and mark user email as verified.
@@ -500,14 +599,14 @@ class EmailVerificationService:
         """
         # Verify token
         valid, email, error = self.verify_token(token)
-        
+
         if not valid:
             return (False, error)
 
         try:
             # Find user by email
             user = await BetaUser.find_one(BetaUser.email == email)
-            
+
             if not user:
                 logger.warning(
                     "User not found for verification",
@@ -525,7 +624,7 @@ class EmailVerificationService:
 
             # Mark as verified
             user.status = "active"
-            user.verified_at = datetime.utcnow()
+            user.verified_at = datetime.now(timezone.utc)
             user.verification_token = None  # Clear token after use
             await user.save()
 

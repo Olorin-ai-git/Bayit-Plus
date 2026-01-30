@@ -5,7 +5,7 @@ Personalized content recommendations using AI analysis of user preferences.
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
 
 from anthropic import AsyncAnthropic
@@ -95,7 +95,7 @@ class BetaAIRecommendationsService:
             metadata={
                 "content_type": content_type,
                 "context": context,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
         )
 

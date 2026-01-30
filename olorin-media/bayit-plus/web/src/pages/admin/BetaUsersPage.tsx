@@ -15,6 +15,9 @@ import {
   GlassCard,
   GlassButton,
   GlassInput,
+  GlassTextArea,
+  GlassCheckbox,
+  GlassSelect,
   GlassModal,
   GlassAlert,
   GlassBadge,
@@ -28,7 +31,7 @@ interface BetaUser {
   name?: string;
   status: string;
   is_beta_user: boolean;
-  credits_remaining: int;
+  credits_remaining: number;
   credits_total: number;
   credits_used: number;
   enrolled_at: string;
@@ -141,11 +144,13 @@ const CreditAdjustmentModal: React.FC<CreditAdjustmentModalProps> = ({
           <label className="block text-sm font-medium text-white/80 mb-2">
             Reason (required)
           </label>
-          <textarea
+          <GlassTextArea
             value={reason}
-            onChange={(e) => setReason(e.target.value)}
+            onChangeText={setReason}
             placeholder="Explain why this adjustment is being made..."
-            className="w-full min-h-[100px] bg-white/5 backdrop-blur-xl text-white border border-white/20 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-white/40"
+            minLength={10}
+            maxLength={500}
+            rows={4}
             data-testid="credit-reason-textarea"
           />
           <p className="text-xs text-white/60 mt-1">
@@ -154,18 +159,12 @@ const CreditAdjustmentModal: React.FC<CreditAdjustmentModalProps> = ({
         </div>
 
         {/* Notify User Checkbox */}
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            checked={notifyUser}
-            onChange={(e) => setNotifyUser(e.target.checked)}
-            className="mr-2"
-            data-testid="notify-user-checkbox"
-          />
-          <label className="text-sm text-white/80">
-            Send email notification to user
-          </label>
-        </div>
+        <GlassCheckbox
+          checked={notifyUser}
+          onChange={setNotifyUser}
+          label="Send email notification to user"
+          data-testid="notify-user-checkbox"
+        />
 
         {/* Error Message */}
         {error && (
@@ -212,6 +211,12 @@ export const BetaUsersPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedUser, setSelectedUser] = useState<BetaUser | null>(null);
   const [isAdjustmentModalOpen, setIsAdjustmentModalOpen] = useState<boolean>(false);
+
+  // Deactivation modal state
+  const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState<boolean>(false);
+  const [deactivateReason, setDeactivateReason] = useState<string>('');
+  const [isDeactivating, setIsDeactivating] = useState<boolean>(false);
+  const [deactivateError, setDeactivateError] = useState<string | null>(null);
 
   // Fetch beta users
   const fetchBetaUsers = async () => {
@@ -264,20 +269,28 @@ export const BetaUsersPage: React.FC = () => {
     fetchBetaUsers(); // Refresh list
   };
 
-  // Handle deactivate user
-  const handleDeactivateUser = async (userId: string) => {
-    if (!confirm('Are you sure you want to deactivate this user\'s beta access?')) {
+  // Handle deactivate user - open modal
+  const handleDeactivateUser = (user: BetaUser) => {
+    setSelectedUser(user);
+    setIsDeactivateModalOpen(true);
+    setDeactivateReason('');
+    setDeactivateError(null);
+  };
+
+  // Confirm deactivation
+  const confirmDeactivation = async () => {
+    if (!selectedUser) return;
+
+    if (deactivateReason.length < 10) {
+      setDeactivateError('Reason must be at least 10 characters');
       return;
     }
 
-    const reason = prompt('Please provide a reason for deactivation:');
-    if (!reason || reason.length < 10) {
-      alert('Reason must be at least 10 characters');
-      return;
-    }
+    setIsDeactivating(true);
+    setDeactivateError(null);
 
     try {
-      const response = await fetch(`/api/v1/admin/beta/users/${userId}/deactivate?reason=${encodeURIComponent(reason)}`, {
+      const response = await fetch(`/api/v1/admin/beta/users/${selectedUser.user_id}/deactivate?reason=${encodeURIComponent(deactivateReason)}`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('authToken')}`,
@@ -288,9 +301,13 @@ export const BetaUsersPage: React.FC = () => {
         throw new Error('Failed to deactivate user');
       }
 
+      // Success
+      setIsDeactivateModalOpen(false);
       fetchBetaUsers(); // Refresh list
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      setDeactivateError(err.message || 'Failed to deactivate user');
+    } finally {
+      setIsDeactivating(false);
     }
   };
 
@@ -348,17 +365,17 @@ export const BetaUsersPage: React.FC = () => {
             </div>
 
             {/* Status Filter */}
-            <select
+            <GlassSelect
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-white/5 backdrop-blur-xl text-white border border-white/20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white/40"
+              onValueChange={setStatusFilter}
+              options={[
+                { label: 'All Status', value: 'all' },
+                { label: 'Active', value: 'active' },
+                { label: 'Inactive', value: 'inactive' },
+                { label: 'Pending Verification', value: 'pending_verification' },
+              ]}
               data-testid="status-filter"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-              <option value="pending_verification">Pending Verification</option>
-            </select>
+            />
           </div>
         </GlassCard>
       </div>
@@ -429,7 +446,7 @@ export const BetaUsersPage: React.FC = () => {
                     {user.status === 'active' && (
                       <GlassButton
                         variant="danger"
-                        onPress={() => handleDeactivateUser(user.user_id)}
+                        onPress={() => handleDeactivateUser(user)}
                         data-testid="deactivate-button"
                       >
                         Deactivate
@@ -450,6 +467,64 @@ export const BetaUsersPage: React.FC = () => {
         user={selectedUser}
         onSuccess={handleAdjustmentSuccess}
       />
+
+      {/* Deactivation Modal */}
+      <GlassModal
+        visible={isDeactivateModalOpen}
+        onClose={() => setIsDeactivateModalOpen(false)}
+        title="Deactivate Beta Access"
+        data-testid="deactivate-modal"
+      >
+        <div className="space-y-6 p-6">
+          <p className="text-white/80">
+            Are you sure you want to deactivate beta access for <strong>{selectedUser?.email}</strong>?
+          </p>
+
+          {/* Reason Input */}
+          <div>
+            <label className="block text-sm font-medium text-white/80 mb-2">
+              Reason for deactivation (required)
+            </label>
+            <GlassTextArea
+              value={deactivateReason}
+              onChangeText={setDeactivateReason}
+              placeholder="Provide a reason (minimum 10 characters)"
+              minLength={10}
+              maxLength={500}
+              rows={3}
+              data-testid="deactivate-reason-textarea"
+            />
+          </div>
+
+          {/* Error Message */}
+          {deactivateError && (
+            <GlassAlert variant="error" data-testid="deactivate-error">
+              {deactivateError}
+            </GlassAlert>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            <GlassButton
+              variant="secondary"
+              onPress={() => setIsDeactivateModalOpen(false)}
+              disabled={isDeactivating}
+              className="flex-1"
+            >
+              Cancel
+            </GlassButton>
+            <GlassButton
+              variant="danger"
+              onPress={confirmDeactivation}
+              disabled={isDeactivating || deactivateReason.length < 10}
+              className="flex-1"
+              data-testid="confirm-deactivate-button"
+            >
+              {isDeactivating ? 'Deactivating...' : 'Deactivate'}
+            </GlassButton>
+          </div>
+        </div>
+      </GlassModal>
     </div>
   );
 };
