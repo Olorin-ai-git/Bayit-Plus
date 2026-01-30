@@ -4445,11 +4445,53 @@
         "loading": "Loading credit balance...",
         "error": "Unable to load credit balance",
         "label": "AI Credits",
-        "remaining": "credits remaining",
+        "remaining": "Credits Remaining",
         "warningCritical": "Critical: Running low on credits",
         "warningLow": "Warning: Credit balance is low",
         "upgrade": "Upgrade Plan",
         "upgradeAction": "Upgrade to get more credits"
+      },
+      "settings": {
+        "title": "Beta Programs",
+        "description": "Manage your Beta 500 enrollment and view program details. Get early access to AI-powered features.",
+        "enrolledTitle": "You're in Beta 500!",
+        "statusPendingVerification": "Pending Verification",
+        "statusActive": "Active",
+        "statusExpired": "Expired",
+        "pendingMessage": "We're verifying your enrollment. You'll receive an email once approved.",
+        "expiresOn": "Expires on {{date}}",
+        "loadingStatus": "Loading program status...",
+        "errorLoading": "Unable to load program information. Please try again.",
+        "programStatus": "Program Status",
+        "slots": "slots filled",
+        "slotsAvailable": "{{count}} slots available",
+        "programFull": "All 500 slots filled"
+      },
+      "enrollment": {
+        "title": "Join Beta 500",
+        "subtitle": "Be one of 500 families to experience AI-powered features",
+        "programFull": "Program Full",
+        "joinButton": "Join Beta 500",
+        "exclusiveAccess": "Exclusive Access",
+        "limitedSlots": "Limited to 500 families",
+        "slotsAvailable": "{{available}} of {{total}} slots available",
+        "freeCredits": "Free AI Credits",
+        "creditsAmount": "5,000 credits (worth $50)",
+        "duration": "Beta Duration",
+        "durationValue": "90 days",
+        "features": "AI Features",
+        "featuresValue": "Live dubbing, AI search, recommendations",
+        "whatYouGet": "What You Get",
+        "benefits": {
+          "liveDubbing": "Real-time audio translation while watching",
+          "aiSearch": "Intelligent content discovery",
+          "aiRecommendations": "Personalized suggestions",
+          "prioritySupport": "Direct access to development team"
+        },
+        "disclaimer": "Beta 500 is a limited-time program. Credits are non-renewable during beta period.",
+        "waitlistMessage": "All 500 slots are currently filled. Join the waitlist to be notified when a slot becomes available.",
+        "enrollmentSuccess": "Welcome to Beta 500! Check your email to verify your account.",
+        "enrollmentError": "Unable to enroll. Please try again later."
       }
     }
   }

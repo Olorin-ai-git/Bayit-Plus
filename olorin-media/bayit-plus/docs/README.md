@@ -14,6 +14,10 @@ Feature documentation and implementation guides:
 - **Unified Voice System** (`/architecture/UNIFIED_VOICE_ARCHITECTURE.md`, `/guides/VOICE_MIGRATION_GUIDE.md`, `/api/VOICE_API_REFERENCE.md`) - Complete unified voice system consolidating 3 separate voice systems under Olorin wizard avatar with 4 visibility modes, cross-platform support (Web/iOS/Android/tvOS), intent routing, and orchestrator pattern - ✅ IMPLEMENTED - 2026-01-29 **NEW**
 - **Librarian Audit Log Improvements** (`LIBRARIAN_AUDIT_LOG_IMPROVEMENTS.md`) - Comprehensive UI/UX enhancements for Live Audit Log and Recent Reports components with search, filtering, sorting, quick audit triggers, and enhanced table layout - ✅ ENHANCEMENT COMPLETE - 2026-01-25 **NEW**
 
+### `/guides/`
+User guides and manuals:
+- **Beta 500 User Manual** (`BETA_500_USER_MANUAL.md`) - Comprehensive user manual for Beta 500 closed beta program testers covering signup, email verification, credit system (5,000 AI credits), feature usage (live dubbing, AI search, recommendations), troubleshooting, and FAQ - 2026-01-29 **NEW**
+
 ### `/deployment/`
 Deployment guides and status:
 - Deployment completion reports

@@ -4379,6 +4379,48 @@
         "warningLow": "אזהרה: יתרת קרדיטים נמוכה",
         "upgrade": "שדרג תוכנית",
         "upgradeAction": "שדרג כדי לקבל קרדיטים נוספים"
+      },
+      "settings": {
+        "title": "תוכניות בטא",
+        "description": "נהל את ההרשמה שלך ל-Beta 500 וצפה בפרטי התוכנית. קבל גישה מוקדמת לפיצ'רים מונעי AI.",
+        "enrolledTitle": "את/ה ב-Beta 500!",
+        "statusPendingVerification": "ממתין לאימות",
+        "statusActive": "פעיל",
+        "statusExpired": "פג תוקף",
+        "pendingMessage": "אנחנו מאמתים את ההרשמה שלך. תקבל אימייל ברגע שתאושר.",
+        "expiresOn": "פג תוקף ב-{{date}}",
+        "loadingStatus": "טוען מצב תוכנית...",
+        "errorLoading": "לא ניתן לטעון מידע על התוכנית. נסה שוב.",
+        "programStatus": "מצב התוכנית",
+        "slots": "מקומות תפוסים",
+        "slotsAvailable": "{{count}} מקומות זמינים",
+        "programFull": "כל 500 המקומות תפוסים"
+      },
+      "enrollment": {
+        "title": "הצטרף ל-Beta 500",
+        "subtitle": "היה אחת מ-500 המשפחות שיחוו פיצ'רים מונעי AI",
+        "programFull": "התוכנית מלאה",
+        "joinButton": "הצטרף ל-Beta 500",
+        "exclusiveAccess": "גישה בלעדית",
+        "limitedSlots": "מוגבל ל-500 משפחות",
+        "slotsAvailable": "{{available}} מתוך {{total}} מקומות זמינים",
+        "freeCredits": "קרדיטים חינמיים של AI",
+        "creditsAmount": "5,000 קרדיטים (ערך $50)",
+        "duration": "משך זמן הבטא",
+        "durationValue": "90 יום",
+        "features": "פיצ'רים של AI",
+        "featuresValue": "דיבוב בזמן אמת, חיפוש AI, המלצות",
+        "whatYouGet": "מה תקבל",
+        "benefits": {
+          "liveDubbing": "תרגום אודיו בזמן אמת בזמן הצפייה",
+          "aiSearch": "גילוי תוכן חכם",
+          "aiRecommendations": "המלצות מותאמות אישית",
+          "prioritySupport": "גישה ישירה לצוות הפיתוח"
+        },
+        "disclaimer": "Beta 500 היא תוכנית מוגבלת בזמן. הקרדיטים אינם ניתנים לחידוש במהלך תקופת הבטא.",
+        "waitlistMessage": "כל 500 המקומות תפוסים כעת. הצטרף לרשימת ההמתנה כדי לקבל הודעה כאשר יתפנה מקום.",
+        "enrollmentSuccess": "ברוך הבא ל-Beta 500! בדוק את האימייל שלך כדי לאמת את החשבון.",
+        "enrollmentError": "לא ניתן להירשם. נסה שוב מאוחר יותר."
       }
     }
   }

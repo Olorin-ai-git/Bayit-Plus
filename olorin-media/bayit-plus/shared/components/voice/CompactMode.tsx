@@ -7,6 +7,7 @@
 import React from 'react';
 import { View, TouchableWithoutFeedback, Animated, Image, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { colors } from '@olorin/design-tokens';
 import { VoiceState, GestureState } from '../../stores/supportStore';
 import { WizardSprite } from '../support/WizardSprite';
 import { WizardEffects } from '../support/WizardEffects';
@@ -113,11 +114,11 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   compactPanel: {
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: colors.glass.bgLight,
     borderRadius: 9999,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,

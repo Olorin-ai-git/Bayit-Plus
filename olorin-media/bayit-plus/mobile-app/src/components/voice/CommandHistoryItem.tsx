@@ -6,6 +6,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { formatDistanceToNow } from 'date-fns';
+import { colors } from '@olorin/design-tokens';
 import { VoiceCommand, getCommandTypeColor } from '@bayit/shared/utils/voiceCommandUtils';
 
 interface CommandHistoryItemProps {
@@ -23,7 +24,7 @@ export const CommandHistoryItem: React.FC<CommandHistoryItemProps> = ({
 }) => {
   const commandTypeColor = getCommandTypeColor(command.commandType);
   const statusIcon = command.success ? '✓' : '✗';
-  const statusColor = command.success ? '#10B981' : '#EF4444';
+  const statusColor = command.success ? colors.success.DEFAULT : colors.error.DEFAULT;
 
   return (
     <TouchableOpacity

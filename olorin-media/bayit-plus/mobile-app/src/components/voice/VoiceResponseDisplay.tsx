@@ -15,6 +15,7 @@ import {
   Animated,
   TouchableOpacity,
 } from 'react-native';
+import { colors } from '@olorin/design-tokens';
 import { VoiceCommandResponse } from '../../services/backendProxyService';
 
 interface VoiceResponseDisplayProps {
@@ -69,7 +70,7 @@ export const VoiceResponseDisplay: React.FC<VoiceResponseDisplayProps> = ({
 
   const commandTypeColor = getCommandTypeColor(response.commandType);
   const statusIcon = response.success ? '✓' : '✗';
-  const statusColor = response.success ? '#10B981' : '#EF4444';
+  const statusColor = response.success ? colors.success.DEFAULT : colors.error.DEFAULT;
 
   return (
     <Animated.View
@@ -210,12 +211,12 @@ export const VoiceResponseDisplay: React.FC<VoiceResponseDisplayProps> = ({
 // ============================================
 
 const getCommandTypeColor = (commandType: string): string => {
-  const colors: Record<string, string> = {
-    search: '#3B82F6',    // Blue
-    play: '#10B981',      // Green
-    control: '#F59E0B',   // Amber
-    navigate: '#8B5CF6',  // Purple
-    settings: '#6B7280',  // Gray
+  const commandColors: Record<string, string> = {
+    search: colors.info.DEFAULT,    // Blue
+    play: colors.success.DEFAULT,      // Green
+    control: colors.warning.DEFAULT,   // Amber
+    navigate: colors.primary[500],  // Purple
+    settings: colors.textMuted,  // Gray
   };
-  return colors[commandType] || '#6B7280';
+  return commandColors[commandType] || colors.textMuted;
 };

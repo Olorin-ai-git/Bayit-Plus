@@ -12,6 +12,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, Pressable, Animated } from 'react-native';
 import { X, Check, Sparkles } from 'lucide-react-native';
+import { colors } from '@olorin/design-tokens';
 import type { ProactiveSuggestion } from '../../hooks/useProactiveVoice';
 
 interface ProactiveSuggestionBannerProps {
@@ -64,9 +65,9 @@ export default function ProactiveSuggestionBanner({
   if (!suggestion) return null;
 
   const priorityColor = {
-    low: '#00aaff',
-    medium: '#ff9500',
-    high: '#ff3b30',
+    low: colors.info.DEFAULT,
+    medium: colors.warning.DEFAULT,
+    high: colors.error.DEFAULT,
   }[suggestion.priority];
 
   return (
@@ -78,8 +79,11 @@ export default function ProactiveSuggestionBanner({
       }}
     >
       <View
-        className="flex-row items-center bg-[rgba(20,20,40,0.98)] rounded-[20px] border-[1.5px] border-purple-500/60 border-l-[5px] py-4 px-4 shadow-lg shadow-purple-500/40"
-        style={{ borderLeftColor: priorityColor }}
+        className="flex-row items-center rounded-[20px] border-[1.5px] border-purple-500/60 border-l-[5px] py-4 px-4 shadow-lg shadow-purple-500/40"
+        style={{
+          borderLeftColor: priorityColor,
+          backgroundColor: colors.glass.bgStrong,
+        }}
       >
         {/* Icon */}
         <View
@@ -117,13 +121,13 @@ export default function ProactiveSuggestionBanner({
               className="w-10 h-10 rounded-full justify-center items-center border border-purple-500 bg-purple-500"
               onPress={() => onExecute(suggestion)}
             >
-              <Check size={18} color="#fff" />
+              <Check size={18} color={colors.white} />
             </Pressable>
           )}
 
           {/* Dismiss button */}
           <Pressable className="w-10 h-10 rounded-full justify-center items-center border border-white/20 bg-white/15" onPress={onDismiss}>
-            <X size={18} color="rgba(255, 255, 255, 0.7)" />
+            <X size={18} color={colors.textSecondary} />
           </Pressable>
         </View>
       </View>

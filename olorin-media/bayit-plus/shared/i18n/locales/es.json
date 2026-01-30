@@ -3870,11 +3870,53 @@
         "loading": "Cargando saldo de créditos...",
         "error": "No se puede cargar el saldo de créditos",
         "label": "Créditos de IA",
-        "remaining": "créditos restantes",
+        "remaining": "Créditos Restantes",
         "warningCritical": "Crítico: Créditos casi agotados",
         "warningLow": "Advertencia: Saldo de créditos bajo",
         "upgrade": "Actualizar Plan",
         "upgradeAction": "Actualizar para obtener más créditos"
+      },
+      "settings": {
+        "title": "Programas Beta",
+        "description": "Administra tu inscripción a Beta 500 y ver detalles del programa. Obtén acceso anticipado a funciones de IA.",
+        "enrolledTitle": "¡Estás en Beta 500!",
+        "statusPendingVerification": "Verificación Pendiente",
+        "statusActive": "Activo",
+        "statusExpired": "Expirado",
+        "pendingMessage": "Estamos verificando tu inscripción. Recibirás un correo electrónico una vez aprobado.",
+        "expiresOn": "Expira el {{date}}",
+        "loadingStatus": "Cargando estado del programa...",
+        "errorLoading": "No se puede cargar la información del programa. Por favor, inténtalo de nuevo.",
+        "programStatus": "Estado del Programa",
+        "slots": "plazas ocupadas",
+        "slotsAvailable": "{{count}} plazas disponibles",
+        "programFull": "Las 500 plazas están ocupadas"
+      },
+      "enrollment": {
+        "title": "Únete a Beta 500",
+        "subtitle": "Sé una de las 500 familias en experimentar funciones de IA",
+        "programFull": "Programa Completo",
+        "joinButton": "Únete a Beta 500",
+        "exclusiveAccess": "Acceso Exclusivo",
+        "limitedSlots": "Limitado a 500 familias",
+        "slotsAvailable": "{{available}} de {{total}} plazas disponibles",
+        "freeCredits": "Créditos de IA Gratis",
+        "creditsAmount": "5,000 créditos (valor $50)",
+        "duration": "Duración de Beta",
+        "durationValue": "90 días",
+        "features": "Funciones de IA",
+        "featuresValue": "Doblaje en vivo, búsqueda de IA, recomendaciones",
+        "whatYouGet": "Lo que obtienes",
+        "benefits": {
+          "liveDubbing": "Traducción de audio en tiempo real mientras ves",
+          "aiSearch": "Descubrimiento inteligente de contenido",
+          "aiRecommendations": "Sugerencias personalizadas",
+          "prioritySupport": "Acceso directo al equipo de desarrollo"
+        },
+        "disclaimer": "Beta 500 es un programa de tiempo limitado. Los créditos no son renovables durante el período beta.",
+        "waitlistMessage": "Las 500 plazas están actualmente ocupadas. Únete a la lista de espera para ser notificado cuando haya una plaza disponible.",
+        "enrollmentSuccess": "¡Bienvenido a Beta 500! Revisa tu correo electrónico para verificar tu cuenta.",
+        "enrollmentError": "No se puede inscribir. Por favor, inténtalo de nuevo más tarde."
       }
     }
   }

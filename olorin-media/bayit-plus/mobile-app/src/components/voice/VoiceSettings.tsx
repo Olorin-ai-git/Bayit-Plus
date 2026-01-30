@@ -9,7 +9,7 @@
  * - Command history management
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -17,9 +17,13 @@ import {
   TouchableOpacity,
   Switch,
   SafeAreaView,
+  PanResponder,
+  GestureResponderEvent,
 } from 'react-native';
+import { colors } from '@olorin/design-tokens';
 import { useNotifications } from '@olorin/glass-ui/hooks';
 import { useConversationContextMobile } from '../../hooks/useConversationContextMobile';
+import { useSupportStore } from '../../stores/supportStore';
 import { AvatarPreferences } from './AvatarPreferences';
 
 interface VoiceSettingsProps {
@@ -52,6 +56,8 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
   const [settings, setSettings] = useState<VoiceSettingsState>(DEFAULT_SETTINGS);
   const conversationContext = useConversationContextMobile();
   const notifications = useNotifications();
+  const wakeSensitivity = useSupportStore((state) => state.wakeSensitivity);
+  const setWakeSensitivity = useSupportStore((state) => state.setWakeSensitivity);
 
   const handleSettingChange = useCallback(
     (key: keyof VoiceSettingsState, value: any) => {
@@ -201,10 +207,8 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
         {/* Wake Word Settings */}
         <Section title="Wake Word Detection">
           <SensitivitySlider
-            value={settings.wakeSensitivity}
-            onValueChange={(value) =>
-              handleSettingChange('wakeSensitivity', value)
-            }
+            value={wakeSensitivity}
+            onValueChange={setWakeSensitivity}
             label="Sensitivity"
             description="Higher = more responsive, may trigger more false positives"
           />
@@ -213,7 +217,7 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
             allowFontScaling={true}
             maxFontSizeMultiplier={1.3}
           >
-            Current sensitivity: {(settings.wakeSensitivity * 100).toFixed(0)}%
+            Current sensitivity: {(wakeSensitivity * 100).toFixed(0)}%
           </Text>
         </Section>
 
@@ -277,8 +281,8 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
                 className="w-3 h-3 rounded-full"
                 style={{
                   backgroundColor: settings.microphonePermission
-                    ? '#10B981'
-                    : '#EF4444',
+                    ? colors.success.DEFAULT
+                    : colors.error.DEFAULT,
                 }}
               />
             </View>
@@ -398,8 +402,8 @@ const SettingRow: React.FC<SettingRowProps> = ({
     <Switch
       value={value}
       onValueChange={onValueChange}
-      trackColor={{ false: '#475569', true: '#3B82F6' }}
-      thumbColor={value ? '#60A5FA' : '#94A3B8'}
+      trackColor={{ false: colors.textMuted, true: colors.info.DEFAULT }}
+      thumbColor={value ? colors.info[400] : colors.textSecondary}
       accessible
       accessibilityLabel={label}
       accessibilityRole="switch"
@@ -421,50 +425,92 @@ const SensitivitySlider: React.FC<SensitivitySliderProps> = ({
   onValueChange,
   label,
   description,
-}) => (
-  <View className="py-3 border-b border-slate-700">
-    <View className="mb-3">
-      <Text
-        className="text-sm font-medium text-slate-100 mb-0.5"
-        allowFontScaling={true}
-        maxFontSizeMultiplier={1.3}
-      >
-        {label}
-      </Text>
-      {description && (
+}) => {
+  const sliderRef = useRef<View>(null);
+  const [sliderWidth, setSliderWidth] = useState(0);
+
+  const handleSliderLayout = useCallback((event: any) => {
+    setSliderWidth(event.nativeEvent.layout.width);
+  }, []);
+
+  const updateValueFromTouch = useCallback(
+    (event: GestureResponderEvent) => {
+      if (sliderWidth === 0) return;
+
+      const touchX = event.nativeEvent.locationX;
+      const newValue = Math.max(0, Math.min(1, touchX / sliderWidth));
+      onValueChange(newValue);
+    },
+    [sliderWidth, onValueChange]
+  );
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: updateValueFromTouch,
+      onPanResponderMove: updateValueFromTouch,
+    })
+  ).current;
+
+  return (
+    <View className="py-3 border-b border-slate-700">
+      <View className="mb-3">
         <Text
-          className="text-xs text-slate-400 mt-0.5"
+          className="text-sm font-medium text-slate-100 mb-0.5"
           allowFontScaling={true}
           maxFontSizeMultiplier={1.3}
         >
-          {description}
+          {label}
         </Text>
-      )}
-    </View>
-    <View className="h-1.5 bg-slate-700 rounded-full overflow-hidden mb-2">
+        {description && (
+          <Text
+            className="text-xs text-slate-400 mt-0.5"
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1.3}
+          >
+            {description}
+          </Text>
+        )}
+      </View>
       <View
-        className="h-full bg-blue-600"
-        style={{ width: `${value * 100}%` }}
-      />
-    </View>
-    <View className="flex-row justify-between">
-      <Text
-        className="text-xs text-slate-600"
-        allowFontScaling={true}
-        maxFontSizeMultiplier={1.3}
+        ref={sliderRef}
+        onLayout={handleSliderLayout}
+        {...panResponder.panHandlers}
+        className="h-1.5 bg-slate-700 rounded-full overflow-hidden mb-2"
+        accessible
+        accessibilityLabel={`${label} slider`}
+        accessibilityRole="adjustable"
+        accessibilityValue={{
+          min: 0,
+          max: 100,
+          now: Math.round(value * 100),
+        }}
       >
-        Low
-      </Text>
-      <Text
-        className="text-xs text-slate-600"
-        allowFontScaling={true}
-        maxFontSizeMultiplier={1.3}
-      >
-        High
-      </Text>
+        <View
+          className="h-full bg-blue-600"
+          style={{ width: `${value * 100}%` }}
+        />
+      </View>
+      <View className="flex-row justify-between">
+        <Text
+          className="text-xs text-slate-600"
+          allowFontScaling={true}
+          maxFontSizeMultiplier={1.3}
+        >
+          Low
+        </Text>
+        <Text
+          className="text-xs text-slate-600"
+          allowFontScaling={true}
+          maxFontSizeMultiplier={1.3}
+        >
+          High
+        </Text>
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 const VoiceCommandInfo: React.FC = () => (
   <View className="gap-2">
