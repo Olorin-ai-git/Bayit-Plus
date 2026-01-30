@@ -3908,7 +3908,8 @@
     "nikudLive": "Hebreo con Nikud",
     "nikudLiveDescription": "Subtítulos en hebreo vocalizados con signos diacríticos para facilitar la lectura",
     "nikudEnabled": "Subtítulos con nikud activados",
-    "nikudDisabled": "Subtítulos con nikud desactivados"
+    "nikudDisabled": "Subtítulos con nikud desactivados",
+    "nikudSubtitleLabel": "Hebreo con nikud: {{text}}"
   },
   "support": {
     "title": "Centro de Soporte",
@@ -4492,6 +4493,46 @@
       "syncYouTube": "Sincronizar YouTube",
       "tagVod": "Etiquetar VOD",
       "pendingModeration": "Pendiente de moderación"
+    }
+  },
+  "channelChat": {
+    "title": "Chat en vivo",
+    "participants": "{{count}} viendo",
+    "inputPlaceholder": "Escribe un mensaje...",
+    "sendButton": "Enviar",
+    "rateLimitWarning": "¡Más despacio! Espera {{seconds}}s",
+    "autoTranslationBadge": "Traducción automática (Beta)",
+    "showOriginal": "Mostrar original",
+    "showTranslation": "Mostrar traducción",
+    "error": "Chat no disponible",
+    "retry": "Reintentar",
+    "upgradeBeta": "Actualiza a Beta 500 para traducción automática",
+    "inputLabel": "Campo de mensaje del chat",
+    "moderationDelete": "Mensaje eliminado por el moderador"
+  },
+  "catchup": {
+    "overlay": {
+      "title": "¿Acabas de unirte?",
+      "description": "Te uniste a {{programName}} en progreso",
+      "creditContext": "Esto usará {{cost}} de tus {{balance}} créditos",
+      "lowBalanceWarning": "Créditos restantes bajos",
+      "acceptButton": "Ponme al día ({{cost}} créditos)",
+      "declineButton": "No, gracias"
+    },
+    "button": "Ponerme al día ({{cost}} créditos)",
+    "generating": "Generando resumen...",
+    "summary": {
+      "title": "Lo que te perdiste",
+      "keyPoints": "Puntos clave",
+      "windowInfo": "Últimos {{minutes}} minutos",
+      "creditsUsed": "{{count}} créditos utilizados",
+      "creditsRemaining": "{{count}} créditos restantes",
+      "close": "Cerrar"
+    },
+    "error": {
+      "failed": "No se pudo generar el resumen",
+      "retry": "Intentar de nuevo",
+      "insufficientCredits": "Créditos insuficientes"
     }
   }
 }

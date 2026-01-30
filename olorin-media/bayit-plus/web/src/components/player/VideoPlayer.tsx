@@ -6,6 +6,8 @@ import VideoPlayerOverlays from './VideoPlayerOverlays'
 import VideoPlayerPanels from './VideoPlayerPanels'
 import VideoPlayerControlsOverlay from './VideoPlayerControlsOverlay'
 import VideoPlayerWatchParty from './VideoPlayerWatchParty'
+import ChannelChatPanel from './chat/ChannelChatPanel'
+import VideoPlayerCatchUp from './VideoPlayerCatchUp'
 import { BufferedLiveDubbingPlayer } from '../BufferedLiveDubbingPlayer'
 import { StreamLimitExceededModal } from './StreamLimitExceededModal'
 import {
@@ -21,7 +23,9 @@ import {
   usePlaybackSession,
 } from './hooks'
 import { castConfig } from '@/config/castConfig'
+import { catchUpConfig } from '@/config/catchUpConfig'
 import { useLiveFeatureQuota } from '@/hooks/useLiveFeatureQuota'
+import { useBetaCreditsStore } from '@/stores/betaCreditsStore'
 import { VideoPlayerProps } from './types'
 
 export default function VideoPlayer({
@@ -48,6 +52,7 @@ export default function VideoPlayer({
   const user = useAuthStore((s) => s.user)
 
   const { usageStats } = useLiveFeatureQuota()
+  const { isBetaUser, balance: creditBalance } = useBetaCreditsStore()
   const [hoveredButton, setHoveredButton] = useState<string | null>(null)
   const [showStreamLimitModal, setShowStreamLimitModal] = useState(false)
   const [streamLimitError, setStreamLimitError] = useState<{
@@ -417,6 +422,21 @@ export default function VideoPlayer({
         sendMessage={sendMessage}
         title={title}
       />
+
+      {isLive && !isWidget && contentId && (
+        <ChannelChatPanel channelId={contentId} isLiveChannel={isLive} />
+      )}
+
+      {isLive && !isWidget && contentId && (
+        <VideoPlayerCatchUp
+          channelId={contentId}
+          isBetaUser={isBetaUser}
+          creditBalance={creditBalance}
+          creditCost={catchUpConfig.creditCost}
+          programName={title}
+          autoDismissSeconds={catchUpConfig.autoDismissSeconds}
+        />
+      )}
 
       {streamLimitError && (
         <StreamLimitExceededModal

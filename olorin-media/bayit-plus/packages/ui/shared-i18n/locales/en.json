@@ -4670,7 +4670,8 @@
     "nikudLive": "Hebrew with Nikud",
     "nikudLiveDescription": "Vocalized Hebrew subtitles with diacritical marks for easier reading",
     "nikudEnabled": "Nikud subtitles enabled",
-    "nikudDisabled": "Nikud subtitles disabled"
+    "nikudDisabled": "Nikud subtitles disabled",
+    "nikudSubtitleLabel": "Hebrew with nikud: {{text}}"
   },
   "support": {
     "title": "Support Center",
@@ -5572,6 +5573,46 @@
       "syncYouTube": "Sync YouTube",
       "tagVod": "Tag VOD",
       "pendingModeration": "Pending Moderation"
+    }
+  },
+  "channelChat": {
+    "title": "Live Chat",
+    "participants": "{{count}} watching",
+    "inputPlaceholder": "Type a message...",
+    "sendButton": "Send",
+    "rateLimitWarning": "Slow down! Wait {{seconds}}s",
+    "autoTranslationBadge": "Auto-Translation (Beta)",
+    "showOriginal": "Show Original",
+    "showTranslation": "Show Translation",
+    "error": "Chat unavailable",
+    "retry": "Retry",
+    "upgradeBeta": "Upgrade to Beta 500 for auto-translation",
+    "inputLabel": "Chat message input",
+    "moderationDelete": "Message removed by moderator"
+  },
+  "catchup": {
+    "overlay": {
+      "title": "Just joined?",
+      "description": "You joined {{programName}} in progress",
+      "creditContext": "This will use {{cost}} of your {{balance}} credits",
+      "lowBalanceWarning": "Low credits remaining",
+      "acceptButton": "Catch Me Up ({{cost}} credits)",
+      "declineButton": "No Thanks"
+    },
+    "button": "Catch Up ({{cost}} credits)",
+    "generating": "Generating summary...",
+    "summary": {
+      "title": "What You Missed",
+      "keyPoints": "Key Points",
+      "windowInfo": "Last {{minutes}} minutes",
+      "creditsUsed": "Used {{count}} credits",
+      "creditsRemaining": "{{count}} credits remaining",
+      "close": "Close"
+    },
+    "error": {
+      "failed": "Could not generate summary",
+      "retry": "Try Again",
+      "insufficientCredits": "Not enough credits"
     }
   }
 }

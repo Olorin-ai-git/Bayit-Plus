@@ -1292,6 +1292,25 @@
       }
     }
   },
+  "subtitles": {
+    "nikud": "Nikud",
+    "selection": "Selezione",
+    "translation": "Traduzione",
+    "selectLanguage": "Seleziona la lingua dei sottotitoli",
+    "liveTranslate": "Traduzione in diretta",
+    "translateTo": "Traduci in",
+    "smartSubs": "Sottotitoli intelligenti",
+    "smartSubsDescription": "Doppia visualizzazione: Ebraico semplificato + Italiano con evidenziazione delle radici",
+    "smartSubsDualView": "Doppia visualizzazione",
+    "shoreshToggle": "Evidenziazione delle radici",
+    "shoreshOn": "Evidenziazione delle radici attivata",
+    "shoreshOff": "Evidenziazione delle radici disattivata",
+    "nikudLive": "Ebraico con Nikud",
+    "nikudLiveDescription": "Sottotitoli ebraici vocalizzati con segni diacritici per facilitare la lettura",
+    "nikudEnabled": "Sottotitoli nikud attivati",
+    "nikudDisabled": "Sottotitoli nikud disattivati",
+    "nikudSubtitleLabel": "Ebraico con nikud: {{text}}"
+  },
   "support": {
     "title": "Centro assistenza",
     "subtitle": "Come possiamo aiutarti oggi?",
@@ -1415,5 +1434,45 @@
     "items": "elementi",
     "empty": "La tua lista è vuota",
     "emptyHint": "Inizia a guardare e gli elementi appariranno qui"
+  },
+  "channelChat": {
+    "title": "Chat dal vivo",
+    "participants": "{{count}} stanno guardando",
+    "inputPlaceholder": "Scrivi un messaggio...",
+    "sendButton": "Invia",
+    "rateLimitWarning": "Piano! Attendi {{seconds}}s",
+    "autoTranslationBadge": "Traduzione automatica (Beta)",
+    "showOriginal": "Mostra originale",
+    "showTranslation": "Mostra traduzione",
+    "error": "Chat non disponibile",
+    "retry": "Riprova",
+    "upgradeBeta": "Passa a Beta 500 per la traduzione automatica",
+    "inputLabel": "Campo di inserimento messaggio",
+    "moderationDelete": "Messaggio rimosso dal moderatore"
+  },
+  "catchup": {
+    "overlay": {
+      "title": "Appena arrivato?",
+      "description": "Ti sei unito a {{programName}} in corso",
+      "creditContext": "Questo utilizzerà {{cost}} dei tuoi {{balance}} crediti",
+      "lowBalanceWarning": "Crediti rimanenti bassi",
+      "acceptButton": "Aggiornami ({{cost}} crediti)",
+      "declineButton": "No grazie"
+    },
+    "button": "Aggiornami ({{cost}} crediti)",
+    "generating": "Generazione del riepilogo...",
+    "summary": {
+      "title": "Cosa ti sei perso",
+      "keyPoints": "Punti chiave",
+      "windowInfo": "Ultimi {{minutes}} minuti",
+      "creditsUsed": "{{count}} crediti utilizzati",
+      "creditsRemaining": "{{count}} crediti rimanenti",
+      "close": "Chiudi"
+    },
+    "error": {
+      "failed": "Impossibile generare il riepilogo",
+      "retry": "Riprova",
+      "insufficientCredits": "Crediti insufficienti"
+    }
   }
 }

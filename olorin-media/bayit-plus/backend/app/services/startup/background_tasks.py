@@ -40,6 +40,9 @@ _beta_checkpoint_worker = None
 # Global live channel monitor instance
 _channel_monitor = None
 
+# Global transcript feeder instance
+_transcript_feeder = None
+
 
 async def _scan_monitored_folders_task() -> None:
     """Periodically scan monitored folders for new content."""
@@ -182,7 +185,7 @@ async def _cleanup_failed_upload_jobs_task() -> None:
         try:
             # Delete all failed upload jobs
             result = await UploadJob.find(
-                UploadJob.status == UploadStatus.FAILED
+                {"status": UploadStatus.FAILED}
             ).delete()
 
             deleted_count = result.deleted_count if result else 0
@@ -293,6 +296,15 @@ def start_background_tasks() -> None:
             f"(interval: {settings.SESSION_CHECKPOINT_INTERVAL_SECONDS}s)"
         )
 
+    # Catch-up transcript feeder (always runs when beta features enabled)
+    if settings.BETA_FEATURES_ENABLED:
+        from app.services.catchup.transcript_feeder import TranscriptFeeder
+        global _transcript_feeder
+        _transcript_feeder = TranscriptFeeder()
+        task = asyncio.create_task(_transcript_feeder.start())
+        _running_tasks.append(task)
+        logger.info("Started catch-up transcript feeder background task")
+
     # Live channel stream monitor (always runs)
     from app.services.live_channel_monitor import get_channel_monitor
     global _channel_monitor
@@ -304,7 +316,7 @@ def start_background_tasks() -> None:
 
 async def stop_background_tasks() -> None:
     """Stop all running background tasks gracefully."""
-    global _running_tasks, _translation_worker, _beta_checkpoint_worker, _channel_monitor
+    global _running_tasks, _translation_worker, _beta_checkpoint_worker, _channel_monitor, _transcript_feeder
 
     # Stop translation worker first
     if _translation_worker:
@@ -317,6 +329,12 @@ async def stop_background_tasks() -> None:
         logger.info("Stopping Beta 500 checkpoint worker...")
         await _beta_checkpoint_worker.stop()
         _beta_checkpoint_worker = None
+
+    # Stop transcript feeder
+    if _transcript_feeder:
+        logger.info("Stopping catch-up transcript feeder...")
+        await _transcript_feeder.stop()
+        _transcript_feeder = None
 
     # Stop channel monitor
     if _channel_monitor:

@@ -1386,6 +1386,30 @@
       }
     }
   },
+  "subtitles": {
+    "nikud": "Nikud",
+    "selection": "Sélection",
+    "translation": "Traduction",
+    "selectLanguage": "Sélectionner la langue des sous-titres",
+    "liveTranslate": "Traduction en direct",
+    "translateTo": "Traduire en",
+    "downloadMore": "Télécharger plus de sous-titres...",
+    "downloading": "Recherche sur OpenSubtitles...",
+    "opensubtitlesSource": "Depuis OpenSubtitles.com",
+    "downloadSuccess": "{{count}} sous-titre(s) téléchargé(s)",
+    "noSubtitlesFound": "Aucun sous-titre trouvé pour ce contenu",
+    "smartSubs": "Sous-titres intelligents",
+    "smartSubsDescription": "Double affichage : Hébreu simplifié + Français avec mise en évidence des racines",
+    "smartSubsDualView": "Double affichage",
+    "shoreshToggle": "Mise en évidence des racines",
+    "shoreshOn": "Mise en évidence des racines activée",
+    "shoreshOff": "Mise en évidence des racines désactivée",
+    "nikudLive": "Hébreu avec Nikud",
+    "nikudLiveDescription": "Sous-titres hébraïques vocalisés avec signes diacritiques pour faciliter la lecture",
+    "nikudEnabled": "Sous-titres nikud activés",
+    "nikudDisabled": "Sous-titres nikud désactivés",
+    "nikudSubtitleLabel": "Hébreu avec nikud : {{text}}"
+  },
   "support": {
     "title": "Centre d'aide",
     "subtitle": "Comment pouvons-nous vous aider aujourd'hui ?",
@@ -1540,5 +1564,45 @@
     "items": "éléments",
     "empty": "Votre liste de lecture est vide",
     "emptyHint": "Commencez à regarder et les éléments apparaîtront ici"
+  },
+  "channelChat": {
+    "title": "Chat en direct",
+    "participants": "{{count}} en train de regarder",
+    "inputPlaceholder": "Écrivez un message...",
+    "sendButton": "Envoyer",
+    "rateLimitWarning": "Doucement ! Attendez {{seconds}}s",
+    "autoTranslationBadge": "Traduction automatique (Bêta)",
+    "showOriginal": "Afficher l'original",
+    "showTranslation": "Afficher la traduction",
+    "error": "Chat indisponible",
+    "retry": "Réessayer",
+    "upgradeBeta": "Passez à Beta 500 pour la traduction automatique",
+    "inputLabel": "Champ de saisie du message",
+    "moderationDelete": "Message supprimé par le modérateur"
+  },
+  "catchup": {
+    "overlay": {
+      "title": "Vous venez d'arriver ?",
+      "description": "Vous avez rejoint {{programName}} en cours",
+      "creditContext": "Cela utilisera {{cost}} de vos {{balance}} crédits",
+      "lowBalanceWarning": "Crédits restants faibles",
+      "acceptButton": "Rattrapez-moi ({{cost}} crédits)",
+      "declineButton": "Non merci"
+    },
+    "button": "Rattraper ({{cost}} crédits)",
+    "generating": "Génération du résumé...",
+    "summary": {
+      "title": "Ce que vous avez manqué",
+      "keyPoints": "Points clés",
+      "windowInfo": "Dernières {{minutes}} minutes",
+      "creditsUsed": "{{count}} crédits utilisés",
+      "creditsRemaining": "{{count}} crédits restants",
+      "close": "Fermer"
+    },
+    "error": {
+      "failed": "Impossible de générer le résumé",
+      "retry": "Réessayer",
+      "insufficientCredits": "Crédits insuffisants"
+    }
   }
 }

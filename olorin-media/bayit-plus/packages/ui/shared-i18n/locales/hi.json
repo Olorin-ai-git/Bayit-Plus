@@ -1151,7 +1151,18 @@
     "none": "कोई नहीं",
     "selectLanguage": "सबटाइटल भाषा चुनें",
     "liveTranslate": "लाइव अनुवाद",
-    "translateTo": "में अनुवाद करें"
+    "translateTo": "में अनुवाद करें",
+    "smartSubs": "स्मार्ट सबटाइटल",
+    "smartSubsDescription": "दोहरा दृश्य: सरल हिब्रू + हिंदी, जड़ अक्षर हाइलाइट के साथ",
+    "smartSubsDualView": "दोहरा दृश्य",
+    "shoreshToggle": "जड़ हाइलाइटिंग",
+    "shoreshOn": "जड़ हाइलाइटिंग सक्रिय",
+    "shoreshOff": "जड़ हाइलाइटिंग निष्क्रिय",
+    "nikudLive": "निकुद के साथ हिब्रू",
+    "nikudLiveDescription": "आसान पठन के लिए स्वर चिह्नों के साथ हिब्रू सबटाइटल",
+    "nikudEnabled": "निकुद सबटाइटल सक्रिय",
+    "nikudDisabled": "निकुद सबटाइटल निष्क्रिय",
+    "nikudSubtitleLabel": "निकुद के साथ हिब्रू: {{text}}"
   },
   "support": {
     "title": "सहायता केंद्र",
@@ -1274,6 +1285,46 @@
       "judaism": "यहूदी धर्म",
       "podcasts": "पॉडकास्ट",
       "radio": "रेडियो"
+    }
+  },
+  "channelChat": {
+    "title": "लाइव चैट",
+    "participants": "{{count}} देख रहे हैं",
+    "inputPlaceholder": "संदेश लिखें...",
+    "sendButton": "भेजें",
+    "rateLimitWarning": "धीरे! {{seconds}} सेकंड प्रतीक्षा करें",
+    "autoTranslationBadge": "स्वचालित अनुवाद (बीटा)",
+    "showOriginal": "मूल दिखाएं",
+    "showTranslation": "अनुवाद दिखाएं",
+    "error": "चैट अनुपलब्ध",
+    "retry": "पुनः प्रयास करें",
+    "upgradeBeta": "स्वचालित अनुवाद के लिए Beta 500 में अपग्रेड करें",
+    "inputLabel": "चैट संदेश इनपुट",
+    "moderationDelete": "मॉडरेटर द्वारा संदेश हटाया गया"
+  },
+  "catchup": {
+    "overlay": {
+      "title": "अभी जुड़े?",
+      "description": "आप {{programName}} के बीच में शामिल हुए",
+      "creditContext": "इसमें आपके {{balance}} क्रेडिट में से {{cost}} का उपयोग होगा",
+      "lowBalanceWarning": "शेष क्रेडिट कम हैं",
+      "acceptButton": "मुझे अपडेट करें ({{cost}} क्रेडिट)",
+      "declineButton": "नहीं, धन्यवाद"
+    },
+    "button": "अपडेट करें ({{cost}} क्रेडिट)",
+    "generating": "सारांश बनाया जा रहा है...",
+    "summary": {
+      "title": "आपने क्या मिस किया",
+      "keyPoints": "मुख्य बिंदु",
+      "windowInfo": "पिछले {{minutes}} मिनट",
+      "creditsUsed": "{{count}} क्रेडिट उपयोग किए गए",
+      "creditsRemaining": "{{count}} क्रेडिट शेष",
+      "close": "बंद करें"
+    },
+    "error": {
+      "failed": "सारांश नहीं बनाया जा सका",
+      "retry": "पुनः प्रयास करें",
+      "insufficientCredits": "अपर्याप्त क्रेडिट"
     }
   }
 }

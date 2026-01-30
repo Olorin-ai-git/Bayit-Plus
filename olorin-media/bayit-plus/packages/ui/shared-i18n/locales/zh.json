@@ -2370,7 +2370,18 @@
     "downloading": "正在搜索 OpenSubtitles...",
     "opensubtitlesSource": "来自 OpenSubtitles.com",
     "downloadSuccess": "已下载 {{count}} 个字幕",
-    "noSubtitlesFound": "未找到此内容的字幕"
+    "noSubtitlesFound": "未找到此内容的字幕",
+    "smartSubs": "智能字幕",
+    "smartSubsDescription": "双行显示：简化希伯来语 + 中文，并突出显示词根",
+    "smartSubsDualView": "双行显示",
+    "shoreshToggle": "词根高亮",
+    "shoreshOn": "词根高亮已启用",
+    "shoreshOff": "词根高亮已关闭",
+    "nikudLive": "带尼库德的希伯来语",
+    "nikudLiveDescription": "带有变音符号的希伯来语字幕，方便阅读",
+    "nikudEnabled": "尼库德字幕已启用",
+    "nikudDisabled": "尼库德字幕已关闭",
+    "nikudSubtitleLabel": "带尼库德的希伯来语：{{text}}"
   },
   "support": {
     "title": "支持中心",
@@ -2780,6 +2791,46 @@
       "saving": "保存中...",
       "cancel": "取消",
       "change": "更改"
+    }
+  },
+  "channelChat": {
+    "title": "实时聊天",
+    "participants": "{{count}} 人正在观看",
+    "inputPlaceholder": "输入消息...",
+    "sendButton": "发送",
+    "rateLimitWarning": "请稍慢！等待 {{seconds}} 秒",
+    "autoTranslationBadge": "自动翻译（测试版）",
+    "showOriginal": "显示原文",
+    "showTranslation": "显示翻译",
+    "error": "聊天不可用",
+    "retry": "重试",
+    "upgradeBeta": "升级到 Beta 500 以使用自动翻译",
+    "inputLabel": "聊天消息输入",
+    "moderationDelete": "消息已被管理员删除"
+  },
+  "catchup": {
+    "overlay": {
+      "title": "刚加入？",
+      "description": "您在 {{programName}} 进行中加入",
+      "creditContext": "这将使用您 {{balance}} 积分中的 {{cost}} 积分",
+      "lowBalanceWarning": "积分余额不足",
+      "acceptButton": "帮我补看（{{cost}} 积分）",
+      "declineButton": "不用了"
+    },
+    "button": "补看（{{cost}} 积分）",
+    "generating": "正在生成摘要...",
+    "summary": {
+      "title": "您错过的内容",
+      "keyPoints": "要点",
+      "windowInfo": "最近 {{minutes}} 分钟",
+      "creditsUsed": "已使用 {{count}} 积分",
+      "creditsRemaining": "剩余 {{count}} 积分",
+      "close": "关闭"
+    },
+    "error": {
+      "failed": "无法生成摘要",
+      "retry": "重试",
+      "insufficientCredits": "积分不足"
     }
   }
 }

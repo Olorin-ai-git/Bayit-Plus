@@ -2090,6 +2090,25 @@
       }
     }
   },
+  "subtitles": {
+    "nikud": "ニクド",
+    "selection": "選択",
+    "translation": "翻訳",
+    "selectLanguage": "字幕言語を選択",
+    "liveTranslate": "ライブ翻訳",
+    "translateTo": "翻訳先",
+    "smartSubs": "スマート字幕",
+    "smartSubsDescription": "二行表示：簡略化ヘブライ語 + 日本語、語根ハイライト付き",
+    "smartSubsDualView": "二行表示",
+    "shoreshToggle": "語根ハイライト",
+    "shoreshOn": "語根ハイライトが有効",
+    "shoreshOff": "語根ハイライトが無効",
+    "nikudLive": "ニクド付きヘブライ語",
+    "nikudLiveDescription": "読みやすくするための発音記号付きヘブライ語字幕",
+    "nikudEnabled": "ニクド字幕が有効",
+    "nikudDisabled": "ニクド字幕が無効",
+    "nikudSubtitleLabel": "ニクド付きヘブライ語：{{text}}"
+  },
   "support": {
     "title": "サポート",
     "subtitle": "何かお手伝いできますか？",
@@ -2293,5 +2312,45 @@
     "type": "タイプ",
     "manage": "ウォッチリストを管理",
     "clearAll": "すべてクリア"
+  },
+  "channelChat": {
+    "title": "ライブチャット",
+    "participants": "{{count}} 人が視聴中",
+    "inputPlaceholder": "メッセージを入力...",
+    "sendButton": "送信",
+    "rateLimitWarning": "少々お待ちください！{{seconds}}秒後に再試行",
+    "autoTranslationBadge": "自動翻訳（ベータ）",
+    "showOriginal": "原文を表示",
+    "showTranslation": "翻訳を表示",
+    "error": "チャットを利用できません",
+    "retry": "再試行",
+    "upgradeBeta": "自動翻訳を利用するにはBeta 500にアップグレード",
+    "inputLabel": "チャットメッセージ入力",
+    "moderationDelete": "モデレーターによりメッセージが削除されました"
+  },
+  "catchup": {
+    "overlay": {
+      "title": "今参加しましたか？",
+      "description": "{{programName}} の途中から参加しました",
+      "creditContext": "{{balance}} クレジットのうち {{cost}} を使用します",
+      "lowBalanceWarning": "クレジット残高が少なくなっています",
+      "acceptButton": "追いつく（{{cost}} クレジット）",
+      "declineButton": "結構です"
+    },
+    "button": "追いつく（{{cost}} クレジット）",
+    "generating": "要約を生成中...",
+    "summary": {
+      "title": "見逃した内容",
+      "keyPoints": "要点",
+      "windowInfo": "直近 {{minutes}} 分",
+      "creditsUsed": "{{count}} クレジット使用済み",
+      "creditsRemaining": "残り {{count}} クレジット",
+      "close": "閉じる"
+    },
+    "error": {
+      "failed": "要約を生成できませんでした",
+      "retry": "再試行",
+      "insufficientCredits": "クレジットが不足しています"
+    }
   }
 }

@@ -4522,7 +4522,8 @@
     "nikudLive": "עברית עם ניקוד",
     "nikudLiveDescription": "כתוביות עברית מנוקדות לקריאה קלה יותר",
     "nikudEnabled": "כתוביות ניקוד מופעלות",
-    "nikudDisabled": "כתוביות ניקוד כבויות"
+    "nikudDisabled": "כתוביות ניקוד כבויות",
+    "nikudSubtitleLabel": "עברית עם ניקוד: {{text}}"
   },
   "support": {
     "title": "מרכז תמיכה",
@@ -5138,6 +5139,46 @@
       "syncYouTube": "סנכרון יוטיוב",
       "tagVod": "תיוג VOD",
       "pendingModeration": "ממתין למודרציה"
+    }
+  },
+  "channelChat": {
+    "title": "צ'אט חי",
+    "participants": "{{count}} צופים",
+    "inputPlaceholder": "כתוב הודעה...",
+    "sendButton": "שלח",
+    "rateLimitWarning": "לאט! המתן {{seconds}} שניות",
+    "autoTranslationBadge": "תרגום אוטומטי (בטא)",
+    "showOriginal": "הצג מקור",
+    "showTranslation": "הצג תרגום",
+    "error": "הצ'אט לא זמין",
+    "retry": "נסה שוב",
+    "upgradeBeta": "שדרג לבטא 500 לתרגום אוטומטי",
+    "inputLabel": "שדה הודעת צ'אט",
+    "moderationDelete": "ההודעה הוסרה על ידי מנהל"
+  },
+  "catchup": {
+    "overlay": {
+      "title": "הצטרפת עכשיו?",
+      "description": "הצטרפת ל-{{programName}} באמצע השידור",
+      "creditContext": "זה ישתמש ב-{{cost}} מתוך {{balance}} הקרדיטים שלך",
+      "lowBalanceWarning": "נותרו מעט קרדיטים",
+      "acceptButton": "עדכן אותי ({{cost}} קרדיטים)",
+      "declineButton": "לא תודה"
+    },
+    "button": "עדכון ({{cost}} קרדיטים)",
+    "generating": "מייצר סיכום...",
+    "summary": {
+      "title": "מה פספסת",
+      "keyPoints": "נקודות עיקריות",
+      "windowInfo": "{{minutes}} הדקות האחרונות",
+      "creditsUsed": "השתמשת ב-{{count}} קרדיטים",
+      "creditsRemaining": "נותרו {{count}} קרדיטים",
+      "close": "סגור"
+    },
+    "error": {
+      "failed": "לא ניתן לייצר סיכום",
+      "retry": "נסה שוב",
+      "insufficientCredits": "אין מספיק קרדיטים"
     }
   }
 }

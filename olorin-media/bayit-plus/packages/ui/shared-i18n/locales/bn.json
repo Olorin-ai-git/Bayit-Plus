@@ -1042,6 +1042,25 @@
       }
     }
   },
+  "subtitles": {
+    "nikud": "নিকুদ",
+    "selection": "নির্বাচন",
+    "translation": "অনুবাদ",
+    "selectLanguage": "সাবটাইটেল ভাষা নির্বাচন করুন",
+    "liveTranslate": "লাইভ অনুবাদ",
+    "translateTo": "অনুবাদ করুন",
+    "smartSubs": "স্মার্ট সাবটাইটেল",
+    "smartSubsDescription": "দ্বৈত দৃশ্য: সরলীকৃত হিব্রু + বাংলা, মূল অক্ষর হাইলাইট সহ",
+    "smartSubsDualView": "দ্বৈত দৃশ্য",
+    "shoreshToggle": "মূল হাইলাইটিং",
+    "shoreshOn": "মূল হাইলাইটিং সক্রিয়",
+    "shoreshOff": "মূল হাইলাইটিং নিষ্ক্রিয়",
+    "nikudLive": "নিকুদ সহ হিব্রু",
+    "nikudLiveDescription": "সহজ পঠনের জন্য স্বরচিহ্ন সহ হিব্রু সাবটাইটেল",
+    "nikudEnabled": "নিকুদ সাবটাইটেল সক্রিয়",
+    "nikudDisabled": "নিকুদ সাবটাইটেল নিষ্ক্রিয়",
+    "nikudSubtitleLabel": "নিকুদ সহ হিব্রু: {{text}}"
+  },
   "support": {
     "title": "সাপোর্ট সেন্টার",
     "subtitle": "আজ আমরা কীভাবে আপনাকে সাহায্য করতে পারি?",
@@ -1141,6 +1160,46 @@
       "movies": "সিনেমা",
       "series": "সিরিজ",
       "kids": "শিশু"
+    }
+  },
+  "channelChat": {
+    "title": "লাইভ চ্যাট",
+    "participants": "{{count}} জন দেখছেন",
+    "inputPlaceholder": "একটি বার্তা লিখুন...",
+    "sendButton": "পাঠান",
+    "rateLimitWarning": "ধীরে! {{seconds}} সেকেন্ড অপেক্ষা করুন",
+    "autoTranslationBadge": "স্বয়ংক্রিয় অনুবাদ (বিটা)",
+    "showOriginal": "মূল দেখান",
+    "showTranslation": "অনুবাদ দেখান",
+    "error": "চ্যাট অনুপলব্ধ",
+    "retry": "পুনরায় চেষ্টা করুন",
+    "upgradeBeta": "স্বয়ংক্রিয় অনুবাদের জন্য Beta 500 তে আপগ্রেড করুন",
+    "inputLabel": "চ্যাট বার্তা ইনপুট",
+    "moderationDelete": "মডারেটর দ্বারা বার্তা মুছে ফেলা হয়েছে"
+  },
+  "catchup": {
+    "overlay": {
+      "title": "এইমাত্র যোগ দিলেন?",
+      "description": "আপনি {{programName}} চলাকালীন যোগ দিয়েছেন",
+      "creditContext": "এটি আপনার {{balance}} ক্রেডিটের মধ্যে {{cost}} ব্যবহার করবে",
+      "lowBalanceWarning": "অবশিষ্ট ক্রেডিট কম",
+      "acceptButton": "আমাকে আপডেট করুন ({{cost}} ক্রেডিট)",
+      "declineButton": "না, ধন্যবাদ"
+    },
+    "button": "আপডেট করুন ({{cost}} ক্রেডিট)",
+    "generating": "সারসংক্ষেপ তৈরি হচ্ছে...",
+    "summary": {
+      "title": "আপনি যা মিস করেছেন",
+      "keyPoints": "মূল বিষয়গুলি",
+      "windowInfo": "শেষ {{minutes}} মিনিট",
+      "creditsUsed": "{{count}} ক্রেডিট ব্যবহৃত",
+      "creditsRemaining": "{{count}} ক্রেডিট অবশিষ্ট",
+      "close": "বন্ধ করুন"
+    },
+    "error": {
+      "failed": "সারসংক্ষেপ তৈরি করা যায়নি",
+      "retry": "আবার চেষ্টা করুন",
+      "insufficientCredits": "অপর্যাপ্ত ক্রেডিট"
     }
   }
 }
