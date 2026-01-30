@@ -43,60 +43,68 @@ class FraudDetectionService:
             user_agent: User agent string
 
         Returns:
-            Dict with risk level and details
+            Dict with risk level, passed status, flags, and fingerprint
         """
+        flags = []
+
         # Check disposable email domains (from settings, not hardcoded)
         disposable_domains = self.settings.disposable_email_domains_list
-        domain = email.split('@')[1] if '@' in email else ''
+        domain = email.split('@')[1].lower() if '@' in email else ''
 
-        if domain in disposable_domains:
+        if domain.lower() in [d.lower() for d in disposable_domains]:
             logger.warning(
                 "Disposable email detected",
                 extra={"email": email, "domain": domain}
             )
-            return {"risk": "high", "reason": "disposable_email"}
-
-        # Check IP reputation (multiple signups from same IP)
-        recent_signups = await BetaUser.find(
-            BetaUser.created_at >= datetime.utcnow() - timedelta(hours=24)
-        ).to_list()
-
-        # Count signups from this IP (metadata would store IP)
-        same_ip_count = 0
-        for user in recent_signups:
-            # Note: IP would be stored in metadata (not shown in model for brevity)
-            # For now, we skip this check - would need IP in BetaUser model
-            pass
-
-        if same_ip_count >= 3:
-            logger.warning(
-                "Multiple signups from same IP",
-                extra={"ip": ip, "count": same_ip_count}
-            )
-            return {"risk": "high", "reason": "multiple_signups_same_ip"}
+            flags.append("disposable_email")
 
         # Device fingerprint using SHA-256 (not MD5 - cryptographically secure)
         fingerprint = hashlib.sha256(f"{user_agent}:{ip}".encode()).hexdigest()
-        
-        existing = await BetaUser.find(
-            # Note: Would need device_fingerprint field in BetaUser model
-            # For now, this is a placeholder
-        ).to_list()
 
-        # Check for duplicate device fingerprint
-        # if existing:
-        #     logger.warning(
-        #         "Duplicate device fingerprint",
-        #         extra={"fingerprint": fingerprint}
-        #     )
-        #     return {"risk": "high", "reason": "duplicate_device"}
+        # Check for multiple accounts with same fingerprint
+        try:
+            # Query BetaUser collection for accounts with same fingerprint
+            # In real implementation, would need device_fingerprint field in BetaUser model
+            existing_count = await BetaUser.find(
+                # Placeholder query - would check fingerprint field when model is updated
+            ).count()
+
+            if existing_count >= 3:
+                logger.warning(
+                    "Multiple accounts from same device",
+                    extra={"fingerprint": fingerprint, "count": existing_count}
+                )
+                flags.append("multiple_accounts")
+        except Exception:
+            # If database query fails, continue with other checks
+            pass
+
+        # Determine risk level and passed status
+        if "disposable_email" in flags:
+            risk = "high"
+            passed = False
+            reason = "Disposable email domain detected"
+        elif "multiple_accounts" in flags:
+            risk = "medium"
+            passed = False
+            reason = "Multiple accounts from same device"
+        else:
+            risk = "low"
+            passed = True
+            reason = None
 
         logger.info(
-            "Signup passed fraud checks",
-            extra={"email": email}
+            "Signup fraud check completed",
+            extra={"email": email, "risk": risk, "passed": passed}
         )
-        
-        return {"risk": "low", "reason": None}
+
+        return {
+            "risk": risk,
+            "passed": passed,
+            "flags": flags,
+            "reason": reason,
+            "fingerprint": fingerprint
+        }
 
     async def detect_credit_abuse(self, user_id: str) -> bool:
         """

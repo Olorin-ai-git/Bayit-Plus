@@ -16,6 +16,8 @@ import logging
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
+from app.core.config import settings
+
 logger = logging.getLogger(__name__)
 
 
@@ -40,17 +42,22 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         """
         response: Response = await call_next(request)
 
+        # Skip security headers for OPTIONS requests (CORS preflight)
+        # OPTIONS responses should only have CORS headers
+        if request.method == "OPTIONS":
+            return response
+
         # Content Security Policy (CSP)
         # Restricts resource loading to prevent XSS
-        # Note: Chrome Extension popup pages may need 'unsafe-inline' for inline styles
-        # Extension pages loaded via chrome-extension:// protocol are not affected by CSP
+        # connect-src is configurable via CSP_CONNECT_SRC_EXTRA env var
+        connect_src = settings.parsed_csp_connect_src
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
             "script-src 'self'; "
-            "style-src 'self' 'unsafe-inline'; "  # Allow inline styles for Glass UI
+            "style-src 'self' 'unsafe-inline'; "
             "img-src 'self' data: https:; "
             "font-src 'self' data:; "
-            "connect-src 'self' https://api.stripe.com wss://api.bayit.tv; "
+            f"connect-src {connect_src}; "
             "frame-ancestors 'none'; "
             "base-uri 'self'; "
             "form-action 'self'"

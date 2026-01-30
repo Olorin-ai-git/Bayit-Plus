@@ -27,12 +27,14 @@ if ! command -v poetry &> /dev/null; then
     exit 1
 fi
 
-echo "🚀 Starting backend on port 8090..."
-echo "   API Documentation: http://localhost:8090/docs"
-echo "   NLP Health Check: http://localhost:8090/api/v1/nlp/health"
+BACKEND_PORT="${BACKEND_PORT:-8000}"
+
+echo "🚀 Starting backend on port ${BACKEND_PORT}..."
+echo "   API Documentation: http://localhost:${BACKEND_PORT}/docs"
+echo "   NLP Health Check: http://localhost:${BACKEND_PORT}/api/v1/nlp/health"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
 # Start uvicorn with reload (will also load from .env file)
-poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8090
+poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port "${BACKEND_PORT}"

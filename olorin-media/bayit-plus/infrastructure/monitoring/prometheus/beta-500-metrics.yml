@@ -1,0 +1,162 @@
+# Prometheus Configuration for Beta 500 Program
+# Metrics collection, alerting rules, and monitoring targets
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'bayit-plus-production'
+    env: 'production'
+    feature: 'beta-500'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+# Load alerting rules
+rule_files:
+  - 'beta-500-alerts.yml'
+
+# Scrape configurations
+scrape_configs:
+  # ========================================
+  # Backend API Metrics
+  # ========================================
+  - job_name: 'beta-backend-api'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          - 'backend:8080'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: backend:8080
+
+  # ========================================
+  # MongoDB Atlas Metrics
+  # ========================================
+  - job_name: 'mongodb-atlas'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          - 'mongodb-exporter:9216'
+    metric_relabel_configs:
+      # Only collect Beta-related collections
+      - source_labels: [collection]
+        regex: 'beta_.*'
+        action: keep
+
+  # ========================================
+  # Frontend Client Metrics (RUM)
+  # ========================================
+  - job_name: 'beta-frontend-rum'
+    metrics_path: '/api/metrics'
+    static_configs:
+      - targets:
+          - 'frontend:3000'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: platform
+        replacement: 'web'
+
+# ========================================
+# Recording Rules (Pre-aggregated metrics)
+# ========================================
+recording_rules:
+  - name: beta_credit_aggregations
+    interval: 1m
+    rules:
+      # Total credits consumed per minute
+      - record: beta:credits_consumed:rate1m
+        expr: rate(beta_credits_deducted_total[1m])
+
+      # Average credit balance across all users
+      - record: beta:credits_remaining:avg
+        expr: avg(beta_user_credits_remaining)
+
+      # Credits consumed by feature
+      - record: beta:credits_consumed_by_feature:rate1m
+        expr: sum(rate(beta_credits_deducted_total[1m])) by (feature)
+
+  - name: beta_api_performance
+    interval: 1m
+    rules:
+      # API request rate per endpoint
+      - record: beta:api_requests:rate1m
+        expr: sum(rate(http_requests_total{path=~"/api/v1/beta/.*"}[1m])) by (path, method)
+
+      # API error rate per endpoint
+      - record: beta:api_errors:rate1m
+        expr: sum(rate(http_requests_total{path=~"/api/v1/beta/.*", status=~"5.."}[1m])) by (path)
+
+      # API latency p95 per endpoint
+      - record: beta:api_latency:p95
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{path=~"/api/v1/beta/.*"}[5m]))
+
+  - name: beta_user_metrics
+    interval: 5m
+    rules:
+      # Active beta users (last 24 hours)
+      - record: beta:users_active:24h
+        expr: count(beta_user_last_activity > (time() - 86400))
+
+      # Low credit users (< 500 credits)
+      - record: beta:users_low_credits:count
+        expr: count(beta_user_credits_remaining < 500)
+
+      # Critical credit users (< 100 credits)
+      - record: beta:users_critical_credits:count
+        expr: count(beta_user_credits_remaining < 100)
+
+# ========================================
+# Custom Metrics Definitions
+# ========================================
+# These metrics are emitted by the backend application
+
+# Business Metrics:
+# - beta_users_total (gauge): Total enrolled beta users
+# - beta_users_active (gauge): Active users in last 24h
+# - beta_users_verified (gauge): Email-verified users
+# - beta_credits_allocated_total (counter): Total credits allocated
+# - beta_credits_deducted_total (counter): Credits deducted by feature
+# - beta_credits_remaining_total (gauge): Sum of all user balances
+# - beta_user_credits_remaining (gauge): Per-user credit balance
+# - beta_credit_transactions_total (counter): Credit transaction count
+
+# Feature Usage Metrics:
+# - beta_ai_search_requests_total (counter): AI search requests
+# - beta_ai_recommendations_requests_total (counter): Recommendation requests
+# - beta_live_dubbing_sessions_total (counter): Live dubbing sessions
+# - beta_live_translation_sessions_total (counter): Live translation sessions
+# - beta_podcast_translation_requests_total (counter): Podcast translations
+
+# Performance Metrics:
+# - beta_ai_search_duration_seconds (histogram): Search latency
+# - beta_ai_recommendations_duration_seconds (histogram): Recommendations latency
+# - beta_credit_deduction_duration_seconds (histogram): Credit operation latency
+# - beta_session_duration_seconds (histogram): Session lengths
+
+# System Metrics:
+# - beta_api_requests_total (counter): API requests by endpoint
+# - beta_api_errors_total (counter): API errors by type
+# - beta_database_queries_total (counter): Database operations
+# - beta_cache_hits_total (counter): Cache hits
+# - beta_cache_misses_total (counter): Cache misses
+
+# Fraud Detection Metrics:
+# - beta_signup_fraud_checks_total (counter): Fraud checks performed
+# - beta_signup_fraud_detected_total (counter): Fraud detected
+# - beta_signup_fraud_risk_score (histogram): Risk scores
+
+# Email Verification Metrics:
+# - beta_email_verification_sent_total (counter): Verification emails sent
+# - beta_email_verification_succeeded_total (counter): Successful verifications
+# - beta_email_verification_failed_total (counter): Failed verifications

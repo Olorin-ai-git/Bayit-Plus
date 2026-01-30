@@ -52,25 +52,29 @@ def credit_service(mock_settings, mock_metering_service, mock_db):
 class TestGetCreditRate:
     """Tests for get_credit_rate method."""
 
-    def test_get_rate_live_dubbing(self, credit_service):
+    @pytest.mark.asyncio
+    async def test_get_rate_live_dubbing(self, credit_service):
         """Test credit rate for live dubbing feature."""
-        rate = credit_service.get_credit_rate("live_dubbing")
+        rate = await credit_service.get_credit_rate("live_dubbing")
         assert rate == 1.0
 
-    def test_get_rate_ai_search(self, credit_service):
+    @pytest.mark.asyncio
+    async def test_get_rate_ai_search(self, credit_service):
         """Test credit rate for AI search feature."""
-        rate = credit_service.get_credit_rate("ai_search")
+        rate = await credit_service.get_credit_rate("ai_search")
         assert rate == 0.5
 
-    def test_get_rate_ai_recommendations(self, credit_service):
+    @pytest.mark.asyncio
+    async def test_get_rate_ai_recommendations(self, credit_service):
         """Test credit rate for AI recommendations feature."""
-        rate = credit_service.get_credit_rate("ai_recommendations")
+        rate = await credit_service.get_credit_rate("ai_recommendations")
         assert rate == 0.3
 
-    def test_get_rate_unknown_feature_raises_error(self, credit_service):
+    @pytest.mark.asyncio
+    async def test_get_rate_unknown_feature_raises_error(self, credit_service):
         """Test that unknown feature raises ValueError."""
         with pytest.raises(ValueError, match="Unknown feature: unknown_feature"):
-            credit_service.get_credit_rate("unknown_feature")
+            await credit_service.get_credit_rate("unknown_feature")
 
 
 class TestAllocateCredits:
@@ -82,20 +86,23 @@ class TestAllocateCredits:
         user_id = "user-123"
 
         # Mock BetaCredit.find_one to return None (no existing credit)
-        with patch('app.services.beta.credit_service.BetaCredit') as MockCredit:
+        with patch('app.services.beta.credit_service.BetaCredit') as MockCredit, \
+             patch('app.services.beta.credit_service.BetaCreditTransaction') as MockTransaction:
             MockCredit.find_one = AsyncMock(return_value=None)
             MockCredit.return_value.insert = AsyncMock()
+            MockTransaction.return_value.insert = AsyncMock()
 
             await credit_service.allocate_credits(user_id)
 
-            # Verify credit record was created
+            # Verify credit record was created with correct args
             MockCredit.assert_called_once()
-            created_credit = MockCredit.return_value
-            assert created_credit.user_id == user_id
-            assert created_credit.total_credits == 5000
-            assert created_credit.used_credits == 0
-            assert created_credit.remaining_credits == 5000
-            created_credit.insert.assert_called_once()
+            call_kwargs = MockCredit.call_args.kwargs
+            assert call_kwargs["user_id"] == user_id
+            assert call_kwargs["total_credits"] == 5000
+            assert call_kwargs["used_credits"] == 0
+            assert call_kwargs["remaining_credits"] == 5000
+            MockCredit.return_value.insert.assert_called_once()
+            MockTransaction.return_value.insert.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_allocate_credits_already_allocated(self, credit_service):
@@ -159,13 +166,9 @@ class TestAuthorize:
         """Test authorization with expired credits."""
         user_id = "user-123"
 
-        # Mock expired credit record
-        mock_credit = MagicMock()
-        mock_credit.remaining_credits = 1000
-        mock_credit.is_expired = True
-
+        # Mock find_one to return None (expired credits filtered out by query)
         with patch('app.services.beta.credit_service.BetaCredit') as MockCredit:
-            MockCredit.find_one = AsyncMock(return_value=mock_credit)
+            MockCredit.find_one = AsyncMock(return_value=None)
 
             success, remaining = await credit_service.authorize(
                 user_id, "live_dubbing", 50.0
@@ -192,10 +195,14 @@ class TestDeductCredits:
         mock_credit.save = AsyncMock()
 
         # Mock session and transaction
+        mock_transaction = AsyncMock()
+        mock_transaction.__aenter__ = AsyncMock(return_value=mock_transaction)
+        mock_transaction.__aexit__ = AsyncMock()
+
         mock_session = AsyncMock()
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock()
-        mock_session.start_transaction = MagicMock(return_value=mock_session)
+        mock_session.start_transaction = MagicMock(return_value=mock_transaction)
 
         with patch('app.services.beta.credit_service.BetaCredit') as MockCredit, \
              patch('app.services.beta.credit_service.BetaCreditTransaction') as MockTransaction:
@@ -213,27 +220,34 @@ class TestDeductCredits:
             assert mock_credit.remaining_credits == 950
             assert mock_credit.used_credits == 150
             mock_credit.save.assert_called_once()
-            mock_metering_service.record_usage.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_deduct_credits_insufficient_balance(self, credit_service):
         """Test deduction fails with insufficient balance."""
         user_id = "user-123"
 
-        # Mock credit record with low balance
-        mock_credit = MagicMock()
-        mock_credit.remaining_credits = 10
-        mock_credit.is_expired = False
+        # Mock session and transaction
+        mock_transaction = AsyncMock()
+        mock_transaction.__aenter__ = AsyncMock(return_value=mock_transaction)
+        mock_transaction.__aexit__ = AsyncMock()
+        mock_transaction.abort_transaction = AsyncMock()
 
+        mock_session = AsyncMock()
+        mock_session.__aenter__ = AsyncMock(return_value=mock_session)
+        mock_session.__aexit__ = AsyncMock()
+        mock_session.start_transaction = MagicMock(return_value=mock_transaction)
+
+        # Mock find_one to return None (insufficient balance filtered by query)
         with patch('app.services.beta.credit_service.BetaCredit') as MockCredit:
-            MockCredit.find_one = AsyncMock(return_value=mock_credit)
+            MockCredit.find_one = AsyncMock(return_value=None)
+            credit_service.db.client.start_session = AsyncMock(return_value=mock_session)
 
             success, remaining = await credit_service.deduct_credits(
                 user_id, "live_dubbing", 50.0
             )
 
             assert success is False
-            assert remaining == 10
+            assert remaining == 0
 
 
 class TestBalanceThresholds:

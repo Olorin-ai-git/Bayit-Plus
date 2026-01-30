@@ -84,7 +84,7 @@ systemctl start bayit-plus-backend
 
 # 5. Verify startup
 sleep 5
-curl http://localhost:8090/health
+curl http://localhost:${BACKEND_PORT:-8000}/health
 ```
 
 ### 2. Frontend Deployment
@@ -112,7 +112,7 @@ curl https://bayit.tv
 
 ```bash
 # Reverse geocode endpoint
-curl "http://localhost:8090/api/v1/location/reverse-geocode?latitude=40.7128&longitude=-74.0060"
+curl "http://localhost:${BACKEND_PORT:-8000}/api/v1/location/reverse-geocode?latitude=40.7128&longitude=-74.0060"
 
 # Expected response (200 OK):
 {
@@ -130,7 +130,7 @@ curl "http://localhost:8090/api/v1/location/reverse-geocode?latitude=40.7128&lon
 
 ```bash
 # Location content endpoint
-curl "http://localhost:8090/api/v1/content/israelis-in-city?city=New%20York&state=NY"
+curl "http://localhost:${BACKEND_PORT:-8000}/api/v1/content/israelis-in-city?city=New%20York&state=NY"
 
 # Expected response (200 OK):
 {
@@ -150,27 +150,27 @@ TOKEN="your_jwt_token_here"
 
 # Check current consent status
 curl -H "Authorization: Bearer $TOKEN" \
-  "http://localhost:8090/api/v1/location-consent"
+  "http://localhost:${BACKEND_PORT:-8000}/api/v1/location-consent"
 
 # Grant consent
 curl -X POST \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"consent_given": true, "retention_days": 90}' \
-  "http://localhost:8090/api/v1/location-consent"
+  "http://localhost:${BACKEND_PORT:-8000}/api/v1/location-consent"
 ```
 
 ### 4. Rate Limiting Test
 
 ```bash
 # Should succeed (within limit)
-curl "http://localhost:8090/api/v1/location/reverse-geocode?latitude=40.7128&longitude=-74.0060"
+curl "http://localhost:${BACKEND_PORT:-8000}/api/v1/location/reverse-geocode?latitude=40.7128&longitude=-74.0060"
 # Returns: 200 OK
 
 # Make 30+ rapid requests from same IP
 for i in {1..31}; do
   STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-    "http://localhost:8090/api/v1/location/reverse-geocode?latitude=40.7128&longitude=-74.0060")
+    "http://localhost:${BACKEND_PORT:-8000}/api/v1/location/reverse-geocode?latitude=40.7128&longitude=-74.0060")
   echo "Request $i: $STATUS"
   [[ $STATUS == "429" ]] && echo "Rate limiting working!" && break
 done
@@ -228,7 +228,7 @@ grep "Decryption failed" /var/log/bayit-plus/backend.log
 
 # API response time (target: < 500ms cached, < 2s uncached)
 curl -w "Time: %{time_total}s\n" \
-  "http://localhost:8090/api/v1/location/reverse-geocode?latitude=40.7128&longitude=-74.0060"
+  "http://localhost:${BACKEND_PORT:-8000}/api/v1/location/reverse-geocode?latitude=40.7128&longitude=-74.0060"
 ```
 
 ### 2. Alerting Rules (Suggested)
@@ -304,7 +304,7 @@ poetry install --no-dev
 systemctl start bayit-plus-backend
 
 # 5. Verify
-curl http://localhost:8090/health
+curl http://localhost:${BACKEND_PORT:-8000}/health
 
 # 6. Check logs for errors
 journalctl -u bayit-plus-backend -n 50

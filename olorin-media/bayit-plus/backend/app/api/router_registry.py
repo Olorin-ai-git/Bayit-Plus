@@ -71,7 +71,7 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes.olorin import legacy_router as olorin_legacy_router
     from app.api.routes.olorin import router as olorin_router
     # Beta 500 routes
-    from app.api.routes.beta import signup, credits, sessions, status
+    from app.api.routes.beta import ai_recommendations, ai_search, signup, credits, sessions, status
 
     # ============================================
     # Health Check Routes (no prefix)
@@ -189,7 +189,7 @@ def register_all_routers(app: FastAPI) -> None:
     # ============================================
     # Location Routes
     # ============================================
-    app.include_router(location.router, prefix=prefix, tags=["location"])
+    app.include_router(location.router, prefix=f"{prefix}/location", tags=["location"])
     logger.debug("Registered location routes")
     app.include_router(location_consent.router, prefix=prefix, tags=["location-consent"])
     logger.debug("Registered location consent routes")
@@ -366,7 +366,9 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(credits.router, prefix=prefix, tags=["beta-credits"])
     app.include_router(sessions.router, prefix=prefix, tags=["beta-sessions"])
     app.include_router(status.router, prefix=prefix, tags=["beta-status"])
-    logger.debug("Registered Beta 500 closed beta program routes (signup, credits, sessions, status)")
+    app.include_router(ai_search.router, prefix=prefix, tags=["beta-search"])
+    app.include_router(ai_recommendations.router, prefix=prefix, tags=["beta-recommendations"])
+    logger.debug("Registered Beta 500 routes (signup, credits, sessions, status, ai_search, ai_recommendations)")
 
     logger.info(f"All API routers registered with prefix {prefix}")
 

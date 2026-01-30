@@ -1,0 +1,470 @@
+{
+  "dashboard": {
+    "title": "Beta 500 - Overview Dashboard",
+    "tags": ["beta-500", "production", "monitoring"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "30s",
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Beta Program Overview",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "beta_users_total",
+            "legendFormat": "Total Enrolled",
+            "refId": "A"
+          },
+          {
+            "expr": "beta_users_active",
+            "legendFormat": "Active (24h)",
+            "refId": "B"
+          },
+          {
+            "expr": "beta_users_verified",
+            "legendFormat": "Verified",
+            "refId": "C"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "textMode": "value_and_name",
+          "colorMode": "value",
+          "graphMode": "area"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 450, "color": "yellow"},
+                {"value": 490, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Credit System Health",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(beta_user_credits_remaining)",
+            "legendFormat": "Total Credits Remaining",
+            "refId": "A"
+          },
+          {
+            "expr": "beta:credits_remaining:avg",
+            "legendFormat": "Avg per User",
+            "refId": "B"
+          },
+          {
+            "expr": "rate(beta_credits_deducted_total[5m]) * 60",
+            "legendFormat": "Burn Rate (per min)",
+            "refId": "C"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "textMode": "value_and_name"
+        }
+      },
+      {
+        "id": 3,
+        "title": "API Performance (p95 Latency)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(beta_ai_search_duration_seconds_bucket[5m]))",
+            "legendFormat": "AI Search",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(beta_ai_recommendations_duration_seconds_bucket[5m]))",
+            "legendFormat": "AI Recommendations",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(beta_credit_deduction_duration_seconds_bucket[5m]))",
+            "legendFormat": "Credit Operations",
+            "refId": "C"
+          }
+        ],
+        "yaxes": [
+          {"format": "s", "label": "Latency"},
+          {"format": "short"}
+        ],
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {"type": "gt", "params": [0.5]},
+              "operator": {"type": "and"},
+              "query": {"params": ["A", "5m", "now"]},
+              "reducer": {"type": "avg"},
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "frequency": "1m",
+          "handler": 1,
+          "name": "AI Search Latency Alert",
+          "noDataState": "no_data",
+          "notifications": []
+        }
+      },
+      {
+        "id": 4,
+        "title": "Feature Usage (Requests/min)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+        "targets": [
+          {
+            "expr": "rate(beta_ai_search_requests_total[5m]) * 60",
+            "legendFormat": "AI Search",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(beta_ai_recommendations_requests_total[5m]) * 60",
+            "legendFormat": "AI Recommendations",
+            "refId": "B"
+          },
+          {
+            "expr": "rate(beta_live_dubbing_sessions_total[5m]) * 60",
+            "legendFormat": "Live Dubbing",
+            "refId": "C"
+          },
+          {
+            "expr": "rate(beta_podcast_translation_requests_total[5m]) * 60",
+            "legendFormat": "Podcast Translation",
+            "refId": "D"
+          }
+        ],
+        "yaxes": [
+          {"format": "short", "label": "Requests/min"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Credit Consumption by Feature",
+        "type": "piechart",
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 12},
+        "targets": [
+          {
+            "expr": "sum(rate(beta_credits_deducted_total[1h])) by (feature)",
+            "legendFormat": "{{feature}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {"displayMode": "table", "placement": "right"},
+          "pieType": "donut"
+        }
+      },
+      {
+        "id": 6,
+        "title": "User Credit Distribution",
+        "type": "histogram",
+        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 12},
+        "targets": [
+          {
+            "expr": "beta_user_credits_remaining",
+            "legendFormat": "Credit Balance",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "bucketSize": 500,
+          "legend": {"displayMode": "list", "placement": "bottom"}
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "fillOpacity": 80,
+              "gradientMode": "scheme"
+            }
+          }
+        }
+      },
+      {
+        "id": 7,
+        "title": "API Error Rate",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+        "targets": [
+          {
+            "expr": "sum(rate(beta_api_errors_total[5m])) by (path) * 60",
+            "legendFormat": "{{path}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {"format": "short", "label": "Errors/min"},
+          {"format": "short"}
+        ],
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {"type": "gt", "params": [10]},
+              "operator": {"type": "and"},
+              "query": {"params": ["A", "5m", "now"]},
+              "reducer": {"type": "avg"},
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "frequency": "1m",
+          "handler": 1,
+          "name": "High Error Rate Alert",
+          "noDataState": "no_data"
+        }
+      },
+      {
+        "id": 8,
+        "title": "Low Credit Users Over Time",
+        "type": "graph",
+        "gridPos": {"h": 6, "w": 12, "x": 0, "y": 20},
+        "targets": [
+          {
+            "expr": "beta:users_low_credits:count",
+            "legendFormat": "< 500 credits",
+            "refId": "A"
+          },
+          {
+            "expr": "beta:users_critical_credits:count",
+            "legendFormat": "< 100 credits",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "short", "label": "User Count"},
+          {"format": "short"}
+        ],
+        "thresholds": [
+          {"value": 50, "op": "gt", "fill": true, "line": true, "colorMode": "critical"}
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Fraud Detection Stats",
+        "type": "stat",
+        "gridPos": {"h": 6, "w": 6, "x": 12, "y": 20},
+        "targets": [
+          {
+            "expr": "rate(beta_signup_fraud_checks_total[1h])",
+            "legendFormat": "Checks/hour",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(beta_signup_fraud_detected_total[1h])",
+            "legendFormat": "Detected/hour",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(beta_signup_fraud_risk_score_bucket[1h]))",
+            "legendFormat": "p95 Risk Score",
+            "refId": "C"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "textMode": "value_and_name"
+        }
+      },
+      {
+        "id": 10,
+        "title": "Email Verification Funnel",
+        "type": "stat",
+        "gridPos": {"h": 6, "w": 6, "x": 18, "y": 20},
+        "targets": [
+          {
+            "expr": "rate(beta_email_verification_sent_total[1h]) * 3600",
+            "legendFormat": "Sent/hour",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(beta_email_verification_succeeded_total[1h]) * 3600",
+            "legendFormat": "Verified/hour",
+            "refId": "B"
+          },
+          {
+            "expr": "(rate(beta_email_verification_succeeded_total[1h]) / rate(beta_email_verification_sent_total[1h])) * 100",
+            "legendFormat": "Success Rate %",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 50, "color": "yellow"},
+                {"value": 70, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 11,
+        "title": "Database Performance",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 26},
+        "targets": [
+          {
+            "expr": "rate(mongodb_op_latencies_latency_sum{type=\"commands\"}[5m]) / rate(mongodb_op_latencies_latency_count{type=\"commands\"}[5m])",
+            "legendFormat": "Avg Query Latency",
+            "refId": "A"
+          },
+          {
+            "expr": "mongodb_connections{state=\"current\"}",
+            "legendFormat": "Active Connections",
+            "refId": "B"
+          },
+          {
+            "expr": "rate(mongodb_opcounters_total[5m])",
+            "legendFormat": "{{type}} ops/sec",
+            "refId": "C"
+          }
+        ],
+        "yaxes": [
+          {"format": "ms", "label": "Latency / Connections"},
+          {"format": "short", "label": "Ops/sec"}
+        ]
+      },
+      {
+        "id": 12,
+        "title": "SLO Compliance",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 26},
+        "targets": [
+          {
+            "expr": "(sum(rate(beta_api_requests_total[30m])) - sum(rate(beta_api_errors_total[30m]))) / sum(rate(beta_api_requests_total[30m])) * 100",
+            "legendFormat": "API Availability %",
+            "refId": "A",
+            "format": "table",
+            "instant": true
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(beta_ai_search_duration_seconds_bucket[10m])) * 1000",
+            "legendFormat": "AI Search p95 (ms)",
+            "refId": "B",
+            "format": "table",
+            "instant": true
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(beta_credit_deduction_duration_seconds_bucket[5m])) * 1000",
+            "legendFormat": "Credit Ops p95 (ms)",
+            "refId": "C",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "transformations": [
+          {
+            "id": "merge",
+            "options": {}
+          },
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {"Time": true},
+              "indexByName": {},
+              "renameByName": {
+                "Value #A": "Availability (%)",
+                "Value #B": "Search Latency (ms)",
+                "Value #C": "Credit Latency (ms)"
+              }
+            }
+          }
+        ],
+        "options": {
+          "showHeader": true,
+          "cellHeight": "sm",
+          "footer": {
+            "show": false
+          }
+        },
+        "fieldConfig": {
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "Availability (%)"},
+              "properties": [
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "mode": "absolute",
+                    "steps": [
+                      {"value": 0, "color": "red"},
+                      {"value": 99.9, "color": "green"}
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "env",
+          "type": "query",
+          "query": "label_values(beta_users_total, env)",
+          "refresh": 1,
+          "options": [],
+          "includeAll": false,
+          "multi": false
+        },
+        {
+          "name": "instance",
+          "type": "query",
+          "query": "label_values(beta_api_requests_total, instance)",
+          "refresh": 1,
+          "options": [],
+          "includeAll": true,
+          "multi": true
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "datasource": "Prometheus",
+          "enable": true,
+          "expr": "ALERTS{alertname=~\"Beta.*\", severity=\"critical\"}",
+          "iconColor": "red",
+          "name": "Critical Alerts",
+          "tagKeys": "alertname,severity",
+          "textFormat": "{{alertname}}: {{summary}}",
+          "titleFormat": "Alert"
+        },
+        {
+          "datasource": "Prometheus",
+          "enable": true,
+          "expr": "changes(beta_users_total[5m]) > 0",
+          "iconColor": "green",
+          "name": "New Enrollments",
+          "textFormat": "New users enrolled"
+        }
+      ]
+    }
+  },
+  "overwrite": true,
+  "folderId": 0,
+  "folderUid": "beta-500"
+}

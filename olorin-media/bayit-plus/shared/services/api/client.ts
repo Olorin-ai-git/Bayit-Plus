@@ -39,8 +39,14 @@ const getApiBaseUrl = () => {
   }
 
   // In development:
-  // Web and iOS simulator can use localhost
-  if (Platform.OS === "web" || Platform.OS === "ios") {
+  // Web uses relative path to go through webpack dev server proxy (port 3200 → port 8000)
+  // This avoids CORS issues by making requests same-origin
+  if (Platform.OS === "web") {
+    return "/api/v1";
+  }
+
+  // iOS simulator can use localhost directly
+  if (Platform.OS === "ios") {
     return "http://localhost:8000/api/v1";
   }
 
@@ -58,20 +64,19 @@ export const API_BASE_URL = getApiBaseUrl();
 // Create scoped logger for API client
 const apiLogger = logger.scope("API");
 
-// Security headers for all API requests
-const SECURITY_HEADERS = {
+// Request headers for all API requests
+// NOTE: Security headers (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Strict-Transport-Security)
+// are RESPONSE headers and must ONLY be set by the server, never by the client.
+// Setting them as request headers causes CORS errors.
+const REQUEST_HEADERS = {
   "Content-Type": "application/json",
-  "X-Content-Type-Options": "nosniff", // Prevent MIME type sniffing
-  "X-Frame-Options": "DENY", // Prevent clickjacking
-  "X-XSS-Protection": "1; mode=block", // XSS protection
-  "Strict-Transport-Security": "max-age=31536000; includeSubDomains", // Force HTTPS
 };
 
-// Main API instance with security hardening
+// Main API instance
 export const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
-  headers: SECURITY_HEADERS,
+  headers: REQUEST_HEADERS,
   withCredentials: true, // Enable cookies for CSRF token handling
   validateStatus: (status) => status >= 200 && status < 500, // Don't throw on 4xx/5xx
 });
@@ -80,7 +85,7 @@ export const api = axios.create({
 export const contentApi = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000,
-  headers: SECURITY_HEADERS,
+  headers: REQUEST_HEADERS,
   withCredentials: true, // Enable cookies for CSRF token handling
   validateStatus: (status) => status >= 200 && status < 500,
 });

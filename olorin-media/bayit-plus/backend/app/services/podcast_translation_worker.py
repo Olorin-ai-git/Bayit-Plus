@@ -9,6 +9,7 @@ from typing import List, Optional, Set
 
 from app.core.config import settings
 from app.models.content import PodcastEpisode, PodcastEpisodeMinimal
+from app.services.beta.podcast_translation_integration import BetaPodcastTranslationIntegration
 from app.services.podcast_translation_service import PodcastTranslationService
 
 logger = logging.getLogger(__name__)
@@ -126,7 +127,22 @@ class PodcastTranslationWorker:
 
                 # Process translation
                 try:
-                    await self.translation_service.translate_episode(episode)
+                    # Reload full episode to get requested_by_user_id
+                    full_episode = await PodcastEpisode.get(episode.id)
+
+                    # Use Beta integration if user requested translation
+                    if full_episode.requested_by_user_id:
+                        logger.info(
+                            f"Worker {worker_id} using Beta integration for user {full_episode.requested_by_user_id}"
+                        )
+                        beta_service = BetaPodcastTranslationIntegration(
+                            user_id=full_episode.requested_by_user_id
+                        )
+                        await beta_service.translate_episode(full_episode)
+                    else:
+                        # Fallback to standard service for legacy episodes
+                        await self.translation_service.translate_episode(full_episode)
+
                     logger.info(
                         f"Worker {worker_id} completed episode: {episode.title}"
                     )

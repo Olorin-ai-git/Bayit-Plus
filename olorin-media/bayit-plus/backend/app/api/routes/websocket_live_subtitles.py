@@ -16,6 +16,7 @@ from app.api.routes.websocket_helpers import (check_authentication_message,
 from app.core.config import settings
 from app.models.content import LiveChannel
 from app.models.live_feature_quota import FeatureType, UsageSessionStatus
+from app.services.beta.live_translation_integration import BetaLiveTranslationIntegration
 from app.services.live_feature_quota_service import live_feature_quota_service
 from app.services.live_translation_service import LiveTranslationService
 from app.services.rate_limiter_live import get_rate_limiter
@@ -178,40 +179,60 @@ async def websocket_live_subtitles(
 
     logger.info(f"Live subtitle connection: user={user.id}, channel={channel_id}")
 
-    # Initialize translation service
+    # Initialize Beta-aware translation service
     try:
-        translation_service = LiveTranslationService()
         source_lang = channel.primary_language or "he"
 
+        # Create Beta integration (handles both Beta and non-Beta users)
+        translation_integration = BetaLiveTranslationIntegration(
+            user=user,
+            source_lang=source_lang,
+            target_lang=target_lang,
+        )
+
+        # Start session (Beta or standard mode)
+        session_info = await translation_integration.start_session()
+
         # Verify service availability
-        if not translation_service.verify_service_availability().get("speech_to_text"):
+        if not translation_integration._translation_service.verify_service_availability().get("speech_to_text"):
             await websocket.send_json(
                 {"type": "error", "message": "Speech-to-text service unavailable"}
             )
             await websocket.close(code=4000, reason="Speech service unavailable")
             return
 
-        # Send connection confirmation
-        await websocket.send_json(
-            {
-                "type": "connected",
-                "source_lang": source_lang,
-                "target_lang": target_lang,
-                "channel_id": channel_id,
-                "stt_provider": translation_service.provider,
-                "translation_provider": translation_service.translation_provider,
-            }
-        )
-        logger.info(f"Translation service initialized for channel {channel_id}")
+        # Send connection confirmation (includes Beta mode info if applicable)
+        mode = session_info.get("mode", "standard_quota")
+        connection_msg = {
+            "type": "connected",
+            "source_lang": source_lang,
+            "target_lang": target_lang,
+            "channel_id": channel_id,
+            "stt_provider": translation_integration._translation_service.provider,
+            "translation_provider": translation_integration._translation_service.translation_provider,
+            "mode": mode,
+        }
+
+        if mode == "beta_credits":
+            connection_msg.update({
+                "credits": session_info.get("initial_balance"),
+                "credit_rate": session_info.get("credit_rate"),
+                "estimated_runtime_seconds": session_info.get("estimated_runtime_seconds"),
+            })
+            logger.info(
+                f"Beta translation session started: user={user.id}, "
+                f"credits={session_info.get('initial_balance')}, "
+                f"estimated_runtime={session_info.get('estimated_runtime_seconds')}s"
+            )
+        else:
+            logger.info(f"Standard translation session started: user={user.id}")
+
+        await websocket.send_json(connection_msg)
 
         # Process audio and stream subtitles
         try:
-            async for (
-                subtitle_cue
-            ) in translation_service.process_live_audio_to_subtitles(
+            async for subtitle_cue in translation_integration.process_audio_with_credits(
                 create_audio_stream_with_quota_updates(websocket, session, user),
-                source_lang=source_lang,
-                target_lang=target_lang,
             ):
                 await websocket.send_json({"type": "subtitle", "data": subtitle_cue})
 
@@ -219,9 +240,11 @@ async def websocket_live_subtitles(
             logger.info(
                 f"Live subtitle session ended: user={user.id}, channel={channel_id}"
             )
+            await translation_integration.stop_session()
             await end_quota_session(session, UsageSessionStatus.COMPLETED)
         except Exception as e:
             logger.error(f"Error in subtitle stream: {str(e)}")
+            await translation_integration.stop_session()
             await end_quota_session(session, UsageSessionStatus.ERROR)
             try:
                 await websocket.send_json(

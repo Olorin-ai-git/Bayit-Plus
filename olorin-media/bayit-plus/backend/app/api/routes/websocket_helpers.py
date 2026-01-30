@@ -19,6 +19,8 @@ from app.models.content import LiveChannel
 from app.models.live_dubbing import LiveDubbingSession
 from app.models.live_feature_quota import FeatureType, UsageSessionStatus
 from app.models.user import User
+from app.services.beta.credit_service import BetaCreditService
+from app.services.beta.live_dubbing_integration import BetaLiveDubbingIntegration
 from app.services.live_dubbing_service import LiveDubbingService
 from app.services.live_feature_quota_service import live_feature_quota_service
 
@@ -226,7 +228,7 @@ async def initialize_dubbing_session(
     voice_id: Optional[str],
     platform: str,
 ) -> Tuple[
-    LiveDubbingService,
+    BetaLiveDubbingIntegration,
     asyncio.Task,
     asyncio.Task,
     asyncio.Task,
@@ -234,12 +236,18 @@ async def initialize_dubbing_session(
     """
     Initialize dubbing service and start processing tasks.
 
+    Uses BetaLiveDubbingIntegration which:
+    - Checks if user is enrolled in Beta 500
+    - Uses Beta credit system for Beta users
+    - Falls back to standard quota system for non-Beta users
+
     Returns: (dubbing_service, pipeline_task, latency_task, sender_task)
     """
     # Use channel's default voice or provided voice
     effective_voice_id = voice_id or channel.default_dubbing_voice_id
 
-    dubbing_service = LiveDubbingService(
+    # Create Beta-aware dubbing service (handles both Beta and non-Beta users)
+    dubbing_service = BetaLiveDubbingIntegration(
         channel=channel,
         user=user,
         target_language=target_language,
@@ -247,15 +255,25 @@ async def initialize_dubbing_session(
         platform=platform,
     )
 
-    # Start dubbing session
+    # Start dubbing session (Beta or standard mode)
     connection_info = await dubbing_service.start()
 
-    # Send connection confirmation
+    # Send connection confirmation (includes Beta mode info if applicable)
     await websocket.send_json(connection_info)
-    logger.info(
-        f"Dubbing session started: {dubbing_service.session_id}, "
-        f"sync_delay={connection_info['sync_delay_ms']}ms"
-    )
+
+    mode = connection_info.get("mode", "standard_quota")
+    if mode == "beta_credits":
+        logger.info(
+            f"Beta dubbing session started: {dubbing_service.session_id}, "
+            f"sync_delay={connection_info.get('sync_delay_ms')}ms, "
+            f"credits={connection_info.get('initial_balance')}, "
+            f"estimated_runtime={connection_info.get('estimated_runtime_seconds')}s"
+        )
+    else:
+        logger.info(
+            f"Standard dubbing session started: {dubbing_service.session_id}, "
+            f"sync_delay={connection_info.get('sync_delay_ms')}ms"
+        )
 
     # Track active session
     channel_id = str(channel.id)
@@ -355,7 +373,7 @@ async def end_quota_session(quota_session, status: UsageSessionStatus):
 
 async def cleanup_dubbing_session(
     channel_id: str,
-    dubbing_service: Optional[LiveDubbingService],
+    dubbing_service: Optional[BetaLiveDubbingIntegration],
     pipeline_task: Optional[asyncio.Task],
     latency_task: Optional[asyncio.Task],
     sender_task: Optional[asyncio.Task],

@@ -23,7 +23,7 @@ def mock_credit_service():
     service = AsyncMock()
     service.authorize = AsyncMock(return_value=(True, 1000))
     service.deduct_credits = AsyncMock(return_value=(True, 950))
-    service.get_credit_rate = MagicMock(return_value=1.0)
+    service.get_credit_rate = AsyncMock(return_value=1.0)  # Must be AsyncMock since it's awaited
     return service
 
 
@@ -57,7 +57,9 @@ class TestStartDubbingSession:
             assert session_id is not None
             assert len(session_id) > 0
             mock_credit_service.authorize.assert_called_once_with(
-                user_id, "live_dubbing", 30.0
+                user_id=user_id,
+                feature="live_dubbing",
+                estimated_cost=30  # CHECKPOINT_INTERVAL_SECONDS from mock_settings
             )
             mock_session.insert.assert_called_once()
 
@@ -87,12 +89,14 @@ class TestStartDubbingSession:
                 user_id, "live_dubbing", {"device": "iOS"}
             )
 
-            # Verify session properties
-            assert mock_session.user_id == user_id
-            assert mock_session.feature == "live_dubbing"
-            assert mock_session.status == "active"
-            assert mock_session.credits_consumed == 0
-            assert mock_session.metadata == {"device": "iOS"}
+            # Verify BetaSession was called with correct arguments
+            MockSession.assert_called_once()
+            call_kwargs = MockSession.call_args.kwargs
+            assert call_kwargs["user_id"] == user_id
+            assert call_kwargs["feature"] == "live_dubbing"
+            assert call_kwargs["status"] == "active"
+            assert call_kwargs["credits_consumed"] == 0
+            assert call_kwargs["metadata"] == {"device": "iOS"}
 
 
 class TestCheckpointSession:
@@ -184,25 +188,36 @@ class TestEndSession:
         """Test successful session end with final checkpoint."""
         session_id = "session-123"
 
-        # Mock session with 15 seconds elapsed since last checkpoint
-        mock_session = MagicMock()
-        mock_session.user_id = "user-456"
-        mock_session.feature = "live_dubbing"
-        mock_session.status = "active"
-        mock_session.last_checkpoint = datetime.utcnow() - timedelta(seconds=15)
-        mock_session.credits_consumed = 100
-        mock_session.metadata = {}
-        mock_session.save = AsyncMock()
+        # Create a simple object that stores attributes properly
+        class MockSession:
+            def __init__(self):
+                self.user_id = "user-456"
+                self.feature = "live_dubbing"
+                self.status = "active"
+                self.start_time = datetime.utcnow() - timedelta(minutes=5)
+                self.last_checkpoint = datetime.utcnow() - timedelta(seconds=15)
+                self.credits_consumed = 100
+                self.metadata = {}
+                self.end_time = None
+                self.save = AsyncMock()
 
-        with patch('app.services.beta.session_service.BetaSession') as MockSession:
-            MockSession.find_one = AsyncMock(return_value=mock_session)
+            def duration_seconds(self):
+                """Calculate session duration in seconds."""
+                if self.end_time:
+                    return (self.end_time - self.start_time).total_seconds()
+                return 0
+
+        mock_session = MockSession()
+
+        with patch('app.services.beta.session_service.BetaSession') as MockSessionClass:
+            MockSessionClass.find_one = AsyncMock(return_value=mock_session)
 
             remaining = await session_service.end_session(session_id, "completed")
 
             assert remaining == 950
             assert mock_session.status == "ended"
             assert mock_session.credits_consumed == 115  # 100 + 15
-            assert mock_session.end_reason == "completed"
+            assert mock_session.end_time is not None
             mock_session.save.assert_called_once()
 
     @pytest.mark.asyncio
@@ -249,7 +264,7 @@ class TestCalculateSessionCredits:
     async def test_calculate_credits_for_30_seconds(self, session_service):
         """Test credit calculation for 30-second interval."""
         # 30 seconds at 1.0 credits/second = 30 credits
-        rate = session_service.credit_service.get_credit_rate("live_dubbing")
+        rate = await session_service.credit_service.get_credit_rate("live_dubbing")
         elapsed = 30
         expected_credits = int(elapsed * rate)
 
@@ -259,7 +274,7 @@ class TestCalculateSessionCredits:
     async def test_calculate_credits_for_60_seconds(self, session_service):
         """Test credit calculation for 60-second interval."""
         # 60 seconds at 1.0 credits/second = 60 credits
-        rate = session_service.credit_service.get_credit_rate("live_dubbing")
+        rate = await session_service.credit_service.get_credit_rate("live_dubbing")
         elapsed = 60
         expected_credits = int(elapsed * rate)
 

@@ -14,7 +14,7 @@ def get_location_service() -> LocationService:
     return LocationService()
 
 
-@router.get("/location/reverse-geocode", response_model=ReverseGeocodeResponse)
+@router.get("/reverse-geocode", response_model=ReverseGeocodeResponse)
 @limiter.limit("30/minute")
 async def reverse_geocode(
     request: Request,

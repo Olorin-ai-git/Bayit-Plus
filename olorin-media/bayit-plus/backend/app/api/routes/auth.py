@@ -423,8 +423,21 @@ async def refresh_access_token(request: Request, refresh_request: RefreshTokenRe
 @router.get("/google/url")
 async def get_google_auth_url(redirect_uri: str | None = None):
     """Get Google OAuth authorization URL with CSRF protection."""
+    # Validate Google OAuth configuration
+    if not settings.GOOGLE_CLIENT_ID:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Google OAuth is not configured. Please set GOOGLE_CLIENT_ID in environment variables.",
+        )
+
     # Use provided redirect_uri or fall back to configured default
     final_redirect_uri = redirect_uri or settings.GOOGLE_REDIRECT_URI
+
+    if not final_redirect_uri:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="redirect_uri parameter is required. Example: http://localhost:3200/auth/google/callback",
+        )
 
     # Generate cryptographically secure random state token for CSRF protection
     state = secrets.token_urlsafe(32)
@@ -451,6 +464,13 @@ async def get_google_auth_url(redirect_uri: str | None = None):
 @limiter.limit("10/minute")
 async def google_callback(request: Request, auth_data: GoogleAuthCode):
     """Handle Google OAuth callback with CSRF validation."""
+
+    # Validate Google OAuth configuration
+    if not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Google OAuth is not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.",
+        )
 
     # Verify state parameter to prevent CSRF attacks
     if not auth_data.state:

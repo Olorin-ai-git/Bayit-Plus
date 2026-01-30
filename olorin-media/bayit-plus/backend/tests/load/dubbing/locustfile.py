@@ -7,8 +7,9 @@ Usage:
     locust -f backend/tests/load/dubbing/locustfile.py
 
 Environment Variables:
-    LOAD_TEST_BASE_URL: Backend base URL (default: http://localhost:8090)
-    LOAD_TEST_WS_URL: WebSocket base URL (default: ws://localhost:8090)
+    BACKEND_PORT: Backend port (default: 8000, used by LOAD_TEST_BASE_URL/WS_URL fallbacks)
+    LOAD_TEST_BASE_URL: Backend base URL (default: http://localhost:${BACKEND_PORT})
+    LOAD_TEST_WS_URL: WebSocket base URL (default: ws://localhost:${BACKEND_PORT})
     LOAD_TEST_API_KEY: Partner API key for authentication
     LOAD_TEST_SOURCE_LANG: Source language (default: he)
     LOAD_TEST_TARGET_LANG: Target language (default: en)

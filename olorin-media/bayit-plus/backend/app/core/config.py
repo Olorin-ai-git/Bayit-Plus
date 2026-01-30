@@ -493,14 +493,17 @@ class Settings(BaseSettings):
     # GeoNames (Reverse geocoding for location-based features)
     GEONAMES_USERNAME: str = Field(
         default="",
+        validation_alias=AliasChoices('BAYIT_GEONAMES_USERNAME', 'GEONAMES_USERNAME'),
         description="GeoNames API username for reverse geocoding (required for location features)"
     )
     GEONAMES_API_BASE_URL: str = Field(
         default="https://secure.geonames.org",
+        validation_alias=AliasChoices('BAYIT_GEONAMES_API_BASE_URL', 'GEONAMES_API_BASE_URL'),
         description="GeoNames API base URL"
     )
     GEONAMES_TIMEOUT_SECONDS: int = Field(
         default=10,
+        validation_alias=AliasChoices('BAYIT_GEONAMES_TIMEOUT_SECONDS', 'GEONAMES_TIMEOUT_SECONDS'),
         description="GeoNames API request timeout in seconds"
     )
     LOCATION_CACHE_TTL_HOURS: int = Field(
@@ -575,7 +578,10 @@ class Settings(BaseSettings):
 
     # CORS (REQUIRED - supports JSON string from Secret Manager or comma-separated list)
     # Example: '["https://bayit.tv","https://api.bayit.tv"]' or "https://bayit.tv,https://api.bayit.tv"
-    BACKEND_CORS_ORIGINS: list[str] | str = ""  # Required, no hardcoded defaults
+    BACKEND_CORS_ORIGINS: list[str] | str = Field(
+        default="",
+        validation_alias=AliasChoices('BAYIT_BACKEND_CORS_ORIGINS', 'BACKEND_CORS_ORIGINS')
+    )
 
     @property
     def parsed_cors_origins(self) -> list[str]:
@@ -607,6 +613,40 @@ class Settings(BaseSettings):
                     if origin.strip()
                 ]
         return self.BACKEND_CORS_ORIGINS
+
+    # CSP connect-src additional origins (comma-separated or JSON array)
+    # Google OAuth, Sentry, Firebase, etc.
+    CSP_CONNECT_SRC_EXTRA: str = Field(
+        default="",
+        validation_alias=AliasChoices('BAYIT_CSP_CONNECT_SRC_EXTRA', 'CSP_CONNECT_SRC_EXTRA')
+    )
+
+    @property
+    def parsed_csp_connect_src(self) -> str:
+        """Build CSP connect-src directive from config."""
+        sources = [
+            "'self'",
+            "https://accounts.google.com",
+            "https://oauth2.googleapis.com",
+            "https://www.googleapis.com",
+            "https://api.stripe.com",
+            "https://*.sentry.io",
+            "https://*.firebaseio.com",
+            "wss://api.bayit.tv",
+        ]
+
+        if self.CSP_CONNECT_SRC_EXTRA:
+            try:
+                extras = json.loads(self.CSP_CONNECT_SRC_EXTRA)
+            except json.JSONDecodeError:
+                extras = [
+                    s.strip()
+                    for s in self.CSP_CONNECT_SRC_EXTRA.split(",")
+                    if s.strip()
+                ]
+            sources.extend(extras)
+
+        return " ".join(sources)
 
     # DRM (optional)
     DRM_LICENSE_URL: str = ""

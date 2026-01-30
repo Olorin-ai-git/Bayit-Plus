@@ -26,6 +26,7 @@ from app.core.database_olorin import (close_olorin_mongo_connection,
 from app.core.logging_config import setup_logging
 from app.core.sentry_config import init_sentry
 from app.middleware.correlation_id import CorrelationIdMiddleware
+from app.middleware.options_handler import OptionsHandlerMiddleware
 from app.middleware.request_timing import RequestTimingMiddleware
 from app.services.olorin.content_metadata_service import \
     content_metadata_service
@@ -348,6 +349,11 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*", "X-Correlation-ID", "X-Request-Duration-Ms"],
 )
+
+# OPTIONS handler - handles CORS preflight before validation
+# Must be added AFTER CORS middleware (executed BEFORE CORS on request path)
+app.add_middleware(OptionsHandlerMiddleware)
+logger.info("OPTIONS handler middleware enabled - bypasses validation for CORS preflight")
 
 # ============================================
 # Routes

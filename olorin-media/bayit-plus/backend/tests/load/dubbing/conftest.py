@@ -61,12 +61,13 @@ def get_test_audio_chunks(
 
 
 # Load test configuration from environment
+_backend_port = os.getenv("BACKEND_PORT", "8000")
 LOAD_TEST_CONFIG = {
     "base_url": os.getenv(
-        "LOAD_TEST_BASE_URL", "http://localhost:8090"
+        "LOAD_TEST_BASE_URL", f"http://localhost:{_backend_port}"
     ),
     "ws_url": os.getenv(
-        "LOAD_TEST_WS_URL", "ws://localhost:8090"
+        "LOAD_TEST_WS_URL", f"ws://localhost:{_backend_port}"
     ),
     "api_key": os.getenv("LOAD_TEST_API_KEY", ""),
     "source_language": os.getenv("LOAD_TEST_SOURCE_LANG", "he"),

@@ -448,7 +448,7 @@ poetry run python -m app.local_server
 poetry run pytest tests/test_audiobooks.py -v
 
 # 3. Manual testing
-curl http://localhost:8090/api/v1/audiobooks
+curl http://localhost:${BACKEND_PORT:-8000}/api/v1/audiobooks
 
 # 4. Seed audiobooks section
 poetry run python scripts/seed_audiobooks_section.py

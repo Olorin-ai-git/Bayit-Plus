@@ -560,6 +560,7 @@ class PodcastEpisode(Document):
     available_languages: List[str] = Field(default_factory=list)  # ["he", "en"]
     original_language: str = ""  # Populated at runtime from detection or config
     translation_status: str = "pending"  # pending, processing, completed, failed
+    requested_by_user_id: Optional[str] = None  # Beta user who requested translation (for credit tracking)
 
     # Translation stage tracking (for resumption after failures)
     translation_stages: Dict[str, Any] = Field(

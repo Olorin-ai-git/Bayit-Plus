@@ -25,7 +25,13 @@ def mock_settings():
 @pytest.fixture
 def fraud_service(mock_settings):
     """Create FraudDetectionService with mocked settings."""
-    return FraudDetectionService(settings=mock_settings)
+    with patch('app.services.beta.fraud_service.BetaUser') as MockUser:
+        # Mock database query to return no existing users (default)
+        mock_find = MagicMock()
+        mock_find.count = AsyncMock(return_value=0)
+        MockUser.find = MagicMock(return_value=mock_find)
+
+        yield FraudDetectionService(settings=mock_settings)
 
 
 class TestCheckSignup:
@@ -101,25 +107,25 @@ class TestCheckSignup:
         assert "disposable_email" in result2["flags"]
 
     @pytest.mark.asyncio
-    async def test_check_signup_multiple_signups_same_fingerprint(self, fraud_service):
+    async def test_check_signup_multiple_signups_same_fingerprint(self, mock_settings):
         """Test detection of multiple signups from same device."""
-        email1 = "user1@example.com"
         email2 = "user2@example.com"
         ip = "192.168.1.1"
         user_agent = "Mozilla/5.0"
 
-        # Mock existing beta user with same fingerprint
+        # Mock existing beta users with same fingerprint (3 existing accounts)
         with patch('app.services.beta.fraud_service.BetaUser') as MockUser:
-            mock_user = MagicMock()
-            mock_user.email = email1
-            MockUser.find = MagicMock()
-            MockUser.find.return_value.count = AsyncMock(return_value=2)
+            mock_find = MagicMock()
+            mock_find.count = AsyncMock(return_value=3)
+            MockUser.find = MagicMock(return_value=mock_find)
 
+            fraud_service = FraudDetectionService(settings=mock_settings)
             result = await fraud_service.check_signup(email2, ip, user_agent)
 
             # Should flag as medium risk due to multiple accounts
             assert result["risk"] in ["medium", "high"]
             assert "multiple_accounts" in result["flags"]
+            assert result["passed"] is False
 
 
 class TestDetectCreditAbuse:
@@ -145,20 +151,46 @@ class TestDetectCreditAbuse:
             assert is_abuse is False
 
     @pytest.mark.asyncio
-    async def test_detect_abuse_excessive_usage(self, fraud_service):
+    async def test_detect_abuse_excessive_usage(self, mock_settings):
         """Test excessive usage (abuse detected)."""
         user_id = "user-123"
 
         # Mock transactions totaling 1500 credits (exceeds threshold of 1000)
-        with patch('app.services.beta.fraud_service.BetaCreditTransaction') as MockTx:
-            MockTx.find = MagicMock()
+        with patch('app.services.beta.fraud_service.BetaCreditTransaction') as MockTx, \
+             patch('app.services.beta.fraud_service.BetaUser') as MockUser:
+
             mock_transactions = [
                 MagicMock(amount=500),
                 MagicMock(amount=500),
                 MagicMock(amount=500),
             ]
-            MockTx.find.return_value.to_list = AsyncMock(return_value=mock_transactions)
 
+            # Configure mock fields to support comparison operations
+            # This allows BetaCreditTransaction.created_at >= one_hour_ago to work
+            mock_created_at = MagicMock()
+            mock_created_at.__ge__ = MagicMock(return_value=mock_created_at)
+            mock_user_id = MagicMock()
+            mock_user_id.__eq__ = MagicMock(return_value=mock_user_id)
+            mock_tx_type = MagicMock()
+            mock_tx_type.__eq__ = MagicMock(return_value=mock_tx_type)
+
+            MockTx.created_at = mock_created_at
+            MockTx.user_id = mock_user_id
+            MockTx.transaction_type = mock_tx_type
+
+            # Mock the query chain: find(...).to_list()
+            mock_to_list = AsyncMock(return_value=mock_transactions)
+            mock_find_result = MagicMock()
+            mock_find_result.to_list = mock_to_list
+            MockTx.find = MagicMock(return_value=mock_find_result)
+
+            # Mock BetaUser.find() for check_signup
+            mock_user_find = MagicMock()
+            mock_user_find.count = AsyncMock(return_value=0)
+            MockUser.find = MagicMock(return_value=mock_user_find)
+
+            # Create fraud service with mocked dependencies
+            fraud_service = FraudDetectionService(settings=mock_settings)
             is_abuse = await fraud_service.detect_credit_abuse(user_id)
 
             assert is_abuse is True

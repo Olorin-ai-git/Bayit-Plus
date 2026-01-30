@@ -8,6 +8,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from app.core.rate_limiter import RATE_LIMITS, limiter
+from app.core.security import get_current_user
 from app.models.admin import AuditAction, Permission
 from app.models.content import Podcast, PodcastEpisode
 from app.models.user import User
@@ -234,11 +235,12 @@ async def trigger_translation(
     podcast_id: str,
     episode_id: str,
     request: Request,
-    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
+    current_user: User = Depends(get_current_user),
 ):
     """
-    Manually trigger translation for a specific episode.
+    Trigger translation for a specific episode.
 
+    Available to all authenticated users (Beta users will be charged credits).
     Rate limited to 10 requests per minute to prevent abuse.
     """
     # Verify podcast exists
@@ -254,6 +256,11 @@ async def trigger_translation(
 
     if not episode or episode.podcast_id != podcast_id:
         raise HTTPException(status_code=404, detail="Episode not found")
+
+    # Store requesting user for Beta credit tracking
+    await PodcastEpisode.find_one({"_id": episode.id}).update(
+        {"$set": {"requested_by_user_id": str(current_user.id)}}
+    )
 
     # Get translation worker
     worker = get_translation_worker()

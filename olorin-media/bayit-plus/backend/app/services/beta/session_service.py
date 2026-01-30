@@ -56,7 +56,7 @@ class SessionBasedCreditService:
         metadata: dict = None
     ) -> Optional[str]:
         """
-        Start dubbing session - create checkpoint, don't deduct yet.
+        Start dubbing session - authorize first, then create checkpoint.
 
         Args:
             user_id: User ID
@@ -64,12 +64,28 @@ class SessionBasedCreditService:
             metadata: Additional session metadata
 
         Returns:
-            Session ID or None if failed
+            Session ID or None if failed/unauthorized
         """
         if metadata is None:
             metadata = {}
 
         try:
+            # Authorize user before starting session
+            # Reserve credits for estimated first checkpoint interval
+            checkpoint_interval = self.settings.CHECKPOINT_INTERVAL_SECONDS
+            authorized, balance = await self.credit_service.authorize(
+                user_id=user_id,
+                feature=feature,
+                estimated_cost=checkpoint_interval  # Reserve credits for first interval
+            )
+
+            if not authorized:
+                logger.warning(
+                    "Session start unauthorized - insufficient credits",
+                    extra={"user_id": user_id, "balance": balance}
+                )
+                return None
+
             # Generate unique session ID
             session_id = f"sess_{uuid.uuid4().hex[:16]}"
 

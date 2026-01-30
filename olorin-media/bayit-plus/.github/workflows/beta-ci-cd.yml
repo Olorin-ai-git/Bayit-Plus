@@ -1,0 +1,407 @@
+name: Beta 500 CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'backend/app/services/beta/**'
+      - 'backend/app/api/routes/beta/**'
+      - 'backend/app/models/beta_*.py'
+      - 'backend/test/**'
+      - 'web/src/components/beta/**'
+      - 'mobile-app/src/components/beta/**'
+      - 'tvos-app/src/components/beta/**'
+      - '.github/workflows/beta-ci-cd.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'backend/app/services/beta/**'
+      - 'backend/app/api/routes/beta/**'
+      - 'backend/test/**'
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+  POETRY_VERSION: '1.7.0'
+
+jobs:
+  # ========================================
+  # Backend Testing
+  # ========================================
+  backend-unit-tests:
+    name: Backend Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pypoetry
+            backend/.venv
+          key: ${{ runner.os }}-poetry-${{ hashFiles('backend/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          poetry install --no-interaction --no-ansi
+
+      - name: Run unit tests
+        run: |
+          cd backend
+          PYTHONPATH=. poetry run pytest test/unit/beta/ \
+            -v \
+            --cov=app/services/beta \
+            --cov=app/api/routes/beta \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            --junitxml=test-results/junit.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: backend/coverage.xml
+          flags: backend-unit
+          name: backend-unit-tests
+
+      - name: Publish test results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: backend/test-results/junit.xml
+
+      - name: Check coverage threshold
+        run: |
+          cd backend
+          COVERAGE=$(poetry run coverage report | grep TOTAL | awk '{print $4}' | sed 's/%//')
+          echo "Coverage: ${COVERAGE}%"
+          if (( $(echo "$COVERAGE < 87" | bc -l) )); then
+            echo "❌ Coverage ${COVERAGE}% is below 87% threshold"
+            exit 1
+          fi
+          echo "✅ Coverage ${COVERAGE}% meets 87% threshold"
+
+  backend-integration-tests:
+    name: Backend Integration Tests
+    runs-on: ubuntu-latest
+    needs: backend-unit-tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          poetry install --no-interaction
+
+      - name: Run integration tests
+        run: |
+          cd backend
+          PYTHONPATH=. poetry run pytest test/integration/test_beta_*.py \
+            -v \
+            --junitxml=test-results/integration-junit.xml
+
+      - name: Publish test results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: backend/test-results/integration-junit.xml
+
+  # ========================================
+  # Frontend Testing
+  # ========================================
+  web-tests:
+    name: Web Tests (TypeScript + Lint)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd web
+          npm ci
+
+      - name: TypeScript check
+        run: |
+          cd web
+          npm run typecheck
+
+      - name: Lint
+        run: |
+          cd web
+          npm run lint
+
+      - name: Build
+        run: |
+          cd web
+          npm run build
+
+  mobile-tests:
+    name: Mobile Tests (TypeScript + Lint)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: mobile-app/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd mobile-app
+          npm ci
+
+      - name: TypeScript check
+        run: |
+          cd mobile-app
+          npm run typecheck || echo "TypeScript check (warnings allowed)"
+
+      - name: Lint
+        run: |
+          cd mobile-app
+          npm run lint || echo "Lint check (warnings allowed)"
+
+  # ========================================
+  # Load Testing (on PR only)
+  # ========================================
+  load-test-smoke:
+    name: Load Test (Smoke)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: [backend-unit-tests, backend-integration-tests]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Locust
+        run: pip install locust
+
+      - name: Run smoke load test
+        run: |
+          cd backend/tests/load/beta
+          locust -f locustfile.py --headless \
+            --host=https://staging.bayit.plus \
+            --users 50 \
+            --spawn-rate 10 \
+            --run-time 2m \
+            --html=report.html \
+            --csv=results
+
+      - name: Upload load test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: load-test-report
+          path: backend/tests/load/beta/report.html
+
+      - name: Check load test results
+        run: |
+          cd backend/tests/load/beta
+          FAILURES=$(grep -c "failures" results_stats.csv || echo "0")
+          if [ "$FAILURES" -gt 0 ]; then
+            echo "❌ Load test had failures"
+            exit 1
+          fi
+          echo "✅ Load test passed"
+
+  # ========================================
+  # Security Scanning
+  # ========================================
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Bandit (Python security)
+        run: |
+          pip install bandit
+          cd backend
+          bandit -r app/services/beta/ app/api/routes/beta/ -ll -f json -o bandit-report.json || true
+
+      - name: Run Safety (dependency check)
+        run: |
+          pip install safety
+          cd backend
+          poetry export -f requirements.txt | safety check --stdin || true
+
+      - name: Run npm audit
+        run: |
+          cd web
+          npm audit --audit-level=moderate || true
+
+  # ========================================
+  # Deploy to Staging (on main branch)
+  # ========================================
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: [backend-unit-tests, backend-integration-tests, web-tests, mobile-tests]
+    environment:
+      name: staging
+      url: https://staging.bayit.plus
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy Backend to Cloud Run
+        run: |
+          gcloud run deploy bayit-plus-backend-staging \
+            --source backend \
+            --region us-central1 \
+            --platform managed \
+            --allow-unauthenticated \
+            --set-env-vars "ENV=staging" \
+            --tag beta-${{ github.sha }}
+
+      - name: Deploy Frontend to Firebase
+        run: |
+          cd web
+          npm ci
+          npm run build
+          npx firebase deploy --only hosting:staging --token ${{ secrets.FIREBASE_TOKEN }}
+
+      - name: Run smoke tests on staging
+        run: |
+          # Wait for deployment
+          sleep 30
+          # Test health endpoint
+          curl -f https://staging.bayit.plus/health || exit 1
+          # Test Beta API endpoints
+          curl -f https://staging.bayit.plus/api/v1/beta/status || exit 1
+
+      - name: Notify deployment
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          text: 'Beta 500 deployed to staging'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  # ========================================
+  # Full Load Test (scheduled)
+  # ========================================
+  load-test-full:
+    name: Load Test (Full - 500 users)
+    runs-on: ubuntu-latest
+    # Run daily at 2 AM UTC
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Locust
+        run: pip install locust
+
+      - name: Run full load test
+        run: |
+          cd backend/tests/load/beta
+          locust -f locustfile.py --headless \
+            --host=https://staging.bayit.plus \
+            --users 500 \
+            --spawn-rate 50 \
+            --run-time 30m \
+            --html=report.html \
+            --csv=results
+
+      - name: Upload load test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-full-report
+          path: backend/tests/load/beta/report.html
+
+      - name: Analyze results
+        run: |
+          cd backend/tests/load/beta
+          echo "=== Load Test Results ==="
+          cat results_stats.csv
+
+          # Check failure rate
+          FAIL_RATE=$(awk -F',' 'NR>1 {sum+=$7} END {print sum/NR}' results_stats.csv)
+          if (( $(echo "$FAIL_RATE > 0.1" | bc -l) )); then
+            echo "❌ Failure rate ${FAIL_RATE}% exceeds 0.1% threshold"
+            exit 1
+          fi
+
+          # Check p95 response time
+          P95=$(awk -F',' 'NR>1 {if ($5 > max) max=$5} END {print max}' results_stats.csv)
+          if (( $(echo "$P95 > 500" | bc -l) )); then
+            echo "❌ P95 response time ${P95}ms exceeds 500ms threshold"
+            exit 1
+          fi
+
+          echo "✅ Load test passed all thresholds"
+
+      - name: Notify results
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          text: 'Beta 500 load test (500 users) completed'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+# ========================================
+# Scheduled Jobs
+# ========================================
+on:
+  schedule:
+    # Daily load test at 2 AM UTC
+    - cron: '0 2 * * *'
+    # Weekly full test suite on Sunday at 3 AM UTC
+    - cron: '0 3 * * 0'

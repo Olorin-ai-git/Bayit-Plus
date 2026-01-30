@@ -4492,6 +4492,62 @@
         "waitlistMessage": "All 500 slots are currently filled. Join the waitlist to be notified when a slot becomes available.",
         "enrollmentSuccess": "Welcome to Beta 500! Check your email to verify your account.",
         "enrollmentError": "Unable to enroll. Please try again later."
+      },
+      "aiSearch": {
+        "title": "AI Content Search",
+        "subtitle": "Natural language search powered by Claude",
+        "placeholder": "Search with natural language (e.g., \"action movies from 2020s with heists\")",
+        "search": "Search",
+        "searching": "Searching...",
+        "costInfo": "2 credits per search",
+        "queryAnalysis": "Understanding your search",
+        "resultsCount": "{{count}} results found",
+        "noResults": "No matching content found. Try a different search.",
+        "emptyState": "Start searching with natural language",
+        "exampleQueries": "Try: \"funny podcasts about technology\" or \"romantic series with strong leads\"",
+        "analyzing": "Analyzing your search with AI..."
+      },
+      "recommendations": {
+        "title": "AI Recommendations",
+        "subtitle": "Personalized content suggestions",
+        "contentTypeLabel": "What would you like to watch?",
+        "contentTypes": {
+          "all": "All Content",
+          "movies": "Movies",
+          "series": "Series",
+          "podcasts": "Podcasts",
+          "audiobooks": "Audiobooks"
+        },
+        "contextLabel": "Context (optional)",
+        "contextPlaceholder": "e.g., for weekend binge-watching, with family, to relax",
+        "contexts": {
+          "weekend": "for weekend binge-watching",
+          "family": "with family",
+          "relax": "to relax after work",
+          "educational": "educational content",
+          "funny": "something funny"
+        },
+        "getRecommendations": "Get AI Recommendations",
+        "loading": "Generating recommendations...",
+        "costInfo": "3 credits per request",
+        "forYou": "{{count}} recommendations for you",
+        "noRecommendations": "No recommendations available. Try adjusting your preferences.",
+        "emptyState": "Get personalized recommendations based on your viewing history"
+      },
+      "credits": {
+        "balance": "Beta Credits",
+        "subtitle": "Your AI feature credits",
+        "charged": "Charged",
+        "remaining": "Remaining",
+        "criticalLow": "Credit balance critically low! You have less than 10% remaining.",
+        "runningLow": "Your credit balance is running low. Consider budgeting your usage.",
+        "expiresOn": "Credits expire on {{date}}",
+        "usdValue": "USD Value",
+        "refresh": "Refresh Balance"
+      },
+      "status": {
+        "active": "Active",
+        "pending": "Pending Verification"
       }
     }
   }

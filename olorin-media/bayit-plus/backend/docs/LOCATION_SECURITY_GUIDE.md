@@ -194,29 +194,29 @@ assert decrypted == "New York"
 **Test Rate Limiting:**
 ```bash
 # Should succeed (1st request)
-curl http://localhost:8090/api/v1/location/reverse-geocode?latitude=40.7128&longitude=-74.0060
+curl http://localhost:${BACKEND_PORT:-8000}/api/v1/location/reverse-geocode?latitude=40.7128&longitude=-74.0060
 
 # Make 30+ requests rapidly - 31st should return 429
 for i in {1..31}; do
   curl -w "%{http_code}\n" -o /dev/null -s \
-    http://localhost:8090/api/v1/location/reverse-geocode?latitude=40.7128&longitude=-74.0060
+    http://localhost:${BACKEND_PORT:-8000}/api/v1/location/reverse-geocode?latitude=40.7128&longitude=-74.0060
 done
 ```
 
 **Test Consent Management:**
 ```bash
 # Grant consent
-curl -X POST http://localhost:8090/api/v1/location-consent \
+curl -X POST http://localhost:${BACKEND_PORT:-8000}/api/v1/location-consent \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"consent_given": true, "retention_days": 90}'
 
 # Check consent
-curl http://localhost:8090/api/v1/location-consent \
+curl http://localhost:${BACKEND_PORT:-8000}/api/v1/location-consent \
   -H "Authorization: Bearer $TOKEN"
 
 # Revoke consent
-curl -X POST http://localhost:8090/api/v1/location-consent \
+curl -X POST http://localhost:${BACKEND_PORT:-8000}/api/v1/location-consent \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"consent_given": false}'
