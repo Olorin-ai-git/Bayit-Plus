@@ -50,7 +50,7 @@ async def generate_catchup_summary(
     validate_id(channel_id, "channel_id")
 
     if window_minutes is None:
-        window_minutes = 15
+        window_minutes = settings.olorin.catchup.default_window_minutes
 
     logger.info(
         "Catch-up summary requested",
@@ -139,14 +139,15 @@ async def generate_catchup_summary(
             exc_info=True
         )
 
-        response.headers["Retry-After"] = "300"
+        retry_after = settings.olorin.catchup.retry_after_seconds
+        response.headers["Retry-After"] = str(retry_after)
 
         raise HTTPException(
             status_code=503,
             detail={
                 "error": "Service temporarily unavailable",
                 "message": "AI catch-up service is experiencing issues. Please try again later.",
-                "retry_after": 300
+                "retry_after": retry_after
             }
         )
 

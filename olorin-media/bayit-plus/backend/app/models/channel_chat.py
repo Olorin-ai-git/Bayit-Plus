@@ -1,5 +1,4 @@
-"""
-Channel Chat Models for live channel public chat.
+"""Channel Chat Models for live channel public chat.
 
 MongoDB models (Beanie ODM) for:
 - ChannelChatMessage: Main chat messages
@@ -8,7 +7,6 @@ MongoDB models (Beanie ODM) for:
 - ModerationAuditLog: Append-only audit trail per Security Expert
 """
 
-import html
 import re
 from datetime import datetime
 from enum import Enum
@@ -19,6 +17,7 @@ from pydantic import BaseModel, Field, field_validator
 from pymongo import IndexModel
 
 from app.core.config import settings
+from app.models.channel_chat_sanitizer import _sanitize_message_text
 
 
 class ModerationStatus(str, Enum):
@@ -40,49 +39,8 @@ class AuditAction(str, Enum):
     USER_UNMUTE = "user_unmute"
 
 
-# Dangerous patterns for XSS prevention
-_DANGEROUS_PATTERNS = [
-    r"<script",
-    r"javascript:",
-    r"onerror\s*=",
-    r"eval\s*\(",
-    r"expression\s*\(",
-    r"import\s*\(",
-    r"data:text/html",
-    r"vbscript:",
-    r"<iframe",
-    r"on\w+\s*=",
-]
-
-
-def _sanitize_message_text(text: str) -> str:
-    """
-    Multi-layer input sanitization (Security Expert).
-
-    Layer 1: Length enforcement (done by Pydantic max_length)
-    Layer 2: Strip HTML tags completely (no HTML in chat)
-    Layer 3: Dangerous pattern blocking
-    Layer 4: html.escape as final fallback
-    """
-    # Strip leading/trailing whitespace
-    cleaned = text.strip()
-
-    # Layer 2: Remove all HTML tags
-    cleaned = re.sub(r"<[^>]+>", "", cleaned)
-
-    # Layer 3: Check for dangerous patterns
-    for pattern in _DANGEROUS_PATTERNS:
-        if re.search(pattern, cleaned, re.IGNORECASE):
-            # Layer 4: Escape if dangerous pattern detected
-            cleaned = html.escape(cleaned)
-            break
-
-    return cleaned
-
-
 class ChannelChatMessage(Document):
-    """
-    Main chat message model.
+    """Main chat message model.
 
     Stores original message with detected language.
     Translations stored in separate collection (ChatTranslationCacheEntry).
@@ -145,8 +103,7 @@ class ChannelChatMessage(Document):
 
 
 class ChatTranslationCacheEntry(Document):
-    """
-    Separate collection for translation cache (per DB Expert).
+    """Separate collection for translation cache (per DB Expert).
 
     Keyed by message_id + language for efficient lookup.
     """
@@ -173,8 +130,7 @@ class ChatTranslationCacheEntry(Document):
 
 
 class ChatReaction(Document):
-    """
-    Separate collection for reactions (per DB Expert).
+    """Separate collection for reactions (per DB Expert).
 
     One reaction type per user per message.
     """
@@ -206,8 +162,7 @@ class ChatReaction(Document):
 
 
 class ModerationAuditLog(Document):
-    """
-    Append-only audit trail for moderation actions (Security Expert).
+    """Append-only audit trail for moderation actions (Security Expert).
 
     NO delete operations permitted. Separate retention policy.
     """
