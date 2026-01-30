@@ -12,6 +12,8 @@ Feature documentation and implementation guides:
 - Live streaming functionality
 - Content import and management
 - **Unified Voice System** (`/architecture/UNIFIED_VOICE_ARCHITECTURE.md`, `/guides/VOICE_MIGRATION_GUIDE.md`, `/api/VOICE_API_REFERENCE.md`) - Complete unified voice system consolidating 3 separate voice systems under Olorin wizard avatar with 4 visibility modes, cross-platform support (Web/iOS/Android/tvOS), intent routing, and orchestrator pattern - ✅ IMPLEMENTED - 2026-01-29 **NEW**
+- **Channel Live Chat** (`CHANNEL_LIVE_CHAT.md`) - Twitch/YouTube-style public chat for live TV channels with WebSocket protocol, XSS sanitization, rate limiting, session tokens, admin moderation (pin/delete/mute), auto-translation for Beta 500 users, and full audit trail - ✅ IMPLEMENTED - 2026-01-30 **NEW**
+- **AI Catch-Up Summaries** (`AI_CATCH_UP_SUMMARIES.md`) - AI-powered "Catch Up" feature generating real-time summaries of live channel content with EPG enrichment, credit-gated at 5 credits per summary, configurable time windows, multi-language support, background transcript feeding, and 3-minute TTL caching - ✅ IMPLEMENTED - 2026-01-30 **NEW**
 - **Librarian Audit Log Improvements** (`LIBRARIAN_AUDIT_LOG_IMPROVEMENTS.md`) - Comprehensive UI/UX enhancements for Live Audit Log and Recent Reports components with search, filtering, sorting, quick audit triggers, and enhanced table layout - ✅ ENHANCEMENT COMPLETE - 2026-01-25 **NEW**
 
 ### `/guides/`
@@ -32,6 +34,8 @@ Deployment guides and status:
 - **Google Cloud Secrets: Beta 500 Program** (`GCLOUD_SECRETS_BETA_500.md`) - Secrets management documentation for 16 Beta 500 closed beta program configuration variables (fraud detection, email verification, credit system, session tracking) with GCloud commands, service account access, and sync workflow - 2026-01-29 **NEW**
 - **Beta 500 Monitoring Setup** (`MONITORING_SETUP.md`) - Prometheus/Grafana/Alertmanager monitoring infrastructure for Beta 500 program with 30+ business and system metrics, alert rules for credit thresholds, fraud detection, session tracking, and dashboard templates - 2026-01-29 **NEW**
 - **Google Cloud Secrets: Location Service** (`GCLOUD_SECRETS_LOCATION_SERVICE.md`) - Secrets management documentation for GEONAMES_USERNAME configuration required for reverse geocoding via GeoNames API, includes GCloud commands, service account access, verification steps, and troubleshooting guide - 2026-01-30
+- **Google Cloud Secrets: Channel Chat** (`GCLOUD_SECRETS_CHANNEL_CHAT.md`) - Secrets management documentation for 12 configuration variables covering rate limiting, message constraints, translation, session management, connection limits, and heartbeat for live channel chat - 2026-01-30 **NEW**
+- **Google Cloud Secrets: Catch-Up Summaries** (`GCLOUD_SECRETS_CATCH_UP.md`) - Secrets management documentation for 13 backend secrets and 5 frontend build variables covering feature toggle, credit system, trigger configuration, caching, summary constraints, data requirements, rate limiting, transcript buffer, and UI behavior - 2026-01-30 **NEW**
 - **Google Cloud Secrets: Simplified Hebrew & Smart Subs** (`GCLOUD_SECRETS_SIMPLIFIED_HEBREW.md`) - Secrets management documentation for 13 configuration variables across Simplified Hebrew (Ivrit Kalla) audio track and Smart Subs dual-view subtitles with shoresh highlighting - 2026-01-30 **NEW**
 
 ### `/testing/`
@@ -130,6 +134,8 @@ Complete environment variables reference:
 
 ### API Documentation
 Located in `/docs/api/`:
+- **Channel Chat API Reference** (`CHANNEL_CHAT_API.md`) - Complete API reference for live channel chat: WebSocket protocol spec (client/server message types, session tokens, heartbeat), REST endpoints (history, translate, pin, delete, mute), error codes, and TypeScript data models - 2026-01-30 **NEW**
+- **Catch-Up API Reference** (`CATCH_UP_API.md`) - Complete API reference for AI catch-up summaries: GET /catchup endpoint (credit-gated, cached), GET /catchup/available endpoint, error handling with retry strategies, and TypeScript data models - 2026-01-30 **NEW**
 - **Voice API Reference** (`VOICE_API_REFERENCE.md`) - Complete API reference for unified voice system: POST /api/v1/voice/unified endpoint, 6 intent types, authentication, rate limits, error codes, and usage examples - 2026-01-29 **NEW**
 - **Audible API Examples** (`AUDIBLE_API_EXAMPLES.md`) - Complete OAuth flow walkthrough with curl examples, pagination, search, and troubleshooting guide - 2026-01-27 **NEW**
 
@@ -231,6 +237,7 @@ When adding new documentation:
 This documentation structure was organized on January 13, 2026 to improve project organization.
 
 **Latest Updates:**
+- **January 30, 2026:** Added Channel Live Chat and AI Catch-Up Summaries documentation - Feature docs (`/features/CHANNEL_LIVE_CHAT.md`, `/features/AI_CATCH_UP_SUMMARIES.md`), API references (`/api/CHANNEL_CHAT_API.md`, `/api/CATCH_UP_API.md`), and secrets management (`/deployment/GCLOUD_SECRETS_CHANNEL_CHAT.md`, `/deployment/GCLOUD_SECRETS_CATCH_UP.md`)
 - **January 30, 2026:** Added Live Trivia System implementation status (`/LIVE_TRIVIA_IMPLEMENTATION_STATUS.md`) - Production-ready report for live trivia feature with comprehensive architecture, testing, and deployment documentation
 - **January 30, 2026:** Added Location Service secrets documentation (`/deployment/GCLOUD_SECRETS_LOCATION_SERVICE.md`) - GeoNames API configuration for reverse geocoding
 - **January 29, 2026:** Added Beta 500 Closed Beta Program documentation - Complete implementation plan (`/implementation/BETA_500_REVISED_PLAN.md`), secrets management (`/deployment/GCLOUD_SECRETS_BETA_500.md`), and monitoring setup (`/deployment/MONITORING_SETUP.md`) for 500-family closed beta with 5,000 free AI credits per user
