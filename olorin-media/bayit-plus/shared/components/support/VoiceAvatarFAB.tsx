@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     height: isTV ? 96 : 64,
     borderRadius: isTV ? 48 : 32,
     borderWidth: 2,
-    borderColor: colors.blue[500],
+    borderColor: colors.info[500],
     backgroundColor: 'transparent',
   },
 });
