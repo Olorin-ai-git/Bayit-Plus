@@ -644,11 +644,18 @@
     "inputLabel": "Chat message input",
     "moderationDelete": "Message removed by moderator"
   },
+  "common": {
+    "milliseconds": "milliseconds",
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "details": "details"
+  },
   "dubbing": {
     "latency": {
       "badge": {
         "title": "Latency Monitor",
-        "tooltip": "Real-time audio processing delay. Video is automatically delayed to match for perfect sync."
+        "tooltip": "Real-time audio processing delay. Video is automatically delayed to match for perfect sync.",
+        "accessibilityHint": "Double tap to toggle latency details panel"
       },
       "components": {
         "capture": "Audio Capture",
@@ -688,7 +695,13 @@
         "title": "Latency History",
         "tooltip": "60-second rolling history of processing latency",
         "xAxis": "Time (seconds ago)",
-        "yAxis": "Latency (ms)"
+        "yAxis": "Latency (ms)",
+        "noData": "No data yet..."
+      },
+      "breakdown": {
+        "title": "Latency Breakdown",
+        "cacheHitRate": "Cache Hit Rate",
+        "provider": "Provider"
       }
     },
     "controls": {

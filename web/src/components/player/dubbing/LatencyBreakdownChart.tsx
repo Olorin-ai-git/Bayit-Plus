@@ -5,6 +5,7 @@
 
 import React from 'react'
 import { StyleSheet, View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import type { LatencyReport } from '@/services/liveDubbingService'
 
 interface LatencyBreakdownChartProps {
@@ -20,26 +21,28 @@ export const LatencyBreakdownChart: React.FC<LatencyBreakdownChartProps> = ({
   syncDelayMs,
   totalLatency,
 }) => {
+  const { t } = useTranslation()
+
   if (!currentLatency) return null
 
   const bufferMs = (bufferSize / 16000) * 1000
 
   const breakdown = [
-    { label: 'Buffer', value: bufferMs, color: '#8B5CF6' },
-    { label: 'STT', value: currentLatency.avg_stt_ms, color: '#3B82F6' },
-    { label: 'Translation', value: currentLatency.avg_translation_ms, color: '#10B981' },
-    { label: 'TTS', value: currentLatency.avg_tts_ms, color: '#F59E0B' },
+    { label: t('dubbing.latency.components.buffer'), value: bufferMs, color: '#8B5CF6' },
+    { label: t('dubbing.latency.components.stt'), value: currentLatency.avg_stt_ms, color: '#3B82F6' },
+    { label: t('dubbing.latency.components.translation'), value: currentLatency.avg_translation_ms, color: '#10B981' },
+    { label: t('dubbing.latency.components.tts'), value: currentLatency.avg_tts_ms, color: '#F59E0B' },
     {
-      label: 'Network',
+      label: t('dubbing.latency.components.network'),
       value: currentLatency.avg_network_roundtrip_ms || 40,
       color: '#EC4899',
     },
-    { label: 'Sync', value: syncDelayMs, color: '#6366F1' },
+    { label: t('dubbing.latency.components.sync'), value: syncDelayMs, color: '#6366F1' },
   ]
 
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Latency Breakdown</Text>
+      <Text style={styles.sectionTitle}>{t('dubbing.latency.breakdown.title')}</Text>
       <View style={styles.chart}>
         {breakdown.map((item, index) => (
           <View key={index} style={styles.chartRow}>
@@ -67,10 +70,10 @@ export const LatencyBreakdownChart: React.FC<LatencyBreakdownChartProps> = ({
       {currentLatency?.translation_cache_hit_rate !== undefined && (
         <View style={styles.cacheInfo}>
           <Text style={styles.cacheText}>
-            Cache Hit Rate: {(currentLatency.translation_cache_hit_rate * 100).toFixed(1)}%
+            {t('dubbing.latency.breakdown.cacheHitRate')}: {(currentLatency.translation_cache_hit_rate * 100).toFixed(1)}%
           </Text>
           <Text style={styles.cacheSubtext}>
-            Provider: {currentLatency.translation_provider || 'N/A'}
+            {t('dubbing.latency.breakdown.provider')}: {currentLatency.translation_provider || 'N/A'}
           </Text>
         </View>
       )}

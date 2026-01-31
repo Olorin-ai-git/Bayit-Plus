@@ -6,6 +6,7 @@
 
 import React, { useMemo } from 'react'
 import { StyleSheet, View, Text, Platform } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import type { LatencyDataPoint } from '@/stores/dubbingSettingsStore'
 
 interface LatencyGraphProps {
@@ -14,6 +15,7 @@ interface LatencyGraphProps {
 }
 
 export const LatencyGraph: React.FC<LatencyGraphProps> = ({ history, maxLatency }) => {
+  const { t } = useTranslation()
   const graphHeight = 80
   const graphWidth = 300
 
@@ -39,7 +41,7 @@ export const LatencyGraph: React.FC<LatencyGraphProps> = ({ history, maxLatency 
   if (Platform.OS === 'web') {
     return (
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Latency Trend (60s)</Text>
+        <Text style={styles.sectionTitle}>{t('dubbing.latency.graph.title')}</Text>
         <View style={styles.graph}>
           {history.length > 0 ? (
             <View style={styles.graphCanvas}>
@@ -54,7 +56,7 @@ export const LatencyGraph: React.FC<LatencyGraphProps> = ({ history, maxLatency 
               </svg>
             </View>
           ) : (
-            <Text style={styles.graphEmptyText}>No data yet...</Text>
+            <Text style={styles.graphEmptyText}>{t('dubbing.latency.graph.noData')}</Text>
           )}
         </View>
       </View>
@@ -65,7 +67,7 @@ export const LatencyGraph: React.FC<LatencyGraphProps> = ({ history, maxLatency 
   const barWidth = graphWidth / Math.max(sampledData.length, 1)
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Latency Trend (60s)</Text>
+      <Text style={styles.sectionTitle}>{t('dubbing.latency.graph.title')}</Text>
       <View style={styles.graph}>
         {history.length > 0 ? (
           <View style={[styles.graphCanvas, styles.nativeGraphContainer]}>
@@ -87,7 +89,7 @@ export const LatencyGraph: React.FC<LatencyGraphProps> = ({ history, maxLatency 
             })}
           </View>
         ) : (
-          <Text style={styles.graphEmptyText}>No data yet...</Text>
+          <Text style={styles.graphEmptyText}>{t('dubbing.latency.graph.noData')}</Text>
         )}
       </View>
     </View>

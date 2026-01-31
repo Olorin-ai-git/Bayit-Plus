@@ -5,6 +5,8 @@
 
 import React, { useMemo } from 'react'
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
+import { useTranslation } from 'react-i18next'
+import { GlassTooltip } from '@bayit/glass'
 
 interface LatencyBadgeProps {
   totalLatency: number
@@ -17,6 +19,8 @@ export const LatencyBadge: React.FC<LatencyBadgeProps> = ({
   isExpanded,
   onToggle,
 }) => {
+  const { t } = useTranslation()
+
   // Color-coded badge based on total latency
   const badgeColor = useMemo(() => {
     if (totalLatency < 300) return '#10B981' // Green
@@ -24,19 +28,25 @@ export const LatencyBadge: React.FC<LatencyBadgeProps> = ({
     return '#EF4444' // Red
   }, [totalLatency])
 
-  return (
+  const badgeContent = (
     <TouchableOpacity
       style={[styles.badge, { backgroundColor: `${badgeColor}33` }]}
       onPress={onToggle}
       accessibilityRole="button"
-      accessibilityLabel={`Latency ${totalLatency.toFixed(0)} milliseconds. ${isExpanded ? 'Collapse' : 'Expand'} details.`}
+      accessibilityLabel={`${t('dubbing.latency.badge.title')} ${totalLatency.toFixed(0)} ${t('common.milliseconds')}. ${isExpanded ? t('common.collapse') : t('common.expand')} ${t('common.details')}.`}
       accessibilityState={{ expanded: isExpanded }}
-      accessibilityHint="Double tap to toggle latency details panel"
+      accessibilityHint={t('dubbing.latency.badge.accessibilityHint')}
     >
       <View style={[styles.badgeDot, { backgroundColor: badgeColor }]} />
       <Text style={styles.badgeText}>{totalLatency.toFixed(0)}ms</Text>
       <Text style={styles.badgeArrow}>{isExpanded ? '▼' : '▶'}</Text>
     </TouchableOpacity>
+  )
+
+  return (
+    <GlassTooltip content={t('dubbing.latency.badge.tooltip')} position="bottom">
+      {badgeContent}
+    </GlassTooltip>
   )
 }
 

@@ -359,15 +359,7 @@ logger.info(f"CORS Origins configured: {cors_origins}")
 
 # Security: Use specific allow lists instead of wildcards
 allowed_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
-allowed_headers = [
-    "Accept",
-    "Accept-Language",
-    "Content-Type",
-    "Content-Language",
-    "Authorization",
-    "X-Requested-With",
-    "X-CSRF-Token",
-]
+allowed_headers = ["*"]  # Wildcard is safe with allow_credentials=True (Starlette echoes requested headers)
 exposed_headers = [
     "Content-Type",
     "X-Correlation-ID",

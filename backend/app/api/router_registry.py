@@ -65,6 +65,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 tel_aviv, trending, trivia,
                                 user_system_widgets, users, verification,
                                 voice, watchlist, webauthn, websocket,
+                                websocket_channel_chat,
                                 websocket_chess, websocket_dm,
                                 websocket_live_dubbing,
                                 websocket_live_subtitles, websocket_live_trivia,
@@ -349,6 +350,11 @@ def register_all_routers(app: FastAPI) -> None:
         websocket_live_trivia.router,
         prefix=prefix,
         tags=["websocket", "live-trivia"],
+    )
+    app.include_router(
+        websocket_channel_chat.router,
+        prefix=prefix,
+        tags=["websocket", "channel-chat"],
     )
     app.include_router(
         websocket_chess.router, prefix=prefix, tags=["websocket", "chess"]
