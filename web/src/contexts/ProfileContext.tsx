@@ -8,7 +8,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { profilesService } from '@/services/api';
 import { useAuthStore } from '@/stores/authStore';
-import i18n from '@bayit/i18n';
+import i18n from 'i18next';
 
 export interface Profile {
   id: string;

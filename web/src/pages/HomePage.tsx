@@ -102,6 +102,7 @@ function SectionSkeleton() {
 
 // Hero skeleton with Avatar placeholder
 function HeroSkeleton() {
+  const { t } = useTranslation();
   const placeholderImage = 'https://image.tmdb.org/t/p/original/s16H6tpK2utvwDtzZ8Qy4qm5Emw.jpg';
 
   return (

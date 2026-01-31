@@ -715,5 +715,161 @@
         "queueRefreshed": "התור רוענן ידנית."
       }
     }
+  },
+  "errors": {
+    "friends": {
+      "fetchFailed": "שליפת החברים נכשלה",
+      "requestsFetchFailed": "שליפת הבקשות נכשלה",
+      "sendFailed": "שליחת הבקשה נכשלה",
+      "acceptFailed": "אישור הבקשה נכשל",
+      "rejectFailed": "דחיית הבקשה נכשלה",
+      "cancelFailed": "ביטול הבקשה נכשל",
+      "removeFailed": "הסרת החבר נכשלה"
+    },
+    "settings": {
+      "loadFailed": "טעינת ההעדפות נכשלה",
+      "saveFailed": "שמירת ההעדפות נכשלה"
+    },
+    "devices": {
+      "loadFailed": "טעינת המכשירים נכשלה",
+      "registerFailed": "רישום המכשיר נכשל",
+      "disconnectFailed": "ניתוק המכשיר נכשל"
+    },
+    "stats": {
+      "fetchFailed": "שליפת הסטטיסטיקות נכשלה",
+      "playerFetchFailed": "שליפת סטטיסטיקות השחקן נכשלה",
+      "historyFetchFailed": "שליפת היסטוריית המשחקים נכשלה",
+      "leaderboardFetchFailed": "שליפת טבלת המובילים נכשלה",
+      "h2hFetchFailed": "שליפת סטטיסטיקות ראש בראש נכשלה"
+    },
+    "profile": {
+      "fetchFailed": "שליפת הפרופילים נכשלה",
+      "selectFailed": "בחירת הפרופיל נכשלה",
+      "createFailed": "יצירת הפרופיל נכשלה",
+      "updateFailed": "עדכון הפרופיל נכשל",
+      "deleteFailed": "מחיקת הפרופיל נכשלה"
+    },
+    "auth": {
+      "notAuthenticated": "לא מאומת",
+      "tokenRefreshFailed": "רענון אסימון האימות נכשל",
+      "playbackAuthRequired": "נדרש אימות להפעלת צפייה"
+    },
+    "connection": {
+      "failed": "שגיאת חיבור - בדוק את הקונסולה לפרטים",
+      "timeout": "פסק זמן חיבור",
+      "error": "שגיאת חיבור"
+    },
+    "chess": {
+      "connectFailed": "ההתחברות למשחק נכשלה",
+      "notConnected": "לא מחובר למשחק"
+    },
+    "podcast": {
+      "switchLanguageFailed": "החלפת השפה נכשלה",
+      "playbackError": "שגיאת השמעת אודיו"
+    },
+    "widget": {
+      "loadFailed": "טעינת הווידג'טים נכשלה"
+    },
+    "player": {
+      "noStreamUrl": "אין כתובת שידור זמינה",
+      "loadFailed": "טעינת הווידאו נכשלה",
+      "notReady": "הווידאו לא מוכן",
+      "sessionCreateFailed": "יצירת הפעלת צפייה נכשלה לאחר מספר ניסיונות"
+    },
+    "trivia": {
+      "invalidChannel": "מזהה ערוץ לא תקין"
+    }
+  },
+  "widget": {
+    "streamUnavailable": "השידור לא זמין",
+    "contentUnavailable": "התוכן לא זמין",
+    "podcastUnavailable": "הפודקאסט לא זמין",
+    "stationUnavailable": "התחנה לא זמינה",
+    "iframeNotConfigured": "כתובת ה-iFrame לא הוגדרה",
+    "unknownComponent": "רכיב לא מוכר: {{componentName}}",
+    "noContentConfigured": "לא הוגדר תוכן",
+    "errorLoadingContent": "שגיאה בטעינת תוכן",
+    "loadingEpisodes": "טוען פרקים...",
+    "noEpisodesFound": "לא נמצאו פרקים",
+    "audioUnavailable": "האודיו לא זמין",
+    "103fmEpisodes": "פרקי 103FM",
+    "loadingNews": "טוען חדשות...",
+    "ynetBreakingNews": "מבזקי Ynet"
+  },
+  "chess": {
+    "waitingForOpponent": "ממתין ליריב...",
+    "disconnected": "מנותק",
+    "theirTurn": "תורו"
+  },
+  "audible": {
+    "connectionFailed": "החיבור נכשל",
+    "connecting": "מתחבר ל-Audible...",
+    "pleaseWait": "אנא המתן בזמן שאנו מקשרים את החשבון שלך.",
+    "connected": "מחובר!",
+    "accountLinked": "חשבון ה-Audible שלך מקושר כעת ל-Bayit+"
+  },
+  "settings": {
+    "accessibility": {
+      "small": "קטן",
+      "medium": "בינוני",
+      "large": "גדול"
+    }
+  },
+  "recordings": {
+    "record": "הקלט"
+  },
+  "epg": {
+    "live": "שידור חי"
+  },
+  "admin": {
+    "accessDenied": "הגישה נדחתה",
+    "noPermission": "אין לך הרשאה לצפות בתוכן זה",
+    "actions": {
+      "view": "צפה",
+      "edit": "ערוך",
+      "delete": "מחק",
+      "pause": "השהה",
+      "resume": "חדש",
+      "cancel": "בטל",
+      "approve": "אשר",
+      "reject": "דחה",
+      "activate": "הפעל",
+      "test": "בדוק"
+    },
+    "importWizard": {
+      "title": "ייבוא תוכן חינמי",
+      "loadingSources": "טוען מקורות...",
+      "loadingCategories": "טוען קטגוריות...",
+      "selectCategory": "בחר קטגוריה לסרטים המיובאים",
+      "selectItems": "בחר פריטים לייבוא",
+      "sources": {
+        "vod": "סרטים ו-VOD",
+        "vodDescription": "ייבא סרטים קלאסיים מ-archive.org",
+        "liveTv": "ערוצי טלוויזיה חיים",
+        "liveTvDescription": "ייבא שידורי בדיקה מ-Apple BipBop",
+        "radio": "תחנות רדיו",
+        "radioDescription": "ייבא שידורי רדיו ציבוריים",
+        "podcasts": "פודקאסטים",
+        "podcastsDescription": "ייבא פידי פודקאסט ציבוריים"
+      }
+    },
+    "diagnostics": {
+      "service": "שירות",
+      "status": "סטטוס",
+      "latency": "השהיה",
+      "loading": "טוען אבחון..."
+    },
+    "costDashboard": {
+      "title": "לוח בקרה עלויות",
+      "subtitle": "מעקב וניתוח עלויות הפלטפורמה",
+      "view": "צפה",
+      "selectUser": "בחר משתמש...",
+      "tabs": {
+        "overview": "סקירה כללית",
+        "timeline": "ציר זמן",
+        "categories": "קטגוריות",
+        "topSpenders": "בעלי ההוצאה הגבוהים"
+      }
+    }
   }
 }

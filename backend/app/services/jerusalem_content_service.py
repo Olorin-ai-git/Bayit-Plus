@@ -13,7 +13,7 @@ Uses existing news_scraper infrastructure with Jerusalem keyword filtering.
 import asyncio
 import logging
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import httpx

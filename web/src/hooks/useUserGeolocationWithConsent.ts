@@ -27,7 +27,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { logger as appLogger } from '../utils/logger';
 import { GEOLOCATION_CONFIG } from '@/config/geolocationConfig';
 import useLocationConsent from './useLocationConsent';
-import i18n from '@bayit/i18n';
+import i18n from 'i18next';
 
 const logger = appLogger.scope('useUserGeolocationWithConsent');
 

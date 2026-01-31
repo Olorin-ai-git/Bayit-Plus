@@ -7,7 +7,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { profilesService } from '@/services/api';
 import logger from '@/utils/logger';
-import i18n from '@bayit/i18n';
+import i18n from 'i18next';
 
 export interface AIPreferences {
   chatbot_enabled: boolean;

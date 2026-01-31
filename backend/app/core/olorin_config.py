@@ -705,6 +705,86 @@ class ChannelChatConfig(BaseSettings):
         env_prefix = "CHANNEL_CHAT_"
 
 
+class LiveTriviaConfig(BaseSettings):
+    """Live trivia overlay configuration for topic detection and fact extraction."""
+
+    claude_model: str = Field(
+        default="claude-sonnet-4-20250514",
+        description="Anthropic model for topic validation and fact extraction",
+    )
+    claude_max_tokens_short: int = Field(
+        default=256,
+        ge=64,
+        le=2048,
+        description="Max tokens for short Claude responses (topic validation)",
+    )
+    claude_max_tokens_long: int = Field(
+        default=1024,
+        ge=128,
+        le=4096,
+        description="Max tokens for long Claude responses (fact extraction)",
+    )
+    claude_temperature_validation: float = Field(
+        default=0.1,
+        ge=0.0,
+        le=1.0,
+        description="Temperature for topic validation (low = deterministic)",
+    )
+    claude_temperature_facts: float = Field(
+        default=0.7,
+        ge=0.0,
+        le=1.0,
+        description="Temperature for fact extraction (higher = creative)",
+    )
+    spacy_confidence_baseline: float = Field(
+        default=0.5,
+        ge=0.0,
+        le=1.0,
+        description="Minimum spaCy NER confidence baseline for topic detection",
+    )
+    wikipedia_api_url: str = Field(
+        default="https://en.wikipedia.org/api/rest_v1/page/summary",
+        description="Wikipedia REST API base URL for topic summaries",
+    )
+    duckduckgo_api_url: str = Field(
+        default="https://api.duckduckgo.com",
+        description="DuckDuckGo Instant Answer API base URL",
+    )
+    search_timeout_seconds: float = Field(
+        default=5.0,
+        ge=1.0,
+        le=30.0,
+        description="HTTP timeout for web search requests",
+    )
+    summary_truncate_length: int = Field(
+        default=500,
+        ge=100,
+        le=2000,
+        description="Max character length for topic summaries",
+    )
+    fact_display_duration: int = Field(
+        default=10,
+        ge=3,
+        le=60,
+        description="Default display duration for trivia facts (seconds)",
+    )
+    fact_default_priority: int = Field(
+        default=5,
+        ge=1,
+        le=10,
+        description="Default priority for extracted facts (1=lowest, 10=highest)",
+    )
+    fact_default_relevance: float = Field(
+        default=0.7,
+        ge=0.0,
+        le=1.0,
+        description="Default relevance score for extracted facts",
+    )
+
+    class Config:
+        env_prefix = "LIVE_TRIVIA_"
+
+
 class OlorinSettings(BaseSettings):
     """
     Olorin.ai Platform Configuration.
@@ -808,6 +888,10 @@ class OlorinSettings(BaseSettings):
     channel_chat: ChannelChatConfig = Field(
         default_factory=ChannelChatConfig,
         description="Channel live chat WebSocket configuration",
+    )
+    live_trivia: LiveTriviaConfig = Field(
+        default_factory=LiveTriviaConfig,
+        description="Live trivia overlay configuration for topic detection and facts",
     )
 
     class Config:

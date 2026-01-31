@@ -280,10 +280,13 @@ class CultureContentService:
                     logger.error(f"Scraper failed for {culture_id}/{city_id}: {e}")
 
             # Sort by relevance then date
+            _utc_min = datetime.min.replace(tzinfo=timezone.utc)
             all_items.sort(
                 key=lambda x: (
                     x.get("relevance_score", 0),
-                    x.get("published_at", datetime.min),
+                    x.get("published_at", _utc_min).replace(tzinfo=timezone.utc)
+                    if x.get("published_at", _utc_min).tzinfo is None
+                    else x.get("published_at", _utc_min),
                 ),
                 reverse=True,
             )

@@ -7,7 +7,7 @@
 
 import logger from '@/utils/logger'
 import type { LiveTriviaFact } from '@/components/player/hooks/useLiveTrivia'
-import i18n from '@bayit/i18n'
+import i18n from 'i18next'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL
 

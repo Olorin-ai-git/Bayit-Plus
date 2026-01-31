@@ -15,7 +15,7 @@ Uses existing news_scraper infrastructure with Tel Aviv keyword filtering.
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from app.core.config import settings

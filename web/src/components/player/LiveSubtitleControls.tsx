@@ -7,7 +7,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { View, Text, Pressable, Modal, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import i18n from '@bayit/i18n'
+import i18n from 'i18next'
 import { Languages } from 'lucide-react'
 import { useNotifications } from '@olorin/glass-ui/hooks'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'

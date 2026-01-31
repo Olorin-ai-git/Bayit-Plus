@@ -9,6 +9,7 @@ import Layout from './components/layout/Layout'
 import FullscreenVideoOverlay from './components/player/FullscreenVideoOverlay'
 import LocationManager from './components/location/LocationManager'
 import PaymentPendingGuard from './components/auth/PaymentPendingGuard'
+import ProtectedRoute from './components/auth/ProtectedRoute'
 import { useAuthStore } from '@/stores/authStore'
 import { logger } from '@/utils/logger'
 import './styles/layout-fix.css'
@@ -177,17 +178,19 @@ const AppContent = () => {
       <Route path="/payment/success" element={<PaymentSuccessPage />} />
       <Route path="/payment/cancelled" element={<PaymentCancelledPage />} />
 
-      {/* Admin Routes (lazily loaded, protected by payment guard) */}
+      {/* Admin Routes (lazily loaded, protected by auth + payment guard) */}
       <Route
         path="/admin"
         element={
-          <PaymentPendingGuard>
-            <AdminRoute>
-              <Suspense fallback={<LoadingFallback />}>
-                <AdminLayout />
-              </Suspense>
-            </AdminRoute>
-          </PaymentPendingGuard>
+          <ProtectedRoute>
+            <PaymentPendingGuard>
+              <AdminRoute>
+                <Suspense fallback={<LoadingFallback />}>
+                  <AdminLayout />
+                </Suspense>
+              </AdminRoute>
+            </PaymentPendingGuard>
+          </ProtectedRoute>
         }
       >
         <Route index element={<AdminDashboardPage />} />
@@ -227,14 +230,16 @@ const AppContent = () => {
         <Route path="diagnostics" element={<SystemDiagnosticsPage />} />
       </Route>
 
-      {/* Main Routes with Layout (protected by payment guard) */}
+      {/* Main Routes with Layout (protected by auth + payment guard) */}
       <Route
         element={
-          <PaymentPendingGuard>
-            <VoiceListeningProvider>
-              <Layout />
-            </VoiceListeningProvider>
-          </PaymentPendingGuard>
+          <ProtectedRoute>
+            <PaymentPendingGuard>
+              <VoiceListeningProvider>
+                <Layout />
+              </VoiceListeningProvider>
+            </PaymentPendingGuard>
+          </ProtectedRoute>
         }
       >
         <Route path="/" element={<HomePage />} />

@@ -1,145 +1,186 @@
 {
+  "auth": {
+    "loginRequired": "உள்நுழைவு தேவை",
+    "loginToWatch": "{{title}} பார்க்க உள்நுழையவும்",
+    "login": "உள்நுழைவு",
+    "signUp": "பதிவு செய்யவும்"
+  },
   "email": {
-    "greeting": "Hello",
+    "greeting": "வணக்கம்",
     "footer": {
-      "privacy": "Privacy Policy",
-      "terms": "Terms of Service",
-      "support": "Support",
-      "unsubscribe": "Unsubscribe from these emails"
+      "privacy": "தனியுரிமைக் கொள்கை",
+      "terms": "சேவை விதிமுறைகள்",
+      "support": "ஆதரவு",
+      "unsubscribe": "இந்த மின்னஞ்சல்களிலிருந்து குழுவிலகவும்"
     },
     "welcome": {
-      "subject": "Welcome to Bayit+!",
-      "title": "Welcome to Bayit+",
-      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
-      "cta": "Go to Dashboard"
+      "subject": "Bayit+ க்கு வரவேற்கிறோம்!",
+      "title": "Bayit+ க்கு வரவேற்கிறோம்",
+      "body": "Bayit+ இல் இணைந்ததற்கு நன்றி. நீங்கள் எங்களுடன் இருப்பதில் மகிழ்ச்சி!",
+      "cta": "டாஷ்போர்டுக்குச் செல்லவும்"
     },
     "verification": {
-      "subject": "Verify Your Email",
-      "title": "Verify Your Email Address",
-      "body": "Please click the button below to verify your email address.",
-      "cta": "Verify Email",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't create an account, you can safely ignore this email."
+      "subject": "உங்கள் மின்னஞ்சலைச் சரிபார்க்கவும்",
+      "title": "உங்கள் மின்னஞ்சல் முகவரியைச் சரிபார்க்கவும்",
+      "body": "உங்கள் மின்னஞ்சல் முகவரியைச் சரிபார்க்க கீழே உள்ள பொத்தானைக் கிளிக் செய்யவும்.",
+      "cta": "மின்னஞ்சலைச் சரிபார்க்கவும்",
+      "expiry": "இந்த இணைப்பு {expiry_hours} மணி நேரத்தில் காலாவதியாகும்.",
+      "security": "நீங்கள் கணக்கை உருவாக்கவில்லை என்றால், இந்த மின்னஞ்சலை பாதுகாப்பாக புறக்கணிக்கலாம்."
     },
     "verification_resend": {
-      "subject": "Email Verification (Resent)",
-      "title": "Verify Your Email Address",
-      "body": "Here's a new verification link as requested.",
-      "cta": "Verify Email"
+      "subject": "மின்னஞ்சல் சரிபார்ப்பு (மீண்டும் அனுப்பப்பட்டது)",
+      "title": "உங்கள் மின்னஞ்சல் முகவரியைச் சரிபார்க்கவும்",
+      "body": "கோரிக்கையின்படி இதோ ஒரு புதிய சரிபார்ப்பு இணைப்பு.",
+      "cta": "மின்னஞ்சலைச் சரிபார்க்கவும்"
     },
     "password_reset": {
-      "subject": "Reset Your Password",
-      "title": "Reset Your Password",
-      "body": "We received a request to reset your password. Click the button below to create a new password.",
-      "cta": "Reset Password",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+      "subject": "உங்கள் கடவுச்சொல்லை மீட்டமைக்கவும்",
+      "title": "உங்கள் கடவுச்சொல்லை மீட்டமைக்கவும்",
+      "body": "உங்கள் கடவுச்சொல்லை மீட்டமைக்க கோரிக்கை வந்துள்ளது. புதிய கடவுச்சொல்லை உருவாக்க கீழே உள்ள பொத்தானைக் கிளிக் செய்யவும்.",
+      "cta": "கடவுச்சொல்லை மீட்டமைக்கவும்",
+      "expiry": "இந்த இணைப்பு {expiry_hours} மணி நேரத்தில் காலாவதியாகும்.",
+      "security": "நீங்கள் இதைக் கோரவில்லை என்றால், உங்கள் கணக்கு இன்னும் பாதுகாப்பாக உள்ளது. இந்த மின்னஞ்சலை புறக்கணிக்கலாம்."
     },
     "password_changed": {
-      "subject": "Password Changed",
-      "title": "Your Password Has Been Changed",
-      "body": "Your password was successfully changed.",
-      "security": "If you didn't make this change, please contact support immediately."
+      "subject": "கடவுச்சொல் மாற்றப்பட்டது",
+      "title": "உங்கள் கடவுச்சொல் மாற்றப்பட்டது",
+      "body": "உங்கள் கடவுச்சொல் வெற்றிகரமாக மாற்றப்பட்டது.",
+      "security": "நீங்கள் இந்த மாற்றத்தைச் செய்யவில்லை என்றால், உடனடியாக ஆதரவைத் தொடர்பு கொள்ளவும்."
     },
     "account_locked": {
-      "subject": "Account Locked",
-      "title": "Your Account Has Been Locked",
-      "body": "Your account has been temporarily locked due to security concerns.",
-      "cta": "Unlock Account"
+      "subject": "கணக்கு பூட்டப்பட்டது",
+      "title": "உங்கள் கணக்கு பூட்டப்பட்டது",
+      "body": "பாதுகாப்பு கவலைகள் காரணமாக உங்கள் கணக்கு தற்காலிகமாக பூட்டப்பட்டுள்ளது.",
+      "cta": "கணக்கைத் திறக்கவும்"
     },
     "beta_invitation": {
-      "subject": "You're Invited to Bayit+ Beta!",
-      "title": "You're Invited to the Beta Program",
-      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
-      "credits": "{credits} AI credits included",
-      "duration": "Access for {days} days",
-      "cta": "Join Beta Program"
+      "subject": "Bayit+ பீட்டாவுக்கு நீங்கள் அழைக்கப்பட்டுள்ளீர்கள்!",
+      "title": "பீட்டா நிரலுக்கு நீங்கள் அழைக்கப்பட்டுள்ளீர்கள்",
+      "body": "வாழ்த்துக்கள்! நீங்கள் பிரத்யேக Bayit+ பீட்டா 500 நிரலுக்குத் தேர்ந்தெடுக்கப்பட்டுள்ளீர்கள்.",
+      "credits": "{credits} AI கிரெடிட்கள் சேர்க்கப்பட்டுள்ளன",
+      "duration": "{days} நாட்கள் அணுகல்",
+      "cta": "பீட்டா நிரலில் சேரவும்"
     },
     "beta_welcome": {
-      "subject": "Welcome to Bayit+ Beta!",
-      "title": "Welcome to the Beta Program",
-      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
-      "cta": "Get Started"
+      "subject": "Bayit+ பீட்டாவுக்கு வரவேற்கிறோம்!",
+      "title": "பீட்டா நிரலுக்கு வரவேற்கிறோம்",
+      "body": "நீங்கள் இப்போது பிரத்யேக Bayit+ பீட்டா 500 சமூகத்தின் பகுதியாக உள்ளீர்கள்!",
+      "cta": "தொடங்குங்கள்"
     },
     "payment_confirmation": {
-      "subject": "Payment Confirmation",
-      "title": "Payment Received",
-      "body": "Your payment has been processed successfully.",
-      "transaction": "Transaction ID",
-      "plan": "Plan",
-      "amount": "Amount",
-      "date": "Payment Date",
-      "next_billing": "Next Billing Date"
+      "subject": "கட்டண உறுதிப்படுத்தல்",
+      "title": "கட்டணம் பெறப்பட்டது",
+      "body": "உங்கள் கட்டணம் வெற்றிகரமாக செயலாக்கப்பட்டது.",
+      "transaction": "பரிவர்த்தனை ஐடி",
+      "plan": "திட்டம்",
+      "amount": "தொகை",
+      "date": "கட்டண தேதி",
+      "next_billing": "அடுத்த பில்லிங் தேதி"
     },
     "subscription_activated": {
-      "subject": "Subscription Activated",
-      "title": "Your Subscription is Active",
-      "body": "Your subscription has been activated. Here's what you get:",
-      "cta": "Start Watching"
+      "subject": "சந்தா செயல்படுத்தப்பட்டது",
+      "title": "உங்கள் சந்தா செயலில் உள்ளது",
+      "body": "உங்கள் சந்தா செயல்படுத்தப்பட்டுள்ளது. நீங்கள் பெறுவது இதோ:",
+      "cta": "பார்க்கத் தொடங்குங்கள்"
     },
     "subscription_cancelled": {
-      "subject": "Subscription Cancelled",
-      "title": "Subscription Cancelled",
-      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
-      "cta": "Reactivate Subscription"
+      "subject": "சந்தா ரத்து செய்யப்பட்டது",
+      "title": "சந்தா ரத்து செய்யப்பட்டது",
+      "body": "உங்கள் சந்தா ரத்து செய்யப்பட்டது. {access_until} வரை அணுகல் தொடரும்.",
+      "cta": "சந்தாவை மீண்டும் செயல்படுத்தவும்"
     },
     "payment_failed": {
-      "subject": "Payment Failed",
-      "title": "Payment Failed",
-      "body": "We were unable to process your payment. Please update your payment method.",
-      "cta": "Update Payment Method"
+      "subject": "கட்டணம் தோல்வியடைந்தது",
+      "title": "கட்டணம் தோல்வியடைந்தது",
+      "body": "உங்கள் கட்டணத்தைச் செயலாக்க முடியவில்லை. உங்கள் கட்டண முறையைப் புதுப்பிக்கவும்.",
+      "cta": "கட்டண முறையைப் புதுப்பிக்கவும்"
     },
     "trial_expiring": {
-      "subject": "Your Trial is Expiring Soon",
-      "title": "Trial Ending in {days_remaining} Days",
-      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
-      "cta": "Upgrade Now"
+      "subject": "உங்கள் சோதனை விரைவில் முடிவடையும்",
+      "title": "சோதனை {days_remaining} நாட்களில் முடிவடையும்",
+      "body": "உங்கள் இலவச சோதனை விரைவில் முடிவடையும். அனைத்து அம்சங்களையும் அனுபவிக்க இப்போதே மேம்படுத்தவும்.",
+      "cta": "இப்போது மேம்படுத்தவும்"
     },
     "support": {
-      "created_subject": "Ticket #{ticket_id} Created",
-      "created_title": "Support Ticket Created",
-      "created_body": "Your support ticket has been created. We'll get back to you soon.",
-      "response_subject": "New Response on Ticket #{ticket_id}",
-      "response_title": "New Response on Your Ticket",
-      "escalation_subject": "Ticket #{ticket_id} Escalated",
-      "escalation_title": "Your Ticket Has Been Escalated",
-      "resolved_subject": "Ticket #{ticket_id} Resolved",
-      "resolved_title": "Your Ticket Has Been Resolved",
-      "resolved_body": "Your support ticket has been resolved."
+      "created_subject": "டிக்கெட் #{ticket_id} உருவாக்கப்பட்டது",
+      "created_title": "ஆதரவு டிக்கெட் உருவாக்கப்பட்டது",
+      "created_body": "உங்கள் ஆதரவு டிக்கெட் உருவாக்கப்பட்டுள்ளது. நாங்கள் விரைவில் உங்களைத் தொடர்பு கொள்வோம்.",
+      "response_subject": "டிக்கெட் #{ticket_id} இல் புதிய பதில்",
+      "response_title": "உங்கள் டிக்கெட்டில் புதிய பதில்",
+      "escalation_subject": "டிக்கெட் #{ticket_id} மேம்படுத்தப்பட்டது",
+      "escalation_title": "உங்கள் டிக்கெட் மேம்படுத்தப்பட்டுள்ளது",
+      "resolved_subject": "டிக்கெட் #{ticket_id} தீர்க்கப்பட்டது",
+      "resolved_title": "உங்கள் டிக்கெட் தீர்க்கப்பட்டது",
+      "resolved_body": "உங்கள் ஆதரவு டிக்கெட் தீர்க்கப்பட்டுள்ளது."
     },
     "new_message": {
-      "subject": "New Message from {sender_name}",
-      "title": "You Have a New Message",
-      "cta": "Read Message"
+      "subject": "{sender_name} இடமிருந்து புதிய செய்தி",
+      "title": "உங்களுக்கு ஒரு புதிய செய்தி உள்ளது",
+      "cta": "செய்தியைப் படிக்கவும்"
     },
     "content_digest": {
-      "subject": "Your {digest_period} Content Digest",
-      "title": "Your Content Digest",
-      "cta": "Browse Content"
+      "subject": "உங்கள் {digest_period} உள்ளடக்க சுருக்கம்",
+      "title": "உங்கள் உள்ளடக்க சுருக்கம்",
+      "cta": "உள்ளடக்கத்தை உலாவுங்கள்"
     },
     "gdpr": {
-      "deletion_subject": "Data Deletion Confirmation",
-      "deletion_title": "Your Data Has Been Deleted",
-      "deletion_body": "As requested, your personal data has been permanently deleted.",
-      "categories_label": "Deleted Data Categories"
+      "deletion_subject": "தரவு நீக்க உறுதிப்படுத்தல்",
+      "deletion_title": "உங்கள் தரவு நீக்கப்பட்டது",
+      "deletion_body": "கோரிக்கையின்படி, உங்கள் தனிப்பட்ட தரவு நிரந்தரமாக நீக்கப்பட்டுள்ளது.",
+      "categories_label": "நீக்கப்பட்ட தரவு வகைகள்"
     },
     "admin": {
-      "account_created_subject": "Admin Account Created",
-      "account_created_title": "Admin Account Created",
-      "role_change_subject": "Role Changed",
-      "role_change_title": "Your Role Has Been Updated"
+      "account_created_subject": "நிர்வாகி கணக்கு உருவாக்கப்பட்டது",
+      "account_created_title": "நிர்வாகி கணக்கு உருவாக்கப்பட்டது",
+      "role_change_subject": "பாத்திரம் மாற்றப்பட்டது",
+      "role_change_title": "உங்கள் பாத்திரம் புதுப்பிக்கப்பட்டது"
     },
     "campaign": {
-      "default_subject": "News from Bayit+"
+      "default_subject": "Bayit+ இலிருந்து செய்திகள்"
     },
     "newsletter": {
-      "default_subject": "Bayit+ Newsletter"
+      "default_subject": "Bayit+ செய்திமடல்"
     },
     "reengagement": {
-      "subject": "We Miss You!",
-      "title": "It's Been a While",
-      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
-      "cta": "Come Back"
+      "subject": "நாங்கள் உங்களை நினைக்கிறோம்!",
+      "title": "சிறிது நேரமாகிறது",
+      "body": "{days_inactive} நாட்களாக நீங்கள் வரவில்லை என்பதை நாங்கள் கவனித்தோம். நீங்கள் தவறவிட்டது இதோ:",
+      "cta": "திரும்பி வாருங்கள்"
+    }
+  },
+  "greeting": {
+    "morning": "காலை வணக்கம்",
+    "afternoon": "மதிய வணக்கம்",
+    "evening": "மாலை வணக்கம்",
+    "night": "இனிய இரவு"
+  },
+  "location": {
+    "consentModal": {
+      "title": "இருப்பிட சேவைகளை இயக்கவும்",
+      "description": "உங்கள் பகுதிக்கு பொருத்தமான உள்ளடக்கத்தைக் காட்ட விரும்புகிறோம்.\n\nநாங்கள் செய்வோம்:\n• உங்கள் நகரம் மற்றும் மாநிலத்தைக் கண்டறிவோம்\n• உள்ளூர் இஸ்ரேலிய சமூக உள்ளடக்கத்தைக் காட்டுவோம்\n• 24 மணி நேரத்திற்கு உங்கள் இருப்பிடத்தை தற்காலிகமாக சேமிப்போம்\n\nநாங்கள் செய்ய மாட்டோம்:\n• உங்கள் துல்லியமான இருப்பிடத்தைக் கண்காணிப்பது\n• மூன்றாம் தரப்பினருடன் உங்கள் இருப்பிடத்தைப் பகிர்வது\n• ஒப்புதல் இல்லாமல் உங்கள் இருப்பிடத்தை நிரந்தரமாக சேமிப்பது\n\nநீங்கள் எந்த நேரத்திலும் அமைப்புகளில் இதை மாற்றலாம்.",
+      "accept": "இருப்பிட அணுகலை அனுமதிக்கவும்",
+      "decline": "இப்போது வேண்டாம்",
+      "privacyNote": "உங்கள் தனியுரிமை முக்கியம். இருப்பிட தரவு மறையாக்கம் செய்யப்பட்டது மற்றும் ஒருபோதும் விற்கப்படாது."
+    },
+    "permissionBanner": {
+      "title": "உங்களுக்கு அருகில் இஸ்ரேலிய உள்ளடக்கத்தைக் கண்டறியுங்கள்",
+      "description": "உங்கள் பகுதியிலிருந்து இஸ்ரேலிய சமூக நிகழ்வுகள், செய்திகள் மற்றும் கதைகளைப் பார்க்க இருப்பிட சேவைகளை இயக்கவும். உங்கள் தனியுரிமை பாதுகாக்கப்படுகிறது - உங்கள் நகரத்தை மட்டுமே கண்டறிகிறோம்.",
+      "enable": "இருப்பிடத்தை இயக்கவும்",
+      "notNow": "இப்போது வேண்டாம்",
+      "close": "மூடு"
+    },
+    "status": {
+      "detecting": "உங்கள் இருப்பிடத்தைக் கண்டறிகிறது...",
+      "detected": "இருப்பிடம் கண்டறியப்பட்டது: {{city}}, {{state}}",
+      "denied": "இருப்பிட அணுகல் மறுக்கப்பட்டது",
+      "unavailable": "இருப்பிட சேவைகள் கிடைக்கவில்லை",
+      "error": "இருப்பிடத்தைக் கண்டறிய முடியவில்லை"
+    },
+    "errors": {
+      "permissionDenied": "இருப்பிட அணுகல் மறுக்கப்பட்டது. உங்கள் உலாவி அமைப்புகளில் இருப்பிடத்தை இயக்கவும்.",
+      "timeout": "இருப்பிட கோரிக்கை நேரம் முடிந்தது. மீண்டும் முயற்சிக்கவும்.",
+      "unavailable": "உங்கள் உலாவியில் இருப்பிட சேவைகள் கிடைக்கவில்லை.",
+      "failed": "இருப்பிடத்தைப் பெற முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
     }
   },
   "payment": {
@@ -303,6 +344,291 @@
       }
     }
   },
+  "uploads": {
+    "title": "பதிவேற்ற மேலாண்மை",
+    "subtitle": "கோப்புறைகளைக் கண்காணித்து உள்ளடக்க பதிவேற்றங்களை நிர்வகிக்கவும்",
+    "queueDashboard": {
+      "title": "பதிவேற்ற வரிசை டாஷ்போர்டு",
+      "stats": "வரிசை புள்ளிவிவரங்கள்",
+      "total": "மொத்தம்",
+      "queued": "வரிசையில்",
+      "active": "செயலில்",
+      "done": "முடிந்தது",
+      "activeJob": "செயலில் உள்ள பதிவேற்றம்",
+      "queuedJobs": "வரிசையில் உள்ள பதிவேற்றங்கள்",
+      "recentCompleted": "சமீபத்திய நிறைவுகள்",
+      "noActiveJob": "செயலில் பதிவேற்றங்கள் இல்லை",
+      "noActiveJobDescription": "வரிசை காலியாக உள்ளது. செயலாக்கத்தைத் தொடங்க கோப்புகளைப் பதிவேற்றவும் அல்லது கண்காணிக்கப்பட்ட கோப்புறைகளை ஸ்கேன் செய்யவும்.",
+      "noQueuedJobs": "நிலுவையில் பதிவேற்றங்கள் இல்லை",
+      "noQueuedJobsDescription": "அனைத்து கோப்புகளும் செயலாக்கப்பட்டன. தொடர மேலும் கோப்புகளைச் சேர்க்கவும்.",
+      "noRecentCompleted": "சமீபத்திய நிறைவுகள் இல்லை",
+      "noRecentCompletedDescription": "வெற்றிகரமாக பதிவேற்றப்பட்ட கோப்புகள் இங்கே தோன்றும்.",
+      "queuePausedWarning": "வரிசை இடைநிறுத்தப்பட்டது: {{reason}}",
+      "resumeQueue": "வரிசையை மீண்டும் தொடங்கவும்",
+      "pauseQueue": "வரிசையை இடைநிறுத்தவும்",
+      "clearQueue": "வரிசையை அழிக்கவும்"
+    },
+    "manualUpload": {
+      "title": "கைமுறை பதிவேற்றம்",
+      "subtitle": "உங்கள் சாதனத்திலிருந்து நேரடியாக கோப்புகளைப் பதிவேற்றவும்",
+      "browserUpload": "உலாவி பதிவேற்றம்",
+      "urlUpload": "URL இறக்குமதி",
+      "contentType": "உள்ளடக்க வகை",
+      "contentTypeHelp": "பதிவேற்றப்படும் உள்ளடக்கத்தின் வகையைத் தேர்ந்தெடுக்கவும்",
+      "contentTypeRequired": "உள்ளடக்க வகையைத் தேர்ந்தெடுக்கவும்",
+      "dropZone": "டிராப் மண்டலம்",
+      "dropZoneAriaLabel": "கோப்பு பதிவேற்ற டிராப்சோன். கோப்புகளைத் தேர்ந்தெடுக்க கிளிக் செய்யவும் அல்லது Enter அழுத்தவும், அல்லது இங்கே கோப்புகளை இழுக்கவும்",
+      "dropHere": "வீடியோ கோப்புகளை இங்கே இழுக்கவும் அல்லது உலாவ கிளிக் செய்யவும்",
+      "dropHereActive": "பதிவேற்ற கோப்புகளை விடுங்கள்",
+      "tapToSelect": "கோப்புகளைத் தேர்ந்தெடுக்க தட்டவும்",
+      "browseFiles": "கோப்புகளை உலாவுங்கள்",
+      "selectFiles": "கோப்புகளைத் தேர்ந்தெடுக்கவும்",
+      "supportedFormats": "ஆதரிக்கப்படுவை: MP4, MKV, AVI, MOV, WEBM (அதிகபட்சம் {{maxSize}})",
+      "fileList": "பதிவேற்றத்திற்கு தேர்ந்தெடுக்கப்பட்ட கோப்புகள்",
+      "fileListEmpty": "கோப்புகள் எதுவும் தேர்ந்தெடுக்கப்படவில்லை",
+      "fileListEmptyDescription": "பதிவேற்றத்திற்கு கோப்புகளைத் தேர்ந்தெடுக்க மேலே உள்ள கோப்பு தேர்வியைப் பயன்படுத்தவும்",
+      "fileItem": "கோப்பு: {{name}}, அளவு: {{size}}, முன்னேற்றம்: {{progress}}%",
+      "fileName": "கோப்பு பெயர்",
+      "fileSize": "அளவு",
+      "fileType": "வகை",
+      "fileProgress": "முன்னேற்றம்",
+      "fileStatus": "நிலை",
+      "removeFile": "{{name}} நீக்கவும்",
+      "removeFileHint": "இந்த கோப்பை பதிவேற்ற வரிசையிலிருந்து நீக்கவும்",
+      "fileRemoved": "{{name}} பதிவேற்ற வரிசையிலிருந்து நீக்கப்பட்டது",
+      "selectedFiles": "{{count}} கோப்பு(கள்) தேர்ந்தெடுக்கப்பட்டன",
+      "selectedFilesOne": "1 கோப்பு தேர்ந்தெடுக்கப்பட்டது",
+      "selectedFilesOther": "{{count}} கோப்புகள் தேர்ந்தெடுக்கப்பட்டன",
+      "totalSize": "மொத்த அளவு: {{size}}",
+      "clearAll": "அனைத்தையும் அழிக்கவும்",
+      "clearAllHint": "பதிவேற்ற வரிசையிலிருந்து அனைத்து கோப்புகளையும் நீக்கவும்",
+      "clearAllConfirm": "அனைத்து {{count}} கோப்புகளையும் நீக்கவா?",
+      "uploadFiles": "கோப்புகளைப் பதிவேற்றவும்",
+      "uploading": "பதிவேற்றுகிறது...",
+      "uploadingFiles": "{{count}} கோப்பு(கள்) பதிவேற்றப்படுகிறது...",
+      "uploadProgress": "பதிவேற்றுகிறது: {{percent}}% முடிந்தது",
+      "uploadComplete": "பதிவேற்றம் முடிந்தது",
+      "uploadSuccess": "{{count}} கோப்பு(கள்) வெற்றிகரமாக பதிவேற்றப்பட்டன",
+      "uploadSuccessOne": "1 கோப்பு வெற்றிகரமாக பதிவேற்றப்பட்டது",
+      "uploadSuccessOther": "{{count}} கோப்புகள் வெற்றிகரமாக பதிவேற்றப்பட்டன",
+      "uploadPartialSuccess": "{{total}} இல் {{successful}} கோப்புகள் பதிவேற்றப்பட்டன. {{failed}} தோல்வியடைந்தன.",
+      "uploadFailed": "பதிவேற்றம் தோல்வி: {{error}}",
+      "cancelUpload": "பதிவேற்றத்தை ரத்து செய்யவும்",
+      "retryUpload": "பதிவேற்றத்தை மீண்டும் முயற்சிக்கவும்",
+      "retryFailed": "தோல்வியுற்ற கோப்புகளை மீண்டும் முயற்சிக்கவும்"
+    },
+    "urlUpload": {
+      "title": "URL இலிருந்து இறக்குமதி",
+      "subtitle": "தொலைநிலை URL களிலிருந்து வீடியோ கோப்புகளை இறக்குமதி செய்யவும்",
+      "urlLabel": "வீடியோ URL",
+      "urlPlaceholder": "https://example.com/video.mp4",
+      "urlHelp": "வீடியோ கோப்பிற்கான நேரடி URL ஐ உள்ளிடவும்",
+      "urlRequired": "URL தேவை",
+      "importButton": "URL இலிருந்து இறக்குமதி",
+      "importing": "இறக்குமதி செய்கிறது...",
+      "importSuccess": "URL இலிருந்து வெற்றிகரமாக இறக்குமதி செய்யப்பட்டது",
+      "importFailed": "இறக்குமதி தோல்வி: {{error}}",
+      "invalidUrl": "சரியான URL ஐ உள்ளிடவும்",
+      "urlMustBeHttps": "URL HTTPS நெறிமுறையைப் பயன்படுத்த வேண்டும்",
+      "emptyUrlList": "URL கள் இறக்குமதி செய்யப்படவில்லை",
+      "emptyUrlListDescription": "தொலைநிலை மூலங்களிலிருந்து வீடியோ கோப்புகளை இறக்குமதி செய்ய மேலே URL களை உள்ளிடவும்",
+      "addUrl": "URL சேர்க்கவும்",
+      "removeUrl": "URL நீக்கவும்"
+    },
+    "monitoredFolders": {
+      "title": "கண்காணிக்கப்பட்ட கோப்புறைகள்",
+      "subtitle": "உள்ளடக்கத்தை தானாகக் கண்டறிந்து பதிவேற்ற கோப்புறைகளை உள்ளமைக்கவும்",
+      "noFolders": "கண்காணிக்கப்பட்ட கோப்புறைகள் இல்லை",
+      "noFoldersDescription": "தானியங்கு உள்ளடக்க கண்டறிதல் மற்றும் பதிவேற்றத்தை இயக்க கோப்புறைகளைச் சேர்க்கவும்",
+      "addFolder": "கோப்புறையைச் சேர்க்கவும்",
+      "editFolder": "கோப்புறையைத் திருத்தவும்",
+      "deleteFolder": "கோப்புறையை நீக்கவும்",
+      "scanFolder": "கோப்புறையை ஸ்கேன் செய்யவும்",
+      "scanFolderHint": "புதிய கோப்புகளைச் சரிபார்த்து பதிவேற்ற வரிசையில் சேர்க்கவும்",
+      "scanning": "ஸ்கேன் செய்கிறது...",
+      "scanComplete": "ஸ்கேன் முடிந்தது: {{count}} கோப்பு(கள்) கண்டறியப்பட்டன",
+      "scanCompleteOne": "ஸ்கேன் முடிந்தது: 1 கோப்பு கண்டறியப்பட்டது",
+      "scanCompleteOther": "ஸ்கேன் முடிந்தது: {{count}} கோப்புகள் கண்டறியப்பட்டன",
+      "noFilesFound": "கோப்புறையில் புதிய கோப்புகள் இல்லை",
+      "scanFailed": "ஸ்கேன் தோல்வி: {{error}}",
+      "folderName": "கோப்புறை பெயர்",
+      "folderPath": "கோப்புறை பாதை",
+      "folderStatus": "நிலை",
+      "folderEnabled": "இயக்கப்பட்டது",
+      "folderDisabled": "முடக்கப்பட்டது",
+      "lastScan": "கடைசி ஸ்கேன்",
+      "neverScanned": "ஒருபோதும் ஸ்கேன் செய்யப்படவில்லை",
+      "filesDetected": "{{count}} கோப்பு(கள்) கண்டறியப்பட்டன",
+      "confirmDelete": "{{name}} நீக்கவா?",
+      "confirmDeleteMessage": "இது இந்த கோப்புறையின் கண்காணிப்பை நிறுத்தும். இருக்கும் பதிவேற்றங்கள் பாதிக்கப்படாது.",
+      "deleteSuccess": "கோப்புறை வெற்றிகரமாக நீக்கப்பட்டது",
+      "deleteFailed": "கோப்புறை நீக்க தோல்வி: {{error}}",
+      "form": {
+        "title": "கோப்புறை உள்ளமைவு",
+        "name": "கோப்புறை பெயர்",
+        "namePlaceholder": "எ.கா., திரைப்பட காப்பகம்",
+        "nameRequired": "கோப்புறை பெயர் தேவை",
+        "nameHelp": "இந்த கோப்புறைக்கான விளக்கமான பெயர்",
+        "path": "கோப்புறை பாதை",
+        "pathPlaceholder": "/path/to/folder",
+        "pathHelp": "கண்காணிக்க முழு பாதையை உள்ளிடவும்",
+        "pathRequired": "கோப்புறை பாதை தேவை",
+        "pathInvalid": "தவறான கோப்புறை பாதை",
+        "pathReadOnly": "உருவாக்கிய பிறகு பாதையை மாற்ற முடியாது",
+        "enabled": "இயக்கப்பட்டது",
+        "enabledHelp": "இந்த கோப்புறைக்கான கண்காணிப்பை இயக்கவும் அல்லது முடக்கவும்",
+        "autoUpload": "தானியங்கு பதிவேற்றம்",
+        "autoUploadHelp": "இந்த கோப்புறையில் கண்டறியப்பட்ட புதிய கோப்புகளை தானாகப் பதிவேற்றவும்",
+        "contentType": "உள்ளடக்க வகை",
+        "contentTypeHelp": "இந்த கோப்புறையில் உள்ள உள்ளடக்கத்தின் வகை",
+        "saveButton": "கோப்புறையைச் சேமிக்கவும்",
+        "cancelButton": "ரத்து செய்யவும்",
+        "saving": "சேமிக்கிறது..."
+      }
+    },
+    "dryRun": {
+      "title": "டிரை ரன் பயன்முறை",
+      "enabled": "டிரை ரன் இயக்கப்பட்டது",
+      "disabled": "டிரை ரன் முடக்கப்பட்டது",
+      "description": "கோப்புகளை உண்மையில் மாற்றாமல் பதிவேற்றத்தை முன்னோட்டமிடுங்கள்",
+      "descriptionDetailed": "இயக்கப்பட்டால், கோப்புகள் சரிபார்க்கப்பட்டு மெட்டாடேட்டா பிரித்தெடுக்கப்படும், ஆனால் சேமிப்பகத்திற்கு பதிவேற்றப்படாது. மாற்றங்களைச் செய்யாமல் பதிவேற்றங்களைச் சோதிக்க இதைப் பயன்படுத்தவும்.",
+      "toggle": "டிரை ரன் இயக்கவும்",
+      "toggleHint": "பாதுகாப்பான பதிவேற்ற சோதனைக்கு டிரை ரன் பயன்முறையை மாற்றவும்",
+      "previewTitle": "டிரை ரன் முடிவுகள்",
+      "previewDescription": "நீங்கள் பதிவேற்றத்தைத் தொடர்ந்தால் என்ன நடக்கும் என்பதை மதிப்பாய்வு செய்யவும்",
+      "validFiles": "சரியான கோப்புகள் ({{count}})",
+      "invalidFiles": "தவறான கோப்புகள் ({{count}})",
+      "warnings": "எச்சரிக்கைகள் ({{count}})",
+      "proceedButton": "பதிவேற்றத்தைத் தொடரவும்",
+      "proceedHint": "டிரை ரன் முடக்கி உண்மையான பதிவேற்றத்தைச் செய்யவும்",
+      "cancelButton": "ரத்து செய்யவும்",
+      "noResults": "டிரை ரன் முடிவுகள் இல்லை"
+    },
+    "connectionStatus": {
+      "connected": "இணைக்கப்பட்டது",
+      "disconnected": "துண்டிக்கப்பட்டது",
+      "reconnecting": "மீண்டும் இணைக்கிறது...",
+      "reconnectAttempt": "மீண்டும் இணைக்கிறது (முயற்சி {{current}} / {{max}})",
+      "connectionLost": "நிகழ்நேர புதுப்பிப்புகள் கிடைக்கவில்லை",
+      "connectionLostDescription": "சர்வருடனான இணைப்பு துண்டிக்கப்பட்டது. மீண்டும் இணைக்க முயற்சிக்கிறது...",
+      "connectionLostAnnouncement": "இணைப்பு துண்டிக்கப்பட்டது. நிகழ்நேர புதுப்பிப்புகள் இடைநிறுத்தப்பட்டன. கைமுறை புதுப்பிப்புகளுக்கு புதுப்பிப்பு பொத்தானைப் பயன்படுத்தவும்.",
+      "connectedAnnouncement": "பதிவேற்ற சேவையுடன் இணைக்கப்பட்டது. நிகழ்நேர புதுப்பிப்புகள் செயலில்.",
+      "reconnectingAnnouncement": "பதிவேற்ற சேவையுடன் மீண்டும் இணைக்கிறது. முயற்சி {{attempt}} / {{maxAttempts}}.",
+      "troubleshooting": "சரிசெய்தல்",
+      "troubleshootingSteps": [
+        "உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்",
+        "சர்வர் இயங்குகிறதா என்பதைச் சரிபார்க்கவும்",
+        "உங்கள் அங்கீகார டோக்கனைச் சரிபார்க்கவும்",
+        "பக்கத்தைப் புதுப்பிக்க முயற்சிக்கவும்"
+      ],
+      "manualRefresh": "கைமுறையாகப் புதுப்பிக்கவும்",
+      "manualRefreshHint": "வரிசை தரவை கைமுறையாகப் புதுப்பிக்கவும்",
+      "refreshing": "புதுப்பிக்கிறது..."
+    },
+    "contentTypes": {
+      "movie": "திரைப்படம்",
+      "series": "தொடர்",
+      "podcast": "பாட்காஸ்ட்",
+      "other": "பிற"
+    },
+    "stages": {
+      "browserUpload": "உலாவி பதிவேற்றம்",
+      "hashCalculation": "ஹாஷ் கணக்கீடு",
+      "duplicateCheck": "நகல் சரிபார்ப்பு",
+      "metadataExtraction": "மெட்டாடேட்டா பிரித்தெடுத்தல்",
+      "gcsUpload": "கிளவுட் பதிவேற்றம்",
+      "databaseInsert": "தரவுத்தள செருகல்",
+      "complete": "முடிந்தது",
+      "failed": "தோல்வி"
+    },
+    "status": {
+      "queued": "வரிசையில்",
+      "processing": "செயலாக்கம்",
+      "uploading": "பதிவேற்றுகிறது",
+      "complete": "முடிந்தது",
+      "failed": "தோல்வி",
+      "cancelled": "ரத்து செய்யப்பட்டது",
+      "skipped": "தவிர்க்கப்பட்டது (நகல்)"
+    },
+    "actions": {
+      "pauseQueue": "வரிசையை இடைநிறுத்தவும்",
+      "resumeQueue": "வரிசையை மீண்டும் தொடங்கவும்",
+      "clearQueue": "வரிசையை அழிக்கவும்",
+      "clearQueueConfirm": "பதிவேற்ற வரிசையை அழிக்கவா?",
+      "clearQueueConfirmMessage": "இது {{count}} நிலுவையில் உள்ள பதிவேற்றங்களை ரத்து செய்யும். இந்த செயலை மீட்க முடியாது.",
+      "triggerUpload": "கோப்புறைகளை ஸ்கேன் செய்யவும்",
+      "triggerUploadHint": "புதிய கோப்புகளுக்கு அனைத்து கண்காணிக்கப்பட்ட கோப்புறைகளையும் ஸ்கேன் செய்யவும்",
+      "triggerUploadSuccess": "பதிவேற்ற {{files_found}} கோப்பு(கள்) கண்டறியப்பட்டன",
+      "triggerUploadFailed": "ஸ்கேன் தோல்வி: {{error}}",
+      "refresh": "புதுப்பிக்கவும்",
+      "refreshHint": "வரிசை தரவை மீண்டும் ஏற்றவும்",
+      "cancel": "ரத்து செய்யவும்",
+      "retry": "மீண்டும் முயற்சிக்கவும்",
+      "remove": "நீக்கவும்"
+    },
+    "errors": {
+      "loadFailed": "பதிவேற்ற தரவை ஏற்ற முடியவில்லை",
+      "loadFailedDescription": "பதிவேற்ற வரிசையைப் பெற முடியவில்லை. புதுப்பிக்க முயற்சிக்கவும்.",
+      "saveFailed": "கோப்புறை உள்ளமைவை சேமிக்க முடியவில்லை",
+      "saveFailedDescription": "கண்காணிக்கப்பட்ட கோப்புறையை சேமிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
+      "deleteFailed": "கண்காணிக்கப்பட்ட கோப்புறையை நீக்க முடியவில்லை",
+      "uploadFailed": "பதிவேற்றம் தோல்வி",
+      "uploadFailedDescription": "ஒன்று அல்லது அதற்கு மேற்பட்ட கோப்புகளைப் பதிவேற்ற முடியவில்லை. விவரங்களுக்கு கோப்பு பட்டியலைச் சரிபார்க்கவும்.",
+      "resumeFailed": "வரிசையை மீண்டும் தொடங்க முடியவில்லை",
+      "clearFailed": "வரிசையை அழிக்க முடியவில்லை",
+      "triggerFailed": "பதிவேற்ற ஸ்கேனைத் தொடங்க முடியவில்லை",
+      "pathRequired": "கோப்புறை பாதை தேவை",
+      "invalidPath": "தவறான கோப்புறை பாதை",
+      "pathTraversal": "பாதையில் தவறான எழுத்துகள் அல்லது டிராவர்சல் முயற்சிகள் உள்ளன",
+      "networkError": "நெட்வொர்க் பிழை. உங்கள் இணைப்பைச் சரிபார்க்கவும்.",
+      "authError": "அங்கீகாரப் பிழை. மீண்டும் உள்நுழையவும்.",
+      "serverError": "சர்வர் பிழை. பின்னர் மீண்டும் முயற்சிக்கவும்.",
+      "fileTooBig": "கோப்பு அதிகபட்ச அளவு {{maxSize}} ஐ மீறுகிறது",
+      "invalidFileType": "தவறான கோப்பு வகை. ஆதரிக்கப்படும் வடிவங்கள்: {{formats}}",
+      "duplicateFile": "இந்த கோப்பு ஏற்கனவே பதிவேற்றப்பட்டுள்ளது",
+      "rateLimitExceeded": "வரம்பு மீறப்பட்டது. மேலும் கோப்புகளைப் பதிவேற்றும் முன் காத்திருக்கவும்.",
+      "configValidationFailed": "உள்ளமைவு சரிபார்ப்பு தோல்வி. விவரங்களுக்கு கன்சோலைச் சரிபார்க்கவும்.",
+      "websocketAuthFailed": "WebSocket அங்கீகாரம் தோல்வி",
+      "unsupportedBrowser": "உங்கள் உலாவி தேவையான அம்சங்களை ஆதரிக்கவில்லை"
+    },
+    "mobile": {
+      "dataWarning": "நீங்கள் செல்லுலார் தரவில் இருக்கிறீர்கள். {{size}} பதிவேற்றம் கணிசமான தரவைப் பயன்படுத்தலாம்.",
+      "dataWarningProceed": "எப்படியும் தொடரவும்",
+      "dataWarningCancel": "பதிவேற்றத்தை ரத்து செய்யவும்",
+      "lowMemoryWarning": "சாதன நினைவகம் குறைவாக உள்ளது. பெரிய பதிவேற்றங்கள் தோல்வியடையலாம்.",
+      "batteryLowWarning": "பேட்டரி குறைவாக உள்ளது ({{percent}}%). பதிவேற்றங்கள் தடைப்படலாம்.",
+      "networkChanged": "நெட்வொர்க் மாறியது. மீண்டும் இணைக்கிறது...",
+      "mobileBrowserNotSupported": "மொபைல் உலாவிகளில் சில அம்சங்கள் வேலை செய்யாமல் போகலாம்"
+    },
+    "accessibility": {
+      "pageDescription": "வரிசை கண்காணிப்பு, கைமுறை பதிவேற்றங்கள் மற்றும் கோப்புறை கண்காணிப்புடன் பதிவேற்ற மேலாண்மை இடைமுகம்",
+      "pageTitle": "நிர்வாகி பதிவேற்றங்கள் பக்கம்",
+      "sectionQueue": "வரிசை டாஷ்போர்டு பகுதி",
+      "sectionManualUpload": "கைமுறை பதிவேற்ற பகுதி",
+      "sectionMonitoredFolders": "கண்காணிக்கப்பட்ட கோப்புறைகள் பகுதி",
+      "loadingQueue": "பதிவேற்ற வரிசை ஏற்றப்படுகிறது...",
+      "queueLoaded": "பதிவேற்ற வரிசை {{count}} உருப்படிகளுடன் ஏற்றப்பட்டது",
+      "queueLoadedOne": "பதிவேற்ற வரிசை 1 உருப்படியுடன் ஏற்றப்பட்டது",
+      "queueLoadedOther": "பதிவேற்ற வரிசை {{count}} உருப்படிகளுடன் ஏற்றப்பட்டது",
+      "uploadStarted": "{{count}} கோப்புகளுக்கு பதிவேற்றம் தொடங்கியது",
+      "uploadStartedOne": "1 கோப்பிற்கு பதிவேற்றம் தொடங்கியது",
+      "uploadStartedOther": "{{count}} கோப்புகளுக்கு பதிவேற்றம் தொடங்கியது",
+      "uploadProgressUpdate": "பதிவேற்ற முன்னேற்றம்: {{percent}}% முடிந்தது",
+      "uploadProgressMilestone": "பதிவேற்றம் {{percent}}% முடிந்தது",
+      "uploadCompleted": "பதிவேற்றம் வெற்றிகரமாக முடிந்தது",
+      "uploadFailed": "பதிவேற்றம் தோல்வி",
+      "folderAdded": "கோப்புறை {{name}} கண்காணிப்பில் சேர்க்கப்பட்டது",
+      "folderRemoved": "கோப்புறை {{name}} கண்காணிப்பிலிருந்து நீக்கப்பட்டது",
+      "folderScanned": "கோப்புறை {{name}} ஸ்கேன் செய்யப்பட்டது, {{count}} கோப்புகள் கண்டறியப்பட்டன",
+      "emptyStateAction": "செயலைச் செய்ய Enter அழுத்தவும்",
+      "connectionStatusRegion": "இணைப்பு நிலை தகவல்",
+      "queueStatsRegion": "வரிசை புள்ளிவிவர பகுதி",
+      "shortcuts": {
+        "uploadFocused": "பதிவேற்ற உள்ளீடு கவனத்தில். கோப்புகளைத் தேர்ந்தெடுக்க Enter அழுத்தவும்.",
+        "queueRefreshed": "வரிசை கைமுறையாகப் புதுப்பிக்கப்பட்டது."
+      }
+    }
+  },
   "channelChat": {
     "title": "நேரடி அரட்டை",
     "participants": "{{count}} பார்க்கிறார்கள்",
@@ -392,6 +718,162 @@
         "selectVoice": "டப் செய்யப்பட்ட ஆடியோவிற்கான குரலைத் தேர்ந்தெடுக்கவும்",
         "originalVolume": "அசல் ஆடியோ ஒலியளவை சரிசெய்யவும் (0 = ஒலியணைப்பு)",
         "dubbedVolume": "டப் செய்யப்பட்ட ஆடியோ ஒலியளவை சரிசெய்யவும் (1 = முழு ஒலியளவு)"
+      }
+    }
+  },
+  "errors": {
+    "friends": {
+      "fetchFailed": "நண்பர்களைப் பெற இயலவில்லை",
+      "requestsFetchFailed": "கோரிக்கைகளைப் பெற இயலவில்லை",
+      "sendFailed": "கோரிக்கை அனுப்ப இயலவில்லை",
+      "acceptFailed": "கோரிக்கையை ஏற்க இயலவில்லை",
+      "rejectFailed": "கோரிக்கையை நிராகரிக்க இயலவில்லை",
+      "cancelFailed": "கோரிக்கையை ரத்து செய்ய இயலவில்லை",
+      "removeFailed": "நண்பரை நீக்க இயலவில்லை"
+    },
+    "settings": {
+      "loadFailed": "விருப்பத்தேர்வுகளை ஏற்ற இயலவில்லை",
+      "saveFailed": "விருப்பத்தேர்வுகளைச் சேமிக்க இயலவில்லை"
+    },
+    "devices": {
+      "loadFailed": "சாதனங்களை ஏற்ற இயலவில்லை",
+      "registerFailed": "சாதனத்தைப் பதிவு செய்ய இயலவில்லை",
+      "disconnectFailed": "சாதனத்தைத் துண்டிக்க இயலவில்லை"
+    },
+    "stats": {
+      "fetchFailed": "புள்ளிவிவரங்களைப் பெற இயலவில்லை",
+      "playerFetchFailed": "வீரர் புள்ளிவிவரங்களைப் பெற இயலவில்லை",
+      "historyFetchFailed": "போட்டி வரலாற்றைப் பெற இயலவில்லை",
+      "leaderboardFetchFailed": "தலைவர் பட்டியலைப் பெற இயலவில்லை",
+      "h2hFetchFailed": "நேருக்கு நேர் புள்ளிவிவரங்களைப் பெற இயலவில்லை"
+    },
+    "profile": {
+      "fetchFailed": "சுயவிவரங்களைப் பெற இயலவில்லை",
+      "selectFailed": "சுயவிவரத்தைத் தேர்ந்தெடுக்க இயலவில்லை",
+      "createFailed": "சுயவிவரத்தை உருவாக்க இயலவில்லை",
+      "updateFailed": "சுயவிவரத்தைப் புதுப்பிக்க இயலவில்லை",
+      "deleteFailed": "சுயவிவரத்தை நீக்க இயலவில்லை"
+    },
+    "auth": {
+      "notAuthenticated": "அங்கீகரிக்கப்படவில்லை",
+      "tokenRefreshFailed": "அங்கீகார டோக்கனைப் புதுப்பிக்க இயலவில்லை",
+      "playbackAuthRequired": "பிளேபேக் அமர்வுக்கு அங்கீகாரம் தேவை"
+    },
+    "connection": {
+      "failed": "இணைப்பு பிழை - விவரங்களுக்கு கன்சோலைச் சரிபார்க்கவும்",
+      "timeout": "இணைப்பு நேரம் முடிந்தது",
+      "error": "இணைப்பு பிழை"
+    },
+    "chess": {
+      "connectFailed": "விளையாட்டுடன் இணைக்க இயலவில்லை",
+      "notConnected": "விளையாட்டுடன் இணைக்கப்படவில்லை"
+    },
+    "podcast": {
+      "switchLanguageFailed": "மொழியை மாற்ற இயலவில்லை",
+      "playbackError": "ஆடியோ பிளேபேக் பிழை"
+    },
+    "widget": {
+      "loadFailed": "விட்ஜெட்களை ஏற்ற இயலவில்லை"
+    },
+    "player": {
+      "noStreamUrl": "ஸ்ட்ரீம் URL கிடைக்கவில்லை",
+      "loadFailed": "வீடியோவை ஏற்ற இயலவில்லை",
+      "notReady": "வீடியோ தயாராக இல்லை",
+      "sessionCreateFailed": "பல முயற்சிகளுக்குப் பிறகு பிளேபேக் அமர்வை உருவாக்க இயலவில்லை"
+    },
+    "trivia": {
+      "invalidChannel": "தவறான சேனல் ஐடி"
+    }
+  },
+  "widget": {
+    "streamUnavailable": "ஸ்ட்ரீம் கிடைக்கவில்லை",
+    "contentUnavailable": "உள்ளடக்கம் கிடைக்கவில்லை",
+    "podcastUnavailable": "பாட்காஸ்ட் கிடைக்கவில்லை",
+    "stationUnavailable": "நிலையம் கிடைக்கவில்லை",
+    "iframeNotConfigured": "iFrame URL உள்ளமைக்கப்படவில்லை",
+    "unknownComponent": "அறியாத கூறு: {{componentName}}",
+    "noContentConfigured": "உள்ளடக்கம் உள்ளமைக்கப்படவில்லை",
+    "errorLoadingContent": "உள்ளடக்கத்தை ஏற்றுவதில் பிழை",
+    "loadingEpisodes": "அத்தியாயங்கள் ஏற்றப்படுகின்றன...",
+    "noEpisodesFound": "அத்தியாயங்கள் எதுவும் கிடைக்கவில்லை",
+    "audioUnavailable": "ஆடியோ கிடைக்கவில்லை",
+    "103fmEpisodes": "103FM அத்தியாயங்கள்",
+    "loadingNews": "செய்திகள் ஏற்றப்படுகின்றன...",
+    "ynetBreakingNews": "מבזקי Ynet"
+  },
+  "chess": {
+    "waitingForOpponent": "எதிராளிக்காகக் காத்திருக்கிறது...",
+    "disconnected": "துண்டிக்கப்பட்டது",
+    "theirTurn": "அவர்களின் முறை"
+  },
+  "audible": {
+    "connectionFailed": "இணைப்பு தோல்வி",
+    "connecting": "Audible இணைக்கப்படுகிறது...",
+    "pleaseWait": "உங்கள் கணக்கை இணைக்கும் வரை காத்திருக்கவும்.",
+    "connected": "இணைக்கப்பட்டது!",
+    "accountLinked": "உங்கள் Audible கணக்கு இப்போது Bayit+ உடன் இணைக்கப்பட்டுள்ளது"
+  },
+  "settings": {
+    "accessibility": {
+      "small": "சிறியது",
+      "medium": "நடுத்தரம்",
+      "large": "பெரியது"
+    }
+  },
+  "recordings": {
+    "record": "பதிவு செய்"
+  },
+  "epg": {
+    "live": "நேரடி"
+  },
+  "admin": {
+    "accessDenied": "அணுகல் மறுக்கப்பட்டது",
+    "noPermission": "இந்த உள்ளடக்கத்தைப் பார்க்க உங்களுக்கு அனுமதி இல்லை",
+    "actions": {
+      "view": "பார்க்கவும்",
+      "edit": "திருத்தவும்",
+      "delete": "நீக்கவும்",
+      "pause": "இடைநிறுத்தவும்",
+      "resume": "மீண்டும் தொடங்கவும்",
+      "cancel": "ரத்து செய்யவும்",
+      "approve": "ஒப்புதல் அளிக்கவும்",
+      "reject": "நிராகரிக்கவும்",
+      "activate": "செயல்படுத்தவும்",
+      "test": "சோதிக்கவும்"
+    },
+    "importWizard": {
+      "title": "இலவச உள்ளடக்கத்தை இறக்குமதி செய்",
+      "loadingSources": "மூலங்கள் ஏற்றப்படுகின்றன...",
+      "loadingCategories": "வகைகள் ஏற்றப்படுகின்றன...",
+      "selectCategory": "இறக்குமதி செய்யப்பட்ட திரைப்படங்களுக்கான வகையைத் தேர்ந்தெடுக்கவும்",
+      "selectItems": "இறக்குமதி செய்ய உருப்படிகளைத் தேர்ந்தெடுக்கவும்",
+      "sources": {
+        "vod": "திரைப்படங்கள் மற்றும் VOD",
+        "vodDescription": "archive.org இலிருந்து கிளாசிக் திரைப்படங்களை இறக்குமதி செய்யவும்",
+        "liveTv": "நேரடி டிவி சேனல்கள்",
+        "liveTvDescription": "Apple BipBop இலிருந்து சோதனை ஸ்ட்ரீம்களை இறக்குமதி செய்யவும்",
+        "radio": "வானொலி நிலையங்கள்",
+        "radioDescription": "பொது வானொலி ஸ்ட்ரீம்களை இறக்குமதி செய்யவும்",
+        "podcasts": "பாட்காஸ்ட்கள்",
+        "podcastsDescription": "பொது பாட்காஸ்ட் ஊட்டங்களை இறக்குமதி செய்யவும்"
+      }
+    },
+    "diagnostics": {
+      "service": "சேவை",
+      "status": "நிலை",
+      "latency": "தாமதம்",
+      "loading": "கண்டறிதல் ஏற்றப்படுகிறது..."
+    },
+    "costDashboard": {
+      "title": "செலவு டாஷ்போர்டு",
+      "subtitle": "தள செலவு கண்காணிப்பு மற்றும் பகுப்பாய்வு",
+      "view": "பார்க்கவும்",
+      "selectUser": "பயனரைத் தேர்ந்தெடுக்கவும்...",
+      "tabs": {
+        "overview": "கண்ணோட்டம்",
+        "timeline": "காலவரிசை",
+        "categories": "வகைகள்",
+        "topSpenders": "அதிக செலவினர்"
       }
     }
   }

@@ -61,7 +61,15 @@
     "refreshData": "Actualizar datos",
     "dismissError": "Descartar error",
     "closeHint": "Cierra la pantalla actual",
-    "cancelHint": "Cancela la acción actual"
+    "cancelHint": "Cancela la acción actual",
+    "loadingArticle": "Cargando artículo...",
+    "watch": "Ver",
+    "share": "Compartir",
+    "noContent": "No hay contenido disponible",
+    "premium": "PREMIUM",
+    "poweredBy": "Desarrollado por",
+    "filters": "Filtros",
+    "upgrade": "Actualizar a Premium"
   },
   "demo": {
     "banner": "MODO DEMOSTRACIÓN",
@@ -240,7 +248,9 @@
     "plans": "Planes",
     "admin": "Administración",
     "games": "Juegos",
-    "friends": "Amigos"
+    "friends": "Amigos",
+    "support": "Soporte",
+    "privacy": "Política de Privacidad"
   },
   "epg": {
     "title": "Guía de TV",
@@ -285,7 +295,11 @@
     "exampleQuery4": "Muéstrame todos los programas de noticias mañana por la mañana",
     "aiDisclaimer": "Impulsado por Claude AI. Los resultados pueden variar según la disponibilidad de datos del programa.",
     "interpretationTitle": "Lo que entendí",
-    "noResultsFound": "No se encontraron programas que coincidan con tu consulta"
+    "noResultsFound": "No se encontraron programas que coincidan con tu consulta",
+    "noProgramsScheduled": "No hay programas programados",
+    "noProgramsFound": "No Se Encontraron Programas",
+    "noDataAvailable": "No Hay Datos de Guía de TV Disponibles",
+    "live": "EN VIVO"
   },
   "home": {
     "continueWatching": "Continuar Viendo",
@@ -307,6 +321,14 @@
     "jerusalemConnection": "Conexión Jerusalén",
     "telAvivConnection": "Conexión Tel Aviv",
     "categories": "Categorías",
+    "podcasts": "Podcasts",
+    "audiobooks": "Audiolibros",
+    "israelis_in_city": "Israelíes en {{city}}, {{state}}",
+    "israeli_businesses": "Negocios Israelíes en {{city}}, {{state}}",
+    "israeli_businesses_nearby": "Negocios Israelíes Cerca de Ti - Desde {{city}}",
+    "searching_businesses": "Buscando negocios israelíes en {{city}}...",
+    "no_businesses_found": "No se encontraron negocios israelíes en {{city}}",
+    "businesses_load_error": "No se pueden cargar los listados de negocios. Por favor, inténtalo de nuevo.",
     "carousel": {
       "fauda": {
         "title": "Fauda",
@@ -375,9 +397,18 @@
       "infoTitle": "Búsqueda con IA",
       "info": "La búsqueda de IA comprende el contexto y encuentra momentos exactos en videos analizando escenas, diálogos y contenido visual."
     },
+    "loadingMore": "Cargando más resultados...",
+    "viewMode": {
+      "grid": "Cuadrícula",
+      "list": "Lista",
+      "cards": "Tarjetas"
+    },
     "empty": {
       "clearSearch": "Borrar búsqueda"
     }
+  },
+  "auth": {
+    "login": "Iniciar Sesión"
   },
   "liveTV": {
     "title": "TV en Vivo",
@@ -424,7 +455,48 @@
       "educational": "Educativo"
     },
     "noPodcasts": "Sin podcasts disponibles",
-    "tryLater": "Intenta de nuevo más tarde"
+    "tryLater": "Intenta de nuevo más tarde",
+    "selectLanguage": "Idioma de Audio",
+    "switchToLanguage": "Cambiar a {{language}}",
+    "languageSwitched": "Reproduciendo en {{language}}",
+    "availableInLanguage": "Disponible en {{language}}",
+    "availableLanguages": "Disponible en varios idiomas",
+    "downloadForOffline": "Descargar para escuchar sin conexión",
+    "downloadProgress": "Descargando {{progress}}%",
+    "downloaded": "Descargado",
+    "downloadFailed": "Error en la descarga",
+    "retryDownload": "Reintentar descarga",
+    "deleteDownload": "Eliminar descarga",
+    "confirmDelete": "¿Eliminar audio descargado?",
+    "quality": {
+      "label": "Calidad de Audio",
+      "low": "Baja (64 kbps) - Ahorra datos",
+      "medium": "Media (96 kbps) - Equilibrada",
+      "high": "Alta (128 kbps) - Mejor calidad"
+    },
+    "languages": {
+      "he": {
+        "short": "Hebreo",
+        "full": "Hebreo"
+      },
+      "en": {
+        "short": "Inglés",
+        "full": "Inglés"
+      }
+    },
+    "player": {
+      "switchingLanguage": "Cambiando idioma de audio...",
+      "languageSwitchError": "No se pudo cambiar el idioma",
+      "loadingTranslation": "Cargando audio traducido...",
+      "translationUnavailable": "La traducción aún no está disponible"
+    },
+    "onboarding": {
+      "multiLanguageTitle": "Audio Multilenguaje",
+      "multiLanguageDescription": "Este podcast está disponible en hebreo e inglés. Toca el selector de idioma para cambiar.",
+      "downloadTitle": "Escuchar Sin Conexión",
+      "downloadDescription": "Descarga episodios para escuchar sin conexión a internet.",
+      "gotIt": "Entendido"
+    }
   },
   "vod": {
     "title": "Películas y Series",
@@ -1007,6 +1079,16 @@
     "error": "Error al reproducir el video",
     "back": "← Volver",
     "liveBadge": "EN VIVO",
+    "live": "EN VIVO",
+    "play": "Reproducir",
+    "pause": "Pausar",
+    "mute": "Silenciar",
+    "unmute": "Activar sonido",
+    "volume": "Volumen",
+    "albumArt": "Portada del álbum de {{title}}",
+    "seekBar": "Progreso de reproducción",
+    "skipBack": "Retroceder {{seconds}} segundos",
+    "skipForward": "Avanzar 30 segundos",
     "noStream": "Transmisión no disponible",
     "loadError": "Error al cargar la transmisión",
     "settings": "Configuración",
@@ -1014,6 +1096,10 @@
     "playbackSpeed": "Velocidad de Reproducción",
     "quality": "Calidad",
     "auto": "Automático",
+    "previousChapter": "Capítulo anterior",
+    "nextChapter": "Capítulo siguiente",
+    "skipBackward": "Retroceder 30 segundos",
+    "restart": "Reiniciar desde el principio",
     "subtitlesOff": "Desactivados",
     "speed": "Velocidad",
     "liveChat": "Chat en Vivo",

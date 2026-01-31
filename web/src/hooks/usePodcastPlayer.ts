@@ -6,7 +6,7 @@ import { AudioCacheService } from '../services/mobile/AudioCacheService'
 import { useNetworkQuality } from './useNetworkQuality'
 import { useAuthStore } from '@/stores/authStore'
 import logger from '@/utils/logger'
-import i18n from '@bayit/i18n'
+import i18n from 'i18next'
 
 interface UsePodcastPlayerOptions {
   episode: PodcastEpisode

@@ -1,145 +1,471 @@
 {
+  "auth": {
+    "loginRequired": "Connexion requise",
+    "loginToWatch": "Veuillez vous connecter pour regarder {{title}}",
+    "login": "Connexion",
+    "signUp": "Inscription"
+  },
   "email": {
-    "greeting": "Hello",
+    "greeting": "Bonjour",
     "footer": {
-      "privacy": "Privacy Policy",
-      "terms": "Terms of Service",
+      "privacy": "Politique de confidentialité",
+      "terms": "Conditions d'utilisation",
       "support": "Support",
-      "unsubscribe": "Unsubscribe from these emails"
+      "unsubscribe": "Se désabonner de ces e-mails"
     },
     "welcome": {
-      "subject": "Welcome to Bayit+!",
-      "title": "Welcome to Bayit+",
-      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
-      "cta": "Go to Dashboard"
+      "subject": "Bienvenue sur Bayit+ !",
+      "title": "Bienvenue sur Bayit+",
+      "body": "Merci d'avoir rejoint Bayit+. Nous sommes ravis de vous accueillir !",
+      "cta": "Aller au tableau de bord"
     },
     "verification": {
-      "subject": "Verify Your Email",
-      "title": "Verify Your Email Address",
-      "body": "Please click the button below to verify your email address.",
-      "cta": "Verify Email",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't create an account, you can safely ignore this email."
+      "subject": "Vérifiez votre e-mail",
+      "title": "Vérifiez votre adresse e-mail",
+      "body": "Veuillez cliquer sur le bouton ci-dessous pour vérifier votre adresse e-mail.",
+      "cta": "Vérifier l'e-mail",
+      "expiry": "Ce lien expirera dans {expiry_hours} heures.",
+      "security": "Si vous n'avez pas créé de compte, vous pouvez ignorer cet e-mail en toute sécurité."
     },
     "verification_resend": {
-      "subject": "Email Verification (Resent)",
-      "title": "Verify Your Email Address",
-      "body": "Here's a new verification link as requested.",
-      "cta": "Verify Email"
+      "subject": "Vérification d'e-mail (Renvoyé)",
+      "title": "Vérifiez votre adresse e-mail",
+      "body": "Voici un nouveau lien de vérification comme demandé.",
+      "cta": "Vérifier l'e-mail"
     },
     "password_reset": {
-      "subject": "Reset Your Password",
-      "title": "Reset Your Password",
-      "body": "We received a request to reset your password. Click the button below to create a new password.",
-      "cta": "Reset Password",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+      "subject": "Réinitialisez votre mot de passe",
+      "title": "Réinitialisez votre mot de passe",
+      "body": "Nous avons reçu une demande de réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe.",
+      "cta": "Réinitialiser le mot de passe",
+      "expiry": "Ce lien expirera dans {expiry_hours} heures.",
+      "security": "Si vous n'avez pas fait cette demande, votre compte est toujours en sécurité. Vous pouvez ignorer cet e-mail."
     },
     "password_changed": {
-      "subject": "Password Changed",
-      "title": "Your Password Has Been Changed",
-      "body": "Your password was successfully changed.",
-      "security": "If you didn't make this change, please contact support immediately."
+      "subject": "Mot de passe modifié",
+      "title": "Votre mot de passe a été modifié",
+      "body": "Votre mot de passe a été modifié avec succès.",
+      "security": "Si vous n'avez pas effectué ce changement, veuillez contacter le support immédiatement."
     },
     "account_locked": {
-      "subject": "Account Locked",
-      "title": "Your Account Has Been Locked",
-      "body": "Your account has been temporarily locked due to security concerns.",
-      "cta": "Unlock Account"
+      "subject": "Compte verrouillé",
+      "title": "Votre compte a été verrouillé",
+      "body": "Votre compte a été temporairement verrouillé en raison de préoccupations de sécurité.",
+      "cta": "Déverrouiller le compte"
     },
     "beta_invitation": {
-      "subject": "You're Invited to Bayit+ Beta!",
-      "title": "You're Invited to the Beta Program",
-      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
-      "credits": "{credits} AI credits included",
-      "duration": "Access for {days} days",
-      "cta": "Join Beta Program"
+      "subject": "Vous êtes invité à Bayit+ Beta !",
+      "title": "Vous êtes invité au programme Beta",
+      "body": "Félicitations ! Vous avez été sélectionné pour le programme exclusif Bayit+ Beta 500.",
+      "credits": "{credits} crédits IA inclus",
+      "duration": "Accès pendant {days} jours",
+      "cta": "Rejoindre le programme Beta"
     },
     "beta_welcome": {
-      "subject": "Welcome to Bayit+ Beta!",
-      "title": "Welcome to the Beta Program",
-      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
-      "cta": "Get Started"
+      "subject": "Bienvenue sur Bayit+ Beta !",
+      "title": "Bienvenue dans le programme Beta",
+      "body": "Vous faites maintenant partie de la communauté exclusive Bayit+ Beta 500 !",
+      "cta": "Commencer"
     },
     "payment_confirmation": {
-      "subject": "Payment Confirmation",
-      "title": "Payment Received",
-      "body": "Your payment has been processed successfully.",
-      "transaction": "Transaction ID",
+      "subject": "Confirmation de paiement",
+      "title": "Paiement reçu",
+      "body": "Votre paiement a été traité avec succès.",
+      "transaction": "ID de transaction",
       "plan": "Plan",
-      "amount": "Amount",
-      "date": "Payment Date",
-      "next_billing": "Next Billing Date"
+      "amount": "Montant",
+      "date": "Date de paiement",
+      "next_billing": "Prochaine date de facturation"
     },
     "subscription_activated": {
-      "subject": "Subscription Activated",
-      "title": "Your Subscription is Active",
-      "body": "Your subscription has been activated. Here's what you get:",
-      "cta": "Start Watching"
+      "subject": "Abonnement activé",
+      "title": "Votre abonnement est actif",
+      "body": "Votre abonnement a été activé. Voici ce que vous obtenez :",
+      "cta": "Commencer à regarder"
     },
     "subscription_cancelled": {
-      "subject": "Subscription Cancelled",
-      "title": "Subscription Cancelled",
-      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
-      "cta": "Reactivate Subscription"
+      "subject": "Abonnement annulé",
+      "title": "Abonnement annulé",
+      "body": "Votre abonnement a été annulé. Vous continuerez à avoir accès jusqu'au {access_until}.",
+      "cta": "Réactiver l'abonnement"
     },
     "payment_failed": {
-      "subject": "Payment Failed",
-      "title": "Payment Failed",
-      "body": "We were unable to process your payment. Please update your payment method.",
-      "cta": "Update Payment Method"
+      "subject": "Paiement échoué",
+      "title": "Paiement échoué",
+      "body": "Nous n'avons pas pu traiter votre paiement. Veuillez mettre à jour votre méthode de paiement.",
+      "cta": "Mettre à jour la méthode de paiement"
     },
     "trial_expiring": {
-      "subject": "Your Trial is Expiring Soon",
-      "title": "Trial Ending in {days_remaining} Days",
-      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
-      "cta": "Upgrade Now"
+      "subject": "Votre essai expire bientôt",
+      "title": "Essai se terminant dans {days_remaining} jours",
+      "body": "Votre essai gratuit expire bientôt. Mettez à niveau maintenant pour continuer à profiter de toutes les fonctionnalités.",
+      "cta": "Mettre à niveau maintenant"
     },
     "support": {
-      "created_subject": "Ticket #{ticket_id} Created",
-      "created_title": "Support Ticket Created",
-      "created_body": "Your support ticket has been created. We'll get back to you soon.",
-      "response_subject": "New Response on Ticket #{ticket_id}",
-      "response_title": "New Response on Your Ticket",
-      "escalation_subject": "Ticket #{ticket_id} Escalated",
-      "escalation_title": "Your Ticket Has Been Escalated",
-      "resolved_subject": "Ticket #{ticket_id} Resolved",
-      "resolved_title": "Your Ticket Has Been Resolved",
-      "resolved_body": "Your support ticket has been resolved."
+      "created_subject": "Ticket #{ticket_id} créé",
+      "created_title": "Ticket de support créé",
+      "created_body": "Votre ticket de support a été créé. Nous vous répondrons bientôt.",
+      "response_subject": "Nouvelle réponse sur le Ticket #{ticket_id}",
+      "response_title": "Nouvelle réponse sur votre ticket",
+      "escalation_subject": "Ticket #{ticket_id} escaladé",
+      "escalation_title": "Votre ticket a été escaladé",
+      "resolved_subject": "Ticket #{ticket_id} résolu",
+      "resolved_title": "Votre ticket a été résolu",
+      "resolved_body": "Votre ticket de support a été résolu."
     },
     "new_message": {
-      "subject": "New Message from {sender_name}",
-      "title": "You Have a New Message",
-      "cta": "Read Message"
+      "subject": "Nouveau message de {sender_name}",
+      "title": "Vous avez un nouveau message",
+      "cta": "Lire le message"
     },
     "content_digest": {
-      "subject": "Your {digest_period} Content Digest",
-      "title": "Your Content Digest",
-      "cta": "Browse Content"
+      "subject": "Votre résumé de contenu {digest_period}",
+      "title": "Votre résumé de contenu",
+      "cta": "Parcourir le contenu"
     },
     "gdpr": {
-      "deletion_subject": "Data Deletion Confirmation",
-      "deletion_title": "Your Data Has Been Deleted",
-      "deletion_body": "As requested, your personal data has been permanently deleted.",
-      "categories_label": "Deleted Data Categories"
+      "deletion_subject": "Confirmation de suppression des données",
+      "deletion_title": "Vos données ont été supprimées",
+      "deletion_body": "Comme demandé, vos données personnelles ont été définitivement supprimées.",
+      "categories_label": "Catégories de données supprimées"
     },
     "admin": {
-      "account_created_subject": "Admin Account Created",
-      "account_created_title": "Admin Account Created",
-      "role_change_subject": "Role Changed",
-      "role_change_title": "Your Role Has Been Updated"
+      "account_created_subject": "Compte administrateur créé",
+      "account_created_title": "Compte administrateur créé",
+      "role_change_subject": "Rôle modifié",
+      "role_change_title": "Votre rôle a été mis à jour"
     },
     "campaign": {
-      "default_subject": "News from Bayit+"
+      "default_subject": "Nouvelles de Bayit+"
     },
     "newsletter": {
-      "default_subject": "Bayit+ Newsletter"
+      "default_subject": "Newsletter Bayit+"
     },
     "reengagement": {
-      "subject": "We Miss You!",
-      "title": "It's Been a While",
-      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
-      "cta": "Come Back"
+      "subject": "Vous nous manquez !",
+      "title": "Cela fait un moment",
+      "body": "Nous avons remarqué que vous n'avez pas visité depuis {days_inactive} jours. Voici ce que vous avez manqué :",
+      "cta": "Revenir"
+    }
+  },
+  "greeting": {
+    "morning": "Bonjour",
+    "afternoon": "Bon après-midi",
+    "evening": "Bonsoir",
+    "night": "Bonne nuit"
+  },
+  "location": {
+    "consentModal": {
+      "title": "Activer les services de localisation",
+      "description": "Nous aimerions vous montrer du contenu pertinent pour votre zone.\n\nNous allons :\n• Détecter votre ville et votre état\n• Afficher le contenu de la communauté israélienne locale\n• Mettre en cache votre localisation pendant 24 heures\n\nNous ne ferons PAS :\n• Suivre votre localisation exacte\n• Partager votre localisation avec des tiers\n• Stocker votre localisation de manière permanente sans consentement\n\nVous pouvez modifier cela à tout moment dans les paramètres.",
+      "accept": "Autoriser l'accès à la localisation",
+      "decline": "Pas maintenant",
+      "privacyNote": "Votre vie privée est importante. Les données de localisation sont chiffrées et jamais vendues."
+    },
+    "permissionBanner": {
+      "title": "Découvrez du contenu israélien près de chez vous",
+      "description": "Activez les services de localisation pour voir les événements, actualités et histoires de la communauté israélienne dans votre zone. Votre vie privée est protégée - nous détectons uniquement votre ville.",
+      "enable": "Activer la localisation",
+      "notNow": "Pas maintenant",
+      "close": "Fermer"
+    },
+    "status": {
+      "detecting": "Détection de votre localisation...",
+      "detected": "Localisation détectée : {{city}}, {{state}}",
+      "denied": "Accès à la localisation refusé",
+      "unavailable": "Services de localisation indisponibles",
+      "error": "Échec de la détection de localisation"
+    },
+    "errors": {
+      "permissionDenied": "Accès à la localisation refusé. Veuillez activer la localisation dans les paramètres de votre navigateur.",
+      "timeout": "La demande de localisation a expiré. Veuillez réessayer.",
+      "unavailable": "Les services de localisation ne sont pas disponibles dans votre navigateur.",
+      "failed": "Échec de l'obtention de la localisation. Veuillez réessayer."
+    }
+  },
+  "uploads": {
+    "title": "Gestion des téléversements",
+    "subtitle": "Surveiller les dossiers et gérer les téléversements de contenu",
+    "queueDashboard": {
+      "title": "Tableau de bord de la file d'attente",
+      "stats": "Statistiques de la file d'attente",
+      "total": "Total",
+      "queued": "En attente",
+      "active": "Actif",
+      "done": "Terminé",
+      "activeJob": "Téléversement actif",
+      "queuedJobs": "Téléversements en attente",
+      "recentCompleted": "Complétés récemment",
+      "noActiveJob": "Aucun téléversement actif",
+      "noActiveJobDescription": "La file d'attente est vide. Téléversez des fichiers ou scannez les dossiers surveillés pour commencer le traitement.",
+      "noQueuedJobs": "Aucun téléversement en attente",
+      "noQueuedJobsDescription": "Tous les fichiers ont été traités. Ajoutez d'autres fichiers pour continuer.",
+      "noRecentCompleted": "Aucun complété récemment",
+      "noRecentCompletedDescription": "Les fichiers téléversés avec succès apparaîtront ici.",
+      "queuePausedWarning": "La file d'attente est en pause : {{reason}}",
+      "resumeQueue": "Reprendre la file d'attente",
+      "pauseQueue": "Mettre en pause la file d'attente",
+      "clearQueue": "Vider la file d'attente"
+    },
+    "manualUpload": {
+      "title": "Téléversement manuel",
+      "subtitle": "Téléversez des fichiers directement depuis votre appareil",
+      "browserUpload": "Téléversement navigateur",
+      "urlUpload": "Importation par URL",
+      "contentType": "Type de contenu",
+      "contentTypeHelp": "Sélectionnez le type de contenu téléversé",
+      "contentTypeRequired": "Veuillez sélectionner un type de contenu",
+      "dropZone": "Zone de dépôt",
+      "dropZoneAriaLabel": "Zone de dépôt pour téléverser des fichiers. Cliquez ou appuyez sur Entrée pour sélectionner des fichiers, ou glissez des fichiers ici",
+      "dropHere": "Glissez des fichiers vidéo ici ou cliquez pour parcourir",
+      "dropHereActive": "Déposez les fichiers pour téléverser",
+      "tapToSelect": "Appuyez pour sélectionner des fichiers",
+      "browseFiles": "Parcourir les fichiers",
+      "selectFiles": "Sélectionner des fichiers",
+      "supportedFormats": "Formats supportés : MP4, MKV, AVI, MOV, WEBM (max {{maxSize}})",
+      "fileList": "Fichiers sélectionnés pour le téléversement",
+      "fileListEmpty": "Aucun fichier sélectionné",
+      "fileListEmptyDescription": "Utilisez le sélecteur de fichiers ci-dessus pour choisir des fichiers à téléverser",
+      "fileItem": "Fichier : {{name}}, Taille : {{size}}, Progression : {{progress}}%",
+      "fileName": "Nom du fichier",
+      "fileSize": "Taille",
+      "fileType": "Type",
+      "fileProgress": "Progression",
+      "fileStatus": "Statut",
+      "removeFile": "Supprimer {{name}}",
+      "removeFileHint": "Supprimer ce fichier de la file d'attente de téléversement",
+      "fileRemoved": "{{name}} supprimé de la file d'attente de téléversement",
+      "selectedFiles": "{{count}} fichier(s) sélectionné(s)",
+      "selectedFilesOne": "1 fichier sélectionné",
+      "selectedFilesOther": "{{count}} fichiers sélectionnés",
+      "totalSize": "Taille totale : {{size}}",
+      "clearAll": "Tout effacer",
+      "clearAllHint": "Supprimer tous les fichiers de la file d'attente de téléversement",
+      "clearAllConfirm": "Supprimer les {{count}} fichiers ?",
+      "uploadFiles": "Téléverser les fichiers",
+      "uploading": "Téléversement en cours...",
+      "uploadingFiles": "Téléversement de {{count}} fichier(s) en cours...",
+      "uploadProgress": "Téléversement : {{percent}}% terminé",
+      "uploadComplete": "Téléversement terminé",
+      "uploadSuccess": "{{count}} fichier(s) téléversé(s) avec succès",
+      "uploadSuccessOne": "1 fichier téléversé avec succès",
+      "uploadSuccessOther": "{{count}} fichiers téléversés avec succès",
+      "uploadPartialSuccess": "{{successful}} sur {{total}} fichiers téléversés. {{failed}} ont échoué.",
+      "uploadFailed": "Échec du téléversement : {{error}}",
+      "cancelUpload": "Annuler le téléversement",
+      "retryUpload": "Réessayer le téléversement",
+      "retryFailed": "Réessayer les fichiers échoués"
+    },
+    "urlUpload": {
+      "title": "Importer depuis une URL",
+      "subtitle": "Importez des fichiers vidéo depuis des URLs distantes",
+      "urlLabel": "URL de la vidéo",
+      "urlPlaceholder": "https://exemple.com/video.mp4",
+      "urlHelp": "Entrez une URL directe vers un fichier vidéo",
+      "urlRequired": "L'URL est requise",
+      "importButton": "Importer depuis l'URL",
+      "importing": "Importation en cours...",
+      "importSuccess": "Importé avec succès depuis l'URL",
+      "importFailed": "Échec de l'importation : {{error}}",
+      "invalidUrl": "Veuillez entrer une URL valide",
+      "urlMustBeHttps": "L'URL doit utiliser le protocole HTTPS",
+      "emptyUrlList": "Aucune URL importée",
+      "emptyUrlListDescription": "Entrez des URLs ci-dessus pour importer des fichiers vidéo depuis des sources distantes",
+      "addUrl": "Ajouter une URL",
+      "removeUrl": "Supprimer l'URL"
+    },
+    "monitoredFolders": {
+      "title": "Dossiers surveillés",
+      "subtitle": "Configurez les dossiers pour détecter et téléverser automatiquement le contenu",
+      "noFolders": "Aucun dossier surveillé",
+      "noFoldersDescription": "Ajoutez des dossiers pour activer la détection et le téléversement automatiques de contenu",
+      "addFolder": "Ajouter un dossier",
+      "editFolder": "Modifier le dossier",
+      "deleteFolder": "Supprimer le dossier",
+      "scanFolder": "Scanner le dossier",
+      "scanFolderHint": "Vérifier le dossier pour de nouveaux fichiers et mettre en file d'attente les téléversements",
+      "scanning": "Scan en cours...",
+      "scanComplete": "Scan terminé : {{count}} fichier(s) trouvé(s)",
+      "scanCompleteOne": "Scan terminé : 1 fichier trouvé",
+      "scanCompleteOther": "Scan terminé : {{count}} fichiers trouvés",
+      "noFilesFound": "Aucun nouveau fichier trouvé dans le dossier",
+      "scanFailed": "Échec du scan : {{error}}",
+      "folderName": "Nom du dossier",
+      "folderPath": "Chemin du dossier",
+      "folderStatus": "Statut",
+      "folderEnabled": "Activé",
+      "folderDisabled": "Désactivé",
+      "lastScan": "Dernier scan",
+      "neverScanned": "Jamais scanné",
+      "filesDetected": "{{count}} fichier(s) détecté(s)",
+      "confirmDelete": "Supprimer {{name}} ?",
+      "confirmDeleteMessage": "Cela arrêtera la surveillance de ce dossier. Les téléversements existants ne seront pas affectés.",
+      "deleteSuccess": "Dossier supprimé avec succès",
+      "deleteFailed": "Échec de la suppression du dossier : {{error}}",
+      "form": {
+        "title": "Configuration du dossier",
+        "name": "Nom du dossier",
+        "namePlaceholder": "ex., Archive de films",
+        "nameRequired": "Le nom du dossier est requis",
+        "nameHelp": "Nom descriptif pour ce dossier",
+        "path": "Chemin du dossier",
+        "pathPlaceholder": "/chemin/vers/dossier",
+        "pathHelp": "Entrez le chemin complet à surveiller",
+        "pathRequired": "Le chemin du dossier est requis",
+        "pathInvalid": "Chemin de dossier invalide",
+        "pathReadOnly": "Le chemin ne peut pas être modifié après la création",
+        "enabled": "Activé",
+        "enabledHelp": "Activer ou désactiver la surveillance de ce dossier",
+        "autoUpload": "Téléversement automatique",
+        "autoUploadHelp": "Téléverser automatiquement les nouveaux fichiers détectés dans ce dossier",
+        "contentType": "Type de contenu",
+        "contentTypeHelp": "Type de contenu dans ce dossier",
+        "saveButton": "Enregistrer le dossier",
+        "cancelButton": "Annuler",
+        "saving": "Enregistrement en cours..."
+      }
+    },
+    "dryRun": {
+      "title": "Mode simulation",
+      "enabled": "Simulation activée",
+      "disabled": "Simulation désactivée",
+      "description": "Aperçu du téléversement sans transférer réellement les fichiers",
+      "descriptionDetailed": "Lorsqu'activé, les fichiers seront validés et les métadonnées extraites, mais ne seront pas téléversés vers le stockage. Utilisez ceci pour tester les téléversements sans appliquer de changements.",
+      "toggle": "Activer la simulation",
+      "toggleHint": "Basculer le mode simulation pour des tests de téléversement sécurisés",
+      "previewTitle": "Résultats de la simulation",
+      "previewDescription": "Vérifiez ce qui se passera si vous procédez au téléversement",
+      "validFiles": "Fichiers valides ({{count}})",
+      "invalidFiles": "Fichiers invalides ({{count}})",
+      "warnings": "Avertissements ({{count}})",
+      "proceedButton": "Procéder au téléversement",
+      "proceedHint": "Désactiver la simulation et effectuer le téléversement réel",
+      "cancelButton": "Annuler",
+      "noResults": "Aucun résultat de simulation disponible"
+    },
+    "connectionStatus": {
+      "connected": "Connecté",
+      "disconnected": "Déconnecté",
+      "reconnecting": "Reconnexion en cours...",
+      "reconnectAttempt": "Reconnexion (tentative {{current}} sur {{max}})",
+      "connectionLost": "Mises à jour en temps réel indisponibles",
+      "connectionLostDescription": "La connexion au serveur a été perdue. Tentative de reconnexion...",
+      "connectionLostAnnouncement": "Connexion perdue. Mises à jour en temps réel en pause. Utilisez le bouton Actualiser pour des mises à jour manuelles.",
+      "connectedAnnouncement": "Connecté au service de téléversement. Mises à jour en temps réel actives.",
+      "reconnectingAnnouncement": "Reconnexion au service de téléversement. Tentative {{attempt}} sur {{maxAttempts}}.",
+      "troubleshooting": "Dépannage",
+      "troubleshootingSteps": [
+        "Vérifiez votre connexion internet",
+        "Vérifiez que le serveur est en cours d'exécution",
+        "Vérifiez votre jeton d'authentification",
+        "Essayez d'actualiser la page"
+      ],
+      "manualRefresh": "Actualiser manuellement",
+      "manualRefreshHint": "Actualiser manuellement les données de la file d'attente",
+      "refreshing": "Actualisation en cours..."
+    },
+    "contentTypes": {
+      "movie": "Film",
+      "series": "Série",
+      "podcast": "Podcast",
+      "other": "Autre"
+    },
+    "stages": {
+      "browserUpload": "Téléversement navigateur",
+      "hashCalculation": "Calcul du hash",
+      "duplicateCheck": "Vérification des doublons",
+      "metadataExtraction": "Extraction des métadonnées",
+      "gcsUpload": "Téléversement cloud",
+      "databaseInsert": "Insertion en base de données",
+      "complete": "Terminé",
+      "failed": "Échoué"
+    },
+    "status": {
+      "queued": "En attente",
+      "processing": "En cours de traitement",
+      "uploading": "Téléversement en cours",
+      "complete": "Terminé",
+      "failed": "Échoué",
+      "cancelled": "Annulé",
+      "skipped": "Ignoré (Doublon)"
+    },
+    "actions": {
+      "pauseQueue": "Mettre en pause la file d'attente",
+      "resumeQueue": "Reprendre la file d'attente",
+      "clearQueue": "Vider la file d'attente",
+      "clearQueueConfirm": "Vider la file d'attente de téléversement ?",
+      "clearQueueConfirmMessage": "Cela annulera {{count}} téléversement(s) en attente. Cette action est irréversible.",
+      "triggerUpload": "Scanner les dossiers",
+      "triggerUploadHint": "Scanner tous les dossiers surveillés pour de nouveaux fichiers",
+      "triggerUploadSuccess": "{{files_found}} fichier(s) trouvé(s) à téléverser",
+      "triggerUploadFailed": "Échec du scan : {{error}}",
+      "refresh": "Actualiser",
+      "refreshHint": "Recharger les données de la file d'attente",
+      "cancel": "Annuler",
+      "retry": "Réessayer",
+      "remove": "Supprimer"
+    },
+    "errors": {
+      "loadFailed": "Échec du chargement des données de téléversement",
+      "loadFailedDescription": "Impossible de récupérer la file d'attente de téléversement. Veuillez essayer d'actualiser.",
+      "saveFailed": "Échec de l'enregistrement de la configuration du dossier",
+      "saveFailedDescription": "Impossible d'enregistrer le dossier surveillé. Veuillez réessayer.",
+      "deleteFailed": "Échec de la suppression du dossier surveillé",
+      "uploadFailed": "Échec du téléversement",
+      "uploadFailedDescription": "Un ou plusieurs fichiers n'ont pas pu être téléversés. Consultez la liste des fichiers pour plus de détails.",
+      "resumeFailed": "Échec de la reprise de la file d'attente",
+      "clearFailed": "Échec du vidage de la file d'attente",
+      "triggerFailed": "Échec du lancement du scan de téléversement",
+      "pathRequired": "Le chemin du dossier est requis",
+      "invalidPath": "Chemin de dossier invalide",
+      "pathTraversal": "Le chemin contient des caractères invalides ou des tentatives de traversée",
+      "networkError": "Erreur réseau. Veuillez vérifier votre connexion.",
+      "authError": "Erreur d'authentification. Veuillez vous reconnecter.",
+      "serverError": "Erreur serveur. Veuillez réessayer plus tard.",
+      "fileTooBig": "Le fichier dépasse la taille maximale de {{maxSize}}",
+      "invalidFileType": "Type de fichier invalide. Formats supportés : {{formats}}",
+      "duplicateFile": "Ce fichier a déjà été téléversé",
+      "rateLimitExceeded": "Limite de débit dépassée. Veuillez patienter avant de téléverser d'autres fichiers.",
+      "configValidationFailed": "La validation de la configuration a échoué. Consultez la console pour plus de détails.",
+      "websocketAuthFailed": "Échec de l'authentification WebSocket",
+      "unsupportedBrowser": "Votre navigateur ne supporte pas les fonctionnalités requises"
+    },
+    "mobile": {
+      "dataWarning": "Vous êtes sur données cellulaires. Le téléversement de {{size}} peut consommer beaucoup de données.",
+      "dataWarningProceed": "Continuer quand même",
+      "dataWarningCancel": "Annuler le téléversement",
+      "lowMemoryWarning": "La mémoire de l'appareil est faible. Les téléversements volumineux peuvent échouer.",
+      "batteryLowWarning": "La batterie est faible ({{percent}}%). Les téléversements peuvent être interrompus.",
+      "networkChanged": "Le réseau a changé. Reconnexion en cours...",
+      "mobileBrowserNotSupported": "Certaines fonctionnalités peuvent ne pas fonctionner sur les navigateurs mobiles"
+    },
+    "accessibility": {
+      "pageDescription": "Interface de gestion des téléversements avec surveillance de la file d'attente, téléversements manuels et surveillance des dossiers",
+      "pageTitle": "Page de téléversements administrateur",
+      "sectionQueue": "Section du tableau de bord de la file d'attente",
+      "sectionManualUpload": "Section de téléversement manuel",
+      "sectionMonitoredFolders": "Section des dossiers surveillés",
+      "loadingQueue": "Chargement de la file d'attente de téléversement...",
+      "queueLoaded": "File d'attente de téléversement chargée avec {{count}} éléments",
+      "queueLoadedOne": "File d'attente de téléversement chargée avec 1 élément",
+      "queueLoadedOther": "File d'attente de téléversement chargée avec {{count}} éléments",
+      "uploadStarted": "Téléversement démarré pour {{count}} fichiers",
+      "uploadStartedOne": "Téléversement démarré pour 1 fichier",
+      "uploadStartedOther": "Téléversement démarré pour {{count}} fichiers",
+      "uploadProgressUpdate": "Progression du téléversement : {{percent}}% terminé",
+      "uploadProgressMilestone": "Téléversement {{percent}}% terminé",
+      "uploadCompleted": "Téléversement terminé avec succès",
+      "uploadFailed": "Échec du téléversement",
+      "folderAdded": "Dossier {{name}} ajouté à la surveillance",
+      "folderRemoved": "Dossier {{name}} retiré de la surveillance",
+      "folderScanned": "Dossier {{name}} scanné, {{count}} fichiers trouvés",
+      "emptyStateAction": "Appuyez sur Entrée pour effectuer l'action",
+      "connectionStatusRegion": "Informations sur le statut de la connexion",
+      "queueStatsRegion": "Région des statistiques de la file d'attente",
+      "shortcuts": {
+        "uploadFocused": "Champ de téléversement ciblé. Appuyez sur Entrée pour sélectionner des fichiers.",
+        "queueRefreshed": "File d'attente actualisée manuellement."
+      }
     }
   },
   "payment": {

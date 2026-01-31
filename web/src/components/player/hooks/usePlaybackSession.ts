@@ -10,7 +10,7 @@ import { usePlaybackHeartbeat } from '@/hooks/usePlaybackHeartbeat';
 import { deviceService } from '@/services/deviceService';
 import { useAuthStore } from '@bayit/shared-stores/authStore';
 import logger from '@/utils/logger';
-import i18n from '@bayit/i18n';
+import i18n from 'i18next';
 
 const sessionLogger = logger.scope('PlaybackSession');
 

@@ -117,9 +117,17 @@ export const useChannelChatStore = create<ChannelChatState>()(
       /**
        * Toggle chat panel visibility.
        * Persisted to localStorage for user preference.
+       * When opening chat, automatically expand it to show input box.
        */
       toggleChatVisibility: () => {
-        set({ isChatVisible: !get().isChatVisible });
+        const currentVisibility = get().isChatVisible;
+        const newVisibility = !currentVisibility;
+
+        set({
+          isChatVisible: newVisibility,
+          // Auto-expand when opening chat to show input box
+          isChatExpanded: newVisibility ? true : get().isChatExpanded
+        });
       },
 
       /**
@@ -147,8 +155,14 @@ export const useChannelChatStore = create<ChannelChatState>()(
       name: 'bayit-channel-chat-store',
       partialize: (state) => ({
         isChatVisible: state.isChatVisible,
-        isChatExpanded: state.isChatExpanded,
+        // Don't persist isChatExpanded - always default to true when visible
       }),
+      // Ensure chat is expanded when visible after hydration
+      onRehydrateStorage: () => (state) => {
+        if (state && state.isChatVisible) {
+          state.isChatExpanded = true;
+        }
+      },
     }
   )
 );

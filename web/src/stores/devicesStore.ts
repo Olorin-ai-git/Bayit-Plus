@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import api from '@/services/api';
 import logger from '@/utils/logger';
-import i18n from '@bayit/i18n';
+import i18n from 'i18next';
 
 interface Device {
   device_id: string;

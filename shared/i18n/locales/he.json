@@ -288,7 +288,11 @@
     "exampleQuery4": "הצג לי את כל תוכניות החדשות מחר בבוקר",
     "aiDisclaimer": "מופעל על ידי Claude AI. התוצאות עשויות להשתנות בהתאם לזמינות נתוני התוכניות.",
     "interpretationTitle": "מה הבנתי",
-    "noResultsFound": "לא נמצאו תוכניות התואמות לשאילתה שלך"
+    "noResultsFound": "לא נמצאו תוכניות התואמות לשאילתה שלך",
+    "noProgramsScheduled": "אין תוכניות מתוכננות",
+    "noProgramsFound": "לא נמצאו תוכניות",
+    "noDataAvailable": "אין נתוני מדריך טלוויזיה זמינים",
+    "live": "שידור חי"
   },
   "home": {
     "continueWatching": "המשך צפייה",

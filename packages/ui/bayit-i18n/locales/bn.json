@@ -1,145 +1,186 @@
 {
+  "auth": {
+    "loginRequired": "লগইন প্রয়োজন",
+    "loginToWatch": "{{title}} দেখতে সাইন ইন করুন",
+    "login": "লগইন",
+    "signUp": "সাইন আপ"
+  },
   "email": {
-    "greeting": "Hello",
+    "greeting": "নমস্কার",
     "footer": {
-      "privacy": "Privacy Policy",
-      "terms": "Terms of Service",
-      "support": "Support",
-      "unsubscribe": "Unsubscribe from these emails"
+      "privacy": "গোপনীয়তা নীতি",
+      "terms": "সেবা শর্তাবলী",
+      "support": "সাপোর্ট",
+      "unsubscribe": "এই ইমেলগুলি থেকে সদস্যতা বাতিল করুন"
     },
     "welcome": {
-      "subject": "Welcome to Bayit+!",
-      "title": "Welcome to Bayit+",
-      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
-      "cta": "Go to Dashboard"
+      "subject": "Bayit+ এ স্বাগতম!",
+      "title": "Bayit+ এ স্বাগতম",
+      "body": "Bayit+ এ যোগদানের জন্য ধন্যবাদ। আপনাকে আমাদের সাথে পেয়ে আমরা উত্তেজিত!",
+      "cta": "ড্যাশবোর্ডে যান"
     },
     "verification": {
-      "subject": "Verify Your Email",
-      "title": "Verify Your Email Address",
-      "body": "Please click the button below to verify your email address.",
-      "cta": "Verify Email",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't create an account, you can safely ignore this email."
+      "subject": "আপনার ইমেল যাচাই করুন",
+      "title": "আপনার ইমেল ঠিকানা যাচাই করুন",
+      "body": "আপনার ইমেল ঠিকানা যাচাই করতে নীচের বোতামে ক্লিক করুন।",
+      "cta": "ইমেল যাচাই করুন",
+      "expiry": "এই লিংকটি {expiry_hours} ঘন্টায় মেয়াদ শেষ হবে।",
+      "security": "আপনি যদি অ্যাকাউন্ট তৈরি না করে থাকেন, তাহলে এই ইমেলটি নিরাপদে উপেক্ষা করতে পারেন।"
     },
     "verification_resend": {
-      "subject": "Email Verification (Resent)",
-      "title": "Verify Your Email Address",
-      "body": "Here's a new verification link as requested.",
-      "cta": "Verify Email"
+      "subject": "ইমেল যাচাইকরণ (পুনরায় পাঠানো)",
+      "title": "আপনার ইমেল ঠিকানা যাচাই করুন",
+      "body": "অনুরোধ অনুযায়ী এখানে একটি নতুন যাচাইকরণ লিংক।",
+      "cta": "ইমেল যাচাই করুন"
     },
     "password_reset": {
-      "subject": "Reset Your Password",
-      "title": "Reset Your Password",
-      "body": "We received a request to reset your password. Click the button below to create a new password.",
-      "cta": "Reset Password",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+      "subject": "আপনার পাসওয়ার্ড রিসেট করুন",
+      "title": "আপনার পাসওয়ার্ড রিসেট করুন",
+      "body": "আপনার পাসওয়ার্ড রিসেট করার অনুরোধ পাওয়া গেছে। নতুন পাসওয়ার্ড তৈরি করতে নীচের বোতামে ক্লিক করুন।",
+      "cta": "পাসওয়ার্ড রিসেট করুন",
+      "expiry": "এই লিংকটি {expiry_hours} ঘন্টায় মেয়াদ শেষ হবে।",
+      "security": "আপনি যদি এই অনুরোধ না করে থাকেন, তাহলে আপনার অ্যাকাউন্ট এখনও নিরাপদ। আপনি এই ইমেলটি উপেক্ষা করতে পারেন।"
     },
     "password_changed": {
-      "subject": "Password Changed",
-      "title": "Your Password Has Been Changed",
-      "body": "Your password was successfully changed.",
-      "security": "If you didn't make this change, please contact support immediately."
+      "subject": "পাসওয়ার্ড পরিবর্তিত",
+      "title": "আপনার পাসওয়ার্ড পরিবর্তিত হয়েছে",
+      "body": "আপনার পাসওয়ার্ড সফলভাবে পরিবর্তন করা হয়েছে।",
+      "security": "আপনি এই পরিবর্তন না করে থাকলে, অনুগ্রহ করে অবিলম্বে সাপোর্টে যোগাযোগ করুন।"
     },
     "account_locked": {
-      "subject": "Account Locked",
-      "title": "Your Account Has Been Locked",
-      "body": "Your account has been temporarily locked due to security concerns.",
-      "cta": "Unlock Account"
+      "subject": "অ্যাকাউন্ট লক করা হয়েছে",
+      "title": "আপনার অ্যাকাউন্ট লক করা হয়েছে",
+      "body": "নিরাপত্তা উদ্বেগের কারণে আপনার অ্যাকাউন্ট সাময়িকভাবে লক করা হয়েছে।",
+      "cta": "অ্যাকাউন্ট আনলক করুন"
     },
     "beta_invitation": {
-      "subject": "You're Invited to Bayit+ Beta!",
-      "title": "You're Invited to the Beta Program",
-      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
-      "credits": "{credits} AI credits included",
-      "duration": "Access for {days} days",
-      "cta": "Join Beta Program"
+      "subject": "আপনাকে Bayit+ বিটাতে আমন্ত্রণ জানানো হয়েছে!",
+      "title": "আপনাকে বিটা প্রোগ্রামে আমন্ত্রণ জানানো হয়েছে",
+      "body": "অভিনন্দন! আপনি এক্সক্লুসিভ Bayit+ বিটা 500 প্রোগ্রামের জন্য নির্বাচিত হয়েছেন।",
+      "credits": "{credits} AI ক্রেডিট অন্তর্ভুক্ত",
+      "duration": "{days} দিনের অ্যাক্সেস",
+      "cta": "বিটা প্রোগ্রামে যোগ দিন"
     },
     "beta_welcome": {
-      "subject": "Welcome to Bayit+ Beta!",
-      "title": "Welcome to the Beta Program",
-      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
-      "cta": "Get Started"
+      "subject": "Bayit+ বিটাতে স্বাগতম!",
+      "title": "বিটা প্রোগ্রামে স্বাগতম",
+      "body": "আপনি এখন এক্সক্লুসিভ Bayit+ বিটা 500 কমিউনিটির অংশ!",
+      "cta": "শুরু করুন"
     },
     "payment_confirmation": {
-      "subject": "Payment Confirmation",
-      "title": "Payment Received",
-      "body": "Your payment has been processed successfully.",
-      "transaction": "Transaction ID",
-      "plan": "Plan",
-      "amount": "Amount",
-      "date": "Payment Date",
-      "next_billing": "Next Billing Date"
+      "subject": "পেমেন্ট নিশ্চিতকরণ",
+      "title": "পেমেন্ট প্রাপ্ত",
+      "body": "আপনার পেমেন্ট সফলভাবে প্রক্রিয়া করা হয়েছে।",
+      "transaction": "ট্রানজেকশন আইডি",
+      "plan": "প্ল্যান",
+      "amount": "পরিমাণ",
+      "date": "পেমেন্টের তারিখ",
+      "next_billing": "পরবর্তী বিলিং তারিখ"
     },
     "subscription_activated": {
-      "subject": "Subscription Activated",
-      "title": "Your Subscription is Active",
-      "body": "Your subscription has been activated. Here's what you get:",
-      "cta": "Start Watching"
+      "subject": "সাবস্ক্রিপশন সক্রিয়",
+      "title": "আপনার সাবস্ক্রিপশন সক্রিয়",
+      "body": "আপনার সাবস্ক্রিপশন সক্রিয় করা হয়েছে। আপনি যা পাবেন:",
+      "cta": "দেখা শুরু করুন"
     },
     "subscription_cancelled": {
-      "subject": "Subscription Cancelled",
-      "title": "Subscription Cancelled",
-      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
-      "cta": "Reactivate Subscription"
+      "subject": "সাবস্ক্রিপশন বাতিল",
+      "title": "সাবস্ক্রিপশন বাতিল",
+      "body": "আপনার সাবস্ক্রিপশন বাতিল করা হয়েছে। {access_until} পর্যন্ত আপনার অ্যাক্সেস থাকবে।",
+      "cta": "সাবস্ক্রিপশন পুনরায় সক্রিয় করুন"
     },
     "payment_failed": {
-      "subject": "Payment Failed",
-      "title": "Payment Failed",
-      "body": "We were unable to process your payment. Please update your payment method.",
-      "cta": "Update Payment Method"
+      "subject": "পেমেন্ট ব্যর্থ",
+      "title": "পেমেন্ট ব্যর্থ",
+      "body": "আমরা আপনার পেমেন্ট প্রক্রিয়া করতে পারিনি। অনুগ্রহ করে আপনার পেমেন্ট পদ্ধতি আপডেট করুন।",
+      "cta": "পেমেন্ট পদ্ধতি আপডেট করুন"
     },
     "trial_expiring": {
-      "subject": "Your Trial is Expiring Soon",
-      "title": "Trial Ending in {days_remaining} Days",
-      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
-      "cta": "Upgrade Now"
+      "subject": "আপনার ট্রায়াল শীঘ্রই শেষ হচ্ছে",
+      "title": "ট্রায়াল {days_remaining} দিনে শেষ হচ্ছে",
+      "body": "আপনার বিনামূল্যে ট্রায়াল শীঘ্রই শেষ হচ্ছে। সমস্ত ফিচার উপভোগ করতে এখনই আপগ্রেড করুন।",
+      "cta": "এখনই আপগ্রেড করুন"
     },
     "support": {
-      "created_subject": "Ticket #{ticket_id} Created",
-      "created_title": "Support Ticket Created",
-      "created_body": "Your support ticket has been created. We'll get back to you soon.",
-      "response_subject": "New Response on Ticket #{ticket_id}",
-      "response_title": "New Response on Your Ticket",
-      "escalation_subject": "Ticket #{ticket_id} Escalated",
-      "escalation_title": "Your Ticket Has Been Escalated",
-      "resolved_subject": "Ticket #{ticket_id} Resolved",
-      "resolved_title": "Your Ticket Has Been Resolved",
-      "resolved_body": "Your support ticket has been resolved."
+      "created_subject": "টিকেট #{ticket_id} তৈরি হয়েছে",
+      "created_title": "সাপোর্ট টিকেট তৈরি হয়েছে",
+      "created_body": "আপনার সাপোর্ট টিকেট তৈরি হয়েছে। আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।",
+      "response_subject": "টিকেট #{ticket_id} এ নতুন প্রতিক্রিয়া",
+      "response_title": "আপনার টিকেটে নতুন প্রতিক্রিয়া",
+      "escalation_subject": "টিকেট #{ticket_id} এস্কেলেট করা হয়েছে",
+      "escalation_title": "আপনার টিকেট এস্কেলেট করা হয়েছে",
+      "resolved_subject": "টিকেট #{ticket_id} সমাধান হয়েছে",
+      "resolved_title": "আপনার টিকেট সমাধান হয়েছে",
+      "resolved_body": "আপনার সাপোর্ট টিকেট সমাধান করা হয়েছে।"
     },
     "new_message": {
-      "subject": "New Message from {sender_name}",
-      "title": "You Have a New Message",
-      "cta": "Read Message"
+      "subject": "{sender_name} থেকে নতুন বার্তা",
+      "title": "আপনার একটি নতুন বার্তা আছে",
+      "cta": "বার্তা পড়ুন"
     },
     "content_digest": {
-      "subject": "Your {digest_period} Content Digest",
-      "title": "Your Content Digest",
-      "cta": "Browse Content"
+      "subject": "আপনার {digest_period} কন্টেন্ট ডাইজেস্ট",
+      "title": "আপনার কন্টেন্ট ডাইজেস্ট",
+      "cta": "কন্টেন্ট ব্রাউজ করুন"
     },
     "gdpr": {
-      "deletion_subject": "Data Deletion Confirmation",
-      "deletion_title": "Your Data Has Been Deleted",
-      "deletion_body": "As requested, your personal data has been permanently deleted.",
-      "categories_label": "Deleted Data Categories"
+      "deletion_subject": "ডেটা মুছে ফেলার নিশ্চিতকরণ",
+      "deletion_title": "আপনার ডেটা মুছে ফেলা হয়েছে",
+      "deletion_body": "অনুরোধ অনুযায়ী, আপনার ব্যক্তিগত ডেটা স্থায়ীভাবে মুছে ফেলা হয়েছে।",
+      "categories_label": "মুছে ফেলা ডেটা বিভাগ"
     },
     "admin": {
-      "account_created_subject": "Admin Account Created",
-      "account_created_title": "Admin Account Created",
-      "role_change_subject": "Role Changed",
-      "role_change_title": "Your Role Has Been Updated"
+      "account_created_subject": "অ্যাডমিন অ্যাকাউন্ট তৈরি হয়েছে",
+      "account_created_title": "অ্যাডমিন অ্যাকাউন্ট তৈরি হয়েছে",
+      "role_change_subject": "ভূমিকা পরিবর্তিত",
+      "role_change_title": "আপনার ভূমিকা আপডেট করা হয়েছে"
     },
     "campaign": {
-      "default_subject": "News from Bayit+"
+      "default_subject": "Bayit+ থেকে সংবাদ"
     },
     "newsletter": {
-      "default_subject": "Bayit+ Newsletter"
+      "default_subject": "Bayit+ নিউজলেটার"
     },
     "reengagement": {
-      "subject": "We Miss You!",
-      "title": "It's Been a While",
-      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
-      "cta": "Come Back"
+      "subject": "আমরা আপনাকে মিস করি!",
+      "title": "অনেকদিন হয়ে গেছে",
+      "body": "আমরা লক্ষ্য করেছি আপনি {days_inactive} দিন ধরে ভিজিট করেননি। আপনি যা মিস করছেন:",
+      "cta": "ফিরে আসুন"
+    }
+  },
+  "greeting": {
+    "morning": "সুপ্রভাত",
+    "afternoon": "শুভ দুপুর",
+    "evening": "শুভ সন্ধ্যা",
+    "night": "শুভ রাত্রি"
+  },
+  "location": {
+    "consentModal": {
+      "title": "লোকেশন সার্ভিস সক্ষম করুন",
+      "description": "আমরা আপনার এলাকার সাথে প্রাসঙ্গিক কন্টেন্ট দেখাতে চাই।\n\nআমরা করব:\n• আপনার শহর ও রাজ্য শনাক্ত করব\n• স্থানীয় ইসরায়েলি কমিউনিটি কন্টেন্ট দেখাব\n• ২৪ ঘন্টার জন্য আপনার লোকেশন ক্যাশে করব\n\nআমরা করব না:\n• আপনার সঠিক অবস্থান ট্র্যাক করা\n• তৃতীয় পক্ষের সাথে আপনার অবস্থান শেয়ার করা\n• সম্মতি ছাড়া আপনার অবস্থান স্থায়ীভাবে সংরক্ষণ করা\n\nআপনি সেটিংসে যেকোনো সময় এটি পরিবর্তন করতে পারেন।",
+      "accept": "লোকেশন অ্যাক্সেস অনুমতি দিন",
+      "decline": "এখন নয়",
+      "privacyNote": "আপনার গোপনীয়তা গুরুত্বপূর্ণ। লোকেশন ডেটা এনক্রিপ্ট করা এবং কখনও বিক্রি করা হয় না।"
+    },
+    "permissionBanner": {
+      "title": "আপনার কাছে ইসরায়েলি কন্টেন্ট আবিষ্কার করুন",
+      "description": "আপনার এলাকা থেকে ইসরায়েলি কমিউনিটি ইভেন্ট, সংবাদ এবং গল্প দেখতে লোকেশন সার্ভিস সক্ষম করুন। আপনার গোপনীয়তা সুরক্ষিত - আমরা শুধু আপনার শহর শনাক্ত করি।",
+      "enable": "লোকেশন সক্ষম করুন",
+      "notNow": "এখন নয়",
+      "close": "বন্ধ করুন"
+    },
+    "status": {
+      "detecting": "আপনার অবস্থান শনাক্ত করা হচ্ছে...",
+      "detected": "অবস্থান শনাক্ত হয়েছে: {{city}}, {{state}}",
+      "denied": "লোকেশন অ্যাক্সেস অস্বীকার করা হয়েছে",
+      "unavailable": "লোকেশন সার্ভিস অনুপলব্ধ",
+      "error": "অবস্থান শনাক্ত করতে ব্যর্থ"
+    },
+    "errors": {
+      "permissionDenied": "লোকেশন অ্যাক্সেস অস্বীকার করা হয়েছে। অনুগ্রহ করে আপনার ব্রাউজার সেটিংসে লোকেশন সক্ষম করুন।",
+      "timeout": "লোকেশন অনুরোধের সময় শেষ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
+      "unavailable": "আপনার ব্রাউজারে লোকেশন সার্ভিস উপলব্ধ নয়।",
+      "failed": "অবস্থান পেতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।"
     }
   },
   "payment": {
@@ -303,6 +344,291 @@
       }
     }
   },
+  "uploads": {
+    "title": "আপলোড ব্যবস্থাপনা",
+    "subtitle": "ফোল্ডার মনিটর করুন এবং কন্টেন্ট আপলোড পরিচালনা করুন",
+    "queueDashboard": {
+      "title": "আপলোড কিউ ড্যাশবোর্ড",
+      "stats": "কিউ পরিসংখ্যান",
+      "total": "মোট",
+      "queued": "কিউতে",
+      "active": "সক্রিয়",
+      "done": "সম্পন্ন",
+      "activeJob": "সক্রিয় আপলোড",
+      "queuedJobs": "কিউতে থাকা আপলোড",
+      "recentCompleted": "সাম্প্রতিক সম্পন্ন",
+      "noActiveJob": "কোনো সক্রিয় আপলোড নেই",
+      "noActiveJobDescription": "কিউ খালি। প্রক্রিয়াকরণ শুরু করতে ফাইল আপলোড করুন বা মনিটর করা ফোল্ডার স্ক্যান করুন।",
+      "noQueuedJobs": "কোনো মুলতুবি আপলোড নেই",
+      "noQueuedJobsDescription": "সমস্ত ফাইল প্রক্রিয়া করা হয়েছে। চালিয়ে যেতে আরও ফাইল যোগ করুন।",
+      "noRecentCompleted": "কোনো সাম্প্রতিক সম্পন্ন নেই",
+      "noRecentCompletedDescription": "সফলভাবে আপলোড করা ফাইলগুলি এখানে দেখা যাবে।",
+      "queuePausedWarning": "কিউ বিরতিতে আছে: {{reason}}",
+      "resumeQueue": "কিউ পুনরায় শুরু করুন",
+      "pauseQueue": "কিউ বিরতি দিন",
+      "clearQueue": "কিউ পরিষ্কার করুন"
+    },
+    "manualUpload": {
+      "title": "ম্যানুয়াল আপলোড",
+      "subtitle": "আপনার ডিভাইস থেকে সরাসরি ফাইল আপলোড করুন",
+      "browserUpload": "ব্রাউজার আপলোড",
+      "urlUpload": "URL আমদানি",
+      "contentType": "কন্টেন্ট টাইপ",
+      "contentTypeHelp": "আপলোড করা কন্টেন্টের ধরন নির্বাচন করুন",
+      "contentTypeRequired": "অনুগ্রহ করে একটি কন্টেন্ট টাইপ নির্বাচন করুন",
+      "dropZone": "ড্রপ জোন",
+      "dropZoneAriaLabel": "ফাইল আপলোড ড্রপজোন। ফাইল নির্বাচন করতে ক্লিক করুন বা Enter চাপুন, অথবা এখানে ফাইল টেনে আনুন",
+      "dropHere": "ভিডিও ফাইল এখানে টেনে আনুন বা ব্রাউজ করতে ক্লিক করুন",
+      "dropHereActive": "আপলোড করতে ফাইল ছেড়ে দিন",
+      "tapToSelect": "ফাইল নির্বাচন করতে ট্যাপ করুন",
+      "browseFiles": "ফাইল ব্রাউজ করুন",
+      "selectFiles": "ফাইল নির্বাচন করুন",
+      "supportedFormats": "সমর্থিত: MP4, MKV, AVI, MOV, WEBM (সর্বোচ্চ {{maxSize}})",
+      "fileList": "আপলোডের জন্য নির্বাচিত ফাইল",
+      "fileListEmpty": "কোনো ফাইল নির্বাচিত নয়",
+      "fileListEmptyDescription": "আপলোডের জন্য ফাইল নির্বাচন করতে উপরের ফাইল সিলেক্টর ব্যবহার করুন",
+      "fileItem": "ফাইল: {{name}}, আকার: {{size}}, অগ্রগতি: {{progress}}%",
+      "fileName": "ফাইলের নাম",
+      "fileSize": "আকার",
+      "fileType": "ধরন",
+      "fileProgress": "অগ্রগতি",
+      "fileStatus": "স্থিতি",
+      "removeFile": "{{name}} সরান",
+      "removeFileHint": "আপলোড কিউ থেকে এই ফাইলটি সরান",
+      "fileRemoved": "{{name}} আপলোড কিউ থেকে সরানো হয়েছে",
+      "selectedFiles": "{{count}}টি ফাইল নির্বাচিত",
+      "selectedFilesOne": "১টি ফাইল নির্বাচিত",
+      "selectedFilesOther": "{{count}}টি ফাইল নির্বাচিত",
+      "totalSize": "মোট আকার: {{size}}",
+      "clearAll": "সব সরান",
+      "clearAllHint": "আপলোড কিউ থেকে সমস্ত ফাইল সরান",
+      "clearAllConfirm": "সমস্ত {{count}}টি ফাইল সরাবেন?",
+      "uploadFiles": "ফাইল আপলোড করুন",
+      "uploading": "আপলোড হচ্ছে...",
+      "uploadingFiles": "{{count}}টি ফাইল আপলোড হচ্ছে...",
+      "uploadProgress": "আপলোড হচ্ছে: {{percent}}% সম্পন্ন",
+      "uploadComplete": "আপলোড সম্পন্ন",
+      "uploadSuccess": "{{count}}টি ফাইল সফলভাবে আপলোড হয়েছে",
+      "uploadSuccessOne": "১টি ফাইল সফলভাবে আপলোড হয়েছে",
+      "uploadSuccessOther": "{{count}}টি ফাইল সফলভাবে আপলোড হয়েছে",
+      "uploadPartialSuccess": "{{total}} এর মধ্যে {{successful}}টি ফাইল আপলোড হয়েছে। {{failed}}টি ব্যর্থ।",
+      "uploadFailed": "আপলোড ব্যর্থ: {{error}}",
+      "cancelUpload": "আপলোড বাতিল করুন",
+      "retryUpload": "আপলোড পুনরায় চেষ্টা করুন",
+      "retryFailed": "ব্যর্থ ফাইল পুনরায় চেষ্টা করুন"
+    },
+    "urlUpload": {
+      "title": "URL থেকে আমদানি",
+      "subtitle": "রিমোট URL থেকে ভিডিও ফাইল আমদানি করুন",
+      "urlLabel": "ভিডিও URL",
+      "urlPlaceholder": "https://example.com/video.mp4",
+      "urlHelp": "ভিডিও ফাইলের সরাসরি URL লিখুন",
+      "urlRequired": "URL প্রয়োজন",
+      "importButton": "URL থেকে আমদানি",
+      "importing": "আমদানি হচ্ছে...",
+      "importSuccess": "URL থেকে সফলভাবে আমদানি হয়েছে",
+      "importFailed": "আমদানি ব্যর্থ: {{error}}",
+      "invalidUrl": "অনুগ্রহ করে একটি বৈধ URL লিখুন",
+      "urlMustBeHttps": "URL অবশ্যই HTTPS প্রোটোকল ব্যবহার করতে হবে",
+      "emptyUrlList": "কোনো URL আমদানি করা হয়নি",
+      "emptyUrlListDescription": "রিমোট সোর্স থেকে ভিডিও ফাইল আমদানি করতে উপরে URL লিখুন",
+      "addUrl": "URL যোগ করুন",
+      "removeUrl": "URL সরান"
+    },
+    "monitoredFolders": {
+      "title": "মনিটর করা ফোল্ডার",
+      "subtitle": "স্বয়ংক্রিয়ভাবে কন্টেন্ট শনাক্ত এবং আপলোড করতে ফোল্ডার কনফিগার করুন",
+      "noFolders": "কোনো মনিটর করা ফোল্ডার নেই",
+      "noFoldersDescription": "স্বয়ংক্রিয় কন্টেন্ট শনাক্তকরণ এবং আপলোড সক্ষম করতে ফোল্ডার যোগ করুন",
+      "addFolder": "ফোল্ডার যোগ করুন",
+      "editFolder": "ফোল্ডার সম্পাদনা করুন",
+      "deleteFolder": "ফোল্ডার মুছুন",
+      "scanFolder": "ফোল্ডার স্ক্যান করুন",
+      "scanFolderHint": "নতুন ফাইল পরীক্ষা করুন এবং আপলোড কিউতে যোগ করুন",
+      "scanning": "স্ক্যান হচ্ছে...",
+      "scanComplete": "স্ক্যান সম্পন্ন: {{count}}টি ফাইল পাওয়া গেছে",
+      "scanCompleteOne": "স্ক্যান সম্পন্ন: ১টি ফাইল পাওয়া গেছে",
+      "scanCompleteOther": "স্ক্যান সম্পন্ন: {{count}}টি ফাইল পাওয়া গেছে",
+      "noFilesFound": "ফোল্ডারে কোনো নতুন ফাইল পাওয়া যায়নি",
+      "scanFailed": "স্ক্যান ব্যর্থ: {{error}}",
+      "folderName": "ফোল্ডারের নাম",
+      "folderPath": "ফোল্ডার পাথ",
+      "folderStatus": "স্থিতি",
+      "folderEnabled": "সক্ষম",
+      "folderDisabled": "অক্ষম",
+      "lastScan": "শেষ স্ক্যান",
+      "neverScanned": "কখনো স্ক্যান করা হয়নি",
+      "filesDetected": "{{count}}টি ফাইল শনাক্ত হয়েছে",
+      "confirmDelete": "{{name}} মুছবেন?",
+      "confirmDeleteMessage": "এটি এই ফোল্ডারের মনিটরিং বন্ধ করবে। বিদ্যমান আপলোড প্রভাবিত হবে না।",
+      "deleteSuccess": "ফোল্ডার সফলভাবে মুছে ফেলা হয়েছে",
+      "deleteFailed": "ফোল্ডার মুছতে ব্যর্থ: {{error}}",
+      "form": {
+        "title": "ফোল্ডার কনফিগারেশন",
+        "name": "ফোল্ডারের নাম",
+        "namePlaceholder": "যেমন, মুভি আর্কাইভ",
+        "nameRequired": "ফোল্ডারের নাম প্রয়োজন",
+        "nameHelp": "এই ফোল্ডারের জন্য বর্ণনামূলক নাম",
+        "path": "ফোল্ডার পাথ",
+        "pathPlaceholder": "/path/to/folder",
+        "pathHelp": "মনিটর করতে সম্পূর্ণ পাথ লিখুন",
+        "pathRequired": "ফোল্ডার পাথ প্রয়োজন",
+        "pathInvalid": "অবৈধ ফোল্ডার পাথ",
+        "pathReadOnly": "তৈরির পরে পাথ পরিবর্তন করা যাবে না",
+        "enabled": "সক্ষম",
+        "enabledHelp": "এই ফোল্ডারের জন্য মনিটরিং সক্ষম বা অক্ষম করুন",
+        "autoUpload": "স্বয়ংক্রিয় আপলোড",
+        "autoUploadHelp": "এই ফোল্ডারে শনাক্ত হওয়া নতুন ফাইল স্বয়ংক্রিয়ভাবে আপলোড করুন",
+        "contentType": "কন্টেন্ট টাইপ",
+        "contentTypeHelp": "এই ফোল্ডারে কন্টেন্টের ধরন",
+        "saveButton": "ফোল্ডার সংরক্ষণ করুন",
+        "cancelButton": "বাতিল",
+        "saving": "সংরক্ষণ হচ্ছে..."
+      }
+    },
+    "dryRun": {
+      "title": "ড্রাই রান মোড",
+      "enabled": "ড্রাই রান সক্ষম",
+      "disabled": "ড্রাই রান অক্ষম",
+      "description": "ফাইল স্থানান্তর ছাড়াই আপলোডের পূর্বরূপ দেখুন",
+      "descriptionDetailed": "সক্ষম করা হলে, ফাইলগুলি যাচাই করা হবে এবং মেটাডেটা বের করা হবে, কিন্তু স্টোরেজে আপলোড করা হবে না। পরিবর্তন না করে আপলোড পরীক্ষা করতে এটি ব্যবহার করুন।",
+      "toggle": "ড্রাই রান সক্ষম করুন",
+      "toggleHint": "নিরাপদ আপলোড পরীক্ষার জন্য ড্রাই রান মোড টগল করুন",
+      "previewTitle": "ড্রাই রান ফলাফল",
+      "previewDescription": "আপনি আপলোড চালিয়ে গেলে কী হবে তা পর্যালোচনা করুন",
+      "validFiles": "বৈধ ফাইল ({{count}})",
+      "invalidFiles": "অবৈধ ফাইল ({{count}})",
+      "warnings": "সতর্কতা ({{count}})",
+      "proceedButton": "আপলোড চালিয়ে যান",
+      "proceedHint": "ড্রাই রান অক্ষম করে প্রকৃত আপলোড করুন",
+      "cancelButton": "বাতিল",
+      "noResults": "কোনো ড্রাই রান ফলাফল নেই"
+    },
+    "connectionStatus": {
+      "connected": "সংযুক্ত",
+      "disconnected": "সংযোগ বিচ্ছিন্ন",
+      "reconnecting": "পুনরায় সংযোগ হচ্ছে...",
+      "reconnectAttempt": "পুনরায় সংযোগ হচ্ছে (চেষ্টা {{current}} / {{max}})",
+      "connectionLost": "রিয়েল-টাইম আপডেট অনুপলব্ধ",
+      "connectionLostDescription": "সার্ভারের সাথে সংযোগ বিচ্ছিন্ন হয়েছে। পুনরায় সংযোগের চেষ্টা করা হচ্ছে...",
+      "connectionLostAnnouncement": "সংযোগ বিচ্ছিন্ন। রিয়েল-টাইম আপডেট বিরতিতে। ম্যানুয়াল আপডেটের জন্য রিফ্রেশ বোতাম ব্যবহার করুন।",
+      "connectedAnnouncement": "আপলোড সার্ভিসে সংযুক্ত। রিয়েল-টাইম আপডেট সক্রিয়।",
+      "reconnectingAnnouncement": "আপলোড সার্ভিসে পুনরায় সংযোগ হচ্ছে। চেষ্টা {{attempt}} / {{maxAttempts}}।",
+      "troubleshooting": "সমস্যা সমাধান",
+      "troubleshootingSteps": [
+        "আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন",
+        "সার্ভার চলছে কিনা যাচাই করুন",
+        "আপনার প্রমাণীকরণ টোকেন পরীক্ষা করুন",
+        "পেজ রিফ্রেশ করার চেষ্টা করুন"
+      ],
+      "manualRefresh": "ম্যানুয়ালি রিফ্রেশ করুন",
+      "manualRefreshHint": "কিউ ডেটা ম্যানুয়ালি রিফ্রেশ করুন",
+      "refreshing": "রিফ্রেশ হচ্ছে..."
+    },
+    "contentTypes": {
+      "movie": "মুভি",
+      "series": "সিরিজ",
+      "podcast": "পডকাস্ট",
+      "other": "অন্যান্য"
+    },
+    "stages": {
+      "browserUpload": "ব্রাউজার আপলোড",
+      "hashCalculation": "হ্যাশ গণনা",
+      "duplicateCheck": "ডুপ্লিকেট পরীক্ষা",
+      "metadataExtraction": "মেটাডেটা এক্সট্রাকশন",
+      "gcsUpload": "ক্লাউড আপলোড",
+      "databaseInsert": "ডেটাবেস ইনসার্ট",
+      "complete": "সম্পন্ন",
+      "failed": "ব্যর্থ"
+    },
+    "status": {
+      "queued": "কিউতে",
+      "processing": "প্রক্রিয়াকরণ",
+      "uploading": "আপলোড হচ্ছে",
+      "complete": "সম্পন্ন",
+      "failed": "ব্যর্থ",
+      "cancelled": "বাতিল",
+      "skipped": "এড়িয়ে যাওয়া (ডুপ্লিকেট)"
+    },
+    "actions": {
+      "pauseQueue": "কিউ বিরতি দিন",
+      "resumeQueue": "কিউ পুনরায় শুরু করুন",
+      "clearQueue": "কিউ পরিষ্কার করুন",
+      "clearQueueConfirm": "আপলোড কিউ পরিষ্কার করবেন?",
+      "clearQueueConfirmMessage": "এটি {{count}}টি মুলতুবি আপলোড বাতিল করবে। এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না।",
+      "triggerUpload": "ফোল্ডার স্ক্যান করুন",
+      "triggerUploadHint": "নতুন ফাইলের জন্য সমস্ত মনিটর করা ফোল্ডার স্ক্যান করুন",
+      "triggerUploadSuccess": "আপলোডের জন্য {{files_found}}টি ফাইল পাওয়া গেছে",
+      "triggerUploadFailed": "স্ক্যান ব্যর্থ: {{error}}",
+      "refresh": "রিফ্রেশ",
+      "refreshHint": "কিউ ডেটা রিলোড করুন",
+      "cancel": "বাতিল",
+      "retry": "পুনরায় চেষ্টা",
+      "remove": "সরান"
+    },
+    "errors": {
+      "loadFailed": "আপলোড ডেটা লোড করতে ব্যর্থ",
+      "loadFailedDescription": "আপলোড কিউ আনতে অক্ষম। অনুগ্রহ করে রিফ্রেশ করার চেষ্টা করুন।",
+      "saveFailed": "ফোল্ডার কনফিগারেশন সংরক্ষণ করতে ব্যর্থ",
+      "saveFailedDescription": "মনিটর করা ফোল্ডার সংরক্ষণ করতে অক্ষম। অনুগ্রহ করে আবার চেষ্টা করুন।",
+      "deleteFailed": "মনিটর করা ফোল্ডার মুছতে ব্যর্থ",
+      "uploadFailed": "আপলোড ব্যর্থ",
+      "uploadFailedDescription": "এক বা একাধিক ফাইল আপলোড করতে ব্যর্থ। বিস্তারিতের জন্য ফাইল তালিকা পরীক্ষা করুন।",
+      "resumeFailed": "কিউ পুনরায় শুরু করতে ব্যর্থ",
+      "clearFailed": "কিউ পরিষ্কার করতে ব্যর্থ",
+      "triggerFailed": "আপলোড স্ক্যান শুরু করতে ব্যর্থ",
+      "pathRequired": "ফোল্ডার পাথ প্রয়োজন",
+      "invalidPath": "অবৈধ ফোল্ডার পাথ",
+      "pathTraversal": "পাথে অবৈধ অক্ষর বা ট্রাভার্সাল প্রচেষ্টা আছে",
+      "networkError": "নেটওয়ার্ক ত্রুটি। অনুগ্রহ করে আপনার সংযোগ পরীক্ষা করুন।",
+      "authError": "প্রমাণীকরণ ত্রুটি। অনুগ্রহ করে আবার লগইন করুন।",
+      "serverError": "সার্ভার ত্রুটি। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
+      "fileTooBig": "ফাইল সর্বোচ্চ আকার {{maxSize}} অতিক্রম করেছে",
+      "invalidFileType": "অবৈধ ফাইল টাইপ। সমর্থিত ফরম্যাট: {{formats}}",
+      "duplicateFile": "এই ফাইলটি ইতিমধ্যে আপলোড করা হয়েছে",
+      "rateLimitExceeded": "রেট লিমিট অতিক্রম করেছে। আরও ফাইল আপলোড করার আগে অনুগ্রহ করে অপেক্ষা করুন।",
+      "configValidationFailed": "কনফিগারেশন যাচাইকরণ ব্যর্থ। বিস্তারিতের জন্য কনসোল পরীক্ষা করুন।",
+      "websocketAuthFailed": "WebSocket প্রমাণীকরণ ব্যর্থ",
+      "unsupportedBrowser": "আপনার ব্রাউজার প্রয়োজনীয় ফিচার সমর্থন করে না"
+    },
+    "mobile": {
+      "dataWarning": "আপনি সেলুলার ডেটায় আছেন। {{size}} আপলোড করতে উল্লেখযোগ্য ডেটা ব্যবহার হতে পারে।",
+      "dataWarningProceed": "যাই হোক চালিয়ে যান",
+      "dataWarningCancel": "আপলোড বাতিল করুন",
+      "lowMemoryWarning": "ডিভাইসের মেমরি কম। বড় আপলোড ব্যর্থ হতে পারে।",
+      "batteryLowWarning": "ব্যাটারি কম ({{percent}}%)। আপলোড বাধাগ্রস্ত হতে পারে।",
+      "networkChanged": "নেটওয়ার্ক পরিবর্তিত। পুনরায় সংযোগ হচ্ছে...",
+      "mobileBrowserNotSupported": "মোবাইল ব্রাউজারে কিছু ফিচার কাজ নাও করতে পারে"
+    },
+    "accessibility": {
+      "pageDescription": "কিউ মনিটরিং, ম্যানুয়াল আপলোড এবং ফোল্ডার মনিটরিং সহ আপলোড ব্যবস্থাপনা ইন্টারফেস",
+      "pageTitle": "অ্যাডমিন আপলোড পেজ",
+      "sectionQueue": "কিউ ড্যাশবোর্ড বিভাগ",
+      "sectionManualUpload": "ম্যানুয়াল আপলোড বিভাগ",
+      "sectionMonitoredFolders": "মনিটর করা ফোল্ডার বিভাগ",
+      "loadingQueue": "আপলোড কিউ লোড হচ্ছে...",
+      "queueLoaded": "আপলোড কিউ {{count}}টি আইটেম সহ লোড হয়েছে",
+      "queueLoadedOne": "আপলোড কিউ ১টি আইটেম সহ লোড হয়েছে",
+      "queueLoadedOther": "আপলোড কিউ {{count}}টি আইটেম সহ লোড হয়েছে",
+      "uploadStarted": "{{count}}টি ফাইলের জন্য আপলোড শুরু হয়েছে",
+      "uploadStartedOne": "১টি ফাইলের জন্য আপলোড শুরু হয়েছে",
+      "uploadStartedOther": "{{count}}টি ফাইলের জন্য আপলোড শুরু হয়েছে",
+      "uploadProgressUpdate": "আপলোড অগ্রগতি: {{percent}}% সম্পন্ন",
+      "uploadProgressMilestone": "আপলোড {{percent}}% সম্পন্ন",
+      "uploadCompleted": "আপলোড সফলভাবে সম্পন্ন",
+      "uploadFailed": "আপলোড ব্যর্থ",
+      "folderAdded": "ফোল্ডার {{name}} মনিটরিংয়ে যোগ করা হয়েছে",
+      "folderRemoved": "ফোল্ডার {{name}} মনিটরিং থেকে সরানো হয়েছে",
+      "folderScanned": "ফোল্ডার {{name}} স্ক্যান করা হয়েছে, {{count}}টি ফাইল পাওয়া গেছে",
+      "emptyStateAction": "কাজ করতে Enter চাপুন",
+      "connectionStatusRegion": "সংযোগ স্থিতি তথ্য",
+      "queueStatsRegion": "কিউ পরিসংখ্যান অঞ্চল",
+      "shortcuts": {
+        "uploadFocused": "আপলোড ইনপুট ফোকাসড। ফাইল নির্বাচন করতে Enter চাপুন।",
+        "queueRefreshed": "কিউ ম্যানুয়ালি রিফ্রেশ হয়েছে।"
+      }
+    }
+  },
   "channelChat": {
     "title": "লাইভ চ্যাট",
     "participants": "{{count}} জন দেখছেন",
@@ -392,6 +718,162 @@
         "selectVoice": "ডাব করা অডিওর জন্য ভয়েস নির্বাচন করুন",
         "originalVolume": "মূল অডিও ভলিউম সমন্বয় করুন (0 = নিঃশব্দ)",
         "dubbedVolume": "ডাব করা অডিও ভলিউম সমন্বয় করুন (1 = পূর্ণ ভলিউম)"
+      }
+    }
+  },
+  "errors": {
+    "friends": {
+      "fetchFailed": "বন্ধুদের আনতে ব্যর্থ",
+      "requestsFetchFailed": "অনুরোধ আনতে ব্যর্থ",
+      "sendFailed": "অনুরোধ পাঠাতে ব্যর্থ",
+      "acceptFailed": "অনুরোধ গ্রহণ করতে ব্যর্থ",
+      "rejectFailed": "অনুরোধ প্রত্যাখ্যান করতে ব্যর্থ",
+      "cancelFailed": "অনুরোধ বাতিল করতে ব্যর্থ",
+      "removeFailed": "বন্ধু সরাতে ব্যর্থ"
+    },
+    "settings": {
+      "loadFailed": "পছন্দ লোড করতে ব্যর্থ",
+      "saveFailed": "পছন্দ সংরক্ষণ করতে ব্যর্থ"
+    },
+    "devices": {
+      "loadFailed": "ডিভাইস লোড করতে ব্যর্থ",
+      "registerFailed": "ডিভাইস নিবন্ধন করতে ব্যর্থ",
+      "disconnectFailed": "ডিভাইস সংযোগ বিচ্ছিন্ন করতে ব্যর্থ"
+    },
+    "stats": {
+      "fetchFailed": "পরিসংখ্যান আনতে ব্যর্থ",
+      "playerFetchFailed": "খেলোয়াড়ের পরিসংখ্যান আনতে ব্যর্থ",
+      "historyFetchFailed": "ম্যাচ ইতিহাস আনতে ব্যর্থ",
+      "leaderboardFetchFailed": "লিডারবোর্ড আনতে ব্যর্থ",
+      "h2hFetchFailed": "মুখোমুখি পরিসংখ্যান আনতে ব্যর্থ"
+    },
+    "profile": {
+      "fetchFailed": "প্রোফাইল আনতে ব্যর্থ",
+      "selectFailed": "প্রোফাইল নির্বাচন করতে ব্যর্থ",
+      "createFailed": "প্রোফাইল তৈরি করতে ব্যর্থ",
+      "updateFailed": "প্রোফাইল আপডেট করতে ব্যর্থ",
+      "deleteFailed": "প্রোফাইল মুছতে ব্যর্থ"
+    },
+    "auth": {
+      "notAuthenticated": "প্রমাণীকৃত নয়",
+      "tokenRefreshFailed": "প্রমাণীকরণ টোকেন রিফ্রেশ করতে ব্যর্থ",
+      "playbackAuthRequired": "প্লেব্যাক সেশনের জন্য প্রমাণীকরণ প্রয়োজন"
+    },
+    "connection": {
+      "failed": "সংযোগ ত্রুটি - বিস্তারিতের জন্য কনসোল দেখুন",
+      "timeout": "সংযোগ টাইমআউট",
+      "error": "সংযোগ ত্রুটি"
+    },
+    "chess": {
+      "connectFailed": "গেমে সংযোগ করতে ব্যর্থ",
+      "notConnected": "গেমে সংযুক্ত নয়"
+    },
+    "podcast": {
+      "switchLanguageFailed": "ভাষা পরিবর্তন করতে ব্যর্থ",
+      "playbackError": "অডিও প্লেব্যাক ত্রুটি"
+    },
+    "widget": {
+      "loadFailed": "উইজেট লোড করতে ব্যর্থ"
+    },
+    "player": {
+      "noStreamUrl": "কোনো স্ট্রিম URL পাওয়া যায়নি",
+      "loadFailed": "ভিডিও লোড করতে ব্যর্থ",
+      "notReady": "ভিডিও প্রস্তুত নয়",
+      "sessionCreateFailed": "একাধিক প্রচেষ্টার পরে প্লেব্যাক সেশন তৈরি করতে ব্যর্থ"
+    },
+    "trivia": {
+      "invalidChannel": "অবৈধ চ্যানেল আইডি"
+    }
+  },
+  "widget": {
+    "streamUnavailable": "স্ট্রিম অনুপলব্ধ",
+    "contentUnavailable": "কন্টেন্ট অনুপলব্ধ",
+    "podcastUnavailable": "পডকাস্ট অনুপলব্ধ",
+    "stationUnavailable": "স্টেশন অনুপলব্ধ",
+    "iframeNotConfigured": "iFrame URL কনফিগার করা হয়নি",
+    "unknownComponent": "অজানা কম্পোনেন্ট: {{componentName}}",
+    "noContentConfigured": "কোনো কন্টেন্ট কনফিগার করা হয়নি",
+    "errorLoadingContent": "কন্টেন্ট লোড করতে ত্রুটি",
+    "loadingEpisodes": "পর্বগুলি লোড হচ্ছে...",
+    "noEpisodesFound": "কোনো পর্ব পাওয়া যায়নি",
+    "audioUnavailable": "অডিও অনুপলব্ধ",
+    "103fmEpisodes": "103FM পর্বসমূহ",
+    "loadingNews": "সংবাদ লোড হচ্ছে...",
+    "ynetBreakingNews": "מבזקי Ynet"
+  },
+  "chess": {
+    "waitingForOpponent": "প্রতিপক্ষের জন্য অপেক্ষা করা হচ্ছে...",
+    "disconnected": "সংযোগ বিচ্ছিন্ন",
+    "theirTurn": "তাদের পালা"
+  },
+  "audible": {
+    "connectionFailed": "সংযোগ ব্যর্থ",
+    "connecting": "Audible সংযোগ হচ্ছে...",
+    "pleaseWait": "আপনার অ্যাকাউন্ট লিংক করার সময় অনুগ্রহ করে অপেক্ষা করুন।",
+    "connected": "সংযুক্ত হয়েছে!",
+    "accountLinked": "আপনার Audible অ্যাকাউন্ট এখন Bayit+ এর সাথে লিংক করা হয়েছে"
+  },
+  "settings": {
+    "accessibility": {
+      "small": "ছোট",
+      "medium": "মাঝারি",
+      "large": "বড়"
+    }
+  },
+  "recordings": {
+    "record": "রেকর্ড"
+  },
+  "epg": {
+    "live": "লাইভ"
+  },
+  "admin": {
+    "accessDenied": "অ্যাক্সেস অস্বীকৃত",
+    "noPermission": "এই কন্টেন্ট দেখার অনুমতি আপনার নেই",
+    "actions": {
+      "view": "দেখুন",
+      "edit": "সম্পাদনা করুন",
+      "delete": "মুছুন",
+      "pause": "বিরতি দিন",
+      "resume": "পুনরায় শুরু করুন",
+      "cancel": "বাতিল করুন",
+      "approve": "অনুমোদন করুন",
+      "reject": "প্রত্যাখ্যান করুন",
+      "activate": "সক্রিয় করুন",
+      "test": "পরীক্ষা করুন"
+    },
+    "importWizard": {
+      "title": "বিনামূল্যে কন্টেন্ট আমদানি করুন",
+      "loadingSources": "উৎস লোড হচ্ছে...",
+      "loadingCategories": "বিভাগ লোড হচ্ছে...",
+      "selectCategory": "আমদানি করা মুভির জন্য একটি বিভাগ নির্বাচন করুন",
+      "selectItems": "আমদানি করতে আইটেম নির্বাচন করুন",
+      "sources": {
+        "vod": "মুভি এবং VOD",
+        "vodDescription": "archive.org থেকে ক্লাসিক মুভি আমদানি করুন",
+        "liveTv": "লাইভ টিভি চ্যানেল",
+        "liveTvDescription": "Apple BipBop থেকে টেস্ট স্ট্রিম আমদানি করুন",
+        "radio": "রেডিও স্টেশন",
+        "radioDescription": "পাবলিক রেডিও স্ট্রিম আমদানি করুন",
+        "podcasts": "পডকাস্ট",
+        "podcastsDescription": "পাবলিক পডকাস্ট ফিড আমদানি করুন"
+      }
+    },
+    "diagnostics": {
+      "service": "সেবা",
+      "status": "স্থিতি",
+      "latency": "বিলম্ব",
+      "loading": "ডায়াগনস্টিক লোড হচ্ছে..."
+    },
+    "costDashboard": {
+      "title": "খরচ ড্যাশবোর্ড",
+      "subtitle": "প্ল্যাটফর্ম খরচ ট্র্যাকিং এবং বিশ্লেষণ",
+      "view": "দেখুন",
+      "selectUser": "ব্যবহারকারী নির্বাচন করুন...",
+      "tabs": {
+        "overview": "সারসংক্ষেপ",
+        "timeline": "টাইমলাইন",
+        "categories": "বিভাগ",
+        "topSpenders": "শীর্ষ ব্যয়কারী"
       }
     }
   }

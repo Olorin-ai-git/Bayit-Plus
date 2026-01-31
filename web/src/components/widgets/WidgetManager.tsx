@@ -17,7 +17,7 @@ import MinimizedWidgetDock from './MinimizedWidgetDock';
 import type { Widget, WidgetPosition } from '@/types/widget';
 import type { PodcastEpisode } from '@/types/podcast';
 import logger from '@/utils/logger';
-import i18n from '@bayit/i18n';
+import i18n from 'i18next';
 
 // Cache for stream URLs and episode data to avoid repeated API calls
 const streamUrlCache: Record<string, { streamUrl?: string; episodeData?: PodcastEpisode }> = {};

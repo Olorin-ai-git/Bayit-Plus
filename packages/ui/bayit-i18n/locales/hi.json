@@ -720,5 +720,161 @@
         "dubbedVolume": "डब किए गए ऑडियो वॉल्यूम समायोजित करें (1 = पूर्ण वॉल्यूम)"
       }
     }
+  },
+  "errors": {
+    "friends": {
+      "fetchFailed": "मित्रों को लाने में विफल",
+      "requestsFetchFailed": "अनुरोधों को लाने में विफल",
+      "sendFailed": "अनुरोध भेजने में विफल",
+      "acceptFailed": "अनुरोध स्वीकार करने में विफल",
+      "rejectFailed": "अनुरोध अस्वीकार करने में विफल",
+      "cancelFailed": "अनुरोध रद्द करने में विफल",
+      "removeFailed": "मित्र हटाने में विफल"
+    },
+    "settings": {
+      "loadFailed": "प्राथमिकताएं लोड करने में विफल",
+      "saveFailed": "प्राथमिकताएं सहेजने में विफल"
+    },
+    "devices": {
+      "loadFailed": "डिवाइस लोड करने में विफल",
+      "registerFailed": "डिवाइस पंजीकृत करने में विफल",
+      "disconnectFailed": "डिवाइस डिस्कनेक्ट करने में विफल"
+    },
+    "stats": {
+      "fetchFailed": "आंकड़े लाने में विफल",
+      "playerFetchFailed": "खिलाड़ी आंकड़े लाने में विफल",
+      "historyFetchFailed": "मैच इतिहास लाने में विफल",
+      "leaderboardFetchFailed": "लीडरबोर्ड लाने में विफल",
+      "h2hFetchFailed": "आमने-सामने आंकड़े लाने में विफल"
+    },
+    "profile": {
+      "fetchFailed": "प्रोफाइल लाने में विफल",
+      "selectFailed": "प्रोफाइल चुनने में विफल",
+      "createFailed": "प्रोफाइल बनाने में विफल",
+      "updateFailed": "प्रोफाइल अपडेट करने में विफल",
+      "deleteFailed": "प्रोफाइल हटाने में विफल"
+    },
+    "auth": {
+      "notAuthenticated": "प्रमाणित नहीं",
+      "tokenRefreshFailed": "प्रमाणीकरण टोकन रिफ्रेश करने में विफल",
+      "playbackAuthRequired": "प्लेबैक सत्र के लिए प्रमाणीकरण आवश्यक"
+    },
+    "connection": {
+      "failed": "कनेक्शन त्रुटि - विवरण के लिए कंसोल जांचें",
+      "timeout": "कनेक्शन टाइमआउट",
+      "error": "कनेक्शन त्रुटि"
+    },
+    "chess": {
+      "connectFailed": "गेम से कनेक्ट होने में विफल",
+      "notConnected": "गेम से कनेक्ट नहीं"
+    },
+    "podcast": {
+      "switchLanguageFailed": "भाषा बदलने में विफल",
+      "playbackError": "ऑडियो प्लेबैक त्रुटि"
+    },
+    "widget": {
+      "loadFailed": "विजेट लोड करने में विफल"
+    },
+    "player": {
+      "noStreamUrl": "कोई स्ट्रीम URL उपलब्ध नहीं",
+      "loadFailed": "वीडियो लोड करने में विफल",
+      "notReady": "वीडियो तैयार नहीं",
+      "sessionCreateFailed": "कई प्रयासों के बाद प्लेबैक सत्र बनाने में विफल"
+    },
+    "trivia": {
+      "invalidChannel": "अमान्य चैनल आईडी"
+    }
+  },
+  "widget": {
+    "streamUnavailable": "स्ट्रीम अनुपलब्ध",
+    "contentUnavailable": "सामग्री अनुपलब्ध",
+    "podcastUnavailable": "पॉडकास्ट अनुपलब्ध",
+    "stationUnavailable": "स्टेशन अनुपलब्ध",
+    "iframeNotConfigured": "iFrame URL कॉन्फ़िगर नहीं किया गया",
+    "unknownComponent": "अज्ञात कॉम्पोनेंट: {{componentName}}",
+    "noContentConfigured": "कोई सामग्री कॉन्फ़िगर नहीं",
+    "errorLoadingContent": "सामग्री लोड करने में त्रुटि",
+    "loadingEpisodes": "एपिसोड लोड हो रहे हैं...",
+    "noEpisodesFound": "कोई एपिसोड नहीं मिले",
+    "audioUnavailable": "ऑडियो अनुपलब्ध",
+    "103fmEpisodes": "103FM एपिसोड",
+    "loadingNews": "समाचार लोड हो रहे हैं...",
+    "ynetBreakingNews": "מבזקי Ynet"
+  },
+  "chess": {
+    "waitingForOpponent": "प्रतिद्वंद्वी की प्रतीक्षा कर रहे हैं...",
+    "disconnected": "डिस्कनेक्ट",
+    "theirTurn": "उनकी बारी"
+  },
+  "audible": {
+    "connectionFailed": "कनेक्शन विफल",
+    "connecting": "Audible कनेक्ट हो रहा है...",
+    "pleaseWait": "कृपया प्रतीक्षा करें जब तक हम आपका खाता लिंक करते हैं।",
+    "connected": "कनेक्ट हो गया!",
+    "accountLinked": "आपका Audible खाता अब Bayit+ से लिंक है"
+  },
+  "settings": {
+    "accessibility": {
+      "small": "छोटा",
+      "medium": "मध्यम",
+      "large": "बड़ा"
+    }
+  },
+  "recordings": {
+    "record": "रिकॉर्ड"
+  },
+  "epg": {
+    "live": "लाइव"
+  },
+  "admin": {
+    "accessDenied": "पहुंच अस्वीकृत",
+    "noPermission": "आपके पास इस सामग्री को देखने की अनुमति नहीं है",
+    "actions": {
+      "view": "देखें",
+      "edit": "संपादित करें",
+      "delete": "हटाएं",
+      "pause": "रोकें",
+      "resume": "फिर से शुरू करें",
+      "cancel": "रद्द करें",
+      "approve": "स्वीकृत करें",
+      "reject": "अस्वीकार करें",
+      "activate": "सक्रिय करें",
+      "test": "परीक्षण करें"
+    },
+    "importWizard": {
+      "title": "मुफ्त सामग्री आयात करें",
+      "loadingSources": "स्रोत लोड हो रहे हैं...",
+      "loadingCategories": "श्रेणियां लोड हो रही हैं...",
+      "selectCategory": "आयातित फिल्मों के लिए श्रेणी चुनें",
+      "selectItems": "आयात करने के लिए आइटम चुनें",
+      "sources": {
+        "vod": "फिल्में और VOD",
+        "vodDescription": "archive.org से क्लासिक फिल्में आयात करें",
+        "liveTv": "लाइव टीवी चैनल",
+        "liveTvDescription": "Apple BipBop से टेस्ट स्ट्रीम आयात करें",
+        "radio": "रेडियो स्टेशन",
+        "radioDescription": "सार्वजनिक रेडियो स्ट्रीम आयात करें",
+        "podcasts": "पॉडकास्ट",
+        "podcastsDescription": "सार्वजनिक पॉडकास्ट फीड आयात करें"
+      }
+    },
+    "diagnostics": {
+      "service": "सेवा",
+      "status": "स्थिति",
+      "latency": "लेटेंसी",
+      "loading": "डायग्नोस्टिक्स लोड हो रहे हैं..."
+    },
+    "costDashboard": {
+      "title": "लागत डैशबोर्ड",
+      "subtitle": "प्लेटफ़ॉर्म लागत ट्रैकिंग और विश्लेषण",
+      "view": "देखें",
+      "selectUser": "उपयोगकर्ता चुनें...",
+      "tabs": {
+        "overview": "अवलोकन",
+        "timeline": "टाइमलाइन",
+        "categories": "श्रेणियां",
+        "topSpenders": "शीर्ष खर्चकर्ता"
+      }
+    }
   }
 }

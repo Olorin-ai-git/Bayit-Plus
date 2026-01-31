@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import api from '@/services/api';
-import i18n from '@bayit/i18n';
+import i18n from 'i18next';
 
 
 interface PlayerStats {

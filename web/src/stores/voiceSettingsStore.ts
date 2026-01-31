@@ -8,7 +8,7 @@ import { persist } from 'zustand/middleware';
 import { profilesService } from '@/services/api';
 import logger from '@/utils/logger';
 import { VoiceMode } from '@bayit/shared-types/voiceModes';
-import i18n from '@bayit/i18n';
+import i18n from 'i18next';
 
 export type VoiceLanguage = 'he' | 'en' | 'es';
 export type TextSize = 'small' | 'medium' | 'large';

@@ -720,5 +720,161 @@
         "dubbedVolume": "调整配音音频音量（1 = 最大音量）"
       }
     }
+  },
+  "errors": {
+    "friends": {
+      "fetchFailed": "获取好友列表失败",
+      "requestsFetchFailed": "获取请求列表失败",
+      "sendFailed": "发送请求失败",
+      "acceptFailed": "接受请求失败",
+      "rejectFailed": "拒绝请求失败",
+      "cancelFailed": "取消请求失败",
+      "removeFailed": "移除好友失败"
+    },
+    "settings": {
+      "loadFailed": "加载偏好设置失败",
+      "saveFailed": "保存偏好设置失败"
+    },
+    "devices": {
+      "loadFailed": "加载设备失败",
+      "registerFailed": "注册设备失败",
+      "disconnectFailed": "断开设备失败"
+    },
+    "stats": {
+      "fetchFailed": "获取统计数据失败",
+      "playerFetchFailed": "获取玩家统计失败",
+      "historyFetchFailed": "获取对战历史失败",
+      "leaderboardFetchFailed": "获取排行榜失败",
+      "h2hFetchFailed": "获取对决统计失败"
+    },
+    "profile": {
+      "fetchFailed": "获取个人资料失败",
+      "selectFailed": "选择个人资料失败",
+      "createFailed": "创建个人资料失败",
+      "updateFailed": "更新个人资料失败",
+      "deleteFailed": "删除个人资料失败"
+    },
+    "auth": {
+      "notAuthenticated": "未认证",
+      "tokenRefreshFailed": "刷新认证令牌失败",
+      "playbackAuthRequired": "播放会话需要身份验证"
+    },
+    "connection": {
+      "failed": "连接错误 - 请查看控制台了解详情",
+      "timeout": "连接超时",
+      "error": "连接错误"
+    },
+    "chess": {
+      "connectFailed": "连接游戏失败",
+      "notConnected": "未连接到游戏"
+    },
+    "podcast": {
+      "switchLanguageFailed": "切换语言失败",
+      "playbackError": "音频播放错误"
+    },
+    "widget": {
+      "loadFailed": "加载组件失败"
+    },
+    "player": {
+      "noStreamUrl": "没有可用的流地址",
+      "loadFailed": "加载视频失败",
+      "notReady": "视频未就绪",
+      "sessionCreateFailed": "多次尝试后创建播放会话失败"
+    },
+    "trivia": {
+      "invalidChannel": "无效的频道 ID"
+    }
+  },
+  "widget": {
+    "streamUnavailable": "直播流不可用",
+    "contentUnavailable": "内容不可用",
+    "podcastUnavailable": "播客不可用",
+    "stationUnavailable": "电台不可用",
+    "iframeNotConfigured": "iFrame URL 未配置",
+    "unknownComponent": "未知组件：{{componentName}}",
+    "noContentConfigured": "未配置内容",
+    "errorLoadingContent": "加载内容时出错",
+    "loadingEpisodes": "正在加载剧集...",
+    "noEpisodesFound": "未找到剧集",
+    "audioUnavailable": "音频不可用",
+    "103fmEpisodes": "103FM 节目",
+    "loadingNews": "正在加载新闻...",
+    "ynetBreakingNews": "מבזקי Ynet"
+  },
+  "chess": {
+    "waitingForOpponent": "等待对手...",
+    "disconnected": "已断开连接",
+    "theirTurn": "对方回合"
+  },
+  "audible": {
+    "connectionFailed": "连接失败",
+    "connecting": "正在连接 Audible...",
+    "pleaseWait": "请稍候，正在关联您的帐户。",
+    "connected": "已连接！",
+    "accountLinked": "您的 Audible 帐户已成功关联到 Bayit+"
+  },
+  "settings": {
+    "accessibility": {
+      "small": "小",
+      "medium": "中",
+      "large": "大"
+    }
+  },
+  "recordings": {
+    "record": "录制"
+  },
+  "epg": {
+    "live": "直播"
+  },
+  "admin": {
+    "accessDenied": "拒绝访问",
+    "noPermission": "您没有权限查看此内容",
+    "actions": {
+      "view": "查看",
+      "edit": "编辑",
+      "delete": "删除",
+      "pause": "暂停",
+      "resume": "恢复",
+      "cancel": "取消",
+      "approve": "批准",
+      "reject": "拒绝",
+      "activate": "激活",
+      "test": "测试"
+    },
+    "importWizard": {
+      "title": "导入免费内容",
+      "loadingSources": "正在加载来源...",
+      "loadingCategories": "正在加载分类...",
+      "selectCategory": "为导入的电影选择分类",
+      "selectItems": "选择要导入的项目",
+      "sources": {
+        "vod": "电影和点播",
+        "vodDescription": "从 archive.org 导入经典电影",
+        "liveTv": "直播电视频道",
+        "liveTvDescription": "从 Apple BipBop 导入测试流",
+        "radio": "广播电台",
+        "radioDescription": "导入公共广播流",
+        "podcasts": "播客",
+        "podcastsDescription": "导入公共播客订阅源"
+      }
+    },
+    "diagnostics": {
+      "service": "服务",
+      "status": "状态",
+      "latency": "延迟",
+      "loading": "正在加载诊断信息..."
+    },
+    "costDashboard": {
+      "title": "费用仪表板",
+      "subtitle": "平台费用跟踪与分析",
+      "view": "查看",
+      "selectUser": "选择用户...",
+      "tabs": {
+        "overview": "概览",
+        "timeline": "时间线",
+        "categories": "分类",
+        "topSpenders": "消费排行"
+      }
+    }
   }
 }

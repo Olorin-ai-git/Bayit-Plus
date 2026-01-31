@@ -1,145 +1,471 @@
 {
+  "auth": {
+    "loginRequired": "ログインが必要です",
+    "loginToWatch": "{{title}} を視聴するにはサインインしてください",
+    "login": "ログイン",
+    "signUp": "新規登録"
+  },
   "email": {
-    "greeting": "Hello",
+    "greeting": "こんにちは",
     "footer": {
-      "privacy": "Privacy Policy",
-      "terms": "Terms of Service",
-      "support": "Support",
-      "unsubscribe": "Unsubscribe from these emails"
+      "privacy": "プライバシーポリシー",
+      "terms": "利用規約",
+      "support": "サポート",
+      "unsubscribe": "このメールの配信を停止する"
     },
     "welcome": {
-      "subject": "Welcome to Bayit+!",
-      "title": "Welcome to Bayit+",
-      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
-      "cta": "Go to Dashboard"
+      "subject": "Bayit+ へようこそ！",
+      "title": "Bayit+ へようこそ",
+      "body": "Bayit+ にご参加いただきありがとうございます。お会いできてうれしいです！",
+      "cta": "ダッシュボードへ"
     },
     "verification": {
-      "subject": "Verify Your Email",
-      "title": "Verify Your Email Address",
-      "body": "Please click the button below to verify your email address.",
-      "cta": "Verify Email",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't create an account, you can safely ignore this email."
+      "subject": "メールアドレスの確認",
+      "title": "メールアドレスを確認してください",
+      "body": "下のボタンをクリックしてメールアドレスを確認してください。",
+      "cta": "メールを確認",
+      "expiry": "このリンクは {expiry_hours} 時間後に無効になります。",
+      "security": "アカウントを作成していない場合は、このメールを無視していただいて問題ありません。"
     },
     "verification_resend": {
-      "subject": "Email Verification (Resent)",
-      "title": "Verify Your Email Address",
-      "body": "Here's a new verification link as requested.",
-      "cta": "Verify Email"
+      "subject": "メール確認（再送信）",
+      "title": "メールアドレスを確認してください",
+      "body": "リクエストに基づき、新しい確認リンクをお送りします。",
+      "cta": "メールを確認"
     },
     "password_reset": {
-      "subject": "Reset Your Password",
-      "title": "Reset Your Password",
-      "body": "We received a request to reset your password. Click the button below to create a new password.",
-      "cta": "Reset Password",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+      "subject": "パスワードのリセット",
+      "title": "パスワードをリセットしてください",
+      "body": "パスワードリセットのリクエストを受け付けました。下のボタンをクリックして新しいパスワードを作成してください。",
+      "cta": "パスワードをリセット",
+      "expiry": "このリンクは {expiry_hours} 時間後に無効になります。",
+      "security": "このリクエストに心当たりがない場合でも、アカウントは安全です。このメールを無視していただけます。"
     },
     "password_changed": {
-      "subject": "Password Changed",
-      "title": "Your Password Has Been Changed",
-      "body": "Your password was successfully changed.",
-      "security": "If you didn't make this change, please contact support immediately."
+      "subject": "パスワードが変更されました",
+      "title": "パスワードが変更されました",
+      "body": "パスワードが正常に変更されました。",
+      "security": "この変更に心当たりがない場合は、直ちにサポートにお問い合わせください。"
     },
     "account_locked": {
-      "subject": "Account Locked",
-      "title": "Your Account Has Been Locked",
-      "body": "Your account has been temporarily locked due to security concerns.",
-      "cta": "Unlock Account"
+      "subject": "アカウントがロックされました",
+      "title": "アカウントがロックされました",
+      "body": "セキュリティ上の理由により、アカウントが一時的にロックされました。",
+      "cta": "アカウントのロックを解除"
     },
     "beta_invitation": {
-      "subject": "You're Invited to Bayit+ Beta!",
-      "title": "You're Invited to the Beta Program",
-      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
-      "credits": "{credits} AI credits included",
-      "duration": "Access for {days} days",
-      "cta": "Join Beta Program"
+      "subject": "Bayit+ ベータ版への招待状！",
+      "title": "ベータプログラムへご招待",
+      "body": "おめでとうございます！独占的な Bayit+ Beta 500 プログラムに選ばれました。",
+      "credits": "{credits} AI クレジット付き",
+      "duration": "{days} 日間のアクセス権",
+      "cta": "ベータプログラムに参加"
     },
     "beta_welcome": {
-      "subject": "Welcome to Bayit+ Beta!",
-      "title": "Welcome to the Beta Program",
-      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
-      "cta": "Get Started"
+      "subject": "Bayit+ ベータ版へようこそ！",
+      "title": "ベータプログラムへようこそ",
+      "body": "独占的な Bayit+ Beta 500 コミュニティの一員になりました！",
+      "cta": "はじめる"
     },
     "payment_confirmation": {
-      "subject": "Payment Confirmation",
-      "title": "Payment Received",
-      "body": "Your payment has been processed successfully.",
-      "transaction": "Transaction ID",
-      "plan": "Plan",
-      "amount": "Amount",
-      "date": "Payment Date",
-      "next_billing": "Next Billing Date"
+      "subject": "お支払い確認",
+      "title": "お支払いを受領しました",
+      "body": "お支払いが正常に処理されました。",
+      "transaction": "取引ID",
+      "plan": "プラン",
+      "amount": "金額",
+      "date": "支払日",
+      "next_billing": "次回請求日"
     },
     "subscription_activated": {
-      "subject": "Subscription Activated",
-      "title": "Your Subscription is Active",
-      "body": "Your subscription has been activated. Here's what you get:",
-      "cta": "Start Watching"
+      "subject": "サブスクリプションが有効になりました",
+      "title": "サブスクリプションが有効です",
+      "body": "サブスクリプションが有効になりました。以下の特典をご利用いただけます：",
+      "cta": "視聴を開始"
     },
     "subscription_cancelled": {
-      "subject": "Subscription Cancelled",
-      "title": "Subscription Cancelled",
-      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
-      "cta": "Reactivate Subscription"
+      "subject": "サブスクリプションがキャンセルされました",
+      "title": "サブスクリプションがキャンセルされました",
+      "body": "サブスクリプションがキャンセルされました。{access_until} までアクセスを継続できます。",
+      "cta": "サブスクリプションを再開"
     },
     "payment_failed": {
-      "subject": "Payment Failed",
-      "title": "Payment Failed",
-      "body": "We were unable to process your payment. Please update your payment method.",
-      "cta": "Update Payment Method"
+      "subject": "お支払いに失敗しました",
+      "title": "お支払いに失敗しました",
+      "body": "お支払いを処理できませんでした。お支払い方法を更新してください。",
+      "cta": "お支払い方法を更新"
     },
     "trial_expiring": {
-      "subject": "Your Trial is Expiring Soon",
-      "title": "Trial Ending in {days_remaining} Days",
-      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
-      "cta": "Upgrade Now"
+      "subject": "トライアルがまもなく終了します",
+      "title": "トライアル終了まで残り {days_remaining} 日",
+      "body": "無料トライアルがまもなく終了します。すべての機能を引き続きお楽しみいただくには、今すぐアップグレードしてください。",
+      "cta": "今すぐアップグレード"
     },
     "support": {
-      "created_subject": "Ticket #{ticket_id} Created",
-      "created_title": "Support Ticket Created",
-      "created_body": "Your support ticket has been created. We'll get back to you soon.",
-      "response_subject": "New Response on Ticket #{ticket_id}",
-      "response_title": "New Response on Your Ticket",
-      "escalation_subject": "Ticket #{ticket_id} Escalated",
-      "escalation_title": "Your Ticket Has Been Escalated",
-      "resolved_subject": "Ticket #{ticket_id} Resolved",
-      "resolved_title": "Your Ticket Has Been Resolved",
-      "resolved_body": "Your support ticket has been resolved."
+      "created_subject": "チケット #{ticket_id} が作成されました",
+      "created_title": "サポートチケットが作成されました",
+      "created_body": "サポートチケットが作成されました。まもなくご連絡いたします。",
+      "response_subject": "チケット #{ticket_id} に新しい返信があります",
+      "response_title": "チケットに新しい返信があります",
+      "escalation_subject": "チケット #{ticket_id} がエスカレーションされました",
+      "escalation_title": "チケットがエスカレーションされました",
+      "resolved_subject": "チケット #{ticket_id} が解決されました",
+      "resolved_title": "チケットが解決されました",
+      "resolved_body": "サポートチケットが解決されました。"
     },
     "new_message": {
-      "subject": "New Message from {sender_name}",
-      "title": "You Have a New Message",
-      "cta": "Read Message"
+      "subject": "{sender_name} からの新しいメッセージ",
+      "title": "新しいメッセージがあります",
+      "cta": "メッセージを読む"
     },
     "content_digest": {
-      "subject": "Your {digest_period} Content Digest",
-      "title": "Your Content Digest",
-      "cta": "Browse Content"
+      "subject": "{digest_period}のコンテンツダイジェスト",
+      "title": "コンテンツダイジェスト",
+      "cta": "コンテンツを閲覧"
     },
     "gdpr": {
-      "deletion_subject": "Data Deletion Confirmation",
-      "deletion_title": "Your Data Has Been Deleted",
-      "deletion_body": "As requested, your personal data has been permanently deleted.",
-      "categories_label": "Deleted Data Categories"
+      "deletion_subject": "データ削除の確認",
+      "deletion_title": "データが削除されました",
+      "deletion_body": "ご要望に基づき、個人データが永久に削除されました。",
+      "categories_label": "削除されたデータカテゴリ"
     },
     "admin": {
-      "account_created_subject": "Admin Account Created",
-      "account_created_title": "Admin Account Created",
-      "role_change_subject": "Role Changed",
-      "role_change_title": "Your Role Has Been Updated"
+      "account_created_subject": "管理者アカウントが作成されました",
+      "account_created_title": "管理者アカウントが作成されました",
+      "role_change_subject": "役割が変更されました",
+      "role_change_title": "役割が更新されました"
     },
     "campaign": {
-      "default_subject": "News from Bayit+"
+      "default_subject": "Bayit+ からのニュース"
     },
     "newsletter": {
-      "default_subject": "Bayit+ Newsletter"
+      "default_subject": "Bayit+ ニュースレター"
     },
     "reengagement": {
-      "subject": "We Miss You!",
-      "title": "It's Been a While",
-      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
-      "cta": "Come Back"
+      "subject": "お会いできなくて寂しいです！",
+      "title": "お久しぶりです",
+      "body": "{days_inactive} 日間ご訪問がないことに気づきました。見逃した内容はこちらです：",
+      "cta": "戻ってくる"
+    }
+  },
+  "greeting": {
+    "morning": "おはようございます",
+    "afternoon": "こんにちは",
+    "evening": "こんばんは",
+    "night": "おやすみなさい"
+  },
+  "location": {
+    "consentModal": {
+      "title": "位置情報サービスを有効にする",
+      "description": "お住まいの地域に関連するコンテンツを表示したいと考えています。\n\n当社が行うこと：\n• お住まいの市区町村と都道府県を検出\n• 地域のイスラエルコミュニティコンテンツを表示\n• 位置情報を24時間キャッシュ\n\n当社が行わないこと：\n• 正確な位置を追跡\n• 位置情報を第三者と共有\n• 同意なく位置情報を永久保存\n\nこの設定はいつでも変更できます。",
+      "accept": "位置情報へのアクセスを許可",
+      "decline": "今はしない",
+      "privacyNote": "お客様のプライバシーは重要です。位置情報データは暗号化され、販売されることはありません。"
+    },
+    "permissionBanner": {
+      "title": "お近くのイスラエルコンテンツを発見",
+      "description": "位置情報サービスを有効にすると、お住まいの地域のイスラエルコミュニティイベント、ニュース、ストーリーが表示されます。プライバシーは保護されています。検出するのは市区町村のみです。",
+      "enable": "位置情報を有効にする",
+      "notNow": "今はしない",
+      "close": "閉じる"
+    },
+    "status": {
+      "detecting": "位置情報を検出中...",
+      "detected": "位置を検出しました：{{city}}、{{state}}",
+      "denied": "位置情報へのアクセスが拒否されました",
+      "unavailable": "位置情報サービスが利用できません",
+      "error": "位置情報の検出に失敗しました"
+    },
+    "errors": {
+      "permissionDenied": "位置情報へのアクセスが拒否されました。ブラウザの設定で位置情報を有効にしてください。",
+      "timeout": "位置情報のリクエストがタイムアウトしました。もう一度お試しください。",
+      "unavailable": "お使いのブラウザでは位置情報サービスを利用できません。",
+      "failed": "位置情報の取得に失敗しました。もう一度お試しください。"
+    }
+  },
+  "uploads": {
+    "title": "アップロード管理",
+    "subtitle": "フォルダを監視してコンテンツのアップロードを管理",
+    "queueDashboard": {
+      "title": "アップロードキューダッシュボード",
+      "stats": "キュー統計",
+      "total": "合計",
+      "queued": "キュー待ち",
+      "active": "処理中",
+      "done": "完了",
+      "activeJob": "アクティブなアップロード",
+      "queuedJobs": "キュー待ちのアップロード",
+      "recentCompleted": "最近の完了",
+      "noActiveJob": "アクティブなアップロードはありません",
+      "noActiveJobDescription": "キューは空です。ファイルをアップロードするか、監視フォルダをスキャンして処理を開始してください。",
+      "noQueuedJobs": "待機中のアップロードはありません",
+      "noQueuedJobsDescription": "すべてのファイルが処理されました。続行するにはファイルを追加してください。",
+      "noRecentCompleted": "最近の完了はありません",
+      "noRecentCompletedDescription": "正常にアップロードされたファイルがここに表示されます。",
+      "queuePausedWarning": "キューが一時停止中：{{reason}}",
+      "resumeQueue": "キューを再開",
+      "pauseQueue": "キューを一時停止",
+      "clearQueue": "キューをクリア"
+    },
+    "manualUpload": {
+      "title": "手動アップロード",
+      "subtitle": "デバイスから直接ファイルをアップロード",
+      "browserUpload": "ブラウザアップロード",
+      "urlUpload": "URLインポート",
+      "contentType": "コンテンツタイプ",
+      "contentTypeHelp": "アップロードするコンテンツのタイプを選択",
+      "contentTypeRequired": "コンテンツタイプを選択してください",
+      "dropZone": "ドロップゾーン",
+      "dropZoneAriaLabel": "ファイルアップロードドロップゾーン。クリックまたはEnterキーでファイルを選択、またはファイルをここにドラッグ",
+      "dropHere": "動画ファイルをここにドラッグするか、クリックして参照",
+      "dropHereActive": "ファイルをドロップしてアップロード",
+      "tapToSelect": "タップしてファイルを選択",
+      "browseFiles": "ファイルを参照",
+      "selectFiles": "ファイルを選択",
+      "supportedFormats": "対応形式：MP4、MKV、AVI、MOV、WEBM（最大 {{maxSize}}）",
+      "fileList": "アップロード用に選択されたファイル",
+      "fileListEmpty": "ファイルが選択されていません",
+      "fileListEmptyDescription": "上のファイル選択を使用してアップロードするファイルを選択してください",
+      "fileItem": "ファイル：{{name}}、サイズ：{{size}}、進捗：{{progress}}%",
+      "fileName": "ファイル名",
+      "fileSize": "サイズ",
+      "fileType": "タイプ",
+      "fileProgress": "進捗",
+      "fileStatus": "ステータス",
+      "removeFile": "{{name}} を削除",
+      "removeFileHint": "このファイルをアップロードキューから削除",
+      "fileRemoved": "{{name}} をアップロードキューから削除しました",
+      "selectedFiles": "{{count}} 件のファイルが選択されています",
+      "selectedFilesOne": "1 件のファイルが選択されています",
+      "selectedFilesOther": "{{count}} 件のファイルが選択されています",
+      "totalSize": "合計サイズ：{{size}}",
+      "clearAll": "すべてクリア",
+      "clearAllHint": "アップロードキューからすべてのファイルを削除",
+      "clearAllConfirm": "{{count}} 件のファイルをすべて削除しますか？",
+      "uploadFiles": "ファイルをアップロード",
+      "uploading": "アップロード中...",
+      "uploadingFiles": "{{count}} 件のファイルをアップロード中...",
+      "uploadProgress": "アップロード中：{{percent}}% 完了",
+      "uploadComplete": "アップロード完了",
+      "uploadSuccess": "{{count}} 件のファイルを正常にアップロードしました",
+      "uploadSuccessOne": "1 件のファイルを正常にアップロードしました",
+      "uploadSuccessOther": "{{count}} 件のファイルを正常にアップロードしました",
+      "uploadPartialSuccess": "{{total}} 件中 {{successful}} 件をアップロードしました。{{failed}} 件が失敗しました。",
+      "uploadFailed": "アップロード失敗：{{error}}",
+      "cancelUpload": "アップロードをキャンセル",
+      "retryUpload": "アップロードを再試行",
+      "retryFailed": "失敗したファイルを再試行"
+    },
+    "urlUpload": {
+      "title": "URLからインポート",
+      "subtitle": "リモートURLから動画ファイルをインポート",
+      "urlLabel": "動画URL",
+      "urlPlaceholder": "https://example.com/video.mp4",
+      "urlHelp": "動画ファイルの直接URLを入力",
+      "urlRequired": "URLは必須です",
+      "importButton": "URLからインポート",
+      "importing": "インポート中...",
+      "importSuccess": "URLからのインポートに成功しました",
+      "importFailed": "インポート失敗：{{error}}",
+      "invalidUrl": "有効なURLを入力してください",
+      "urlMustBeHttps": "URLはHTTPSプロトコルを使用する必要があります",
+      "emptyUrlList": "インポートされたURLはありません",
+      "emptyUrlListDescription": "上にURLを入力してリモートソースから動画ファイルをインポート",
+      "addUrl": "URLを追加",
+      "removeUrl": "URLを削除"
+    },
+    "monitoredFolders": {
+      "title": "監視フォルダ",
+      "subtitle": "コンテンツの自動検出とアップロードのためのフォルダを設定",
+      "noFolders": "監視フォルダはありません",
+      "noFoldersDescription": "フォルダを追加して自動コンテンツ検出とアップロードを有効にしてください",
+      "addFolder": "フォルダを追加",
+      "editFolder": "フォルダを編集",
+      "deleteFolder": "フォルダを削除",
+      "scanFolder": "フォルダをスキャン",
+      "scanFolderHint": "フォルダ内の新しいファイルを確認してアップロードをキューに追加",
+      "scanning": "スキャン中...",
+      "scanComplete": "スキャン完了：{{count}} 件のファイルが見つかりました",
+      "scanCompleteOne": "スキャン完了：1 件のファイルが見つかりました",
+      "scanCompleteOther": "スキャン完了：{{count}} 件のファイルが見つかりました",
+      "noFilesFound": "フォルダに新しいファイルは見つかりませんでした",
+      "scanFailed": "スキャン失敗：{{error}}",
+      "folderName": "フォルダ名",
+      "folderPath": "フォルダパス",
+      "folderStatus": "ステータス",
+      "folderEnabled": "有効",
+      "folderDisabled": "無効",
+      "lastScan": "最終スキャン",
+      "neverScanned": "未スキャン",
+      "filesDetected": "{{count}} 件のファイルが検出されました",
+      "confirmDelete": "{{name}} を削除しますか？",
+      "confirmDeleteMessage": "このフォルダの監視を停止します。既存のアップロードには影響しません。",
+      "deleteSuccess": "フォルダを正常に削除しました",
+      "deleteFailed": "フォルダの削除に失敗しました：{{error}}",
+      "form": {
+        "title": "フォルダ設定",
+        "name": "フォルダ名",
+        "namePlaceholder": "例：映画アーカイブ",
+        "nameRequired": "フォルダ名は必須です",
+        "nameHelp": "このフォルダのわかりやすい名前",
+        "path": "フォルダパス",
+        "pathPlaceholder": "/path/to/folder",
+        "pathHelp": "監視する完全パスを入力",
+        "pathRequired": "フォルダパスは必須です",
+        "pathInvalid": "無効なフォルダパス",
+        "pathReadOnly": "作成後にパスは変更できません",
+        "enabled": "有効",
+        "enabledHelp": "このフォルダの監視を有効または無効にする",
+        "autoUpload": "自動アップロード",
+        "autoUploadHelp": "このフォルダで検出された新しいファイルを自動的にアップロード",
+        "contentType": "コンテンツタイプ",
+        "contentTypeHelp": "このフォルダ内のコンテンツのタイプ",
+        "saveButton": "フォルダを保存",
+        "cancelButton": "キャンセル",
+        "saving": "保存中..."
+      }
+    },
+    "dryRun": {
+      "title": "ドライランモード",
+      "enabled": "ドライラン有効",
+      "disabled": "ドライラン無効",
+      "description": "実際にファイルを転送せずにアップロードをプレビュー",
+      "descriptionDetailed": "有効にすると、ファイルの検証とメタデータの抽出は行われますが、ストレージへのアップロードは行われません。変更をコミットせずにアップロードをテストするのに使用してください。",
+      "toggle": "ドライランを有効にする",
+      "toggleHint": "安全なアップロードテストのためにドライランモードを切り替え",
+      "previewTitle": "ドライラン結果",
+      "previewDescription": "アップロードを続行した場合に何が起こるかを確認",
+      "validFiles": "有効なファイル（{{count}}）",
+      "invalidFiles": "無効なファイル（{{count}}）",
+      "warnings": "警告（{{count}}）",
+      "proceedButton": "アップロードを続行",
+      "proceedHint": "ドライランを無効にして実際のアップロードを実行",
+      "cancelButton": "キャンセル",
+      "noResults": "ドライラン結果はありません"
+    },
+    "connectionStatus": {
+      "connected": "接続済み",
+      "disconnected": "切断",
+      "reconnecting": "再接続中...",
+      "reconnectAttempt": "再接続中（{{current}} / {{max}} 回目）",
+      "connectionLost": "リアルタイム更新が利用できません",
+      "connectionLostDescription": "サーバーとの接続が切断されました。再接続を試みています...",
+      "connectionLostAnnouncement": "接続が切断されました。リアルタイム更新が一時停止しています。手動更新するには更新ボタンを使用してください。",
+      "connectedAnnouncement": "アップロードサービスに接続しました。リアルタイム更新が有効です。",
+      "reconnectingAnnouncement": "アップロードサービスに再接続中。{{attempt}} / {{maxAttempts}} 回目の試行。",
+      "troubleshooting": "トラブルシューティング",
+      "troubleshootingSteps": [
+        "インターネット接続を確認してください",
+        "サーバーが稼働していることを確認してください",
+        "認証トークンを確認してください",
+        "ページを更新してみてください"
+      ],
+      "manualRefresh": "手動で更新",
+      "manualRefreshHint": "キューデータを手動で更新",
+      "refreshing": "更新中..."
+    },
+    "contentTypes": {
+      "movie": "映画",
+      "series": "シリーズ",
+      "podcast": "ポッドキャスト",
+      "other": "その他"
+    },
+    "stages": {
+      "browserUpload": "ブラウザアップロード",
+      "hashCalculation": "ハッシュ計算",
+      "duplicateCheck": "重複チェック",
+      "metadataExtraction": "メタデータ抽出",
+      "gcsUpload": "クラウドアップロード",
+      "databaseInsert": "データベース挿入",
+      "complete": "完了",
+      "failed": "失敗"
+    },
+    "status": {
+      "queued": "キュー待ち",
+      "processing": "処理中",
+      "uploading": "アップロード中",
+      "complete": "完了",
+      "failed": "失敗",
+      "cancelled": "キャンセル済み",
+      "skipped": "スキップ（重複）"
+    },
+    "actions": {
+      "pauseQueue": "キューを一時停止",
+      "resumeQueue": "キューを再開",
+      "clearQueue": "キューをクリア",
+      "clearQueueConfirm": "アップロードキューをクリアしますか？",
+      "clearQueueConfirmMessage": "{{count}} 件の待機中のアップロードがキャンセルされます。この操作は元に戻せません。",
+      "triggerUpload": "フォルダをスキャン",
+      "triggerUploadHint": "すべての監視フォルダで新しいファイルをスキャン",
+      "triggerUploadSuccess": "{{files_found}} 件のアップロード対象ファイルが見つかりました",
+      "triggerUploadFailed": "スキャン失敗：{{error}}",
+      "refresh": "更新",
+      "refreshHint": "キューデータを再読み込み",
+      "cancel": "キャンセル",
+      "retry": "再試行",
+      "remove": "削除"
+    },
+    "errors": {
+      "loadFailed": "アップロードデータの読み込みに失敗しました",
+      "loadFailedDescription": "アップロードキューを取得できません。更新してみてください。",
+      "saveFailed": "フォルダ設定の保存に失敗しました",
+      "saveFailedDescription": "監視フォルダを保存できません。もう一度お試しください。",
+      "deleteFailed": "監視フォルダの削除に失敗しました",
+      "uploadFailed": "アップロード失敗",
+      "uploadFailedDescription": "1つ以上のファイルのアップロードに失敗しました。詳細はファイルリストを確認してください。",
+      "resumeFailed": "キューの再開に失敗しました",
+      "clearFailed": "キューのクリアに失敗しました",
+      "triggerFailed": "アップロードスキャンの開始に失敗しました",
+      "pathRequired": "フォルダパスは必須です",
+      "invalidPath": "無効なフォルダパス",
+      "pathTraversal": "パスに無効な文字またはディレクトリトラバーサルの試みが含まれています",
+      "networkError": "ネットワークエラー。接続を確認してください。",
+      "authError": "認証エラー。再度ログインしてください。",
+      "serverError": "サーバーエラー。しばらくしてからもう一度お試しください。",
+      "fileTooBig": "ファイルが最大サイズ {{maxSize}} を超えています",
+      "invalidFileType": "無効なファイル形式。対応形式：{{formats}}",
+      "duplicateFile": "このファイルは既にアップロードされています",
+      "rateLimitExceeded": "レート制限を超えました。しばらく待ってからファイルをアップロードしてください。",
+      "configValidationFailed": "設定の検証に失敗しました。詳細はコンソールを確認してください。",
+      "websocketAuthFailed": "WebSocket認証に失敗しました",
+      "unsupportedBrowser": "お使いのブラウザは必要な機能に対応していません"
+    },
+    "mobile": {
+      "dataWarning": "モバイルデータ通信を使用中です。{{size}} のアップロードは大量のデータを消費する可能性があります。",
+      "dataWarningProceed": "続行する",
+      "dataWarningCancel": "アップロードをキャンセル",
+      "lowMemoryWarning": "デバイスのメモリが不足しています。大きなアップロードは失敗する可能性があります。",
+      "batteryLowWarning": "バッテリーが残りわずかです（{{percent}}%）。アップロードが中断される可能性があります。",
+      "networkChanged": "ネットワークが変更されました。再接続中...",
+      "mobileBrowserNotSupported": "一部の機能はモバイルブラウザでは動作しない場合があります"
+    },
+    "accessibility": {
+      "pageDescription": "キュー監視、手動アップロード、フォルダ監視機能を備えたアップロード管理インターフェース",
+      "pageTitle": "管理者アップロードページ",
+      "sectionQueue": "キューダッシュボードセクション",
+      "sectionManualUpload": "手動アップロードセクション",
+      "sectionMonitoredFolders": "監視フォルダセクション",
+      "loadingQueue": "アップロードキューを読み込み中...",
+      "queueLoaded": "アップロードキューが読み込まれました（{{count}} 件）",
+      "queueLoadedOne": "アップロードキューが読み込まれました（1 件）",
+      "queueLoadedOther": "アップロードキューが読み込まれました（{{count}} 件）",
+      "uploadStarted": "{{count}} 件のファイルのアップロードが開始されました",
+      "uploadStartedOne": "1 件のファイルのアップロードが開始されました",
+      "uploadStartedOther": "{{count}} 件のファイルのアップロードが開始されました",
+      "uploadProgressUpdate": "アップロード進捗：{{percent}}% 完了",
+      "uploadProgressMilestone": "アップロード {{percent}}% 完了",
+      "uploadCompleted": "アップロードが正常に完了しました",
+      "uploadFailed": "アップロード失敗",
+      "folderAdded": "フォルダ {{name}} を監視に追加しました",
+      "folderRemoved": "フォルダ {{name}} を監視から削除しました",
+      "folderScanned": "フォルダ {{name}} をスキャンし、{{count}} 件のファイルが見つかりました",
+      "emptyStateAction": "Enterキーを押してアクションを実行",
+      "connectionStatusRegion": "接続ステータス情報",
+      "queueStatsRegion": "キュー統計領域",
+      "shortcuts": {
+        "uploadFocused": "アップロード入力にフォーカスしました。Enterキーを押してファイルを選択。",
+        "queueRefreshed": "キューが手動で更新されました。"
+      }
     }
   },
   "payment": {
@@ -392,6 +718,162 @@
         "selectVoice": "吹き替え音声を選択",
         "originalVolume": "元の音声のボリュームを調整（0 = ミュート）",
         "dubbedVolume": "吹き替え音声のボリュームを調整（1 = 最大）"
+      }
+    }
+  },
+  "errors": {
+    "friends": {
+      "fetchFailed": "フレンドの取得に失敗しました",
+      "requestsFetchFailed": "リクエストの取得に失敗しました",
+      "sendFailed": "リクエストの送信に失敗しました",
+      "acceptFailed": "リクエストの承認に失敗しました",
+      "rejectFailed": "リクエストの拒否に失敗しました",
+      "cancelFailed": "リクエストのキャンセルに失敗しました",
+      "removeFailed": "フレンドの削除に失敗しました"
+    },
+    "settings": {
+      "loadFailed": "設定の読み込みに失敗しました",
+      "saveFailed": "設定の保存に失敗しました"
+    },
+    "devices": {
+      "loadFailed": "デバイスの読み込みに失敗しました",
+      "registerFailed": "デバイスの登録に失敗しました",
+      "disconnectFailed": "デバイスの切断に失敗しました"
+    },
+    "stats": {
+      "fetchFailed": "統計の取得に失敗しました",
+      "playerFetchFailed": "プレイヤー統計の取得に失敗しました",
+      "historyFetchFailed": "対戦履歴の取得に失敗しました",
+      "leaderboardFetchFailed": "リーダーボードの取得に失敗しました",
+      "h2hFetchFailed": "対戦成績の取得に失敗しました"
+    },
+    "profile": {
+      "fetchFailed": "プロフィールの取得に失敗しました",
+      "selectFailed": "プロフィールの選択に失敗しました",
+      "createFailed": "プロフィールの作成に失敗しました",
+      "updateFailed": "プロフィールの更新に失敗しました",
+      "deleteFailed": "プロフィールの削除に失敗しました"
+    },
+    "auth": {
+      "notAuthenticated": "認証されていません",
+      "tokenRefreshFailed": "認証トークンの更新に失敗しました",
+      "playbackAuthRequired": "再生セッションには認証が必要です"
+    },
+    "connection": {
+      "failed": "接続エラー - 詳細はコンソールを確認してください",
+      "timeout": "接続タイムアウト",
+      "error": "接続エラー"
+    },
+    "chess": {
+      "connectFailed": "ゲームへの接続に失敗しました",
+      "notConnected": "ゲームに接続されていません"
+    },
+    "podcast": {
+      "switchLanguageFailed": "言語の切り替えに失敗しました",
+      "playbackError": "音声再生エラー"
+    },
+    "widget": {
+      "loadFailed": "ウィジェットの読み込みに失敗しました"
+    },
+    "player": {
+      "noStreamUrl": "ストリームURLが利用できません",
+      "loadFailed": "動画の読み込みに失敗しました",
+      "notReady": "動画の準備ができていません",
+      "sessionCreateFailed": "複数回の試行後、再生セッションの作成に失敗しました"
+    },
+    "trivia": {
+      "invalidChannel": "無効なチャンネルID"
+    }
+  },
+  "widget": {
+    "streamUnavailable": "ストリームが利用できません",
+    "contentUnavailable": "コンテンツが利用できません",
+    "podcastUnavailable": "ポッドキャストが利用できません",
+    "stationUnavailable": "ステーションが利用できません",
+    "iframeNotConfigured": "iFrame URLが設定されていません",
+    "unknownComponent": "不明なコンポーネント: {{componentName}}",
+    "noContentConfigured": "コンテンツが設定されていません",
+    "errorLoadingContent": "コンテンツの読み込みエラー",
+    "loadingEpisodes": "エピソードを読み込み中...",
+    "noEpisodesFound": "エピソードが見つかりません",
+    "audioUnavailable": "音声が利用できません",
+    "103fmEpisodes": "103FMエピソード",
+    "loadingNews": "ニュースを読み込み中...",
+    "ynetBreakingNews": "מבזקי Ynet"
+  },
+  "chess": {
+    "waitingForOpponent": "対戦相手を待っています...",
+    "disconnected": "切断されました",
+    "theirTurn": "相手のターン"
+  },
+  "audible": {
+    "connectionFailed": "接続に失敗しました",
+    "connecting": "Audibleに接続中...",
+    "pleaseWait": "アカウントをリンクしています。しばらくお待ちください。",
+    "connected": "接続完了！",
+    "accountLinked": "AudibleアカウントがBayit+にリンクされました"
+  },
+  "settings": {
+    "accessibility": {
+      "small": "小",
+      "medium": "中",
+      "large": "大"
+    }
+  },
+  "recordings": {
+    "record": "録画"
+  },
+  "epg": {
+    "live": "ライブ"
+  },
+  "admin": {
+    "accessDenied": "アクセス拒否",
+    "noPermission": "このコンテンツを閲覧する権限がありません",
+    "actions": {
+      "view": "表示",
+      "edit": "編集",
+      "delete": "削除",
+      "pause": "一時停止",
+      "resume": "再開",
+      "cancel": "キャンセル",
+      "approve": "承認",
+      "reject": "拒否",
+      "activate": "有効化",
+      "test": "テスト"
+    },
+    "importWizard": {
+      "title": "無料コンテンツのインポート",
+      "loadingSources": "ソースを読み込み中...",
+      "loadingCategories": "カテゴリを読み込み中...",
+      "selectCategory": "インポートする映画のカテゴリを選択",
+      "selectItems": "インポートするアイテムを選択",
+      "sources": {
+        "vod": "映画・VOD",
+        "vodDescription": "archive.orgからクラシック映画をインポート",
+        "liveTv": "ライブTVチャンネル",
+        "liveTvDescription": "Apple BipBopからテストストリームをインポート",
+        "radio": "ラジオ局",
+        "radioDescription": "公開ラジオストリームをインポート",
+        "podcasts": "ポッドキャスト",
+        "podcastsDescription": "公開ポッドキャストフィードをインポート"
+      }
+    },
+    "diagnostics": {
+      "service": "サービス",
+      "status": "ステータス",
+      "latency": "レイテンシー",
+      "loading": "診断を読み込み中..."
+    },
+    "costDashboard": {
+      "title": "コストダッシュボード",
+      "subtitle": "プラットフォームのコスト追跡と分析",
+      "view": "表示",
+      "selectUser": "ユーザーを選択...",
+      "tabs": {
+        "overview": "概要",
+        "timeline": "タイムライン",
+        "categories": "カテゴリ",
+        "topSpenders": "上位利用者"
       }
     }
   }

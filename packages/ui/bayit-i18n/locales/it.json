@@ -1,145 +1,471 @@
 {
+  "auth": {
+    "loginRequired": "Accesso richiesto",
+    "loginToWatch": "Accedi per guardare {{title}}",
+    "login": "Accedi",
+    "signUp": "Registrati"
+  },
   "email": {
-    "greeting": "Hello",
+    "greeting": "Ciao",
     "footer": {
-      "privacy": "Privacy Policy",
-      "terms": "Terms of Service",
-      "support": "Support",
-      "unsubscribe": "Unsubscribe from these emails"
+      "privacy": "Informativa sulla privacy",
+      "terms": "Termini di servizio",
+      "support": "Supporto",
+      "unsubscribe": "Annulla iscrizione a queste email"
     },
     "welcome": {
-      "subject": "Welcome to Bayit+!",
-      "title": "Welcome to Bayit+",
-      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
-      "cta": "Go to Dashboard"
+      "subject": "Benvenuto su Bayit+!",
+      "title": "Benvenuto su Bayit+",
+      "body": "Grazie per esserti unito a Bayit+. Siamo entusiasti di averti con noi!",
+      "cta": "Vai alla Dashboard"
     },
     "verification": {
-      "subject": "Verify Your Email",
-      "title": "Verify Your Email Address",
-      "body": "Please click the button below to verify your email address.",
-      "cta": "Verify Email",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't create an account, you can safely ignore this email."
+      "subject": "Verifica la tua email",
+      "title": "Verifica il tuo indirizzo email",
+      "body": "Clicca il pulsante qui sotto per verificare il tuo indirizzo email.",
+      "cta": "Verifica email",
+      "expiry": "Questo link scadrà tra {expiry_hours} ore.",
+      "security": "Se non hai creato un account, puoi ignorare questa email in sicurezza."
     },
     "verification_resend": {
-      "subject": "Email Verification (Resent)",
-      "title": "Verify Your Email Address",
-      "body": "Here's a new verification link as requested.",
-      "cta": "Verify Email"
+      "subject": "Verifica email (Reinviata)",
+      "title": "Verifica il tuo indirizzo email",
+      "body": "Ecco un nuovo link di verifica come richiesto.",
+      "cta": "Verifica email"
     },
     "password_reset": {
-      "subject": "Reset Your Password",
-      "title": "Reset Your Password",
-      "body": "We received a request to reset your password. Click the button below to create a new password.",
-      "cta": "Reset Password",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+      "subject": "Reimposta la tua password",
+      "title": "Reimposta la tua password",
+      "body": "Abbiamo ricevuto una richiesta di reimpostazione della tua password. Clicca il pulsante qui sotto per creare una nuova password.",
+      "cta": "Reimposta password",
+      "expiry": "Questo link scadrà tra {expiry_hours} ore.",
+      "security": "Se non hai richiesto questo, il tuo account è ancora al sicuro. Puoi ignorare questa email."
     },
     "password_changed": {
-      "subject": "Password Changed",
-      "title": "Your Password Has Been Changed",
-      "body": "Your password was successfully changed.",
-      "security": "If you didn't make this change, please contact support immediately."
+      "subject": "Password modificata",
+      "title": "La tua password è stata modificata",
+      "body": "La tua password è stata modificata con successo.",
+      "security": "Se non hai effettuato questa modifica, contatta immediatamente il supporto."
     },
     "account_locked": {
-      "subject": "Account Locked",
-      "title": "Your Account Has Been Locked",
-      "body": "Your account has been temporarily locked due to security concerns.",
-      "cta": "Unlock Account"
+      "subject": "Account bloccato",
+      "title": "Il tuo account è stato bloccato",
+      "body": "Il tuo account è stato temporaneamente bloccato per motivi di sicurezza.",
+      "cta": "Sblocca account"
     },
     "beta_invitation": {
-      "subject": "You're Invited to Bayit+ Beta!",
-      "title": "You're Invited to the Beta Program",
-      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
-      "credits": "{credits} AI credits included",
-      "duration": "Access for {days} days",
-      "cta": "Join Beta Program"
+      "subject": "Sei invitato a Bayit+ Beta!",
+      "title": "Sei invitato al Programma Beta",
+      "body": "Congratulazioni! Sei stato selezionato per il programma esclusivo Bayit+ Beta 500.",
+      "credits": "{credits} crediti IA inclusi",
+      "duration": "Accesso per {days} giorni",
+      "cta": "Unisciti al Programma Beta"
     },
     "beta_welcome": {
-      "subject": "Welcome to Bayit+ Beta!",
-      "title": "Welcome to the Beta Program",
-      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
-      "cta": "Get Started"
+      "subject": "Benvenuto su Bayit+ Beta!",
+      "title": "Benvenuto nel Programma Beta",
+      "body": "Ora fai parte della comunità esclusiva Bayit+ Beta 500!",
+      "cta": "Inizia"
     },
     "payment_confirmation": {
-      "subject": "Payment Confirmation",
-      "title": "Payment Received",
-      "body": "Your payment has been processed successfully.",
-      "transaction": "Transaction ID",
-      "plan": "Plan",
-      "amount": "Amount",
-      "date": "Payment Date",
-      "next_billing": "Next Billing Date"
+      "subject": "Conferma di pagamento",
+      "title": "Pagamento ricevuto",
+      "body": "Il tuo pagamento è stato elaborato con successo.",
+      "transaction": "ID transazione",
+      "plan": "Piano",
+      "amount": "Importo",
+      "date": "Data di pagamento",
+      "next_billing": "Prossima data di fatturazione"
     },
     "subscription_activated": {
-      "subject": "Subscription Activated",
-      "title": "Your Subscription is Active",
-      "body": "Your subscription has been activated. Here's what you get:",
-      "cta": "Start Watching"
+      "subject": "Abbonamento attivato",
+      "title": "Il tuo abbonamento è attivo",
+      "body": "Il tuo abbonamento è stato attivato. Ecco cosa ottieni:",
+      "cta": "Inizia a guardare"
     },
     "subscription_cancelled": {
-      "subject": "Subscription Cancelled",
-      "title": "Subscription Cancelled",
-      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
-      "cta": "Reactivate Subscription"
+      "subject": "Abbonamento annullato",
+      "title": "Abbonamento annullato",
+      "body": "Il tuo abbonamento è stato annullato. Continuerai ad avere accesso fino al {access_until}.",
+      "cta": "Riattiva abbonamento"
     },
     "payment_failed": {
-      "subject": "Payment Failed",
-      "title": "Payment Failed",
-      "body": "We were unable to process your payment. Please update your payment method.",
-      "cta": "Update Payment Method"
+      "subject": "Pagamento fallito",
+      "title": "Pagamento fallito",
+      "body": "Non siamo riusciti a elaborare il tuo pagamento. Aggiorna il tuo metodo di pagamento.",
+      "cta": "Aggiorna metodo di pagamento"
     },
     "trial_expiring": {
-      "subject": "Your Trial is Expiring Soon",
-      "title": "Trial Ending in {days_remaining} Days",
-      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
-      "cta": "Upgrade Now"
+      "subject": "La tua prova sta per scadere",
+      "title": "Prova in scadenza tra {days_remaining} giorni",
+      "body": "La tua prova gratuita sta per scadere. Aggiorna ora per continuare a goderti tutte le funzionalità.",
+      "cta": "Aggiorna ora"
     },
     "support": {
-      "created_subject": "Ticket #{ticket_id} Created",
-      "created_title": "Support Ticket Created",
-      "created_body": "Your support ticket has been created. We'll get back to you soon.",
-      "response_subject": "New Response on Ticket #{ticket_id}",
-      "response_title": "New Response on Your Ticket",
-      "escalation_subject": "Ticket #{ticket_id} Escalated",
-      "escalation_title": "Your Ticket Has Been Escalated",
-      "resolved_subject": "Ticket #{ticket_id} Resolved",
-      "resolved_title": "Your Ticket Has Been Resolved",
-      "resolved_body": "Your support ticket has been resolved."
+      "created_subject": "Ticket #{ticket_id} creato",
+      "created_title": "Ticket di supporto creato",
+      "created_body": "Il tuo ticket di supporto è stato creato. Ti risponderemo presto.",
+      "response_subject": "Nuova risposta sul Ticket #{ticket_id}",
+      "response_title": "Nuova risposta sul tuo ticket",
+      "escalation_subject": "Ticket #{ticket_id} escalato",
+      "escalation_title": "Il tuo ticket è stato escalato",
+      "resolved_subject": "Ticket #{ticket_id} risolto",
+      "resolved_title": "Il tuo ticket è stato risolto",
+      "resolved_body": "Il tuo ticket di supporto è stato risolto."
     },
     "new_message": {
-      "subject": "New Message from {sender_name}",
-      "title": "You Have a New Message",
-      "cta": "Read Message"
+      "subject": "Nuovo messaggio da {sender_name}",
+      "title": "Hai un nuovo messaggio",
+      "cta": "Leggi messaggio"
     },
     "content_digest": {
-      "subject": "Your {digest_period} Content Digest",
-      "title": "Your Content Digest",
-      "cta": "Browse Content"
+      "subject": "Il tuo riepilogo contenuti {digest_period}",
+      "title": "Il tuo riepilogo contenuti",
+      "cta": "Sfoglia contenuti"
     },
     "gdpr": {
-      "deletion_subject": "Data Deletion Confirmation",
-      "deletion_title": "Your Data Has Been Deleted",
-      "deletion_body": "As requested, your personal data has been permanently deleted.",
-      "categories_label": "Deleted Data Categories"
+      "deletion_subject": "Conferma eliminazione dati",
+      "deletion_title": "I tuoi dati sono stati eliminati",
+      "deletion_body": "Come richiesto, i tuoi dati personali sono stati eliminati permanentemente.",
+      "categories_label": "Categorie di dati eliminati"
     },
     "admin": {
-      "account_created_subject": "Admin Account Created",
-      "account_created_title": "Admin Account Created",
-      "role_change_subject": "Role Changed",
-      "role_change_title": "Your Role Has Been Updated"
+      "account_created_subject": "Account amministratore creato",
+      "account_created_title": "Account amministratore creato",
+      "role_change_subject": "Ruolo modificato",
+      "role_change_title": "Il tuo ruolo è stato aggiornato"
     },
     "campaign": {
-      "default_subject": "News from Bayit+"
+      "default_subject": "Novità da Bayit+"
     },
     "newsletter": {
-      "default_subject": "Bayit+ Newsletter"
+      "default_subject": "Newsletter Bayit+"
     },
     "reengagement": {
-      "subject": "We Miss You!",
-      "title": "It's Been a While",
-      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
-      "cta": "Come Back"
+      "subject": "Ci manchi!",
+      "title": "È passato un po' di tempo",
+      "body": "Abbiamo notato che non ci visiti da {days_inactive} giorni. Ecco cosa ti sei perso:",
+      "cta": "Torna"
+    }
+  },
+  "greeting": {
+    "morning": "Buongiorno",
+    "afternoon": "Buon pomeriggio",
+    "evening": "Buonasera",
+    "night": "Buonanotte"
+  },
+  "location": {
+    "consentModal": {
+      "title": "Attiva i servizi di localizzazione",
+      "description": "Vorremmo mostrarti contenuti pertinenti alla tua zona.\n\nFaremo:\n• Rilevare la tua città e stato\n• Mostrare contenuti della comunità israeliana locale\n• Memorizzare la tua posizione nella cache per 24 ore\n\nNON faremo:\n• Tracciare la tua posizione esatta\n• Condividere la tua posizione con terze parti\n• Memorizzare la tua posizione permanentemente senza consenso\n\nPuoi modificare questa impostazione in qualsiasi momento nelle impostazioni.",
+      "accept": "Consenti accesso alla posizione",
+      "decline": "Non ora",
+      "privacyNote": "La tua privacy è importante. I dati di localizzazione sono crittografati e mai venduti."
+    },
+    "permissionBanner": {
+      "title": "Scopri contenuti israeliani vicino a te",
+      "description": "Attiva i servizi di localizzazione per vedere eventi, notizie e storie della comunità israeliana nella tua zona. La tua privacy è protetta - rileviamo solo la tua città.",
+      "enable": "Attiva localizzazione",
+      "notNow": "Non ora",
+      "close": "Chiudi"
+    },
+    "status": {
+      "detecting": "Rilevamento della tua posizione...",
+      "detected": "Posizione rilevata: {{city}}, {{state}}",
+      "denied": "Accesso alla posizione negato",
+      "unavailable": "Servizi di localizzazione non disponibili",
+      "error": "Rilevamento della posizione fallito"
+    },
+    "errors": {
+      "permissionDenied": "Accesso alla posizione negato. Attiva la localizzazione nelle impostazioni del browser.",
+      "timeout": "Richiesta di localizzazione scaduta. Riprova.",
+      "unavailable": "I servizi di localizzazione non sono disponibili nel tuo browser.",
+      "failed": "Impossibile ottenere la posizione. Riprova."
+    }
+  },
+  "uploads": {
+    "title": "Gestione caricamenti",
+    "subtitle": "Monitora le cartelle e gestisci i caricamenti di contenuti",
+    "queueDashboard": {
+      "title": "Dashboard della coda di caricamento",
+      "stats": "Statistiche della coda",
+      "total": "Totale",
+      "queued": "In coda",
+      "active": "Attivo",
+      "done": "Completato",
+      "activeJob": "Caricamento attivo",
+      "queuedJobs": "Caricamenti in coda",
+      "recentCompleted": "Completati di recente",
+      "noActiveJob": "Nessun caricamento attivo",
+      "noActiveJobDescription": "La coda è vuota. Carica file o scansiona le cartelle monitorate per iniziare l'elaborazione.",
+      "noQueuedJobs": "Nessun caricamento in attesa",
+      "noQueuedJobsDescription": "Tutti i file sono stati elaborati. Aggiungi altri file per continuare.",
+      "noRecentCompleted": "Nessun completato di recente",
+      "noRecentCompletedDescription": "I file caricati con successo appariranno qui.",
+      "queuePausedWarning": "La coda è in pausa: {{reason}}",
+      "resumeQueue": "Riprendi coda",
+      "pauseQueue": "Metti in pausa la coda",
+      "clearQueue": "Svuota coda"
+    },
+    "manualUpload": {
+      "title": "Caricamento manuale",
+      "subtitle": "Carica file direttamente dal tuo dispositivo",
+      "browserUpload": "Caricamento da browser",
+      "urlUpload": "Importazione URL",
+      "contentType": "Tipo di contenuto",
+      "contentTypeHelp": "Seleziona il tipo di contenuto da caricare",
+      "contentTypeRequired": "Seleziona un tipo di contenuto",
+      "dropZone": "Zona di rilascio",
+      "dropZoneAriaLabel": "Zona di rilascio per caricare file. Clicca o premi Invio per selezionare file, oppure trascina i file qui",
+      "dropHere": "Trascina file video qui o clicca per sfogliare",
+      "dropHereActive": "Rilascia i file per caricare",
+      "tapToSelect": "Tocca per selezionare file",
+      "browseFiles": "Sfoglia file",
+      "selectFiles": "Seleziona file",
+      "supportedFormats": "Supportati: MP4, MKV, AVI, MOV, WEBM (max {{maxSize}})",
+      "fileList": "File selezionati per il caricamento",
+      "fileListEmpty": "Nessun file selezionato",
+      "fileListEmptyDescription": "Usa il selettore file sopra per scegliere i file da caricare",
+      "fileItem": "File: {{name}}, Dimensione: {{size}}, Progresso: {{progress}}%",
+      "fileName": "Nome file",
+      "fileSize": "Dimensione",
+      "fileType": "Tipo",
+      "fileProgress": "Progresso",
+      "fileStatus": "Stato",
+      "removeFile": "Rimuovi {{name}}",
+      "removeFileHint": "Rimuovi questo file dalla coda di caricamento",
+      "fileRemoved": "{{name}} rimosso dalla coda di caricamento",
+      "selectedFiles": "{{count}} file selezionato/i",
+      "selectedFilesOne": "1 file selezionato",
+      "selectedFilesOther": "{{count}} file selezionati",
+      "totalSize": "Dimensione totale: {{size}}",
+      "clearAll": "Cancella tutto",
+      "clearAllHint": "Rimuovi tutti i file dalla coda di caricamento",
+      "clearAllConfirm": "Rimuovere tutti i {{count}} file?",
+      "uploadFiles": "Carica file",
+      "uploading": "Caricamento in corso...",
+      "uploadingFiles": "Caricamento di {{count}} file in corso...",
+      "uploadProgress": "Caricamento: {{percent}}% completato",
+      "uploadComplete": "Caricamento completato",
+      "uploadSuccess": "{{count}} file caricato/i con successo",
+      "uploadSuccessOne": "1 file caricato con successo",
+      "uploadSuccessOther": "{{count}} file caricati con successo",
+      "uploadPartialSuccess": "Caricati {{successful}} di {{total}} file. {{failed}} falliti.",
+      "uploadFailed": "Caricamento fallito: {{error}}",
+      "cancelUpload": "Annulla caricamento",
+      "retryUpload": "Riprova caricamento",
+      "retryFailed": "Riprova file falliti"
+    },
+    "urlUpload": {
+      "title": "Importa da URL",
+      "subtitle": "Importa file video da URL remoti",
+      "urlLabel": "URL del video",
+      "urlPlaceholder": "https://esempio.com/video.mp4",
+      "urlHelp": "Inserisci un URL diretto a un file video",
+      "urlRequired": "L'URL è obbligatorio",
+      "importButton": "Importa da URL",
+      "importing": "Importazione in corso...",
+      "importSuccess": "Importato con successo da URL",
+      "importFailed": "Importazione fallita: {{error}}",
+      "invalidUrl": "Inserisci un URL valido",
+      "urlMustBeHttps": "L'URL deve usare il protocollo HTTPS",
+      "emptyUrlList": "Nessun URL importato",
+      "emptyUrlListDescription": "Inserisci URL sopra per importare file video da fonti remote",
+      "addUrl": "Aggiungi URL",
+      "removeUrl": "Rimuovi URL"
+    },
+    "monitoredFolders": {
+      "title": "Cartelle monitorate",
+      "subtitle": "Configura cartelle per rilevare e caricare automaticamente i contenuti",
+      "noFolders": "Nessuna cartella monitorata",
+      "noFoldersDescription": "Aggiungi cartelle per abilitare il rilevamento e il caricamento automatico dei contenuti",
+      "addFolder": "Aggiungi cartella",
+      "editFolder": "Modifica cartella",
+      "deleteFolder": "Elimina cartella",
+      "scanFolder": "Scansiona cartella",
+      "scanFolderHint": "Controlla la cartella per nuovi file e metti in coda i caricamenti",
+      "scanning": "Scansione in corso...",
+      "scanComplete": "Scansione completata: Trovato/i {{count}} file",
+      "scanCompleteOne": "Scansione completata: Trovato 1 file",
+      "scanCompleteOther": "Scansione completata: Trovati {{count}} file",
+      "noFilesFound": "Nessun nuovo file trovato nella cartella",
+      "scanFailed": "Scansione fallita: {{error}}",
+      "folderName": "Nome cartella",
+      "folderPath": "Percorso cartella",
+      "folderStatus": "Stato",
+      "folderEnabled": "Abilitato",
+      "folderDisabled": "Disabilitato",
+      "lastScan": "Ultima scansione",
+      "neverScanned": "Mai scansionata",
+      "filesDetected": "{{count}} file rilevato/i",
+      "confirmDelete": "Eliminare {{name}}?",
+      "confirmDeleteMessage": "Questo interromperà il monitoraggio di questa cartella. I caricamenti esistenti non saranno interessati.",
+      "deleteSuccess": "Cartella eliminata con successo",
+      "deleteFailed": "Eliminazione cartella fallita: {{error}}",
+      "form": {
+        "title": "Configurazione cartella",
+        "name": "Nome cartella",
+        "namePlaceholder": "es., Archivio film",
+        "nameRequired": "Il nome della cartella è obbligatorio",
+        "nameHelp": "Nome descrittivo per questa cartella",
+        "path": "Percorso cartella",
+        "pathPlaceholder": "/percorso/alla/cartella",
+        "pathHelp": "Inserisci il percorso completo da monitorare",
+        "pathRequired": "Il percorso della cartella è obbligatorio",
+        "pathInvalid": "Percorso cartella non valido",
+        "pathReadOnly": "Il percorso non può essere modificato dopo la creazione",
+        "enabled": "Abilitato",
+        "enabledHelp": "Abilita o disabilita il monitoraggio di questa cartella",
+        "autoUpload": "Caricamento automatico",
+        "autoUploadHelp": "Carica automaticamente i nuovi file rilevati in questa cartella",
+        "contentType": "Tipo di contenuto",
+        "contentTypeHelp": "Tipo di contenuto in questa cartella",
+        "saveButton": "Salva cartella",
+        "cancelButton": "Annulla",
+        "saving": "Salvataggio in corso..."
+      }
+    },
+    "dryRun": {
+      "title": "Modalità di prova",
+      "enabled": "Prova abilitata",
+      "disabled": "Prova disabilitata",
+      "description": "Anteprima del caricamento senza trasferire effettivamente i file",
+      "descriptionDetailed": "Quando abilitato, i file verranno validati e i metadati estratti, ma non caricati nello storage. Usa questa funzione per testare i caricamenti senza applicare modifiche.",
+      "toggle": "Abilita modalità di prova",
+      "toggleHint": "Attiva/disattiva la modalità di prova per test di caricamento sicuri",
+      "previewTitle": "Risultati della prova",
+      "previewDescription": "Verifica cosa succederà se procedi con il caricamento",
+      "validFiles": "File validi ({{count}})",
+      "invalidFiles": "File non validi ({{count}})",
+      "warnings": "Avvisi ({{count}})",
+      "proceedButton": "Procedi con il caricamento",
+      "proceedHint": "Disabilita la modalità di prova ed esegui il caricamento effettivo",
+      "cancelButton": "Annulla",
+      "noResults": "Nessun risultato di prova disponibile"
+    },
+    "connectionStatus": {
+      "connected": "Connesso",
+      "disconnected": "Disconnesso",
+      "reconnecting": "Riconnessione in corso...",
+      "reconnectAttempt": "Riconnessione (tentativo {{current}} di {{max}})",
+      "connectionLost": "Aggiornamenti in tempo reale non disponibili",
+      "connectionLostDescription": "La connessione al server è stata persa. Tentativo di riconnessione...",
+      "connectionLostAnnouncement": "Connessione persa. Aggiornamenti in tempo reale in pausa. Usa il pulsante Aggiorna per aggiornamenti manuali.",
+      "connectedAnnouncement": "Connesso al servizio di caricamento. Aggiornamenti in tempo reale attivi.",
+      "reconnectingAnnouncement": "Riconnessione al servizio di caricamento. Tentativo {{attempt}} di {{maxAttempts}}.",
+      "troubleshooting": "Risoluzione problemi",
+      "troubleshootingSteps": [
+        "Verifica la tua connessione internet",
+        "Verifica che il server sia in esecuzione",
+        "Verifica il tuo token di autenticazione",
+        "Prova ad aggiornare la pagina"
+      ],
+      "manualRefresh": "Aggiorna manualmente",
+      "manualRefreshHint": "Aggiorna manualmente i dati della coda",
+      "refreshing": "Aggiornamento in corso..."
+    },
+    "contentTypes": {
+      "movie": "Film",
+      "series": "Serie",
+      "podcast": "Podcast",
+      "other": "Altro"
+    },
+    "stages": {
+      "browserUpload": "Caricamento da browser",
+      "hashCalculation": "Calcolo hash",
+      "duplicateCheck": "Verifica duplicati",
+      "metadataExtraction": "Estrazione metadati",
+      "gcsUpload": "Caricamento cloud",
+      "databaseInsert": "Inserimento nel database",
+      "complete": "Completato",
+      "failed": "Fallito"
+    },
+    "status": {
+      "queued": "In coda",
+      "processing": "In elaborazione",
+      "uploading": "Caricamento in corso",
+      "complete": "Completato",
+      "failed": "Fallito",
+      "cancelled": "Annullato",
+      "skipped": "Saltato (Duplicato)"
+    },
+    "actions": {
+      "pauseQueue": "Metti in pausa la coda",
+      "resumeQueue": "Riprendi coda",
+      "clearQueue": "Svuota coda",
+      "clearQueueConfirm": "Svuotare la coda di caricamento?",
+      "clearQueueConfirmMessage": "Questo annullerà {{count}} caricamento/i in attesa. Questa azione non può essere annullata.",
+      "triggerUpload": "Scansiona cartelle",
+      "triggerUploadHint": "Scansiona tutte le cartelle monitorate per nuovi file",
+      "triggerUploadSuccess": "Trovato/i {{files_found}} file da caricare",
+      "triggerUploadFailed": "Scansione fallita: {{error}}",
+      "refresh": "Aggiorna",
+      "refreshHint": "Ricarica i dati della coda",
+      "cancel": "Annulla",
+      "retry": "Riprova",
+      "remove": "Rimuovi"
+    },
+    "errors": {
+      "loadFailed": "Caricamento dati fallito",
+      "loadFailedDescription": "Impossibile recuperare la coda di caricamento. Prova ad aggiornare.",
+      "saveFailed": "Salvataggio configurazione cartella fallito",
+      "saveFailedDescription": "Impossibile salvare la cartella monitorata. Riprova.",
+      "deleteFailed": "Eliminazione cartella monitorata fallita",
+      "uploadFailed": "Caricamento fallito",
+      "uploadFailedDescription": "Uno o più file non sono stati caricati. Controlla la lista file per i dettagli.",
+      "resumeFailed": "Ripresa della coda fallita",
+      "clearFailed": "Svuotamento della coda fallito",
+      "triggerFailed": "Avvio della scansione di caricamento fallito",
+      "pathRequired": "Il percorso della cartella è obbligatorio",
+      "invalidPath": "Percorso cartella non valido",
+      "pathTraversal": "Il percorso contiene caratteri non validi o tentativi di attraversamento",
+      "networkError": "Errore di rete. Verifica la tua connessione.",
+      "authError": "Errore di autenticazione. Accedi di nuovo.",
+      "serverError": "Errore del server. Riprova più tardi.",
+      "fileTooBig": "Il file supera la dimensione massima di {{maxSize}}",
+      "invalidFileType": "Tipo di file non valido. Formati supportati: {{formats}}",
+      "duplicateFile": "Questo file è già stato caricato",
+      "rateLimitExceeded": "Limite di frequenza superato. Attendi prima di caricare altri file.",
+      "configValidationFailed": "Validazione della configurazione fallita. Controlla la console per i dettagli.",
+      "websocketAuthFailed": "Autenticazione WebSocket fallita",
+      "unsupportedBrowser": "Il tuo browser non supporta le funzionalità richieste"
+    },
+    "mobile": {
+      "dataWarning": "Sei su rete cellulare. Il caricamento di {{size}} potrebbe consumare molti dati.",
+      "dataWarningProceed": "Procedi comunque",
+      "dataWarningCancel": "Annulla caricamento",
+      "lowMemoryWarning": "La memoria del dispositivo è scarsa. I caricamenti di grandi dimensioni potrebbero fallire.",
+      "batteryLowWarning": "La batteria è scarsa ({{percent}}%). I caricamenti potrebbero essere interrotti.",
+      "networkChanged": "La rete è cambiata. Riconnessione in corso...",
+      "mobileBrowserNotSupported": "Alcune funzionalità potrebbero non funzionare sui browser mobili"
+    },
+    "accessibility": {
+      "pageDescription": "Interfaccia di gestione caricamenti con monitoraggio della coda, caricamenti manuali e monitoraggio delle cartelle",
+      "pageTitle": "Pagina caricamenti amministratore",
+      "sectionQueue": "Sezione dashboard della coda",
+      "sectionManualUpload": "Sezione caricamento manuale",
+      "sectionMonitoredFolders": "Sezione cartelle monitorate",
+      "loadingQueue": "Caricamento coda in corso...",
+      "queueLoaded": "Coda di caricamento caricata con {{count}} elementi",
+      "queueLoadedOne": "Coda di caricamento caricata con 1 elemento",
+      "queueLoadedOther": "Coda di caricamento caricata con {{count}} elementi",
+      "uploadStarted": "Caricamento avviato per {{count}} file",
+      "uploadStartedOne": "Caricamento avviato per 1 file",
+      "uploadStartedOther": "Caricamento avviato per {{count}} file",
+      "uploadProgressUpdate": "Progresso caricamento: {{percent}}% completato",
+      "uploadProgressMilestone": "Caricamento {{percent}}% completato",
+      "uploadCompleted": "Caricamento completato con successo",
+      "uploadFailed": "Caricamento fallito",
+      "folderAdded": "Cartella {{name}} aggiunta al monitoraggio",
+      "folderRemoved": "Cartella {{name}} rimossa dal monitoraggio",
+      "folderScanned": "Cartella {{name}} scansionata, trovati {{count}} file",
+      "emptyStateAction": "Premi Invio per eseguire l'azione",
+      "connectionStatusRegion": "Informazioni sullo stato della connessione",
+      "queueStatsRegion": "Regione statistiche della coda",
+      "shortcuts": {
+        "uploadFocused": "Campo di caricamento selezionato. Premi Invio per selezionare file.",
+        "queueRefreshed": "Coda aggiornata manualmente."
+      }
     }
   },
   "payment": {
@@ -392,6 +718,162 @@
         "selectVoice": "Scegli la voce per l'audio doppiato",
         "originalVolume": "Regola il volume dell'audio originale (0 = muto)",
         "dubbedVolume": "Regola il volume dell'audio doppiato (1 = volume completo)"
+      }
+    }
+  },
+  "errors": {
+    "friends": {
+      "fetchFailed": "Impossibile recuperare gli amici",
+      "requestsFetchFailed": "Impossibile recuperare le richieste",
+      "sendFailed": "Impossibile inviare la richiesta",
+      "acceptFailed": "Impossibile accettare la richiesta",
+      "rejectFailed": "Impossibile rifiutare la richiesta",
+      "cancelFailed": "Impossibile annullare la richiesta",
+      "removeFailed": "Impossibile rimuovere l'amico"
+    },
+    "settings": {
+      "loadFailed": "Impossibile caricare le preferenze",
+      "saveFailed": "Impossibile salvare le preferenze"
+    },
+    "devices": {
+      "loadFailed": "Impossibile caricare i dispositivi",
+      "registerFailed": "Impossibile registrare il dispositivo",
+      "disconnectFailed": "Impossibile disconnettere il dispositivo"
+    },
+    "stats": {
+      "fetchFailed": "Impossibile recuperare le statistiche",
+      "playerFetchFailed": "Impossibile recuperare le statistiche del giocatore",
+      "historyFetchFailed": "Impossibile recuperare la cronologia delle partite",
+      "leaderboardFetchFailed": "Impossibile recuperare la classifica",
+      "h2hFetchFailed": "Impossibile recuperare le statistiche testa a testa"
+    },
+    "profile": {
+      "fetchFailed": "Impossibile recuperare i profili",
+      "selectFailed": "Impossibile selezionare il profilo",
+      "createFailed": "Impossibile creare il profilo",
+      "updateFailed": "Impossibile aggiornare il profilo",
+      "deleteFailed": "Impossibile eliminare il profilo"
+    },
+    "auth": {
+      "notAuthenticated": "Non autenticato",
+      "tokenRefreshFailed": "Impossibile aggiornare il token di autenticazione",
+      "playbackAuthRequired": "Autenticazione richiesta per la sessione di riproduzione"
+    },
+    "connection": {
+      "failed": "Errore di connessione - controlla la console per i dettagli",
+      "timeout": "Timeout di connessione",
+      "error": "Errore di connessione"
+    },
+    "chess": {
+      "connectFailed": "Impossibile connettersi alla partita",
+      "notConnected": "Non connesso alla partita"
+    },
+    "podcast": {
+      "switchLanguageFailed": "Impossibile cambiare lingua",
+      "playbackError": "Errore di riproduzione audio"
+    },
+    "widget": {
+      "loadFailed": "Impossibile caricare i widget"
+    },
+    "player": {
+      "noStreamUrl": "Nessun URL di streaming disponibile",
+      "loadFailed": "Impossibile caricare il video",
+      "notReady": "Video non pronto",
+      "sessionCreateFailed": "Impossibile creare la sessione di riproduzione dopo diversi tentativi"
+    },
+    "trivia": {
+      "invalidChannel": "ID canale non valido"
+    }
+  },
+  "widget": {
+    "streamUnavailable": "Stream non disponibile",
+    "contentUnavailable": "Contenuto non disponibile",
+    "podcastUnavailable": "Podcast non disponibile",
+    "stationUnavailable": "Stazione non disponibile",
+    "iframeNotConfigured": "URL iFrame non configurato",
+    "unknownComponent": "Componente sconosciuto: {{componentName}}",
+    "noContentConfigured": "Nessun contenuto configurato",
+    "errorLoadingContent": "Errore nel caricamento del contenuto",
+    "loadingEpisodes": "Caricamento episodi...",
+    "noEpisodesFound": "Nessun episodio trovato",
+    "audioUnavailable": "Audio non disponibile",
+    "103fmEpisodes": "Episodi 103FM",
+    "loadingNews": "Caricamento notizie...",
+    "ynetBreakingNews": "מבזקי Ynet"
+  },
+  "chess": {
+    "waitingForOpponent": "In attesa dell'avversario...",
+    "disconnected": "Disconnesso",
+    "theirTurn": "Il loro turno"
+  },
+  "audible": {
+    "connectionFailed": "Connessione fallita",
+    "connecting": "Connessione ad Audible...",
+    "pleaseWait": "Attendere mentre colleghiamo il tuo account.",
+    "connected": "Connesso!",
+    "accountLinked": "Il tuo account Audible è ora collegato a Bayit+"
+  },
+  "settings": {
+    "accessibility": {
+      "small": "Piccolo",
+      "medium": "Medio",
+      "large": "Grande"
+    }
+  },
+  "recordings": {
+    "record": "Registra"
+  },
+  "epg": {
+    "live": "IN DIRETTA"
+  },
+  "admin": {
+    "accessDenied": "Accesso negato",
+    "noPermission": "Non hai il permesso di visualizzare questo contenuto",
+    "actions": {
+      "view": "Visualizza",
+      "edit": "Modifica",
+      "delete": "Elimina",
+      "pause": "Pausa",
+      "resume": "Riprendi",
+      "cancel": "Annulla",
+      "approve": "Approva",
+      "reject": "Rifiuta",
+      "activate": "Attiva",
+      "test": "Testa"
+    },
+    "importWizard": {
+      "title": "Importa contenuti gratuiti",
+      "loadingSources": "Caricamento fonti...",
+      "loadingCategories": "Caricamento categorie...",
+      "selectCategory": "Seleziona una categoria per i film importati",
+      "selectItems": "Seleziona gli elementi da importare",
+      "sources": {
+        "vod": "Film e VOD",
+        "vodDescription": "Importa film classici da archive.org",
+        "liveTv": "Canali TV in diretta",
+        "liveTvDescription": "Importa stream di test da Apple BipBop",
+        "radio": "Stazioni radio",
+        "radioDescription": "Importa stream radio pubblici",
+        "podcasts": "Podcast",
+        "podcastsDescription": "Importa feed di podcast pubblici"
+      }
+    },
+    "diagnostics": {
+      "service": "Servizio",
+      "status": "Stato",
+      "latency": "Latenza",
+      "loading": "Caricamento diagnostica..."
+    },
+    "costDashboard": {
+      "title": "Dashboard dei costi",
+      "subtitle": "Monitoraggio e analisi dei costi della piattaforma",
+      "view": "Visualizza",
+      "selectUser": "Seleziona utente...",
+      "tabs": {
+        "overview": "Panoramica",
+        "timeline": "Cronologia",
+        "categories": "Categorie",
+        "topSpenders": "Maggiori spenditori"
       }
     }
   }
