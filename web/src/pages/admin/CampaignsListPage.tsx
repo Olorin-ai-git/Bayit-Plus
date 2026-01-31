@@ -98,7 +98,7 @@ export default function CampaignsListPage() {
       };
       setStats(statsData);
     } catch (err: any) {
-      const message = err?.message || 'Failed to load campaigns';
+      const message = err?.message || t('admin.campaigns.loadError', 'Failed to load campaigns');
       logger.error('Failed to load campaigns', 'CampaignsListPage', err);
       notifications.showError(message);
     } finally {

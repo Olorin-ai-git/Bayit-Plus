@@ -48,7 +48,7 @@ export const AuditCompletionBanner = ({ report }: AuditCompletionBannerProps) =>
         {getStatusIcon()}
         {t(`admin.librarian.status.${report.status}`)}
         {report.execution_time_seconds && ` • ${report.execution_time_seconds.toFixed(1)}s`}
-        {report.summary && ` • ${report.summary.total_items || 0} items checked`}
+        {report.summary && ` • ${report.summary.total_items || 0} ${t('admin.librarian.itemsChecked', 'items checked')}`}
       </Text>
     </View>
   );

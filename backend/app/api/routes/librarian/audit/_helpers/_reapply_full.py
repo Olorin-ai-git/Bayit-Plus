@@ -1,8 +1,11 @@
 """Full reapply fixes implementation."""
 import logging
-from typing import Optional
+from datetime import datetime
+from typing import List, Optional
 
 from app.models.librarian import AuditReport
+
+from ._extraction import _extract_issues_from_database
 
 logger = logging.getLogger(__name__)
 
@@ -288,6 +291,3 @@ def _merge_issue_sources(tracked_items: list, audit_issues: dict) -> dict:
                 issues[category].append(item)
 
     return issues
-
-
-async def _extract_issues_from_database(limit_per_type: int = 100) -> dict:

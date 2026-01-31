@@ -57,7 +57,7 @@ export default function UsageChartsCard() {
       </View>
 
       {loading ? (
-        <GlassLoadingSpinner size={32} />
+        <GlassLoadingSpinner />
       ) : data.length === 0 ? (
         <Text style={styles.empty}>
           {t('admin.voiceManagement.analytics.noUsageData', 'No usage data for this period')}

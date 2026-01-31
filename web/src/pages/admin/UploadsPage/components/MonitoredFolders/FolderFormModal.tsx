@@ -74,7 +74,7 @@ export const FolderFormModal: React.FC<FolderFormModalProps> = ({
           <GlassInput
             value={formData.name}
             onChangeText={(name) => setFormData({ ...formData, name })}
-            placeholder="e.g., Movies Import"
+            placeholder={t('admin.uploads.manualUpload.folderNamePlaceholder', 'e.g., Movies Import')}
           />
         </View>
 
@@ -83,7 +83,7 @@ export const FolderFormModal: React.FC<FolderFormModalProps> = ({
           <GlassInput
             value={formData.path}
             onChangeText={(path) => setFormData({ ...formData, path })}
-            placeholder="/path/to/folder"
+            placeholder={t('admin.uploads.manualUpload.folderPathPlaceholder', '/path/to/folder')}
           />
         </View>
 

@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 interface UsageRowProps {
@@ -10,6 +11,7 @@ interface UsageRowProps {
 }
 
 export default function UsageRow({ label, current, limit, accumulated, isRTL }: UsageRowProps) {
+  const { t } = useTranslation();
   const totalAvailable = limit + (accumulated || 0);
   const percentage = totalAvailable > 0 ? (current / totalAvailable) * 100 : 0;
   const isWarning = percentage >= 80;
@@ -26,10 +28,10 @@ export default function UsageRow({ label, current, limit, accumulated, isRTL }: 
             isError && styles.usageError,
           ]}
         >
-          {current.toFixed(1)} / {totalAvailable.toFixed(0)} min
+          {current.toFixed(1)} / {totalAvailable.toFixed(0)} {t('admin.liveQuotas.minutes')}
         </Text>
         {accumulated && accumulated > 0 && (
-          <Text style={styles.rolloverText}>(+{accumulated.toFixed(0)} saved)</Text>
+          <Text style={styles.rolloverText}>(+{accumulated.toFixed(0)} {t('admin.liveQuotas.saved')})</Text>
         )}
         <View
           style={[

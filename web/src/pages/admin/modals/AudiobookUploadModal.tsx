@@ -28,12 +28,12 @@ export default function AudiobookUploadModal({ audiobook, visible, onClose }: Au
     if (!file) return
     const allowedTypes = ['audio/mpeg', 'audio/aac', 'audio/m4a', 'audio/flac']
     if (!allowedTypes.includes(file.type)) { setError(t('admin.audiobooks.upload.invalidType', 'Invalid file type. Allowed: MP3, AAC, M4A, FLAC')); return }
-    if (file.size > 500 * 1024 * 1024) { setError(t('admin.audiobooks.upload.tooLarge', 'File size exceeds 500MB limit')); return }
+    if (file.size > 500 * 1024 * 1024) { setError(t('admin.audiobooks.upload.fileTooLarge', 'File size exceeds 500MB limit')); return }
     setSelectedFile(file); setError(null)
   }
 
   const handleUpload = async () => {
-    if (!selectedFile || !audiobook?.id) { setError('File and audiobook selection required'); return }
+    if (!selectedFile || !audiobook?.id) { setError(t('admin.audiobooks.upload.selectionRequired', 'File and audiobook selection required')); return }
     setIsUploading(true); setError(null); setStreamUrl('')
     try {
       const result = await adminAudiobookService.uploadAudioFile(audiobook.id, selectedFile, (percent) => setProgress(percent))
@@ -89,7 +89,7 @@ export default function AudiobookUploadModal({ audiobook, visible, onClose }: Au
                 <GlassInput value={streamUrl} editable={false} containerStyle={styles.urlInput} />
                 <GlassButton variant="ghost" size="sm" onPress={() => {
                   navigator.clipboard.writeText(streamUrl)
-                  alert('URL copied to clipboard')
+                  alert(t('admin.audiobooks.upload.urlCopied', 'URL copied to clipboard'))
                 }}>
                   {t('common.copy', 'Copy URL')}
                 </GlassButton>

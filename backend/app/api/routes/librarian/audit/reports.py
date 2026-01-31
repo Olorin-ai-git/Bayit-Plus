@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.api.routes.admin import require_admin
 from app.api.routes.librarian.models import AuditReportResponse
-from app.models.librarian import AuditReport
+from app.models.librarian import AuditReport, LibrarianAction
 from app.models.user import User
 
 router = APIRouter()
@@ -125,6 +125,3 @@ async def clear_audit_reports(current_user: User = Depends(require_admin())):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to clear audit reports: {str(e)}",
         )
-
-
-@router.get("/admin/librarian/actions", response_model=List[ActionResponse])

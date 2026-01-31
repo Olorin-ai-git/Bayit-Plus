@@ -224,7 +224,7 @@ export const AuditConfiguration = ({
       {isAuditRunning && !triggering && (
         <View style={[styles.runningNotice, { borderColor: colors.warning.DEFAULT + '40' }]}>
           <View style={[styles.runningNoticeHeader, { flexDirection }]}>
-            <GlassLoadingSpinner size={32} />
+            <GlassLoadingSpinner />
             <Text style={[styles.runningNoticeText, { textAlign, color: colors.warning.DEFAULT }]}>
               {t('admin.librarian.quickActions.auditRunningNotice', 'An audit is currently running')}
             </Text>

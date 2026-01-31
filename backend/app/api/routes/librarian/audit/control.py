@@ -132,6 +132,3 @@ async def cancel_audit(audit_id: str, current_user: User = Depends(require_admin
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to cancel audit: {str(e)}",
         )
-
-
-@router.post(

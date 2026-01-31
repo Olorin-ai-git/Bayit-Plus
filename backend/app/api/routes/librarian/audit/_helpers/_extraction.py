@@ -1,5 +1,6 @@
 """Extract issues from database for reapply."""
 import logging
+from datetime import datetime
 
 from app.models.content import Content
 from app.models.librarian import AuditReport
@@ -102,6 +103,3 @@ async def _log_fix_progress(audit: AuditReport, fix_type: str, stats: dict):
     }
     audit.execution_logs.append(log_entry)
     await audit.save()
-
-
-async def _apply_title_fixes(

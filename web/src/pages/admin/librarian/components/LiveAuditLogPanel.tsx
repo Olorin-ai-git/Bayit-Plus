@@ -55,7 +55,7 @@ export const LiveAuditLogPanel = ({
       subtitle={report ? `${t('admin.librarian.logs.auditType')}: ${t(`admin.librarian.auditTypes.${report.audit_type}`, report.audit_type.replace('_', ' '))}` : undefined}
       icon={
         report?.status === 'in_progress' ? (
-          <GlassLoadingSpinner size={32} />
+          <GlassLoadingSpinner />
         ) : (
           <ScrollText size={20} color={colors.primary} />
         )

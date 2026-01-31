@@ -366,25 +366,44 @@ async def connect_to_mongo():
     # Note: allow_index_dropping disabled to prevent errors on missing indexes
     # Use dedicated migration scripts (rebuild_all_indexes.py) for index management
     database = get_mongodb_database()
-    try:
-        await init_beanie(
-            database=database,
-            document_models=document_models,
-            allow_index_dropping=False,
-        )
-    except Exception as e:
-        # Index conflicts (e.g. TTL value changes) crash init_beanie before all
-        # models are registered, leaving the server in DEGRADED mode. Retry with
-        # skip_indexes=True so all models are still usable for queries.
-        logger.warning(
-            f"init_beanie failed during index creation ({type(e).__name__}: {e}). "
-            "Retrying with skip_indexes=True - resolve index conflicts via migration scripts."
-        )
+
+    # In development, skip index creation/validation for faster startup
+    # In production, indexes should be managed via migration scripts
+    import os
+
+    is_development = (
+        settings.DEBUG
+        or os.getenv("ENVIRONMENT", "").lower() in ("development", "local", "dev")
+        or os.getenv("DEBUG", "").lower() == "true"
+    )
+
+    if is_development:
+        logger.info("Development mode: Skipping index creation for faster startup")
         await init_beanie(
             database=database,
             document_models=document_models,
             skip_indexes=True,
         )
+    else:
+        try:
+            await init_beanie(
+                database=database,
+                document_models=document_models,
+                allow_index_dropping=False,
+            )
+        except Exception as e:
+            # Index conflicts (e.g. TTL value changes) crash init_beanie before all
+            # models are registered, leaving the server in DEGRADED mode. Retry with
+            # skip_indexes=True so all models are still usable for queries.
+            logger.warning(
+                f"init_beanie failed during index creation ({type(e).__name__}: {e}). "
+                "Retrying with skip_indexes=True - resolve index conflicts via migration scripts."
+            )
+            await init_beanie(
+                database=database,
+                document_models=document_models,
+                skip_indexes=True,
+            )
     logger.info(f"Connected to MongoDB via olorin-shared: {database.name}")
 
     # Create TTL indexes for automatic document expiration

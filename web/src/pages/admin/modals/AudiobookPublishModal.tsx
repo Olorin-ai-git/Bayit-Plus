@@ -24,7 +24,7 @@ export default function AudiobookPublishModal({ audiobook, visible, onClose, onS
     if (!audiobook?.id) return
     if (audiobook.is_published) { await handleUnpublish(); return }
     if (!audiobook.title || !audiobook.author || !(audiobook as any).stream_url) {
-      setError(t('admin.audiobooks.publish.missingFields', 'Missing required fields: title, author, stream URL'))
+      setError(t('admin.audiobooks.publish.missingFieldsFull', 'Missing required fields: title, author, stream URL'))
       return
     }
     setIsLoading(true); setError(null)
@@ -79,7 +79,7 @@ export default function AudiobookPublishModal({ audiobook, visible, onClose, onS
                 {(!audiobook?.title || !audiobook?.author || !(audiobook as any)?.stream_url) && (
                   <View style={styles.warningBox}>
                     <AlertCircle size={16} color="#ef4444" />
-                    <Text style={styles.warningText}>{t('admin.audiobooks.publish.missingFields', 'Missing required fields')}</Text>
+                    <Text style={styles.warningText}>{t('admin.audiobooks.publish.missingFieldsShort', 'Missing required fields')}</Text>
                   </View>
                 )}
               </>

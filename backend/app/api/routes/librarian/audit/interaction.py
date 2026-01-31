@@ -1,5 +1,7 @@
 """Audit interaction endpoints (interject, reapply)."""
+import asyncio
 import logging
+from datetime import datetime
 from typing import Optional
 
 from beanie import PydanticObjectId
@@ -187,6 +189,3 @@ async def reapply_audit_fixes(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to start reapply fixes: {str(e)}",
         )
-
-
-async def _run_reapply_fixes(

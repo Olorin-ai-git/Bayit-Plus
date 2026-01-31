@@ -94,7 +94,7 @@ export default function EmailCampaignsPage() {
       };
       setStats(statsData);
     } catch (err: any) {
-      const message = err?.message || 'Failed to load email campaigns';
+      const message = err?.message || t('admin.emailCampaigns.loadError', 'Failed to load email campaigns');
       logger.error('Failed to load email campaigns', 'EmailCampaignsPage', err);
       notifications.showError(message);
     } finally {
@@ -172,7 +172,7 @@ export default function EmailCampaignsPage() {
               title={t('admin.emailCampaigns.create', 'Create Campaign')}
               variant="primary"
               icon={<Plus size={16} color="white" />}
-              onPress={() => notifications.showInfo('Create email campaign coming soon')}
+              onPress={() => notifications.showInfo(t('admin.emailCampaigns.comingSoon', 'Create email campaign coming soon'))}
             />
             <GlassButton
               title={t('admin.dashboard.refresh', 'Refresh')}

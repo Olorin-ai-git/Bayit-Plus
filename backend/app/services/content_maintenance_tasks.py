@@ -12,7 +12,7 @@ from app.models.content import Content, Podcast, PodcastEpisode
 from app.services.auto_fixer.metadata_fixer import fix_missing_metadata
 from app.services.external_subtitle_service import ExternalSubtitleService
 from app.services.podcast_sync import sync_all_podcasts
-from app.services.podcast_translation_service import PodcastTranslationService
+from app.services.podcast_translation import PodcastTranslationService
 from app.services.tmdb_service import TMDBService
 
 logger = logging.getLogger(__name__)

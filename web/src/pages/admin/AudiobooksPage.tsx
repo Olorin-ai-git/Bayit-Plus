@@ -61,7 +61,7 @@ export default function AdminAudiobooksPage() {
           await adminAudiobookService.deleteAudiobook(id)
           setAudiobooks(audiobooks.filter(a => a.id !== id))
         } catch (err) {
-          const msg = err instanceof Error ? err.message : 'Failed to delete audiobook'
+          const msg = err instanceof Error ? err.message : t('admin.audiobooks.deleteError', 'Failed to delete audiobook')
           logger.error(msg, 'AdminAudiobooksPage', err); setError(msg)
         }
       }}

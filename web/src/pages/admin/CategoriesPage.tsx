@@ -94,8 +94,8 @@ export default function CategoriesPage() {
         render: (isActive: boolean) => (
           <GlassTableCell.Badge variant={isActive ? 'success' : 'default'}>
             {isActive
-              ? t('admin.categories.status.active', 'Active')
-              : t('admin.categories.status.inactive', 'Inactive')}
+              ? t('admin.categories.active', 'Active')
+              : t('admin.categories.inactive', 'Inactive')}
           </GlassTableCell.Badge>
         ),
       },

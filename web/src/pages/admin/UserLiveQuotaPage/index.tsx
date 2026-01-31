@@ -37,7 +37,7 @@ export default function UserLiveQuotaPage() {
       setUsage(response.usage);
       setFormData(response.quota);
     } catch (err: any) {
-      setError(err?.message || 'Failed to load quota data');
+      setError(err?.message || t('admin.liveQuotas.loadError'));
       logger.error('Failed to load quota', 'UserLiveQuotaPage', err);
     } finally {
       setLoading(false);
@@ -57,7 +57,7 @@ export default function UserLiveQuotaPage() {
       setEditing(false);
       setNotes('');
     } catch (err: any) {
-      setError(err?.message || 'Failed to save limits');
+      setError(err?.message || t('admin.liveQuotas.saveError'));
       logger.error('Failed to save limits', 'UserLiveQuotaPage', err);
     } finally {
       setSaving(false);
@@ -76,7 +76,7 @@ export default function UserLiveQuotaPage() {
       await liveQuotasService.resetUserQuota(userId);
       await loadQuota();
     } catch (err: any) {
-      setError(err?.message || 'Failed to reset quota');
+      setError(err?.message || t('admin.liveQuotas.resetError'));
       logger.error('Failed to reset quota', 'UserLiveQuotaPage', err);
     } finally {
       setSaving(false);

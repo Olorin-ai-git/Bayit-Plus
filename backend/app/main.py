@@ -159,21 +159,32 @@ async def lifespan(app: FastAPI):
         logger.error("Server will start in DEGRADED mode - database operations will fail")
         # Continue anyway - exception handlers will catch database errors in requests
 
-    # Connect to Olorin database (Phase 2 - separate database if enabled)
-    try:
-        await connect_to_olorin_mongo()
-        logger.info("✅ Olorin database connection established")
-    except Exception as e:
-        logger.warning(f"Olorin database connection failed: {e}")
-        # Non-fatal - main database is primary
+    # Parallelize independent initializations for faster startup
+    import asyncio
 
-    # Initialize Content metadata service for Olorin cross-database access
-    try:
-        await content_metadata_service.initialize()
-        logger.info("✅ Content metadata service initialized")
-    except Exception as e:
-        logger.warning(f"Content metadata service initialization failed: {e}")
-        # Non-fatal
+    async def init_olorin_database():
+        """Initialize Olorin database (Phase 2 - separate database if enabled)."""
+        try:
+            await connect_to_olorin_mongo()
+            logger.info("✅ Olorin database connection established")
+        except Exception as e:
+            logger.warning(f"Olorin database connection failed: {e}")
+
+    async def init_content_metadata():
+        """Initialize Content metadata service for Olorin cross-database access."""
+        try:
+            await content_metadata_service.initialize()
+            logger.info("✅ Content metadata service initialized")
+        except Exception as e:
+            logger.warning(f"Content metadata service initialization failed: {e}")
+
+    # Run Olorin database and content metadata service initialization in parallel
+    # These are independent and don't need to block each other
+    await asyncio.gather(
+        init_olorin_database(),
+        init_content_metadata(),
+        return_exceptions=True,  # Don't fail if one fails
+    )
 
     # Ensure upload directory exists
     upload_dir = Path(settings.UPLOAD_DIR)
@@ -188,45 +199,91 @@ async def lifespan(app: FastAPI):
         logger.warning(f"Collection verification failed: {e}")
         # Continue anyway - seeders will handle errors gracefully
 
-    # Initialize default data (widgets)
-    try:
-        await init_default_widgets()
-    except Exception as e:
-        logger.warning(f"Failed to initialize default data: {e}")
-
-    # Initialize default cultures (Israeli)
-    try:
-        await init_default_cultures()
-    except Exception as e:
-        logger.warning(f"Failed to initialize default cultures: {e}")
-
     # Start background tasks
     start_background_tasks()
+
+    # Initialize default data (widgets and cultures) in background
+    # Don't block server startup - these can initialize after server is ready
+    import asyncio
+
+    async def _background_seeding():
+        """Background task to seed default data after server startup."""
+        # Wait for Beanie collections to be fully initialized
+        # In development with skip_indexes=True, collections need extra time to initialize
+        max_wait = 30  # Maximum 30 seconds
+        wait_interval = 1  # Check every second
+
+        for attempt in range(max_wait):
+            try:
+                # Check if Widget collection is ready by attempting a simple query
+                from app.models.widget import Widget
+
+                await Widget.find_one({"_id": "test"})  # Non-existent ID, just tests collection
+                break  # Collection is ready
+            except Exception:
+                if attempt < max_wait - 1:
+                    await asyncio.sleep(wait_interval)
+                else:
+                    logger.warning(
+                        f"Background seeding: Collections not ready after {max_wait}s, "
+                        "proceeding anyway"
+                    )
+
+        # Initialize default widgets
+        try:
+            await init_default_widgets()
+            logger.info("✅ Background seeding: Default widgets initialized")
+        except Exception as e:
+            logger.warning(f"Background seeding: Failed to initialize default widgets: {e}")
+
+        # Initialize default cultures (Israeli)
+        try:
+            await init_default_cultures()
+            logger.info("✅ Background seeding: Default cultures initialized")
+        except Exception as e:
+            logger.warning(f"Background seeding: Failed to initialize default cultures: {e}")
+
+    # Launch seeding in background without blocking startup
+    asyncio.create_task(_background_seeding())
+    logger.info("Default data seeding scheduled for background execution")
 
     # Upload queue processor is now manual-only (triggered from UI)
     from app.services.upload_service import upload_service  # noqa: F401
 
     logger.info("Upload queue processor ready (manual trigger only)")
 
-    # Start audit recovery monitoring
+    # Parallelize service initializations for faster startup
     from app.services.audit_recovery_service import audit_recovery_service
-
-    try:
-        await audit_recovery_service.start_monitoring()
-        logger.info("Audit recovery monitoring started")
-    except Exception as e:
-        logger.warning(f"Failed to start audit recovery monitoring: {e}")
-
-    # Initialize recording scheduler (EPG-scheduled recordings)
     from app.services.recording_scheduler_service import recording_scheduler_service
 
-    try:
-        await recording_scheduler_service.initialize()
-        logger.info("Recording scheduler initialized")
-    except Exception as e:
-        logger.warning(f"Failed to initialize recording scheduler: {e}")
+    async def init_audit_recovery():
+        """Initialize audit recovery monitoring."""
+        try:
+            await audit_recovery_service.start_monitoring()
+            logger.info("Audit recovery monitoring started")
+        except Exception as e:
+            logger.warning(f"Failed to start audit recovery monitoring: {e}")
+
+    async def init_recording_scheduler():
+        """Initialize recording scheduler (EPG-scheduled recordings)."""
+        try:
+            await recording_scheduler_service.initialize()
+            logger.info("Recording scheduler initialized")
+        except Exception as e:
+            logger.warning(f"Failed to initialize recording scheduler: {e}")
+
+    # Run service initializations in parallel (they're independent)
+    await asyncio.gather(
+        init_audit_recovery(),
+        init_recording_scheduler(),
+        return_exceptions=True,
+    )
 
     logger.info("Server startup complete - Ready to accept connections")
+    logger.info(
+        "Startup optimizations enabled: "
+        "index creation deferred (dev), data seeding in background, parallel service init"
+    )
 
     yield
 

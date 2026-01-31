@@ -74,7 +74,7 @@ export default function LatencyMetricsCard() {
       </View>
 
       {loading ? (
-        <GlassLoadingSpinner size={32} />
+        <GlassLoadingSpinner />
       ) : data ? (
         <View>
           <View style={styles.metricRow}>

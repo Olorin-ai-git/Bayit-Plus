@@ -46,7 +46,7 @@ export default function CostBreakdownCard() {
       </Text>
 
       {loading ? (
-        <GlassLoadingSpinner size={32} />
+        <GlassLoadingSpinner />
       ) : items.length === 0 ? (
         <Text style={styles.empty}>
           {t('admin.voiceManagement.analytics.noCostData', 'No cost data available')}

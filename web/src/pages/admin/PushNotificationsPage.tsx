@@ -271,7 +271,7 @@ export default function PushNotificationsPage() {
 
       <GlassTable columns={columns} data={notifications} loading={loading} searchPlaceholder={t('admin.pushNotifications.searchPlaceholder')} onSearch={handleSearch} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.pushNotifications.emptyMessage')} isRTL={isRTL} />
 
-      <GlassModal visible={showCreateModal} onClose={handleCloseModal} title={editingNotification ? t('admin.pushNotifications.editModal', 'Edit Notification') : t('admin.pushNotifications.createModal')}>
+      <GlassModal visible={showCreateModal} onClose={handleCloseModal} title={editingNotification ? t('admin.pushNotifications.editNotification', 'Edit Notification') : t('admin.pushNotifications.createModal')}>
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
             <GlassInput label={t('admin.pushNotifications.titleLabel')} containerStyle={styles.input} value={newNotification.title} onChangeText={(title) => setNewNotification((p) => ({ ...p, title }))} placeholder={t('admin.push.titlePlaceholder')} />

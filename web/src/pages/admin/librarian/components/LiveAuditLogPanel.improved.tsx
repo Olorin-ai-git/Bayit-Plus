@@ -30,26 +30,26 @@ interface LiveAuditLogPanelProps {
   onTriggerAudit?: (auditType: string) => void;
 }
 
-const QUICK_AUDIT_TYPES = [
+const getQuickAuditTypes = (t: (key: string, fallback?: string) => string) => [
   {
     type: 'content_validation',
     icon: FileSearch,
-    label: 'Content Validation',
-    description: 'Verify metadata and content integrity',
+    label: t('admin.librarian.auditTypes.contentValidation.name', 'Content Validation'),
+    description: t('admin.librarian.auditTypes.contentValidation.description', 'Verify metadata and content integrity'),
     color: '#3b82f6',
   },
   {
     type: 'poster_enrichment',
     icon: ShieldCheck,
-    label: 'Poster Enrichment',
-    description: 'Update missing posters and artwork',
+    label: t('admin.librarian.auditTypes.posterEnrichment.name', 'Poster Enrichment'),
+    description: t('admin.librarian.auditTypes.posterEnrichment.description', 'Update missing posters and artwork'),
     color: '#10b981',
   },
   {
     type: 'classification_audit',
     icon: Database,
-    label: 'Classification Audit',
-    description: 'Review content classifications',
+    label: t('admin.librarian.auditTypes.classificationAudit.name', 'Classification Audit'),
+    description: t('admin.librarian.auditTypes.classificationAudit.description', 'Review content classifications'),
     color: '#f59e0b',
   },
 ];
@@ -103,7 +103,7 @@ export const LiveAuditLogPanel = ({
             {t('admin.librarian.logs.quickAudit', 'Quick Audit')}
           </Text>
           <View style={styles.quickAuditGrid}>
-            {QUICK_AUDIT_TYPES.map((audit) => {
+            {getQuickAuditTypes(t).map((audit) => {
               const Icon = audit.icon;
               return (
                 <Pressable
@@ -155,7 +155,7 @@ export const LiveAuditLogPanel = ({
       }
       icon={
         report?.status === 'in_progress' ? (
-          <GlassLoadingSpinner size={32} />
+          <GlassLoadingSpinner />
         ) : (
           <ScrollText size={20} color={colors.primary} />
         )

@@ -90,6 +90,3 @@ async def _apply_poster_fixes(
             stats["failed"] += 1
             logger.warning(f"Poster fix failed for {content_id}: {e}")
     return stats
-
-
-async def _apply_subtitle_fixes(

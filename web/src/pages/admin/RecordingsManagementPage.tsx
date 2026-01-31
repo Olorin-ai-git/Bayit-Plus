@@ -172,7 +172,7 @@ export default function RecordingsManagementPage() {
             <GlassView style={styles.statCard}>
               <Play size={24} color={colors.error} />
               <Text style={styles.statValue}>{stats.active_sessions}</Text>
-              <Text style={styles.statLabel}>{t('admin.recordings.activeSessions')}</Text>
+              <Text style={styles.statLabel}>{stats.active_sessions > 0 ? t('admin.recordings.live', 'LIVE') : t('admin.recordings.offline', 'OFFLINE')}</Text>
             </GlassView>
           </View>
         )}

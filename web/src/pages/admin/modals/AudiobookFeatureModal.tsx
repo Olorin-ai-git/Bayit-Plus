@@ -13,7 +13,13 @@ import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import logger from '@/utils/logger'
 import type { Audiobook } from '@/types/audiobook'
 
-const FEATURE_SECTIONS = ['Audiobooks', 'Recommended', 'New Releases', 'Top Rated', 'Trending']
+const getFeatureSections = (t: (key: string, fallback?: string) => string) => [
+  { value: 'Audiobooks', label: t('admin.audiobooks.sections.audiobooks', 'Audiobooks') },
+  { value: 'Recommended', label: t('admin.audiobooks.sections.recommended', 'Recommended') },
+  { value: 'New Releases', label: t('admin.audiobooks.sections.newReleases', 'New Releases') },
+  { value: 'Top Rated', label: t('admin.audiobooks.sections.topRated', 'Top Rated') },
+  { value: 'Trending', label: t('admin.audiobooks.sections.trending', 'Trending') },
+]
 
 interface AudiobookFeatureModalProps { audiobook?: Audiobook | null; visible: boolean; onClose: () => void }
 
@@ -26,7 +32,7 @@ export default function AudiobookFeatureModal({ audiobook, visible, onClose }: A
   const [success, setSuccess] = useState(false)
 
   const handleFeature = async () => {
-    if (!audiobook?.id || !section) { setError('Please select a section'); return }
+    if (!audiobook?.id || !section) { setError(t('admin.audiobooks.selectSection', 'Please select a section')); return }
     const orderNum = parseInt(order) || 1
     if (orderNum < 1 || orderNum > 100) { setError(t('validation.orderRange', 'Order must be between 1 and 100')); return }
 
@@ -73,7 +79,7 @@ export default function AudiobookFeatureModal({ audiobook, visible, onClose }: A
               </View>
             )}
 
-            <GlassSelect label={t('admin.audiobooks.feature.section', 'Featured Section')} options={FEATURE_SECTIONS.map(s => ({ label: s, value: s }))} value={section} onChange={setSection} containerStyle={styles.input} />
+            <GlassSelect label={t('admin.audiobooks.feature.section', 'Featured Section')} options={getFeatureSections(t)} value={section} onChange={setSection} containerStyle={styles.input} />
 
             <GlassInput label={t('admin.audiobooks.feature.order', 'Display Order')} placeholder="1-100" value={order} onChangeText={setOrder} containerStyle={styles.input} keyboardType="number-pad" />
 
@@ -83,7 +89,7 @@ export default function AudiobookFeatureModal({ audiobook, visible, onClose }: A
                 <View style={styles.previewCard}>
                   <Text style={styles.previewTitle}>{audiobook.title}</Text>
                   <Text style={styles.previewSubtext}>{audiobook.author}</Text>
-                  <Text style={styles.previewSection}>{section || 'Select section'}</Text>
+                  <Text style={styles.previewSection}>{section || t('admin.audiobooks.selectSection', 'Select section')}</Text>
                 </View>
               </View>
             )}

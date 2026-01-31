@@ -58,10 +58,10 @@ export const DropZone: React.FC<DropZoneProps> = ({
           .join('\n');
 
         notifications.showWarning(
-          t('admin.uploads.manualUpload.invalidFiles', {
+          t('admin.uploads.dropZone.filesRejected', {
             count: invalid.length,
             defaultValue: `${invalid.length} file(s) rejected`,
-          }) + `\n\n${invalidList}` + (invalid.length > 5 ? `\n...and ${invalid.length - 5} more` : '')
+          }) + `\n\n${invalidList}` + (invalid.length > 5 ? `\n...${t('common.more', 'more')}` : '')
         );
       }
 

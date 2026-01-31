@@ -99,7 +99,7 @@ export const FolderPreview: React.FC<FolderPreviewProps> = ({
               />
             ))}
             {invalidFiles.length > 5 && (
-              <Text style={styles.moreText}>+{invalidFiles.length - 5} more</Text>
+              <Text style={styles.moreText}>+{invalidFiles.length - 5} {t('common.more', 'more')}</Text>
             )}
           </View>
         )}

@@ -9,7 +9,7 @@ from typing import List, Optional, Set
 
 from app.core.config import settings
 from app.models.content import PodcastEpisode, PodcastEpisodeMinimal
-from app.services.podcast_translation_service import PodcastTranslationService
+from app.services.podcast_translation import PodcastTranslationService
 
 logger = logging.getLogger(__name__)
 

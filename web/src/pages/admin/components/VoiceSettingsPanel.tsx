@@ -76,7 +76,7 @@ export default function VoiceSettingsPanel() {
             </Text>
           </View>
           <GlassButton
-            title="Check"
+            title={t('admin.voiceManagement.settings.check')}
             icon={<RefreshCw size={14} color={colors.primary} />}
             variant="secondary"
             onPress={() => handleHealthCheck(provider)}
@@ -93,7 +93,7 @@ export default function VoiceSettingsPanel() {
                 { color: health.is_healthy ? colors.success : colors.error },
               ]}
             >
-              {health.is_healthy ? 'Healthy' : 'Unhealthy'}
+              {health.is_healthy ? t('admin.voiceManagement.settings.healthy') : t('admin.voiceManagement.settings.unhealthy')}
             </Text>
             {health.latency_ms && (
               <Text style={styles.healthLatency}>

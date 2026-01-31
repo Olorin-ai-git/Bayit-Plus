@@ -125,7 +125,7 @@ export default function AdminDashboardPage() {
       setStats(statsData);
       setRecentActivity(activityData);
     } catch (err: any) {
-      const message = err?.message || 'Failed to load dashboard data';
+      const message = err?.message || t('admin.dashboard.loadError', 'Failed to load dashboard data');
       setError(message);
       logger.error('Failed to load dashboard data', 'AdminDashboard', err);
     } finally {

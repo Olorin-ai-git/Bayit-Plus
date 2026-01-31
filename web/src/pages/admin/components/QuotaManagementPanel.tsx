@@ -74,26 +74,26 @@ export default function QuotaManagementPanel() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('admin.voiceManagement.quotas.subtitleLimits')}</Text>
             <Text style={styles.limitText}>
-              Hour: {quota.quota.subtitle_minutes_per_hour} min
+              {t('admin.liveQuotas.hour')}: {quota.quota.subtitle_minutes_per_hour} {t('admin.liveQuotas.minutes')}
             </Text>
             <Text style={styles.limitText}>
-              Day: {quota.quota.subtitle_minutes_per_day} min
+              {t('admin.liveQuotas.day')}: {quota.quota.subtitle_minutes_per_day} {t('admin.liveQuotas.minutes')}
             </Text>
             <Text style={styles.limitText}>
-              Month: {quota.quota.subtitle_minutes_per_month} min
+              {t('admin.liveQuotas.month')}: {quota.quota.subtitle_minutes_per_month} {t('admin.liveQuotas.minutes')}
             </Text>
           </View>
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('admin.voiceManagement.quotas.dubbingLimits')}</Text>
             <Text style={styles.limitText}>
-              Hour: {quota.quota.dubbing_minutes_per_hour} min
+              {t('admin.liveQuotas.hour')}: {quota.quota.dubbing_minutes_per_hour} {t('admin.liveQuotas.minutes')}
             </Text>
             <Text style={styles.limitText}>
-              Day: {quota.quota.dubbing_minutes_per_day} min
+              {t('admin.liveQuotas.day')}: {quota.quota.dubbing_minutes_per_day} {t('admin.liveQuotas.minutes')}
             </Text>
             <Text style={styles.limitText}>
-              Month: {quota.quota.dubbing_minutes_per_month} min
+              {t('admin.liveQuotas.month')}: {quota.quota.dubbing_minutes_per_month} {t('admin.liveQuotas.minutes')}
             </Text>
           </View>
 

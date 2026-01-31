@@ -338,7 +338,7 @@ export default function PodcastEpisodesPage() {
 
       <GlassModal
         visible={editingId !== null}
-        title={editingId === 'new' ? t('admin.podcasts.newEpisode', 'New Episode') : t('admin.podcasts.editEpisode', 'Edit Episode')}
+        title={editingId === 'new' ? t('admin.podcastEpisodes.newEpisode', 'New Episode') : t('admin.podcastEpisodes.editEpisode', 'Edit Episode')}
         onClose={() => setEditingId(null)}
         dismissable={false}
         buttons={[

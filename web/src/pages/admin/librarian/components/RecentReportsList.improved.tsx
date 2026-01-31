@@ -212,7 +212,7 @@ export const RecentReportsList = ({
             <FileText size={48} color={colors.textMuted} />
             <Text style={styles.emptyText}>
               {searchQuery || statusFilter
-                ? t('admin.librarian.reports.noMatchingReports', 'No matching reports found')
+                ? t('admin.librarian.reports.noResults', 'No matching reports found')
                 : t('admin.librarian.reports.emptyMessage', 'No audit reports yet')}
             </Text>
             {(searchQuery || statusFilter) && (

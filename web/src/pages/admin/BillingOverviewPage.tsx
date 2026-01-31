@@ -55,7 +55,7 @@ export default function BillingOverviewPage() {
       setOverview(overviewData);
       setChurnData(churn);
     } catch (err: any) {
-      const message = err?.message || 'Failed to load billing data';
+      const message = err?.message || t('admin.billing.loadError', 'Failed to load billing data');
       setError(message);
       logger.error('Failed to load billing data', 'BillingOverviewPage', err);
       notifications.showError(message);

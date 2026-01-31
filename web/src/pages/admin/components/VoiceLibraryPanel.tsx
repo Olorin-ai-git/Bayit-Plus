@@ -46,7 +46,7 @@ export default function VoiceLibraryPanel() {
   const handlePreview = async (voiceId: string) => {
     setPlaying(voiceId);
     try {
-      const response = await voiceManagementService.previewVoice(voiceId, 'Hello, this is a preview of this voice.');
+      const response = await voiceManagementService.previewVoice(voiceId, t('admin.voiceManagement.library.previewText'));
       const audio = new Audio(`data:audio/mp3;base64,${response.audio_base64}`);
       await audio.play();
     } catch (error: any) {
@@ -60,7 +60,7 @@ export default function VoiceLibraryPanel() {
   const handleAssign = async (voiceId: string, role: string) => {
     try {
       await voiceManagementService.assignVoiceToRole(voiceId, role);
-      setErrorMessage(`Voice assigned to ${role} role`);
+      setErrorMessage(t('admin.voiceManagement.library.assignSuccess', { role }));
     } catch (error: any) {
       logger.error('Failed to assign voice', 'VoiceLibraryPanel', error);
       setErrorMessage(error?.message || 'Failed to assign voice');
@@ -87,7 +87,7 @@ export default function VoiceLibraryPanel() {
                 <Text style={styles.voiceName}>{item.name}</Text>
                 <Text style={styles.voiceCategory}>{item.category}</Text>
                 {item.labels?.language && (
-                  <Text style={styles.voiceLabel}>Language: {item.labels.language}</Text>
+                  <Text style={styles.voiceLabel}>{t('admin.voiceManagement.library.language')}: {item.labels.language}</Text>
                 )}
               </View>
               <View style={styles.actions}>
@@ -100,7 +100,7 @@ export default function VoiceLibraryPanel() {
                   style={styles.actionButton}
                 />
                 <GlassButton
-                  title="Assign"
+                  title={t('admin.voiceManagement.library.assign')}
                   variant="primary"
                   onPress={() => handleAssign(item.voice_id, 'default')}
                   style={styles.actionButton}

@@ -70,10 +70,10 @@ export default function VoiceConfigurationPanel() {
       await Promise.all(updates);
 
       setHasChanges(false);
-      setSuccessMessage('Voice configuration saved successfully');
+      setSuccessMessage(t('admin.voiceManagement.configuration.saveSuccess'));
     } catch (error: any) {
       logger.error('Failed to save voice config', 'VoiceConfigurationPanel', error);
-      setErrorMessage(error?.message || 'Failed to save configuration');
+      setErrorMessage(error?.message || t('admin.voiceManagement.configuration.saveError'));
     } finally {
       setSaving(false);
     }
@@ -85,16 +85,16 @@ export default function VoiceConfigurationPanel() {
     setErrorMessage('');
 
     try {
-      const response = await voiceManagementService.testVoice(voiceId, 'Hello, this is a voice test.', 'en');
+      const response = await voiceManagementService.testVoice(voiceId, t('admin.voiceManagement.configuration.testText'), 'en');
 
       // Play audio
       const audio = new Audio(`data:audio/mp3;base64,${response.audio_base64}`);
       await audio.play();
 
-      setSuccessMessage('Voice test played successfully');
+      setSuccessMessage(t('admin.voiceManagement.configuration.testSuccess'));
     } catch (error: any) {
       logger.error('Failed to test voice', 'VoiceConfigurationPanel', error);
-      setErrorMessage(error?.message || 'Failed to test voice');
+      setErrorMessage(error?.message || t('admin.voiceManagement.configuration.testError'));
     } finally {
       setTesting(false);
     }

@@ -269,7 +269,7 @@ export default function LiveChannelsPage() {
       {editingId && (
         <View style={styles.editForm}>
           <Text style={styles.formTitle}>
-            {editingId === 'new' ? 'New Live Channel' : 'Edit Live Channel'}
+            {editingId === 'new' ? t('admin.liveChannels.newChannel', 'New Live Channel') : t('admin.liveChannels.editChannel', 'Edit Live Channel')}
           </Text>
           <GlassInput
             label={t('admin.liveChannels.form.name', 'Channel name')}

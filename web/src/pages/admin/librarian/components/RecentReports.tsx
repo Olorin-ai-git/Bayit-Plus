@@ -17,24 +17,24 @@ interface RecentReportsProps {
 }
 
 // Helper: Extract triggered by
-const getTriggeredBy = (report: AuditReport): string => {
+const getTriggeredBy = (report: AuditReport, t: (key: string, fallback?: string) => string): string => {
   if (report.audit_type === 'daily_incremental' || report.audit_type === 'weekly_full') {
-    return 'Scheduled';
+    return t('admin.librarian.reports.scheduled', 'Scheduled');
   }
-  return (report as any).summary?.triggered_by || 'Manual';
+  return (report as any).summary?.triggered_by || t('admin.librarian.reports.manual', 'Manual');
 };
 
 // Helper: Get audit parameters badge
-const getAuditParametersBadge = (report: AuditReport): string[] => {
+const getAuditParametersBadge = (report: AuditReport, t: (key: string, fallback?: string) => string): string[] => {
   const filters: string[] = [];
   const summary = (report as any).summary || {};
 
-  if (summary.last_24_hours_only) filters.push('Recent');
-  if (summary.cyb_titles_only) filters.push('Titles');
-  if (summary.tmdb_posters_only) filters.push('TMDB');
-  if (summary.opensubtitles_enabled) filters.push('Subtitles');
-  if (summary.classify_only) filters.push('Classification');
-  if (summary.remove_duplicates) filters.push('Duplicates');
+  if (summary.last_24_hours_only) filters.push(t('admin.librarian.reports.recent', 'Recent'));
+  if (summary.cyb_titles_only) filters.push(t('admin.librarian.reports.titles', 'Titles'));
+  if (summary.tmdb_posters_only) filters.push(t('admin.librarian.reports.tmdb', 'TMDB'));
+  if (summary.opensubtitles_enabled) filters.push(t('admin.librarian.reports.subtitles', 'Subtitles'));
+  if (summary.classify_only) filters.push(t('admin.librarian.reports.classification', 'Classification'));
+  if (summary.remove_duplicates) filters.push(t('admin.librarian.reports.duplicates', 'Duplicates'));
 
   return filters;
 };
@@ -83,7 +83,7 @@ export const RecentReports = ({
       label: t('admin.librarian.reports.columns.triggeredBy', 'Triggered By'),
       width: 120,
       render: (_: any, row: AuditReport) => {
-        const triggeredBy = getTriggeredBy(row);
+        const triggeredBy = getTriggeredBy(row, t);
         return (
           <Text style={[styles.tableText, { color: colors.textMuted, fontSize: fontSize.sm }]}>
             {triggeredBy}
@@ -96,7 +96,7 @@ export const RecentReports = ({
       label: t('admin.librarian.reports.columns.parameters', 'Parameters'),
       width: 200,
       render: (_: any, row: AuditReport) => {
-        const params = getAuditParametersBadge(row);
+        const params = getAuditParametersBadge(row, t);
         return (
           <View style={[styles.badgeRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             {params.slice(0, 3).map((param, idx) => (

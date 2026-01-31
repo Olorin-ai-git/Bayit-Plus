@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.api.routes.admin import require_admin
 from app.api.routes.librarian.models import ActionResponse
+from app.models.content import Content
 from app.models.librarian import LibrarianAction
 from app.models.user import User
 from app.services.auto_fixer import rollback_action
@@ -91,6 +92,3 @@ async def rollback_librarian_action(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to rollback action: {str(e)}",
         )
-
-
-@router.post("/admin/librarian/audits/{audit_id}/pause")
