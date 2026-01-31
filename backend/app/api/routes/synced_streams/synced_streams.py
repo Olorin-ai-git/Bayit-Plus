@@ -9,9 +9,10 @@ import logging
 import uuid
 from typing import Optional, Set
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, Field, field_validator, constr
 
+from app.core.rate_limiter import limiter
 from app.core.security import get_current_user
 from app.models.user import User
 from app.services.buffered_channel_service import (
@@ -89,8 +90,10 @@ class SyncedStreamResponse(BaseModel):
 
 
 @router.post("/create", response_model=SyncedStreamResponse)
+@limiter.limit("30/minute")  # Limit synced stream creation to prevent abuse
 async def create_synced_stream(
-    request: SyncedStreamRequest,
+    request_data: SyncedStreamRequest,
+    http_request: Request,
     current_user: User = Depends(get_current_user),
 ) -> SyncedStreamResponse:
     """
@@ -116,14 +119,14 @@ async def create_synced_stream(
     """
     try:
         # Validate that at least one feature is enabled
-        if not request.enable_dubbing and not request.enable_subtitles:
+        if not request_data.enable_dubbing and not request_data.enable_subtitles:
             raise HTTPException(
                 status_code=400,
                 detail="Must enable at least dubbing or subtitles"
             )
 
         # Validate target language if features enabled
-        if (request.enable_dubbing or request.enable_subtitles) and not request.target_lang:
+        if (request_data.enable_dubbing or request_data.enable_subtitles) and not request_data.target_lang:
             raise HTTPException(
                 status_code=400,
                 detail="target_lang required when dubbing or subtitles enabled"
@@ -131,11 +134,11 @@ async def create_synced_stream(
 
         # Create synced stream
         stream_info = await buffered_channel_service.create_synced_stream(
-            channel_id=request.channel_id,
+            channel_id=request_data.channel_id,
             user_id=str(current_user.id),
-            target_lang=request.target_lang,
-            enable_dubbing=request.enable_dubbing,
-            enable_subtitles=request.enable_subtitles,
+            target_lang=request_data.target_lang,
+            enable_dubbing=request_data.enable_dubbing,
+            enable_subtitles=request_data.enable_subtitles,
         )
 
         return SyncedStreamResponse(
@@ -158,7 +161,7 @@ async def create_synced_stream(
             extra={
                 "correlation_id": correlation_id,
                 "user_id": str(current_user.id),
-                "channel_id": request.channel_id,
+                "channel_id": request_data.channel_id,
                 "error": str(e),
             },
             exc_info=True
@@ -174,8 +177,10 @@ async def create_synced_stream(
 
 
 @router.post("/update-latency")
+@limiter.limit("60/minute")  # Allow frequent latency updates during active streaming
 async def update_latency_measurement(
-    request: LatencyUpdateRequest,
+    request_data: LatencyUpdateRequest,
+    http_request: Request,
     current_user: User = Depends(get_current_user),
 ) -> dict:
     """
@@ -186,17 +191,17 @@ async def update_latency_measurement(
     """
     try:
         await buffered_channel_service.update_latency_profile(
-            channel_id=request.channel_id,
-            target_lang=request.target_lang,
-            measured_dubbing_ms=request.measured_dubbing_ms,
-            measured_subtitle_ms=request.measured_subtitle_ms,
+            channel_id=request_data.channel_id,
+            target_lang=request_data.target_lang,
+            measured_dubbing_ms=request_data.measured_dubbing_ms,
+            measured_subtitle_ms=request_data.measured_subtitle_ms,
         )
 
         return {
             "success": True,
             "message": "Latency profile updated",
-            "channel_id": request.channel_id,
-            "target_lang": request.target_lang,
+            "channel_id": request_data.channel_id,
+            "target_lang": request_data.target_lang,
         }
 
     except Exception as e:
@@ -206,7 +211,7 @@ async def update_latency_measurement(
             extra={
                 "correlation_id": correlation_id,
                 "user_id": str(current_user.id),
-                "channel_id": request.channel_id,
+                "channel_id": request_data.channel_id,
                 "error": str(e),
             },
             exc_info=True
@@ -221,7 +226,9 @@ async def update_latency_measurement(
 
 
 @router.get("/latency-profile")
+@limiter.limit("30/minute")  # Limit latency profile queries
 async def get_latency_profile(
+    http_request: Request,
     channel_id: constr(min_length=1, max_length=100, pattern=r'^[a-zA-Z0-9_-]+$') = Query(..., description="Channel ID"),
     target_lang: constr(min_length=2, max_length=5, pattern=r'^[a-z]{2}(-[A-Z]{2})?$') = Query(..., description="Target language"),
     current_user: User = Depends(get_current_user),

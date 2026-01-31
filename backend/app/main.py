@@ -356,13 +356,34 @@ else:
 # This ensures CORS headers are added even to error responses
 cors_origins = settings.parsed_cors_origins
 logger.info(f"CORS Origins configured: {cors_origins}")
+
+# Security: Use specific allow lists instead of wildcards
+allowed_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+allowed_headers = [
+    "Accept",
+    "Accept-Language",
+    "Content-Type",
+    "Content-Language",
+    "Authorization",
+    "X-Requested-With",
+    "X-CSRF-Token",
+]
+exposed_headers = [
+    "Content-Type",
+    "X-Correlation-ID",
+    "X-Request-Duration-Ms",
+    "X-RateLimit-Limit",
+    "X-RateLimit-Remaining",
+    "X-RateLimit-Reset",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=cors_origins,
+    allow_origins=cors_origins,  # Whitelist from settings (no wildcards allowed)
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*", "X-Correlation-ID", "X-Request-Duration-Ms"],
+    allow_methods=allowed_methods,  # Specific HTTP methods (no wildcard)
+    allow_headers=allowed_headers,  # Specific headers (no wildcard)
+    expose_headers=exposed_headers,  # Specific exposed headers (no wildcard)
 )
 
 # ============================================
