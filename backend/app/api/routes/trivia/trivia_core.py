@@ -17,7 +17,7 @@ from app.models.user import User
 from app.services.security_utils import validate_object_id
 from app.services.trivia import TriviaGenerationService
 
-from .trivia_utils import format_trivia_response
+from .trivia_utils import check_trivia_rollout, format_trivia_response
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +42,7 @@ async def get_trivia(
     language: str = "he",
     multilingual: bool = False,
     current_user: Optional[User] = Depends(get_optional_user),
+    _rollout: None = Depends(check_trivia_rollout),
 ) -> dict:
     """
     Get trivia facts for a specific content item.
@@ -53,9 +54,6 @@ async def get_trivia(
         multilingual: If True, return all language fields. If False, return single language
         current_user: Optional authenticated user
     """
-    if not settings.TRIVIA_ENABLED:
-        raise HTTPException(status_code=503, detail="Trivia feature is disabled")
-
     validated_id = validate_object_id(content_id)
 
     existing = await ContentTrivia.get_for_content(validated_id)
@@ -80,6 +78,7 @@ async def get_enriched_trivia(
     language: str = "he",
     multilingual: bool = False,
     current_user: Optional[User] = Depends(get_optional_user),
+    _rollout: None = Depends(check_trivia_rollout),
 ) -> dict:
     """
     Get full enriched trivia bundle for offline playback.
@@ -91,9 +90,6 @@ async def get_enriched_trivia(
         multilingual: If True, return all language fields. If False, return single language
         current_user: Optional authenticated user
     """
-    if not settings.TRIVIA_ENABLED:
-        raise HTTPException(status_code=503, detail="Trivia feature is disabled")
-
     validated_id = validate_object_id(content_id)
 
     existing = await ContentTrivia.get_for_content(validated_id)

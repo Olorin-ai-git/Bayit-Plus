@@ -61,13 +61,14 @@ def register_all_routers(app: FastAPI) -> None:
                                 search_analytics, search_llm, search_scenes,
                                 search_suggestions, stats, subscriptions,
                                 subtitle_preferences, subtitles, support,
+                                synced_streams,
                                 tel_aviv, trending, trivia,
                                 user_system_widgets, users, verification,
                                 voice, watchlist, webauthn, websocket,
                                 websocket_chess, websocket_dm,
                                 websocket_live_dubbing,
-                                websocket_live_subtitles, widgets, youngsters,
-                                zman)
+                                websocket_live_subtitles, websocket_live_trivia,
+                                widgets, youngsters, zman)
     from app.api.routes.admin.recordings import \
         router as admin_recordings_router
     from app.api.routes.olorin import legacy_router as olorin_legacy_router
@@ -345,6 +346,11 @@ def register_all_routers(app: FastAPI) -> None:
         tags=["websocket", "live-dubbing"],
     )
     app.include_router(
+        websocket_live_trivia.router,
+        prefix=prefix,
+        tags=["websocket", "live-trivia"],
+    )
+    app.include_router(
         websocket_chess.router, prefix=prefix, tags=["websocket", "chess"]
     )
     app.include_router(
@@ -357,6 +363,12 @@ def register_all_routers(app: FastAPI) -> None:
     # ============================================
     app.include_router(live_dubbing.router, prefix=prefix, tags=["live-dubbing"])
     logger.debug("Registered live dubbing routes")
+
+    # ============================================
+    # Synced Streams Routes (Perfect Video-Audio Sync)
+    # ============================================
+    app.include_router(synced_streams.router, prefix=prefix, tags=["synced-streams"])
+    logger.debug("Registered synced streams routes")
 
     # ============================================
     # User Dubbing Routes (Chrome Extension B2C)
