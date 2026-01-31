@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
+import { Sparkles } from 'lucide-react';
 import { getLanguageInfo } from '../types/subtitle';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 interface SubtitleFlagsProps {
   languages: string[];
+  /** Languages that have AI-enhanced versions (nikud, shoresh, heblish, etc.) */
+  aiLanguages?: string[];
   maxDisplay?: number;
   size?: 'small' | 'medium';
   showTooltip?: boolean;
@@ -14,6 +17,7 @@ interface SubtitleFlagsProps {
 
 export function SubtitleFlags({
   languages,
+  aiLanguages = [],
   maxDisplay = 5,
   size = 'small',
   showTooltip = true,
@@ -35,6 +39,7 @@ export function SubtitleFlags({
 
   const flagSize = size === 'medium' ? 16 : 14;
   const fontSize = size === 'medium' ? 16 : 14;
+  const sparkleSize = size === 'medium' ? 8 : 6;
 
   // Calculate position style based on props
   const getPositionStyle = () => {
@@ -59,14 +64,23 @@ export function SubtitleFlags({
         ]}
       >
         <View style={styles.flagsRow}>
-          {displayLanguages.map((lang, i) => (
-            <Text
-              key={lang.code}
-              style={[styles.flagText, { fontSize: flagSize, lineHeight: flagSize * 1.2 }]}
-            >
-              {lang.flag}
-            </Text>
-          ))}
+          {displayLanguages.map((lang, i) => {
+            const hasAI = aiLanguages.includes(lang.code);
+            return (
+              <View key={lang.code} style={styles.flagWrapper}>
+                <Text
+                  style={[styles.flagText, { fontSize: flagSize, lineHeight: flagSize * 1.2 }]}
+                >
+                  {lang.flag}
+                </Text>
+                {hasAI && (
+                  <View style={styles.sparkleBadge}>
+                    <Sparkles size={sparkleSize} color="#fff" />
+                  </View>
+                )}
+              </View>
+            );
+          })}
           {remainingCount > 0 && (
             <Text style={[styles.remainingText, { fontSize: fontSize - 2 }]}>
               +{remainingCount}
@@ -80,7 +94,10 @@ export function SubtitleFlags({
         <View style={styles.tooltipContainer} pointerEvents="none">
           <View style={styles.tooltipCard}>
             <Text style={styles.tooltipText}>
-              {languageData.map(lang => lang.nativeName).join(', ')}
+              {languageData.map(lang => {
+                const hasAI = aiLanguages.includes(lang.code);
+                return hasAI ? `${lang.nativeName} (AI)` : lang.nativeName;
+              }).join(', ')}
             </Text>
           </View>
         </View>
@@ -113,8 +130,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
+  flagWrapper: {
+    position: 'relative',
+  },
   flagText: {
     color: '#fff',
+  },
+  sparkleBadge: {
+    position: 'absolute',
+    bottom: -2,
+    right: -4,
+    backgroundColor: 'rgba(168, 85, 247, 0.9)',
+    borderRadius: 4,
+    padding: 1,
   },
   remainingText: {
     color: 'rgba(255, 255, 255, 0.4)',

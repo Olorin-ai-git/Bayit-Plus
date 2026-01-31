@@ -128,19 +128,30 @@ async def get_content_hierarchical(
     db = get_database()
     all_subtitle_tracks = await db.subtitle_tracks.find(
         {"content_id": {"$in": content_ids}},
-        {"content_id": 1, "language": 1}
+        {"content_id": 1, "language": 1, "has_nikud_version": 1, "has_shoresh_version": 1, "has_heblish_version": 1, "has_grammar_flip_version": 1, "has_slang_synthesis_version": 1}
     ).to_list(None)
     print(f"[admin_content_vod_read] Subtitle query took: {(time.time() - subtitle_start) * 1000:.0f}ms")
 
-    # Build subtitle map: content_id -> list of unique language codes
+    # Build subtitle map: content_id -> {languages: set, ai_languages: set}
+    # ai_languages contains languages that have AI-generated versions (nikud, shoresh, heblish, grammarFlip, slangSynthesis)
     subtitle_map = {}
     for track in all_subtitle_tracks:
         # track is now a dict (projection result), not SubtitleTrackDoc object
         content_id = track["content_id"]
         language = track["language"]
         if content_id not in subtitle_map:
-            subtitle_map[content_id] = set()
-        subtitle_map[content_id].add(language)
+            subtitle_map[content_id] = {"languages": set(), "ai_languages": set()}
+        subtitle_map[content_id]["languages"].add(language)
+        # Check if this track has any AI-generated versions
+        has_ai = (
+            track.get("has_nikud_version", False) or
+            track.get("has_shoresh_version", False) or
+            track.get("has_heblish_version", False) or
+            track.get("has_grammar_flip_version", False) or
+            track.get("has_slang_synthesis_version", False)
+        )
+        if has_ai:
+            subtitle_map[content_id]["ai_languages"].add(language)
 
     # Batch fetch episode counts for all series using aggregation (server-side counting)
     episode_start = time.time()
@@ -163,7 +174,9 @@ async def get_content_hierarchical(
     result_items = []
     for item in items:
         # Get available subtitle languages from batch-fetched data
-        available_subtitles = list(subtitle_map.get(str(item.id), set()))
+        subtitle_info = subtitle_map.get(str(item.id), {"languages": set(), "ai_languages": set()})
+        available_subtitles = list(subtitle_info["languages"])
+        ai_subtitles = list(subtitle_info["ai_languages"])
 
         item_data = {
             "id": str(item.id),
@@ -187,6 +200,7 @@ async def get_content_hierarchical(
             "view_count": item.view_count,
             "avg_rating": item.avg_rating,
             "available_subtitles": available_subtitles,
+            "ai_subtitles": ai_subtitles,  # Languages with AI-generated versions (nikud, shoresh, heblish, grammarFlip, slangSynthesis)
             "review_issue_type": item.review_issue_type,
             "created_at": item.created_at.isoformat(),
             "updated_at": item.updated_at.isoformat(),

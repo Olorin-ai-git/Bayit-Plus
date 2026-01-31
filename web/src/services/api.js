@@ -498,6 +498,8 @@ const apiSubtitlesService = {
     api.post(`/subtitles/${contentId}/import`, {
       source_url: sourceUrl, language, language_name: languageName, is_default: isDefault
     }),
+  setDefault: (contentId, language) =>
+    api.patch(`/subtitles/${contentId}/${language}/set-default`),
   translateWord: (word, sourceLang = 'he', targetLang = 'en') =>
     api.post('/subtitles/translate/word', null, {
       params: { word, source_lang: sourceLang, target_lang: targetLang }

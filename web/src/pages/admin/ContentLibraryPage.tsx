@@ -8,7 +8,7 @@ import EnglishModePickerModal from '@/components/player/subtitle/EnglishModePick
 import { adminContentService } from '@/services/adminApi'
 import { subtitlesService } from '@/services/api'
 import type { HebrewMode, EnglishMode } from '@/types/subtitle'
-import { colors, fontSize } from '@olorin/design-tokens'
+import { colors, fontSize, spacing } from '@olorin/design-tokens'
 import {
   GlassInput,
   GlassButton,
@@ -23,7 +23,6 @@ import ContentBatchActions from '@/components/admin/content/ContentBatchActions'
 import ContentFiltersDropdown from '@/components/admin/content/ContentFiltersDropdown'
 import { getContentTableColumns } from '@/components/admin/content/getContentTableColumns'
 import logger from '@/utils/logger'
-import { spacing } from '@olorin/design-tokens'
 
 export default function ContentLibraryPage() {
   const { t } = useTranslation()

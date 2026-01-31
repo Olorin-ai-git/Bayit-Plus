@@ -44,6 +44,8 @@ async def get_subtitle_tracks(content_id: str, language: Optional[str] = None) -
                 "has_nikud_version": track.has_nikud_version,
                 "has_shoresh_version": track.has_shoresh_version,
                 "has_heblish_version": track.has_heblish_version,
+                "has_grammar_flip_version": getattr(track, "has_grammar_flip_version", False),
+                "has_slang_synthesis_version": getattr(track, "has_slang_synthesis_version", False),
                 "is_default": track.is_default,
                 "is_auto_generated": getattr(track, "is_auto_generated", False),
                 "cue_count": len(track.cues),
@@ -144,6 +146,37 @@ async def delete_subtitle_track(
     await track.delete()
 
     return {"message": "Subtitle track deleted"}
+
+
+@router.patch("/{content_id}/{language}/set-default")
+async def set_default_subtitle(
+    content_id: str,
+    language: str,
+) -> dict:
+    """Set a subtitle track as the default for this content."""
+    # Find the track to set as default
+    track = await SubtitleTrackDoc.find_one(
+        SubtitleTrackDoc.content_id == content_id, SubtitleTrackDoc.language == language
+    )
+
+    if not track:
+        raise HTTPException(status_code=404, detail="Subtitle track not found")
+
+    # Unset is_default on all other tracks for this content
+    await SubtitleTrackDoc.find(
+        SubtitleTrackDoc.content_id == content_id,
+        SubtitleTrackDoc.language != language
+    ).update({"$set": {"is_default": False}})
+
+    # Set this track as default
+    track.is_default = True
+    await track.save()
+
+    return {
+        "message": "Default subtitle updated",
+        "language": language,
+        "track_id": str(track.id),
+    }
 
 
 @router.post("/{content_id}/fetch-external")

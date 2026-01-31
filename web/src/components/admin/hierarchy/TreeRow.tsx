@@ -10,6 +10,7 @@ import { Star, Eye, Trash2, Film, Tv } from 'lucide-react';
 import { GlassTableCell, GlassCheckbox } from '@bayit/shared/ui/web';
 import { colors, borderRadius } from '@olorin/design-tokens';
 import { z } from 'zod';
+import { FlagWithSparkle } from '@/components/common/FlagWithSparkle';
 
 const ContentItemSchema = z.object({
   id: z.string(),
@@ -25,6 +26,7 @@ const ContentItemSchema = z.object({
   view_count: z.number().optional(),
   avg_rating: z.number().optional(),
   available_subtitles: z.array(z.string()).optional(),
+  ai_subtitles: z.array(z.string()).optional(),
 });
 
 const EpisodeSchema = z.object({
@@ -231,12 +233,13 @@ export function ActionButtons({
 
 interface SubtitlesCellProps {
   subtitles: string[];
+  aiSubtitles?: string[];
   isRTL: boolean;
   getLanguageFlag: (lang: string) => string;
   getLanguageName: (lang: string) => string;
 }
 
-export function SubtitlesCell({ subtitles, isRTL, getLanguageFlag, getLanguageName }: SubtitlesCellProps) {
+export function SubtitlesCell({ subtitles, aiSubtitles = [], isRTL, getLanguageFlag, getLanguageName }: SubtitlesCellProps) {
   const textStyle = [
     styles.noSubtitlesText,
     isRTL ? styles.textRight : styles.textLeft,
@@ -249,9 +252,12 @@ export function SubtitlesCell({ subtitles, isRTL, getLanguageFlag, getLanguageNa
   return (
     <View style={styles.subtitlesContainer}>
       {subtitles.map((lang) => (
-        <Text key={lang} style={styles.flagText} title={getLanguageName(lang)}>
-          {getLanguageFlag(lang)}
-        </Text>
+        <FlagWithSparkle
+          key={lang}
+          language={lang}
+          hasAI={aiSubtitles.includes(lang)}
+          size="medium"
+        />
       ))}
     </View>
   );

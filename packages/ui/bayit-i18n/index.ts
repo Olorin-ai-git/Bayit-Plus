@@ -30,13 +30,13 @@ import jaTranslations from './locales/ja.json';
 
 export type BayitLanguage = 'en' | 'he' | 'es' | 'zh' | 'fr' | 'it' | 'hi' | 'ta' | 'bn' | 'ja';
 
-export type BayitTranslations = typeof enTranslations;
+export type BayitTranslations = Record<string, unknown>;
 
 /**
  * Get Bayit+-specific translations for a given language
  */
-export function getBayitTranslations(language: BayitLanguage): Partial<BayitTranslations> {
-  const translations: Record<BayitLanguage, Partial<BayitTranslations>> = {
+export function getBayitTranslations(language: BayitLanguage): BayitTranslations {
+  const translations: Record<BayitLanguage, BayitTranslations> = {
     en: enTranslations,
     he: heTranslations,
     es: esTranslations,
@@ -55,7 +55,7 @@ export function getBayitTranslations(language: BayitLanguage): Partial<BayitTran
 /**
  * Bayit+ resources in i18next format
  */
-export const bayitResources = {
+export const bayitResources: Record<BayitLanguage, { bayit: Record<string, unknown> }> = {
   en: { bayit: enTranslations },
   he: { bayit: heTranslations },
   es: { bayit: esTranslations },

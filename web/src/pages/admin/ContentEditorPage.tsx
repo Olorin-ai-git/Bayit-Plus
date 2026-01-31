@@ -12,6 +12,7 @@ import StreamingSection from '@/components/admin/content/StreamingSection'
 import ContentDetailsSection from '@/components/admin/content/ContentDetailsSection'
 import PublishingSection from '@/components/admin/content/PublishingSection'
 import AccessControlSection from '@/components/admin/content/AccessControlSection'
+import SubtitlesSection from '@/components/admin/content/SubtitlesSection'
 import AdminLoadingState from '@/components/admin/shared/AdminLoadingState'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 
@@ -130,6 +131,13 @@ export default function ContentEditorPage() {
           onChange={handleInputChange}
           disabled={isSubmitting}
         />
+
+        {isEditing && contentId && (
+          <SubtitlesSection
+            contentId={contentId}
+            disabled={isSubmitting}
+          />
+        )}
 
         <View style={styles.formActions}>
           <GlassButton

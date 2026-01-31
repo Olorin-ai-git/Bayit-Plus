@@ -22,6 +22,13 @@ interface JobStatus {
   error_message?: string
 }
 
+interface ActiveJobsResponse {
+  content_id: string
+  nikud_job: JobStatus | null
+  shoresh_job: JobStatus | null
+  heblish_job: JobStatus | null
+}
+
 interface HebrewModePickerModalProps {
   visible: boolean
   currentMode: HebrewMode
@@ -99,6 +106,32 @@ export default function HebrewModePickerModal({
   const [jobProgress, setJobProgress] = useState<number>(0)
   const isAdmin = useAuthStore((s) => s.isAdmin())
 
+  // Poll job status callback - defined early since it's used by useEffects
+  const pollJobStatus = useCallback(async (jobId: string, mode: 'nikud' | 'shoresh') => {
+    try {
+      const status = await subtitlesService.getJobStatus(jobId) as JobStatus
+      logger.info(`Job status: ${status.status}`, 'HebrewModePickerModal', { jobId, progress: status.progress })
+
+      setJobProgress(status.progress)
+
+      if (status.status === 'completed') {
+        if (pollingRef.current) clearInterval(pollingRef.current)
+        setGeneratingMode(null)
+        setJobProgress(0)
+        logger.info(`${mode} generation completed`, 'HebrewModePickerModal', { contentId })
+        onGenerationComplete?.()
+      } else if (status.status === 'failed') {
+        if (pollingRef.current) clearInterval(pollingRef.current)
+        setGeneratingMode(null)
+        setJobProgress(0)
+        setGenerationError(status.error_message || `${mode} generation failed`)
+        logger.error(`${mode} generation failed`, 'HebrewModePickerModal', { contentId, error: status.error_message })
+      }
+    } catch (error) {
+      logger.error('Failed to poll job status', 'HebrewModePickerModal', { jobId, error })
+    }
+  }, [contentId, onGenerationComplete])
+
   // Cleanup polling on unmount
   useEffect(() => {
     return () => {
@@ -121,6 +154,65 @@ export default function HebrewModePickerModal({
       checkFirstTime()
     }
   }, [visible])
+
+  // Check for active generation jobs when modal opens
+  useEffect(() => {
+    if (!visible || !contentId || isLoading) return
+
+    const checkActiveJobs = async () => {
+      try {
+        const activeJobs = await subtitlesService.getActiveJobs(contentId) as ActiveJobsResponse
+        logger.info('Checked active jobs', 'HebrewModePickerModal', { contentId, activeJobs })
+
+        // Check for nikud job
+        if (activeJobs.nikud_job) {
+          const job = activeJobs.nikud_job
+          if (job.status === 'failed') {
+            // Show error from failed job
+            setGenerationError(job.error_message || 'Nikud generation failed')
+          } else if (['pending', 'processing'].includes(job.status)) {
+            // Resume tracking in-progress job
+            setGeneratingMode('nikud')
+            setJobProgress(job.progress || 0)
+            pollingRef.current = setInterval(() => {
+              pollJobStatus(job.job_id, 'nikud')
+            }, 2000)
+            return
+          }
+          // If completed, do nothing - hasNikud should already be true
+        }
+
+        // Check for shoresh job (only if no nikud job is being tracked)
+        if (activeJobs.shoresh_job) {
+          const job = activeJobs.shoresh_job
+          if (job.status === 'failed') {
+            // Show error from failed job
+            setGenerationError(job.error_message || 'Shoresh generation failed')
+          } else if (['pending', 'processing'].includes(job.status)) {
+            // Resume tracking in-progress job
+            setGeneratingMode('shoresh')
+            setJobProgress(job.progress || 0)
+            pollingRef.current = setInterval(() => {
+              pollJobStatus(job.job_id, 'shoresh')
+            }, 2000)
+          }
+          // If completed, do nothing - hasShoresh should already be true
+        }
+      } catch (error) {
+        logger.error('Failed to check active jobs', 'HebrewModePickerModal', { contentId, error })
+      }
+    }
+
+    checkActiveJobs()
+
+    // Cleanup polling when modal closes
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current)
+        pollingRef.current = null
+      }
+    }
+  }, [visible, contentId, isLoading, pollJobStatus])
 
   // Close on Escape key
   useEffect(() => {
@@ -191,31 +283,6 @@ export default function HebrewModePickerModal({
     if (mode === 'shoresh') return hasShoresh
     return false
   }
-
-  const pollJobStatus = useCallback(async (jobId: string, mode: 'nikud' | 'shoresh') => {
-    try {
-      const status = await subtitlesService.getJobStatus(jobId) as JobStatus
-      logger.info(`Job status: ${status.status}`, 'HebrewModePickerModal', { jobId, progress: status.progress })
-
-      setJobProgress(status.progress)
-
-      if (status.status === 'completed') {
-        if (pollingRef.current) clearInterval(pollingRef.current)
-        setGeneratingMode(null)
-        setJobProgress(0)
-        logger.info(`${mode} generation completed`, 'HebrewModePickerModal', { contentId })
-        onGenerationComplete?.()
-      } else if (status.status === 'failed') {
-        if (pollingRef.current) clearInterval(pollingRef.current)
-        setGeneratingMode(null)
-        setJobProgress(0)
-        setGenerationError(status.error_message || `${mode} generation failed`)
-        logger.error(`${mode} generation failed`, 'HebrewModePickerModal', { contentId, error: status.error_message })
-      }
-    } catch (error) {
-      logger.error('Failed to poll job status', 'HebrewModePickerModal', { jobId, error })
-    }
-  }, [contentId, onGenerationComplete])
 
   const handleGenerateMode = async (mode: 'nikud' | 'shoresh', e: React.MouseEvent) => {
     e.stopPropagation()

@@ -9,6 +9,7 @@ import { z } from 'zod'
 import { Icon } from '@olorin/shared-icons/web'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { SubtitleTrack, getLanguageInfo, HebrewMode, EnglishMode } from '@/types/subtitle'
+import { FlagWithSparkle } from '@/components/common/FlagWithSparkle'
 
 const isTV = Platform.isTV || Platform.OS === 'tvos'
 const isIOS = Platform.OS === 'ios'
@@ -21,7 +22,7 @@ const SubtitleLanguageListPropsSchema = z.object({
   availableLanguages: z.array(z.any()),
   currentLanguage: z.string().nullable(),
   hebrewMode: z.enum(['regular', 'nikud', 'shoresh']).optional(),
-  englishMode: z.enum(['regular', 'heblish']).optional(),
+  englishMode: z.enum(['regular', 'heblish', 'grammarFlip', 'slangSynthesis']).optional(),
   enabled: z.boolean(),
   isLoading: z.boolean(),
   contentId: z.string().optional(),
@@ -87,6 +88,8 @@ export default function SubtitleLanguageList({
     const icons: Record<EnglishMode, { isIconName: boolean; value: string }> = {
       regular: { isIconName: true, value: 'settings' },
       heblish: { isIconName: true, value: 'translate' },
+      grammarFlip: { isIconName: true, value: 'shuffle' },
+      slangSynthesis: { isIconName: true, value: 'chatBubble' },
     }
     return icons[mode]
   }
@@ -195,11 +198,12 @@ export default function SubtitleLanguageList({
                   ]}
                 >
                   <View style={[styles.flagBadge, isActive && styles.flagBadgeActive]}>
-                    {langInfo?.flag ? (
-                      <Text style={styles.flagText}>{langInfo.flag}</Text>
-                    ) : (
-                      <Icon name="globe" size="lg" color="#FFFFFF" />
-                    )}
+                    <FlagWithSparkle
+                      language={track.language}
+                      hasAI={track.has_nikud_version || track.has_shoresh_version}
+                      size="medium"
+                      showTooltip={false}
+                    />
                   </View>
                   <View style={styles.languageInfo}>
                     <Text
@@ -286,11 +290,12 @@ export default function SubtitleLanguageList({
                   ]}
                 >
                   <View style={[styles.flagBadge, isActive && styles.flagBadgeActive]}>
-                    {langInfo?.flag ? (
-                      <Text style={styles.flagText}>{langInfo.flag}</Text>
-                    ) : (
-                      <Icon name="globe" size="lg" color="#FFFFFF" />
-                    )}
+                    <FlagWithSparkle
+                      language={track.language}
+                      hasAI={track.has_heblish_version || track.has_grammar_flip_version || track.has_slang_synthesis_version}
+                      size="medium"
+                      showTooltip={false}
+                    />
                   </View>
                   <View style={styles.languageInfo}>
                     <Text
@@ -374,11 +379,12 @@ export default function SubtitleLanguageList({
               ]}
             >
               <View style={[styles.flagBadge, isActive && styles.flagBadgeActive]}>
-                {langInfo?.flag ? (
-                  <Text style={styles.flagText}>{langInfo.flag}</Text>
-                ) : (
-                  <Icon name="globe" size="lg" color="#FFFFFF" />
-                )}
+                <FlagWithSparkle
+                  language={track.language}
+                  hasAI={false}
+                  size="medium"
+                  showTooltip={false}
+                />
               </View>
               <View style={styles.languageInfo}>
                 <Text style={[styles.languageName, isActive ? styles.textActive : styles.textInactive]}>

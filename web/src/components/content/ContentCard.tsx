@@ -31,6 +31,7 @@ interface Content {
   total_episodes?: number;
   has_subtitles?: boolean;
   available_subtitle_languages?: string[];
+  ai_subtitle_languages?: string[];  // Languages with AI-enhanced subtitles (nikud, shoresh, heblish, etc.)
   quality_tier?: string;
   source?: string;
   city?: string;
@@ -425,6 +426,7 @@ export default function ContentCard({ content, showProgress = false, showActions
             {content.available_subtitle_languages && content.available_subtitle_languages.length > 0 && (
               <SubtitleFlags
                 languages={content.available_subtitle_languages}
+                aiLanguages={content.ai_subtitle_languages}
                 position={isRTL ? 'bottom-left' : 'bottom-right'}
                 isRTL={isRTL}
                 size="small"

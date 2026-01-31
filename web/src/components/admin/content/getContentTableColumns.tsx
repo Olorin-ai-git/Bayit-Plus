@@ -13,6 +13,7 @@ import {
   createDeleteAction,
   type HierarchicalTableColumn,
 } from '@bayit/shared/ui'
+import { FlagWithSparkle } from '@/components/common/FlagWithSparkle'
 
 interface ContentItem {
   id: string
@@ -24,6 +25,7 @@ interface ContentItem {
   year?: number
   episode_count?: number
   available_subtitles?: string[]
+  ai_subtitles?: string[]  // Languages with AI-generated versions (nikud, shoresh, heblish)
   is_published: boolean
   content_type?: 'movie' | 'series' | 'podcast' | 'radio' | 'audiobook'
   author?: string  // For audiobooks
@@ -39,23 +41,6 @@ interface Episode {
   is_published: boolean
 }
 
-const getLanguageFlag = (lang: string): string => {
-  const flags: Record<string, string> = {
-    'he': '🇮🇱', 'en': '🇺🇸', 'ar': '🇸🇦', 'ru': '🇷🇺',
-    'es': '🇪🇸', 'fr': '🇫🇷', 'de': '🇩🇪', 'it': '🇮🇹',
-    'pt': '🇵🇹', 'zh': '🇨🇳', 'ja': '🇯🇵', 'ko': '🇰🇷',
-  }
-  return flags[lang] || '🌐'
-}
-
-const getLanguageName = (lang: string): string => {
-  const names: Record<string, string> = {
-    'he': 'Hebrew', 'en': 'English', 'ar': 'Arabic', 'ru': 'Russian',
-    'es': 'Spanish', 'fr': 'French', 'de': 'German', 'it': 'Italian',
-    'pt': 'Portuguese', 'zh': 'Chinese', 'ja': 'Japanese', 'ko': 'Korean',
-  }
-  return names[lang] || lang
-}
 
 // Custom action creator for Subtitle AI features (Hebrew & English)
 const createSubtitleAIAction = (
@@ -212,17 +197,22 @@ export function getContentTableColumns(
       width: 200,
       minWidth: 150,
       maxWidth: 300,
-      render: (value) => {
+      render: (value, row) => {
+        const content = row as ContentItem
         const subtitles = value as string[] | undefined
+        const aiSubtitles = content.ai_subtitles || []
+
         if (!subtitles || subtitles.length === 0) {
           return <TextCell text="-" muted align="center" />
         }
         return (
           <View style={{ flexDirection: 'row', gap: spacing.xs, flexWrap: 'wrap', alignItems: 'center' }}>
             {subtitles.slice(0, 4).map((lang, index) => (
-              <Text key={index} style={{ fontSize: 18 }} title={getLanguageName(lang)}>
-                {getLanguageFlag(lang)}
-              </Text>
+              <FlagWithSparkle
+                key={index}
+                language={lang}
+                hasAI={aiSubtitles.includes(lang)}
+              />
             ))}
             {subtitles.length > 4 && (
               <Text style={{ fontSize: fontSize.xs, color: colors.textSecondary }}>
@@ -252,7 +242,7 @@ export function getContentTableColumns(
             content.is_featured ? t('admin.content.unfeature', 'Remove from Featured') : t('admin.content.feature', 'Add to Featured')
           ),
           createViewAction(
-            () => { window.location.href = `/admin/content/${content.id}` },
+            () => { window.open(`/vod/${content.is_series ? 'series' : 'movie'}/${content.id}`, '_blank') },
             t('common.view', 'View')
           ),
           createEditAction(
@@ -301,11 +291,11 @@ export function getContentTableColumns(
                 ep.is_featured ? t('admin.content.unfeature', 'Remove from Featured') : t('admin.content.feature', 'Add to Featured')
               ),
               createViewAction(
-                () => { window.location.href = `/admin/episodes/${ep.id}` },
+                () => { window.open(`/vod/episode/${ep.id}`, '_blank') },
                 t('common.view', 'View')
               ),
               createEditAction(
-                () => { window.location.href = `/admin/episodes/${ep.id}/edit` },
+                () => { window.location.href = `/admin/content/${ep.id}/edit` },
                 t('common.edit', 'Edit')
               ),
               createDeleteAction(

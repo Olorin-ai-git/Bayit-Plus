@@ -110,6 +110,7 @@ export function renderSubtitlesCell(row: TableRow, context: RenderContext) {
   return (
     <SubtitlesCell
       subtitles={item.available_subtitles || []}
+      aiSubtitles={item.ai_subtitles || []}
       isRTL={context.isRTL}
       getLanguageFlag={getLanguageFlag}
       getLanguageName={getLanguageName}
