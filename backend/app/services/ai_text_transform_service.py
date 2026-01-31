@@ -3,8 +3,10 @@ Base service for AI-powered text transformations.
 Provides common functionality for Hebrew text processing (nikud, shoresh, etc.).
 """
 
+import asyncio
 import hashlib
 from abc import ABC, abstractmethod
+from collections import OrderedDict
 from typing import Dict, Generic, List, Optional, TypeVar
 
 from app.core.ai_clients import get_anthropic_client
@@ -22,31 +24,48 @@ class AITextTransformService(ABC, Generic[T]):
     Handles caching, batching, and common Anthropic API interactions.
     """
 
-    def __init__(self, cache_max_size: int, service_name: str):
+    def __init__(self, cache_max_size: int, service_name: str, supports_batch: bool = True):
         """
         Initialize the service.
 
         Args:
             cache_max_size: Maximum number of cache entries
             service_name: Name of the service for logging
+            supports_batch: Whether this service supports batch transformations
         """
-        self._cache: Dict[str, T] = {}
+        self._cache: OrderedDict[str, T] = OrderedDict()
         self._cache_max_size = cache_max_size
         self._service_name = service_name
+        self._supports_batch = supports_batch
         self._logger = get_logger(f"{__name__}.{service_name}")
+
+        # Concurrency control: limit simultaneous API calls
+        # Prevents rate limit exhaustion from parallel requests
+        self._api_semaphore = asyncio.Semaphore(3)  # Max 3 concurrent API calls
 
     def _get_cache_key(self, text: str) -> str:
         """Generate cache key for text"""
         return hashlib.md5(text.encode()).hexdigest()
 
     def _get_from_cache(self, cache_key: str) -> Optional[T]:
-        """Get value from cache if exists"""
-        return self._cache.get(cache_key)
+        """Get value from cache if exists (LRU: move to end)"""
+        if cache_key in self._cache:
+            # Move to end (most recently used)
+            self._cache.move_to_end(cache_key)
+            return self._cache[cache_key]
+        return None
 
     def _add_to_cache(self, cache_key: str, value: T) -> None:
-        """Add value to cache if space available"""
-        if len(self._cache) < self._cache_max_size:
-            self._cache[cache_key] = value
+        """Add value to cache with LRU eviction"""
+        # If cache is full, remove least recently used (first item)
+        if len(self._cache) >= self._cache_max_size:
+            # Remove the first (oldest) item
+            evicted_key = next(iter(self._cache))
+            self._cache.pop(evicted_key)
+            self._logger.debug(f"LRU eviction: removed cache entry", extra={"evicted_key": evicted_key})
+
+        # Add new item to end (most recently used)
+        self._cache[cache_key] = value
 
     @abstractmethod
     async def _transform_single(self, text: str) -> T:
@@ -114,9 +133,10 @@ class AITextTransformService(ABC, Generic[T]):
             if cached is not None:
                 return cached
 
-        # Transform
+        # Transform with concurrency control
         try:
-            result = await self._transform_single(text)
+            async with self._api_semaphore:
+                result = await self._transform_single(text)
 
             # Cache result
             if use_cache:
@@ -149,6 +169,14 @@ class AITextTransformService(ABC, Generic[T]):
         Returns:
             List of transformed results in same order
         """
+        # If service doesn't support batching, fall back to sequential transform
+        if not self._supports_batch:
+            results = []
+            for text in texts:
+                result = await self.transform(text, use_cache)
+                results.append(result)
+            return results
+
         results: List[Optional[T]] = []
         uncached_indices = []
         uncached_texts = []
@@ -179,16 +207,22 @@ class AITextTransformService(ABC, Generic[T]):
             )
             return results  # type: ignore
 
-        # Batch process uncached texts
+        # Batch process uncached texts with concurrency control
         try:
             prompt = self._create_batch_prompt(uncached_texts)
 
-            client = get_anthropic_client()
-            response = await client.messages.create(
-                model=settings.SUBTITLE_AI_MODEL,
-                max_tokens=sum(len(t) * 4 for t in uncached_texts),
-                messages=[{"role": "user", "content": prompt}],
-            )
+            # Use semaphore to limit concurrent API calls
+            async with self._api_semaphore:
+                client = get_anthropic_client()
+                # Cap max_tokens to prevent unbounded requests
+                calculated_tokens = sum(len(t) * 4 for t in uncached_texts)
+                max_tokens = min(calculated_tokens, settings.SUBTITLE_AI_MAX_TOKENS)
+
+                response = await client.messages.create(
+                    model=settings.SUBTITLE_AI_MODEL,
+                    max_tokens=max_tokens,
+                    messages=[{"role": "user", "content": prompt}],
+                )
 
             response_text = response.content[0].text.strip()
 

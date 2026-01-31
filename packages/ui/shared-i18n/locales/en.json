@@ -3568,7 +3568,12 @@
     "nowPlaying": "Now Playing",
     "upNext": "Up Next",
     "timeRemaining": "Time Remaining",
-    "openAiTools": "Open AI Tools"
+    "openAiTools": "Open AI Tools",
+    "noVocabulary": "No vocabulary words available for this episode",
+    "noContext": "No episode context available",
+    "noQuiz": "No quiz questions available for this episode",
+    "checkAnswer": "Check Answer",
+    "concepts": "Key Concepts"
   },
   "channels": {
     "kanEducational": "Kan Educational",

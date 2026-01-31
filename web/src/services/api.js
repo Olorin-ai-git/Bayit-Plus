@@ -41,14 +41,16 @@ const apiLogger = logger.scope('API')
 
 apiLogger.debug('Base URL configured', { baseUrl: API_BASE_URL })
 
-// Retry configuration
-const MAX_RETRIES = 3
-const RETRY_DELAY_MS = 1000
+// Retry configuration (from environment variables)
+const MAX_RETRIES = parseInt(import.meta.env.VITE_API_RETRY_COUNT || '3', 10)
+const RETRY_DELAY_MS = parseInt(import.meta.env.VITE_API_RETRY_DELAY || '1000', 10)
 const TIMEOUT_MS = parseInt(import.meta.env.VITE_API_TIMEOUT || '30000', 10)
 
 // Network errors that should trigger retry
 const RETRYABLE_ERROR_CODES = ['ECONNABORTED', 'ENOTFOUND', 'ENETUNREACH', 'ETIMEDOUT']
-const RETRYABLE_STATUS_CODES = [408, 429, 500, 502, 503, 504]
+const RETRYABLE_STATUS_CODES = (import.meta.env.VITE_API_RETRY_STATUS_CODES || '408,429,500,502,503,504')
+  .split(',')
+  .map(Number)
 
 /**
  * Check if error is retryable

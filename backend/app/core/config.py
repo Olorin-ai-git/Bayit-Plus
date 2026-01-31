@@ -325,6 +325,11 @@ class Settings(BaseSettings):
         env="SUBTITLE_SHORESH_CACHE_MAX_SIZE",
         description="Maximum in-memory cache entries for shoresh text"
     )
+    SUBTITLE_AI_MAX_TOKENS: int = Field(
+        default=4096,
+        env="SUBTITLE_AI_MAX_TOKENS",
+        description="Maximum tokens per AI request (prevents unbounded requests)"
+    )
 
     # Tavily (Web Search & News API)
     TAVILY_API_KEY: str = ""
@@ -1269,6 +1274,23 @@ class Settings(BaseSettings):
     KIDS_CONTENT_MIN_RELEVANCE_SCORE: float = 0.3
     KIDS_CONTENT_SAFE_SEARCH_ENABLED: bool = True
     KIDS_CONTENT_DEFAULT_AGE_MAX: int = 12
+
+    # Kan Educational TV YouTube Channel Configuration
+    KAN_EDUCATIONAL_YOUTUBE_CHANNEL_ID: str = Field(
+        default="UCK3cyNmTx9t0wVsQC5vI93Q",  # כאן חינוכית channel ID
+        env="KAN_EDUCATIONAL_YOUTUBE_CHANNEL_ID",
+        description="YouTube channel ID for Kan Educational TV"
+    )
+    KAN_EDUCATIONAL_EPG_SYNC_INTERVAL_MINUTES: int = Field(
+        default=60,
+        env="KAN_EDUCATIONAL_EPG_SYNC_INTERVAL_MINUTES",
+        description="How often to refresh Kan Educational EPG schedule (minutes)"
+    )
+    KAN_EDUCATIONAL_LOOP_PLAYLIST: bool = Field(
+        default=True,
+        env="KAN_EDUCATIONAL_LOOP_PLAYLIST",
+        description="Whether to loop the playlist continuously"
+    )
 
     # Trivia Feature Configuration
     TRIVIA_ENABLED: bool = Field(

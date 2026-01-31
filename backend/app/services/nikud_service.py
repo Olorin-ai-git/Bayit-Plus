@@ -46,9 +46,11 @@ class NikudService(AITextTransformService[str]):
 טקסט עם ניקוד:"""
 
         client = get_anthropic_client()
+        # Cap max_tokens to prevent unbounded requests
+        max_tokens = min(len(text) * 3, settings.SUBTITLE_AI_MAX_TOKENS)
         response = await client.messages.create(
             model=settings.SUBTITLE_AI_MODEL,
-            max_tokens=len(text) * 3,  # Nikud adds characters
+            max_tokens=max_tokens,
             messages=[{"role": "user", "content": prompt}],
         )
 
@@ -109,6 +111,7 @@ class TranslationService(AITextTransformService[TranslationResult]):
         super().__init__(
             cache_max_size=settings.SUBTITLE_NIKUD_CACHE_MAX_SIZE,
             service_name="translation",
+            supports_batch=False,  # Translation uses sequential processing
         )
         self._source_lang = "he"
         self._target_lang = "en"
@@ -171,14 +174,14 @@ Return JSON:
         )
 
     def _create_batch_prompt(self, texts: List[str]) -> str:
-        """Create batch prompt - not implemented for translation"""
-        raise NotImplementedError("Batch translation not supported")
+        """Not used - translation uses sequential processing (supports_batch=False)"""
+        return ""  # Not called due to supports_batch=False
 
     def _parse_batch_response(
         self, response_text: str, original_texts: List[str]
     ) -> List[TranslationResult]:
-        """Parse batch response - not implemented for translation"""
-        raise NotImplementedError("Batch translation not supported")
+        """Not used - translation uses sequential processing (supports_batch=False)"""
+        return []  # Not called due to supports_batch=False
 
 
 # Singleton instances
@@ -233,10 +236,12 @@ async def translate_phrase(
 
     try:
         client = get_anthropic_client()
+        # Cap max_tokens to prevent unbounded requests
+        max_tokens = min(len(phrase) * 2, settings.SUBTITLE_AI_MAX_TOKENS)
 
         response = await client.messages.create(
             model=settings.SUBTITLE_AI_MODEL,
-            max_tokens=len(phrase) * 2,
+            max_tokens=max_tokens,
             messages=[{"role": "user", "content": prompt}],
         )
 

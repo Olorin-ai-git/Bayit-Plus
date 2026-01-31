@@ -6,6 +6,7 @@
 import { useMemo } from 'react'
 import { View, Text, StyleSheet, Platform } from 'react-native'
 import { SubtitleCue, SubtitleSettings, getLanguageInfo } from '@/types/subtitle'
+import { useSafeAreaInsets } from '@bayit/shared-hooks/useSafeArea'
 
 interface SubtitleOverlayProps {
   currentTime: number
@@ -22,6 +23,14 @@ export default function SubtitleOverlay({
   enabled,
   settings,
 }: SubtitleOverlayProps) {
+  // Get safe area insets for dynamic positioning
+  const safeAreaInsets = useSafeAreaInsets()
+
+  // Calculate bottom position accounting for safe area
+  const bottomPosition = useMemo(() => ({
+    bottom: safeAreaInsets.bottom + 96, // Original padding + safe area
+  }), [safeAreaInsets.bottom])
+
   // Find active subtitle cue(s) for current time
   const activeCues = useMemo(() => {
     if (!enabled || !subtitles.length) return []
@@ -57,7 +66,7 @@ export default function SubtitleOverlay({
     <View
       style={[
         styles.container,
-        settings.position === 'top' ? styles.positionTop : styles.positionBottom,
+        settings.position === 'top' ? styles.positionTop : bottomPosition,
       ]}
       pointerEvents="none"
     >

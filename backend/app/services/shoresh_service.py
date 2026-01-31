@@ -36,9 +36,12 @@ class ShoreshService(AITextTransformService[str]):
 תשובה:"""
 
         client = get_anthropic_client()
+        # Cap max_tokens to prevent unbounded requests
+        max_tokens = min(len(text) * 4, settings.SUBTITLE_AI_MAX_TOKENS)
+
         response = await client.messages.create(
             model=settings.SUBTITLE_AI_MODEL,
-            max_tokens=len(text) * 4,  # Shoresh adds brackets
+            max_tokens=max_tokens,
             messages=[{"role": "user", "content": prompt}],
         )
 

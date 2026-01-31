@@ -4,10 +4,11 @@
  * Uses TailwindCSS for styling and web-native modal implementation
  */
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { createPortal } from 'react-dom'
 import { HebrewMode } from '@/types/subtitle'
+import { storageHelpers, STORAGE_KEYS } from '@/utils/storage'
 
 interface HebrewModePickerModalProps {
   visible: boolean
@@ -50,6 +51,8 @@ const HEBREW_MODE_OPTIONS: ModeOption[] = [
   },
 ]
 
+const HEBREW_MODE_FIRST_TIME_KEY = 'hebrew_mode_first_time_seen'
+
 export default function HebrewModePickerModal({
   visible,
   currentMode,
@@ -60,6 +63,19 @@ export default function HebrewModePickerModal({
 }: HebrewModePickerModalProps) {
   const { t } = useTranslation()
   const modalRef = useRef<HTMLDivElement>(null)
+  const previousFocusRef = useRef<HTMLElement | null>(null)
+  const [showFirstTimeHint, setShowFirstTimeHint] = useState(false)
+
+  // Check if this is the user's first time seeing the Hebrew mode picker
+  useEffect(() => {
+    if (visible) {
+      const hasSeenBefore = storageHelpers.get(HEBREW_MODE_FIRST_TIME_KEY)
+      if (!hasSeenBefore) {
+        setShowFirstTimeHint(true)
+        storageHelpers.set(HEBREW_MODE_FIRST_TIME_KEY, 'true')
+      }
+    }
+  }, [visible])
 
   // Close on Escape key
   useEffect(() => {
@@ -80,9 +96,12 @@ export default function HebrewModePickerModal({
     }
   }, [visible, onClose])
 
-  // Focus trap
+  // Focus trap with focus restoration
   useEffect(() => {
     if (visible && modalRef.current) {
+      // Store previous focus
+      previousFocusRef.current = document.activeElement as HTMLElement
+
       const focusableElements = modalRef.current.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       )
@@ -110,6 +129,8 @@ export default function HebrewModePickerModal({
 
       return () => {
         document.removeEventListener('keydown', handleTab)
+        // Restore previous focus when modal closes
+        previousFocusRef.current?.focus()
       }
     }
   }, [visible])
@@ -125,6 +146,12 @@ export default function HebrewModePickerModal({
     if (mode === 'shoresh') return hasShoresh
     return false
   }
+
+  // Memoize options to avoid re-rendering on every state change
+  const memoizedOptions = useMemo(
+    () => HEBREW_MODE_OPTIONS,
+    [] // Static options, never change
+  )
 
   if (!visible) return null
 
@@ -158,9 +185,28 @@ export default function HebrewModePickerModal({
           </button>
         </div>
 
+        {/* First-time hint */}
+        {showFirstTimeHint && (
+          <div className="mb-4 bg-indigo-500/10 border border-indigo-500/30 rounded-lg p-3">
+            <div className="flex items-start gap-2">
+              <span className="text-indigo-400 text-xl flex-shrink-0">💡</span>
+              <p className="text-sm text-indigo-200">
+                {t('subtitles.hebrewMode.firstTimeHint', 'Choose how you want Hebrew subtitles displayed. Nikud adds vowel marks for easier reading, while Shoresh shows root words for language learning.')}
+              </p>
+              <button
+                onClick={() => setShowFirstTimeHint(false)}
+                className="text-indigo-300 hover:text-indigo-100 transition-colors flex-shrink-0"
+                aria-label="Dismiss hint"
+              >
+                <span className="text-lg">✕</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Options */}
         <div className="space-y-3">
-          {HEBREW_MODE_OPTIONS.map((option) => {
+          {memoizedOptions.map((option) => {
             const isAvailable = isModeAvailable(option.mode)
             const isSelected = option.mode === currentMode
 
@@ -168,6 +214,12 @@ export default function HebrewModePickerModal({
               <button
                 key={option.mode}
                 onClick={() => isAvailable && handleModePress(option.mode)}
+                onKeyDown={(e) => {
+                  if (isAvailable && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault()
+                    handleModePress(option.mode)
+                  }
+                }}
                 disabled={!isAvailable}
                 className={`
                   w-full rounded-lg p-4 border-2 transition-all
@@ -197,11 +249,19 @@ export default function HebrewModePickerModal({
                     </h3>
                     <p
                       className={`text-sm mb-1 ${
-                        isAvailable ? 'text-gray-400' : 'text-gray-600'
+                        isAvailable ? 'text-gray-400' : 'text-gray-500'
                       }`}
                     >
                       {t(option.descriptionKey, 'Description')}
                     </p>
+                    {!isAvailable && (
+                      <p className="text-xs text-amber-500/90 mb-2 italic">
+                        {option.mode === 'nikud'
+                          ? t('subtitles.hebrewMode.nikud.unavailableReason', 'AI processing not available for this content')
+                          : t('subtitles.hebrewMode.shoresh.unavailableReason', 'Root word analysis not available for this content')
+                        }
+                      </p>
+                    )}
                     <p
                       className="text-sm text-gray-500 font-mono"
                       dir="rtl"

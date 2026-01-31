@@ -12,7 +12,8 @@ import {
 } from '@/types/subtitle'
 import { subtitlesService, subtitlePreferencesService } from '@/services/api'
 import logger from '@/utils/logger'
-import { storageHelpers, STORAGE_KEYS } from '@/utils/storage'
+import { storageHelpers, STORAGE_KEYS, StorageSchemas } from '@/utils/storage'
+import { useNotificationStore } from '@olorin/glass-ui/stores'
 
 interface UseSubtitlesOptions {
   contentId?: string
@@ -20,6 +21,9 @@ interface UseSubtitlesOptions {
 }
 
 export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions) {
+  // Global notification system
+  const addNotification = useNotificationStore((state) => state.add)
+
   const [subtitlesEnabled, setSubtitlesEnabled] = useState(false)
   const [currentSubtitleLang, setCurrentSubtitleLang] = useState<string | null>(null)
   const [hebrewMode, setHebrewMode] = useState<HebrewMode>('regular')
@@ -36,12 +40,13 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     textColor: '#ffffff',
   })
 
-  // Load subtitle preferences from storage
+  // Load subtitle preferences from storage with validation
   useEffect(() => {
     const loadPreferences = async () => {
       try {
-        const prefs = await storageHelpers.getJSON<SubtitlePreferences>(
-          STORAGE_KEYS.SUBTITLE_PREFERENCES
+        const prefs = await storageHelpers.getValidatedJSON(
+          STORAGE_KEYS.SUBTITLE_PREFERENCES,
+          StorageSchemas.SubtitlePreferences
         )
         if (prefs) {
           setSubtitlesEnabled(prefs.enabled)
@@ -102,6 +107,13 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
       const errorObj = error instanceof Error ? error : new Error(String(error))
       setSubtitlesError(errorObj)
       logger.error('Failed to fetch subtitle tracks', 'useSubtitles', error)
+
+      // Show error notification
+      addNotification({
+        message: 'Failed to load subtitle languages. Please try again.',
+        level: 'error',
+        duration: 5000,
+      })
     } finally {
       setSubtitlesLoading(false)
     }
@@ -131,6 +143,13 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
         setCuesError(errorObj)
         logger.error('Failed to fetch subtitle cues', 'useSubtitles', error)
         setCurrentCues([])
+
+        // Show error notification
+        addNotification({
+          message: 'Failed to load subtitle text. Please try again.',
+          level: 'error',
+          duration: 5000,
+        })
       } finally {
         setCuesLoading(false)
       }
@@ -152,6 +171,13 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
         await storageHelpers.setJSON(STORAGE_KEYS.SUBTITLE_PREFERENCES, prefs)
       } catch (error) {
         logger.error('Failed to save subtitle preferences', 'useSubtitles', error)
+
+        // Show warning notification (non-critical)
+        addNotification({
+          message: 'Could not save subtitle preferences',
+          level: 'warning',
+          duration: 3000,
+        })
       }
     }
     savePreferences()
@@ -179,6 +205,11 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
         await subtitlePreferencesService.setPreference(contentId, language)
       } catch (error) {
         logger.error('Failed to save subtitle preference', 'useSubtitles', error)
+        addNotification({
+          message: 'Could not save language preference',
+          level: 'warning',
+          duration: 3000,
+        })
       }
     }
   }
@@ -196,6 +227,11 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
         await subtitlePreferencesService.setHebrewMode(contentId, mode)
       } catch (error) {
         logger.error('Failed to save Hebrew mode preference', 'useSubtitles', error)
+        addNotification({
+          message: 'Could not save Hebrew mode preference',
+          level: 'warning',
+          duration: 3000,
+        })
       }
     }
   }

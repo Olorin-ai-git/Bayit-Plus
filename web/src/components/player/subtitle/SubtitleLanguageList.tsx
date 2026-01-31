@@ -4,12 +4,18 @@
  */
 
 import { useState } from 'react'
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, Text, Pressable, ActivityIndicator, StyleSheet, Platform, PixelRatio } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { SubtitleTrack, getLanguageInfo, HebrewMode } from '@/types/subtitle'
 import HebrewModePickerModal from './HebrewModePickerModal'
+
+const isTV = Platform.isTV || Platform.OS === 'tvos'
+const isIOS = Platform.OS === 'ios'
+
+// Get font scale for iOS Dynamic Type support
+const fontScale = isIOS ? PixelRatio.getFontScale() : 1
 
 // Zod schema for props
 const SubtitleLanguageListPropsSchema = z.object({
@@ -91,13 +97,29 @@ export default function SubtitleLanguageList({
         onPress={handleDisablePress}
         onClick={stopPropagation}
         onMouseDown={stopPropagation}
-        style={({ pressed }) => [
+        hasTVPreferredFocus={isTV}
+        tvParallaxProperties={{
+          enabled: true,
+          magnification: 1.05,
+          pressMagnification: 0.95,
+        }}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel={t('subtitles.off')}
+        accessibilityHint={t('subtitles.offHint', 'Turn off subtitles')}
+        accessibilityState={{ selected: isOffSelected }}
+        style={({ pressed, focused }) => [
           styles.option,
           isOffSelected ? styles.optionActive : styles.optionInactive,
+          focused && isTV && styles.tvFocused,
           { opacity: pressed ? 0.7 : 1 },
         ]}
       >
-        <Text style={[styles.optionText, isOffSelected ? styles.textActive : styles.textInactive]}>
+        <Text
+          style={[styles.optionText, isOffSelected ? styles.textActive : styles.textInactive]}
+          allowFontScaling={isIOS}
+          maxFontSizeMultiplier={isIOS ? 1.5 : undefined}
+        >
           {t('subtitles.off')}
         </Text>
         {isOffSelected && <View style={styles.activeIndicator} />}
@@ -107,7 +129,11 @@ export default function SubtitleLanguageList({
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color={colors.primary} />
-          <Text style={styles.loadingText}>
+          <Text
+            style={styles.loadingText}
+            allowFontScaling={isIOS}
+            maxFontSizeMultiplier={isIOS ? 1.5 : undefined}
+          >
             {t('common.loading', 'Loading...')}
           </Text>
         </View>
@@ -126,10 +152,21 @@ export default function SubtitleLanguageList({
                   onPress={handleLanguagePress(track.language)}
                   onClick={stopPropagation}
                   onMouseDown={stopPropagation}
-                  style={({ pressed }) => [
+                  tvParallaxProperties={{
+                    enabled: true,
+                    magnification: 1.05,
+                    pressMagnification: 0.95,
+                  }}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${track.language_name} ${t('subtitles.subtitles', 'subtitles')}`}
+                  accessibilityHint={isActive ? t('subtitles.currentLanguage', 'Currently selected') : t('subtitles.selectLanguage', 'Double tap to select')}
+                  accessibilityState={{ selected: isActive }}
+                  style={({ pressed, focused }) => [
                     styles.option,
                     styles.splitButtonLeft,
                     isActive ? styles.optionActive : styles.optionInactive,
+                    focused && isTV && styles.tvFocused,
                     { opacity: pressed ? 0.7 : 1 },
                   ]}
                 >
@@ -137,7 +174,11 @@ export default function SubtitleLanguageList({
                     <Text style={styles.flagText}>{langInfo?.flag || '🌐'}</Text>
                   </View>
                   <View style={styles.languageInfo}>
-                    <Text style={[styles.languageName, isActive ? styles.textActive : styles.textInactive]}>
+                    <Text
+                      style={[styles.languageName, isActive ? styles.textActive : styles.textInactive]}
+                      allowFontScaling={isIOS}
+                      maxFontSizeMultiplier={isIOS ? 1.5 : undefined}
+                    >
                       {track.language_name}
                     </Text>
                   </View>
@@ -152,9 +193,19 @@ export default function SubtitleLanguageList({
                   }}
                   onClick={stopPropagation}
                   onMouseDown={stopPropagation}
-                  style={({ pressed }) => [
+                  tvParallaxProperties={{
+                    enabled: true,
+                    magnification: 1.05,
+                    pressMagnification: 0.95,
+                  }}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${t('subtitles.hebrewMode.title', 'Hebrew mode')}: ${t(`subtitles.hebrewMode.${hebrewMode}.title`, hebrewMode)}`}
+                  accessibilityHint={t('subtitles.changeHebrewMode', 'Double tap to change Hebrew display mode')}
+                  style={({ pressed, focused }) => [
                     styles.splitButtonRight,
                     isActive ? styles.optionActive : styles.optionInactive,
+                    focused && isTV && styles.tvFocused,
                     { opacity: pressed ? 0.7 : 1 },
                   ]}
                 >
@@ -187,10 +238,21 @@ export default function SubtitleLanguageList({
               onPress={handleLanguagePress(track.language)}
               onClick={stopPropagation}
               onMouseDown={stopPropagation}
-              style={({ pressed }) => [
+              tvParallaxProperties={{
+                enabled: true,
+                magnification: 1.05,
+                pressMagnification: 0.95,
+              }}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel={`${track.language_name} ${t('subtitles.subtitles', 'subtitles')}${track.is_auto_generated ? ` (${t('subtitles.autoGenerated', 'auto-generated')})` : ''}`}
+              accessibilityHint={isActive ? t('subtitles.currentLanguage', 'Currently selected') : t('subtitles.selectLanguage', 'Double tap to select')}
+              accessibilityState={{ selected: isActive }}
+              style={({ pressed, focused }) => [
                 styles.option,
                 styles.languageOption,
                 isActive ? styles.optionActive : styles.optionInactive,
+                focused && isTV && styles.tvFocused,
                 { opacity: pressed ? 0.7 : 1 },
               ]}
             >
@@ -351,5 +413,10 @@ const styles = StyleSheet.create({
   chevron: {
     fontSize: 10,
     color: colors.textSecondary,
+  },
+  tvFocused: {
+    borderColor: colors.primary.DEFAULT,
+    borderWidth: 3,
+    transform: [{ scale: 1.05 }],
   },
 });

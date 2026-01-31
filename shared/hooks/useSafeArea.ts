@@ -112,22 +112,29 @@ export function useSafeAreaStyle(
 
 /**
  * Check if device has notch (iPhone X and later)
+ * This is a hook and must be called from within a React component
  */
-export function hasNotch(): boolean {
-  if (Platform.OS !== 'ios') return false
-
-  // iPhone X and later have safe area bottom inset of 34
+export function useHasNotch(): boolean {
   const insets = useSafeAreaInsets()
-  return insets.bottom > 20
+
+  return useMemo(() => {
+    if (Platform.OS !== 'ios') return false
+    // iPhone X and later have safe area bottom inset of 34
+    return insets.bottom > 20
+  }, [insets.bottom])
 }
 
 /**
  * Get bottom tab bar height including safe area
+ * This is a hook and must be called from within a React component
  */
-export function getTabBarHeight(): number {
-  const baseHeight = 49 // Standard iOS tab bar height
+export function useTabBarHeight(): number {
   const insets = useSafeAreaInsets()
-  return baseHeight + insets.bottom
+
+  return useMemo(() => {
+    const baseHeight = 49 // Standard iOS tab bar height
+    return baseHeight + insets.bottom
+  }, [insets.bottom])
 }
 
 /**

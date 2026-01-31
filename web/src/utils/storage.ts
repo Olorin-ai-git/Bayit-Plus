@@ -1,7 +1,11 @@
 /**
  * Platform-agnostic storage abstraction
  * Uses localStorage on web, AsyncStorage on React Native
+ * Includes Zod validation for type-safe data retrieval
  */
+
+import { z } from 'zod'
+import logger from '@/utils/logger'
 
 /**
  * Storage interface for cross-platform compatibility
@@ -21,7 +25,7 @@ class WebStorage implements StorageInterface {
     try {
       return localStorage.getItem(key)
     } catch (error) {
-      console.error('WebStorage.getItem error:', error)
+      logger.error('WebStorage.getItem error', 'storage', error)
       return null
     }
   }
@@ -30,7 +34,7 @@ class WebStorage implements StorageInterface {
     try {
       localStorage.setItem(key, value)
     } catch (error) {
-      console.error('WebStorage.setItem error:', error)
+      logger.error('WebStorage.setItem error', 'storage', error)
       throw error
     }
   }
@@ -39,7 +43,7 @@ class WebStorage implements StorageInterface {
     try {
       localStorage.removeItem(key)
     } catch (error) {
-      console.error('WebStorage.removeItem error:', error)
+      logger.error('WebStorage.removeItem error', 'storage', error)
       throw error
     }
   }
@@ -48,7 +52,7 @@ class WebStorage implements StorageInterface {
     try {
       localStorage.clear()
     } catch (error) {
-      console.error('WebStorage.clear error:', error)
+      logger.error('WebStorage.clear error', 'storage', error)
       throw error
     }
   }
@@ -91,7 +95,7 @@ function createStorage(): StorageInterface {
       return new WebStorage()
     }
   } catch (error) {
-    console.warn('localStorage not available, using in-memory storage')
+    logger.warn('localStorage not available, using in-memory storage', 'storage', error)
   }
 
   // Fallback to in-memory storage
@@ -108,7 +112,7 @@ export const storage = createStorage()
  */
 export const storageHelpers = {
   /**
-   * Get and parse JSON value
+   * Get and parse JSON value (unvalidated - use getValidatedJSON for type safety)
    */
   async getJSON<T>(key: string): Promise<T | null> {
     try {
@@ -116,7 +120,35 @@ export const storageHelpers = {
       if (!value) return null
       return JSON.parse(value) as T
     } catch (error) {
-      console.error(`storageHelpers.getJSON error for key "${key}":`, error)
+      logger.error(`storageHelpers.getJSON error for key "${key}"`, 'storage', error)
+      return null
+    }
+  },
+
+  /**
+   * Get and parse JSON value with Zod schema validation
+   * Ensures type safety and data integrity
+   */
+  async getValidatedJSON<T>(key: string, schema: z.ZodSchema<T>): Promise<T | null> {
+    try {
+      const value = await storage.getItem(key)
+      if (!value) return null
+
+      const parsed = JSON.parse(value)
+      const result = schema.safeParse(parsed)
+
+      if (result.success) {
+        return result.data
+      } else {
+        logger.warn(`storageHelpers.getValidatedJSON validation failed for key "${key}"`, 'storage', {
+          errors: result.error.errors,
+        })
+        // Remove invalid data from storage
+        await storage.removeItem(key)
+        return null
+      }
+    } catch (error) {
+      logger.error(`storageHelpers.getValidatedJSON error for key "${key}"`, 'storage', error)
       return null
     }
   },
@@ -129,7 +161,7 @@ export const storageHelpers = {
       const serialized = JSON.stringify(value)
       await storage.setItem(key, serialized)
     } catch (error) {
-      console.error(`storageHelpers.setJSON error for key "${key}":`, error)
+      logger.error(`storageHelpers.setJSON error for key "${key}"`, 'storage', error)
       throw error
     }
   },
@@ -211,3 +243,32 @@ export const STORAGE_KEYS = {
 } as const
 
 export type StorageKey = typeof STORAGE_KEYS[keyof typeof STORAGE_KEYS]
+
+/**
+ * Zod schemas for common storage types
+ */
+export const StorageSchemas = {
+  SubtitlePreferences: z.object({
+    enabled: z.boolean(),
+    language: z.string().nullable(),
+    hebrew_mode: z.enum(['regular', 'nikud', 'shoresh']).optional(),
+    settings: z.object({
+      fontSize: z.enum(['small', 'medium', 'large']),
+      position: z.enum(['top', 'bottom']),
+      backgroundColor: z.string(),
+      textColor: z.string(),
+    }),
+  }),
+
+  UserLocation: z.object({
+    country: z.string(),
+    region: z.string().optional(),
+    city: z.string().optional(),
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
+  }),
+
+  Theme: z.enum(['light', 'dark', 'auto']),
+
+  Language: z.string().min(2).max(5), // e.g., 'en', 'he', 'en-US'
+}
