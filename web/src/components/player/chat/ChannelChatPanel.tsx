@@ -5,13 +5,14 @@
  * error boundary fallback, and keyboard navigation (Escape to close).
  */
 
-import { useEffect, useCallback, useRef } from 'react'
+import { useEffect, useCallback, useRef, useState } from 'react'
 import { View, Text, Pressable, FlatList, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { colors } from '@olorin/design-tokens'
 import { MessageCircle, AlertTriangle } from 'lucide-react'
 import { useChannelChat } from '../hooks/useChannelChat'
 import type { ChatMessageData } from '@/services/channelChatTypes'
+import { ChannelChatService } from '@/services/channelChatService'
 import { useChannelChatStore } from '@/stores/channelChatSlice'
 import { logger } from '@/utils/logger'
 import ChannelChatHeader from './ChannelChatHeader'
@@ -31,8 +32,10 @@ export default function ChannelChatPanel({
   channelId,
   isLiveChannel,
 }: ChannelChatPanelProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const autoHideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [translations, setTranslations] = useState<Record<string, string>>({})
+  const [showTranslation, setShowTranslation] = useState<Record<string, boolean>>({})
 
   const {
     isChatVisible,
@@ -54,6 +57,22 @@ export default function ChannelChatPanel({
     hasMore,
     isLoadingMore,
   } = useChannelChat({ channelId, autoConnect: isLiveChannel })
+
+  const handleToggleTranslation = useCallback(async (msg: ChatMessageData) => {
+    const msgId = msg.id
+    if (showTranslation[msgId]) {
+      setShowTranslation((prev) => ({ ...prev, [msgId]: false }))
+      return
+    }
+    if (!translations[msgId]) {
+      const userLang = i18n.language?.split('-')[0] || 'en'
+      const translated = await ChannelChatService.translateMessage(
+        channelId, msg.message, msg.original_language, userLang,
+      )
+      if (translated) setTranslations((prev) => ({ ...prev, [msgId]: translated }))
+    }
+    setShowTranslation((prev) => ({ ...prev, [msgId]: true }))
+  }, [channelId, i18n.language, showTranslation, translations])
 
   const resetAutoHide = useCallback(() => {
     if (autoHideTimer.current) clearTimeout(autoHideTimer.current)
@@ -144,7 +163,12 @@ export default function ChannelChatPanel({
       <FlatList
         data={messages}
         renderItem={({ item }: { item: ChatMessageData }) => (
-          <ChannelChatMessage message={item} />
+          <ChannelChatMessage
+            message={item}
+            showTranslation={showTranslation[item.id] || false}
+            translatedText={translationEnabled ? translations[item.id] : undefined}
+            onToggleTranslation={translationEnabled ? () => handleToggleTranslation(item) : undefined}
+          />
         )}
         keyExtractor={(msg: ChatMessageData) => msg.id}
         inverted

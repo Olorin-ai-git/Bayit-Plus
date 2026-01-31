@@ -34,6 +34,17 @@ export default function ChannelChatMessage({
   onToggleTranslation,
 }: ChannelChatMessageProps) {
   const { t } = useTranslation()
+  const isSystemMessage = message.type === 'system_join' || message.type === 'system_leave'
+
+  // Render system messages with minimal styling
+  if (isSystemMessage) {
+    return (
+      <View style={styles.systemContainer}>
+        <Text style={styles.systemText}>{message.message}</Text>
+      </View>
+    )
+  }
+
   const isRTL = RTL_LANGUAGES.includes(message.original_language)
   const displayText = showTranslation && translatedText
     ? translatedText
@@ -79,6 +90,16 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
+  },
+  systemContainer: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    alignItems: 'center',
+  },
+  systemText: {
+    color: colors.textMuted,
+    fontSize: 11,
+    fontStyle: 'italic',
   },
   pinnedContainer: {
     backgroundColor: 'rgba(255, 215, 0, 0.08)',

@@ -4532,5 +4532,20 @@
   "quota": {
     "subtitleExceeded": "מכסת הכתוביות נוצלה. אנא נסה שוב מאוחר יותר.",
     "dubbingExceeded": "מכסת הדיבוב נוצלה. אנא נסה שוב מאוחר יותר."
+  },
+  "channelChat": {
+    "title": "צ'אט חי",
+    "error": "לא ניתן להתחבר לצ'אט",
+    "retry": "התחבר מחדש",
+    "participants": "{{count}} צופים",
+    "participants_one": "צופה {{count}}",
+    "participants_other": "{{count}} צופים",
+    "showOriginal": "הצג מקור",
+    "showTranslation": "תרגם",
+    "userJoined": "{{name}} הצטרף לצ'אט",
+    "userLeft": "משתמש עזב את הצ'אט",
+    "placeholder": "שלח הודעה...",
+    "send": "שלח",
+    "translationBeta": "תרגום (בטא)"
   }
 }

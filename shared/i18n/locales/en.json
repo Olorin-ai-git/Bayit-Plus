@@ -4603,5 +4603,20 @@
   "quota": {
     "subtitleExceeded": "Subtitle quota exceeded. Please try again later.",
     "dubbingExceeded": "Dubbing quota exceeded. Please try again later."
+  },
+  "channelChat": {
+    "title": "Live Chat",
+    "error": "Unable to connect to chat",
+    "retry": "Reconnect",
+    "participants": "{{count}} viewers",
+    "participants_one": "{{count}} viewer",
+    "participants_other": "{{count}} viewers",
+    "showOriginal": "Show original",
+    "showTranslation": "Translate",
+    "userJoined": "{{name}} joined the chat",
+    "userLeft": "A user left the chat",
+    "placeholder": "Send a message...",
+    "send": "Send",
+    "translationBeta": "Translation (Beta)"
   }
 }

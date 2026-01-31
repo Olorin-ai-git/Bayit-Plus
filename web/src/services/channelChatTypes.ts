@@ -12,6 +12,8 @@ export interface ConnectedData {
   recent_messages: ChatMessageData[]
 }
 
+export type ChatMessageType = 'message' | 'system_join' | 'system_leave'
+
 export interface ChatMessageData {
   id: string
   user_id: string
@@ -21,6 +23,8 @@ export interface ChatMessageData {
   timestamp: string
   is_pinned: boolean
   reactions?: Record<string, number>
+  type?: ChatMessageType
+  translated_text?: string
 }
 
 export interface UserJoinData {

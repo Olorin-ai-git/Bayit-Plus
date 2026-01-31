@@ -4777,5 +4777,20 @@
       "loadFailed": "Error al cargar trivia",
       "saveFailed": "Error al guardar preferencias de trivia"
     }
+  },
+  "channelChat": {
+    "title": "Chat en Vivo",
+    "error": "No se pudo conectar al chat",
+    "retry": "Reconectar",
+    "participants": "{{count}} espectadores",
+    "participants_one": "{{count}} espectador",
+    "participants_other": "{{count}} espectadores",
+    "showOriginal": "Mostrar original",
+    "showTranslation": "Traducir",
+    "userJoined": "{{name}} se unió al chat",
+    "userLeft": "Un usuario salió del chat",
+    "placeholder": "Escribe un mensaje...",
+    "send": "Enviar",
+    "translationBeta": "Traducción (Beta)"
   }
 }

@@ -69,11 +69,39 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
   }, [])
 
   const handleUserJoined = useCallback((data: UserJoinData) => {
-    setState((prev) => ({ ...prev, userCount: data.user_count }))
+    const systemMessage: ChatMessageData = {
+      id: `system-join-${data.user_id}-${Date.now()}`,
+      user_id: 'system',
+      user_name: data.user_name,
+      message: `${data.user_name} joined the chat`,
+      original_language: 'en',
+      timestamp: new Date().toISOString(),
+      is_pinned: false,
+      type: 'system_join',
+    }
+    setState((prev) => ({
+      ...prev,
+      userCount: data.user_count,
+      messages: [...prev.messages, systemMessage].slice(-MAX_MESSAGES),
+    }))
   }, [])
 
   const handleUserLeft = useCallback((data: UserLeftData) => {
-    setState((prev) => ({ ...prev, userCount: data.user_count }))
+    const systemMessage: ChatMessageData = {
+      id: `system-leave-${data.user_id}-${Date.now()}`,
+      user_id: 'system',
+      user_name: 'System',
+      message: `A user left the chat`,
+      original_language: 'en',
+      timestamp: new Date().toISOString(),
+      is_pinned: false,
+      type: 'system_leave',
+    }
+    setState((prev) => ({
+      ...prev,
+      userCount: data.user_count,
+      messages: [...prev.messages, systemMessage].slice(-MAX_MESSAGES),
+    }))
   }, [])
 
   const handleReactionUpdate = useCallback((data: ReactionUpdateData) => {
