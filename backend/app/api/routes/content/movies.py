@@ -8,6 +8,10 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
+from app.api.routes.content.beta_filter import (
+    build_beta_content_filter,
+    check_beta_access,
+)
 from app.core.config import settings
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.content import Content
@@ -42,10 +46,12 @@ async def list_all_movies(
     page: int = 1,
     limit: int = 50,
     category_id: Optional[str] = None,
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Get all movies (non-series content)."""
     skip = (page - 1) * limit
 
+    beta_filter = build_beta_content_filter(current_user)
     filters = {
         "is_published": True,
         "is_series": {"$ne": True},
@@ -54,6 +60,7 @@ async def list_all_movies(
             {"series_id": {"$exists": False}},
             {"series_id": ""},
         ],
+        **beta_filter,
     }
     if category_id:
         filters["category_id"] = category_id
@@ -122,16 +129,23 @@ async def get_movie_details(
     if not movie or not movie.is_published or movie.is_series:
         raise HTTPException(status_code=404, detail="Movie not found")
 
-    related = (
-        await Content.find(
-            Content.category_id == movie.category_id,
-            Content.id != movie.id,
-            Content.is_published == True,
-            Content.is_series == False,
-        )
-        .limit(6)
-        .to_list()
-    )
+    # Check beta content access - return 404 to hide existence from non-authorized users
+    is_beta = getattr(movie, "is_beta_content", False)
+    if not check_beta_access(current_user, is_beta):
+        raise HTTPException(status_code=404, detail="Movie not found")
+
+    # Build beta filter for related items
+    beta_filter = build_beta_content_filter(current_user)
+
+    # Query related items with beta filter
+    related_query = {
+        "category_id": movie.category_id,
+        "_id": {"$ne": movie.id},
+        "is_published": True,
+        "is_series": False,
+        **beta_filter,
+    }
+    related = await Content.find(related_query).limit(6).to_list()
 
     # Determine stream URL based on platform
     user_agent = request.headers.get("User-Agent", "")

@@ -707,8 +707,85 @@ async def get_featured(
         })
         logger.info(f"Added {len(location_items)} location-based items for {x_user_city}, {x_user_state}")
 
+    # Add "Beta Exclusive" carousel for beta users
+    is_beta_user = current_user and getattr(current_user, "is_beta_user", False)
+    if is_beta_user:
+        collection = Content.get_settings().pymongo_collection
+        beta_exclusive_pipeline = [
+            {
+                "$match": {
+                    "$and": [
+                        {"is_beta_content": True, "is_published": True},
+                        {"is_quality_variant": {"$ne": True}},
+                        {
+                            "$or": [
+                                {"series_id": None},
+                                {"series_id": {"$exists": False}},
+                                {"series_id": ""},
+                            ]
+                        },
+                        visibility_match,
+                    ]
+                }
+            },
+            {"$sort": {"created_at": -1}},
+            {
+                "$project": {
+                    "_id": 1,
+                    "title": 1,
+                    "thumbnail": 1,
+                    "thumbnail_data": 1,
+                    "poster_url": 1,
+                    "duration": 1,
+                    "year": 1,
+                    "is_series": 1,
+                    "total_episodes": 1,
+                    "available_subtitle_languages": 1,
+                }
+            },
+            {"$limit": 10},
+        ]
+        cursor = collection.aggregate(beta_exclusive_pipeline)
+        beta_items_raw = await cursor.to_list(length=None)
+
+        if beta_items_raw:
+            beta_exclusive_items = []
+            for item in beta_items_raw:
+                is_series = item.get("is_series", False)
+                thumbnail = (
+                    item.get("thumbnail_data")
+                    or item.get("thumbnail")
+                    or item.get("poster_url")
+                )
+                subtitle_langs = item.get("available_subtitle_languages") or []
+
+                beta_exclusive_items.append({
+                    "id": str(item["_id"]),
+                    "title": item.get("title"),
+                    "thumbnail": thumbnail,
+                    "duration": item.get("duration"),
+                    "year": item.get("year"),
+                    "category": "beta-exclusive",
+                    "type": "series" if is_series else "movie",
+                    "is_series": is_series,
+                    "total_episodes": item.get("total_episodes") if is_series else None,
+                    "available_subtitle_languages": subtitle_langs,
+                    "has_subtitles": len(subtitle_langs) > 0,
+                })
+
+            category_data.insert(0, {
+                "id": "beta-exclusive",
+                "name": "beta-exclusive",
+                "name_key": "home.betaExclusive",
+                "name_en": "Beta Exclusive",
+                "name_es": "Exclusivo Beta",
+                "items": beta_exclusive_items,
+            })
+            logger.info(f"Added {len(beta_exclusive_items)} beta exclusive items for beta user")
+
     # Sort categories by desired order
     desired_order = [
+        "beta-exclusive",  # Beta exclusive at the top for beta users
         "near-you",
         "trending",  # What's hot in Israel
         "jerusalem",

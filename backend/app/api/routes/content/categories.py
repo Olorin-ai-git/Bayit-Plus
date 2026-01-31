@@ -8,12 +8,15 @@ Legacy Category model is deprecated.
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
+from app.api.routes.content.beta_filter import build_beta_content_filter
 from app.api.routes.content.utils import (convert_to_proxy_url,
                                           is_series_by_category)
+from app.core.security import get_optional_user
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection, SectionSubcategory
+from app.models.user import User
 from app.services.subtitle_enrichment import \
     enrich_content_items_with_subtitles
 from app.utils.i18n import get_multilingual_names
@@ -140,6 +143,7 @@ async def get_by_category(
     category_id: str,
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Get content by section (accepts ID or slug).
@@ -161,6 +165,7 @@ async def get_by_category(
         raise HTTPException(status_code=404, detail="Section not found")
 
     section_id = str(section.id)
+    beta_filter = build_beta_content_filter(current_user)
 
     content_filter = {
         "section_ids": section_id,
@@ -171,6 +176,7 @@ async def get_by_category(
             {"series_id": ""},
         ],
         "is_quality_variant": {"$ne": True},
+        **beta_filter,
     }
 
     items = await Content.find(content_filter).skip(skip).limit(limit).to_list()
@@ -243,11 +249,12 @@ async def get_section_content(
     slug: str,
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Get content for a specific section by slug.
     """
-    return await get_by_category(slug, page, limit)
+    return await get_by_category(slug, page, limit, current_user)
 
 
 @router.get("/section/{section_slug}/subcategory/{subcategory_slug}")
@@ -256,6 +263,7 @@ async def get_subcategory_content(
     subcategory_slug: str,
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Get content for a specific subcategory.
@@ -274,6 +282,7 @@ async def get_subcategory_content(
         raise HTTPException(status_code=404, detail="Subcategory not found")
 
     subcategory_id = str(subcategory.id)
+    beta_filter = build_beta_content_filter(current_user)
 
     content_filter = {
         "subcategory_ids": subcategory_id,
@@ -283,6 +292,7 @@ async def get_subcategory_content(
             {"series_id": {"$exists": False}},
             {"series_id": ""},
         ],
+        **beta_filter,
     }
 
     items = await Content.find(content_filter).skip(skip).limit(limit).to_list()
