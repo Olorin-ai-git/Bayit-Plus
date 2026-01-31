@@ -7,6 +7,7 @@
 
 import React, { useCallback, memo } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SearchResultCard } from './SearchResultCard';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
@@ -32,6 +33,7 @@ export const SearchResultsCards = memo(function SearchResultsCards({
   onLoadMore,
   isLoadingMore,
 }: SearchResultsCardsProps) {
+  const { t } = useTranslation();
   const renderItem = useCallback(
     ({ item, index }: { item: SearchResult; index: number }) => (
       <SearchResultCard result={item} position={index} onPress={onResultClick} />
@@ -46,7 +48,7 @@ export const SearchResultsCards = memo(function SearchResultsCards({
       isLoadingMore ? (
         <View style={styles.loader}>
           <ActivityIndicator size="small" color={colors.primary} />
-          <Text style={styles.loaderText}>Loading more results...</Text>
+          <Text style={styles.loaderText}>{t('search.loadingMore')}</Text>
         </View>
       ) : null,
     [isLoadingMore]

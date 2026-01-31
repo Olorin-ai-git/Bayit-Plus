@@ -7,6 +7,7 @@
 
 import React, { memo, useCallback, useState, useMemo } from 'react';
 import { View, Text, Image, FlatList, StyleSheet, Platform, ActivityIndicator } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
@@ -33,6 +34,7 @@ export const SearchResultsGrid = memo(function SearchResultsGrid({
   onLoadMore,
   isLoadingMore,
 }: SearchResultsGridProps) {
+  const { t } = useTranslation();
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
 
   const numColumns = useMemo(() => {
@@ -120,7 +122,7 @@ export const SearchResultsGrid = memo(function SearchResultsGrid({
       isLoadingMore ? (
         <View style={styles.loader}>
           <ActivityIndicator size="small" color={colors.primary} />
-          <Text style={styles.loaderText}>Loading more results...</Text>
+          <Text style={styles.loaderText}>{t('search.loadingMore')}</Text>
         </View>
       ) : null,
     [isLoadingMore]

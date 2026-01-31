@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { colors, spacing } from '@olorin/design-tokens';
 import { User, Crown } from 'lucide-react';
 
@@ -18,10 +19,12 @@ interface PlayerCardProps {
 }
 
 export default function PlayerCard({ player, isCurrentTurn, isHost = false }: PlayerCardProps) {
+  const { t } = useTranslation();
+
   if (!player) {
     return (
       <View className="bg-black/30 backdrop-blur-xl rounded-xl p-4 my-2 border-2 border-transparent items-center justify-center py-6 shadow-md">
-        <Text className="text-gray-400 text-sm italic">Waiting for opponent...</Text>
+        <Text className="text-gray-400 text-sm italic">{t('chess.waitingForOpponent')}</Text>
       </View>
     );
   }
@@ -73,13 +76,13 @@ export default function PlayerCard({ player, isCurrentTurn, isHost = false }: Pl
       </View>
 
       {!player.is_connected && (
-        <Text className="text-red-500 text-xs mt-2 italic">Disconnected</Text>
+        <Text className="text-red-500 text-xs mt-2 italic">{t('chess.disconnected')}</Text>
       )}
 
       {isCurrentTurn && (
         <View className="flex-row items-center gap-2 mt-3">
           <View className="w-2 h-2 rounded-full bg-green-500" />
-          <Text className="text-green-500 text-xs font-medium">Their turn</Text>
+          <Text className="text-green-500 text-xs font-medium">{t('chess.theirTurn')}</Text>
         </View>
       )}
     </View>

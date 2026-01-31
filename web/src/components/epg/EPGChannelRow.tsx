@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Text, Image, StyleSheet, ScrollView } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Channel, EPGProgram } from '@/services/epgApi'
 import EPGTimeSlot from './EPGTimeSlot'
 import { RecordingStatus } from './EPGRecordingIndicator'
@@ -29,6 +30,7 @@ const EPGChannelRow: React.FC<EPGChannelRowProps> = ({
   getRecordingStatus,
   onRecordClick
 }) => {
+  const { t } = useTranslation()
   const channelPrograms = programs.filter(p => p.channel_id === channel.id)
 
   return (
@@ -66,7 +68,7 @@ const EPGChannelRow: React.FC<EPGChannelRowProps> = ({
           ))
         ) : (
           <View style={[styles.noProgramsContainer, { width: cellWidth * 4, height: cellHeight }]}>
-            <Text style={styles.noProgramsText}>No programs scheduled</Text>
+            <Text style={styles.noProgramsText}>{t('epg.noProgramsScheduled')}</Text>
           </View>
         )}
       </ScrollView>

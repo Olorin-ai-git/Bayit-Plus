@@ -26,10 +26,10 @@ interface SearchViewModeToggleProps {
   onChange: (mode: ViewMode) => void;
 }
 
-const VIEW_MODE_OPTIONS: { mode: ViewMode; icon: string; label: string }[] = [
-  { mode: 'grid', icon: '⊞', label: 'Grid' },
-  { mode: 'list', icon: '☰', label: 'List' },
-  { mode: 'cards', icon: '▢', label: 'Cards' },
+const VIEW_MODE_OPTIONS: { mode: ViewMode; icon: string }[] = [
+  { mode: 'grid', icon: '⊞' },
+  { mode: 'list', icon: '☰' },
+  { mode: 'cards', icon: '▢' },
 ];
 
 /**

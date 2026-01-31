@@ -56,7 +56,7 @@ async def websocket_channel_chat(websocket: WebSocket, channel_id: str):
             return
 
         user_id = str(user.id)
-        user_name = user.display_name or user.email.split("@")[0]
+        user_name = user.name or user.email.split("@")[0]
         logger.info(
             "User authenticated for channel chat",
             extra={"user_id": user_id, "user_name": user_name, "channel_id": channel_id, "client_ip": client_ip},

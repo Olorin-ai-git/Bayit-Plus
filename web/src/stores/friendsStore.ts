@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import api from '@/services/api';
+import i18n from '@bayit/i18n';
 
 
 interface Friend {
@@ -54,7 +55,7 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
       const data = await api.get('/friends/list') as { friends: Friend[] };
       set({ friends: data.friends || [], loading: false });
     } catch (error: any) {
-      const errorMessage = error?.detail || error?.message || 'Failed to fetch friends';
+      const errorMessage = error?.detail || error?.message || i18n.t('errors.friends.fetchFailed');
       set({ error: errorMessage, loading: false, friends: [] });
     }
   },
@@ -69,7 +70,7 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
         loading: false
       });
     } catch (error: any) {
-      const errorMessage = error?.detail || error?.message || 'Failed to fetch requests';
+      const errorMessage = error?.detail || error?.message || i18n.t('errors.friends.requestsFetchFailed');
       set({ error: errorMessage, loading: false, incomingRequests: [], outgoingRequests: [] });
     }
   },
@@ -81,7 +82,7 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
       await get().fetchRequests();
       set({ loading: false });
     } catch (error: any) {
-      set({ error: error?.detail || 'Failed to send request', loading: false });
+      set({ error: error?.detail || i18n.t('errors.friends.sendFailed'), loading: false });
       throw error;
     }
   },
@@ -94,7 +95,7 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
       await get().fetchRequests();
       set({ loading: false });
     } catch (error: any) {
-      set({ error: error?.detail || 'Failed to accept request', loading: false });
+      set({ error: error?.detail || i18n.t('errors.friends.acceptFailed'), loading: false });
     }
   },
 
@@ -105,7 +106,7 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
       await get().fetchRequests();
       set({ loading: false });
     } catch (error: any) {
-      set({ error: error?.detail || 'Failed to reject request', loading: false });
+      set({ error: error?.detail || i18n.t('errors.friends.rejectFailed'), loading: false });
     }
   },
 
@@ -116,7 +117,7 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
       await get().fetchRequests();
       set({ loading: false });
     } catch (error: any) {
-      set({ error: error?.detail || 'Failed to cancel request', loading: false });
+      set({ error: error?.detail || i18n.t('errors.friends.cancelFailed'), loading: false });
     }
   },
 
@@ -127,7 +128,7 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
       await get().fetchFriends();
       set({ loading: false });
     } catch (error: any) {
-      set({ error: error?.detail || 'Failed to remove friend', loading: false });
+      set({ error: error?.detail || i18n.t('errors.friends.removeFailed'), loading: false });
     }
   },
 

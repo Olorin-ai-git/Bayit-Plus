@@ -13,7 +13,7 @@ const SIDEBAR_MAX_WIDTH = 400
 
 export default function AdminLayout() {
   const { isAuthenticated, isLoading, isAdmin } = useAuthStore()
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { width } = useWindowDimensions()
   const isMobile = width < 768
   const isRTL = i18n.language === 'he' || i18n.language === 'ar'
@@ -59,7 +59,7 @@ export default function AdminLayout() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Loading...</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     )
   }

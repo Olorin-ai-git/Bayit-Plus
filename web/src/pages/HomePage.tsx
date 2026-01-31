@@ -121,7 +121,7 @@ function HeroSkeleton() {
       <View style={styles.skeletonHeroOverlay} />
       <View style={styles.skeletonLoadingContainer}>
         <View style={styles.loadingSpinner} />
-        <Text style={styles.skeletonLoadingText}>Loading...</Text>
+        <Text style={styles.skeletonLoadingText}>{t('common.loading')}</Text>
       </View>
     </View>
   );

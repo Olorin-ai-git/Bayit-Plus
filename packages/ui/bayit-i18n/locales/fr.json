@@ -317,5 +317,192 @@
     "upgradeBeta": "Passez à Beta 500 pour la traduction automatique",
     "inputLabel": "Champ de saisie du message",
     "moderationDelete": "Message supprimé par le modérateur"
+  },
+  "errors": {
+    "friends": {
+      "fetchFailed": "Impossible de récupérer les amis",
+      "requestsFetchFailed": "Impossible de récupérer les demandes",
+      "sendFailed": "Impossible d'envoyer la demande",
+      "acceptFailed": "Impossible d'accepter la demande",
+      "rejectFailed": "Impossible de rejeter la demande",
+      "cancelFailed": "Impossible d'annuler la demande",
+      "removeFailed": "Impossible de supprimer l'ami"
+    },
+    "settings": {
+      "loadFailed": "Impossible de charger les préférences",
+      "saveFailed": "Impossible de sauvegarder les préférences"
+    },
+    "devices": {
+      "loadFailed": "Impossible de charger les appareils",
+      "registerFailed": "Impossible d'enregistrer l'appareil",
+      "disconnectFailed": "Impossible de déconnecter l'appareil"
+    },
+    "stats": {
+      "fetchFailed": "Impossible de récupérer les statistiques",
+      "playerFetchFailed": "Impossible de récupérer les statistiques du joueur",
+      "historyFetchFailed": "Impossible de récupérer l'historique des parties",
+      "leaderboardFetchFailed": "Impossible de récupérer le classement",
+      "h2hFetchFailed": "Impossible de récupérer les statistiques face à face"
+    },
+    "profile": {
+      "fetchFailed": "Impossible de récupérer les profils",
+      "selectFailed": "Impossible de sélectionner le profil",
+      "createFailed": "Impossible de créer le profil",
+      "updateFailed": "Impossible de mettre à jour le profil",
+      "deleteFailed": "Impossible de supprimer le profil"
+    },
+    "auth": {
+      "notAuthenticated": "Non authentifié",
+      "tokenRefreshFailed": "Impossible de renouveler le jeton d'authentification",
+      "playbackAuthRequired": "Authentification requise pour la session de lecture"
+    },
+    "connection": {
+      "failed": "Erreur de connexion - vérifiez la console pour plus de détails",
+      "timeout": "Délai de connexion dépassé",
+      "error": "Erreur de connexion"
+    },
+    "chess": {
+      "connectFailed": "Impossible de se connecter au jeu",
+      "notConnected": "Non connecté au jeu"
+    },
+    "podcast": {
+      "switchLanguageFailed": "Impossible de changer de langue",
+      "playbackError": "Erreur de lecture audio"
+    },
+    "widget": {
+      "loadFailed": "Impossible de charger les widgets"
+    },
+    "player": {
+      "noStreamUrl": "URL de diffusion non disponible",
+      "loadFailed": "Impossible de charger la vidéo",
+      "notReady": "Vidéo pas prête",
+      "sessionCreateFailed": "Impossible de créer la session de lecture après plusieurs tentatives"
+    },
+    "trivia": {
+      "invalidChannel": "ID de chaîne invalide"
+    }
+  },
+  "common": {
+    "milliseconds": "millisecondes",
+    "collapse": "Réduire",
+    "expand": "Développer",
+    "details": "détails",
+    "loading": "Chargement...",
+    "retry": "Réessayer",
+    "loadMore": "Charger plus",
+    "processing": "Traitement..."
+  },
+  "widget": {
+    "streamUnavailable": "Diffusion indisponible",
+    "contentUnavailable": "Contenu indisponible",
+    "podcastUnavailable": "Podcast indisponible",
+    "stationUnavailable": "Station indisponible",
+    "iframeNotConfigured": "URL de l'iFrame non configurée",
+    "unknownComponent": "Composant inconnu : {{componentName}}",
+    "noContentConfigured": "Aucun contenu configuré",
+    "errorLoadingContent": "Erreur de chargement du contenu",
+    "loadingEpisodes": "Chargement des épisodes...",
+    "noEpisodesFound": "Aucun épisode trouvé",
+    "audioUnavailable": "Audio indisponible",
+    "103fmEpisodes": "Épisodes 103FM",
+    "loadingNews": "Chargement des actualités...",
+    "ynetBreakingNews": "מבזקי Ynet"
+  },
+  "chess": {
+    "waitingForOpponent": "En attente de l'adversaire...",
+    "disconnected": "Déconnecté",
+    "theirTurn": "Leur tour"
+  },
+  "audible": {
+    "connectionFailed": "Échec de connexion",
+    "connecting": "Connexion à Audible...",
+    "pleaseWait": "Veuillez patienter pendant que nous lions votre compte.",
+    "connected": "Connecté !",
+    "accountLinked": "Votre compte Audible est maintenant lié à Bayit+"
+  },
+  "settings": {
+    "accessibility": {
+      "small": "Petit",
+      "medium": "Moyen",
+      "large": "Grand"
+    }
+  },
+  "recordings": {
+    "record": "Enregistrer"
+  },
+  "epg": {
+    "live": "EN DIRECT"
+  },
+  "dubbing": {
+    "latency": {
+      "badge": {
+        "title": "Moniteur de Latence",
+        "tooltip": "Délai de traitement audio en temps réel. La vidéo est automatiquement retardée pour correspondre à une synchronisation parfaite.",
+        "accessibilityHint": "Appuyez deux fois pour basculer le panneau des détails de latence"
+      },
+      "components": {
+        "capture": "Capture Audio",
+        "captureDesc": "Temps pour capturer l'audio de la vidéo",
+        "stt": "Parole en Texte",
+        "sttDesc": "Conversion de la parole en texte",
+        "translation": "Traduction",
+        "translationDesc": "Traduction vers la langue cible",
+        "tts": "Texte en Parole",
+        "ttsDesc": "Génération de l'audio doublé",
+        "network": "Réseau",
+        "networkDesc": "Délai de transmission des données",
+        "buffer": "Tampon Audio",
+        "bufferDesc": "Tampon de traitement audio",
+        "sync": "Synchronisation Vidéo",
+        "syncDesc": "Délai vidéo pour une synchronisation parfaite"
+      },
+      "status": {
+        "excellent": "Excellent",
+        "good": "Bon",
+        "fair": "Moyen",
+        "poor": "Mauvais"
+      },
+      "info": {
+        "autoSync": "Synchronisation Automatique",
+        "autoSyncDesc": "La vidéo est automatiquement retardée pour correspondre au temps de traitement audio, garantissant une synchronisation labiale et un timing de sous-titres parfaits.",
+        "howItWorks": "Comment Ça Marche",
+        "howItWorksDesc": "Le système mesure la latence de traitement réelle et retarde le flux vidéo du même montant. C'est ainsi que fonctionne la traduction de diffusion professionnelle.",
+        "noManualAdjustment": "Aucun Réglage Manuel Nécessaire",
+        "noManualAdjustmentDesc": "Contrairement à d'autres systèmes, vous n'avez pas besoin de synchroniser manuellement l'audio et la vidéo. Tout est automatique.",
+        "whyDelay": "Pourquoi Y A-t-il Un Délai?",
+        "whyDelayDesc": "La traduction et le doublage en temps réel prennent du temps (généralement 600-800ms). Plutôt que d'afficher du contenu désynchronisé, nous retardons la vidéo pour qu'elle corresponde. Vous voyez le contenu légèrement en retard par rapport au 'direct' mais parfaitement synchronisé.",
+        "professionalQuality": "Qualité Professionnelle",
+        "professionalQualityDesc": "C'est la même approche utilisée par les diffuseurs professionnels pour la couverture internationale en direct."
+      },
+      "graph": {
+        "title": "Historique de Latence",
+        "tooltip": "Historique continu de 60 secondes de la latence de traitement",
+        "xAxis": "Temps (secondes en arrière)",
+        "yAxis": "Latence (ms)",
+        "noData": "Pas encore de données..."
+      },
+      "breakdown": {
+        "title": "Répartition de la Latence",
+        "cacheHitRate": "Taux de Réussite du Cache",
+        "provider": "Fournisseur"
+      }
+    },
+    "controls": {
+      "liveDubbing": "Doublage en Direct",
+      "enableDubbing": "Activer le Doublage en Direct",
+      "enableSubtitles": "Activer les Sous-titres en Direct",
+      "selectLanguage": "Sélectionner la Langue",
+      "selectVoice": "Sélectionner la Voix",
+      "originalVolume": "Audio Original",
+      "dubbedVolume": "Audio Doublé",
+      "tooltips": {
+        "enableDubbing": "Traduire et doubler l'audio en direct en temps réel",
+        "enableSubtitles": "Afficher les sous-titres traduits en temps réel",
+        "selectLanguage": "Choisissez votre langue préférée pour la traduction",
+        "selectVoice": "Choisissez la voix pour l'audio doublé",
+        "originalVolume": "Ajuster le volume de l'audio original (0 = muet)",
+        "dubbedVolume": "Ajuster le volume de l'audio doublé (1 = volume complet)"
+      }
+    }
   }
 }

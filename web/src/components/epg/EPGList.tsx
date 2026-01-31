@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Channel, EPGProgram } from '@/services/epgApi'
 import EPGProgramCard from './EPGProgramCard'
 
@@ -16,6 +17,7 @@ const EPGList: React.FC<EPGListProps> = ({
   timezone,
   onProgramClick
 }) => {
+  const { t } = useTranslation()
   const channelMap = useMemo(() => {
     return channels.reduce((map, channel) => {
       map[channel.id] = channel
@@ -48,7 +50,7 @@ const EPGList: React.FC<EPGListProps> = ({
               />
             </svg>
           </View>
-          <Text style={styles.emptyStateTitle}>No Programs Found</Text>
+          <Text style={styles.emptyStateTitle}>{t('epg.noProgramsFound')}</Text>
           <Text style={styles.emptyStateMessage}>
             No programs are available for the selected time range. Try adjusting your filters or check back later.
           </Text>

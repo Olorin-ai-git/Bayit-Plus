@@ -1,145 +1,471 @@
 {
+  "auth": {
+    "loginRequired": "需要登录",
+    "loginToWatch": "请登录以观看 {{title}}",
+    "login": "登录",
+    "signUp": "注册"
+  },
   "email": {
-    "greeting": "Hello",
+    "greeting": "您好",
     "footer": {
-      "privacy": "Privacy Policy",
-      "terms": "Terms of Service",
-      "support": "Support",
-      "unsubscribe": "Unsubscribe from these emails"
+      "privacy": "隐私政策",
+      "terms": "服务条款",
+      "support": "客户支持",
+      "unsubscribe": "退订这些邮件"
     },
     "welcome": {
-      "subject": "Welcome to Bayit+!",
-      "title": "Welcome to Bayit+",
-      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
-      "cta": "Go to Dashboard"
+      "subject": "欢迎加入 Bayit+！",
+      "title": "欢迎来到 Bayit+",
+      "body": "感谢您加入 Bayit+。我们很高兴您的到来！",
+      "cta": "前往控制台"
     },
     "verification": {
-      "subject": "Verify Your Email",
-      "title": "Verify Your Email Address",
-      "body": "Please click the button below to verify your email address.",
-      "cta": "Verify Email",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't create an account, you can safely ignore this email."
+      "subject": "验证您的邮箱",
+      "title": "验证您的邮箱地址",
+      "body": "请点击下方按钮验证您的邮箱地址。",
+      "cta": "验证邮箱",
+      "expiry": "此链接将在 {expiry_hours} 小时后失效。",
+      "security": "如果您没有创建帐户，可以安全地忽略此邮件。"
     },
     "verification_resend": {
-      "subject": "Email Verification (Resent)",
-      "title": "Verify Your Email Address",
-      "body": "Here's a new verification link as requested.",
-      "cta": "Verify Email"
+      "subject": "邮箱验证（重新发送）",
+      "title": "验证您的邮箱地址",
+      "body": "根据您的请求，这是新的验证链接。",
+      "cta": "验证邮箱"
     },
     "password_reset": {
-      "subject": "Reset Your Password",
-      "title": "Reset Your Password",
-      "body": "We received a request to reset your password. Click the button below to create a new password.",
-      "cta": "Reset Password",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+      "subject": "重置您的密码",
+      "title": "重置您的密码",
+      "body": "我们收到了重置您密码的请求。请点击下方按钮创建新密码。",
+      "cta": "重置密码",
+      "expiry": "此链接将在 {expiry_hours} 小时后失效。",
+      "security": "如果您没有请求此操作，您的帐户仍然安全。您可以忽略此邮件。"
     },
     "password_changed": {
-      "subject": "Password Changed",
-      "title": "Your Password Has Been Changed",
-      "body": "Your password was successfully changed.",
-      "security": "If you didn't make this change, please contact support immediately."
+      "subject": "密码已更改",
+      "title": "您的密码已更改",
+      "body": "您的密码已成功更改。",
+      "security": "如果这不是您本人的操作，请立即联系客服。"
     },
     "account_locked": {
-      "subject": "Account Locked",
-      "title": "Your Account Has Been Locked",
-      "body": "Your account has been temporarily locked due to security concerns.",
-      "cta": "Unlock Account"
+      "subject": "帐户已锁定",
+      "title": "您的帐户已被锁定",
+      "body": "由于安全原因，您的帐户已被暂时锁定。",
+      "cta": "解锁帐户"
     },
     "beta_invitation": {
-      "subject": "You're Invited to Bayit+ Beta!",
-      "title": "You're Invited to the Beta Program",
-      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
-      "credits": "{credits} AI credits included",
-      "duration": "Access for {days} days",
-      "cta": "Join Beta Program"
+      "subject": "您已被邀请加入 Bayit+ 测试版！",
+      "title": "您已被邀请加入测试计划",
+      "body": "恭喜！您已被选中参加独家 Bayit+ Beta 500 计划。",
+      "credits": "包含 {credits} 个 AI 积分",
+      "duration": "访问权限有效期 {days} 天",
+      "cta": "加入测试计划"
     },
     "beta_welcome": {
-      "subject": "Welcome to Bayit+ Beta!",
-      "title": "Welcome to the Beta Program",
-      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
-      "cta": "Get Started"
+      "subject": "欢迎加入 Bayit+ 测试版！",
+      "title": "欢迎加入测试计划",
+      "body": "您现在是独家 Bayit+ Beta 500 社区的一员！",
+      "cta": "开始使用"
     },
     "payment_confirmation": {
-      "subject": "Payment Confirmation",
-      "title": "Payment Received",
-      "body": "Your payment has been processed successfully.",
-      "transaction": "Transaction ID",
-      "plan": "Plan",
-      "amount": "Amount",
-      "date": "Payment Date",
-      "next_billing": "Next Billing Date"
+      "subject": "付款确认",
+      "title": "已收到付款",
+      "body": "您的付款已成功处理。",
+      "transaction": "交易编号",
+      "plan": "套餐",
+      "amount": "金额",
+      "date": "付款日期",
+      "next_billing": "下次账单日期"
     },
     "subscription_activated": {
-      "subject": "Subscription Activated",
-      "title": "Your Subscription is Active",
-      "body": "Your subscription has been activated. Here's what you get:",
-      "cta": "Start Watching"
+      "subject": "订阅已激活",
+      "title": "您的订阅已激活",
+      "body": "您的订阅已激活。以下是您将获得的权益：",
+      "cta": "开始观看"
     },
     "subscription_cancelled": {
-      "subject": "Subscription Cancelled",
-      "title": "Subscription Cancelled",
-      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
-      "cta": "Reactivate Subscription"
+      "subject": "订阅已取消",
+      "title": "订阅已取消",
+      "body": "您的订阅已取消。您将继续拥有访问权限至 {access_until}。",
+      "cta": "重新激活订阅"
     },
     "payment_failed": {
-      "subject": "Payment Failed",
-      "title": "Payment Failed",
-      "body": "We were unable to process your payment. Please update your payment method.",
-      "cta": "Update Payment Method"
+      "subject": "付款失败",
+      "title": "付款失败",
+      "body": "我们无法处理您的付款。请更新您的付款方式。",
+      "cta": "更新付款方式"
     },
     "trial_expiring": {
-      "subject": "Your Trial is Expiring Soon",
-      "title": "Trial Ending in {days_remaining} Days",
-      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
-      "cta": "Upgrade Now"
+      "subject": "您的试用即将到期",
+      "title": "试用将在 {days_remaining} 天后结束",
+      "body": "您的免费试用即将到期。立即升级以继续享受所有功能。",
+      "cta": "立即升级"
     },
     "support": {
-      "created_subject": "Ticket #{ticket_id} Created",
-      "created_title": "Support Ticket Created",
-      "created_body": "Your support ticket has been created. We'll get back to you soon.",
-      "response_subject": "New Response on Ticket #{ticket_id}",
-      "response_title": "New Response on Your Ticket",
-      "escalation_subject": "Ticket #{ticket_id} Escalated",
-      "escalation_title": "Your Ticket Has Been Escalated",
-      "resolved_subject": "Ticket #{ticket_id} Resolved",
-      "resolved_title": "Your Ticket Has Been Resolved",
-      "resolved_body": "Your support ticket has been resolved."
+      "created_subject": "工单 #{ticket_id} 已创建",
+      "created_title": "客服工单已创建",
+      "created_body": "您的客服工单已创建。我们将尽快回复您。",
+      "response_subject": "工单 #{ticket_id} 有新回复",
+      "response_title": "您的工单有新回复",
+      "escalation_subject": "工单 #{ticket_id} 已升级",
+      "escalation_title": "您的工单已被升级处理",
+      "resolved_subject": "工单 #{ticket_id} 已解决",
+      "resolved_title": "您的工单已解决",
+      "resolved_body": "您的客服工单已解决。"
     },
     "new_message": {
-      "subject": "New Message from {sender_name}",
-      "title": "You Have a New Message",
-      "cta": "Read Message"
+      "subject": "来自 {sender_name} 的新消息",
+      "title": "您有一条新消息",
+      "cta": "阅读消息"
     },
     "content_digest": {
-      "subject": "Your {digest_period} Content Digest",
-      "title": "Your Content Digest",
-      "cta": "Browse Content"
+      "subject": "您的{digest_period}内容摘要",
+      "title": "您的内容摘要",
+      "cta": "浏览内容"
     },
     "gdpr": {
-      "deletion_subject": "Data Deletion Confirmation",
-      "deletion_title": "Your Data Has Been Deleted",
-      "deletion_body": "As requested, your personal data has been permanently deleted.",
-      "categories_label": "Deleted Data Categories"
+      "deletion_subject": "数据删除确认",
+      "deletion_title": "您的数据已被删除",
+      "deletion_body": "根据您的请求，您的个人数据已被永久删除。",
+      "categories_label": "已删除的数据类别"
     },
     "admin": {
-      "account_created_subject": "Admin Account Created",
-      "account_created_title": "Admin Account Created",
-      "role_change_subject": "Role Changed",
-      "role_change_title": "Your Role Has Been Updated"
+      "account_created_subject": "管理员帐户已创建",
+      "account_created_title": "管理员帐户已创建",
+      "role_change_subject": "角色已更改",
+      "role_change_title": "您的角色已更新"
     },
     "campaign": {
-      "default_subject": "News from Bayit+"
+      "default_subject": "来自 Bayit+ 的新闻"
     },
     "newsletter": {
-      "default_subject": "Bayit+ Newsletter"
+      "default_subject": "Bayit+ 通讯"
     },
     "reengagement": {
-      "subject": "We Miss You!",
-      "title": "It's Been a While",
-      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
-      "cta": "Come Back"
+      "subject": "我们想念您！",
+      "title": "好久不见",
+      "body": "我们注意到您已经 {days_inactive} 天没有访问了。以下是您错过的内容：",
+      "cta": "回来看看"
+    }
+  },
+  "greeting": {
+    "morning": "早上好",
+    "afternoon": "下午好",
+    "evening": "晚上好",
+    "night": "晚安"
+  },
+  "location": {
+    "consentModal": {
+      "title": "启用位置服务",
+      "description": "我们希望向您展示与您所在地区相关的内容。\n\n我们将会：\n• 检测您的城市和州\n• 显示当地以色列社区内容\n• 缓存您的位置24小时\n\n我们不会：\n• 追踪您的精确位置\n• 将您的位置信息分享给第三方\n• 未经同意永久存储您的位置\n\n您可以随时在设置中更改此选项。",
+      "accept": "允许访问位置",
+      "decline": "暂时不用",
+      "privacyNote": "您的隐私对我们非常重要。位置数据经过加密处理，绝不会被出售。"
+    },
+    "permissionBanner": {
+      "title": "发现您附近的以色列内容",
+      "description": "启用位置服务以查看您所在地区的以色列社区活动、新闻和故事。您的隐私受到保护——我们仅检测您所在的城市。",
+      "enable": "启用位置",
+      "notNow": "暂时不用",
+      "close": "关闭"
+    },
+    "status": {
+      "detecting": "正在检测您的位置...",
+      "detected": "已检测到位置：{{city}}，{{state}}",
+      "denied": "位置访问被拒绝",
+      "unavailable": "位置服务不可用",
+      "error": "位置检测失败"
+    },
+    "errors": {
+      "permissionDenied": "位置访问被拒绝。请在浏览器设置中启用位置权限。",
+      "timeout": "位置请求超时。请重试。",
+      "unavailable": "您的浏览器不支持位置服务。",
+      "failed": "获取位置失败。请重试。"
+    }
+  },
+  "uploads": {
+    "title": "上传管理",
+    "subtitle": "监控文件夹并管理内容上传",
+    "queueDashboard": {
+      "title": "上传队列仪表板",
+      "stats": "队列统计",
+      "total": "总计",
+      "queued": "排队中",
+      "active": "进行中",
+      "done": "已完成",
+      "activeJob": "当前上传",
+      "queuedJobs": "排队中的上传",
+      "recentCompleted": "最近完成",
+      "noActiveJob": "没有正在进行的上传",
+      "noActiveJobDescription": "队列为空。上传文件或扫描监控文件夹以开始处理。",
+      "noQueuedJobs": "没有待处理的上传",
+      "noQueuedJobsDescription": "所有文件已处理完毕。添加更多文件以继续。",
+      "noRecentCompleted": "没有最近完成的项目",
+      "noRecentCompletedDescription": "成功上传的文件将显示在此处。",
+      "queuePausedWarning": "队列已暂停：{{reason}}",
+      "resumeQueue": "恢复队列",
+      "pauseQueue": "暂停队列",
+      "clearQueue": "清空队列"
+    },
+    "manualUpload": {
+      "title": "手动上传",
+      "subtitle": "从您的设备直接上传文件",
+      "browserUpload": "浏览器上传",
+      "urlUpload": "URL 导入",
+      "contentType": "内容类型",
+      "contentTypeHelp": "选择正在上传的内容类型",
+      "contentTypeRequired": "请选择内容类型",
+      "dropZone": "拖放区域",
+      "dropZoneAriaLabel": "文件上传拖放区。点击或按回车键选择文件，或将文件拖放到此处",
+      "dropHere": "将视频文件拖放到此处或点击浏览",
+      "dropHereActive": "释放文件以上传",
+      "tapToSelect": "点击选择文件",
+      "browseFiles": "浏览文件",
+      "selectFiles": "选择文件",
+      "supportedFormats": "支持格式：MP4、MKV、AVI、MOV、WEBM（最大 {{maxSize}}）",
+      "fileList": "已选择的上传文件",
+      "fileListEmpty": "未选择文件",
+      "fileListEmptyDescription": "使用上方的文件选择器选择要上传的文件",
+      "fileItem": "文件：{{name}}，大小：{{size}}，进度：{{progress}}%",
+      "fileName": "文件名",
+      "fileSize": "大小",
+      "fileType": "类型",
+      "fileProgress": "进度",
+      "fileStatus": "状态",
+      "removeFile": "移除 {{name}}",
+      "removeFileHint": "从上传队列中移除此文件",
+      "fileRemoved": "已从上传队列中移除 {{name}}",
+      "selectedFiles": "已选择 {{count}} 个文件",
+      "selectedFilesOne": "已选择 1 个文件",
+      "selectedFilesOther": "已选择 {{count}} 个文件",
+      "totalSize": "总大小：{{size}}",
+      "clearAll": "清除全部",
+      "clearAllHint": "从上传队列中移除所有文件",
+      "clearAllConfirm": "移除全部 {{count}} 个文件？",
+      "uploadFiles": "上传文件",
+      "uploading": "上传中...",
+      "uploadingFiles": "正在上传 {{count}} 个文件...",
+      "uploadProgress": "上传中：已完成 {{percent}}%",
+      "uploadComplete": "上传完成",
+      "uploadSuccess": "成功上传 {{count}} 个文件",
+      "uploadSuccessOne": "成功上传 1 个文件",
+      "uploadSuccessOther": "成功上传 {{count}} 个文件",
+      "uploadPartialSuccess": "已上传 {{total}} 个文件中的 {{successful}} 个。{{failed}} 个失败。",
+      "uploadFailed": "上传失败：{{error}}",
+      "cancelUpload": "取消上传",
+      "retryUpload": "重试上传",
+      "retryFailed": "重试失败的文件"
+    },
+    "urlUpload": {
+      "title": "从 URL 导入",
+      "subtitle": "从远程 URL 导入视频文件",
+      "urlLabel": "视频 URL",
+      "urlPlaceholder": "https://example.com/video.mp4",
+      "urlHelp": "输入视频文件的直接 URL",
+      "urlRequired": "URL 为必填项",
+      "importButton": "从 URL 导入",
+      "importing": "导入中...",
+      "importSuccess": "从 URL 导入成功",
+      "importFailed": "导入失败：{{error}}",
+      "invalidUrl": "请输入有效的 URL",
+      "urlMustBeHttps": "URL 必须使用 HTTPS 协议",
+      "emptyUrlList": "没有已导入的 URL",
+      "emptyUrlListDescription": "在上方输入 URL 以从远程来源导入视频文件",
+      "addUrl": "添加 URL",
+      "removeUrl": "移除 URL"
+    },
+    "monitoredFolders": {
+      "title": "监控文件夹",
+      "subtitle": "配置文件夹以自动检测和上传内容",
+      "noFolders": "没有监控文件夹",
+      "noFoldersDescription": "添加文件夹以启用自动内容检测和上传",
+      "addFolder": "添加文件夹",
+      "editFolder": "编辑文件夹",
+      "deleteFolder": "删除文件夹",
+      "scanFolder": "扫描文件夹",
+      "scanFolderHint": "检查文件夹中的新文件并排队上传",
+      "scanning": "扫描中...",
+      "scanComplete": "扫描完成：发现 {{count}} 个文件",
+      "scanCompleteOne": "扫描完成：发现 1 个文件",
+      "scanCompleteOther": "扫描完成：发现 {{count}} 个文件",
+      "noFilesFound": "文件夹中未发现新文件",
+      "scanFailed": "扫描失败：{{error}}",
+      "folderName": "文件夹名称",
+      "folderPath": "文件夹路径",
+      "folderStatus": "状态",
+      "folderEnabled": "已启用",
+      "folderDisabled": "已禁用",
+      "lastScan": "上次扫描",
+      "neverScanned": "从未扫描",
+      "filesDetected": "检测到 {{count}} 个文件",
+      "confirmDelete": "删除 {{name}}？",
+      "confirmDeleteMessage": "这将停止监控此文件夹。已有的上传不会受到影响。",
+      "deleteSuccess": "文件夹删除成功",
+      "deleteFailed": "删除文件夹失败：{{error}}",
+      "form": {
+        "title": "文件夹配置",
+        "name": "文件夹名称",
+        "namePlaceholder": "例如：电影存档",
+        "nameRequired": "文件夹名称为必填项",
+        "nameHelp": "此文件夹的描述性名称",
+        "path": "文件夹路径",
+        "pathPlaceholder": "/path/to/folder",
+        "pathHelp": "输入要监控的完整路径",
+        "pathRequired": "文件夹路径为必填项",
+        "pathInvalid": "无效的文件夹路径",
+        "pathReadOnly": "创建后无法更改路径",
+        "enabled": "已启用",
+        "enabledHelp": "启用或禁用此文件夹的监控",
+        "autoUpload": "自动上传",
+        "autoUploadHelp": "自动上传在此文件夹中检测到的新文件",
+        "contentType": "内容类型",
+        "contentTypeHelp": "此文件夹中的内容类型",
+        "saveButton": "保存文件夹",
+        "cancelButton": "取消",
+        "saving": "保存中..."
+      }
+    },
+    "dryRun": {
+      "title": "试运行模式",
+      "enabled": "试运行已启用",
+      "disabled": "试运行已禁用",
+      "description": "预览上传而不实际传输文件",
+      "descriptionDetailed": "启用后，文件将被验证并提取元数据，但不会上传到存储。使用此功能在不提交更改的情况下测试上传。",
+      "toggle": "启用试运行",
+      "toggleHint": "切换试运行模式以安全测试上传",
+      "previewTitle": "试运行结果",
+      "previewDescription": "查看继续上传后将发生的操作",
+      "validFiles": "有效文件（{{count}}）",
+      "invalidFiles": "无效文件（{{count}}）",
+      "warnings": "警告（{{count}}）",
+      "proceedButton": "继续上传",
+      "proceedHint": "禁用试运行并执行实际上传",
+      "cancelButton": "取消",
+      "noResults": "没有可用的试运行结果"
+    },
+    "connectionStatus": {
+      "connected": "已连接",
+      "disconnected": "已断开",
+      "reconnecting": "重新连接中...",
+      "reconnectAttempt": "重新连接中（第 {{current}} 次尝试，共 {{max}} 次）",
+      "connectionLost": "实时更新不可用",
+      "connectionLostDescription": "与服务器的连接已断开。正在尝试重新连接...",
+      "connectionLostAnnouncement": "连接已断开。实时更新已暂停。使用刷新按钮进行手动更新。",
+      "connectedAnnouncement": "已连接到上传服务。实时更新已激活。",
+      "reconnectingAnnouncement": "正在重新连接上传服务。第 {{attempt}} 次尝试，共 {{maxAttempts}} 次。",
+      "troubleshooting": "故障排除",
+      "troubleshootingSteps": [
+        "检查您的网络连接",
+        "确认服务器正在运行",
+        "检查您的身份验证令牌",
+        "尝试刷新页面"
+      ],
+      "manualRefresh": "手动刷新",
+      "manualRefreshHint": "手动刷新队列数据",
+      "refreshing": "刷新中..."
+    },
+    "contentTypes": {
+      "movie": "电影",
+      "series": "剧集",
+      "podcast": "播客",
+      "other": "其他"
+    },
+    "stages": {
+      "browserUpload": "浏览器上传",
+      "hashCalculation": "哈希计算",
+      "duplicateCheck": "重复检查",
+      "metadataExtraction": "元数据提取",
+      "gcsUpload": "云端上传",
+      "databaseInsert": "数据库插入",
+      "complete": "完成",
+      "failed": "失败"
+    },
+    "status": {
+      "queued": "排队中",
+      "processing": "处理中",
+      "uploading": "上传中",
+      "complete": "完成",
+      "failed": "失败",
+      "cancelled": "已取消",
+      "skipped": "已跳过（重复）"
+    },
+    "actions": {
+      "pauseQueue": "暂停队列",
+      "resumeQueue": "恢复队列",
+      "clearQueue": "清空队列",
+      "clearQueueConfirm": "清空上传队列？",
+      "clearQueueConfirmMessage": "这将取消 {{count}} 个待处理的上传。此操作无法撤销。",
+      "triggerUpload": "扫描文件夹",
+      "triggerUploadHint": "扫描所有监控文件夹以查找新文件",
+      "triggerUploadSuccess": "发现 {{files_found}} 个待上传文件",
+      "triggerUploadFailed": "扫描失败：{{error}}",
+      "refresh": "刷新",
+      "refreshHint": "重新加载队列数据",
+      "cancel": "取消",
+      "retry": "重试",
+      "remove": "移除"
+    },
+    "errors": {
+      "loadFailed": "加载上传数据失败",
+      "loadFailedDescription": "无法获取上传队列。请尝试刷新。",
+      "saveFailed": "保存文件夹配置失败",
+      "saveFailedDescription": "无法保存监控文件夹。请重试。",
+      "deleteFailed": "删除监控文件夹失败",
+      "uploadFailed": "上传失败",
+      "uploadFailedDescription": "一个或多个文件上传失败。请查看文件列表了解详情。",
+      "resumeFailed": "恢复队列失败",
+      "clearFailed": "清空队列失败",
+      "triggerFailed": "触发上传扫描失败",
+      "pathRequired": "文件夹路径为必填项",
+      "invalidPath": "无效的文件夹路径",
+      "pathTraversal": "路径包含无效字符或目录遍历尝试",
+      "networkError": "网络错误。请检查您的网络连接。",
+      "authError": "身份验证错误。请重新登录。",
+      "serverError": "服务器错误。请稍后重试。",
+      "fileTooBig": "文件超过最大大小限制 {{maxSize}}",
+      "invalidFileType": "无效的文件类型。支持的格式：{{formats}}",
+      "duplicateFile": "此文件已经上传过",
+      "rateLimitExceeded": "超出速率限制。请等待后再上传更多文件。",
+      "configValidationFailed": "配置验证失败。请查看控制台了解详情。",
+      "websocketAuthFailed": "WebSocket 身份验证失败",
+      "unsupportedBrowser": "您的浏览器不支持所需功能"
+    },
+    "mobile": {
+      "dataWarning": "您正在使用蜂窝数据。上传 {{size}} 可能会消耗大量流量。",
+      "dataWarningProceed": "仍然继续",
+      "dataWarningCancel": "取消上传",
+      "lowMemoryWarning": "设备内存不足。大文件上传可能会失败。",
+      "batteryLowWarning": "电量低（{{percent}}%）。上传可能会中断。",
+      "networkChanged": "网络已更改。正在重新连接...",
+      "mobileBrowserNotSupported": "某些功能在移动浏览器上可能无法正常工作"
+    },
+    "accessibility": {
+      "pageDescription": "上传管理界面，包含队列监控、手动上传和文件夹监控功能",
+      "pageTitle": "管理员上传页面",
+      "sectionQueue": "队列仪表板区域",
+      "sectionManualUpload": "手动上传区域",
+      "sectionMonitoredFolders": "监控文件夹区域",
+      "loadingQueue": "正在加载上传队列...",
+      "queueLoaded": "上传队列已加载，共 {{count}} 项",
+      "queueLoadedOne": "上传队列已加载，共 1 项",
+      "queueLoadedOther": "上传队列已加载，共 {{count}} 项",
+      "uploadStarted": "已开始上传 {{count}} 个文件",
+      "uploadStartedOne": "已开始上传 1 个文件",
+      "uploadStartedOther": "已开始上传 {{count}} 个文件",
+      "uploadProgressUpdate": "上传进度：已完成 {{percent}}%",
+      "uploadProgressMilestone": "上传已完成 {{percent}}%",
+      "uploadCompleted": "上传成功完成",
+      "uploadFailed": "上传失败",
+      "folderAdded": "文件夹 {{name}} 已添加到监控",
+      "folderRemoved": "文件夹 {{name}} 已从监控中移除",
+      "folderScanned": "文件夹 {{name}} 已扫描，发现 {{count}} 个文件",
+      "emptyStateAction": "按回车键执行操作",
+      "connectionStatusRegion": "连接状态信息",
+      "queueStatsRegion": "队列统计区域",
+      "shortcuts": {
+        "uploadFocused": "上传输入已聚焦。按回车键选择文件。",
+        "queueRefreshed": "队列已手动刷新。"
+      }
     }
   },
   "payment": {
@@ -317,5 +643,82 @@
     "upgradeBeta": "升级到 Beta 500 以使用自动翻译",
     "inputLabel": "聊天消息输入",
     "moderationDelete": "消息已被管理员删除"
+  },
+  "common": {
+    "milliseconds": "毫秒",
+    "collapse": "折叠",
+    "expand": "展开",
+    "details": "详情"
+  },
+  "dubbing": {
+    "latency": {
+      "badge": {
+        "title": "延迟监控",
+        "tooltip": "实时音频处理延迟。视频自动延迟以实现完美同步。",
+        "accessibilityHint": "双击可切换延迟详情面板"
+      },
+      "components": {
+        "capture": "音频捕获",
+        "captureDesc": "从视频捕获音频的时间",
+        "stt": "语音转文字",
+        "sttDesc": "将语音转换为文字",
+        "translation": "翻译",
+        "translationDesc": "翻译到目标语言",
+        "tts": "文字转语音",
+        "ttsDesc": "生成配音音频",
+        "network": "网络",
+        "networkDesc": "数据传输延迟",
+        "buffer": "音频缓冲",
+        "bufferDesc": "音频处理缓冲",
+        "sync": "视频同步",
+        "syncDesc": "视频延迟以实现完美同步"
+      },
+      "status": {
+        "excellent": "优秀",
+        "good": "良好",
+        "fair": "一般",
+        "poor": "较差"
+      },
+      "info": {
+        "autoSync": "自动同步",
+        "autoSyncDesc": "视频自动延迟以匹配音频处理时间，确保完美的唇形同步和字幕时间。",
+        "howItWorks": "工作原理",
+        "howItWorksDesc": "系统测量实际处理延迟，并以相同的量延迟视频流。这就是专业广播翻译的工作方式。",
+        "noManualAdjustment": "无需手动调整",
+        "noManualAdjustmentDesc": "与其他系统不同，您无需手动同步音频和视频。一切都是自动的。",
+        "whyDelay": "为什么有延迟？",
+        "whyDelayDesc": "实时翻译和配音需要时间（通常为600-800毫秒）。与其显示不同步的内容，我们延迟视频以匹配。您看到的内容略微落后于直播，但完全同步。",
+        "professionalQuality": "专业品质",
+        "professionalQualityDesc": "这与专业广播公司用于现场国际报道的方法相同。"
+      },
+      "graph": {
+        "title": "延迟历史",
+        "tooltip": "处理延迟的60秒滚动历史",
+        "xAxis": "时间（秒前）",
+        "yAxis": "延迟（毫秒）",
+        "noData": "暂无数据..."
+      },
+      "breakdown": {
+        "title": "延迟细分",
+        "cacheHitRate": "缓存命中率",
+        "provider": "提供商"
+      }
+    },
+    "controls": {
+      "enableDubbing": "启用实时配音",
+      "enableSubtitles": "启用实时字幕",
+      "selectLanguage": "选择语言",
+      "selectVoice": "选择语音",
+      "originalVolume": "原始音频",
+      "dubbedVolume": "配音音频",
+      "tooltips": {
+        "enableDubbing": "实时翻译和配音音频",
+        "enableSubtitles": "实时显示翻译字幕",
+        "selectLanguage": "选择您喜欢的翻译语言",
+        "selectVoice": "选择配音的声音",
+        "originalVolume": "调整原始音频音量（0 = 静音）",
+        "dubbedVolume": "调整配音音频音量（1 = 最大音量）"
+      }
+    }
   }
 }

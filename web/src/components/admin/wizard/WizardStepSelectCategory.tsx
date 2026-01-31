@@ -5,6 +5,7 @@
 
 import React from 'react'
 import { View, Text, Pressable, ActivityIndicator, ScrollView, StyleSheet } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ChevronRight, AlertCircle, ChevronLeft } from 'lucide-react'
 import { z } from 'zod'
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
@@ -33,15 +34,17 @@ export function WizardStepSelectCategory({
   onSelectCategory,
   onBack,
 }: WizardStepSelectCategoryProps) {
+  const { t } = useTranslation()
+
   return (
     <View style={styles.container}>
       {/* Back button */}
       <Pressable onPress={onBack} style={styles.backButton}>
         <ChevronLeft size={16} color="#9333ea" />
-        <Text style={styles.backText}>Back</Text>
+        <Text style={styles.backText}>{t('common.back')}</Text>
       </Pressable>
 
-      <Text style={styles.title}>Select a category for imported movies</Text>
+      <Text style={styles.title}>{t('admin.importWizard.selectCategory')}</Text>
 
       <Text style={styles.subtitle}>
         Imported movies will be added to the selected category.
@@ -51,7 +54,7 @@ export function WizardStepSelectCategory({
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator color="#9333ea" />
-          <Text style={styles.loadingText}>Loading categories...</Text>
+          <Text style={styles.loadingText}>{t('admin.importWizard.loadingCategories')}</Text>
         </View>
       ) : error ? (
         /* Error state */

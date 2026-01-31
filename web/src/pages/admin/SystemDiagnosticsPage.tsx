@@ -125,10 +125,10 @@ const ServicesTable = ({
   return (
     <View style={styles.servicesTable}>
       <View style={styles.tableHeader}>
-        <Text style={[styles.tableHeaderText, styles.tableColService]}>Service</Text>
-        <Text style={[styles.tableHeaderText, styles.tableColStatus]}>Status</Text>
-        <Text style={[styles.tableHeaderText, styles.tableColLatency]}>Latency</Text>
-        <Text style={[styles.tableHeaderText, styles.tableColActions]}>Actions</Text>
+        <Text style={[styles.tableHeaderText, styles.tableColService]}>{t('admin.diagnostics.service')}</Text>
+        <Text style={[styles.tableHeaderText, styles.tableColStatus]}>{t('admin.diagnostics.status')}</Text>
+        <Text style={[styles.tableHeaderText, styles.tableColLatency]}>{t('admin.diagnostics.latency')}</Text>
+        <Text style={[styles.tableHeaderText, styles.tableColActions]}>{t('common.actions')}</Text>
       </View>
       {Object.entries(services).map(([name, service]) => (
         <View key={name} style={styles.tableRow}>
@@ -199,7 +199,7 @@ export default function SystemDiagnosticsPage() {
           title={t('admin.diagnostics.title')}
         />
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading diagnostics...</Text>
+          <Text style={styles.loadingText}>{t('admin.diagnostics.loading')}</Text>
         </View>
       </View>
     );
@@ -219,7 +219,7 @@ export default function SystemDiagnosticsPage() {
             onPress={refresh}
           >
             <RefreshCw size={20} color={colors.white} />
-            <Text style={styles.retryButtonText}>Retry</Text>
+            <Text style={styles.retryButtonText}>{t('common.retry')}</Text>
           </GlassButton>
         </GlassCard>
       </View>

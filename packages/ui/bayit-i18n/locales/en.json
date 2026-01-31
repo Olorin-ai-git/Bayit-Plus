@@ -165,9 +165,11 @@
     "permissionBanner": {
       "title": "Discover Israeli Content Near You",
       "description": "Enable location services to see Israeli community events, news, and stories from your area. Your privacy is protected - we only detect your city.",
+      "ariaLabel": "Location services prompt",
       "enable": "Enable Location",
       "notNow": "Not Now",
-      "close": "Close"
+      "dismiss": "Dismiss location prompt",
+      "close": "Close banner"
     },
     "status": {
       "detecting": "Detecting your location...",
@@ -644,11 +646,185 @@
     "inputLabel": "Chat message input",
     "moderationDelete": "Message removed by moderator"
   },
+  "errors": {
+    "friends": {
+      "fetchFailed": "Failed to fetch friends",
+      "requestsFetchFailed": "Failed to fetch requests",
+      "sendFailed": "Failed to send request",
+      "acceptFailed": "Failed to accept request",
+      "rejectFailed": "Failed to reject request",
+      "cancelFailed": "Failed to cancel request",
+      "removeFailed": "Failed to remove friend"
+    },
+    "settings": {
+      "loadFailed": "Failed to load preferences",
+      "saveFailed": "Failed to save preferences"
+    },
+    "devices": {
+      "loadFailed": "Failed to load devices",
+      "registerFailed": "Failed to register device",
+      "disconnectFailed": "Failed to disconnect device"
+    },
+    "stats": {
+      "fetchFailed": "Failed to fetch stats",
+      "playerFetchFailed": "Failed to fetch player stats",
+      "historyFetchFailed": "Failed to fetch match history",
+      "leaderboardFetchFailed": "Failed to fetch leaderboard",
+      "h2hFetchFailed": "Failed to fetch head-to-head stats"
+    },
+    "profile": {
+      "fetchFailed": "Failed to fetch profiles",
+      "selectFailed": "Failed to select profile",
+      "createFailed": "Failed to create profile",
+      "updateFailed": "Failed to update profile",
+      "deleteFailed": "Failed to delete profile"
+    },
+    "auth": {
+      "notAuthenticated": "Not authenticated",
+      "tokenRefreshFailed": "Failed to refresh authentication token",
+      "playbackAuthRequired": "Authentication required for playback session"
+    },
+    "connection": {
+      "failed": "Connection error - check console for details",
+      "timeout": "Connection timeout",
+      "error": "Connection error"
+    },
+    "chess": {
+      "connectFailed": "Failed to connect to game",
+      "notConnected": "Not connected to game"
+    },
+    "podcast": {
+      "switchLanguageFailed": "Failed to switch language",
+      "playbackError": "Audio playback error"
+    },
+    "widget": {
+      "loadFailed": "Failed to load widgets"
+    },
+    "player": {
+      "noStreamUrl": "No stream URL available",
+      "loadFailed": "Failed to load video",
+      "notReady": "Video not ready",
+      "sessionCreateFailed": "Failed to create playback session after multiple attempts"
+    },
+    "trivia": {
+      "invalidChannel": "Invalid channel ID"
+    }
+  },
+  "widget": {
+    "streamUnavailable": "Stream unavailable",
+    "contentUnavailable": "Content unavailable",
+    "podcastUnavailable": "Podcast unavailable",
+    "stationUnavailable": "Station unavailable",
+    "iframeNotConfigured": "iFrame URL not configured",
+    "unknownComponent": "Unknown component: {{componentName}}",
+    "noContentConfigured": "No content configured",
+    "errorLoadingContent": "Error loading content",
+    "loadingEpisodes": "Loading episodes...",
+    "noEpisodesFound": "No episodes found",
+    "audioUnavailable": "Audio unavailable",
+    "103fmEpisodes": "103FM Episodes",
+    "loadingNews": "Loading news...",
+    "ynetBreakingNews": "מבזקי Ynet"
+  },
+  "chess": {
+    "waitingForOpponent": "Waiting for opponent...",
+    "disconnected": "Disconnected",
+    "theirTurn": "Their turn"
+  },
+  "audible": {
+    "connectionFailed": "Connection Failed",
+    "connecting": "Connecting Audible...",
+    "pleaseWait": "Please wait while we link your account.",
+    "connected": "Connected!",
+    "accountLinked": "Your Audible account is now linked to Bayit+"
+  },
+  "settings": {
+    "accessibility": {
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large"
+    }
+  },
+  "recordings": {
+    "record": "Record"
+  },
+  "epg": {
+    "live": "LIVE"
+  },
   "common": {
     "milliseconds": "milliseconds",
     "collapse": "Collapse",
     "expand": "Expand",
-    "details": "details"
+    "details": "details",
+    "loading": "Loading...",
+    "retry": "Retry",
+    "loadMore": "Load More",
+    "processing": "Processing...",
+    "back": "Back",
+    "actions": "Actions"
+  },
+  "admin": {
+    "accessDenied": "Access Denied",
+    "noPermission": "You don't have permission to view this content",
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete",
+      "pause": "Pause",
+      "resume": "Resume",
+      "cancel": "Cancel",
+      "approve": "Approve",
+      "reject": "Reject",
+      "activate": "Activate",
+      "test": "Test"
+    },
+    "importWizard": {
+      "title": "Import Free Content",
+      "loadingSources": "Loading sources...",
+      "loadingCategories": "Loading categories...",
+      "selectCategory": "Select a category for imported movies",
+      "selectItems": "Select items to import",
+      "sources": {
+        "vod": "Movies & VOD",
+        "vodDescription": "Import classic films from archive.org",
+        "liveTv": "Live TV Channels",
+        "liveTvDescription": "Import test streams from Apple BipBop",
+        "radio": "Radio Stations",
+        "radioDescription": "Import public radio streams",
+        "podcasts": "Podcasts",
+        "podcastsDescription": "Import public podcast feeds"
+      }
+    },
+    "diagnostics": {
+      "service": "Service",
+      "status": "Status",
+      "latency": "Latency",
+      "loading": "Loading diagnostics..."
+    },
+    "costDashboard": {
+      "title": "Cost Dashboard",
+      "subtitle": "Platform cost tracking and analytics",
+      "view": "View",
+      "selectUser": "Select user...",
+      "tabs": {
+        "overview": "Overview",
+        "timeline": "Timeline",
+        "categories": "Categories",
+        "topSpenders": "Top Spenders"
+      }
+    }
+  },
+  "uploads": {
+    "status": {
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "uploading": "Uploading",
+      "processing": "Processing",
+      "queued": "Queued",
+      "completed": "Completed",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    }
   },
   "dubbing": {
     "latency": {
@@ -705,6 +881,7 @@
       }
     },
     "controls": {
+      "liveDubbing": "Live Dubbing",
       "enableDubbing": "Enable Live Dubbing",
       "enableSubtitles": "Enable Live Subtitles",
       "selectLanguage": "Select Language",

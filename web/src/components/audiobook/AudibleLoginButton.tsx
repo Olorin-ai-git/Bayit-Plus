@@ -7,6 +7,7 @@
  */
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { GlassButton, GlassSpinner } from '@bayit/glass';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -21,6 +22,7 @@ export function AudibleLoginButton({
   onError,
   className = '',
 }: AudibleLoginButtonProps) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
@@ -83,7 +85,7 @@ export function AudibleLoginButton({
     return (
       <div className={`flex items-center gap-2 ${className}`}>
         <GlassSpinner size="sm" />
-        <span className="text-sm text-white/60">Processing...</span>
+        <span className="text-sm text-white/60">{t('common.processing')}</span>
       </div>
     );
   }

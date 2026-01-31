@@ -530,7 +530,7 @@ export default function ContentCard({ content, showProgress = false, showActions
         {iframeLoading && (
           <View style={styles.iframeLoadingOverlay}>
             <View style={styles.spinner} />
-            <Text style={styles.loadingText}>Loading article...</Text>
+            <Text style={styles.loadingText}>{t('common.loadingArticle')}</Text>
           </View>
         )}
 

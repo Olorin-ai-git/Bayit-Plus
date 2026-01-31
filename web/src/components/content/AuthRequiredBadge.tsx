@@ -5,6 +5,7 @@
 
 import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Lock } from 'lucide-react';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
@@ -23,6 +24,7 @@ export const AuthRequiredBadge = memo(function AuthRequiredBadge({
   show,
   tooltip = 'Login required',
 }: AuthRequiredBadgeProps) {
+  const { t } = useTranslation();
   if (!show) {
     return null;
   }
@@ -30,7 +32,7 @@ export const AuthRequiredBadge = memo(function AuthRequiredBadge({
   return (
     <View style={styles.badge} title={tooltip}>
       <Lock size={14} color={colors.text} strokeWidth={2} />
-      <Text style={styles.badgeText}>Login</Text>
+      <Text style={styles.badgeText}>{t('auth.login')}</Text>
     </View>
   );
 });

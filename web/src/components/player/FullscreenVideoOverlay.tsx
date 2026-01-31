@@ -8,6 +8,7 @@ import { createPortal } from 'react-dom'
 import { View, Pressable, ActivityIndicator, Text, StyleSheet } from 'react-native'
 import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import i18n from '@bayit/i18n'
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore'
 import { contentService, liveService, chaptersService, historyService } from '@/services/api'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -93,7 +94,7 @@ export default function FullscreenVideoOverlay() {
         if (stream?.url) {
           setStreamUrl(stream.url)
         } else {
-          setError('No stream URL available')
+          setError(i18n.t('errors.player.noStreamUrl'))
         }
       } catch (err: any) {
         logger.error('Failed to fetch stream URL', 'FullscreenVideoOverlay', err)
@@ -108,7 +109,7 @@ export default function FullscreenVideoOverlay() {
           })
           closePlayer()
         } else {
-          setError('Failed to load video')
+          setError(i18n.t('errors.player.loadFailed'))
         }
       } finally {
         setLoading(false)
@@ -199,7 +200,7 @@ export default function FullscreenVideoOverlay() {
       {loading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loadingText}>Loading...</Text>
+          <Text style={styles.loadingText}>{t('common.loading')}</Text>
         </View>
       )}
 
@@ -207,7 +208,7 @@ export default function FullscreenVideoOverlay() {
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{error}</Text>
           <Pressable onPress={closePlayer} style={styles.errorButton}>
-            <Text style={styles.errorButtonText}>Close</Text>
+            <Text style={styles.errorButtonText}>{t('common.close')}</Text>
           </Pressable>
         </View>
       )}

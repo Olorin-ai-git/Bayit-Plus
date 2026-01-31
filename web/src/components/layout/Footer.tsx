@@ -166,7 +166,7 @@ export default function Footer() {
                   })}
                 </Text>
                 <View style={styles.poweredBySection}>
-                  <Text style={styles.poweredByText}>Powered by </Text>
+                  <Text style={styles.poweredByText}>{t('footer.poweredBy')} </Text>
                   <Pressable
                     onPress={() =>
                       window.open('https://marketing.radio.olorin.ai', '_blank')

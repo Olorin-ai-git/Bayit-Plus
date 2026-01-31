@@ -4,6 +4,7 @@
  */
 
 import logger from '@/utils/logger'
+import i18n from '@bayit/i18n'
 import {
   VideoBufferManager,
   createSyncedStream,
@@ -174,9 +175,9 @@ class LiveSubtitleService {
         this.ws.onerror = (error) => {
           logger.error('WebSocket error', 'liveSubtitleService', error)
           clearTimeout(connectionTimeout)
-          onError('Connection error')
+          onError(i18n.t('errors.connection.error'))
           this.isConnected = false
-          reject(new Error('Connection error'))
+          reject(new Error(i18n.t('errors.connection.error')))
         }
 
         this.ws.onclose = () => {

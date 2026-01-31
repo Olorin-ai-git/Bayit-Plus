@@ -8,6 +8,7 @@ import { persist } from 'zustand/middleware';
 import { profilesService } from '@/services/api';
 import logger from '@/utils/logger';
 import { VoiceMode } from '@bayit/shared-types/voiceModes';
+import i18n from '@bayit/i18n';
 
 export type VoiceLanguage = 'he' | 'en' | 'es';
 export type TextSize = 'small' | 'medium' | 'large';
@@ -107,7 +108,7 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
             });
           } else {
             logger.error('Failed to load voice preferences', 'voiceSettingsStore', error);
-            set({ loading: false, error: error.message || 'Failed to load preferences' });
+            set({ loading: false, error: error.message || i18n.t('errors.settings.loadFailed') });
           }
         }
       },
@@ -128,7 +129,7 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
           set({
             preferences: current,
             saving: false,
-            error: error.message || 'Failed to save preferences',
+            error: error.message || i18n.t('errors.settings.saveFailed'),
           });
         }
       },

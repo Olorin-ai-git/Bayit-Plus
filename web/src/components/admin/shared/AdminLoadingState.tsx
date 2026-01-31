@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { colors, spacing, fontSize } from '@olorin/design-tokens'
 
 interface AdminLoadingStateProps {
@@ -7,16 +8,18 @@ interface AdminLoadingStateProps {
 }
 
 export default function AdminLoadingState({
-  message = 'Loading...',
+  message,
   isRTL = false,
 }: AdminLoadingStateProps) {
+  const { t } = useTranslation()
+  const displayMessage = message || t('common.loading')
   return (
     <View style={styles.container}>
       <View style={styles.loadingSpinner}>
         <ActivityIndicator size="small" color={colors.primary} />
       </View>
       <Text style={[styles.loadingText, { textAlign: isRTL ? 'right' : 'left' }]}>
-        {message}
+        {displayMessage}
       </Text>
     </View>
   )

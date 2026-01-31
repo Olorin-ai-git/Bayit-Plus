@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { RefreshCw, ExternalLink, AlertCircle } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { useTranslation } from 'react-i18next';
 import api from '@/services/api';
 import logger from '@/utils/logger';
 
@@ -42,6 +43,7 @@ export function YnetMivzakimWidget({
   autoRefresh = true,
   onItemClick,
 }: YnetMivzakimWidgetProps) {
+  const { t } = useTranslation();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -103,7 +105,7 @@ export function YnetMivzakimWidget({
       <View style={styles.container}>
         <View style={styles.centerContent}>
           <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
-          <Text style={styles.loadingText}>Loading news...</Text>
+          <Text style={styles.loadingText}>{t('widget.loadingNews')}</Text>
         </View>
       </View>
     );
@@ -117,7 +119,7 @@ export function YnetMivzakimWidget({
           <Text style={styles.errorText}>{error}</Text>
           <Pressable onPress={fetchNews} style={styles.retryButton}>
             <RefreshCw size={16} color={colors.text} />
-            <Text style={styles.retryText}>Retry</Text>
+            <Text style={styles.retryText}>{t('common.retry')}</Text>
           </Pressable>
         </View>
       </View>
@@ -129,7 +131,7 @@ export function YnetMivzakimWidget({
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle}>מבזקי Ynet</Text>
+          <Text style={styles.headerTitle}>{t('widget.ynetBreakingNews')}</Text>
           {lastUpdate && (
             <Text style={styles.headerSubtitle}>
               עודכן: {lastUpdate.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}

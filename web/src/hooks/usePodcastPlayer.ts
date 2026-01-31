@@ -6,6 +6,7 @@ import { AudioCacheService } from '../services/mobile/AudioCacheService'
 import { useNetworkQuality } from './useNetworkQuality'
 import { useAuthStore } from '@/stores/authStore'
 import logger from '@/utils/logger'
+import i18n from '@bayit/i18n'
 
 interface UsePodcastPlayerOptions {
   episode: PodcastEpisode
@@ -108,7 +109,7 @@ export function usePodcastPlayer({ episode, autoPlay = false, savePosition = tru
         await audioRef.current.play()
       }
     } catch (err) {
-      setError('Failed to switch language')
+      setError(i18n.t('errors.podcast.switchLanguageFailed'))
       logger.error('Language switch error', 'usePodcastPlayer', err)
     } finally {
       setIsLoading(false)
@@ -128,7 +129,7 @@ export function usePodcastPlayer({ episode, autoPlay = false, savePosition = tru
     }
   }
   const handleError = (e: Event) => {
-    setError('Audio playback error')
+    setError(i18n.t('errors.podcast.playbackError'))
     logger.error('Audio error', 'usePodcastPlayer', e)
   }
 

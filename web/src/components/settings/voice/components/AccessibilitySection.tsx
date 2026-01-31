@@ -10,11 +10,7 @@ import { GlassView } from '@bayit/shared/ui';
 import { VoiceSettingRow } from './VoiceSettingRow';
 import { TextSize } from '../types';
 
-const TEXT_SIZES: { value: TextSize; label: string }[] = [
-  { value: 'small', label: 'Small' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'large', label: 'Large' },
-];
+const TEXT_SIZE_VALUES: TextSize[] = ['small', 'medium', 'large'];
 
 interface AccessibilitySectionProps {
   autoSubtitle: boolean;
@@ -70,12 +66,12 @@ export function AccessibilitySection({
           </Text>
         </View>
         <View style={[styles.textSizeRow, isRTL && styles.rowReverse]}>
-          {TEXT_SIZES.map((size) => {
-            const isSelected = textSize === size.value;
+          {TEXT_SIZE_VALUES.map((size) => {
+            const isSelected = textSize === size;
             return (
               <Pressable
-                key={size.value}
-                onPress={() => onTextSizeChange(size.value)}
+                key={size}
+                onPress={() => onTextSizeChange(size)}
                 style={[
                   styles.textSizeButton,
                   isSelected ? styles.textSizeButtonSelected : styles.textSizeButtonUnselected,
@@ -86,11 +82,11 @@ export function AccessibilitySection({
                     styles.textSizeLabel,
                     isSelected && styles.textSizeLabelSelected,
                     {
-                      fontSize: size.value === 'small' ? 12 : size.value === 'medium' ? 14 : 16
+                      fontSize: size === 'small' ? 12 : size === 'medium' ? 14 : 16
                     }
                   ]}
                 >
-                  {t(`profile.voice.textSize${size.label}`, size.label)}
+                  {t(`settings.accessibility.${size}`)}
                 </Text>
               </Pressable>
             );

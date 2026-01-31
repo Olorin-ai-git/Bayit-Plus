@@ -7,6 +7,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { profilesService } from '@/services/api';
 import logger from '@/utils/logger';
+import i18n from '@bayit/i18n';
 
 export interface AIPreferences {
   chatbot_enabled: boolean;
@@ -61,7 +62,7 @@ export const useAISettingsStore = create<AISettingsStore>()(
             });
           } else {
             logger.error('Failed to load AI preferences', 'aiSettingsStore', error);
-            set({ loading: false, error: error.message || 'Failed to load preferences' });
+            set({ loading: false, error: error.message || i18n.t('errors.settings.loadFailed') });
           }
         }
       },
@@ -82,7 +83,7 @@ export const useAISettingsStore = create<AISettingsStore>()(
           set({
             preferences: current,
             saving: false,
-            error: error.message || 'Failed to save preferences',
+            error: error.message || i18n.t('errors.settings.saveFailed'),
           });
         }
       },

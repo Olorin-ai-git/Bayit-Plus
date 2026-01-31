@@ -1,6 +1,7 @@
 // Scope toggle component for system-wide vs per-user view
 
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Globe, User } from "lucide-react";
 import { GlassButton, GlassSelect } from "@olorin/glass-ui";
 
@@ -10,6 +11,7 @@ interface ScopeToggleProps {
 }
 
 export default function ScopeToggle({ scope, onScopeChange }: ScopeToggleProps) {
+  const { t } = useTranslation();
   const [showUserSelect, setShowUserSelect] = useState(scope === "per_user");
 
   const handleScopeChange = (newScope: "system_wide" | "per_user") => {
@@ -19,7 +21,7 @@ export default function ScopeToggle({ scope, onScopeChange }: ScopeToggleProps) 
 
   return (
     <div className="flex items-center gap-4">
-      <label className="text-gray-400 font-medium">View:</label>
+      <label className="text-gray-400 font-medium">{t('admin.costDashboard.view')}:</label>
 
       <div className="flex gap-2">
         <GlassButton
@@ -43,7 +45,7 @@ export default function ScopeToggle({ scope, onScopeChange }: ScopeToggleProps) 
 
       {showUserSelect && (
         <GlassSelect
-          placeholder="Select user..."
+          placeholder={t('admin.costDashboard.selectUser')}
           options={[
             { value: "user1", label: "User 1" },
             { value: "user2", label: "User 2" },

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ChevronRight, AlertCircle, CheckCircle, X, ChevronLeft } from 'lucide-react'
 import { NativeIcon } from '@olorin/shared-icons/native'
 import { GlassView, GlassButton, GlassCheckbox } from '@bayit/shared/ui'
@@ -29,6 +30,7 @@ interface ImportState {
 }
 
 export function FreeContentImportWizard({ isOpen, onClose, onSuccess }: FreeContentImportWizardProps) {
+  const { t } = useTranslation()
   const [step, setStep] = useState<Step>('type')
   const [importState, setImportState] = useState<ImportState>({
     selectedItems: [],
@@ -41,10 +43,10 @@ export function FreeContentImportWizard({ isOpen, onClose, onSuccess }: FreeCont
   const [progress, setProgress] = useState(0)
 
   const sourceTypes = [
-    { id: 'vod', label: 'Movies & VOD', description: 'Import classic films from archive.org', icon: 'vod' },
-    { id: 'live_tv', label: 'Live TV Channels', description: 'Import test streams from Apple BipBop', icon: 'live' },
-    { id: 'radio', label: 'Radio Stations', description: 'Import public radio streams', icon: 'radio' },
-    { id: 'podcasts', label: 'Podcasts', description: 'Import public podcast feeds', icon: 'podcasts' },
+    { id: 'vod', label: t('admin.importWizard.sources.vod'), description: t('admin.importWizard.sources.vodDescription'), icon: 'vod' },
+    { id: 'live_tv', label: t('admin.importWizard.sources.liveTv'), description: t('admin.importWizard.sources.liveTvDescription'), icon: 'live' },
+    { id: 'radio', label: t('admin.importWizard.sources.radio'), description: t('admin.importWizard.sources.radioDescription'), icon: 'radio' },
+    { id: 'podcasts', label: t('admin.importWizard.sources.podcasts'), description: t('admin.importWizard.sources.podcastsDescription'), icon: 'podcasts' },
   ]
 
   useEffect(() => {
@@ -181,7 +183,7 @@ export function FreeContentImportWizard({ isOpen, onClose, onSuccess }: FreeCont
       <GlassView style={styles.modal}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Import Free Content</Text>
+          <Text style={styles.headerTitle}>{t('admin.importWizard.title')}</Text>
           <Pressable onPress={onClose} style={styles.closeButton}>
             <X size={20} color={colors.textMuted} />
           </Pressable>
@@ -217,7 +219,7 @@ export function FreeContentImportWizard({ isOpen, onClose, onSuccess }: FreeCont
             <View style={styles.stepContent}>
               <Pressable onPress={() => setStep('type')} style={styles.backButton}>
                 <ChevronLeft size={16} color={colors.primary} />
-                <Text style={styles.backButtonText}>Back</Text>
+                <Text style={styles.backButtonText}>{t('common.back')}</Text>
               </Pressable>
               <Text style={styles.stepTitle}>
                 Select a source for {currentSourceType.label.toLowerCase()}
@@ -226,7 +228,7 @@ export function FreeContentImportWizard({ isOpen, onClose, onSuccess }: FreeCont
               {isLoading ? (
                 <View style={styles.loadingContainer}>
                   <ActivityIndicator color={colors.primary} />
-                  <Text style={styles.loadingText}>Loading sources...</Text>
+                  <Text style={styles.loadingText}>{t('admin.importWizard.loadingSources')}</Text>
                 </View>
               ) : error ? (
                 <View style={styles.errorBox}>
@@ -259,9 +261,9 @@ export function FreeContentImportWizard({ isOpen, onClose, onSuccess }: FreeCont
             <View style={styles.stepContent}>
               <Pressable onPress={() => setStep('source')} style={styles.backButton}>
                 <ChevronLeft size={16} color={colors.primary} />
-                <Text style={styles.backButtonText}>Back</Text>
+                <Text style={styles.backButtonText}>{t('common.back')}</Text>
               </Pressable>
-              <Text style={styles.stepTitle}>Select a category for imported movies</Text>
+              <Text style={styles.stepTitle}>{t('admin.importWizard.selectCategory')}</Text>
               <Text style={styles.stepSubtitle}>
                 Imported movies will be added to the selected category.
               </Text>
@@ -269,7 +271,7 @@ export function FreeContentImportWizard({ isOpen, onClose, onSuccess }: FreeCont
               {isLoading ? (
                 <View style={styles.loadingContainer}>
                   <ActivityIndicator color={colors.primary} />
-                  <Text style={styles.loadingText}>Loading categories...</Text>
+                  <Text style={styles.loadingText}>{t('admin.importWizard.loadingCategories')}</Text>
                 </View>
               ) : error ? (
                 <View style={styles.errorBox}>
@@ -313,10 +315,10 @@ export function FreeContentImportWizard({ isOpen, onClose, onSuccess }: FreeCont
                 style={styles.backButton}
               >
                 <ChevronLeft size={16} color={colors.primary} />
-                <Text style={styles.backButtonText}>Back</Text>
+                <Text style={styles.backButtonText}>{t('common.back')}</Text>
               </Pressable>
               <View style={styles.itemsHeader}>
-                <Text style={styles.stepTitle}>Select items to import</Text>
+                <Text style={styles.stepTitle}>{t('admin.importWizard.selectItems')}</Text>
                 <View style={styles.selectAllRow}>
                   <GlassCheckbox
                     checked={importState.importAll}
@@ -366,7 +368,7 @@ export function FreeContentImportWizard({ isOpen, onClose, onSuccess }: FreeCont
             <View style={styles.stepContent}>
               <Pressable onPress={() => setStep('items')} style={styles.backButton}>
                 <ChevronLeft size={16} color={colors.primary} />
-                <Text style={styles.backButtonText}>Back</Text>
+                <Text style={styles.backButtonText}>{t('common.back')}</Text>
               </Pressable>
               <Text style={styles.stepTitle}>Ready to import?</Text>
 

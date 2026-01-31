@@ -5,6 +5,7 @@
 
 import React from 'react'
 import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ChevronLeft, AlertCircle } from 'lucide-react'
 import { z } from 'zod'
 import { GlassButton } from '@bayit/shared/ui'
@@ -49,6 +50,8 @@ export function WizardStepConfirm({
   onImport,
   onBack,
 }: WizardStepConfirmProps) {
+  const { t } = useTranslation()
+
   if (!currentSource) {
     return null
   }
@@ -60,7 +63,7 @@ export function WizardStepConfirm({
       {/* Back button */}
       <Pressable onPress={onBack} style={styles.backButton}>
         <ChevronLeft size={16} color="#9333ea" />
-        <Text style={styles.backText}>Back</Text>
+        <Text style={styles.backText}>{t('common.back')}</Text>
       </Pressable>
 
       <Text style={styles.title}>Ready to import?</Text>

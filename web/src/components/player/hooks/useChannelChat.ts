@@ -33,9 +33,16 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
   const sessionTokenRef = useRef<string | null>(null)
   const retryCountRef = useRef(0)
   const messageQueueRef = useRef<string[]>([])
+  const isConnectingRef = useRef(false)
+  const isConnectedRef = useRef(false)
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const channelIdRef = useRef(channelId)
+  channelIdRef.current = channelId
 
   const handleConnected = useCallback((data: ConnectedData) => {
     sessionTokenRef.current = data.session_token
+    isConnectedRef.current = true
+    isConnectingRef.current = false
     setState((prev) => ({
       ...prev, isConnected: true, isConnecting: false, userCount: data.user_count,
       isBetaUser: data.is_beta_user, translationEnabled: data.translation_enabled,
@@ -79,13 +86,9 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
     }))
   }, [])
 
-  const handleUserMuted = useCallback((_data: UserMutedData) => {
-    // Could show a notification; for now just log via service
-  }, [])
+  const handleUserMuted = useCallback((_data: UserMutedData) => {}, [])
 
-  const handleUserUnmuted = useCallback((_data: UserUnmutedData) => {
-    // Could show a notification; for now just log via service
-  }, [])
+  const handleUserUnmuted = useCallback((_data: UserUnmutedData) => {}, [])
 
   const handleError = useCallback((_code: string, message: string, recoverable: boolean) => {
     setState((prev) => ({
@@ -94,64 +97,81 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
       isConnected: recoverable && prev.isConnected,
       connectionState: recoverable ? 'reconnecting' : 'disconnected',
     }))
+    if (!recoverable) {
+      isConnectedRef.current = false
+      isConnectingRef.current = false
+    }
   }, [])
 
-  const buildCallbacks = useCallback(() => ({
-    onConnected: handleConnected, onMessage: handleMessage,
-    onUserJoined: handleUserJoined, onUserLeft: handleUserLeft,
-    onReactionUpdate: handleReactionUpdate,
-    onMessageDeleted: handleMessageDeleted,
-    onUserMuted: handleUserMuted,
-    onUserUnmuted: handleUserUnmuted,
-    onError: handleError,
-    onDisconnect: () => {
-      setState((prev) => ({ ...prev, isConnected: false, isConnecting: false, connectionState: 'disconnected' }))
-      if (retryCountRef.current < MAX_RETRIES) {
-        const delay = Math.min(BASE_DELAY * Math.pow(2, retryCountRef.current), MAX_DELAY)
-        retryCountRef.current++
-        setState((prev) => ({ ...prev, connectionState: 'reconnecting' }))
-        setTimeout(() => channelChatService.connect(channelId, buildCallbacks()), delay)
-      }
-    },
-  }), [channelId, handleConnected, handleMessage, handleUserJoined, handleUserLeft,
+  const doConnect = useCallback(() => {
+    if (isConnectingRef.current || isConnectedRef.current) return
+    isConnectingRef.current = true
+    setState((prev) => ({ ...prev, isConnecting: true, error: null, connectionState: 'connecting' }))
+    channelChatService.connect(channelIdRef.current, {
+      onConnected: handleConnected,
+      onMessage: handleMessage,
+      onUserJoined: handleUserJoined,
+      onUserLeft: handleUserLeft,
+      onReactionUpdate: handleReactionUpdate,
+      onMessageDeleted: handleMessageDeleted,
+      onUserMuted: handleUserMuted,
+      onUserUnmuted: handleUserUnmuted,
+      onError: handleError,
+      onDisconnect: () => {
+        isConnectedRef.current = false
+        isConnectingRef.current = false
+        setState((prev) => ({ ...prev, isConnected: false, isConnecting: false, connectionState: 'disconnected' }))
+        if (retryCountRef.current < MAX_RETRIES) {
+          const delay = Math.min(BASE_DELAY * Math.pow(2, retryCountRef.current), MAX_DELAY)
+          retryCountRef.current++
+          setState((prev) => ({ ...prev, connectionState: 'reconnecting' }))
+          reconnectTimerRef.current = setTimeout(() => doConnect(), delay)
+        }
+      },
+    })
+  }, [handleConnected, handleMessage, handleUserJoined, handleUserLeft,
     handleReactionUpdate, handleMessageDeleted, handleUserMuted, handleUserUnmuted, handleError])
 
-  const connect = useCallback(() => {
-    if (state.isConnecting || state.isConnected) return
-    setState((prev) => ({ ...prev, isConnecting: true, error: null, connectionState: 'connecting' }))
-    channelChatService.connect(channelId, buildCallbacks())
-  }, [channelId, state.isConnecting, state.isConnected, buildCallbacks])
-
   const disconnect = useCallback(() => {
+    if (reconnectTimerRef.current) {
+      clearTimeout(reconnectTimerRef.current)
+      reconnectTimerRef.current = null
+    }
     channelChatService.disconnect()
     sessionTokenRef.current = null
     messageQueueRef.current = []
     retryCountRef.current = MAX_RETRIES
+    isConnectedRef.current = false
+    isConnectingRef.current = false
     setState((prev) => ({ ...prev, isConnected: false, isConnecting: false, connectionState: 'disconnected' }))
   }, [])
 
   const sendMessage = useCallback((text: string) => {
     if (!text || text.trim().length === 0) return
-    if (!state.isConnected || !sessionTokenRef.current) {
+    if (!isConnectedRef.current || !sessionTokenRef.current) {
       messageQueueRef.current.push(text.trim())
       return
     }
     channelChatService.sendMessage(text.trim(), sessionTokenRef.current)
-  }, [state.isConnected])
+  }, [])
 
   const reconnect = useCallback(() => {
     disconnect()
     retryCountRef.current = 0
-    setTimeout(() => connect(), 100)
-  }, [disconnect, connect])
+    reconnectTimerRef.current = setTimeout(() => doConnect(), 100)
+  }, [disconnect, doConnect])
 
   useEffect(() => {
-    return () => { if (channelChatService.isServiceConnected()) channelChatService.disconnect() }
+    return () => {
+      if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current)
+      if (channelChatService.isServiceConnected()) channelChatService.disconnect()
+    }
   }, [])
 
   useEffect(() => {
-    if (autoConnect && channelId && !state.isConnected && !state.isConnecting) connect()
-  }, [autoConnect, channelId, state.isConnected, state.isConnecting, connect])
+    if (autoConnect && channelId) doConnect()
+    return () => { disconnect() }
+  }, [autoConnect, channelId])
 
-  return { ...state, sendMessage, disconnect, reconnect }
+  return { ...state, connect: doConnect, sendMessage, disconnect, reconnect }
 }

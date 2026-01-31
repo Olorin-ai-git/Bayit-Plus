@@ -70,7 +70,7 @@ export function PodcastLanguageSelector({
       {/* Premium badge if not premium and multiple languages available */}
       {!isPremium && availableLanguages.length > 1 && (
         <View style={styles.premiumBadge}>
-          <Text style={styles.premiumBadgeText}>PREMIUM</Text>
+          <Text style={styles.premiumBadgeText}>{t('common.premium')}</Text>
         </View>
       )}
 

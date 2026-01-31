@@ -63,7 +63,13 @@
     "refreshData": "Refresh data",
     "dismissError": "Dismiss error",
     "closeHint": "Closes current screen",
-    "cancelHint": "Cancels current action"
+    "cancelHint": "Cancels current action",
+    "loadingArticle": "Loading article...",
+    "watch": "Watch",
+    "share": "Share",
+    "noContent": "No content available",
+    "premium": "PREMIUM",
+    "poweredBy": "Powered by"
   },
   "demo": {
     "banner": "DEMO MODE",
@@ -287,7 +293,11 @@
     "exampleQuery4": "Show me all news programs tomorrow morning",
     "aiDisclaimer": "Powered by Claude AI. Results may vary based on program data availability.",
     "interpretationTitle": "What I understood",
-    "noResultsFound": "No programs found matching your query"
+    "noResultsFound": "No programs found matching your query",
+    "noProgramsScheduled": "No programs scheduled",
+    "noProgramsFound": "No Programs Found",
+    "noDataAvailable": "No TV Guide Data Available",
+    "live": "LIVE"
   },
   "home": {
     "continueWatching": "Continue Watching",
@@ -385,9 +395,18 @@
       "infoTitle": "AI-Powered Search",
       "info": "AI search understands context and finds exact moments in videos by analyzing scenes, dialogue, and visual content."
     },
+    "loadingMore": "Loading more results...",
+    "viewMode": {
+      "grid": "Grid",
+      "list": "List",
+      "cards": "Cards"
+    },
     "empty": {
       "clearSearch": "Clear search"
     }
+  },
+  "auth": {
+    "login": "Login"
   },
   "liveTV": {
     "title": "Live TV",

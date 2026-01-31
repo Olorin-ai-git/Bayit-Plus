@@ -17,6 +17,7 @@ import MinimizedWidgetDock from './MinimizedWidgetDock';
 import type { Widget, WidgetPosition } from '@/types/widget';
 import type { PodcastEpisode } from '@/types/podcast';
 import logger from '@/utils/logger';
+import i18n from '@bayit/i18n';
 
 // Cache for stream URLs and episode data to avoid repeated API calls
 const streamUrlCache: Record<string, { streamUrl?: string; episodeData?: PodcastEpisode }> = {};
@@ -47,7 +48,7 @@ export default function WidgetManager() {
       setWidgets(response.items || []);
     } catch (err) {
       logger.error('Failed to load widgets', 'WidgetManager', { error: err, pathname: location.pathname });
-      setError('Failed to load widgets');
+      setError(i18n.t('errors.widget.loadFailed'));
     } finally {
       setLoading(false);
     }

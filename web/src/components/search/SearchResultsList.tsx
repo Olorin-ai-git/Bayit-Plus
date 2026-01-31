@@ -7,6 +7,7 @@
 
 import React, { memo, useCallback } from 'react';
 import { View, Text, Image, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
@@ -33,6 +34,7 @@ export const SearchResultsList = memo(function SearchResultsList({
   onLoadMore,
   isLoadingMore,
 }: SearchResultsListProps) {
+  const { t } = useTranslation();
   const renderItem = useCallback(({ item, index }: { item: SearchResult; index: number }) => (
     <GlassButton
       variant="ghost"
@@ -94,7 +96,7 @@ export const SearchResultsList = memo(function SearchResultsList({
       isLoadingMore ? (
         <View style={styles.loader}>
           <ActivityIndicator size="small" color={colors.primary} />
-          <Text style={styles.loaderText}>Loading more results...</Text>
+          <Text style={styles.loaderText}>{t('search.loadingMore')}</Text>
         </View>
       ) : null,
     [isLoadingMore]

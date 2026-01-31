@@ -317,5 +317,82 @@
     "upgradeBeta": "自動翻訳を利用するにはBeta 500にアップグレード",
     "inputLabel": "チャットメッセージ入力",
     "moderationDelete": "モデレーターによりメッセージが削除されました"
+  },
+  "common": {
+    "milliseconds": "ミリ秒",
+    "collapse": "折りたたむ",
+    "expand": "展開",
+    "details": "詳細"
+  },
+  "dubbing": {
+    "latency": {
+      "badge": {
+        "title": "レイテンシーモニター",
+        "tooltip": "リアルタイム音声処理の遅延。完璧な同期のため、映像が自動的に遅延されます。",
+        "accessibilityHint": "ダブルタップでレイテンシー詳細パネルを切り替え"
+      },
+      "components": {
+        "capture": "音声キャプチャ",
+        "captureDesc": "映像から音声をキャプチャする時間",
+        "stt": "音声認識",
+        "sttDesc": "音声をテキストに変換",
+        "translation": "翻訳",
+        "translationDesc": "対象言語に翻訳",
+        "tts": "音声合成",
+        "ttsDesc": "吹き替え音声を生成",
+        "network": "ネットワーク",
+        "networkDesc": "データ伝送の遅延",
+        "buffer": "音声バッファ",
+        "bufferDesc": "音声処理バッファ",
+        "sync": "映像同期",
+        "syncDesc": "完璧な同期のための映像遅延"
+      },
+      "status": {
+        "excellent": "優秀",
+        "good": "良好",
+        "fair": "普通",
+        "poor": "低い"
+      },
+      "info": {
+        "autoSync": "自動同期",
+        "autoSyncDesc": "映像は音声処理時間に合わせて自動的に遅延され、完璧な口パクと字幕のタイミングを保証します。",
+        "howItWorks": "仕組み",
+        "howItWorksDesc": "システムは実際の処理レイテンシーを測定し、同じ量だけ映像ストリームを遅延させます。これがプロの放送翻訳の仕組みです。",
+        "noManualAdjustment": "手動調整不要",
+        "noManualAdjustmentDesc": "他のシステムと異なり、音声と映像を手動で同期する必要はありません。すべて自動です。",
+        "whyDelay": "なぜ遅延があるのか？",
+        "whyDelayDesc": "リアルタイム翻訳と吹き替えには時間がかかります（通常600-800ms）。同期していないコンテンツを表示するのではなく、映像を遅延させて一致させます。「ライブ」より少し遅れて見えますが、完璧に同期されています。",
+        "professionalQuality": "プロフェッショナル品質",
+        "professionalQualityDesc": "これはプロの放送局が国際生中継で使用するのと同じアプローチです。"
+      },
+      "graph": {
+        "title": "レイテンシー履歴",
+        "tooltip": "60秒間の処理レイテンシーの連続履歴",
+        "xAxis": "時間（秒前）",
+        "yAxis": "レイテンシー（ミリ秒）",
+        "noData": "データがありません..."
+      },
+      "breakdown": {
+        "title": "レイテンシー内訳",
+        "cacheHitRate": "キャッシュヒット率",
+        "provider": "プロバイダー"
+      }
+    },
+    "controls": {
+      "enableDubbing": "ライブ吹き替えを有効化",
+      "enableSubtitles": "ライブ字幕を有効化",
+      "selectLanguage": "言語を選択",
+      "selectVoice": "音声を選択",
+      "originalVolume": "元の音声",
+      "dubbedVolume": "吹き替え音声",
+      "tooltips": {
+        "enableDubbing": "リアルタイムで音声を翻訳・吹き替え",
+        "enableSubtitles": "リアルタイムで翻訳字幕を表示",
+        "selectLanguage": "翻訳の希望言語を選択",
+        "selectVoice": "吹き替え音声を選択",
+        "originalVolume": "元の音声のボリュームを調整（0 = ミュート）",
+        "dubbedVolume": "吹き替え音声のボリュームを調整（1 = 最大）"
+      }
+    }
   }
 }

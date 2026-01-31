@@ -327,7 +327,7 @@ export default function RefundsPage() {
                   style={styles.actionButton}
                   onPress={() => handleViewDetails(refund)}
                 >
-                  <Text style={styles.actionText}>View</Text>
+                  <Text style={styles.actionText}>{t('admin.actions.view')}</Text>
                 </Pressable>
                 {refund.status === 'pending' && (
                   <>
@@ -336,14 +336,14 @@ export default function RefundsPage() {
                       onPress={() => handleApproveRefund(refund.id)}
                     >
                       <Check size={14} color={colors.success.DEFAULT} />
-                      <Text style={styles.actionText}>Approve</Text>
+                      <Text style={styles.actionText}>{t('admin.actions.approve')}</Text>
                     </Pressable>
                     <Pressable
                       style={[styles.actionButton, styles.dangerButton]}
                       onPress={() => handleRejectRefund(refund.id)}
                     >
                       <X size={14} color={colors.error.DEFAULT} />
-                      <Text style={styles.actionText}>Reject</Text>
+                      <Text style={styles.actionText}>{t('admin.actions.reject')}</Text>
                     </Pressable>
                   </>
                 )}

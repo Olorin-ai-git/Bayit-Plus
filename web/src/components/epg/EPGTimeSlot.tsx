@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Clock, Circle } from 'lucide-react'
 import { EPGProgram } from '@/services/epgApi'
 import { DateTime } from 'luxon'
@@ -26,6 +27,7 @@ const EPGTimeSlot: React.FC<EPGTimeSlotProps> = ({
   onClick,
   onRecordClick
 }) => {
+  const { t } = useTranslation()
   const zoneName = timezone === 'israel' ? 'Asia/Jerusalem' : 'local'
 
   const startTime = DateTime.fromISO(program.start_time).setZone(zoneName)
@@ -75,7 +77,7 @@ const EPGTimeSlot: React.FC<EPGTimeSlotProps> = ({
 
       {isNow && (
         <View style={styles.liveBadge}>
-          <Text style={styles.liveBadgeText}>LIVE</Text>
+          <Text style={styles.liveBadgeText}>{t('epg.live')}</Text>
         </View>
       )}
 
@@ -88,7 +90,7 @@ const EPGTimeSlot: React.FC<EPGTimeSlotProps> = ({
             onRecordClick(program, e as any)
           }}
           style={styles.recordButton}
-          aria-label="Record"
+          aria-label={t('recordings.record')}
         >
           <Circle size={14} color="#ffffff" />
         </Pressable>

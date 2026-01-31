@@ -1,5 +1,6 @@
 import { useEffect, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { initBayitI18nWeb } from '@bayit/i18n/web'
 import { useDirection } from '@/hooks/useDirection'
 import { VoiceListeningProvider } from '@bayit/shared-contexts'
@@ -13,14 +14,17 @@ import { logger } from '@/utils/logger'
 import './styles/layout-fix.css'
 
 // Loading fallback component
-const LoadingFallback = () => (
-  <div className="flex items-center justify-center min-h-screen bg-background">
-    <div className="flex flex-col items-center gap-4">
-      <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      <span className="text-white/60 text-sm">Loading...</span>
+const LoadingFallback = () => {
+  const { t } = useTranslation()
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <span className="text-white/60 text-sm">{t('common.loading')}</span>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 // Admin-only route wrapper
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {

@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Channel, EPGProgram } from '@/services/epgApi'
 import EPGTimeline from './EPGTimeline'
 import EPGChannelRow from './EPGChannelRow'
@@ -32,6 +33,7 @@ const EPGGrid: React.FC<EPGGridProps> = ({
   getRecordingStatus,
   onRecordClick
 }) => {
+  const { t } = useTranslation()
   if (channels.length === 0) {
     return (
       <View style={styles.emptyStateContainer}>
@@ -51,7 +53,7 @@ const EPGGrid: React.FC<EPGGridProps> = ({
               />
             </svg>
           </View>
-          <Text style={styles.emptyStateTitle}>No TV Guide Data Available</Text>
+          <Text style={styles.emptyStateTitle}>{t('epg.noDataAvailable')}</Text>
           <Text style={styles.emptyStateMessage}>
             The TV programming schedule is currently unavailable. Please check back later or contact support if this persists.
           </Text>

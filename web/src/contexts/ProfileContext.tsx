@@ -8,6 +8,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { profilesService } from '@/services/api';
 import { useAuthStore } from '@/stores/authStore';
+import i18n from '@bayit/i18n';
 
 export interface Profile {
   id: string;
@@ -85,7 +86,7 @@ export const useProfileStore = create<ProfileStore>()(
           }
         } catch (error: any) {
           set({
-            error: error.detail || 'Failed to fetch profiles',
+            error: error.detail || i18n.t('errors.profile.fetchFailed'),
             isLoading: false,
           });
         }
@@ -102,7 +103,7 @@ export const useProfileStore = create<ProfileStore>()(
           });
         } catch (error: any) {
           set({
-            error: error.detail || 'Failed to select profile',
+            error: error.detail || i18n.t('errors.profile.selectFailed'),
             isLoading: false,
           });
           throw error;
@@ -120,7 +121,7 @@ export const useProfileStore = create<ProfileStore>()(
           return newProfile;
         } catch (error: any) {
           set({
-            error: error.detail || 'Failed to create profile',
+            error: error.detail || i18n.t('errors.profile.createFailed'),
             isLoading: false,
           });
           throw error;
@@ -142,7 +143,7 @@ export const useProfileStore = create<ProfileStore>()(
           }));
         } catch (error: any) {
           set({
-            error: error.detail || 'Failed to update profile',
+            error: error.detail || i18n.t('errors.profile.updateFailed'),
             isLoading: false,
           });
           throw error;
@@ -170,7 +171,7 @@ export const useProfileStore = create<ProfileStore>()(
           });
         } catch (error: any) {
           set({
-            error: error.detail || 'Failed to delete profile',
+            error: error.detail || i18n.t('errors.profile.deleteFailed'),
             isLoading: false,
           });
           throw error;

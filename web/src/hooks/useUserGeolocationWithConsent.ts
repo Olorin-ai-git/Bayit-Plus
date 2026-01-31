@@ -27,6 +27,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { logger as appLogger } from '../utils/logger';
 import { GEOLOCATION_CONFIG } from '@/config/geolocationConfig';
 import useLocationConsent from './useLocationConsent';
+import i18n from '@bayit/i18n';
 
 const logger = appLogger.scope('useUserGeolocationWithConsent');
 
@@ -114,7 +115,7 @@ export const useUserGeolocationWithConsent = (): GeolocationResult => {
               }
             } catch (err) {
               logger.error('Error processing geolocation', { error: err });
-              setError('Failed to determine location');
+              setError(i18n.t('location.errors.failed'));
               fallbackToTimezoneLocation();
             } finally {
               setIsDetecting(false);
@@ -127,11 +128,11 @@ export const useUserGeolocationWithConsent = (): GeolocationResult => {
             });
 
             if (err.code === err.PERMISSION_DENIED) {
-              setError('Location access denied. Please enable location in your browser settings.');
+              setError(i18n.t('location.errors.permissionDenied'));
             } else if (err.code === err.TIMEOUT) {
-              setError('Location request timed out');
+              setError(i18n.t('location.errors.timeout'));
             } else {
-              setError('Failed to get location');
+              setError(i18n.t('location.errors.failed'));
             }
 
             fallbackToTimezoneLocation();

@@ -58,7 +58,7 @@ const EPGSmartSearch: React.FC<EPGSmartSearchProps> = ({
                   <Text style={styles.headerTitle}>{t('epg.smartSearch')}</Text>
                   {isPremium && (
                     <View style={styles.premiumBadge}>
-                      <Text style={styles.premiumBadgeText}>PREMIUM</Text>
+                      <Text style={styles.premiumBadgeText}>{t('common.premium')}</Text>
                     </View>
                   )}
                 </View>

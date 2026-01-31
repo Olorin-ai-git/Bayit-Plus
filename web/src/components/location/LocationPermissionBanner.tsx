@@ -16,12 +16,14 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import useLocationConsent from '../../hooks/useLocationConsent';
 import { logger } from '../../utils/logger';
 
 const BANNER_DISMISSED_KEY = 'bayit_location_banner_dismissed';
 
 export const LocationPermissionBanner: React.FC = () => {
+  const { t } = useTranslation();
   const { hasConsent, requestConsent, isLoading } = useLocationConsent();
   const [isDismissed, setIsDismissed] = useState(true); // Default hidden
   const [isVisible, setIsVisible] = useState(false);
@@ -68,7 +70,7 @@ export const LocationPermissionBanner: React.FC = () => {
     <div
       className="fixed top-20 left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl px-4"
       role="banner"
-      aria-label="Location services prompt"
+      aria-label={t('location.permissionBanner.ariaLabel')}
     >
       <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl">
         <div className="flex items-start gap-4">
@@ -98,14 +100,14 @@ export const LocationPermissionBanner: React.FC = () => {
               <button
                 onClick={handleEnable}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-black/40"
-                aria-label="Enable location services"
+                aria-label={t('location.permissionBanner.enable')}
               >
-                Enable Location
+                {t('location.permissionBanner.enable')}
               </button>
               <button
                 onClick={handleDismiss}
                 className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white/30 focus:ring-offset-2 focus:ring-offset-black/40"
-                aria-label="Dismiss location prompt"
+                aria-label={t('location.permissionBanner.dismiss')}
               >
                 Not Now
               </button>
@@ -116,7 +118,7 @@ export const LocationPermissionBanner: React.FC = () => {
           <button
             onClick={handleDismiss}
             className="flex-shrink-0 text-white/60 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white/30 rounded"
-            aria-label="Close banner"
+            aria-label={t('location.permissionBanner.close')}
           >
             <svg
               className="w-5 h-5"

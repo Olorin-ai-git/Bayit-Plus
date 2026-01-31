@@ -5,6 +5,7 @@
 
 import React, { ReactNode } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { usePermissions } from '@/hooks/usePermissions';
 import { Permission, Role } from '@/types/rbac';
 import { colors, spacing } from '@olorin/design-tokens';
@@ -34,6 +35,7 @@ export const PermissionGate: React.FC<PermissionGateProps> = ({
   fallback,
   showDenied = false,
 }) => {
+  const { t } = useTranslation();
   const { can, canAny, canAll, hasRole, hasAnyRole, isAdmin, isSuperAdmin } = usePermissions();
 
   const hasAccess = (() => {
@@ -59,9 +61,9 @@ export const PermissionGate: React.FC<PermissionGateProps> = ({
     return (
       <View style={styles.deniedContainer}>
         <Text style={styles.lockIcon}>🔒</Text>
-        <Text style={styles.deniedTitle}>Access Denied</Text>
+        <Text style={styles.deniedTitle}>{t('admin.accessDenied')}</Text>
         <Text style={styles.deniedText}>
-          You don't have permission to view this content
+          {t('admin.noPermission')}
         </Text>
       </View>
     );

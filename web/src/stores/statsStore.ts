@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import api from '@/services/api';
+import i18n from '@bayit/i18n';
 
 
 interface PlayerStats {
@@ -93,7 +94,7 @@ export const useStatsStore = create<StatsStore>((set) => ({
       set({ myStats: stats, loading: false });
     } catch (error: any) {
       set({
-        error: error?.detail || 'Failed to fetch stats',
+        error: error?.detail || i18n.t('errors.stats.fetchFailed'),
         loading: false
       });
     }
@@ -106,7 +107,7 @@ export const useStatsStore = create<StatsStore>((set) => ({
       set({ viewedPlayerStats: stats, loading: false });
     } catch (error: any) {
       set({
-        error: error?.detail || 'Failed to fetch player stats',
+        error: error?.detail || i18n.t('errors.stats.playerFetchFailed'),
         loading: false
       });
     }
@@ -119,7 +120,7 @@ export const useStatsStore = create<StatsStore>((set) => ({
       set({ matchHistory: data.games, loading: false });
     } catch (error: any) {
       set({
-        error: error?.detail || 'Failed to fetch match history',
+        error: error?.detail || i18n.t('errors.stats.historyFetchFailed'),
         loading: false
       });
     }
@@ -132,7 +133,7 @@ export const useStatsStore = create<StatsStore>((set) => ({
       set({ leaderboard: data.leaderboard, loading: false });
     } catch (error: any) {
       set({
-        error: error?.detail || 'Failed to fetch leaderboard',
+        error: error?.detail || i18n.t('errors.stats.leaderboardFetchFailed'),
         loading: false
       });
     }
@@ -145,7 +146,7 @@ export const useStatsStore = create<StatsStore>((set) => ({
       set({ headToHead: stats, loading: false });
     } catch (error: any) {
       set({
-        error: error?.detail || 'Failed to fetch head-to-head stats',
+        error: error?.detail || i18n.t('errors.stats.h2hFetchFailed'),
         loading: false
       });
     }

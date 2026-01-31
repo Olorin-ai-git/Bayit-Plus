@@ -10,6 +10,7 @@ import { usePlaybackHeartbeat } from '@/hooks/usePlaybackHeartbeat';
 import { deviceService } from '@/services/deviceService';
 import { useAuthStore } from '@bayit/shared-stores/authStore';
 import logger from '@/utils/logger';
+import i18n from '@bayit/i18n';
 
 const sessionLogger = logger.scope('PlaybackSession');
 
@@ -120,7 +121,7 @@ export const usePlaybackSession = ({
         setIsCreatingSession(false);
         setError({
           code: 'TOKEN_REFRESH_FAILED',
-          message: 'Failed to refresh authentication token',
+          message: i18n.t('errors.auth.tokenRefreshFailed'),
         });
         return;
       }
@@ -203,7 +204,7 @@ export const usePlaybackSession = ({
             hasFailedRef.current = true;
             setError({
               code: 'AUTH_FAILED',
-              message: 'Authentication required for playback session',
+              message: i18n.t('errors.auth.playbackAuthRequired'),
             });
           }
         } else if (isConcurrentLimitError) {
@@ -247,7 +248,7 @@ export const usePlaybackSession = ({
       sessionLogger.error('Failed to create playback session after multiple attempts');
       setError({
         code: 'SESSION_CREATION_FAILED',
-        message: 'Failed to create playback session after multiple attempts',
+        message: i18n.t('errors.player.sessionCreateFailed'),
       });
     }
 

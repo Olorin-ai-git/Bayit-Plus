@@ -398,14 +398,14 @@ export default function CampaignsListPage() {
                   style={styles.actionButton}
                   onPress={() => handleViewDetails(campaign)}
                 >
-                  <Text style={styles.actionText}>View</Text>
+                  <Text style={styles.actionText}>{t('admin.actions.view')}</Text>
                 </Pressable>
                 <Pressable
                   style={styles.actionButton}
                   onPress={() => handleEditCampaign(campaign.id)}
                 >
                   <Edit2 size={14} color={colors.primary.DEFAULT} />
-                  <Text style={styles.actionText}>Edit</Text>
+                  <Text style={styles.actionText}>{t('admin.actions.edit')}</Text>
                 </Pressable>
                 {campaign.status === 'active' ? (
                   <Pressable
@@ -413,7 +413,7 @@ export default function CampaignsListPage() {
                     onPress={() => handlePauseCampaign(campaign.id)}
                   >
                     <PauseCircle size={14} color={colors.warning} />
-                    <Text style={styles.actionText}>Pause</Text>
+                    <Text style={styles.actionText}>{t('admin.actions.pause')}</Text>
                   </Pressable>
                 ) : campaign.status !== 'ended' ? (
                   <Pressable
@@ -421,7 +421,7 @@ export default function CampaignsListPage() {
                     onPress={() => handleActivateCampaign(campaign.id)}
                   >
                     <PlayCircle size={14} color={colors.success.DEFAULT} />
-                    <Text style={styles.actionText}>Activate</Text>
+                    <Text style={styles.actionText}>{t('admin.actions.activate')}</Text>
                   </Pressable>
                 ) : null}
                 <Pressable
@@ -429,7 +429,7 @@ export default function CampaignsListPage() {
                   onPress={() => handleDeleteCampaign(campaign.id)}
                 >
                   <Trash2 size={14} color={colors.error.DEFAULT} />
-                  <Text style={styles.actionText}>Delete</Text>
+                  <Text style={styles.actionText}>{t('admin.actions.delete')}</Text>
                 </Pressable>
               </View>
             </View>

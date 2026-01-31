@@ -5,6 +5,7 @@
 
 import React from 'react'
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ChevronLeft } from 'lucide-react'
 import { z } from 'zod'
 import { GlassCheckbox, GlassButton } from '@bayit/shared/ui'
@@ -42,6 +43,7 @@ export function WizardStepSelectItems({
   onContinue,
   onBack,
 }: WizardStepSelectItemsProps) {
+  const { t } = useTranslation()
   const selectedCount = importAll ? items.length : selectedItems.length
 
   return (
@@ -49,12 +51,12 @@ export function WizardStepSelectItems({
       {/* Back button */}
       <Pressable onPress={onBack} style={styles.backButton}>
         <ChevronLeft size={16} color="#9333ea" />
-        <Text style={styles.backText}>Back</Text>
+        <Text style={styles.backText}>{t('common.back')}</Text>
       </Pressable>
 
       {/* Header with select all */}
       <View style={styles.header}>
-        <Text style={styles.title}>Select items to import</Text>
+        <Text style={styles.title}>{t('admin.importWizard.selectItems')}</Text>
         <View style={styles.selectAllContainer}>
           <GlassCheckbox
             checked={importAll}

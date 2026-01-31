@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Clock, Info } from 'lucide-react'
 import { NativeIcon } from '@olorin/shared-icons/native'
 import { colors } from '@olorin/design-tokens'
@@ -19,6 +20,7 @@ const EPGProgramCard: React.FC<EPGProgramCardProps> = ({
   timezone,
   onClick
 }) => {
+  const { t } = useTranslation()
   const zoneName = timezone === 'israel' ? 'Asia/Jerusalem' : 'local'
 
   const startTime = DateTime.fromISO(program.start_time).setZone(zoneName)
@@ -61,7 +63,7 @@ const EPGProgramCard: React.FC<EPGProgramCardProps> = ({
           </Text>
           {isNow && (
             <View style={styles.liveBadge}>
-              <Text style={styles.liveBadgeText}>LIVE</Text>
+              <Text style={styles.liveBadgeText}>{t('epg.live')}</Text>
             </View>
           )}
         </View>

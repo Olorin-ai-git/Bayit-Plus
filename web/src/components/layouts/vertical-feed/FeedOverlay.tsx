@@ -5,6 +5,7 @@
 
 import { View, Text, Pressable } from 'react-native';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FeedItem } from './schemas';
 
 interface FeedOverlayProps {
@@ -13,6 +14,7 @@ interface FeedOverlayProps {
 
 export function FeedOverlay({ item }: FeedOverlayProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const formatDuration = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
@@ -51,15 +53,15 @@ export function FeedOverlay({ item }: FeedOverlayProps) {
           onPress={() => item.id && navigate(`/watch/${item.id}`)}
         >
           <Text className="text-2xl">▶️</Text>
-          <Text className="text-xs text-white">צפה</Text>
+          <Text className="text-xs text-white">{t('common.watch')}</Text>
         </Pressable>
         <Pressable className="items-center gap-1 p-2 rounded-lg hover:bg-white/10">
           <Text className="text-2xl">➕</Text>
-          <Text className="text-xs text-white">שמור</Text>
+          <Text className="text-xs text-white">{t('common.save')}</Text>
         </Pressable>
         <Pressable className="items-center gap-1 p-2 rounded-lg hover:bg-white/10">
           <Text className="text-2xl">↗️</Text>
-          <Text className="text-xs text-white">שתף</Text>
+          <Text className="text-xs text-white">{t('common.share')}</Text>
         </Pressable>
       </View>
     </View>

@@ -7,6 +7,7 @@
 
 import React from 'react';
 import { View, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { platformClass } from '@/utils/platformClass';
 import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
@@ -31,12 +32,14 @@ export function WidgetContent({
   isMuted,
   refreshKey,
 }: WidgetContentProps) {
+  const { t } = useTranslation();
+
   // Loading state
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-black/80">
         <View className="w-6 h-6 rounded-full border-2 border-white/30 border-t-white" />
-        <Text className="mt-2 text-xs text-neutral-400">Loading...</Text>
+        <Text className="mt-2 text-xs text-neutral-400">{t('common.loading')}</Text>
       </View>
     );
   }
@@ -59,7 +62,7 @@ export function WidgetContent({
         if (!streamUrl) {
           return (
             <View className="flex-1 justify-center items-center bg-black/80">
-              <Text className="text-xs text-neutral-400">Stream unavailable</Text>
+              <Text className="text-xs text-neutral-400">{t('widget.streamUnavailable')}</Text>
             </View>
           );
         }
@@ -79,7 +82,7 @@ export function WidgetContent({
         if (!streamUrl) {
           return (
             <View className="flex-1 justify-center items-center bg-black/80">
-              <Text className="text-xs text-neutral-400">Content unavailable</Text>
+              <Text className="text-xs text-neutral-400">{t('widget.contentUnavailable')}</Text>
             </View>
           );
         }
@@ -99,7 +102,7 @@ export function WidgetContent({
         if (!streamUrl) {
           return (
             <View className="flex-1 justify-center items-center bg-black/80">
-              <Text className="text-xs text-neutral-400">Podcast unavailable</Text>
+              <Text className="text-xs text-neutral-400">{t('widget.podcastUnavailable')}</Text>
             </View>
           );
         }
@@ -118,7 +121,7 @@ export function WidgetContent({
         if (!streamUrl) {
           return (
             <View className="flex-1 justify-center items-center bg-black/80">
-              <Text className="text-xs text-neutral-400">Station unavailable</Text>
+              <Text className="text-xs text-neutral-400">{t('widget.stationUnavailable')}</Text>
             </View>
           );
         }
@@ -137,7 +140,7 @@ export function WidgetContent({
         if (!widget.content.iframe_url) {
           return (
             <View className="flex-1 justify-center items-center bg-black/80">
-              <Text className="text-xs text-neutral-400">iFrame URL not configured</Text>
+              <Text className="text-xs text-neutral-400">{t('widget.iframeNotConfigured')}</Text>
             </View>
           );
         }
@@ -162,14 +165,14 @@ export function WidgetContent({
         }
         return (
           <View className="flex-1 justify-center items-center bg-black/80">
-            <Text className="text-xs text-neutral-400">Unknown component: {componentName}</Text>
+            <Text className="text-xs text-neutral-400">{t('widget.unknownComponent', { componentName })}</Text>
           </View>
         );
 
       default:
         return (
           <View className="flex-1 justify-center items-center bg-black/80">
-            <Text className="text-xs text-neutral-400">No content configured</Text>
+            <Text className="text-xs text-neutral-400">{t('widget.noContentConfigured')}</Text>
           </View>
         );
     }
@@ -177,7 +180,7 @@ export function WidgetContent({
     logger.error('Error rendering content', { error: err, component: 'WidgetContent' });
     return (
       <View className="flex-1 justify-center items-center bg-black/80">
-        <Text className="text-xs text-neutral-400">Error loading content</Text>
+        <Text className="text-xs text-neutral-400">{t('widget.errorLoadingContent')}</Text>
       </View>
     );
   }

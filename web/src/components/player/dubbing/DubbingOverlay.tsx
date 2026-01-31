@@ -5,6 +5,7 @@
 
 import { View, Text, StyleSheet, Animated } from 'react-native'
 import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Volume2 } from 'lucide-react'
 
 interface DubbingOverlayProps {
@@ -22,6 +23,7 @@ export default function DubbingOverlay({
   latencyMs,
   showTranscript = true,
 }: DubbingOverlayProps) {
+  const { t } = useTranslation()
   const fadeAnim = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function DubbingOverlay({
       {/* Active indicator */}
       <View style={styles.header}>
         <Volume2 size={14} color="#9333ea" />
-        <Text style={styles.headerText}>Live Dubbing</Text>
+        <Text style={styles.headerText}>{t('dubbing.controls.liveDubbing')}</Text>
         <View style={styles.latencyBadge}>
           <Text style={styles.latencyText}>{latencyMs}ms</Text>
         </View>

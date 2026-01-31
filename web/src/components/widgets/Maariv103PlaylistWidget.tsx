@@ -13,6 +13,7 @@ import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import AudioPlayer from '@/components/player/AudioPlayer';
 import { useAuthStore } from '@/stores/authStore';
 import type { PodcastEpisode, EpisodesResponse } from '@/types/podcast';
+import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 
 interface Maariv103PlaylistWidgetProps {
@@ -44,6 +45,7 @@ export function Maariv103PlaylistWidget({
   maxEpisodes = DEFAULT_MAX_EPISODES,
   autoRefresh = false,
 }: Maariv103PlaylistWidgetProps) {
+  const { t } = useTranslation();
   const [episodes, setEpisodes] = useState<PodcastEpisode[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -150,7 +152,7 @@ export function Maariv103PlaylistWidget({
   const renderLoading = () => (
     <View style={styles.centerContainer}>
       <ActivityIndicator size="large" color={colors.text} />
-      <Text style={styles.centerText}>Loading episodes...</Text>
+      <Text style={styles.centerText}>{t('widget.loadingEpisodes')}</Text>
     </View>
   );
 
@@ -161,7 +163,7 @@ export function Maariv103PlaylistWidget({
       <Text style={styles.errorText}>{error}</Text>
       <Pressable style={styles.retryButton} onPress={handleRefresh}>
         <RefreshCw size={16} color={colors.text} />
-        <Text style={styles.retryButtonText}>Retry</Text>
+        <Text style={styles.retryButtonText}>{t('common.retry')}</Text>
       </Pressable>
     </View>
   );
@@ -170,7 +172,7 @@ export function Maariv103PlaylistWidget({
   const renderEmpty = () => (
     <View style={styles.centerContainer}>
       <Music size={48} color={colors.textSecondary} />
-      <Text style={styles.centerText}>No episodes found</Text>
+      <Text style={styles.centerText}>{t('widget.noEpisodesFound')}</Text>
     </View>
   );
 
@@ -224,7 +226,7 @@ export function Maariv103PlaylistWidget({
         ) : (
           <View style={styles.noAudioBadge}>
             <AlertTriangle size={12} color="#fbbf24" />
-            <Text style={styles.noAudioText}>Audio unavailable</Text>
+            <Text style={styles.noAudioText}>{t('widget.audioUnavailable')}</Text>
           </View>
         )}
       </Pressable>
@@ -238,7 +240,7 @@ export function Maariv103PlaylistWidget({
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.headerIcon}>🎙️</Text>
-          <Text style={styles.headerTitle}>103FM Episodes</Text>
+          <Text style={styles.headerTitle}>{t('widget.103fmEpisodes')}</Text>
         </View>
         <Pressable style={styles.refreshButton} onPress={handleRefresh}>
           <RefreshCw size={16} color={colors.text} />
@@ -271,7 +273,7 @@ export function Maariv103PlaylistWidget({
                 {loading ? (
                   <ActivityIndicator size="small" color={colors.text} />
                 ) : (
-                  <Text style={styles.loadMoreText}>Load More</Text>
+                  <Text style={styles.loadMoreText}>{t('common.loadMore')}</Text>
                 )}
               </Pressable>
             )}

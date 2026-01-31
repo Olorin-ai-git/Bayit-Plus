@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import type { UploadStageStatus } from '../../types';
 
@@ -14,15 +15,16 @@ interface UploadStatusBadgeProps {
 }
 
 export const UploadStatusBadge: React.FC<UploadStatusBadgeProps> = ({ status, label }) => {
+  const { t } = useTranslation();
   const statusConfig = {
-    pending: { color: colors.glass.borderLight, text: label || 'Pending' },
-    in_progress: { color: colors.primary.DEFAULT, text: label || 'In Progress' },
-    uploading: { color: colors.primary.DEFAULT, text: label || 'Uploading' },
-    processing: { color: colors.primary.DEFAULT, text: label || 'Processing' },
-    queued: { color: colors.info, text: label || 'Queued' },
-    completed: { color: colors.success, text: label || 'Completed' },
-    failed: { color: colors.error, text: label || 'Failed' },
-    cancelled: { color: colors.warning, text: label || 'Cancelled' },
+    pending: { color: colors.glass.borderLight, text: label || t('uploads.status.pending') },
+    in_progress: { color: colors.primary.DEFAULT, text: label || t('uploads.status.inProgress') },
+    uploading: { color: colors.primary.DEFAULT, text: label || t('uploads.status.uploading') },
+    processing: { color: colors.primary.DEFAULT, text: label || t('uploads.status.processing') },
+    queued: { color: colors.info, text: label || t('uploads.status.queued') },
+    completed: { color: colors.success, text: label || t('uploads.status.completed') },
+    failed: { color: colors.error, text: label || t('uploads.status.failed') },
+    cancelled: { color: colors.warning, text: label || t('uploads.status.cancelled') },
   };
 
   const config = statusConfig[status] || statusConfig.pending;

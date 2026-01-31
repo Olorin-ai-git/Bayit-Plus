@@ -14,6 +14,7 @@ import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
 import { YnetMivzakimWidget } from './YnetMivzakimWidget';
 import { Maariv103PlaylistWidget } from './Maariv103PlaylistWidget';
+import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import type { Widget, WidgetPosition } from '@/types/widget';
 import type { PodcastEpisode } from '@/types/podcast';
@@ -51,6 +52,7 @@ export default function WidgetContainer({
   episodeData,
 }: WidgetContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
   const { isRTL } = useDirection();
 
   const [isDragging, setIsDragging] = useState(false);
@@ -431,7 +433,7 @@ export default function WidgetContainer({
   const renderLoading = () => (
     <View style={styles.loadingContainer}>
       <View style={styles.spinner} />
-      <Text style={styles.loadingText}>Loading...</Text>
+      <Text style={styles.loadingText}>{t('common.loading')}</Text>
     </View>
   );
 

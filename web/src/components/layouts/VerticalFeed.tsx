@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, ReactNode } from 'react'
 import { View, Text, StyleSheet, Pressable, Image, Animated } from 'react-native'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassView } from '@bayit/shared/ui'
 
@@ -39,6 +40,7 @@ export default function VerticalFeed({
   showProgress = true,
 }: VerticalFeedProps) {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [touchStart, setTouchStart] = useState(0)
@@ -226,7 +228,7 @@ export default function VerticalFeed({
             onPress={() => navigate(`/watch/${item.id}`)}
           >
             <Text style={styles.actionIcon}>▶️</Text>
-            <Text style={styles.actionLabel}>צפה</Text>
+            <Text style={styles.actionLabel}>{t('common.watch')}</Text>
           </Pressable>
           <Pressable
             style={({ hovered }) => [
@@ -235,7 +237,7 @@ export default function VerticalFeed({
             ]}
           >
             <Text style={styles.actionIcon}>➕</Text>
-            <Text style={styles.actionLabel}>שמור</Text>
+            <Text style={styles.actionLabel}>{t('common.save')}</Text>
           </Pressable>
           <Pressable
             style={({ hovered }) => [
@@ -244,7 +246,7 @@ export default function VerticalFeed({
             ]}
           >
             <Text style={styles.actionIcon}>↗️</Text>
-            <Text style={styles.actionLabel}>שתף</Text>
+            <Text style={styles.actionLabel}>{t('common.share')}</Text>
           </Pressable>
         </View>
       </View>
@@ -255,7 +257,7 @@ export default function VerticalFeed({
     return (
       <View style={styles.container}>
         <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>אין תוכן להצגה</Text>
+          <Text style={styles.emptyText}>{t('common.noContent')}</Text>
         </View>
       </View>
     )

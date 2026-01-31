@@ -7,10 +7,12 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { GlassCard, GlassSpinner } from '@bayit/glass';
 import { AlertCircle } from 'lucide-react';
 
 export function AudibleCallbackPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +62,7 @@ export function AudibleCallbackPage() {
             <div className="flex justify-center mb-4">
               <AlertCircle className="w-16 h-16 text-red-500" />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-4">Connection Failed</h1>
+            <h1 className="text-2xl font-bold text-white mb-4">{t('audible.connectionFailed')}</h1>
             <p className="text-gray-300 mb-6">{error}</p>
             <button
               onClick={() => navigate('/audiobooks')}
@@ -80,8 +82,8 @@ export function AudibleCallbackPage() {
         <GlassCard className="p-8 max-w-md">
           <div className="text-center">
             <GlassSpinner size="lg" className="mb-6" />
-            <h1 className="text-2xl font-bold text-white mb-4">Connecting Audible...</h1>
-            <p className="text-gray-300">Please wait while we link your account.</p>
+            <h1 className="text-2xl font-bold text-white mb-4">{t('audible.connecting')}</h1>
+            <p className="text-gray-300">{t('audible.pleaseWait')}</p>
           </div>
         </GlassCard>
       </div>
@@ -93,8 +95,8 @@ export function AudibleCallbackPage() {
       <GlassCard className="p-8 max-w-md">
         <div className="text-center">
           <div className="text-green-500 text-5xl mb-4">✓</div>
-          <h1 className="text-2xl font-bold text-white mb-4">Connected!</h1>
-          <p className="text-gray-300">Your Audible account is now linked to Bayit+</p>
+          <h1 className="text-2xl font-bold text-white mb-4">{t('audible.connected')}</h1>
+          <p className="text-gray-300">{t('audible.accountLinked')}</p>
         </div>
       </GlassCard>
     </div>

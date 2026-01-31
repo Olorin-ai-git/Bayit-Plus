@@ -360,14 +360,14 @@ export default function SubscriptionsListPage() {
                   style={styles.actionButton}
                   onPress={() => handleViewDetails(subscription)}
                 >
-                  <Text style={styles.actionText}>View</Text>
+                  <Text style={styles.actionText}>{t('admin.actions.view')}</Text>
                 </Pressable>
                 {subscription.status === 'active' && (
                   <Pressable
                     style={[styles.actionButton, styles.warningButton]}
                     onPress={() => handlePauseSubscription(subscription.id)}
                   >
-                    <Text style={styles.actionText}>Pause</Text>
+                    <Text style={styles.actionText}>{t('admin.actions.pause')}</Text>
                   </Pressable>
                 )}
                 {subscription.status === 'paused' && (
@@ -375,7 +375,7 @@ export default function SubscriptionsListPage() {
                     style={[styles.actionButton, styles.successButton]}
                     onPress={() => handleResumeSubscription(subscription.id)}
                   >
-                    <Text style={styles.actionText}>Resume</Text>
+                    <Text style={styles.actionText}>{t('admin.actions.resume')}</Text>
                   </Pressable>
                 )}
                 {subscription.status !== 'cancelled' && subscription.status !== 'expired' && (
@@ -383,7 +383,7 @@ export default function SubscriptionsListPage() {
                     style={[styles.actionButton, styles.dangerButton]}
                     onPress={() => handleCancelSubscription(subscription.id)}
                   >
-                    <Text style={styles.actionText}>Cancel</Text>
+                    <Text style={styles.actionText}>{t('admin.actions.cancel')}</Text>
                   </Pressable>
                 )}
               </View>

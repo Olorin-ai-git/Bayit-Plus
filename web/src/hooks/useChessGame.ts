@@ -6,6 +6,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuthStore } from '../stores/authStore';
 import api from '@/services/api';
 import logger from '@/utils/logger';
+import i18n from '@bayit/i18n';
 
 interface ChessPlayer {
   user_id: string;
@@ -85,7 +86,7 @@ export default function useChessGame() {
 
   const connectWebSocket = useCallback((gameCode: string) => {
     if (!token) {
-      setError('Not authenticated');
+      setError(i18n.t('errors.auth.notAuthenticated'));
       return;
     }
 
@@ -120,7 +121,7 @@ export default function useChessGame() {
 
       ws.current.onerror = (event) => {
         logger.error('WebSocket error', 'useChessGame', { event, readyState: ws.current?.readyState, gameCode });
-        setError('Connection error - check console for details');
+        setError(i18n.t('errors.connection.failed'));
       };
 
       ws.current.onmessage = (event) => {
@@ -183,7 +184,7 @@ export default function useChessGame() {
 
     } catch (err) {
       logger.error('Failed to connect', 'useChessGame', err);
-      setError('Failed to connect to game');
+      setError(i18n.t('errors.chess.connectFailed'));
     }
   }, [token, game, getWebSocketUrl]);
 
@@ -194,8 +195,8 @@ export default function useChessGame() {
     botDifficulty?: BotDifficulty
   ) => {
     if (!token) {
-      setError('Not authenticated');
-      throw new Error('Not authenticated');
+      setError(i18n.t('errors.auth.notAuthenticated'));
+      throw new Error(i18n.t('errors.auth.notAuthenticated'));
     }
 
     try {
@@ -220,8 +221,8 @@ export default function useChessGame() {
 
   const joinGame = async (gameCode: string) => {
     if (!token) {
-      setError('Not authenticated');
-      throw new Error('Not authenticated');
+      setError(i18n.t('errors.auth.notAuthenticated'));
+      throw new Error(i18n.t('errors.auth.notAuthenticated'));
     }
 
     try {
@@ -250,7 +251,7 @@ export default function useChessGame() {
         promotion
       }));
     } else {
-      setError('Not connected to game');
+      setError(i18n.t('errors.chess.notConnected'));
     }
   };
 
@@ -261,7 +262,7 @@ export default function useChessGame() {
         message
       }));
     } else {
-      setError('Not connected to game');
+      setError(i18n.t('errors.chess.notConnected'));
     }
   };
 
@@ -271,7 +272,7 @@ export default function useChessGame() {
         type: 'resign'
       }));
     } else {
-      setError('Not connected to game');
+      setError(i18n.t('errors.chess.notConnected'));
     }
   };
 
@@ -281,7 +282,7 @@ export default function useChessGame() {
         type: 'offer_draw'
       }));
     } else {
-      setError('Not connected to game');
+      setError(i18n.t('errors.chess.notConnected'));
     }
   };
 

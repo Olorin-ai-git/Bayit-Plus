@@ -1,145 +1,186 @@
 {
+  "auth": {
+    "loginRequired": "लॉगिन आवश्यक",
+    "loginToWatch": "{{title}} देखने के लिए कृपया साइन इन करें",
+    "login": "लॉगिन",
+    "signUp": "साइन अप"
+  },
   "email": {
-    "greeting": "Hello",
+    "greeting": "नमस्ते",
     "footer": {
-      "privacy": "Privacy Policy",
-      "terms": "Terms of Service",
-      "support": "Support",
-      "unsubscribe": "Unsubscribe from these emails"
+      "privacy": "गोपनीयता नीति",
+      "terms": "सेवा की शर्तें",
+      "support": "सहायता",
+      "unsubscribe": "इन ईमेल से सदस्यता समाप्त करें"
     },
     "welcome": {
-      "subject": "Welcome to Bayit+!",
-      "title": "Welcome to Bayit+",
-      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
-      "cta": "Go to Dashboard"
+      "subject": "Bayit+ में आपका स्वागत है!",
+      "title": "Bayit+ में आपका स्वागत है",
+      "body": "Bayit+ से जुड़ने के लिए धन्यवाद। हम आपको अपने साथ पाकर उत्साहित हैं!",
+      "cta": "डैशबोर्ड पर जाएं"
     },
     "verification": {
-      "subject": "Verify Your Email",
-      "title": "Verify Your Email Address",
-      "body": "Please click the button below to verify your email address.",
-      "cta": "Verify Email",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't create an account, you can safely ignore this email."
+      "subject": "अपना ईमेल सत्यापित करें",
+      "title": "अपना ईमेल पता सत्यापित करें",
+      "body": "कृपया अपना ईमेल पता सत्यापित करने के लिए नीचे दिए गए बटन पर क्लिक करें।",
+      "cta": "ईमेल सत्यापित करें",
+      "expiry": "यह लिंक {expiry_hours} घंटे में समाप्त हो जाएगा।",
+      "security": "यदि आपने खाता नहीं बनाया है, तो आप इस ईमेल को सुरक्षित रूप से अनदेखा कर सकते हैं।"
     },
     "verification_resend": {
-      "subject": "Email Verification (Resent)",
-      "title": "Verify Your Email Address",
-      "body": "Here's a new verification link as requested.",
-      "cta": "Verify Email"
+      "subject": "ईमेल सत्यापन (पुनः भेजा गया)",
+      "title": "अपना ईमेल पता सत्यापित करें",
+      "body": "अनुरोध के अनुसार यहां एक नया सत्यापन लिंक है।",
+      "cta": "ईमेल सत्यापित करें"
     },
     "password_reset": {
-      "subject": "Reset Your Password",
-      "title": "Reset Your Password",
-      "body": "We received a request to reset your password. Click the button below to create a new password.",
-      "cta": "Reset Password",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+      "subject": "अपना पासवर्ड रीसेट करें",
+      "title": "अपना पासवर्ड रीसेट करें",
+      "body": "हमें आपके पासवर्ड को रीसेट करने का अनुरोध प्राप्त हुआ है। नया पासवर्ड बनाने के लिए नीचे दिए गए बटन पर क्लिक करें।",
+      "cta": "पासवर्ड रीसेट करें",
+      "expiry": "यह लिंक {expiry_hours} घंटे में समाप्त हो जाएगा।",
+      "security": "यदि आपने यह अनुरोध नहीं किया है, तो आपका खाता अभी भी सुरक्षित है। आप इस ईमेल को अनदेखा कर सकते हैं।"
     },
     "password_changed": {
-      "subject": "Password Changed",
-      "title": "Your Password Has Been Changed",
-      "body": "Your password was successfully changed.",
-      "security": "If you didn't make this change, please contact support immediately."
+      "subject": "पासवर्ड बदला गया",
+      "title": "आपका पासवर्ड बदल दिया गया है",
+      "body": "आपका पासवर्ड सफलतापूर्वक बदल दिया गया।",
+      "security": "यदि आपने यह बदलाव नहीं किया है, तो कृपया तुरंत सहायता से संपर्क करें।"
     },
     "account_locked": {
-      "subject": "Account Locked",
-      "title": "Your Account Has Been Locked",
-      "body": "Your account has been temporarily locked due to security concerns.",
-      "cta": "Unlock Account"
+      "subject": "खाता लॉक किया गया",
+      "title": "आपका खाता लॉक कर दिया गया है",
+      "body": "सुरक्षा चिंताओं के कारण आपका खाता अस्थायी रूप से लॉक कर दिया गया है।",
+      "cta": "खाता अनलॉक करें"
     },
     "beta_invitation": {
-      "subject": "You're Invited to Bayit+ Beta!",
-      "title": "You're Invited to the Beta Program",
-      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
-      "credits": "{credits} AI credits included",
-      "duration": "Access for {days} days",
-      "cta": "Join Beta Program"
+      "subject": "आपको Bayit+ बीटा में आमंत्रित किया गया है!",
+      "title": "आपको बीटा प्रोग्राम में आमंत्रित किया गया है",
+      "body": "बधाई हो! आपको विशेष Bayit+ बीटा 500 प्रोग्राम के लिए चुना गया है।",
+      "credits": "{credits} AI क्रेडिट शामिल हैं",
+      "duration": "{days} दिनों के लिए एक्सेस",
+      "cta": "बीटा प्रोग्राम में शामिल हों"
     },
     "beta_welcome": {
-      "subject": "Welcome to Bayit+ Beta!",
-      "title": "Welcome to the Beta Program",
-      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
-      "cta": "Get Started"
+      "subject": "Bayit+ बीटा में आपका स्वागत है!",
+      "title": "बीटा प्रोग्राम में आपका स्वागत है",
+      "body": "आप अब विशेष Bayit+ बीटा 500 समुदाय का हिस्सा हैं!",
+      "cta": "शुरू करें"
     },
     "payment_confirmation": {
-      "subject": "Payment Confirmation",
-      "title": "Payment Received",
-      "body": "Your payment has been processed successfully.",
-      "transaction": "Transaction ID",
-      "plan": "Plan",
-      "amount": "Amount",
-      "date": "Payment Date",
-      "next_billing": "Next Billing Date"
+      "subject": "भुगतान पुष्टि",
+      "title": "भुगतान प्राप्त",
+      "body": "आपका भुगतान सफलतापूर्वक संसाधित हो गया है।",
+      "transaction": "लेनदेन आईडी",
+      "plan": "प्लान",
+      "amount": "राशि",
+      "date": "भुगतान तिथि",
+      "next_billing": "अगली बिलिंग तिथि"
     },
     "subscription_activated": {
-      "subject": "Subscription Activated",
-      "title": "Your Subscription is Active",
-      "body": "Your subscription has been activated. Here's what you get:",
-      "cta": "Start Watching"
+      "subject": "सदस्यता सक्रिय",
+      "title": "आपकी सदस्यता सक्रिय है",
+      "body": "आपकी सदस्यता सक्रिय कर दी गई है। यहां बताया गया है कि आपको क्या मिलता है:",
+      "cta": "देखना शुरू करें"
     },
     "subscription_cancelled": {
-      "subject": "Subscription Cancelled",
-      "title": "Subscription Cancelled",
-      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
-      "cta": "Reactivate Subscription"
+      "subject": "सदस्यता रद्द",
+      "title": "सदस्यता रद्द",
+      "body": "आपकी सदस्यता रद्द कर दी गई है। {access_until} तक आपकी पहुंच बनी रहेगी।",
+      "cta": "सदस्यता पुनः सक्रिय करें"
     },
     "payment_failed": {
-      "subject": "Payment Failed",
-      "title": "Payment Failed",
-      "body": "We were unable to process your payment. Please update your payment method.",
-      "cta": "Update Payment Method"
+      "subject": "भुगतान विफल",
+      "title": "भुगतान विफल",
+      "body": "हम आपके भुगतान को संसाधित करने में असमर्थ रहे। कृपया अपनी भुगतान विधि अपडेट करें।",
+      "cta": "भुगतान विधि अपडेट करें"
     },
     "trial_expiring": {
-      "subject": "Your Trial is Expiring Soon",
-      "title": "Trial Ending in {days_remaining} Days",
-      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
-      "cta": "Upgrade Now"
+      "subject": "आपका ट्रायल जल्द समाप्त हो रहा है",
+      "title": "ट्रायल {days_remaining} दिनों में समाप्त हो रहा है",
+      "body": "आपका मुफ्त ट्रायल जल्द समाप्त हो रहा है। सभी सुविधाओं का आनंद लेते रहने के लिए अभी अपग्रेड करें।",
+      "cta": "अभी अपग्रेड करें"
     },
     "support": {
-      "created_subject": "Ticket #{ticket_id} Created",
-      "created_title": "Support Ticket Created",
-      "created_body": "Your support ticket has been created. We'll get back to you soon.",
-      "response_subject": "New Response on Ticket #{ticket_id}",
-      "response_title": "New Response on Your Ticket",
-      "escalation_subject": "Ticket #{ticket_id} Escalated",
-      "escalation_title": "Your Ticket Has Been Escalated",
-      "resolved_subject": "Ticket #{ticket_id} Resolved",
-      "resolved_title": "Your Ticket Has Been Resolved",
-      "resolved_body": "Your support ticket has been resolved."
+      "created_subject": "टिकट #{ticket_id} बनाया गया",
+      "created_title": "सहायता टिकट बनाया गया",
+      "created_body": "आपका सहायता टिकट बना दिया गया है। हम जल्द ही आपसे संपर्क करेंगे।",
+      "response_subject": "टिकट #{ticket_id} पर नई प्रतिक्रिया",
+      "response_title": "आपके टिकट पर नई प्रतिक्रिया",
+      "escalation_subject": "टिकट #{ticket_id} एस्केलेट किया गया",
+      "escalation_title": "आपका टिकट एस्केलेट किया गया है",
+      "resolved_subject": "टिकट #{ticket_id} हल किया गया",
+      "resolved_title": "आपका टिकट हल हो गया है",
+      "resolved_body": "आपका सहायता टिकट हल कर दिया गया है।"
     },
     "new_message": {
-      "subject": "New Message from {sender_name}",
-      "title": "You Have a New Message",
-      "cta": "Read Message"
+      "subject": "{sender_name} से नया संदेश",
+      "title": "आपके पास एक नया संदेश है",
+      "cta": "संदेश पढ़ें"
     },
     "content_digest": {
-      "subject": "Your {digest_period} Content Digest",
-      "title": "Your Content Digest",
-      "cta": "Browse Content"
+      "subject": "आपका {digest_period} सामग्री सारांश",
+      "title": "आपका सामग्री सारांश",
+      "cta": "सामग्री ब्राउज़ करें"
     },
     "gdpr": {
-      "deletion_subject": "Data Deletion Confirmation",
-      "deletion_title": "Your Data Has Been Deleted",
-      "deletion_body": "As requested, your personal data has been permanently deleted.",
-      "categories_label": "Deleted Data Categories"
+      "deletion_subject": "डेटा हटाने की पुष्टि",
+      "deletion_title": "आपका डेटा हटा दिया गया है",
+      "deletion_body": "अनुरोध के अनुसार, आपका व्यक्तिगत डेटा स्थायी रूप से हटा दिया गया है।",
+      "categories_label": "हटाए गए डेटा श्रेणियां"
     },
     "admin": {
-      "account_created_subject": "Admin Account Created",
-      "account_created_title": "Admin Account Created",
-      "role_change_subject": "Role Changed",
-      "role_change_title": "Your Role Has Been Updated"
+      "account_created_subject": "व्यवस्थापक खाता बनाया गया",
+      "account_created_title": "व्यवस्थापक खाता बनाया गया",
+      "role_change_subject": "भूमिका बदली गई",
+      "role_change_title": "आपकी भूमिका अपडेट की गई है"
     },
     "campaign": {
-      "default_subject": "News from Bayit+"
+      "default_subject": "Bayit+ से समाचार"
     },
     "newsletter": {
-      "default_subject": "Bayit+ Newsletter"
+      "default_subject": "Bayit+ न्यूज़लेटर"
     },
     "reengagement": {
-      "subject": "We Miss You!",
-      "title": "It's Been a While",
-      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
-      "cta": "Come Back"
+      "subject": "हम आपको याद करते हैं!",
+      "title": "कुछ समय हो गया है",
+      "body": "हमने देखा कि आपने {days_inactive} दिनों से विज़िट नहीं किया है। यहां बताया गया है कि आप क्या खो रहे हैं:",
+      "cta": "वापस आएं"
+    }
+  },
+  "greeting": {
+    "morning": "सुप्रभात",
+    "afternoon": "शुभ दोपहर",
+    "evening": "शुभ संध्या",
+    "night": "शुभ रात्रि"
+  },
+  "location": {
+    "consentModal": {
+      "title": "स्थान सेवाएं सक्षम करें",
+      "description": "हम आपके क्षेत्र से संबंधित सामग्री दिखाना चाहेंगे।\n\nहम करेंगे:\n• आपके शहर और राज्य का पता लगाएंगे\n• स्थानीय इज़राइली समुदाय की सामग्री दिखाएंगे\n• 24 घंटे के लिए आपका स्थान कैश करेंगे\n\nहम नहीं करेंगे:\n• आपके सटीक स्थान को ट्रैक करना\n• तीसरे पक्ष के साथ आपका स्थान साझा करना\n• बिना सहमति के आपका स्थान स्थायी रूप से संग्रहीत करना\n\nआप इसे कभी भी सेटिंग्स में बदल सकते हैं।",
+      "accept": "स्थान एक्सेस की अनुमति दें",
+      "decline": "अभी नहीं",
+      "privacyNote": "आपकी गोपनीयता महत्वपूर्ण है। स्थान डेटा एन्क्रिप्टेड है और कभी बेचा नहीं जाता।"
+    },
+    "permissionBanner": {
+      "title": "अपने पास इज़राइली सामग्री खोजें",
+      "description": "अपने क्षेत्र से इज़राइली समुदाय के कार्यक्रम, समाचार और कहानियां देखने के लिए स्थान सेवाएं सक्षम करें। आपकी गोपनीयता सुरक्षित है - हम केवल आपके शहर का पता लगाते हैं।",
+      "enable": "स्थान सक्षम करें",
+      "notNow": "अभी नहीं",
+      "close": "बंद करें"
+    },
+    "status": {
+      "detecting": "आपका स्थान पता लगाया जा रहा है...",
+      "detected": "स्थान पता चला: {{city}}, {{state}}",
+      "denied": "स्थान एक्सेस अस्वीकृत",
+      "unavailable": "स्थान सेवाएं अनुपलब्ध",
+      "error": "स्थान पता लगाने में विफल"
+    },
+    "errors": {
+      "permissionDenied": "स्थान एक्सेस अस्वीकृत। कृपया अपनी ब्राउज़र सेटिंग्स में स्थान सक्षम करें।",
+      "timeout": "स्थान अनुरोध का समय समाप्त हो गया। कृपया पुनः प्रयास करें।",
+      "unavailable": "आपके ब्राउज़र में स्थान सेवाएं उपलब्ध नहीं हैं।",
+      "failed": "स्थान प्राप्त करने में विफल। कृपया पुनः प्रयास करें।"
     }
   },
   "payment": {
@@ -303,6 +344,291 @@
       }
     }
   },
+  "uploads": {
+    "title": "अपलोड प्रबंधन",
+    "subtitle": "फ़ोल्डर्स की निगरानी करें और सामग्री अपलोड प्रबंधित करें",
+    "queueDashboard": {
+      "title": "अपलोड कतार डैशबोर्ड",
+      "stats": "कतार आंकड़े",
+      "total": "कुल",
+      "queued": "कतार में",
+      "active": "सक्रिय",
+      "done": "पूर्ण",
+      "activeJob": "सक्रिय अपलोड",
+      "queuedJobs": "कतारबद्ध अपलोड",
+      "recentCompleted": "हाल ही में पूर्ण",
+      "noActiveJob": "कोई सक्रिय अपलोड नहीं",
+      "noActiveJobDescription": "कतार खाली है। प्रोसेसिंग शुरू करने के लिए फ़ाइलें अपलोड करें या मॉनिटर किए गए फ़ोल्डर्स स्कैन करें।",
+      "noQueuedJobs": "कोई लंबित अपलोड नहीं",
+      "noQueuedJobsDescription": "सभी फ़ाइलें प्रोसेस हो चुकी हैं। जारी रखने के लिए और फ़ाइलें जोड़ें।",
+      "noRecentCompleted": "कोई हाल की पूर्णताएं नहीं",
+      "noRecentCompletedDescription": "सफलतापूर्वक अपलोड की गई फ़ाइलें यहां दिखाई देंगी।",
+      "queuePausedWarning": "कतार रुकी हुई है: {{reason}}",
+      "resumeQueue": "कतार फिर से शुरू करें",
+      "pauseQueue": "कतार रोकें",
+      "clearQueue": "कतार साफ़ करें"
+    },
+    "manualUpload": {
+      "title": "मैनुअल अपलोड",
+      "subtitle": "अपने डिवाइस से सीधे फ़ाइलें अपलोड करें",
+      "browserUpload": "ब्राउज़र अपलोड",
+      "urlUpload": "URL आयात",
+      "contentType": "सामग्री प्रकार",
+      "contentTypeHelp": "अपलोड की जा रही सामग्री का प्रकार चुनें",
+      "contentTypeRequired": "कृपया एक सामग्री प्रकार चुनें",
+      "dropZone": "ड्रॉप ज़ोन",
+      "dropZoneAriaLabel": "फ़ाइल अपलोड ड्रॉपज़ोन। फ़ाइलें चुनने के लिए क्लिक करें या एंटर दबाएं, या यहां फ़ाइलें खींचें",
+      "dropHere": "वीडियो फ़ाइलें यहां खींचें या ब्राउज़ करने के लिए क्लिक करें",
+      "dropHereActive": "अपलोड करने के लिए फ़ाइलें छोड़ें",
+      "tapToSelect": "फ़ाइलें चुनने के लिए टैप करें",
+      "browseFiles": "फ़ाइलें ब्राउज़ करें",
+      "selectFiles": "फ़ाइलें चुनें",
+      "supportedFormats": "समर्थित: MP4, MKV, AVI, MOV, WEBM (अधिकतम {{maxSize}})",
+      "fileList": "अपलोड के लिए चयनित फ़ाइलें",
+      "fileListEmpty": "कोई फ़ाइल चयनित नहीं",
+      "fileListEmptyDescription": "अपलोड के लिए फ़ाइलें चुनने के लिए ऊपर फ़ाइल सिलेक्टर का उपयोग करें",
+      "fileItem": "फ़ाइल: {{name}}, आकार: {{size}}, प्रगति: {{progress}}%",
+      "fileName": "फ़ाइल का नाम",
+      "fileSize": "आकार",
+      "fileType": "प्रकार",
+      "fileProgress": "प्रगति",
+      "fileStatus": "स्थिति",
+      "removeFile": "{{name}} हटाएं",
+      "removeFileHint": "इस फ़ाइल को अपलोड कतार से हटाएं",
+      "fileRemoved": "{{name}} को अपलोड कतार से हटाया गया",
+      "selectedFiles": "{{count}} फ़ाइल(ें) चयनित",
+      "selectedFilesOne": "1 फ़ाइल चयनित",
+      "selectedFilesOther": "{{count}} फ़ाइलें चयनित",
+      "totalSize": "कुल आकार: {{size}}",
+      "clearAll": "सभी हटाएं",
+      "clearAllHint": "अपलोड कतार से सभी फ़ाइलें हटाएं",
+      "clearAllConfirm": "सभी {{count}} फ़ाइलें हटाएं?",
+      "uploadFiles": "फ़ाइलें अपलोड करें",
+      "uploading": "अपलोड हो रहा है...",
+      "uploadingFiles": "{{count}} फ़ाइल(ें) अपलोड हो रही हैं...",
+      "uploadProgress": "अपलोड हो रहा है: {{percent}}% पूर्ण",
+      "uploadComplete": "अपलोड पूर्ण",
+      "uploadSuccess": "{{count}} फ़ाइल(ें) सफलतापूर्वक अपलोड हुईं",
+      "uploadSuccessOne": "1 फ़ाइल सफलतापूर्वक अपलोड हुई",
+      "uploadSuccessOther": "{{count}} फ़ाइलें सफलतापूर्वक अपलोड हुईं",
+      "uploadPartialSuccess": "{{total}} में से {{successful}} फ़ाइलें अपलोड हुईं। {{failed}} विफल।",
+      "uploadFailed": "अपलोड विफल: {{error}}",
+      "cancelUpload": "अपलोड रद्द करें",
+      "retryUpload": "अपलोड पुनः प्रयास करें",
+      "retryFailed": "विफल फ़ाइलें पुनः प्रयास करें"
+    },
+    "urlUpload": {
+      "title": "URL से आयात करें",
+      "subtitle": "रिमोट URL से वीडियो फ़ाइलें आयात करें",
+      "urlLabel": "वीडियो URL",
+      "urlPlaceholder": "https://example.com/video.mp4",
+      "urlHelp": "वीडियो फ़ाइल का सीधा URL दर्ज करें",
+      "urlRequired": "URL आवश्यक है",
+      "importButton": "URL से आयात करें",
+      "importing": "आयात हो रहा है...",
+      "importSuccess": "URL से सफलतापूर्वक आयात हुआ",
+      "importFailed": "आयात विफल: {{error}}",
+      "invalidUrl": "कृपया एक मान्य URL दर्ज करें",
+      "urlMustBeHttps": "URL HTTPS प्रोटोकॉल का उपयोग करना चाहिए",
+      "emptyUrlList": "कोई URL आयात नहीं",
+      "emptyUrlListDescription": "रिमोट स्रोतों से वीडियो फ़ाइलें आयात करने के लिए ऊपर URL दर्ज करें",
+      "addUrl": "URL जोड़ें",
+      "removeUrl": "URL हटाएं"
+    },
+    "monitoredFolders": {
+      "title": "मॉनिटर किए गए फ़ोल्डर",
+      "subtitle": "स्वचालित रूप से सामग्री का पता लगाने और अपलोड करने के लिए फ़ोल्डर कॉन्फ़िगर करें",
+      "noFolders": "कोई मॉनिटर किए गए फ़ोल्डर नहीं",
+      "noFoldersDescription": "स्वचालित सामग्री पहचान और अपलोड सक्षम करने के लिए फ़ोल्डर जोड़ें",
+      "addFolder": "फ़ोल्डर जोड़ें",
+      "editFolder": "फ़ोल्डर संपादित करें",
+      "deleteFolder": "फ़ोल्डर हटाएं",
+      "scanFolder": "फ़ोल्डर स्कैन करें",
+      "scanFolderHint": "नई फ़ाइलों की जांच करें और अपलोड कतार में जोड़ें",
+      "scanning": "स्कैन हो रहा है...",
+      "scanComplete": "स्कैन पूर्ण: {{count}} फ़ाइल(ें) मिलीं",
+      "scanCompleteOne": "स्कैन पूर्ण: 1 फ़ाइल मिली",
+      "scanCompleteOther": "स्कैन पूर्ण: {{count}} फ़ाइलें मिलीं",
+      "noFilesFound": "फ़ोल्डर में कोई नई फ़ाइल नहीं मिली",
+      "scanFailed": "स्कैन विफल: {{error}}",
+      "folderName": "फ़ोल्डर का नाम",
+      "folderPath": "फ़ोल्डर पथ",
+      "folderStatus": "स्थिति",
+      "folderEnabled": "सक्षम",
+      "folderDisabled": "अक्षम",
+      "lastScan": "अंतिम स्कैन",
+      "neverScanned": "कभी स्कैन नहीं किया",
+      "filesDetected": "{{count}} फ़ाइल(ें) पाई गईं",
+      "confirmDelete": "{{name}} हटाएं?",
+      "confirmDeleteMessage": "इससे इस फ़ोल्डर की निगरानी बंद हो जाएगी। मौजूदा अपलोड प्रभावित नहीं होंगे।",
+      "deleteSuccess": "फ़ोल्डर सफलतापूर्वक हटाया गया",
+      "deleteFailed": "फ़ोल्डर हटाने में विफल: {{error}}",
+      "form": {
+        "title": "फ़ोल्डर कॉन्फ़िगरेशन",
+        "name": "फ़ोल्डर का नाम",
+        "namePlaceholder": "उदा., मूवी आर्काइव",
+        "nameRequired": "फ़ोल्डर का नाम आवश्यक है",
+        "nameHelp": "इस फ़ोल्डर के लिए वर्णनात्मक नाम",
+        "path": "फ़ोल्डर पथ",
+        "pathPlaceholder": "/path/to/folder",
+        "pathHelp": "मॉनिटर करने के लिए पूर्ण पथ दर्ज करें",
+        "pathRequired": "फ़ोल्डर पथ आवश्यक है",
+        "pathInvalid": "अमान्य फ़ोल्डर पथ",
+        "pathReadOnly": "बनाने के बाद पथ बदला नहीं जा सकता",
+        "enabled": "सक्षम",
+        "enabledHelp": "इस फ़ोल्डर के लिए निगरानी सक्षम या अक्षम करें",
+        "autoUpload": "स्वचालित अपलोड",
+        "autoUploadHelp": "इस फ़ोल्डर में पाई गई नई फ़ाइलें स्वचालित रूप से अपलोड करें",
+        "contentType": "सामग्री प्रकार",
+        "contentTypeHelp": "इस फ़ोल्डर में सामग्री का प्रकार",
+        "saveButton": "फ़ोल्डर सहेजें",
+        "cancelButton": "रद्द करें",
+        "saving": "सहेजा जा रहा है..."
+      }
+    },
+    "dryRun": {
+      "title": "ड्राई रन मोड",
+      "enabled": "ड्राई रन सक्षम",
+      "disabled": "ड्राई रन अक्षम",
+      "description": "वास्तव में फ़ाइलें स्थानांतरित किए बिना अपलोड का पूर्वावलोकन करें",
+      "descriptionDetailed": "सक्षम होने पर, फ़ाइलें सत्यापित की जाएंगी और मेटाडेटा निकाला जाएगा, लेकिन स्टोरेज में अपलोड नहीं किया जाएगा। बदलाव किए बिना अपलोड का परीक्षण करने के लिए इसका उपयोग करें।",
+      "toggle": "ड्राई रन सक्षम करें",
+      "toggleHint": "सुरक्षित अपलोड परीक्षण के लिए ड्राई रन मोड टॉगल करें",
+      "previewTitle": "ड्राई रन परिणाम",
+      "previewDescription": "अगर आप अपलोड के साथ आगे बढ़ते हैं तो क्या होगा इसकी समीक्षा करें",
+      "validFiles": "मान्य फ़ाइलें ({{count}})",
+      "invalidFiles": "अमान्य फ़ाइलें ({{count}})",
+      "warnings": "चेतावनियां ({{count}})",
+      "proceedButton": "अपलोड के साथ आगे बढ़ें",
+      "proceedHint": "ड्राई रन अक्षम करें और वास्तविक अपलोड करें",
+      "cancelButton": "रद्द करें",
+      "noResults": "कोई ड्राई रन परिणाम उपलब्ध नहीं"
+    },
+    "connectionStatus": {
+      "connected": "कनेक्टेड",
+      "disconnected": "डिस्कनेक्टेड",
+      "reconnecting": "पुनः कनेक्ट हो रहा है...",
+      "reconnectAttempt": "पुनः कनेक्ट हो रहा है (प्रयास {{current}} / {{max}})",
+      "connectionLost": "रियल-टाइम अपडेट अनुपलब्ध",
+      "connectionLostDescription": "सर्वर से कनेक्शन टूट गया। पुनः कनेक्ट करने का प्रयास हो रहा है...",
+      "connectionLostAnnouncement": "कनेक्शन टूटा। रियल-टाइम अपडेट रुके। मैनुअल अपडेट के लिए रिफ्रेश बटन का उपयोग करें।",
+      "connectedAnnouncement": "अपलोड सेवा से कनेक्टेड। रियल-टाइम अपडेट सक्रिय।",
+      "reconnectingAnnouncement": "अपलोड सेवा से पुनः कनेक्ट हो रहा है। प्रयास {{attempt}} / {{maxAttempts}}।",
+      "troubleshooting": "समस्या निवारण",
+      "troubleshootingSteps": [
+        "अपना इंटरनेट कनेक्शन जांचें",
+        "सत्यापित करें कि सर्वर चल रहा है",
+        "अपना प्रमाणीकरण टोकन जांचें",
+        "पेज रिफ्रेश करने का प्रयास करें"
+      ],
+      "manualRefresh": "मैनुअल रूप से रिफ्रेश करें",
+      "manualRefreshHint": "कतार डेटा मैनुअल रूप से रिफ्रेश करें",
+      "refreshing": "रिफ्रेश हो रहा है..."
+    },
+    "contentTypes": {
+      "movie": "मूवी",
+      "series": "सीरीज़",
+      "podcast": "पॉडकास्ट",
+      "other": "अन्य"
+    },
+    "stages": {
+      "browserUpload": "ब्राउज़र अपलोड",
+      "hashCalculation": "हैश गणना",
+      "duplicateCheck": "डुप्लिकेट जांच",
+      "metadataExtraction": "मेटाडेटा निष्कर्षण",
+      "gcsUpload": "क्लाउड अपलोड",
+      "databaseInsert": "डेटाबेस इन्सर्ट",
+      "complete": "पूर्ण",
+      "failed": "विफल"
+    },
+    "status": {
+      "queued": "कतार में",
+      "processing": "प्रोसेसिंग",
+      "uploading": "अपलोड हो रहा है",
+      "complete": "पूर्ण",
+      "failed": "विफल",
+      "cancelled": "रद्द",
+      "skipped": "छोड़ा गया (डुप्लिकेट)"
+    },
+    "actions": {
+      "pauseQueue": "कतार रोकें",
+      "resumeQueue": "कतार फिर से शुरू करें",
+      "clearQueue": "कतार साफ़ करें",
+      "clearQueueConfirm": "अपलोड कतार साफ़ करें?",
+      "clearQueueConfirmMessage": "यह {{count}} लंबित अपलोड रद्द कर देगा। यह क्रिया पूर्ववत नहीं की जा सकती।",
+      "triggerUpload": "फ़ोल्डर स्कैन करें",
+      "triggerUploadHint": "नई फ़ाइलों के लिए सभी मॉनिटर किए गए फ़ोल्डर स्कैन करें",
+      "triggerUploadSuccess": "अपलोड के लिए {{files_found}} फ़ाइल(ें) मिलीं",
+      "triggerUploadFailed": "स्कैन विफल: {{error}}",
+      "refresh": "रिफ्रेश",
+      "refreshHint": "कतार डेटा रीलोड करें",
+      "cancel": "रद्द करें",
+      "retry": "पुनः प्रयास",
+      "remove": "हटाएं"
+    },
+    "errors": {
+      "loadFailed": "अपलोड डेटा लोड करने में विफल",
+      "loadFailedDescription": "अपलोड कतार प्राप्त करने में असमर्थ। कृपया रिफ्रेश करने का प्रयास करें।",
+      "saveFailed": "फ़ोल्डर कॉन्फ़िगरेशन सहेजने में विफल",
+      "saveFailedDescription": "मॉनिटर किया गया फ़ोल्डर सहेजने में असमर्थ। कृपया पुनः प्रयास करें।",
+      "deleteFailed": "मॉनिटर किया गया फ़ोल्डर हटाने में विफल",
+      "uploadFailed": "अपलोड विफल",
+      "uploadFailedDescription": "एक या अधिक फ़ाइलें अपलोड करने में विफल। विवरण के लिए फ़ाइल सूची जांचें।",
+      "resumeFailed": "कतार फिर से शुरू करने में विफल",
+      "clearFailed": "कतार साफ़ करने में विफल",
+      "triggerFailed": "अपलोड स्कैन शुरू करने में विफल",
+      "pathRequired": "फ़ोल्डर पथ आवश्यक है",
+      "invalidPath": "अमान्य फ़ोल्डर पथ",
+      "pathTraversal": "पथ में अमान्य अक्षर या ट्रैवर्सल प्रयास हैं",
+      "networkError": "नेटवर्क त्रुटि। कृपया अपना कनेक्शन जांचें।",
+      "authError": "प्रमाणीकरण त्रुटि। कृपया पुनः लॉगिन करें।",
+      "serverError": "सर्वर त्रुटि। कृपया बाद में पुनः प्रयास करें।",
+      "fileTooBig": "फ़ाइल अधिकतम आकार {{maxSize}} से अधिक है",
+      "invalidFileType": "अमान्य फ़ाइल प्रकार। समर्थित प्रारूप: {{formats}}",
+      "duplicateFile": "यह फ़ाइल पहले ही अपलोड हो चुकी है",
+      "rateLimitExceeded": "दर सीमा पार हो गई। अधिक फ़ाइलें अपलोड करने से पहले कृपया प्रतीक्षा करें।",
+      "configValidationFailed": "कॉन्फ़िगरेशन सत्यापन विफल। विवरण के लिए कंसोल जांचें।",
+      "websocketAuthFailed": "WebSocket प्रमाणीकरण विफल",
+      "unsupportedBrowser": "आपका ब्राउज़र आवश्यक सुविधाओं का समर्थन नहीं करता"
+    },
+    "mobile": {
+      "dataWarning": "आप सेल्युलर डेटा पर हैं। {{size}} अपलोड करने में महत्वपूर्ण डेटा का उपयोग हो सकता है।",
+      "dataWarningProceed": "फिर भी आगे बढ़ें",
+      "dataWarningCancel": "अपलोड रद्द करें",
+      "lowMemoryWarning": "डिवाइस की मेमोरी कम है। बड़े अपलोड विफल हो सकते हैं।",
+      "batteryLowWarning": "बैटरी कम है ({{percent}}%)। अपलोड बाधित हो सकते हैं।",
+      "networkChanged": "नेटवर्क बदला। पुनः कनेक्ट हो रहा है...",
+      "mobileBrowserNotSupported": "मोबाइल ब्राउज़र पर कुछ सुविधाएं काम नहीं कर सकतीं"
+    },
+    "accessibility": {
+      "pageDescription": "कतार निगरानी, मैनुअल अपलोड और फ़ोल्डर निगरानी के साथ अपलोड प्रबंधन इंटरफ़ेस",
+      "pageTitle": "एडमिन अपलोड पेज",
+      "sectionQueue": "कतार डैशबोर्ड अनुभाग",
+      "sectionManualUpload": "मैनुअल अपलोड अनुभाग",
+      "sectionMonitoredFolders": "मॉनिटर किए गए फ़ोल्डर अनुभाग",
+      "loadingQueue": "अपलोड कतार लोड हो रही है...",
+      "queueLoaded": "अपलोड कतार {{count}} आइटम के साथ लोड हुई",
+      "queueLoadedOne": "अपलोड कतार 1 आइटम के साथ लोड हुई",
+      "queueLoadedOther": "अपलोड कतार {{count}} आइटम के साथ लोड हुई",
+      "uploadStarted": "{{count}} फ़ाइलों के लिए अपलोड शुरू हुआ",
+      "uploadStartedOne": "1 फ़ाइल के लिए अपलोड शुरू हुआ",
+      "uploadStartedOther": "{{count}} फ़ाइलों के लिए अपलोड शुरू हुआ",
+      "uploadProgressUpdate": "अपलोड प्रगति: {{percent}}% पूर्ण",
+      "uploadProgressMilestone": "अपलोड {{percent}}% पूर्ण",
+      "uploadCompleted": "अपलोड सफलतापूर्वक पूर्ण",
+      "uploadFailed": "अपलोड विफल",
+      "folderAdded": "फ़ोल्डर {{name}} निगरानी में जोड़ा गया",
+      "folderRemoved": "फ़ोल्डर {{name}} निगरानी से हटाया गया",
+      "folderScanned": "फ़ोल्डर {{name}} स्कैन किया गया, {{count}} फ़ाइलें मिलीं",
+      "emptyStateAction": "क्रिया करने के लिए एंटर दबाएं",
+      "connectionStatusRegion": "कनेक्शन स्थिति जानकारी",
+      "queueStatsRegion": "कतार आंकड़े क्षेत्र",
+      "shortcuts": {
+        "uploadFocused": "अपलोड इनपुट फ़ोकस्ड। फ़ाइलें चुनने के लिए एंटर दबाएं।",
+        "queueRefreshed": "कतार मैनुअल रूप से रिफ्रेश हुई।"
+      }
+    }
+  },
   "channelChat": {
     "title": "लाइव चैट",
     "participants": "{{count}} देख रहे हैं",
@@ -317,5 +643,82 @@
     "upgradeBeta": "स्वचालित अनुवाद के लिए Beta 500 में अपग्रेड करें",
     "inputLabel": "चैट संदेश इनपुट",
     "moderationDelete": "मॉडरेटर द्वारा संदेश हटाया गया"
+  },
+  "common": {
+    "milliseconds": "मिलीसेकंड",
+    "collapse": "संक्षिप्त करें",
+    "expand": "विस्तार करें",
+    "details": "विवरण"
+  },
+  "dubbing": {
+    "latency": {
+      "badge": {
+        "title": "लेटेंसी मॉनिटर",
+        "tooltip": "रियल-टाइम ऑडियो प्रोसेसिंग विलंब। वीडियो स्वचालित रूप से पूर्ण सिंक के लिए विलंबित होता है।",
+        "accessibilityHint": "लेटेंसी विवरण पैनल को टॉगल करने के लिए दो बार टैप करें"
+      },
+      "components": {
+        "capture": "ऑडियो कैप्चर",
+        "captureDesc": "वीडियो से ऑडियो कैप्चर करने का समय",
+        "stt": "स्पीच-टू-टेक्स्ट",
+        "sttDesc": "भाषण को पाठ में परिवर्तित करना",
+        "translation": "अनुवाद",
+        "translationDesc": "लक्षित भाषा में अनुवाद",
+        "tts": "टेक्स्ट-टू-स्पीच",
+        "ttsDesc": "डब किए गए ऑडियो को उत्पन्न करना",
+        "network": "नेटवर्क",
+        "networkDesc": "डेटा ट्रांसमिशन विलंब",
+        "buffer": "ऑडियो बफर",
+        "bufferDesc": "ऑडियो प्रोसेसिंग बफर",
+        "sync": "वीडियो सिंक",
+        "syncDesc": "पूर्ण सिंक के लिए वीडियो विलंब"
+      },
+      "status": {
+        "excellent": "उत्कृष्ट",
+        "good": "अच्छा",
+        "fair": "साधारण",
+        "poor": "खराब"
+      },
+      "info": {
+        "autoSync": "स्वचालित सिंक्रनाइज़ेशन",
+        "autoSyncDesc": "ऑडियो प्रोसेसिंग समय के साथ मेल खाने के लिए वीडियो स्वचालित रूप से विलंबित होता है, जो पूर्ण लिप-सिंक और सबटाइटल समय सुनिश्चित करता है।",
+        "howItWorks": "यह कैसे काम करता है",
+        "howItWorksDesc": "सिस्टम वास्तविक प्रोसेसिंग लेटेंसी को मापता है और उसी मात्रा में वीडियो स्ट्रीम को विलंबित करता है। यही तरीका पेशेवर प्रसारण अनुवाद का है।",
+        "noManualAdjustment": "मैनुअल एडजस्टमेंट की आवश्यकता नहीं",
+        "noManualAdjustmentDesc": "अन्य सिस्टम के विपरीत, आपको ऑडियो और वीडियो को मैन्युअल रूप से सिंक करने की आवश्यकता नहीं है। सब कुछ स्वचालित है।",
+        "whyDelay": "विलंब क्यों है?",
+        "whyDelayDesc": "रियल-टाइम अनुवाद और डबिंग में समय लगता है (आमतौर पर 600-800ms)। असिंक्रनाइज़्ड सामग्री दिखाने के बजाय, हम वीडियो को मिलान के लिए विलंबित करते हैं। आप सामग्री को 'लाइव' से थोड़ा पीछे देखते हैं लेकिन पूरी तरह से सिंक्रनाइज़ किया गया है।",
+        "professionalQuality": "पेशेवर गुणवत्ता",
+        "professionalQualityDesc": "यह वही दृष्टिकोण है जो पेशेवर प्रसारक अंतर्राष्ट्रीय लाइव कवरेज के लिए उपयोग करते हैं।"
+      },
+      "graph": {
+        "title": "लेटेंसी इतिहास",
+        "tooltip": "प्रोसेसिंग लेटेंसी का 60-सेकंड रोलिंग इतिहास",
+        "xAxis": "समय (सेकंड पहले)",
+        "yAxis": "लेटेंसी (ms)",
+        "noData": "अभी तक कोई डेटा नहीं..."
+      },
+      "breakdown": {
+        "title": "लेटेंसी विवरण",
+        "cacheHitRate": "कैश हिट रेट",
+        "provider": "प्रदाता"
+      }
+    },
+    "controls": {
+      "enableDubbing": "लाइव डबिंग सक्षम करें",
+      "enableSubtitles": "लाइव सबटाइटल सक्षम करें",
+      "selectLanguage": "भाषा चुनें",
+      "selectVoice": "आवाज चुनें",
+      "originalVolume": "मूल ऑडियो",
+      "dubbedVolume": "डब किया गया ऑडियो",
+      "tooltips": {
+        "enableDubbing": "रियल-टाइम में ऑडियो का अनुवाद और डब करें",
+        "enableSubtitles": "रियल-टाइम में अनुवादित सबटाइटल प्रदर्शित करें",
+        "selectLanguage": "अनुवाद के लिए अपनी पसंदीदा भाषा चुनें",
+        "selectVoice": "डब किए गए ऑडियो के लिए आवाज चुनें",
+        "originalVolume": "मूल ऑडियो वॉल्यूम समायोजित करें (0 = म्यूट)",
+        "dubbedVolume": "डब किए गए ऑडियो वॉल्यूम समायोजित करें (1 = पूर्ण वॉल्यूम)"
+      }
+    }
   }
 }

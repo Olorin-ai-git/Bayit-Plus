@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import api from '@/services/api';
 import logger from '@/utils/logger';
+import i18n from '@bayit/i18n';
 
 interface Device {
   device_id: string;
@@ -47,7 +48,7 @@ export const useDevicesStore = create<DevicesStore>((set, get) => ({
       set({ devices: response.devices, loading: false });
     } catch (error: any) {
       set({
-        error: error?.detail || 'Failed to load devices',
+        error: error?.detail || i18n.t('errors.devices.loadFailed'),
         loading: false
       });
     }
@@ -72,7 +73,7 @@ export const useDevicesStore = create<DevicesStore>((set, get) => ({
         set({ devices: [...get().devices, device] });
       }
     } catch (error: any) {
-      set({ error: error?.detail || 'Failed to register device' });
+      set({ error: error?.detail || i18n.t('errors.devices.registerFailed') });
       throw error;
     }
   },
@@ -94,7 +95,7 @@ export const useDevicesStore = create<DevicesStore>((set, get) => ({
       };
     } catch (error: any) {
       set({
-        error: error?.detail || 'Failed to disconnect device',
+        error: error?.detail || i18n.t('errors.devices.disconnectFailed'),
         disconnecting: null
       });
       throw error;

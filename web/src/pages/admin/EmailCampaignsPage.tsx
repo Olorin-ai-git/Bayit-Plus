@@ -336,7 +336,7 @@ export default function EmailCampaignsPage() {
                   onPress={() => handleViewDetails(campaign)}
                 >
                   <Eye size={14} color={colors.primary.DEFAULT} />
-                  <Text style={styles.actionText}>View</Text>
+                  <Text style={styles.actionText}>{t('admin.actions.view')}</Text>
                 </Pressable>
                 {campaign.status === 'draft' && (
                   <Pressable
@@ -344,7 +344,7 @@ export default function EmailCampaignsPage() {
                     onPress={() => handleSendTest(campaign.id)}
                   >
                     <Send size={14} color={colors.success.DEFAULT} />
-                    <Text style={styles.actionText}>Test</Text>
+                    <Text style={styles.actionText}>{t('admin.actions.test')}</Text>
                   </Pressable>
                 )}
               </View>

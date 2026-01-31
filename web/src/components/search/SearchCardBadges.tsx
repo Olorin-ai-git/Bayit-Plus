@@ -6,6 +6,7 @@
 
 import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Lock } from 'lucide-react';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
@@ -30,6 +31,7 @@ export const SearchCardBadges = memo(function SearchCardBadges({
   isFeatured,
   requiresAuth,
 }: SearchCardBadgesProps) {
+  const { t } = useTranslation();
   if (!requiresSubscription && !isKidsContent && !isFeatured && !requiresAuth) {
     return null;
   }
@@ -39,7 +41,7 @@ export const SearchCardBadges = memo(function SearchCardBadges({
       {requiresAuth && (
         <View style={styles.badge}>
           <Lock size={12} color={colors.text} strokeWidth={2} />
-          <Text style={styles.badgeText}>Login</Text>
+          <Text style={styles.badgeText}>{t('auth.login')}</Text>
         </View>
       )}
       {requiresSubscription !== 'free' && (

@@ -7,6 +7,7 @@
 
 import logger from '@/utils/logger'
 import type { LiveTriviaFact } from '@/components/player/hooks/useLiveTrivia'
+import i18n from '@bayit/i18n'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL
 
@@ -94,7 +95,7 @@ class LiveTriviaService {
     validateConfiguration()
 
     if (!isValidChannelId(channelId)) {
-      onError({ message: 'Invalid channel ID', recoverable: false })
+      onError({ message: i18n.t('errors.trivia.invalidChannel'), recoverable: false })
       return
     }
 
@@ -108,7 +109,7 @@ class LiveTriviaService {
     const authData = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || '{}')
     const token = authData?.state?.token
     if (!token) {
-      onError({ message: 'Not authenticated', recoverable: false })
+      onError({ message: i18n.t('errors.auth.notAuthenticated'), recoverable: false })
       return
     }
 
@@ -122,7 +123,7 @@ class LiveTriviaService {
     const connectionTimeout = setTimeout(() => {
       if (!this.isConnected) {
         logger.error('Connection timeout', LOG_CONTEXT)
-        this.onError?.({ message: 'Connection timeout', recoverable: true })
+        this.onError?.({ message: i18n.t('errors.connection.timeout'), recoverable: true })
         this.disconnect()
       }
     }, CONNECTION_TIMEOUT_MS)
@@ -186,7 +187,7 @@ class LiveTriviaService {
     this.ws.onerror = () => {
       logger.error('WebSocket error', LOG_CONTEXT)
       clearTimeout(connectionTimeout)
-      this.onError?.({ message: 'Connection error', recoverable: true })
+      this.onError?.({ message: i18n.t('errors.connection.error'), recoverable: true })
       this.isConnected = false
     }
 

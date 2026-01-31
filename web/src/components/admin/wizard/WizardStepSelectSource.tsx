@@ -5,6 +5,7 @@
 
 import React from 'react'
 import { View, Text, Pressable, ActivityIndicator, ScrollView, StyleSheet } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ChevronRight, AlertCircle, ChevronLeft } from 'lucide-react'
 import { z } from 'zod'
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
@@ -38,6 +39,8 @@ export function WizardStepSelectSource({
   onSelectSource,
   onBack,
 }: WizardStepSelectSourceProps) {
+  const { t } = useTranslation()
+
   if (!currentSourceType) {
     return null
   }
@@ -47,7 +50,7 @@ export function WizardStepSelectSource({
       {/* Back button */}
       <Pressable onPress={onBack} style={styles.backButton}>
         <ChevronLeft size={16} color="#9333ea" />
-        <Text style={styles.backText}>Back</Text>
+        <Text style={styles.backText}>{t('common.back')}</Text>
       </Pressable>
 
       <Text style={styles.title}>
@@ -58,7 +61,7 @@ export function WizardStepSelectSource({
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator color="#9333ea" />
-          <Text style={styles.loadingText}>Loading sources...</Text>
+          <Text style={styles.loadingText}>{t('admin.importWizard.loadingSources')}</Text>
         </View>
       ) : error ? (
         /* Error state */

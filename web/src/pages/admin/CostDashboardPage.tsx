@@ -1,6 +1,7 @@
 // Cost Admin Dashboard main page
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useCostDashboard } from "@/hooks/admin/useCostDashboard";
 import PLSummary from "@/components/admin/cost-dashboard/PLSummary";
 import MetricsGrid from "@/components/admin/cost-dashboard/MetricsGrid";
@@ -12,6 +13,7 @@ import TopSpendersTab from "@/components/admin/cost-dashboard/tabs/TopSpendersTa
 import RealTimeStatusBadge from "@/components/admin/cost-dashboard/RealTimeStatusBadge";
 
 export default function CostDashboardPage() {
+  const { t } = useTranslation();
   const dashboard = useCostDashboard();
 
   return (
@@ -20,8 +22,8 @@ export default function CostDashboardPage() {
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">Cost Dashboard</h1>
-            <p className="text-gray-400">Platform cost tracking and analytics</p>
+            <h1 className="text-3xl font-bold text-white">{t('admin.costDashboard.title')}</h1>
+            <p className="text-gray-400">{t('admin.costDashboard.subtitle')}</p>
           </div>
           <RealTimeStatusBadge />
         </div>
@@ -46,10 +48,10 @@ export default function CostDashboardPage() {
         <div className="flex border-b border-purple-500/30 gap-4">
           {(
             [
-              { id: "overview", label: "Overview" },
-              { id: "timeline", label: "Timeline" },
-              { id: "categories", label: "Categories" },
-              { id: "spenders", label: "Top Spenders" },
+              { id: "overview", label: t('admin.costDashboard.tabs.overview') },
+              { id: "timeline", label: t('admin.costDashboard.tabs.timeline') },
+              { id: "categories", label: t('admin.costDashboard.tabs.categories') },
+              { id: "spenders", label: t('admin.costDashboard.tabs.topSpenders') },
             ] as const
           ).map((tab) => (
             <button

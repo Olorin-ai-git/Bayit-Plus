@@ -317,5 +317,82 @@
     "upgradeBeta": "Passa a Beta 500 per la traduzione automatica",
     "inputLabel": "Campo di inserimento messaggio",
     "moderationDelete": "Messaggio rimosso dal moderatore"
+  },
+  "common": {
+    "milliseconds": "millisecondi",
+    "collapse": "Comprimi",
+    "expand": "Espandi",
+    "details": "dettagli"
+  },
+  "dubbing": {
+    "latency": {
+      "badge": {
+        "title": "Monitor Latenza",
+        "tooltip": "Ritardo di elaborazione audio in tempo reale. Il video viene automaticamente ritardato per una sincronizzazione perfetta.",
+        "accessibilityHint": "Tocca due volte per attivare/disattivare il pannello dei dettagli di latenza"
+      },
+      "components": {
+        "capture": "Cattura Audio",
+        "captureDesc": "Tempo per catturare l'audio dal video",
+        "stt": "Voce in Testo",
+        "sttDesc": "Conversione della voce in testo",
+        "translation": "Traduzione",
+        "translationDesc": "Traduzione nella lingua di destinazione",
+        "tts": "Testo in Voce",
+        "ttsDesc": "Generazione dell'audio doppiato",
+        "network": "Rete",
+        "networkDesc": "Ritardo di trasmissione dati",
+        "buffer": "Buffer Audio",
+        "bufferDesc": "Buffer di elaborazione audio",
+        "sync": "Sincronizzazione Video",
+        "syncDesc": "Ritardo video per sincronizzazione perfetta"
+      },
+      "status": {
+        "excellent": "Eccellente",
+        "good": "Buono",
+        "fair": "Discreto",
+        "poor": "Scarso"
+      },
+      "info": {
+        "autoSync": "Sincronizzazione Automatica",
+        "autoSyncDesc": "Il video viene automaticamente ritardato per corrispondere al tempo di elaborazione audio, garantendo una perfetta sincronizzazione labiale e temporizzazione dei sottotitoli.",
+        "howItWorks": "Come Funziona",
+        "howItWorksDesc": "Il sistema misura la latenza di elaborazione effettiva e ritarda il flusso video della stessa quantità. Questo è come funziona la traduzione broadcast professionale.",
+        "noManualAdjustment": "Nessun Aggiustamento Manuale Necessario",
+        "noManualAdjustmentDesc": "A differenza di altri sistemi, non è necessario sincronizzare manualmente audio e video. Tutto è automatico.",
+        "whyDelay": "Perché C'è Un Ritardo?",
+        "whyDelayDesc": "La traduzione e il doppiaggio in tempo reale richiedono tempo (tipicamente 600-800ms). Piuttosto che mostrare contenuti non sincronizzati, ritardiamo il video per farlo corrispondere. Vedi il contenuto leggermente in ritardo rispetto al 'live' ma perfettamente sincronizzato.",
+        "professionalQuality": "Qualità Professionale",
+        "professionalQualityDesc": "Questo è lo stesso approccio utilizzato dai broadcaster professionali per la copertura internazionale in diretta."
+      },
+      "graph": {
+        "title": "Storico Latenza",
+        "tooltip": "Storico continuo di 60 secondi della latenza di elaborazione",
+        "xAxis": "Tempo (secondi fa)",
+        "yAxis": "Latenza (ms)",
+        "noData": "Nessun dato ancora..."
+      },
+      "breakdown": {
+        "title": "Ripartizione Latenza",
+        "cacheHitRate": "Tasso di Successo Cache",
+        "provider": "Fornitore"
+      }
+    },
+    "controls": {
+      "enableDubbing": "Abilita Doppiaggio Live",
+      "enableSubtitles": "Abilita Sottotitoli Live",
+      "selectLanguage": "Seleziona Lingua",
+      "selectVoice": "Seleziona Voce",
+      "originalVolume": "Audio Originale",
+      "dubbedVolume": "Audio Doppiato",
+      "tooltips": {
+        "enableDubbing": "Traduci e doppia l'audio live in tempo reale",
+        "enableSubtitles": "Mostra sottotitoli tradotti in tempo reale",
+        "selectLanguage": "Scegli la tua lingua preferita per la traduzione",
+        "selectVoice": "Scegli la voce per l'audio doppiato",
+        "originalVolume": "Regola il volume dell'audio originale (0 = muto)",
+        "dubbedVolume": "Regola il volume dell'audio doppiato (1 = volume completo)"
+      }
+    }
   }
 }
