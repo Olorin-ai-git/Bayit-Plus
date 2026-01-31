@@ -3,29 +3,30 @@
  * Real-time monitoring of backend services and client health
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Activity, AlertCircle, CheckCircle, RefreshCw, Zap } from 'lucide-react';
+import { Activity, AlertCircle, CheckCircle, RefreshCw } from 'lucide-react';
 import { GlassCard, GlassButton, GlassPageHeader } from '@bayit/shared/ui';
 import { GlassRadar, GlassGauge, GlassHeartbeat } from '@olorin/glass-ui';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import { useSystemHealth } from '@/hooks/useSystemHealth';
-import { useServiceActions } from '@/hooks/useServiceActions';
 import type { ClientStatus, ServiceHealth } from '@/services/diagnosticsApi';
 import type { RadarAgent, RadarAnomaly } from '@olorin/glass-ui';
 
 /**
- * Transform backend services to radar agents
+ * Transform backend services to radar agents (concentric rings)
  */
+const RADAR_SIZE = 700;
+
 const transformServicesToAgents = (services: Record<string, ServiceHealth>): RadarAgent[] => {
   const serviceNames = Object.keys(services);
+  const maxRadius = RADAR_SIZE * 0.4;
   return serviceNames.map((name, index) => ({
     id: name,
     name: services[name].service_name || name,
-    ring: Math.floor((index / serviceNames.length) * 5) + 1, // Distribute across rings 1-5
-    position: (index / serviceNames.length) * 2 * Math.PI, // Distribute evenly around circle
+    radius: ((index + 1) / (serviceNames.length + 1)) * maxRadius,
     color: services[name].status === 'healthy' ? colors.success.DEFAULT :
            services[name].status === 'degraded' ? colors.warning.DEFAULT :
            colors.error[600],
@@ -33,21 +34,24 @@ const transformServicesToAgents = (services: Record<string, ServiceHealth>): Rad
 };
 
 /**
- * Transform services to radar anomalies
+ * Transform unhealthy services to radar anomalies (positioned as blips)
  */
 const transformToAnomalies = (services: Record<string, ServiceHealth>): RadarAnomaly[] => {
-  return Object.entries(services)
-    .filter(([_, service]) => service.status !== 'healthy')
-    .map(([name, service], index) => ({
+  const center = RADAR_SIZE / 2;
+  const unhealthy = Object.entries(services).filter(([_, s]) => s.status !== 'healthy');
+  return unhealthy.map(([name, service], index) => {
+    const angle = (index / Math.max(unhealthy.length, 1)) * 2 * Math.PI;
+    const dist = RADAR_SIZE * 0.25;
+    return {
       id: name,
-      agent_id: name,
-      severity: service.status === 'degraded' ? 'medium' : 'critical',
-      type: 'performance',
-      description: service.message || `${name} is ${service.status}`,
-      timestamp: service.last_check,
-      ring: Math.floor((index / Object.keys(services).length) * 5) + 1,
-      angle: (index / Object.keys(services).length) * 2 * Math.PI,
-    }));
+      name: service.service_name || name,
+      position: {
+        x: center + Math.cos(angle) * dist,
+        y: center + Math.sin(angle) * dist,
+      },
+      severity: service.status === 'degraded' ? ('medium' as const) : ('critical' as const),
+    };
+  });
 };
 
 /**
@@ -153,8 +157,8 @@ const ServicesTable = ({
               style={styles.pingButton}
               onPress={() => onPing(name)}
             >
-              <Zap size={16} color={colors.primary[500]} />
-              <Text style={styles.pingButtonText}>{t('admin.diagnostics.ping')}</Text>
+              <RefreshCw size={14} color={colors.primary[500]} />
+              <Text style={styles.pingButtonText}>{t('admin.diagnostics.check')}</Text>
             </Pressable>
           </View>
         </View>
@@ -175,8 +179,6 @@ export default function SystemDiagnosticsPage() {
     isLive,
     refresh
   } = useSystemHealth();
-  const { pingService } = useServiceActions();
-
   const [selectedAnomaly, setSelectedAnomaly] = useState<RadarAnomaly | null>(null);
 
   const handleAnomalySelected = (anomaly: RadarAnomaly) => {
@@ -184,12 +186,8 @@ export default function SystemDiagnosticsPage() {
     // TODO: Show anomaly details modal
   };
 
-  const handleServicePing = async (serviceName: string) => {
-    try {
-      await pingService(serviceName);
-    } catch (err) {
-      console.error('Ping failed:', err);
-    }
+  const handleServiceCheck = async (_serviceName: string) => {
+    await refresh();
   };
 
   if (loading) {
@@ -316,7 +314,7 @@ export default function SystemDiagnosticsPage() {
         </Text>
         <ServicesTable
           services={services}
-          onPing={handleServicePing}
+          onPing={handleServiceCheck}
         />
       </GlassCard>
 
@@ -365,7 +363,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.gray[600],
+    backgroundColor: colors.dark[600],
   },
   liveDotActive: {
     backgroundColor: colors.success.DEFAULT,
@@ -401,7 +399,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   statusBannerSubtitle: {
-    color: colors.gray[400],
+    color: colors.dark[400],
     fontSize: fontSize.md,
     marginTop: spacing.xs,
   },

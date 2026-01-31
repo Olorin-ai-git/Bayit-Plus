@@ -29,7 +29,7 @@ interface UseSystemHealthReturn {
   refresh: () => Promise<void>;
 }
 
-const WS_BASE_URL = process.env.REACT_APP_WS_BASE_URL || 'ws://localhost:8090';
+const WS_BASE_URL = import.meta.env.VITE_WS_URL || `ws://${window.location.hostname}:8000`;
 
 /**
  * Custom hook for system health monitoring with WebSocket real-time updates
@@ -59,11 +59,11 @@ export function useSystemHealth(): UseSystemHealthReturn {
         getClients()
       ]);
 
-      setServices(servicesData);
-      setClients(clientsData);
+      setServices(servicesData ?? {});
+      setClients(clientsData ?? {});
 
       // Calculate metrics from client data
-      const allClients = Object.values(clientsData).flat();
+      const allClients = Object.values(clientsData ?? {}).flat();
       if (allClients.length > 0) {
         const avgCpu = allClients.reduce((sum, c) => sum + (c.metrics.cpu_usage || 0), 0) / allClients.length;
         const avgMemory = allClients.reduce((sum, c) => sum + (c.metrics.memory_usage || 0), 0) / allClients.length;
@@ -110,11 +110,11 @@ export function useSystemHealth(): UseSystemHealthReturn {
           if (data.type === 'snapshot' || data.type === 'update') {
             const diagnosticsData: DiagnosticsData = data.data;
 
-            setServices(diagnosticsData.services);
-            setClients(diagnosticsData.clients);
+            setServices(diagnosticsData.services ?? {});
+            setClients(diagnosticsData.clients ?? {});
 
             // Update metrics
-            const allClients = Object.values(diagnosticsData.clients).flat();
+            const allClients = Object.values(diagnosticsData.clients ?? {}).flat();
             if (allClients.length > 0) {
               const avgCpu = allClients.reduce((sum, c) => sum + (c.metrics.cpu_usage || 0), 0) / allClients.length;
               const avgMemory = allClients.reduce((sum, c) => sum + (c.metrics.memory_usage || 0), 0) / allClients.length;

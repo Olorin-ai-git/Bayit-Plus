@@ -2970,7 +2970,13 @@
         "epgSource": "EPG ஆதாரம்",
         "category": "வகை",
         "isActive": "செயலில்",
-        "requiresSubscription": "சந்தா தேவை"
+        "requiresSubscription": "சந்தா தேவை",
+        "currentShow": "தற்போதைய நிகழ்ச்சி",
+        "order": "வரிசை",
+        "supportsSubtitles": "நேரடி வசன உரைகளை இயக்கு",
+        "primaryLanguage": "முதன்மை மொழி (மூலம்)",
+        "targetLanguages": "கிடைக்கும் மொழிபெயர்ப்பு மொழிகள்",
+        "targetLanguagesHelp": "பயனர்கள் நிகழ்நேரத்தில் எந்த மொழிகளுக்கு மொழிபெயர்க்கலாம் என்பதைத் தேர்ந்தெடுக்கவும்"
       }
     },
     "radioStations": {
@@ -2987,7 +2993,11 @@
         "streamUrl": "ஸ்ட்ரீம் URL",
         "frequency": "அலைவரிசை",
         "category": "வகை",
-        "isActive": "செயலில்"
+        "isActive": "செயலில்",
+        "genre": "வகை",
+        "currentShow": "தற்போதைய நிகழ்ச்சி (விருப்பத்திற்கு)",
+        "currentSong": "தற்போதைய பாடல் (விருப்பத்திற்கு)",
+        "order": "வரிசை"
       }
     },
     "podcasts": {
@@ -3026,7 +3036,16 @@
         "title": "தலைப்பு",
         "duration": "கால அளவு",
         "publishedAt": "வெளியிடப்பட்டது",
-        "status": "நிலை"
+        "status": "நிலை",
+        "form": {
+          "title": "அத்தியாயத் தலைப்பு",
+          "description": "விளக்கம்",
+          "episodeNumber": "அத்தியாய எண்",
+          "seasonNumber": "பருவ எண் (விருப்பத்திற்கு)",
+          "duration": "கால அளவு",
+          "audioUrl": "ஒலி URL (தேவை)",
+          "publishedDate": "வெளியிட்ட தேதி (YYYY-MM-DD)"
+        }
       }
     },
     "podcastEpisodes": {
@@ -3051,13 +3070,17 @@
         "language": "மொழி",
         "status": "நிலை",
         "error": "பிழை",
-        "date": "தேதி"
+        "date": "தேதி",
+        "episodeTitle": "அத்தியாயம்",
+        "retries": "மறுமுயற்சிகள்",
+        "lastAttempt": "கடைசி முயற்சி"
       },
       "stats": {
         "total": "மொத்த மொழிபெயர்ப்புகள்",
         "pending": "நிலுவையில்",
         "completed": "முடிந்தது",
-        "failed": "தோல்வியடைந்தது"
+        "failed": "தோல்வியடைந்தது",
+        "processing": "செயலாக்கம்"
       }
     },
     "users": {
@@ -3093,7 +3116,11 @@
       "filters": {
         "role": "பங்கு",
         "status": "நிலை",
-        "subscription": "சந்தா"
+        "subscription": "சந்தா",
+        "all": "அனைத்தும்",
+        "active": "செயலில்",
+        "inactive": "செயலற்றது",
+        "blocked": "தடுக்கப்பட்டது"
       },
       "confirmDeleteMessage": "இந்த பயனரை நீக்க விரும்புகிறீர்களா? இந்த செயலை செயல்தவிர்க்க முடியாது.",
       "resetPassword": "கடவுச்சொல்லை மீட்டமை",
@@ -3134,7 +3161,8 @@
         "active": "செயலில்",
         "scheduled": "திட்டமிடப்பட்டது",
         "completed": "நிறைவடைந்தது",
-        "paused": "இடைநிறுத்தப்பட்டது"
+        "paused": "இடைநிறுத்தப்பட்டது",
+        "inactive": "செயலற்றது"
       },
       "columns": {
         "name": "பிரச்சார பெயர்",
@@ -3142,7 +3170,11 @@
         "startDate": "தொடக்க தேதி",
         "endDate": "முடிவு தேதி",
         "budget": "பட்ஜெட்",
-        "reach": "எட்டியது"
+        "reach": "எட்டியது",
+        "discount": "தள்ளுபடி",
+        "usage": "பயன்பாடுகள்",
+        "validUntil": "செல்லுபடியாகும் வரை",
+        "actions": "செயல்கள்"
       },
       "confirmDelete": "இந்த பிரச்சாரத்தை நீக்கவா?",
       "confirmDeleteMessage": "இந்த பிரச்சாரத்தை நீக்க விரும்புகிறீர்களா? இந்த செயலை செயல்தவிர்க்க முடியாது.",
@@ -3159,7 +3191,15 @@
         "startDate": "தொடக்க தேதி",
         "endDate": "முடிவு தேதி",
         "budget": "பட்ஜெட்",
-        "targetAudience": "இலக்கு பார்வையாளர்கள்"
+        "targetAudience": "இலக்கு பார்வையாளர்கள்",
+        "code": "கூப்பன் குறியீடு",
+        "generate": "உருவாக்கு",
+        "discountType": "தள்ளுபடி வகை",
+        "discountValue": "தள்ளுபடி மதிப்பு",
+        "maxUses": "அதிகபட்ச பயன்பாடுகள்",
+        "unlimited": "வரம்பற்றது",
+        "validUntil": "செல்லுபடியாகும் வரை",
+        "active": "பிரச்சாரம் செயலில்"
       }
     },
     "subscriptions": {
@@ -3189,10 +3229,23 @@
         "pause": "சந்தாவை இடைநிறுத்து",
         "resume": "சந்தாவை தொடர்",
         "upgrade": "மேம்படுத்து",
-        "downgrade": "தரமிறக்கு"
+        "downgrade": "தரமிறக்கு",
+        "changePlan": "திட்டத்தை மாற்று",
+        "delete": "நீக்கு"
       },
-      "editPlan": "திட்டத்தை திருத்து",
-      "addSubscription": "சந்தா சேர்",
+      "editPlan": {
+        "title": "சந்தா திட்டத்தை மாற்று",
+        "user": "பயனர்",
+        "currentPlan": "தற்போதைய திட்டம்",
+        "newPlan": "புதிய திட்டத்தைத் தேர்ந்தெடுக்கவும்"
+      },
+      "addSubscription": {
+        "title": "சந்தாவைச் சேர்",
+        "userEmail": "பயனர் மின்னஞ்சல்",
+        "emailPlaceholder": "பயனர் மின்னஞ்சலை உள்ளிடவும்",
+        "duration": "கால அளவு (நாட்கள்)",
+        "selectPlan": "திட்டத்தைத் தேர்ந்தெடுக்கவும்"
+      },
       "fillAllFields": "அனைத்து புலங்களையும் நிரப்பவும்",
       "userNotFound": "பயனர் கிடைக்கவில்லை",
       "selectOneToEdit": "திருத்த ஒன்றைத் தேர்ந்தெடுக்கவும்",
@@ -3209,7 +3262,12 @@
       "emailOpenRate": "மின்னஞ்சல் திறப்பு விகிதம்",
       "pushClickRate": "புஷ் கிளிக் விகிதம்",
       "activeSegments": "செயலில் உள்ள பிரிவுகள்",
-      "campaignStatus": "பிரச்சார நிலை"
+      "campaignStatus": {
+        "active": "செயலில்",
+        "completed": "நிறைவடைந்தது",
+        "scheduled": "திட்டமிடப்பட்டது",
+        "draft": "வரைவு"
+      }
     },
     "transactions": {
       "title": "பரிவர்த்தனைகள்",
@@ -3234,7 +3292,8 @@
       "filters": {
         "status": "நிலை",
         "type": "வகை",
-        "dateRange": "தேதி வரம்பு"
+        "dateRange": "தேதி வரம்பு",
+        "all": "அனைத்தும்"
       },
       "details": "பரிவர்த்தனை விவரங்கள்",
       "email": "மின்னஞ்சல்"
@@ -3257,11 +3316,16 @@
         "status": "நிலை",
         "sentAt": "அனுப்பப்பட்டது",
         "scheduledAt": "திட்டமிடப்பட்டது",
-        "reach": "எட்டியது"
+        "reach": "எட்டியது",
+        "sent": "அனுப்பப்பட்டது",
+        "opened": "திறக்கப்பட்டது",
+        "created": "உருவாக்கப்பட்டது",
+        "actions": "செயல்கள்"
       },
       "filters": {
         "status": "நிலை",
-        "dateRange": "தேதி வரம்பு"
+        "dateRange": "தேதி வரம்பு",
+        "all": "அனைத்தும்"
       },
       "searchPlaceholder": "அறிவிப்புகளை தேடு...",
       "createModal": {

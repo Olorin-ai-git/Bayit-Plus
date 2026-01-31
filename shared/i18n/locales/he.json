@@ -68,7 +68,8 @@
     "share": "שתף",
     "noContent": "אין תוכן להצגה",
     "premium": "פרימיום",
-    "poweredBy": "מופעל על ידי"
+    "poweredBy": "מופעל על ידי",
+    "filters": "מסננים"
   },
   "demo": {
     "banner": "מצב הדמו",
@@ -121,7 +122,10 @@
     "termsNotice": "בהתחברות, אתה מסכים לתנאי השימוש ומדיניות הפרטיות שלנו",
     "errors": {
       "fillAllFields": "נא למלא את כל השדות",
-      "loginFailed": "שגיאה בהתחברות. נסה שוב."
+      "loginFailed": "שגיאה בהתחברות. נסה שוב.",
+      "emailRequired": "יש להזין כתובת אימייל",
+      "passwordRequired": "יש להזין סיסמה",
+      "googleFailed": "ההתחברות עם גוגל נכשלה. נסו שוב."
     },
     "qrInstructions": "סרוק את הקוד עם הטלפון להתחברות מהירה",
     "methodQR": "קוד QR",
@@ -143,7 +147,8 @@
     "voicePlaceholder": "הקלד את תשובתך...",
     "send": "שלח",
     "createAccount": "צור חשבון",
-    "bayitThinking": "בית חושב..."
+    "bayitThinking": "בית חושב...",
+    "unexpectedError": "אירעה שגיאה לא צפויה"
   },
   "tvLogin": {
     "invalidQR": "קוד QR לא תקין. סרוק שוב מהטלוויזיה.",
@@ -607,7 +612,9 @@
       "removeConfirmNo": "ביטול",
       "maxItems": "מקסימום {{max}} פריטים. הסר פריט כדי להוסיף עוד.",
       "emptyAi": "ה-AI יבחר תוכן אוטומטית בהתאם להעדפותיך.",
-      "more": "פריטים נוספים"
+      "more": "פריטים נוספים",
+      "confirmRemove": "לחצו שוב לאישור ההסרה",
+      "maxReached": "הגעתם למקסימום של {{max}} פריטים"
     },
     "days": {
       "sunday": "ראשון",
@@ -649,7 +656,8 @@
       "thisWeek": "השבוע: {{day}} ב-{{time}}",
       "comingSoon": "טריגרים לחגים בקרוב",
       "startTime": "שעת התחלה",
-      "endTime": "שעת סיום"
+      "endTime": "שעת סיום",
+      "locationBased": "זמנים לפי המיקום שלכם"
     },
     "examples": {
       "title": "רצפים לדוגמה",
@@ -682,7 +690,11 @@
       "nameRequired": "שם הרצף נדרש",
       "startTimeRequired": "שעת התחלה נדרשת לטריגר לפי זמן",
       "noDaysSelected": "בחר לפחות יום אחד",
-      "invalidTime": "פורמט זמן לא תקין"
+      "invalidTime": "פורמט זמן לא תקין",
+      "endTimeRequired": "שעת סיום נדרשת",
+      "timeRange": "שעת הסיום חייבת להיות אחרי שעת ההתחלה",
+      "daysRequired": "יש לבחור לפחות יום אחד",
+      "contentRequired": "הוסיפו תוכן או הפעילו AI"
     },
     "tv": {
       "useCompanion": "להתאמה מלאה, השתמש באפליקציית Bayit+ בטלפון או בקר ב-bayit.plus במחשב."
@@ -958,7 +970,14 @@
       "disconnectSuccessMessage": "המכשיר נותק בהצלחה.",
       "disconnectSuccessWithSessions": "המכשיר נותק ו-{{count}} סשן/סשנים פעילים הסתיימו.",
       "thisDevice": "מכשיר זה",
-      "loading": "טוען מכשירים..."
+      "loading": "טוען מכשירים...",
+      "minutesAgo_one": "לפני דקה",
+      "minutesAgo_other": "לפני {{count}} דקות",
+      "hoursAgo_one": "לפני שעה",
+      "hoursAgo_other": "לפני {{count}} שעות",
+      "daysAgo_one": "לפני יום",
+      "daysAgo_other": "לפני {{count}} ימים",
+      "disconnectDevice": "נתק מכשיר"
     }
   },
   "voiceMode": {
@@ -1712,7 +1731,8 @@
       "widget_updated": "ווידג'ט עודכן",
       "widget_deleted": "ווידג'ט נמחק",
       "widget_published": "ווידג'ט פורסם",
-      "widget_unpublished": "ווידג'ט בוטל פרסומו"
+      "widget_unpublished": "ווידג'ט בוטל פרסומו",
+      "subscription_deleted": "מנוי נמחק"
     },
     "placeholder": {
       "userId": "הזן מזהה משתמש",
@@ -1734,7 +1754,8 @@
       "liveChannels": "ערוצים חיים",
       "radioStations": "תחנות רדיו",
       "podcasts": "פודקאסטים",
-      "settings": "הגדרות"
+      "settings": "הגדרות",
+      "librarian": "סוכן ספרן"
     },
     "nav": {
       "dashboard": "לוח בקרה",
@@ -1896,7 +1917,8 @@
         "episodes": "פרקים",
         "order": "סדר",
         "name": "שם",
-        "slug": "מזהה"
+        "slug": "מזהה",
+        "subtitles": "כתוביות"
       },
       "validation": {
         "titleRequired": "כותרת נדרשת",
@@ -2475,7 +2497,12 @@
         "issuesFixed": "בעיות שתוקנו",
         "lastAudit": "ביקורת אחרונה",
         "never": "אף פעם",
-        "unknown": "לא ידוע"
+        "unknown": "לא ידוע",
+        "title": "סקירת ביקורת (30 יום)",
+        "successRate": "אחוז הצלחה",
+        "fixesApplied": "תיקונים שבוצעו",
+        "budgetUsed": "תקציב בשימוש",
+        "budgetLimit": "/ ${{limit}}"
       },
       "health": {
         "excellent": "מצוין",
@@ -2596,7 +2623,10 @@
           "status": "סטטוס",
           "issues": "בעיות",
           "fixes": "תיקונים",
-          "actions": "פעולות"
+          "actions": "פעולות",
+          "triggeredBy": "הופעל על ידי",
+          "parameters": "פרמטרים",
+          "stats": "בעיות / תיקונים"
         },
         "detailModal": {
           "title": "דוח ביקורת: {{id}}",
@@ -2614,8 +2644,10 @@
           "orphanedItems": "פריטים נטושים",
           "fixesApplied": "תיקונים שבוצעו",
           "totalFixes": "{{count}} תיקונים בסך הכל",
-          "aiInsights": "תובנות AI"
-        }
+          "aiInsights": "תובנות AI",
+          "issuesBreakdown": "פירוט בעיות"
+        },
+        "downloadReport": "הורד דוח"
       },
       "logs": {
         "title": "לוגים של ביצוע",
@@ -2656,7 +2688,26 @@
         "dryRunMode": "⚠️ רץ במצב ניסיון - לא ייעשו שינויים",
         "liveMode": "✅ רץ במצב חי - שינויים יבוצעו",
         "budgetSet": "💰 מגבלת תקציב: ${{budget}}",
-        "connectingToAgent": "🔗 מתחבר לסוכן Claude AI..."
+        "connectingToAgent": "🔗 מתחבר לסוכן Claude AI...",
+        "items": "פריטים",
+        "live": "חי",
+        "updatedAgo": "עודכן לפני {{time}}",
+        "justNow": "הרגע",
+        "emptyState": {
+          "title": "אין ביקורת פעילה",
+          "description": "הפעילו ביקורת כדי לראות לוגים בזמן אמת",
+          "dailyTitle": "ביקורת יומית",
+          "dailyDescription": "הביקורת היומית האוטומטית תציג לוגים כאן כשתפעל",
+          "dailyFeature1": "מהיר",
+          "dailyFeature2": "מבוסס חוקים",
+          "dailyFeature3": "מצטבר",
+          "aiTitle": "ביקורת סוכן AI",
+          "aiFeature1": "חכם",
+          "aiFeature2": "אדפטיבי",
+          "aiFeature3": "מקיף",
+          "trigger": "הפעל",
+          "lastRun": "הרצה אחרונה: {{time}}"
+        }
       },
       "audit": {
         "types": {
@@ -2898,8 +2949,13 @@
         "streamUrl": "כתובת הזרמה",
         "epgSource": "כתובת מקור EPG (אופציונלי)",
         "currentShow": "תוכנית נוכחית",
-        "order": "מיקום"
-      }
+        "order": "מיקום",
+        "supportsSubtitles": "הפעל כתוביות שידור חי",
+        "primaryLanguage": "שפה ראשית (מקור)",
+        "targetLanguages": "שפות תרגום זמינות",
+        "targetLanguagesHelp": "בחרו לאילו שפות המשתמשים יכולים לתרגם בזמן אמת"
+      },
+      "subtitleSettings": "הגדרות כתוביות שידור חי"
     },
     "radioStations": {
       "subtitle": "ניהול תחנות רדיו",
@@ -3087,7 +3143,14 @@
       "selectToDelete": "אנא בחר מנויים למחיקה",
       "confirmDeleteMultiple": "למחוק {{count}} מנויים?",
       "selected": "נבחרו",
-      "confirmDelete": "האם אתה בטוח שברצונך למחוק את המנוי עבור {{user}}? פעולה זו אינה ניתנת לביטול."
+      "confirmDelete": "האם אתה בטוח שברצונך למחוק את המנוי עבור {{user}}? פעולה זו אינה ניתנת לביטול.",
+      "actions": {
+        "changePlan": "שנה מסלול",
+        "pause": "השהה",
+        "resume": "חדש",
+        "cancel": "בטל",
+        "delete": "מחק"
+      }
     },
     "marketingDashboard": {
       "subtitle": "סקירת שיווק",
@@ -3163,6 +3226,18 @@
       "confirmSend": "שלח את ההתראה \"{{title}}\"?",
       "confirmDelete": "מחק את ההתראה \"{{title}}\"?",
       "fillRequired": "נא למלא כותרת ותוכן"
+    },
+    "campaignEdit": {
+      "subtitle": "עריכת פרטי קמפיין והגדרות"
+    },
+    "contentEditor": {
+      "subtitle": "עריכת מטאדטה ומידע של תוכן"
+    },
+    "podcastEpisodes": {
+      "subtitle": "ניהול פרקי פודקאסט ומטאדטה"
+    },
+    "userDetail": {
+      "subtitle": "פרטי חשבון משתמש והיסטוריית פעילות"
     }
   },
   "watchParty": {
@@ -4547,5 +4622,27 @@
     "placeholder": "שלח הודעה...",
     "send": "שלח",
     "translationBeta": "תרגום (בטא)"
+  },
+  "podcast": {
+    "selectLanguage": "בחר שפה",
+    "switchToLanguage": "עבור ל{{language}}",
+    "premiumRequiredForTranslation": "נדרש מנוי פרימיום לתרגום פודקאסטים",
+    "player": {
+      "switchingLanguage": "מחליף..."
+    },
+    "languages": {
+      "he": {
+        "short": "עב",
+        "full": "עברית"
+      },
+      "en": {
+        "short": "EN",
+        "full": "אנגלית"
+      },
+      "es": {
+        "short": "ES",
+        "full": "ספרדית"
+      }
+    }
   }
 }

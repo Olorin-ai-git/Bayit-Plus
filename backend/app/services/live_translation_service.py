@@ -76,6 +76,10 @@ LANGUAGE_CODES = {
     "it": "it-IT",
     "pt": "pt-PT",
     "yi": "yi",
+    "ja": "ja-JP",
+    "bn": "bn-IN",
+    "ta": "ta-IN",
+    "hi": "hi-IN",
 }
 
 def chunk_text_for_subtitles(
@@ -136,7 +140,7 @@ def chunk_text_for_subtitles(
     return chunks
 
 
-def deduplicate_transcript(text: str, min_pattern_length: int = 10) -> str:
+def deduplicate_transcript(text: str, min_pattern_length: int | None = None) -> str:
     """
     Remove repetitive patterns from transcript text caused by buffer stuttering or echo.
 
@@ -146,11 +150,17 @@ def deduplicate_transcript(text: str, min_pattern_length: int = 10) -> str:
 
     Args:
         text: The transcript text to deduplicate
-        min_pattern_length: Minimum length of pattern to consider (default 10 chars)
+        min_pattern_length: Minimum length of pattern to consider (default from config)
 
     Returns:
         Deduplicated text with repetitive patterns removed
     """
+    from app.core.config import settings
+
+    # Use configuration default if min_pattern_length not provided
+    if min_pattern_length is None:
+        min_pattern_length = settings.olorin.subtitle.dedup_min_pattern_length
+
     if len(text) < min_pattern_length * 2:
         return text
 
@@ -588,6 +598,10 @@ class LiveTranslationService:
             "it": "Italian",
             "pt": "Portuguese",
             "yi": "Yiddish",
+            "ja": "Japanese",
+            "bn": "Bengali",
+            "ta": "Tamil",
+            "hi": "Hindi",
         }
 
         source_name = language_names.get(source_lang, source_lang)
@@ -660,7 +674,7 @@ class LiveTranslationService:
         text: str,
         source_lang: str,
         target_lang: str,
-        timeout_seconds: float = 0.100,
+        timeout_seconds: float | None = None,
         enable_fallback: bool = True,
         channel_id: Optional[str] = None,
         cache_ttl_seconds: int = 300,
@@ -684,6 +698,11 @@ class LiveTranslationService:
             Translated text, or original text if all providers fail
         """
         from app.services.translation_cache_service import translation_cache_service
+        from app.core.config import settings
+
+        # Use configuration default if timeout not provided
+        if timeout_seconds is None:
+            timeout_seconds = settings.olorin.subtitle.translation_timeout_seconds
 
         # Check cache first
         cache_hit = False

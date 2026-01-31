@@ -69,6 +69,16 @@ class QuotaCache:
         with self._lock:
             if user_id not in self._cache:
                 self._stats["misses"] += 1
+                logger.debug(
+                    "Quota cache miss - user not in cache",
+                    extra={
+                        "user_id": user_id,
+                        "cache_hits": self._stats["hits"],
+                        "cache_misses": self._stats["misses"],
+                        "cache_size": len(self._cache),
+                        "reason": "not_found",
+                    },
+                )
                 return None
 
             allowed, error_msg, usage_stats, timestamp = self._cache[user_id]
@@ -77,13 +87,31 @@ class QuotaCache:
             if time.time() - timestamp >= self.ttl_seconds:
                 del self._cache[user_id]
                 self._stats["misses"] += 1
+                logger.debug(
+                    "Quota cache miss - entry expired",
+                    extra={
+                        "user_id": user_id,
+                        "cache_hits": self._stats["hits"],
+                        "cache_misses": self._stats["misses"],
+                        "cache_size": len(self._cache),
+                        "reason": "expired",
+                        "ttl_seconds": self.ttl_seconds,
+                    },
+                )
                 return None
 
             # Move to end (most recently used)
             self._cache.move_to_end(user_id)
             self._stats["hits"] += 1
             logger.debug(
-                f"Quota cache hit for user {user_id} (hits={self._stats['hits']}, misses={self._stats['misses']})"
+                "Quota cache hit",
+                extra={
+                    "user_id": user_id,
+                    "cache_hits": self._stats["hits"],
+                    "cache_misses": self._stats["misses"],
+                    "cache_size": len(self._cache),
+                    "quota_allowed": allowed,
+                },
             )
             return (allowed, error_msg, usage_stats)
 
@@ -99,11 +127,22 @@ class QuotaCache:
         """
         with self._lock:
             # Remove if exists (to update timestamp)
-            if user_id in self._cache:
+            was_update = user_id in self._cache
+            if was_update:
                 del self._cache[user_id]
 
             # Add new entry
             self._cache[user_id] = (allowed, error_msg, usage_stats, time.time())
+            logger.debug(
+                "Quota cache entry set",
+                extra={
+                    "user_id": user_id,
+                    "quota_allowed": allowed,
+                    "cache_size": len(self._cache),
+                    "max_size": self.max_size,
+                    "is_update": was_update,
+                },
+            )
 
             # LRU eviction if over max size
             if len(self._cache) > self.max_size:
@@ -112,7 +151,13 @@ class QuotaCache:
                 del self._cache[oldest_key]
                 self._stats["evictions"] += 1
                 logger.debug(
-                    f"Quota cache evicted oldest entry (size={len(self._cache)}/{self.max_size}, evictions={self._stats['evictions']})"
+                    "Quota cache LRU eviction",
+                    extra={
+                        "evicted_user_id": oldest_key,
+                        "cache_size": len(self._cache),
+                        "max_size": self.max_size,
+                        "total_evictions": self._stats["evictions"],
+                    },
                 )
 
     def clear(self, user_id: Optional[str] = None) -> None:

@@ -863,9 +863,25 @@
     },
     "diagnostics": {
       "service": "সেবা",
-      "status": "স্থিতি",
+      "status": "অবস্থা",
       "latency": "বিলম্ব",
-      "loading": "ডায়াগনস্টিক লোড হচ্ছে..."
+      "loading": "ডায়াগনস্টিকস লোড হচ্ছে...",
+      "title": "সিস্টেম ডায়াগনস্টিকস",
+      "ping": "পিং",
+      "check": "পরীক্ষা",
+      "allSystemsOperational": "সকল সিস্টেম চালু আছে",
+      "systemDown": "সিস্টেম বন্ধ",
+      "systemDegraded": "সিস্টেম অবনতি",
+      "servicesOverview": "সেবা সারসংক্ষেপ",
+      "performanceMetrics": "কর্মক্ষমতা মেট্রিক্স",
+      "cpu": "CPU",
+      "memory": "মেমোরি",
+      "disk": "ডিস্ক",
+      "systemActivity": "সিস্টেম কার্যকলাপ",
+      "servicesDetails": "সেবার বিবরণ",
+      "healthy": "সুস্থ",
+      "degraded": "অবনতি",
+      "unhealthy": "অসুস্থ"
     },
     "costDashboard": {
       "title": "খরচ ড্যাশবোর্ড",

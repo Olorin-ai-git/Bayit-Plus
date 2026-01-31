@@ -864,8 +864,24 @@
     "diagnostics": {
       "service": "שירות",
       "status": "סטטוס",
-      "latency": "השהיה",
-      "loading": "טוען אבחון..."
+      "latency": "השהייה",
+      "loading": "טוען אבחון...",
+      "title": "אבחון מערכת",
+      "ping": "פינג",
+      "check": "בדיקה",
+      "allSystemsOperational": "כל המערכות פעילות",
+      "systemDown": "המערכת לא פעילה",
+      "systemDegraded": "ביצועי מערכת ירודים",
+      "servicesOverview": "סקירת שירותים",
+      "performanceMetrics": "מדדי ביצועים",
+      "cpu": "מעבד",
+      "memory": "זיכרון",
+      "disk": "דיסק",
+      "systemActivity": "פעילות מערכת",
+      "servicesDetails": "פרטי שירותים",
+      "healthy": "תקין",
+      "degraded": "מופחת",
+      "unhealthy": "לא תקין"
     },
     "costDashboard": {
       "title": "לוח בקרה עלויות",

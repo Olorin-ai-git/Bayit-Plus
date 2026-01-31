@@ -1030,6 +1030,28 @@
       "settings": "Paramètres",
       "diagnostics": "Diagnostics",
       "systemHealth": "Santé du système"
+    },
+    "diagnostics": {
+      "title": "Diagnostics Système",
+      "loading": "Chargement des diagnostics...",
+      "service": "Service",
+      "status": "Statut",
+      "latency": "Latence",
+      "ping": "Ping",
+      "check": "Vérifier",
+      "allSystemsOperational": "Tous les Systèmes Opérationnels",
+      "systemDown": "Système Hors Service",
+      "systemDegraded": "Système Dégradé",
+      "servicesOverview": "Aperçu des Services",
+      "performanceMetrics": "Métriques de Performance",
+      "cpu": "CPU",
+      "memory": "Mémoire",
+      "disk": "Disque",
+      "systemActivity": "Activité Système",
+      "servicesDetails": "Détails des Services",
+      "healthy": "Sain",
+      "degraded": "Dégradé",
+      "unhealthy": "Non Sain"
     }
   }
 }

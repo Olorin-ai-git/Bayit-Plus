@@ -864,8 +864,24 @@
     "diagnostics": {
       "service": "सेवा",
       "status": "स्थिति",
-      "latency": "लेटेंसी",
-      "loading": "डायग्नोस्टिक्स लोड हो रहे हैं..."
+      "latency": "विलंबता",
+      "loading": "डायग्नोस्टिक्स लोड हो रहा है...",
+      "title": "सिस्टम डायग्नोस्टिक्स",
+      "ping": "पिंग",
+      "check": "जांचें",
+      "allSystemsOperational": "सभी सिस्टम चालू हैं",
+      "systemDown": "सिस्टम बंद है",
+      "systemDegraded": "सिस्टम ख़राब है",
+      "servicesOverview": "सेवाओं का अवलोकन",
+      "performanceMetrics": "प्रदर्शन मेट्रिक्स",
+      "cpu": "CPU",
+      "memory": "मेमोरी",
+      "disk": "डिस्क",
+      "systemActivity": "सिस्टम गतिविधि",
+      "servicesDetails": "सेवा विवरण",
+      "healthy": "स्वस्थ",
+      "degraded": "ख़राब",
+      "unhealthy": "अस्वस्थ"
     },
     "costDashboard": {
       "title": "लागत डैशबोर्ड",
