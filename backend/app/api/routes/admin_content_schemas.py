@@ -250,6 +250,14 @@ class PodcastEpisodeUpdateRequest(BaseModel):
     thumbnail: Optional[str] = None
 
 
+# Batch Operation Models
+class BatchBetaRequest(BaseModel):
+    """Request model for batch beta content toggle."""
+
+    content_ids: List[str] = Field(..., min_length=1, max_length=100)
+    beta: bool = True
+
+
 # Merge Content Models
 class PreserveMetadata(BaseModel):
     useBaseTitle: bool = True
