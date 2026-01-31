@@ -38,7 +38,7 @@ async def heartbeat_loop(ws: WebSocket, user_id: str, interval: int) -> None:
 
 
 async def run_message_loop(
-    ws: WebSocket, chat_service: ChannelChatService, user_id: str, user_name: str, channel_id: str
+    ws: WebSocket, chat_service: ChannelChatService, user_id: str, user_name: str, user_role: str, channel_id: str
 ) -> None:
     """Run the WebSocket message dispatch loop with heartbeat monitoring."""
     timeout = settings.olorin.channel_chat.heartbeat_timeout_seconds
@@ -55,7 +55,7 @@ async def run_message_loop(
                 if msg_type == "pong":
                     last_pong = asyncio.get_event_loop().time()
                 elif msg_type == "chat":
-                    await handle_chat_message(ws, chat_service, user_id, user_name, channel_id, msg)
+                    await handle_chat_message(ws, chat_service, user_id, user_name, user_role, channel_id, msg)
                 elif msg_type == "reaction":
                     await handle_reaction(ws, chat_service, user_id, channel_id, msg)
             except asyncio.TimeoutError:
@@ -80,7 +80,7 @@ async def run_message_loop(
 
 async def handle_chat_message(
     ws: WebSocket, chat_service: ChannelChatService,
-    user_id: str, user_name: str, channel_id: str, message_data: dict,
+    user_id: str, user_name: str, user_role: str, channel_id: str, message_data: dict,
 ) -> None:
     """Handle incoming chat message."""
     if not await chat_service.validate_session_token(user_id, message_data.get("session_token")):
@@ -114,7 +114,7 @@ async def handle_chat_message(
         logger.warning("Language detection failed", extra={"user_id": user_id, "channel_id": channel_id, "error": str(e)})
 
     try:
-        saved = await chat_service.save_message(channel_id, user_id, user_name, message_text, detected_lang)
+        saved = await chat_service.save_message(channel_id, user_id, user_name, user_role, message_text, detected_lang)
     except Exception as e:
         await send_error(ws, "save_failed", "Failed to save message")
         logger.error("Failed to save message", extra={"user_id": user_id, "channel_id": channel_id, "error": str(e)})
@@ -125,11 +125,12 @@ async def handle_chat_message(
         "id": str(saved.id),
         "user_id": user_id,
         "user_name": user_name,
+        "user_role": user_role,
         "message": saved.message,
         "original_language": saved.original_language,
         "timestamp": saved.timestamp.isoformat(),
     })
-    logger.info("Message sent", extra={"user_id": user_id, "channel_id": channel_id, "message_id": str(saved.id), "language": detected_lang})
+    logger.info("Message sent", extra={"user_id": user_id, "user_role": user_role, "channel_id": channel_id, "message_id": str(saved.id), "language": detected_lang})
 
 
 async def handle_reaction(

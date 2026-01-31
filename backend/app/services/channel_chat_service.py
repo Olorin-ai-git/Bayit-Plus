@@ -386,6 +386,7 @@ class ChannelChatService:
         channel_id: str,
         user_id: str,
         user_name: str,
+        user_role: str,
         message: str,
         detected_language: str,
     ) -> ChannelChatMessage:
@@ -396,6 +397,7 @@ class ChannelChatService:
             channel_id: Channel identifier
             user_id: User identifier
             user_name: User display name
+            user_role: User role (admin, moderator, user, etc.)
             message: Message text (will be sanitized by model validator)
             detected_language: Detected language code
 
@@ -407,6 +409,7 @@ class ChannelChatService:
                 channel_id=channel_id,
                 user_id=user_id,
                 user_name=user_name,
+                user_role=user_role,
                 message=message,
                 original_language=detected_language,
                 timestamp=datetime.utcnow(),
@@ -420,6 +423,7 @@ class ChannelChatService:
                 extra={
                     "channel_id": channel_id,
                     "user_id": user_id,
+                    "user_role": user_role,
                     "message_id": str(chat_message.id),
                     "language": detected_language,
                 },

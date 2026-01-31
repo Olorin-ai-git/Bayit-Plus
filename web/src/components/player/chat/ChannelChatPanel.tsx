@@ -39,9 +39,7 @@ export default function ChannelChatPanel({
 
   const {
     isChatVisible,
-    isChatExpanded,
     toggleChatVisibility,
-    toggleChatExpanded,
   } = useChannelChatStore()
 
   const {
@@ -56,7 +54,16 @@ export default function ChannelChatPanel({
     loadOlderMessages,
     hasMore,
     isLoadingMore,
-  } = useChannelChat({ channelId, autoConnect: isLiveChannel, isLive: isLiveChannel })
+    connect,
+  } = useChannelChat({ channelId, autoConnect: false, isLive: isLiveChannel })
+
+  // Connect when chat becomes visible
+  useEffect(() => {
+    if (isChatVisible && !isConnected && channelId) {
+      console.log('Chat visible - connecting to channel:', channelId)
+      connect()
+    }
+  }, [isChatVisible, isConnected, channelId, connect])
 
   const handleToggleTranslation = useCallback(async (msg: ChatMessageData) => {
     const msgId = msg.id
@@ -77,16 +84,16 @@ export default function ChannelChatPanel({
   const resetAutoHide = useCallback(() => {
     if (autoHideTimer.current) clearTimeout(autoHideTimer.current)
     autoHideTimer.current = setTimeout(() => {
-      if (isChatExpanded) toggleChatExpanded()
+      // Auto-hide removed - chat stays open when visible
     }, AUTO_HIDE_MS)
-  }, [isChatExpanded, toggleChatExpanded])
+  }, [])
 
   useEffect(() => {
-    if (isChatVisible && isChatExpanded) resetAutoHide()
+    if (isChatVisible) resetAutoHide()
     return () => {
       if (autoHideTimer.current) clearTimeout(autoHideTimer.current)
     }
-  }, [isChatVisible, isChatExpanded, resetAutoHide])
+  }, [isChatVisible, resetAutoHide])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -141,26 +148,6 @@ export default function ChannelChatPanel({
           </Pressable>
         </View>
       </View>
-    )
-  }
-
-  if (!isChatExpanded) {
-    return (
-      <Pressable
-        onPress={(e) => {
-          e?.stopPropagation?.()
-          toggleChatExpanded()
-        }}
-        style={styles.miniBar}
-        accessibilityRole="button"
-        accessibilityLabel={t('channelChat.title')}
-      >
-        <MessageCircle size={16} color={colors.primary.DEFAULT} />
-        <Text style={styles.miniBarTitle}>{t('channelChat.title')}</Text>
-        <Text style={styles.miniBarCount}>
-          {t('channelChat.participants', { count: userCount })}
-        </Text>
-      </Pressable>
     )
   }
 

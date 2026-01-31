@@ -40,6 +40,7 @@ async def get_recent_messages_data(
             "id": str(msg.id),
             "user_id": msg.user_id,
             "user_name": msg.user_name,
+            "user_role": msg.user_role,
             "message": msg.message,
             "original_language": msg.original_language,
             "timestamp": msg.timestamp.isoformat(),

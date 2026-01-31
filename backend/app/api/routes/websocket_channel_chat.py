@@ -83,7 +83,8 @@ async def _handle_channel_chat_ws(websocket: WebSocket, channel_id: str) -> None
         await broadcast_user_joined(chat_service, channel_id, user_name, user_count)
 
         # Step 5: Run message loop (handles heartbeat + dispatch)
-        await run_message_loop(websocket, chat_service, user_id, user_name, channel_id)
+        user_role = user.role if user else "user"
+        await run_message_loop(websocket, chat_service, user_id, user_name, user_role, channel_id)
 
     except Exception as e:
         logger.error(

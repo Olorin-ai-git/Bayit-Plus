@@ -91,6 +91,7 @@ class ChannelChatMessage(Document):
     channel_id: str
     user_id: str
     user_name: str
+    user_role: Optional[str] = "user"
     message: str = Field(max_length=500)
     original_language: str = Field(default="he")
     timestamp: datetime = Field(default_factory=datetime.utcnow)

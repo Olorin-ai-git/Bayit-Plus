@@ -73,12 +73,13 @@ export function useChannelChat({ channelId, autoConnect = false, isLive = true }
       id: `system-join-${data.user_id}-${Date.now()}`,
       user_id: 'system',
       user_name: data.user_name,
-      message: `${data.user_name} joined the chat`,
+      message: `${data.user_name} joined the conversation...`,
       original_language: 'en',
       timestamp: new Date().toISOString(),
       is_pinned: false,
       type: 'system_join',
     }
+    logger.info('User joined chat', 'useChannelChat', { userName: data.user_name, userCount: data.user_count })
     setState((prev) => ({
       ...prev,
       userCount: data.user_count,
@@ -91,12 +92,13 @@ export function useChannelChat({ channelId, autoConnect = false, isLive = true }
       id: `system-leave-${data.user_id}-${Date.now()}`,
       user_id: 'system',
       user_name: 'System',
-      message: `A user left the chat`,
+      message: `${data.user_name || 'A user'} left the conversation...`,
       original_language: 'en',
       timestamp: new Date().toISOString(),
       is_pinned: false,
       type: 'system_leave',
     }
+    logger.info('User left chat', 'useChannelChat', { userName: data.user_name, userCount: data.user_count })
     setState((prev) => ({
       ...prev,
       userCount: data.user_count,

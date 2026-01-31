@@ -1,21 +1,19 @@
 /**
  * ChannelChatHeader Component
  * Header bar for the channel chat panel with title, participant count,
- * beta badge, expand/collapse toggle, and close button.
+ * beta badge, and close button.
  */
 
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
-import { MessageCircle, Users, ChevronDown, ChevronUp, X } from 'lucide-react'
+import { MessageCircle, Users, X } from 'lucide-react'
 
 interface ChannelChatHeaderProps {
   userCount: number
   isBetaUser: boolean
   translationEnabled: boolean
   onClose: () => void
-  onToggleExpand: () => void
-  isExpanded: boolean
 }
 
 export default function ChannelChatHeader({
@@ -23,11 +21,8 @@ export default function ChannelChatHeader({
   isBetaUser,
   translationEnabled,
   onClose,
-  onToggleExpand,
-  isExpanded,
 }: ChannelChatHeaderProps) {
   const { t } = useTranslation()
-  const ExpandIcon = isExpanded ? ChevronDown : ChevronUp
 
   return (
     <View style={styles.header}>
@@ -49,9 +44,6 @@ export default function ChannelChatHeader({
         )}
       </View>
       <View style={styles.actions}>
-        <Pressable onPress={onToggleExpand} accessibilityRole="button">
-          <ExpandIcon size={18} color={colors.textSecondary} />
-        </Pressable>
         <Pressable onPress={onClose} accessibilityRole="button">
           <X size={18} color={colors.textSecondary} />
         </Pressable>

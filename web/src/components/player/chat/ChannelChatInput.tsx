@@ -26,20 +26,31 @@ export default function ChannelChatInput({
   const { t } = useTranslation()
   const [text, setText] = useState('')
 
+  const handleTextChange = useCallback((newText: string) => {
+    console.log('Chat input text changed:', newText) // Debug log
+    setText(newText)
+  }, [])
+
   const trimmedLength = text.trim().length
   const canSend = trimmedLength > 0 && !disabled
 
   const handleSend = useCallback(() => {
     const trimmed = text.trim()
-    if (trimmed.length === 0 || disabled) return
+    if (trimmed.length === 0 || disabled) {
+      console.log('Cannot send message', { isEmpty: trimmed.length === 0, disabled })
+      return
+    }
+    console.log('Sending message:', trimmed)
     onSendMessage(trimmed)
     setText('')
   }, [text, disabled, onSendMessage])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
+      console.log('Key pressed in chat input:', e.key, 'Shift:', e.shiftKey)
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
+        console.log('Enter pressed - sending message')
         handleSend()
       }
     },
@@ -59,7 +70,7 @@ export default function ChannelChatInput({
         <TextInput
           style={styles.input}
           value={text}
-          onChangeText={setText}
+          onChangeText={handleTextChange}
           placeholder={t('channelChat.inputPlaceholder')}
           placeholderTextColor={colors.inputPlaceholder}
           maxLength={maxLength}
@@ -69,6 +80,7 @@ export default function ChannelChatInput({
           // @ts-expect-error -- onKeyDown and onClick supported on React Native Web
           onKeyDown={handleKeyDown}
           onClick={(e: any) => e?.stopPropagation?.()}
+          onFocus={() => console.log('Chat input focused')} // Debug log
         />
         <Pressable
           onPress={handleSend}
@@ -120,11 +132,16 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     color: colors.inputText,
     fontSize: 13,
+    minHeight: 36,
     maxHeight: 80,
     // @ts-ignore - Web-specific styles to ensure text is visible
     ...(Platform.OS === 'web' && {
       outlineStyle: 'none', // Remove default outline
       caretColor: colors.primary.DEFAULT, // Purple cursor
+      lineHeight: '20px', // Ensure text has proper line height
+      resize: 'none', // Disable manual resize
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      WebkitAppearance: 'none',
     }),
   } as any,
   sendButton: {

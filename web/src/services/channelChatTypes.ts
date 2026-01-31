@@ -18,6 +18,7 @@ export interface ChatMessageData {
   id: string
   user_id: string
   user_name: string
+  user_role?: string
   message: string
   original_language: string
   timestamp: string

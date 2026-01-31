@@ -43,17 +43,29 @@ class ChannelChatService {
     try {
       const authData = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || '{}')
       const token = authData?.state?.token
-      if (!token) throw new Error('Not authenticated')
+      if (!token) {
+        logger.error('No authentication token found', 'channelChatService')
+        throw new Error('Not authenticated')
+      }
 
       this.currentChannelId = channelId
       this.callbacks = callbacks
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
       const wsHost = API_BASE_URL.replace(/^https?:\/\//, '').replace(/\/api\/v1\/?$/, '')
       const wsPathPrefix = isLive ? 'live' : 'content'
-      this.ws = new WebSocket(`${wsProtocol}//${wsHost}/api/v1/ws/${wsPathPrefix}/${channelId}/chat`)
+      const wsUrl = `${wsProtocol}//${wsHost}/api/v1/ws/${wsPathPrefix}/${channelId}/chat`
+
+      logger.info('Connecting to channel chat WebSocket', 'channelChatService', {
+        channelId,
+        isLive,
+        wsUrl,
+        hasToken: !!token,
+      })
+
+      this.ws = new WebSocket(wsUrl)
 
       this.ws.onopen = () => {
-        logger.debug('WebSocket connected, authenticating...', 'channelChatService')
+        logger.info('WebSocket connected, sending authentication...', 'channelChatService')
         this.ws?.send(JSON.stringify({ type: 'authenticate', token }))
         this.isConnected = true
       }
@@ -78,18 +90,38 @@ class ChannelChatService {
   private handleMessage(event: MessageEvent, callbacks: ChannelChatCallbacks): void {
     try {
       const msg = JSON.parse(event.data)
+      logger.debug('WebSocket message received', 'channelChatService', { type: msg.type, data: msg })
+
       switch (msg.type) {
         case 'connected':
           this.sessionToken = msg.session_token
+          logger.info('Chat connected', 'channelChatService', {
+            userCount: msg.user_count,
+            isBetaUser: msg.is_beta_user,
+            sessionToken: !!msg.session_token,
+            recentMessages: msg.recent_messages?.length || 0,
+          })
           callbacks.onConnected(msg as ConnectedData)
           break
         case 'channel_chat_message':
+          logger.info('Chat message received', 'channelChatService', {
+            user: msg.user_name,
+            message: msg.message,
+          })
           callbacks.onMessage(msg as ChatMessageData)
           break
         case 'user_joined':
+          logger.info('User joined', 'channelChatService', {
+            userName: msg.user_name,
+            userCount: msg.user_count,
+          })
           callbacks.onUserJoined(msg as UserJoinData)
           break
         case 'user_left':
+          logger.info('User left', 'channelChatService', {
+            userName: msg.user_name,
+            userCount: msg.user_count,
+          })
           callbacks.onUserLeft(msg as UserLeftData)
           break
         case 'reaction_update':
@@ -119,9 +151,16 @@ class ChannelChatService {
 
   sendMessage(message: string, sessionToken?: string): void {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      logger.warn('Cannot send message - not connected', 'channelChatService')
+      logger.warn('Cannot send message - not connected', 'channelChatService', {
+        hasWs: !!this.ws,
+        readyState: this.ws?.readyState,
+      })
       return
     }
+    logger.info('Sending chat message', 'channelChatService', {
+      messageLength: message.length,
+      hasSessionToken: !!(sessionToken || this.sessionToken),
+    })
     this.ws.send(JSON.stringify({
       type: 'chat',
       message,
