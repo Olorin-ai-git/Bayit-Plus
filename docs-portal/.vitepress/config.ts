@@ -57,10 +57,25 @@ export default defineConfig({
         ]
       },
       {
-        text: 'Testing',
+        text: 'Features',
         items: [
-          { text: 'Testing Strategy', link: '/testing/TESTING_STRATEGY' },
-          { text: 'CI/CD', link: '/deployment/CI_CD_PIPELINE' },
+          { text: 'AI Features Overview', link: '/features/AI_FEATURES_OVERVIEW' },
+          { text: 'Subtitle System Enhancements', link: '/features/SUBTITLE_SYSTEM_ENHANCEMENTS' },
+          { text: 'Live Translation', link: '/features/LIVE_TRANSLATION_EXPANSION' },
+        ]
+      },
+      {
+        text: 'Deployment',
+        items: [
+          { text: 'Secrets Management', link: '/deployment/SECRETS_MANAGEMENT' },
+          { text: 'Firebase Deployment', link: '/deployment/FIREBASE_DEPLOYMENT' },
+          { text: 'LLM Configuration', link: '/deployment/LLM_CONFIGURATION' },
+        ]
+      },
+      {
+        text: 'Design',
+        items: [
+          { text: 'WCAG AA Color Tokens', link: '/design/COLOR_TOKENS_WCAG' },
         ]
       },
     ],
@@ -71,7 +86,8 @@ export default defineConfig({
           text: 'Getting Started',
           items: [
             { text: 'Startup Guide', link: '/guides/STARTUP_GUIDE' },
-            { text: 'Contributing', link: '/guides/CONTRIBUTING' },
+            { text: 'Installation Guide', link: '/guides/INSTALLATION_GUIDE' },
+            { text: 'Deployment Guide', link: '/guides/DEPLOYMENT_GUIDE' },
           ]
         },
         {
@@ -83,10 +99,19 @@ export default defineConfig({
           ]
         },
         {
+          text: 'AI Integration',
+          items: [
+            { text: 'Web AI Integration', link: '/guides/AI_INTEGRATION_WEB' },
+            { text: 'Mobile AI Integration', link: '/guides/AI_INTEGRATION_MOBILE' },
+            { text: 'tvOS AI Integration', link: '/guides/AI_INTEGRATION_TVOS' },
+            { text: 'AI Troubleshooting', link: '/guides/AI_TROUBLESHOOTING' },
+          ]
+        },
+        {
           text: 'Features',
           items: [
             { text: 'i18n Complete Guide', link: '/guides/I18N_COMPLETE_GUIDE' },
-            { text: 'Accessibility', link: '/guides/ACCESSIBILITY_GUIDE' },
+            { text: 'Beta 500 User Manual', link: '/guides/BETA_500_USER_MANUAL' },
           ]
         },
         {
@@ -101,15 +126,7 @@ export default defineConfig({
           text: 'API Documentation',
           items: [
             { text: 'API Overview', link: '/api/API_OVERVIEW' },
-            { text: 'Authentication', link: '/api/AUTHENTICATION' },
-          ]
-        },
-        {
-          text: 'Features API',
-          items: [
-            { text: 'AI Features', link: '/api/AI_API_REFERENCE' },
-            { text: 'Channel Chat', link: '/api/CHANNEL_CHAT_API' },
-            { text: 'Catch-Up', link: '/api/CATCH_UP_API' },
+            { text: 'AI Features API', link: '/api/AI_API_REFERENCE' },
             { text: 'Voice API', link: '/api/VOICE_API_REFERENCE' },
           ]
         },
@@ -118,8 +135,8 @@ export default defineConfig({
         {
           text: 'Architecture',
           items: [
-            { text: 'System Overview', link: '/architecture/SYSTEM_OVERVIEW' },
-            { text: 'Component Architecture', link: '/architecture/COMPONENT_ARCHITECTURE' },
+            { text: 'Unified Voice Architecture', link: '/architecture/UNIFIED_VOICE_ARCHITECTURE' },
+            { text: 'Olorin Ecosystem Analysis', link: '/architecture/OLORIN_ECOSYSTEM_ARCHITECTURE_ANALYSIS' },
           ]
         },
       ],
@@ -142,11 +159,38 @@ export default defineConfig({
       ],
       '/deployment/': [
         {
-          text: 'Deployment',
+          text: 'Deployment Guides',
           items: [
-            { text: 'Deployment Guide', link: '/deployment/DEPLOYMENT_GUIDE' },
-            { text: 'CI/CD Pipeline', link: '/deployment/CI_CD_PIPELINE' },
             { text: 'Secrets Management', link: '/deployment/SECRETS_MANAGEMENT' },
+            { text: 'Firebase Deployment', link: '/deployment/FIREBASE_DEPLOYMENT' },
+            { text: 'LLM Configuration', link: '/deployment/LLM_CONFIGURATION' },
+          ]
+        },
+        {
+          text: 'GCloud Secrets Configuration',
+          items: [
+            { text: 'API Configuration', link: '/deployment/GCLOUD_SECRETS_API_CONFIGURATION' },
+            { text: 'Beta 500 Configuration', link: '/deployment/GCLOUD_SECRETS_BETA_500' },
+            { text: 'Payment Flow', link: '/deployment/GCLOUD_SECRETS_PAYMENT_FLOW' },
+          ]
+        },
+      ],
+      '/features/': [
+        {
+          text: 'Platform Features',
+          items: [
+            { text: 'AI Features Overview', link: '/features/AI_FEATURES_OVERVIEW' },
+            { text: 'Subtitle System Enhancements', link: '/features/SUBTITLE_SYSTEM_ENHANCEMENTS' },
+            { text: 'Live Translation Expansion', link: '/features/LIVE_TRANSLATION_EXPANSION' },
+            { text: 'Subscription Gate', link: '/features/SUBSCRIPTION_GATE_IMPLEMENTATION' },
+          ]
+        },
+      ],
+      '/design/': [
+        {
+          text: 'Design System',
+          items: [
+            { text: 'WCAG AA Color Tokens', link: '/design/COLOR_TOKENS_WCAG' },
           ]
         },
       ],
