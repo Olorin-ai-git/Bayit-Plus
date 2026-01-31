@@ -132,19 +132,57 @@ const example = "Hello World";
 
 ## Deployment
 
-### Firebase Hosting
-
-Automatic deployment via GitHub Actions when changes are pushed to `main` or `beta` branches.
-
-**Manual deployment:**
+### Quick Deploy (Recommended)
 
 ```bash
-# Build
+# Production deployment
+npm run deploy
+
+# Staging preview (expires in 30 days)
+npm run deploy:staging
+```
+
+### Manual Deployment
+
+```bash
+# Build documentation
 npm run build
 
-# Deploy to Firebase
-firebase deploy --only hosting:docs-portal
+# Deploy to production
+firebase deploy --only hosting:docs-bayit-plus
+
+# Deploy to staging preview channel
+firebase hosting:channel:deploy docs-staging --expires 30d --only docs-bayit-plus
 ```
+
+### Using Deployment Script
+
+```bash
+# Production deployment
+cd ..
+ENVIRONMENT=production ./scripts/deployment/deploy-docs.sh
+
+# Staging deployment
+ENVIRONMENT=staging ./scripts/deployment/deploy-docs.sh
+```
+
+### Deploy All Platforms
+
+To deploy documentation portal along with all other Bayit+ platforms:
+
+```bash
+cd ..
+./scripts/deployment/deploy-all-platforms.sh
+```
+
+### Firebase Hosting Sites
+
+- **Web App**: `bayit-plus` → https://bayitplus.com
+- **Documentation**: `docs-bayit-plus` → https://docs.bayitplus.com
+
+### Automatic Deployment
+
+GitHub Actions automatically deploys to Firebase Hosting when changes are pushed to `main` or `beta` branches.
 
 ### Environment Variables
 

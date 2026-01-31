@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
-    "preview": "vitepress preview"
+    "preview": "vitepress preview",
+    "deploy": "npm run build && firebase deploy --only hosting:docs-bayit-plus",
+    "deploy:staging": "npm run build && firebase hosting:channel:deploy docs-staging --expires 30d --only docs-bayit-plus"
   },
   "dependencies": {
     "vitepress": "^1.0.0",

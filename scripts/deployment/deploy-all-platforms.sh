@@ -100,13 +100,38 @@ deploy_web() {
   # Deploy to Firebase Hosting
   if [ "$ENVIRONMENT" = "production" ]; then
     log "Deploying to Firebase Hosting production..."
-    firebase deploy --only hosting:production
+    firebase deploy --only hosting:bayit-plus
   else
     log "Deploying to Firebase Hosting preview channel..."
     firebase hosting:channel:deploy staging --expires 30d
   fi
 
   log "✅ Web deployment complete"
+}
+
+deploy_docs_portal() {
+  log "📚 Deploying Documentation Portal (VitePress)..."
+
+  cd "$PROJECT_ROOT/docs-portal"
+
+  # Install dependencies
+  log "Installing docs portal dependencies..."
+  npm ci
+
+  # Build documentation site
+  log "Building VitePress documentation..."
+  npm run build
+
+  # Deploy to Firebase Hosting
+  if [ "$ENVIRONMENT" = "production" ]; then
+    log "Deploying docs portal to Firebase Hosting..."
+    firebase deploy --only hosting:docs-bayit-plus
+  else
+    log "Deploying docs portal to preview channel..."
+    firebase hosting:channel:deploy docs-staging --expires 30d
+  fi
+
+  log "✅ Documentation portal deployment complete"
 }
 
 build_mobile() {
@@ -206,11 +231,15 @@ main() {
   deploy_web
   echo ""
 
-  # 4. Mobile Apps
+  # 4. Documentation Portal
+  deploy_docs_portal
+  echo ""
+
+  # 5. Mobile Apps
   build_mobile
   echo ""
 
-  # 5. tvOS Application
+  # 6. tvOS Application
   build_tvos
   echo ""
 
@@ -238,6 +267,7 @@ Platforms Deployed:
   ✅ Backend Services (Cloud Run)
   ✅ Shared Packages (npm)
   ✅ Web Application (Firebase Hosting)
+  ✅ Documentation Portal (Firebase Hosting)
   ✅ Mobile Apps (iOS/Android bundles)
   ✅ tvOS Application (tvOS bundle)
 

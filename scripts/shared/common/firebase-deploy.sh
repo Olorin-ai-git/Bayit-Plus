@@ -31,18 +31,42 @@ verify_build_artifacts() {
 }
 
 # Deploy to Firebase Hosting
+# Usage: deploy_firebase_hosting [project] [site] [public_dir]
 deploy_firebase_hosting() {
     local project="${1:-bayit-plus}"
-    local public_dir="${2:-dist}"
+    local site="${2:-bayit-plus}"
+    local public_dir="${3:-dist}"
 
-    print_info "Deploying to Firebase Hosting (project: $project, public: $public_dir)..."
+    print_info "Deploying to Firebase Hosting (project: $project, site: $site, public: $public_dir)..."
 
-    if ! firebase deploy --only hosting --project "$project"; then
-        print_error "Firebase Hosting deployment failed"
+    if ! firebase deploy --only hosting:"$site" --project "$project"; then
+        print_error "Firebase Hosting deployment failed for site: $site"
         return 1
     fi
 
-    print_success "Firebase Hosting deployed successfully"
+    print_success "Firebase Hosting deployed successfully (site: $site)"
+    return 0
+}
+
+# Deploy all hosting sites
+deploy_all_firebase_hosting() {
+    local project="${1:-bayit-plus}"
+
+    print_info "Deploying all Firebase Hosting sites (project: $project)..."
+
+    # Deploy main web app
+    if ! deploy_firebase_hosting "$project" "bayit-plus" "web/dist"; then
+        print_error "Web app deployment failed"
+        return 1
+    fi
+
+    # Deploy documentation portal
+    if ! deploy_firebase_hosting "$project" "docs-bayit-plus" "docs-portal/.vitepress/dist"; then
+        print_error "Documentation portal deployment failed"
+        return 1
+    fi
+
+    print_success "All Firebase Hosting sites deployed successfully"
     return 0
 }
 
