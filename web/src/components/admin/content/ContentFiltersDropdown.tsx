@@ -3,6 +3,7 @@ import { X, Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { GlassView, GlassCheckbox } from '@bayit/shared/ui'
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens'
+import logger from '@/utils/logger'
 
 interface ContentFilters {
   search: string
@@ -14,8 +15,10 @@ interface ContentFiltersDropdownProps {
   visible: boolean
   filters: ContentFilters
   showOnlyWithSubtitles: boolean
+  showOnlyBetaContent: boolean
   onFiltersChange: (filters: ContentFilters) => void
   onSubtitlesChange: (value: boolean) => void
+  onBetaContentChange: (value: boolean) => void
   onClose: () => void
   isRTL: boolean
 }
@@ -24,8 +27,10 @@ export default function ContentFiltersDropdown({
   visible,
   filters,
   showOnlyWithSubtitles,
+  showOnlyBetaContent,
   onFiltersChange,
   onSubtitlesChange,
+  onBetaContentChange,
   onClose,
   isRTL,
 }: ContentFiltersDropdownProps) {
@@ -49,7 +54,7 @@ export default function ContentFiltersDropdown({
   ]
 
   const handleContentTypeChange = (value: string) => {
-    console.log('[ContentFiltersDropdown] Content type changed:', value)
+    logger.debug('Content type changed', { value })
     onFiltersChange({
       ...filters,
       content_type: value as ContentFilters['content_type'],
@@ -57,12 +62,11 @@ export default function ContentFiltersDropdown({
   }
 
   const handleStatusChange = (value: string) => {
-    console.log('[ContentFiltersDropdown] Status changed:', value)
+    logger.debug('Status changed', { value })
     const newFilters = {
       ...filters,
       is_published: value === '' ? undefined : value === 'published',
     }
-    console.log('[ContentFiltersDropdown] New filters:', newFilters)
     onFiltersChange(newFilters)
   }
 
@@ -156,10 +160,22 @@ export default function ContentFiltersDropdown({
             <GlassCheckbox
               checked={showOnlyWithSubtitles}
               onCheckedChange={(checked) => {
-                console.log('[ContentFiltersDropdown] Subtitles filter changed:', checked)
+                logger.debug('Subtitles filter changed', { checked })
                 onSubtitlesChange(checked)
               }}
               label={t('admin.content.showOnlyWithSubtitles')}
+            />
+          </View>
+
+          {/* Beta Content Filter */}
+          <View style={styles.section}>
+            <GlassCheckbox
+              checked={showOnlyBetaContent}
+              onCheckedChange={(checked) => {
+                logger.debug('Beta content filter changed', { checked })
+                onBetaContentChange(checked)
+              }}
+              label={t('admin.content.showOnlyBetaContent')}
             />
           </View>
         </View>

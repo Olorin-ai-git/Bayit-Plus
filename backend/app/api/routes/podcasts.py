@@ -3,6 +3,8 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
+from app.api.routes.content.beta_filter import (build_beta_content_filter,
+                                                 check_beta_access)
 from app.core.security import get_optional_user
 from app.models.content import Podcast, PodcastEpisode
 from app.models.user import User
@@ -16,6 +18,7 @@ logger = logging.getLogger(__name__)
 async def get_podcast_categories(
     request: Request,
     culture_id: Optional[str] = Query(None, description="Filter by culture ID"),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Get all unique podcast categories, optionally filtered by culture.
     Returns localized category names based on Accept-Language header.
@@ -41,6 +44,9 @@ async def get_podcast_categories(
 
         # Build query conditions
         query_conditions = [Podcast.is_active == True]
+        beta_filter = build_beta_content_filter(current_user)
+        if beta_filter:
+            query_conditions.append(beta_filter)
         if culture_id:
             query_conditions.append(Podcast.culture_id == culture_id)
 
@@ -134,6 +140,7 @@ async def get_podcasts(
     category: Optional[str] = None,
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Get podcasts with pagination, optionally filtered by culture and category.
     Returns localized category names based on Accept-Language header.
@@ -157,6 +164,9 @@ async def get_podcasts(
             "zh": "category_zh",
         }
         query = {"is_active": True}
+        beta_filter = build_beta_content_filter(current_user)
+        if beta_filter:
+            query.update(beta_filter)
         if culture_id:
             query["culture_id"] = culture_id
         if category:
@@ -256,7 +266,11 @@ async def get_podcasts(
 
 
 @router.get("/{show_id}")
-async def get_podcast(show_id: str, request: Request):
+async def get_podcast(
+    show_id: str,
+    request: Request,
+    current_user: Optional[User] = Depends(get_optional_user),
+):
     """Get podcast details with episodes.
     Returns localized category name based on Accept-Language header.
     """
@@ -281,6 +295,10 @@ async def get_podcast(show_id: str, request: Request):
 
         show = await Podcast.get(show_id)
         if not show or not show.is_active:
+            raise HTTPException(status_code=404, detail="Podcast not found")
+
+        # Beta access check
+        if not check_beta_access(current_user, getattr(show, "is_beta_content", False)):
             raise HTTPException(status_code=404, detail="Podcast not found")
 
         # Get localized category name

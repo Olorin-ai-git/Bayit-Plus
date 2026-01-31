@@ -14,6 +14,7 @@ from app.services.beta.credit_service import BetaCreditService
 from app.services.beta.email_service import EmailVerificationService
 from app.services.beta.fraud_service import FraudDetectionService
 from app.models.beta_user import BetaUser
+from app.models.user import User
 from app.core.logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -190,10 +191,20 @@ async def verify_email(
                 "Credits allocated to verified user",
                 extra={"email": email, "credits": settings.BETA_AI_CREDITS}
             )
-        except ValueError as e:
+        except ValueError:
             # Credits already allocated (idempotent)
             logger.info(
                 "Credits already allocated",
+                extra={"email": email}
+            )
+
+        # Set is_beta_user flag on the matching User document
+        app_user = await User.find_one(User.email == email)
+        if app_user and not app_user.is_beta_user:
+            app_user.is_beta_user = True
+            await app_user.save()
+            logger.info(
+                "Set is_beta_user=True on User",
                 extra={"email": email}
             )
 

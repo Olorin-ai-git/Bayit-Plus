@@ -548,6 +548,10 @@
         "subtitles": "Subtitles"
       },
       "showOnlyWithSubtitles": "Show only with subtitles",
+      "showOnlyBetaContent": "Show Beta content only",
+      "beta": "Beta",
+      "markAsBeta": "Mark as Beta",
+      "removeFromBeta": "Remove from Beta",
       "status": {
         "published": "Published",
         "draft": "Draft"
@@ -575,7 +579,8 @@
         "logo": "Logo",
         "cover": "Cover",
         "languages": "Languages",
-        "translationStatus": "Translation Status"
+        "translationStatus": "Translation Status",
+        "beta": "Beta"
       },
       "validation": {
         "titleRequired": "Title is required",
@@ -5746,6 +5751,15 @@
         "title": "Shoresh (Root Words)",
         "description": "Hebrew words with root analysis: word [root]"
       }
+    },
+    "loading": "Loading subtitles...",
+    "error": {
+      "title": "Subtitle Error",
+      "retry": "Try Again",
+      "loadFailed": "Failed to load subtitles",
+      "cuesFailed": "Failed to load subtitle text",
+      "networkError": "Network error - please check your connection",
+      "serverError": "Server error - please try again later"
     }
   },
   "support": {

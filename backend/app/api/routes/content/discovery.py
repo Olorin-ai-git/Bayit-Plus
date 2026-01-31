@@ -8,12 +8,14 @@ import asyncio
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Query, Request
+from fastapi import APIRouter, Depends, Query, Request
 
+from app.api.routes.content.beta_filter import build_beta_content_filter
 from app.api.routes.content.utils import (convert_to_proxy_url,
                                           is_series_by_category)
-from app.core.security import get_passkey_session
+from app.core.security import get_optional_user, get_passkey_session
 from app.models.content import Content
+from app.models.user import User
 from app.models.content_taxonomy import ContentSection
 from app.services.subtitle_enrichment import \
     enrich_content_items_with_subtitles
@@ -59,6 +61,7 @@ async def get_all_content(
     request: Request,
     page: int = Query(1, ge=1),
     limit: int = Query(100, ge=1, le=200),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Get all published content (movies and series, excluding episodes)."""
     skip = (page - 1) * limit
@@ -67,6 +70,7 @@ async def get_all_content(
     passkey_session = await get_passkey_session(request)
     has_passkey = passkey_session is not None
     visibility_filter = build_visibility_filter(has_passkey)
+    beta_filter = build_beta_content_filter(current_user)
 
     # Build filter combining series exclusion and visibility rules
     content_filter = {
@@ -83,6 +87,8 @@ async def get_all_content(
             },
             # Apply visibility filter
             visibility_filter,
+            # Apply beta content filter
+            beta_filter,
         ]
     }
 
@@ -197,6 +203,7 @@ async def search_content(
     type: Optional[str] = None,
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Search across all content."""
     skip = (page - 1) * limit
@@ -206,6 +213,7 @@ async def search_content(
     passkey_session = await get_passkey_session(request)
     has_passkey = passkey_session is not None
     visibility_filter = build_visibility_filter(has_passkey)
+    beta_filter = build_beta_content_filter(current_user)
 
     if not type or type == "vod":
         # Build search filter with visibility rules
@@ -214,6 +222,7 @@ async def search_content(
                 {"$text": {"$search": query}},
                 {"is_published": True},
                 visibility_filter,
+                beta_filter,
             ]
         }
         vod_items = await Content.find(search_filter).limit(limit).to_list()

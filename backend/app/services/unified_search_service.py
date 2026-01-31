@@ -95,6 +95,7 @@ class UnifiedSearchService:
         page: int = 1,
         limit: int = 20,
         user_subscription_tier: Optional[str] = None,
+        is_beta_user: Optional[bool] = None,
     ) -> SearchResults:
         """
         Main search entry point.
@@ -105,6 +106,7 @@ class UnifiedSearchService:
             page: Page number (1-indexed)
             limit: Results per page
             user_subscription_tier: User's subscription tier for filtering
+            is_beta_user: Whether user is a beta user (None = admin, bypasses filter)
 
         Returns:
             SearchResults with paginated content items
@@ -118,6 +120,7 @@ class UnifiedSearchService:
             "page": page,
             "limit": limit,
             "tier": user_subscription_tier,
+            "is_beta_user": is_beta_user,
         }
 
         cached = self.cache.get_cached_results(query, cache_key_data)
@@ -133,7 +136,7 @@ class UnifiedSearchService:
         else:
             # Text and metadata search
             results = await self._search_text_and_metadata(
-                query, filters, page, limit, user_subscription_tier
+                query, filters, page, limit, user_subscription_tier, is_beta_user
             )
 
         # Calculate execution time
@@ -162,6 +165,7 @@ class UnifiedSearchService:
         page: int,
         limit: int,
         user_subscription_tier: Optional[str],
+        is_beta_user: Optional[bool] = None,
     ) -> List[Dict[str, Any]]:
         """
         Execute text search with metadata filters.
@@ -170,7 +174,9 @@ class UnifiedSearchService:
         advanced filters for genre, year, rating, etc.
         """
         # Build MongoDB query
-        mongo_query = self._build_mongo_query(query, filters, user_subscription_tier)
+        mongo_query = self._build_mongo_query(
+            query, filters, user_subscription_tier, is_beta_user
+        )
 
         # Execute query with text score sorting if query exists
         if query.strip():
@@ -262,7 +268,11 @@ class UnifiedSearchService:
         return results
 
     def _build_mongo_query(
-        self, query: str, filters: SearchFilters, user_subscription_tier: Optional[str]
+        self,
+        query: str,
+        filters: SearchFilters,
+        user_subscription_tier: Optional[str],
+        is_beta_user: Optional[bool] = None,
     ) -> Dict[str, Any]:
         """
         Build MongoDB query from search query and filters.
@@ -320,6 +330,12 @@ class UnifiedSearchService:
         # Kids content filter
         if filters.is_kids_content is not None:
             conditions.append({"is_kids_content": filters.is_kids_content})
+
+        # Beta content filter (None = admin, bypasses filter)
+        if is_beta_user is True:
+            conditions.append({"is_beta_content": True})
+        elif is_beta_user is False:
+            conditions.append({"is_beta_content": False})
 
         # Combine all conditions
         if len(conditions) == 1:

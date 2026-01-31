@@ -25,6 +25,7 @@ async def get_content_hierarchical(
     is_featured: Optional[bool] = None,
     is_published: Optional[bool] = None,
     is_kids_content: Optional[bool] = None,
+    is_beta_content: Optional[bool] = None,
     content_type: Optional[str] = None,
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, le=100),
@@ -75,6 +76,8 @@ async def get_content_hierarchical(
         query = query.find(Content.is_published == is_published)
     if is_kids_content is not None:
         query = query.find(Content.is_kids_content == is_kids_content)
+    if is_beta_content is not None:
+        query = query.find(Content.is_beta_content == is_beta_content)
     if content_type == "series":
         query = query.find(Content.is_series == True)
     elif content_type == "movies":
@@ -180,6 +183,7 @@ async def get_content_hierarchical(
             "is_featured": item.is_featured,
             "requires_subscription": item.requires_subscription,
             "is_kids_content": item.is_kids_content,
+            "is_beta_content": getattr(item, "is_beta_content", False),
             "view_count": item.view_count,
             "avg_rating": item.avg_rating,
             "available_subtitles": available_subtitles,
@@ -243,6 +247,7 @@ async def get_content_detail(
         "is_featured": content.is_featured,
         "requires_subscription": content.requires_subscription,
         "is_kids_content": content.is_kids_content,
+        "is_beta_content": getattr(content, "is_beta_content", False),
         "age_rating": content.age_rating,
         "content_rating": content.content_rating,
         "educational_tags": content.educational_tags,

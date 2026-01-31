@@ -18,6 +18,7 @@ interface ContentItem {
   title: string
   is_series: boolean
   is_featured: boolean
+  is_beta_content?: boolean
   category_name?: string
   year?: number
   episode_count?: number
@@ -191,6 +192,19 @@ export function getContentTableColumns(
         <BadgeCell
           label={value ? t('admin.content.status.published', 'Published') : t('admin.content.status.draft', 'Draft')}
           variant={value ? 'success' : 'warning'}
+        />
+      ),
+    },
+    {
+      key: 'is_beta_content',
+      label: t('admin.content.columns.beta', 'Beta'),
+      width: 100,
+      minWidth: 80,
+      maxWidth: 140,
+      render: (value) => (
+        <BadgeCell
+          label={value ? t('admin.content.beta', 'Beta') : '-'}
+          variant={value ? 'info' : 'default'}
         />
       ),
     },

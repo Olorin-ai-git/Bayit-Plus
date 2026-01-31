@@ -138,6 +138,10 @@
       "audiobooks": "ஆடியோபுக்கள்",
       "podcasts": "போட்காஸ்ட்கள்",
       "showOnlyWithSubtitles": "வசனங்கள் உள்ளவற்றை மட்டும் காட்டு",
+      "showOnlyBetaContent": "பீட்டா உள்ளடக்கத்தை மட்டும் காட்டு",
+      "beta": "பீட்டா",
+      "markAsBeta": "பீட்டா எனக் குறிக்கவும்",
+      "removeFromBeta": "பீட்டாவிலிருந்து அகற்று",
       "status": {
         "published": "வெளியிடப்பட்டது",
         "draft": "வரைவு"
@@ -165,7 +169,8 @@
         "logo": "லோகோ",
         "cover": "அட்டை",
         "languages": "மொழிகள்",
-        "translationStatus": "மொழிபெயர்ப்பு நிலை"
+        "translationStatus": "மொழிபெயர்ப்பு நிலை",
+        "beta": "பீட்டா"
       },
       "validation": {
         "titleRequired": "தலைப்பு தேவை",

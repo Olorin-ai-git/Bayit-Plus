@@ -16,6 +16,7 @@ interface ContentItem {
   is_series: boolean
   is_published: boolean
   is_featured: boolean
+  is_beta_content?: boolean
   episode_count?: number
   view_count?: number
   avg_rating?: number
@@ -58,6 +59,7 @@ export function useContentData() {
     content_type: '',
   })
   const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false)
+  const [showOnlyBetaContent, setShowOnlyBetaContent] = useState(false)
   const [sortBy, setSortBy] = useState<string>('title')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
 
@@ -118,6 +120,7 @@ export function useContentData() {
           page_size: pagination.pageSize,
           search: filters.search,
           is_published: filters.is_published,
+          is_beta_content: showOnlyBetaContent ? true : undefined,
           content_type: filters.content_type === 'series' ? 'series'
                         : filters.content_type === 'movies' ? 'movies'
                         : undefined,
@@ -156,7 +159,7 @@ export function useContentData() {
     } finally {
       setIsLoading(false)
     }
-  }, [pagination.page, pagination.pageSize, filters, sortBy, sortDirection])
+  }, [pagination.page, pagination.pageSize, filters, showOnlyBetaContent, sortBy, sortDirection])
 
   useEffect(() => {
     console.log('[useContentData] Filters or pagination changed, reloading content')
@@ -377,6 +380,7 @@ export function useContentData() {
     pagination,
     filters,
     showOnlyWithSubtitles,
+    showOnlyBetaContent,
     expandedSeries,
     episodeCache,
     loadingEpisodes,
@@ -389,6 +393,7 @@ export function useContentData() {
     showDeleteConfirm,
     setFilters,
     setShowOnlyWithSubtitles,
+    setShowOnlyBetaContent,
     setPagination,
     setSelectedItemsData,
     handleExpandToggle,

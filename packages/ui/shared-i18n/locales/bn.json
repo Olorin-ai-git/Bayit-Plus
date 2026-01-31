@@ -138,6 +138,10 @@
       "audiobooks": "অডিওবুক",
       "podcasts": "পডকাস্ট",
       "showOnlyWithSubtitles": "শুধু সাবটাইটেল সহ দেখান",
+      "showOnlyBetaContent": "শুধুমাত্র বিটা কন্টেন্ট দেখান",
+      "beta": "বিটা",
+      "markAsBeta": "বিটা হিসেবে চিহ্নিত করুন",
+      "removeFromBeta": "বিটা থেকে সরান",
       "status": {
         "published": "প্রকাশিত",
         "draft": "খসড়া"
@@ -165,7 +169,8 @@
         "logo": "লোগো",
         "cover": "কভার",
         "languages": "ভাষাসমূহ",
-        "translationStatus": "অনুবাদ অবস্থা"
+        "translationStatus": "অনুবাদ অবস্থা",
+        "beta": "বিটা"
       },
       "validation": {
         "titleRequired": "শিরোনাম আবশ্যক",

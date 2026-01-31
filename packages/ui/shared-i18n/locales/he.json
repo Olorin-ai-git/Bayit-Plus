@@ -545,6 +545,10 @@
         "subtitles": "כתוביות"
       },
       "showOnlyWithSubtitles": "הצג רק עם כתוביות",
+      "showOnlyBetaContent": "הצג תוכן בטא בלבד",
+      "beta": "בטא",
+      "markAsBeta": "סמן כבטא",
+      "removeFromBeta": "הסר מבטא",
       "status": {
         "published": "פורסם",
         "draft": "טיוטה"
@@ -572,7 +576,8 @@
         "logo": "לוגו",
         "cover": "עטיפה",
         "languages": "שפות",
-        "translationStatus": "סטטוס תרגום"
+        "translationStatus": "סטטוס תרגום",
+        "beta": "בטא"
       },
       "validation": {
         "titleRequired": "כותרת נדרשת",
@@ -5691,6 +5696,15 @@
         "title": "שורש (ניתוח שורשים)",
         "description": "מילים עבריות עם ניתוח שורש: מילה [שורש]"
       }
+    },
+    "loading": "טוען כתוביות...",
+    "error": {
+      "title": "שגיאת כתוביות",
+      "retry": "נסה שוב",
+      "loadFailed": "טעינת כתוביות נכשלה",
+      "cuesFailed": "טעינת טקסט כתוביות נכשלה",
+      "networkError": "שגיאת רשת - אנא בדוק את החיבור שלך",
+      "serverError": "שגיאת שרת - אנא נסה שוב מאוחר יותר"
     }
   },
   "support": {

@@ -117,6 +117,10 @@
       "audiobooks": "ऑडियोबुक्स",
       "podcasts": "पॉडकास्ट",
       "showOnlyWithSubtitles": "केवल उपशीर्षक वाले दिखाएं",
+      "showOnlyBetaContent": "केवल बीटा सामग्री दिखाएं",
+      "beta": "बीटा",
+      "markAsBeta": "बीटा के रूप में चिह्नित करें",
+      "removeFromBeta": "बीटा से हटाएं",
       "episodes_one": "एपिसोड",
       "episodes_other": "एपिसोड",
       "toggleCarousel": "कैरोसेल टॉगल करें",
@@ -185,7 +189,8 @@
         "logo": "लोगो",
         "cover": "कवर",
         "languages": "भाषाएँ",
-        "translationStatus": "अनुवाद स्थिति"
+        "translationStatus": "अनुवाद स्थिति",
+        "beta": "बीटा"
       },
       "validation": {
         "titleRequired": "शीर्षक आवश्यक है",

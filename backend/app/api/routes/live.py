@@ -3,6 +3,8 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
+from app.api.routes.content.beta_filter import (build_beta_content_filter,
+                                                 check_beta_access)
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.content import EPGEntry, LiveChannel
 from app.models.user import User
@@ -19,6 +21,9 @@ async def get_channels(
     """Get live TV channels, optionally filtered by culture and category."""
     # Build query conditions
     query_conditions = [LiveChannel.is_active == True]
+    beta_filter = build_beta_content_filter(current_user)
+    if beta_filter:
+        query_conditions.append(beta_filter)
 
     if culture_id:
         query_conditions.append(LiveChannel.culture_id == culture_id)
@@ -58,6 +63,10 @@ async def get_channel(
     """Get channel details with schedule."""
     channel = await LiveChannel.get(channel_id)
     if not channel or not channel.is_active:
+        raise HTTPException(status_code=404, detail="Channel not found")
+
+    # Beta access check
+    if not check_beta_access(current_user, getattr(channel, "is_beta_content", False)):
         raise HTTPException(status_code=404, detail="Channel not found")
 
     # Get today's schedule
@@ -157,6 +166,10 @@ async def get_stream_url(
     """Get live stream URL with subscription check based on channel requirements."""
     channel = await LiveChannel.get(channel_id)
     if not channel or not channel.is_active:
+        raise HTTPException(status_code=404, detail="Channel not found")
+
+    # Beta access check
+    if not check_beta_access(current_user, getattr(channel, "is_beta_content", False)):
         raise HTTPException(status_code=404, detail="Channel not found")
 
     # Admin users bypass subscription checks

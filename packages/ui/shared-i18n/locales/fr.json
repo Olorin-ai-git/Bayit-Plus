@@ -138,6 +138,10 @@
       "audiobooks": "Livres audio",
       "podcasts": "Podcasts",
       "showOnlyWithSubtitles": "Afficher uniquement avec sous-titres",
+      "showOnlyBetaContent": "Afficher uniquement le contenu Bêta",
+      "beta": "Bêta",
+      "markAsBeta": "Marquer comme Bêta",
+      "removeFromBeta": "Retirer de Bêta",
       "status": {
         "published": "Publié",
         "draft": "Brouillon"
@@ -147,6 +151,7 @@
         "category": "Catégorie",
         "year": "Année",
         "status": "Statut",
+        "beta": "Bêta",
         "views": "Vues",
         "rating": "Note",
         "streamUrl": "URL du flux",
@@ -4723,6 +4728,15 @@
         "title": "Shoresh (Racines)",
         "description": "Mots hébreux avec analyse de racine : mot [racine]"
       }
+    },
+    "loading": "Chargement des sous-titres...",
+    "error": {
+      "title": "Erreur de Sous-titres",
+      "retry": "Réessayer",
+      "loadFailed": "Échec du chargement des sous-titres",
+      "cuesFailed": "Échec du chargement du texte des sous-titres",
+      "networkError": "Erreur réseau - vérifiez votre connexion",
+      "serverError": "Erreur serveur - réessayez plus tard"
     }
   },
   "support": {

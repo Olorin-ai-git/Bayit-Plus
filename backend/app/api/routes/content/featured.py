@@ -16,6 +16,7 @@ from app.models.content_taxonomy import ContentSection
 from app.models.user import User
 from app.services.culture_content_service import culture_content_service
 from app.services.location_content_service import LocationContentService
+from app.api.routes.content.beta_filter import build_beta_content_filter
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -68,6 +69,7 @@ async def get_featured(
     passkey_session = await get_passkey_session(request)
     has_passkey = passkey_session is not None
     visibility_match = build_visibility_match(has_passkey)
+    beta_filter = build_beta_content_filter(current_user)
 
     async def get_hero():
         """Get hero content, with fallback to recently published if none marked as featured."""
@@ -80,6 +82,7 @@ async def get_featured(
                     "$and": [
                         {"is_featured": True, "is_published": True},
                         visibility_match,
+                        beta_filter,
                     ]
                 }
             },
@@ -98,6 +101,7 @@ async def get_featured(
                         "$and": [
                             {"is_published": True},
                             visibility_match,
+                            beta_filter,
                         ]
                     }
                 },
@@ -139,6 +143,7 @@ async def get_featured(
                             ]
                         },
                         visibility_match,
+                        beta_filter,
                     ]
                 }
             },
@@ -173,6 +178,7 @@ async def get_featured(
                                 ]
                             },
                             visibility_match,
+                            beta_filter,
                         ]
                     }
                 },
@@ -199,15 +205,16 @@ async def get_featured(
     async def get_podcasts():
         """Get featured podcasts for homepage, with fallback to recently created."""
         # Try featured podcasts first
+        podcast_beta = beta_filter if beta_filter else {}
         podcasts = await Podcast.find(
-            Podcast.is_active == True, Podcast.is_featured == True
+            Podcast.is_active == True, Podcast.is_featured == True, podcast_beta
         ).sort("-order").limit(10).to_list()
 
         # Fallback to recently created active podcasts if no featured ones
         if not podcasts:
             logger.info("No explicitly featured podcasts, using recently created fallback")
             podcasts = await Podcast.find(
-                Podcast.is_active == True
+                Podcast.is_active == True, podcast_beta
             ).sort("-created_at").limit(10).to_list()
 
         return podcasts
@@ -228,6 +235,7 @@ async def get_featured(
                             "is_quality_variant": {"$ne": True},
                         },
                         visibility_match,
+                        beta_filter,
                     ]
                 }
             },
@@ -263,6 +271,7 @@ async def get_featured(
                                 "is_quality_variant": {"$ne": True},
                             },
                             visibility_match,
+                            beta_filter,
                         ]
                     }
                 },
@@ -466,6 +475,7 @@ async def get_featured(
                                 ]
                             },
                             visibility_match,
+                            beta_filter,
                         ]
                     }
                 },
@@ -515,6 +525,7 @@ async def get_featured(
                                     ]
                                 },
                                 visibility_match,
+                                beta_filter,
                             ]
                         }
                     },

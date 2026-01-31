@@ -138,6 +138,10 @@
       "audiobooks": "Audiolibri",
       "podcasts": "Podcast",
       "showOnlyWithSubtitles": "Mostra solo con sottotitoli",
+      "showOnlyBetaContent": "Mostra solo contenuti Beta",
+      "beta": "Beta",
+      "markAsBeta": "Segna come Beta",
+      "removeFromBeta": "Rimuovi da Beta",
       "status": {
         "published": "Pubblicato",
         "draft": "Bozza"
@@ -147,6 +151,7 @@
         "category": "Categoria",
         "year": "Anno",
         "status": "Stato",
+        "beta": "Beta",
         "views": "Visualizzazioni",
         "rating": "Voto",
         "streamUrl": "URL stream",
@@ -4773,6 +4778,15 @@
         "title": "Shoresh (Radici)",
         "description": "Parole ebraiche con analisi della radice: parola [radice]"
       }
+    },
+    "loading": "Caricamento sottotitoli...",
+    "error": {
+      "title": "Errore Sottotitoli",
+      "retry": "Riprova",
+      "loadFailed": "Caricamento sottotitoli non riuscito",
+      "cuesFailed": "Caricamento testo sottotitoli non riuscito",
+      "networkError": "Errore di rete - controlla la tua connessione",
+      "serverError": "Errore del server - riprova più tardi"
     }
   },
   "support": {

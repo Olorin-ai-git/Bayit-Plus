@@ -29,6 +29,10 @@
       "searchPlaceholder": "Buscar contenido...",
       "emptyMessage": "No se encontró contenido",
       "showOnlyWithSubtitles": "Solo con subtítulos",
+      "showOnlyBetaContent": "Mostrar solo contenido Beta",
+      "beta": "Beta",
+      "markAsBeta": "Marcar como Beta",
+      "removeFromBeta": "Quitar de Beta",
       "selectedItems": "{{count}} seleccionado(s)",
       "batchMerge": "Fusionar Series",
       "batchFeature": "Agregar a Destacados",
@@ -64,7 +68,8 @@
         "logo": "Logo",
         "cover": "Portada",
         "languages": "Idiomas",
-        "translationStatus": "Estado de traducción"
+        "translationStatus": "Estado de traducción",
+        "beta": "Beta"
       },
       "filters": {
         "contentType": "Tipo de Contenido",
@@ -5573,6 +5578,15 @@
         "title": "Shoresh (Raíces)",
         "description": "Palabras hebreas con análisis de raíz: palabra [raíz]"
       }
+    },
+    "loading": "Cargando subtítulos...",
+    "error": {
+      "title": "Error de Subtítulos",
+      "retry": "Intentar de Nuevo",
+      "loadFailed": "Error al cargar subtítulos",
+      "cuesFailed": "Error al cargar texto de subtítulos",
+      "networkError": "Error de red - verifica tu conexión",
+      "serverError": "Error del servidor - inténtalo más tarde"
     }
   },
   "support": {

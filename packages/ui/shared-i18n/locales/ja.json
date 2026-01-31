@@ -131,6 +131,10 @@
       "audiobooks": "オーディオブック",
       "podcasts": "ポッドキャスト",
       "showOnlyWithSubtitles": "字幕付きのみ表示",
+      "showOnlyBetaContent": "ベータコンテンツのみ表示",
+      "beta": "ベータ",
+      "markAsBeta": "ベータに設定",
+      "removeFromBeta": "ベータから解除",
       "status": {
         "published": "公開済み",
         "draft": "下書き",
@@ -163,7 +167,8 @@
         "logo": "ロゴ",
         "cover": "カバー",
         "languages": "言語",
-        "translationStatus": "翻訳状況"
+        "translationStatus": "翻訳状況",
+        "beta": "ベータ"
       },
       "validation": {
         "titleRequired": "タイトルは必須です",

@@ -31,6 +31,7 @@ export default function ContentLibraryPage() {
     pagination,
     filters,
     showOnlyWithSubtitles,
+    showOnlyBetaContent,
     selectedIds,
     selectedItemsData,
     isBatchProcessing,
@@ -40,6 +41,7 @@ export default function ContentLibraryPage() {
     showDeleteConfirm,
     setFilters,
     setShowOnlyWithSubtitles,
+    setShowOnlyBetaContent,
     setPagination,
     setSelectedItemsData,
     handleExpandToggle,
@@ -157,7 +159,7 @@ export default function ContentLibraryPage() {
               title={t('common.filters')}
               onPress={() => setShowFiltersDropdown(true)}
               variant={
-                filters.content_type || filters.is_published !== undefined || showOnlyWithSubtitles
+                filters.content_type || filters.is_published !== undefined || showOnlyWithSubtitles || showOnlyBetaContent
                   ? 'primary'
                   : 'secondary'
               }
@@ -167,6 +169,7 @@ export default function ContentLibraryPage() {
                   filters.content_type && filters.content_type !== '',
                   filters.is_published !== undefined,
                   showOnlyWithSubtitles,
+                  showOnlyBetaContent,
                 ].filter(Boolean).length || undefined
               }
             />
@@ -224,8 +227,10 @@ export default function ContentLibraryPage() {
         visible={showFiltersDropdown}
         filters={filters}
         showOnlyWithSubtitles={showOnlyWithSubtitles}
+        showOnlyBetaContent={showOnlyBetaContent}
         onFiltersChange={setFilters}
         onSubtitlesChange={setShowOnlyWithSubtitles}
+        onBetaContentChange={setShowOnlyBetaContent}
         onClose={() => setShowFiltersDropdown(false)}
         isRTL={isRTL}
       />

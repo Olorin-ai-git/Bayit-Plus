@@ -138,6 +138,7 @@ export interface ContentFilter {
   is_featured?: boolean;
   is_published?: boolean;
   is_kids_content?: boolean;
+  is_beta_content?: boolean;
   page?: number;
   page_size?: number;
   sort_by?: string;
@@ -166,6 +167,7 @@ export interface Content {
   featured_order?: number;
   requires_subscription?: boolean;
   is_kids_content?: boolean;
+  is_beta_content?: boolean;
   age_rating?: string;
   view_count?: number;
   avg_rating?: number;
@@ -813,6 +815,9 @@ export const createAdminApi = (authStore: AuthStore) => {
 
   featureContent: (contentId: string): Promise<Content> =>
     adminApi.post(`/admin/content/${contentId}/feature`),
+
+  toggleBetaContent: (contentId: string): Promise<Content> =>
+    adminApi.post(`/admin/content/${contentId}/beta`),
 
   getSeriesEpisodes: (seriesId: string): Promise<{
     series_id: string;

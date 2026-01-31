@@ -84,6 +84,11 @@ async def unified_search_endpoint(
             search_in_subtitles=search_in_subtitles,
         )
 
+        # Determine beta content access
+        is_beta_user = (
+            current_user.is_beta_user if current_user and not current_user.is_admin_user() else None
+        )
+
         # Execute search
         results = await unified_search.search(
             query=query,
@@ -93,6 +98,7 @@ async def unified_search_endpoint(
             user_subscription_tier=(
                 current_user.subscription_tier if current_user else None
             ),
+            is_beta_user=is_beta_user,
         )
 
         # Log search analytics
