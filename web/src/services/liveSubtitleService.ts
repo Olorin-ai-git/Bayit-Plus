@@ -33,6 +33,8 @@ class LiveSubtitleService {
   private mediaStreamSource: MediaStreamAudioSourceNode | null = null
   private processor: ScriptProcessorNode | null = null
   private isConnected: boolean = false
+  private heartbeatInterval: ReturnType<typeof setInterval> | null = null
+  private lastMessageTime: number = Date.now()
 
   // Video buffering for perfect sync
   private videoBufferManager: VideoBufferManager | null = null
@@ -48,16 +50,21 @@ class LiveSubtitleService {
     targetLang: string,
     videoElement: HTMLVideoElement,
     onSubtitle: SubtitleCallback,
-    onError: ErrorCallback
+    onError: ErrorCallback,
+    sourceLang: string = 'he'
   ): Promise<void> {
     this.firstAudioChunkSent = false
     this.firstSubtitleReceived = false
 
     // Request synced stream from backend (server-side or client-side buffering)
     try {
-      logger.info(`Requesting synced stream for channel ${channelId}`, 'liveSubtitleService')
+      logger.info(
+        `Requesting synced stream for channel ${channelId} (${sourceLang} → ${targetLang})`,
+        'liveSubtitleService'
+      )
       this.syncedStreamInfo = await createSyncedStream({
         channelId,
+        sourceLang,
         targetLang,
         enableDubbing: false, // Subtitles only
         enableSubtitles: true,
@@ -72,6 +79,7 @@ class LiveSubtitleService {
       if (this.syncedStreamInfo.mode === 'client-side') {
         const bufferConfig: VideoBufferConfig = {
           channelId,
+          sourceLang,
           targetLang,
           enableDubbing: false,
           enableSubtitles: true,
@@ -101,7 +109,7 @@ class LiveSubtitleService {
 
         const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
         const wsHost = API_BASE_URL.replace(/^https?:\/\//, '')
-        const wsUrl = `${wsProtocol}//${wsHost}/ws/live/${channelId}/subtitles?target_lang=${targetLang}`
+        const wsUrl = `${wsProtocol}//${wsHost}/ws/live/${channelId}/subtitles?source_lang=${sourceLang}&target_lang=${targetLang}`
 
         this.ws = new WebSocket(wsUrl)
 
@@ -123,11 +131,45 @@ class LiveSubtitleService {
         this.ws.onmessage = async (event) => {
           try {
             const msg = JSON.parse(event.data)
+            this.lastMessageTime = Date.now()
             logger.debug('Message received', 'liveSubtitleService', { type: msg.type, msg })
+
+            // Handle heartbeat ping - respond with pong
+            if (msg.type === 'ping') {
+              try {
+                this.ws?.send(JSON.stringify({ type: 'pong', timestamp: Date.now() }))
+                logger.debug('Responded to heartbeat ping', 'liveSubtitleService')
+              } catch (err) {
+                logger.warn('Failed to send pong response', 'liveSubtitleService', err)
+              }
+              return
+            }
+
             if (msg.type === 'connected') {
-              logger.debug(`Authenticated - Source: ${msg.source_lang}, Target: ${msg.target_lang}`, 'liveSubtitleService')
+              logger.info(
+                `Live subtitles connected - ${msg.source_lang} → ${msg.target_lang} ` +
+                `(STT: ${msg.stt_provider}, Translation: ${msg.translation_provider})`,
+                'liveSubtitleService'
+              )
               this.isConnected = true
+              this.lastMessageTime = Date.now()
               clearTimeout(connectionTimeout)
+
+              // Start connection health monitoring
+              this.heartbeatInterval = setInterval(() => {
+                const timeSinceLastMessage = Date.now() - this.lastMessageTime
+                // If no message received in 60 seconds, connection may be stale
+                if (timeSinceLastMessage > 60000) {
+                  logger.warn(
+                    `No messages received for ${Math.floor(timeSinceLastMessage / 1000)}s - connection may be stale`,
+                    'liveSubtitleService'
+                  )
+                  // Close and trigger reconnection
+                  this.disconnect()
+                  onError('Connection timeout - no activity detected')
+                }
+              }, 10000) // Check every 10 seconds
+
               try {
                 await this.startAudioCapture(videoElement)
                 resolve()
@@ -160,10 +202,23 @@ class LiveSubtitleService {
               this.disconnect()
               reject(new Error(msg.message))
             } else if (msg.type === 'error') {
-              logger.error('Server error', 'liveSubtitleService', msg.message)
+              const errorType = msg.error_type || 'UnknownError'
+              const isRecoverable = msg.recoverable !== false // Default to true if not specified
+              logger.error(
+                `Server error [${errorType}${isRecoverable ? ', recoverable' : ''}]: ${msg.message}`,
+                'liveSubtitleService'
+              )
               clearTimeout(connectionTimeout)
-              onError(msg.message)
-              reject(new Error(msg.message))
+
+              // For recoverable errors, notify but don't reject immediately
+              if (isRecoverable) {
+                onError(`${msg.message} (attempting to recover...)`)
+                // Don't disconnect or reject - let the connection try to recover
+              } else {
+                onError(msg.message)
+                this.disconnect()
+                reject(new Error(msg.message))
+              }
             }
           } catch (error) {
             const errorMsg = error instanceof Error ? error.message : 'Unexpected error'
@@ -305,6 +360,12 @@ class LiveSubtitleService {
    */
   disconnect(): void {
     this.stopAudioCapture()
+
+    // Clear heartbeat monitoring
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval)
+      this.heartbeatInterval = null
+    }
 
     if (this.ws) {
       this.ws.close()

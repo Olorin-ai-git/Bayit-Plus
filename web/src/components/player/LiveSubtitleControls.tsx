@@ -128,10 +128,10 @@ export default function LiveSubtitleControls({
     return () => clearInterval(interval)
   }, [enabled, status])
 
-  // Handle language changes - only reconnect if already connected
+  // Handle target language changes - only reconnect if already connected
   useEffect(() => {
     if (enabled && videoElement && prevLangRef.current !== targetLang) {
-      logger.debug(`Language changed from ${prevLangRef.current} to ${targetLang}, reconnecting...`, 'LiveSubtitleControls')
+      logger.debug(`Target language changed from ${prevLangRef.current} to ${targetLang}, reconnecting...`, 'LiveSubtitleControls')
       prevLangRef.current = targetLang
       liveSubtitleService.disconnect()
       setStatus('connecting')
@@ -143,7 +143,7 @@ export default function LiveSubtitleControls({
           setStatus('error')
           setEnabled(false)
           notifications.showError(err, t('subtitles.connectionError', 'Live Translation Error'))
-        })
+        }, inputLang)
         .then(() => {
           logger.debug('Language change reconnection successful', 'LiveSubtitleControls')
           setStatus('connected')
@@ -160,7 +160,42 @@ export default function LiveSubtitleControls({
     } else {
       prevLangRef.current = targetLang
     }
-  }, [targetLang, enabled, videoElement, channelId, onSubtitleCue])
+  }, [targetLang, enabled, videoElement, channelId, onSubtitleCue, inputLang])
+
+  // Handle input language changes - only reconnect if already connected
+  const prevInputLangRef = useRef<string>(inputLang)
+  useEffect(() => {
+    if (enabled && videoElement && prevInputLangRef.current !== inputLang) {
+      logger.debug(`Input language changed from ${prevInputLangRef.current} to ${inputLang}, reconnecting...`, 'LiveSubtitleControls')
+      prevInputLangRef.current = inputLang
+      liveSubtitleService.disconnect()
+      setStatus('connecting')
+
+      liveSubtitleService
+        .connect(channelId, targetLang, videoElement, onSubtitleCue, (err) => {
+          logger.error('Input language change reconnection error', 'LiveSubtitleControls', err)
+          setError(err)
+          setStatus('error')
+          setEnabled(false)
+          notifications.showError(err, t('subtitles.connectionError', 'Live Translation Error'))
+        }, inputLang)
+        .then(() => {
+          logger.debug('Input language change reconnection successful', 'LiveSubtitleControls')
+          setStatus('connected')
+          setEnabled(true)
+        })
+        .catch((err) => {
+          const errorMsg = err instanceof Error ? err.message : 'Reconnection failed'
+          logger.error('Input language change reconnection failed', 'LiveSubtitleControls', err)
+          setError(errorMsg)
+          setStatus('error')
+          setEnabled(false)
+          notifications.showError(errorMsg, t('subtitles.connectionError', 'Live Translation Error'))
+        })
+    } else {
+      prevInputLangRef.current = inputLang
+    }
+  }, [inputLang, enabled, videoElement, channelId, onSubtitleCue, targetLang])
 
   const handleToggle = async () => {
     // Prevent toggling while connection is in progress
@@ -211,7 +246,8 @@ export default function LiveSubtitleControls({
             setStatus('error')
             setEnabled(false)
             notifications.showError(err, t('subtitles.connectionError', 'Live Translation Error'))
-          }
+          },
+          inputLang
         )
 
         // Connection succeeded - update state

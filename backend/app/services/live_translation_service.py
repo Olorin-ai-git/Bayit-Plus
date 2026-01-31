@@ -10,6 +10,7 @@ import html
 import logging
 import os
 import queue
+import re
 import threading
 import time
 from typing import Any, AsyncIterator, Dict, Optional
@@ -132,6 +133,73 @@ def chunk_text_for_subtitles(
         remaining = remaining[split_point:].strip()
 
     return chunks
+
+
+def deduplicate_transcript(text: str, min_pattern_length: int = 10) -> str:
+    """
+    Remove repetitive patterns from transcript text caused by buffer stuttering or echo.
+
+    Detects and removes patterns like:
+    - "זה יכול להיות זה יכול להיות" → "זה יכול להיות"
+    - "specific more specific more" → "specific more"
+
+    Args:
+        text: The transcript text to deduplicate
+        min_pattern_length: Minimum length of pattern to consider (default 10 chars)
+
+    Returns:
+        Deduplicated text with repetitive patterns removed
+    """
+    if len(text) < min_pattern_length * 2:
+        return text
+
+    # Check for exact repetitions (word for word)
+    words = text.split()
+    if len(words) < 4:
+        return text
+
+    # Find longest repeating suffix
+    for pattern_size in range(len(words) // 2, 0, -1):
+        pattern = words[-pattern_size:]
+        pattern_text = " ".join(pattern)
+
+        if len(pattern_text) < min_pattern_length:
+            continue
+
+        # Check if this pattern appears at the end multiple times
+        remaining = words[:-pattern_size]
+        if len(remaining) >= pattern_size:
+            potential_duplicate = remaining[-pattern_size:]
+            if pattern == potential_duplicate:
+                # Found repetition - remove duplicates
+                logger.debug(
+                    f"Deduplication: Found repeating pattern '{pattern_text[:30]}...', "
+                    f"removing {pattern_size} words"
+                )
+                # Keep only one instance of the pattern
+                deduplicated_words = words[:-pattern_size]
+                return " ".join(deduplicated_words)
+
+    # Check for partial repetitions (at least 70% overlap)
+    text_len = len(text)
+    for i in range(text_len // 2, min_pattern_length, -1):
+        suffix = text[-i:]
+        # Check if suffix appears earlier in the text with at least 70% match
+        for j in range(len(text) - i - 1, -1, -1):
+            substring = text[j:j+i]
+            if len(substring) < min_pattern_length:
+                break
+            # Calculate similarity (simple character overlap)
+            matches = sum(1 for a, b in zip(suffix, substring) if a == b)
+            similarity = matches / len(suffix)
+            if similarity >= 0.7:
+                logger.debug(
+                    f"Deduplication: Found {similarity*100:.0f}% similar pattern, "
+                    f"truncating {i} characters"
+                )
+                return text[:j+i]
+
+    return text
 
 
 class LiveTranslationService:
@@ -451,24 +519,32 @@ class LiveTranslationService:
 
             elif self.provider == "elevenlabs":
                 # ElevenLabs Scribe v2 (true realtime WebSocket streaming)
-                # Use Hebrew as primary language hint to avoid misdetection issues
+                # Use user-selected language as hint to avoid misdetection issues
                 # (Arabic was being confused with Amharic in auto-detect mode)
                 logger.info(
                     f"🎤 Starting ElevenLabs Scribe v2 realtime stream "
-                    f"(Hebrew mode, ~150ms latency)"
+                    f"(language: {source_lang}, ~150ms latency)"
                 )
                 async for (
                     transcript,
                     detected_lang,
                 ) in self.elevenlabs_service.transcribe_audio_stream(
                     audio_stream,
-                    source_lang="he",  # Use Hebrew hint - more reliable than auto-detect
+                    source_lang=source_lang,  # Use user-selected language hint
                 ):
-                    logger.info(
-                        f"📝 ElevenLabs transcribed [{detected_lang}]: {transcript}"
-                    )
+                    # Apply deduplication to remove repetitive patterns
+                    deduplicated = deduplicate_transcript(transcript)
+                    if deduplicated != transcript:
+                        logger.info(
+                            f"📝 ElevenLabs transcribed [{detected_lang}]: {transcript} "
+                            f"→ deduplicated to: {deduplicated}"
+                        )
+                    else:
+                        logger.info(
+                            f"📝 ElevenLabs transcribed [{detected_lang}]: {transcript}"
+                        )
                     # Yield tuple with detected language for translation pipeline
-                    yield (transcript, detected_lang)
+                    yield (deduplicated, detected_lang)
 
         except Exception as e:
             logger.error(f"Transcription error ({self.provider}): {str(e)}")

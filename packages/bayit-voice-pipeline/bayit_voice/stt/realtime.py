@@ -191,12 +191,23 @@ class ElevenLabsRealtimeService:
                     break
 
                 try:
-                    data = json.loads(message)
+                    # Explicitly handle UTF-8 encoding for message
+                    if isinstance(message, bytes):
+                        message = message.decode('utf-8', errors='ignore')
+
+                    data = json.loads(message, encoding='utf-8') if isinstance(message, bytes) else json.loads(message)
                     msg_type = data.get("message_type", "")
 
                     if msg_type == "committed_transcript_with_timestamps":
                         transcript_text = data.get("text", "").strip()
                         detected_lang = data.get("language_code", "auto")
+
+                        # Ensure UTF-8 encoding is preserved (should already be unicode string from JSON)
+                        # Verify no encoding issues by checking for replacement characters
+                        if '\ufffd' in transcript_text:
+                            logger.warning(
+                                f"Encoding issue detected in transcript - contains replacement character"
+                            )
 
                         if transcript_text and len(transcript_text) >= 2:
                             await self._transcript_queue.put((transcript_text, detected_lang))
@@ -214,9 +225,11 @@ class ElevenLabsRealtimeService:
                         self._session_event.set()
                         logger.info("ElevenLabs session started")
 
-                except json.JSONDecodeError:
-                    msg_preview = message[:100] if isinstance(message, str) else message[:100].decode('utf-8', errors='replace')
-                    logger.warning(f"Invalid JSON from ElevenLabs: {msg_preview}")
+                except json.JSONDecodeError as e:
+                    msg_preview = message[:100] if isinstance(message, str) else message[:100].decode('utf-8', errors='ignore')
+                    logger.warning(
+                        f"Invalid JSON from ElevenLabs (error: {e}): {msg_preview}"
+                    )
 
         except ConnectionClosedOK:
             logger.info("ElevenLabs connection closed normally")

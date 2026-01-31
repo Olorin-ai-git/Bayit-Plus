@@ -1,3 +1,4 @@
+// Part 7: Complete ALL remaining missing keys
 import fs from 'fs';
 
 const ja = JSON.parse(fs.readFileSync('ja.json', 'utf8'));
@@ -15,496 +16,495 @@ function deepMerge(target, source) {
 
 const translations = {
   "nav": {
-    "discover": "発見"
+    "friends": "友達"
   },
   "search": {
-    "trending": "トレンドの検索"
-  },
-  "liveTV": {
-    "channels": "チャンネル"
+    "searching": "検索中..."
   },
   "podcasts": {
-    "episodes": "エピソード"
-  },
-  "account": {
-    "billing": "お支払い"
-  },
-  "errors": {
-    "tryAgain": "もう一度試す"
-  },
-  "player": {
-    "loading": "読み込み中...",
-    "retry": "再試行",
-    "error": "動画の再生エラー",
-    "back": "← 戻る",
-    "liveBadge": "ライブ",
-    "albumArt": "{{title}}のアルバムアート",
-    "seekBar": "再生の進行状況",
-    "skipBack": "{{seconds}}秒戻る",
-    "skipForward": "30秒進む",
-    "noStream": "ストリームが利用できません",
-    "loadError": "ストリームの読み込みに失敗しました",
-    "playbackSpeed": "再生速度",
-    "previousChapter": "前のチャプター",
-    "nextChapter": "次のチャプター",
-    "skipBackward": "30秒戻る",
-    "subscription": {
-      "requiredTitle": "サブスクリプションが必要です",
-      "requiredMessage": "は有料サブスクリプションが必要です",
-      "upgradeInfo": "プレミアムコンテンツにアクセスするにはサブスクリプションをアップグレードしてください",
-      "upgrade": "今すぐアップグレード"
-    },
-    "chapters": "チャプター",
-    "sceneSearch": {
-      "title": "シーン検索",
-      "placeholder": "シーンを検索...",
-      "inputLabel": "シーン検索入力",
-      "searching": "検索中...",
-      "noResults": "シーンが見つかりません",
-      "resultsFound": "{{count}}件のシーンが見つかりました",
-      "searchError": "検索に失敗しました。もう一度お試しください。",
-      "hint": "2文字以上入力して検索",
-      "voiceReceived": "検索中：{{query}}",
-      "seekingTo": "{{time}}にジャンプ",
-      "previous": "前へ",
-      "next": "次へ",
-      "result": {
-        "jumpTo": "{{title}}（{{time}}）にジャンプ",
-        "hint": "このシーンにジャンプするにはクリック"
-      },
-      "panelOpened": "シーン検索パネルが開きました",
-      "navigation": "シーン検索ナビゲーション",
-      "position": "結果{{current}} / {{total}}"
+    "categories": {
+      "all": "すべて",
+      "general": "一般",
+      "news": "ニュース",
+      "politics": "政治",
+      "tech": "テック",
+      "business": "ビジネス",
+      "jewish": "ユダヤ",
+      "entertainment": "エンターテインメント",
+      "sports": "スポーツ",
+      "history": "歴史",
+      "educational": "教育"
     }
   },
-  "empty": {
-    "noContent": "コンテンツがありません",
-    "tryAnotherCategory": "別のカテゴリをお試しください",
-    "noPodcasts": "ポッドキャストがありません",
-    "tryLater": "後でもう一度お試しください",
-    "noResults": "結果が見つかりません"
+  "profile": {
+    "email": "メール",
+    "notifications": "通知",
+    "devices": {
+      "minutesAgo_one": "{{count}}分前",
+      "minutesAgo_other": "{{count}}分前",
+      "hoursAgo_one": "{{count}}時間前",
+      "hoursAgo_other": "{{count}}時間前",
+      "daysAgo_one": "{{count}}日前",
+      "daysAgo_other": "{{count}}日前"
+    }
   },
-  "content": {
-    "play": "再生",
-    "addToList": "リストに追加",
-    "inList": "リスト内",
-    "details": "詳細",
-    "synopsis": "あらすじ",
-    "genres": "ジャンル",
-    "runtime": "上映時間",
-    "released": "公開",
-    "starring": "出演",
-    "selectSeason": "シーズンを選択",
-    "noEpisodes": "エピソードがありません",
-    "noEpisodesAvailable": "再生可能なエピソードがありません",
-    "loadingSeries": "シリーズ情報を読み込み中...",
-    "votes": "票",
-    "imdbRating": "IMDB評価",
-    "preview": "プレビュー",
-    "previewPlaying": "プレビュー再生中",
-    "trailerPlaying": "予告編再生中",
-    "youMayAlsoLike": "こちらもおすすめ",
-    "relatedContent": "関連コンテンツ",
-    "notFound": "コンテンツが見つかりません",
-    "availableSubtitles": "利用可能な字幕",
-    "subtitleSelected": "選択中：{{language}}",
-    "ep": "エピソード"
+  "errors": {
+    "offline": "オフラインです。インターネット接続を確認してください。"
   },
-  "audiobooks": {
-    "audiobook": "オーディオブック",
-    "chapter": "チャプター",
-    "chapters": "チャプター",
-    "playChapter": "チャプターを再生",
-    "noChapters": "チャプターがありません",
-    "notFound": "オーディオブックが見つかりません",
-    "author": "著者",
-    "narrator": "ナレーター",
-    "duration": "再生時間",
-    "isbn": "ISBN"
-  },
-  "breadcrumbs": {
-    "series": "シリーズ",
-    "movie": "映画",
-    "watching": "視聴中",
-    "channel": "チャンネル",
-    "station": "ステーション",
-    "podcast": "ポッドキャスト",
-    "watchlist": "ウォッチリスト",
-    "downloads": "ダウンロード"
-  },
-  "favorites": {
-    "items": "アイテム",
-    "empty": "お気に入りがありません",
-    "emptyHint": "お気に入りにアイテムを追加"
-  },
-  "downloads": {
-    "items": "アイテム",
-    "storage": "ストレージ",
-    "empty": "ダウンロードがありません",
-    "emptyHint": "オフライン視聴用にコンテンツをダウンロード"
-  },
-  "podcast": {
-    "selectLanguage": "言語を選択",
-    "switchToLanguage": "{{language}}に切り替え",
-    "premiumRequiredForTranslation": "ポッドキャストの翻訳にはプレミアムサブスクリプションが必要です",
-    "player": {
-      "switchingLanguage": "切り替え中..."
+  "footer": {
+    "apps": {
+      "title": "アプリを入手",
+      "ios": "App Store",
+      "android": "Google Play",
+      "tvos": "Apple TV"
     },
-    "languages": {
-      "he": {
-        "short": "HE",
-        "full": "ヘブライ語"
-      },
-      "en": {
-        "short": "EN",
-        "full": "英語"
-      },
-      "es": {
-        "short": "ES",
-        "full": "スペイン語"
+    "social": {
+      "title": "フォロー",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "instagram": "Instagram",
+      "youtube": "YouTube"
+    },
+    "privacyPolicy": "プライバシーポリシー"
+  },
+  "plans": {
+    "basic": {
+      "name": "ベーシック",
+      "features": [
+        "すべてのVODコンテンツ",
+        "ラジオ＆ポッドキャスト",
+        "1デバイスで視聴",
+        "SD画質"
+      ],
+      "notIncluded": [
+        "ライブチャンネル",
+        "AIアシスタント",
+        "オフライン視聴"
+      ]
+    },
+    "premium": {
+      "name": "プレミアム",
+      "features": [
+        "すべてのVODコンテンツ",
+        "ライブチャンネル",
+        "ラジオ＆ポッドキャスト",
+        "スマートAIアシスタント",
+        "2デバイスで視聴",
+        "HD画質"
+      ],
+      "notIncluded": [
+        "オフライン視聴",
+        "ファミリープロフィール"
+      ]
+    },
+    "family": {
+      "name": "ファミリー",
+      "features": [
+        "すべてのVODコンテンツ",
+        "ライブチャンネル",
+        "ラジオ＆ポッドキャスト",
+        "スマートAIアシスタント",
+        "4デバイスで視聴",
+        "4K画質",
+        "5つのファミリープロフィール",
+        "オフライン用ダウンロード"
+      ],
+      "notIncluded": []
+    }
+  },
+  "judaism": {
+    "items": "アイテム",
+    "empty": "コンテンツがありません",
+    "emptyHint": "別のカテゴリをお試しください",
+    "dashboard": "ユダヤ教ダッシュボード",
+    "categories": {
+      "news": "ユダヤニュース",
+      "community": "コミュニティ"
+    },
+    "shabbat": {
+      "title": "シャバットタイム"
+    }
+  },
+  "chatbot": {
+    "suggestions": {
+      "whatToWatch": "今日は何を見る？",
+      "israeliMovies": "おすすめのイスラエル映画",
+      "whatsOnNow": "今何が放送中？",
+      "popularPodcasts": "人気のポッドキャスト"
+    }
+  },
+  "support": {
+    "faq": {
+      "title": "よくある質問",
+      "loading": "FAQを読み込み中...",
+      "loadError": "FAQの読み込みに失敗しました",
+      "empty": "このカテゴリにFAQはありません",
+      "categories": {
+        "all": "すべてのトピック",
+        "general": "一般",
+        "billing": "請求",
+        "technical": "技術",
+        "features": "機能"
       }
     }
   },
-  "watchlist": {
-    "filters": {
-      "all": "すべて",
-      "continue": "続きを見る",
+  "admin": {
+    "brand": "Bayit+ 管理",
+    "backToApp": "アプリに戻る",
+    "refunds": {
+      "title": "返金管理",
+      "subtitle": "返金リクエストを処理",
+      "pending": "保留中",
+      "approved": "承認済み",
+      "rejected": "却下",
+      "processed": "処理済み",
+      "requestDate": "リクエスト日",
+      "amount": "金額",
+      "reason": "理由",
+      "user": "ユーザー",
+      "approve": "承認",
+      "reject": "却下",
+      "process": "処理"
+    },
+    "plans": {
+      "createButton": "新規プラン作成",
+      "subscribersLabel": "購読者",
+      "intervals": {
+        "month": "月額",
+        "year": "年額"
+      },
+      "trialDays": "トライアル日数",
+      "modal": {
+        "create": "新規プラン",
+        "edit": "プランを編集"
+      },
+      "form": {
+        "name": "プラン名",
+        "nameEn": "名前（英語）",
+        "nameHe": "名前（ヘブライ語）",
+        "price": "価格",
+        "interval": "請求間隔",
+        "trialDays": "トライアル日数",
+        "features": "機能（1行に1つ）",
+        "active": "アクティブ"
+      },
+      "errors": {
+        "nameRequired": "プラン名は必須です",
+        "priceRequired": "価格は必須です"
+      },
+      "confirmDelete": "このプランを削除しますか？この操作は元に戻せません。"
+    },
+    "emailCampaigns": {
+      "title": "メールキャンペーン",
+      "subtitle": "メールマーケティングを管理"
+    },
+    "campaignEdit": {
+      "title": "キャンペーンを編集",
+      "subtitle": "キャンペーン設定を更新"
+    },
+    "dashboard": {
+      "title": "ダッシュボード",
+      "subtitle": "システム概要",
+      "users": "ユーザー",
+      "subscribers": "購読者",
+      "revenue": "収益",
+      "content": "コンテンツ",
+      "totalUsers": "総ユーザー数",
+      "activeSubscriptions": "アクティブな購読",
+      "monthlyRevenue": "月間収益",
+      "totalContent": "総コンテンツ",
+      "recentUsers": "最近のユーザー"
+    },
+    "common": {
+      "save": "保存",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "edit": "編集",
+      "add": "追加",
+      "search": "検索",
+      "filter": "フィルタ",
+      "loading": "読み込み中...",
+      "noResults": "結果がありません",
+      "confirmDelete": "削除を確認",
+      "actions": "アクション"
+    },
+    "stats": {
+      "totalUsers": "総ユーザー数",
+      "activeUsers": "アクティブユーザー",
+      "newToday": "今日の新規",
+      "newThisWeek": "今週の新規",
+      "totalRevenue": "総収益",
+      "revenueToday": "今日の収益",
+      "revenueMonth": "月間収益",
+      "arpu": "ARPU",
+      "activeSubscriptions": "アクティブな購読",
+      "churnRate": "解約率"
+    },
+    "actions": {
+      "save": "保存",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "edit": "編集",
+      "view": "表示",
+      "create": "作成",
+      "refresh": "更新",
+      "export": "エクスポート",
+      "import": "インポート"
+    },
+    "auditActions": {
+      "create": "作成",
+      "update": "更新",
+      "delete": "削除",
+      "login": "ログイン",
+      "logout": "ログアウト"
+    },
+    "placeholder": {
+      "search": "検索...",
+      "email": "メールアドレス",
+      "name": "名前",
+      "amount": "金額"
+    },
+    "titles": {
+      "dashboard": "ダッシュボード",
+      "users": "ユーザー",
+      "content": "コンテンツ",
+      "subscriptions": "購読",
+      "settings": "設定",
+      "analytics": "分析"
+    },
+    "nav": {
+      "dashboard": "ダッシュボード",
+      "users": "ユーザー",
+      "content": "コンテンツ",
+      "subscriptions": "購読",
+      "marketing": "マーケティング",
+      "settings": "設定",
+      "analytics": "分析"
+    },
+    "liveQuotas": {
+      "title": "ライブクォータ",
+      "subtitle": "リアルタイム使用制限を監視",
+      "current": "現在の使用",
+      "limit": "制限",
+      "reset": "リセット日",
+      "unlimited": "無制限"
+    },
+    "featured": {
+      "title": "注目コンテンツ",
+      "subtitle": "ホームページのカルーセルを管理",
+      "add": "注目を追加",
+      "remove": "注目を解除",
+      "order": "順序",
+      "active": "アクティブ"
+    },
+    "content": {
+      "subtitle": "映画、シリーズ、その他のコンテンツを管理",
+      "importFree": "無料コンテンツをインポート",
+      "searchPlaceholder": "コンテンツを検索...",
+      "emptyMessage": "コンテンツが見つかりません",
+      "confirmDelete": "このコンテンツを削除しますか？",
+      "confirmDeleteSingle": "「{{title}}」を削除しますか？",
+      "confirmBatchDelete": "{{count}}件のアイテムを削除しますか？",
+      "batchDeleteSuccess": "{{count}}件のアイテムを削除しました",
+      "batchDeletePartial": "{{success}}件を削除、{{failed}}件が失敗",
+      "selectedItems": "{{count}}件選択済み",
+      "batchFeature": "注目に追加",
+      "batchUnfeature": "注目を解除",
+      "import": {
+        "title": "コンテンツをインポート",
+        "movies": "映画をインポート",
+        "series": "シリーズをインポート"
+      },
       "movies": "映画",
       "series": "シリーズ",
-      "kids": "キッズ",
-      "judaism": "ユダヤ教",
+      "audiobooks": "オーディオブック",
       "podcasts": "ポッドキャスト",
-      "radio": "ラジオ"
+      "filters": {
+        "all": "すべて",
+        "published": "公開済み",
+        "draft": "下書き",
+        "featured": "注目"
+      },
+      "showOnlyWithSubtitles": "字幕付きのみ表示",
+      "status": {
+        "published": "公開済み",
+        "draft": "下書き",
+        "archived": "アーカイブ済み"
+      },
+      "columns": {
+        "title": "タイトル",
+        "type": "タイプ",
+        "category": "カテゴリ",
+        "status": "ステータス",
+        "featured": "注目",
+        "created": "作成日",
+        "actions": "アクション"
+      },
+      "validation": {
+        "titleRequired": "タイトルは必須です",
+        "urlRequired": "URLは必須です"
+      },
+      "episodes_one": "{{count}}エピソード",
+      "episodes_other": "{{count}}エピソード",
+      "toggleCarousel": "カルーセルを切り替え",
+      "editor": {
+        "title": "コンテンツエディタ",
+        "general": "一般情報",
+        "media": "メディア",
+        "metadata": "メタデータ"
+      },
+      "categoryPicker": {
+        "title": "カテゴリを選択",
+        "search": "カテゴリを検索..."
+      },
+      "streamUrlInput": {
+        "label": "ストリームURL",
+        "placeholder": "ストリームURLを入力"
+      },
+      "batchMerge": "一括マージ",
+      "mergeContent": "コンテンツをマージ",
+      "selectItemToKeep": "保持するアイテムを選択",
+      "removeAction": "削除アクション",
+      "removeActionUnpublish": "非公開にする",
+      "removeActionDelete": "完全に削除",
+      "unpublishDescription": "このアイテムを非公開にします",
+      "deleteWarning": "警告: この操作は元に戻せません",
+      "mergeReason": "マージ理由",
+      "mergeReasonPlaceholder": "マージの理由を入力...",
+      "mergeReasonTooShort": "理由は10文字以上必要です",
+      "confirmMerge": "マージを確認",
+      "itemWillBeKept": "このアイテムは保持されます",
+      "itemsWillBeRemoved": "このアイテムは削除されます",
+      "itemsWillBeRemoved_plural": "これらのアイテムは削除されます",
+      "mergeSuccess": "マージに成功しました",
+      "mergeFailed": "マージに失敗しました",
+      "merge": {
+        "title": "コンテンツをマージ",
+        "selectBase": "ベースアイテムを選択",
+        "selectMerge": "マージするアイテムを選択"
+      }
     },
-    "items": "アイテム",
-    "watched": "視聴済み",
-    "empty": "ウォッチリストは空です",
-    "emptyHint": "視聴を開始するとここに表示されます"
-  },
-  "widgets": {
-    "empty": "ウィジェットがありません",
-    "emptyHint": "ウィジェットはここに表示されます",
-    "emptyPersonal": "個人ウィジェットがありません",
-    "emptyPersonalHint": "最初の個人ウィジェットを作成するか、上のシステムウィジェットを追加してください",
-    "itemsTotal": "合計ウィジェット数",
-    "systemWidgets": "システムウィジェット",
-    "systemWidgetsHint": "ウィジェットを閲覧してコレクションに追加",
-    "myWidgets": "マイ個人ウィジェット",
-    "myWidgetsHint": "作成したウィジェット",
-    "personalWidgets": "マイウィジェット",
-    "noSystemWidgets": "システムウィジェットがありません",
-    "added": "追加済み",
-    "add": "追加",
-    "remove": "削除",
-    "show": "表示",
-    "hidden": "非表示",
-    "addToCollection": "マイウィジェットに追加",
-    "removeFromCollection": "マイウィジェットから削除",
-    "contentTypes": {
-      "liveChannel": "ライブチャンネル",
-      "iframe": "Webコンテンツ",
-      "podcast": "ポッドキャスト",
-      "radio": "ラジオ",
-      "vod": "ビデオ",
-      "custom": "カスタム",
-      "widget": "ウィジェット"
+    "billing": {
+      "title": "請求",
+      "subtitle": "収益と支払いを追跡",
+      "revenue": "収益",
+      "today": "今日",
+      "thisWeek": "今週",
+      "thisMonth": "今月",
+      "thisYear": "今年",
+      "metrics": "主要指標",
+      "totalTransactions": "総取引数",
+      "avgTransaction": "平均取引",
+      "pendingRefunds": "保留中の返金",
+      "refundRate": "返金率",
+      "retention": "リテンション",
+      "retentionRate": "リテンション率",
+      "churnRate": "解約率",
+      "atRiskUsers": "リスクのあるユーザー",
+      "churnedUsers": "解約したユーザー",
+      "quickLinks": "クイックリンク"
     },
-    "form": {
-      "title": "ウィジェットを作成",
-      "basicInfo": "基本情報",
-      "titlePlaceholder": "ウィジェットタイトル",
-      "titleRequired": "ウィジェットタイトルは必須です",
-      "descriptionPlaceholder": "説明（オプション）",
-      "iconPlaceholder": "アイコン絵文字（例：📺）",
-      "content": "コンテンツ",
-      "fromLibrary": "ライブラリから",
-      "iframe": "iFrame",
-      "selectContent": "コンテンツを選択（チャンネル、ポッドキャスト、番組など）",
-      "iframeUrl": "iFrame URL",
-      "iframeUrlRequired": "iFrame URLは必須です",
-      "iframeTitle": "iFrameタイトル",
-      "positionSize": "位置とサイズ",
-      "behavior": "動作",
-      "mutedByDefault": "デフォルトでミュート",
-      "closable": "閉じることができる",
-      "draggable": "ドラッグ可能",
-      "widgetOrder": "ウィジェット順序",
-      "orderPlaceholder": "順序（0 = 最初）",
-      "saveWidget": "ウィジェットを保存",
-      "saving": "保存中...",
-      "cancel": "キャンセル",
-      "change": "変更"
+    "settings": {
+      "title": "設定",
+      "subtitle": "システムパラメータを設定",
+      "saveChanges": "変更を保存",
+      "generalSettings": "一般設定",
+      "supportEmail": "サポートメール",
+      "defaultPlan": "デフォルトプラン",
+      "termsUrl": "利用規約URL",
+      "privacyUrl": "プライバシーポリシーURL",
+      "userSettings": "ユーザー設定",
+      "maxDevices": "アカウントあたりの最大デバイス数",
+      "trialDays": "トライアル期間（日）",
+      "maintenanceMode": "メンテナンスモード",
+      "maintenanceModeDesc": "有効にすると、システムはユーザーからアクセスできなくなります",
+      "featureFlags": "機能フラグ",
+      "systemActions": "システムアクション",
+      "clearCache": "キャッシュをクリア",
+      "resetAnalytics": "分析をリセット",
+      "actionsWarning": "これらのアクションはシステムのパフォーマンスに影響を与える可能性があります。",
+      "savingSuccess": "設定が正常に保存されました",
+      "confirmClearCache": "キャッシュをクリアしますか？",
+      "cacheCleared": "キャッシュがクリアされました",
+      "confirmResetAnalytics": "分析データをリセットしますか？",
+      "analyticsReset": "分析データがリセットされました",
+      "featureFlagLabels": {
+        "new_player": "新しいプレーヤー",
+        "live_chat": "ライブチャット",
+        "downloads": "ダウンロード",
+        "watch_party": "ウォッチパーティー",
+        "voice_search": "音声検索",
+        "ai_recommendations": "AIレコメンデーション"
+      }
     },
-    "intro": {
-      "title": "ウィジェットへようこそ",
-      "description": "視聴体験をカスタマイズする強力なフローティングウィジェットを発見",
-      "watchVideo": "紹介を見る",
-      "skip": "スキップ",
-      "dismiss": "今後表示しない",
-      "videoUnavailable": "ビデオは一時的に利用できません",
-      "loadingMartyJr": "Marty Jr.を読み込み中...",
-      "loadingWidgets": "ウィジェット紹介を読み込み中..."
-    }
-  },
-  "trending": {
-    "title": "イスラエルのトレンド",
-    "noTopics": "トレンドトピックがありません",
-    "topStory": "トップストーリー",
-    "sources": "情報源",
-    "categories": {
-      "security": "セキュリティ",
-      "politics": "政治",
-      "tech": "テクノロジー",
-      "culture": "文化",
-      "sports": "スポーツ",
-      "economy": "経済",
-      "entertainment": "エンターテインメント",
-      "weather": "天気",
-      "health": "健康",
-      "general": "一般"
-    }
-  },
-  "cultures": {
-    "title": "文化を選択",
-    "select": "文化を選択",
-    "selectCulture": "文化を選択",
-    "selectCultureDescription": "体験をパーソナライズするために文化コミュニティを選択",
-    "changeCulture": "文化を変更",
-    "israeli": {
-      "name": "イスラエル",
-      "description": "イスラエル在外コミュニティのコンテンツ"
+    "users": {
+      "title": "ユーザー",
+      "subtitle": "ユーザーとアカウントを管理",
+      "addUser": "ユーザーを追加",
+      "status": {
+        "active": "アクティブ",
+        "inactive": "非アクティブ",
+        "blocked": "ブロック"
+      },
+      "filters": {
+        "all": "すべて",
+        "active": "アクティブ",
+        "inactive": "非アクティブ",
+        "blocked": "ブロック"
+      },
+      "columns": {
+        "name": "名前",
+        "role": "役割",
+        "subscription": "購読",
+        "noSubscription": "購読なし",
+        "status": "ステータス",
+        "created": "作成日",
+        "actions": "アクション"
+      },
+      "confirmDelete": "ユーザーを削除",
+      "confirmDeleteMessage": "{{name}}を削除しますか？",
+      "resetPassword": "パスワードをリセット",
+      "block": "ブロック",
+      "unban": "ブロック解除"
     },
-    "chinese": {
-      "name": "中国",
-      "description": "中国コミュニティのコンテンツ"
+    "campaigns": {
+      "title": "キャンペーン",
+      "subtitle": "クーポンコードと割引を管理",
+      "expired": "期限切れ",
+      "status": {
+        "active": "アクティブ",
+        "inactive": "非アクティブ"
+      },
+      "columns": {
+        "name": "名前",
+        "discount": "割引",
+        "usage": "使用回数",
+        "validUntil": "有効期限",
+        "status": "ステータス",
+        "actions": "アクション"
+      }
     },
-    "japanese": {
-      "name": "日本",
-      "description": "日本コミュニティのコンテンツ"
-    },
-    "korean": {
-      "name": "韓国",
-      "description": "韓国コミュニティのコンテンツ"
-    },
-    "indian": {
-      "name": "インド",
-      "description": "インドコミュニティのコンテンツ"
-    }
-  },
-  "cultureTrending": {
-    "whatsHotIn": "{{location}}のトレンド",
-    "noTopics": "トレンドトピックがありません",
-    "sources": "情報源",
-    "categories": {
-      "security": "セキュリティ",
-      "politics": "政治",
-      "tech": "テクノロジー",
-      "technology": "テクノロジー",
-      "culture": "文化",
-      "sports": "スポーツ",
-      "economy": "経済",
-      "finance": "金融",
-      "entertainment": "エンターテインメント",
-      "weather": "天気",
-      "health": "健康",
-      "food": "食",
-      "fashion": "ファッション",
-      "travel": "旅行",
-      "history": "歴史",
-      "expat": "在外生活",
-      "general": "一般"
-    }
-  },
-  "cultureCities": {
-    "connectionTo": "{{city}}コネクション",
-    "explore": "{{city}}を探索",
-    "noContent": "この都市のコンテンツはありません",
-    "categories": {
-      "all": "すべて",
-      "history": "歴史",
-      "culture": "文化",
-      "finance": "金融",
-      "tech": "テクノロジー",
-      "food": "食",
-      "expat": "在外生活",
-      "news": "ニュース",
-      "entertainment": "エンターテインメント"
-    }
-  },
-  "clock": {
-    "israel": "イスラエル",
-    "local": "現地",
-    "shabbatShalom": "シャバットシャローム！",
-    "erevShabbat": "シャバット前夜",
-    "candleLighting": "ろうそく点灯",
-    "parasha": "パラシャ"
-  },
-  "ritual": {
-    "title": "朝のリチュアル",
-    "greeting": "おはようございます！",
-    "israelUpdate": "イスラエルは午後です。最新の動向についてニュースが報道しています",
-    "recommendation": "朝のニュースから始めて、その後ラジオに切り替えることをお勧めします",
-    "preparingRitual": "朝のリチュアルを準備中...",
-    "israelTime": "イスラエル時間",
-    "day": "日",
-    "letsStart": "始めましょう",
-    "skipToday": "今日はスキップ",
-    "finish": "終了",
-    "noContentNow": "現在利用可能なコンテンツはありません",
-    "typeLive": "ライブ",
-    "typeRadio": "ラジオ",
-    "typeVideo": "ビデオ"
-  },
-  "watchParty": {
-    "title": "ウォッチパーティー",
-    "create": "パーティーを作成",
-    "join": "パーティーに参加",
-    "active": "パーティー開催中",
-    "createTitle": "ウォッチパーティーを作成",
-    "joinTitle": "パーティーに参加",
-    "enterCode": "ルームコードを入力",
-    "roomCode": "ルームコード",
-    "roomCodeHint": "8文字のルームコードを入力してパーティーに参加",
-    "copyCode": "コードをコピー",
-    "codeCopied": "コードをコピーしました！",
-    "participants": "参加者",
-    "host": "ホスト",
-    "you": "あなた",
-    "leave": "パーティーを退出",
-    "end": "パーティーを終了",
-    "chat": "チャット",
-    "sendMessage": "メッセージを送信",
-    "typeMessage": "メッセージを入力...",
-    "synced": "同期済み",
-    "syncing": "同期中...",
-    "hostPaused": "ホストが一時停止",
-    "userJoined": "{{name}}が参加しました",
-    "userLeft": "{{name}}が退出しました",
-    "partyEnded": "パーティーが終了しました",
-    "connecting": "接続中...",
-    "options": {
-      "chatEnabled": "チャットを有効にする",
-      "syncPlayback": "再生を同期"
-    },
-    "errors": {
-      "invalidCode": "無効なコード",
-      "partyFull": "パーティーが満員です",
-      "partyEnded": "パーティーは終了しました",
-      "connectionError": "接続エラー",
-      "createFailed": "パーティーの作成に失敗しました",
-      "joinFailed": "パーティーへの参加に失敗しました"
-    },
-    "audio": {
-      "mute": "ミュート",
-      "unmute": "ミュート解除",
-      "speaking": "話し中",
-      "connecting": "音声に接続中...",
-      "noAudio": "音声は利用できません",
-      "muteHint": "マイクをミュート",
-      "unmuteHint": "マイクのミュートを解除して話す"
-    },
-    "textOnlyMode": "テキストチャットのみ",
-    "endParty": "パーティーを終了",
-    "toggleEmoji": "絵文字ピッカーを切り替え",
-    "toggleEmojiHint": "リアクション用の絵文字クイックピッカーを開きます",
-    "sendEmoji": "{{emoji}}を送信",
-    "sendEmojiHint": "チャットに絵文字リアクションを送信",
-    "emojiPicker": "絵文字ピッカー",
-    "chatInput": "チャットメッセージ入力",
-    "chatInputHint": "パーティーチャットに送信するメッセージを入力",
-    "sendMessageHint": "パーティーチャットにメッセージを送信",
-    "copyCodeHint": "ルームコードをクリップボードにコピー",
-    "share": "共有",
-    "shareHint": "パーティーリンクを共有またはコードをコピー",
-    "copied": "コピーしました！",
-    "endPartyHint": "すべての参加者のパーティーを終了",
-    "leaveParty": "パーティーを退出",
-    "leavePartyHint": "パーティーを終了せずに退出",
-    "buttonHint": "ウォッチパーティーを作成または参加するメニューを開く",
-    "createHint": "新しいウォッチパーティーを作成",
-    "joinHint": "コードで既存のウォッチパーティーに参加",
-    "emojiPickerHint": "クイック絵文字リアクションを表示",
-    "chatEnabledHint": "参加者のチャットを有効にする",
-    "syncPlaybackHint": "ホストと再生を同期",
-    "createPartyHint": "選択したオプションでパーティーを作成",
-    "joinPartyHint": "入力したコードでパーティーに参加",
-    "closePanelHint": "ウォッチパーティーパネルを閉じる",
-    "cancelHint": "キャンセルしてダイアログを閉じる",
-    "viewPartyHint": "ウォッチパーティーパネルを開く",
-    "panel": "ウォッチパーティーパネル"
-  },
-  "footer": {
-    "brandDescription": "アメリカでのあなたの家。ヘブライ語でのTV放送、VOD、ラジオ、ポッドキャスト。",
-    "browse": "ブラウズ",
-    "account": "アカウント",
-    "legal": "法的情報",
-    "location": "ニューヨーク、アメリカ",
-    "links": {
-      "home": "ホーム",
-      "liveTV": "ライブTV",
-      "vod": "映画＆シリーズ",
-      "radio": "ラジオ",
-      "podcasts": "ポッドキャスト",
-      "judaism": "ユダヤ教",
-      "profile": "マイプロフィール",
-      "favorites": "お気に入り",
-      "watchlist": "ウォッチリスト",
-      "subscribe": "登録",
-      "downloads": "ダウンロード",
-      "help": "ヘルプセンター",
-      "faq": "よくある質問",
-      "contact": "お問い合わせ",
-      "feedback": "フィードバック",
-      "terms": "利用規約",
-      "privacy": "プライバシーポリシー",
-      "cookies": "Cookieポリシー",
-      "licenses": "ライセンス"
-    },
-    "newsletter": {
-      "title": "最新情報を受け取る",
-      "description": "最新情報と限定コンテンツのためにニュースレターを購読",
-      "placeholder": "メールアドレスを入力",
-      "success": "購読ありがとうございます！"
-    },
-    "apps": {
-      "title": "アプリを入手",
-      "downloadOn": "からダウンロード",
-      "getItOn": "で入手",
-      "appStore": "App Store",
-      "googlePlay": "Google Play"
-    },
-    "navigation": "ナビゲーション",
-    "liveTV": "ライブTV",
-    "moviesAndSeries": "映画＆シリーズ",
-    "radioStations": "ラジオ局",
-    "myProfile": "マイプロフィール",
-    "subscriptions": "サブスクリプション",
-    "helpAndSupport": "ヘルプ＆サポート",
-    "termsOfUse": "利用規約",
-    "contactUs": "お問い合わせ",
-    "poweredBy": "提供：",
-    "sitemap": "サイトマップ"
-  },
-  "chapters": {
-    "title": "チャプター",
-    "noChapters": "チャプターがありません",
-    "generating": "チャプターを生成中...",
-    "jumpTo": "ジャンプ",
-    "current": "現在",
-    "categories": {
-      "intro": "イントロダクション",
-      "news": "ニュース",
-      "security": "セキュリティ",
-      "politics": "政治",
-      "economy": "経済",
-      "sports": "スポーツ",
-      "weather": "天気",
-      "culture": "文化",
-      "conclusion": "まとめ"
+    "subscriptions": {
+      "title": "購読",
+      "subtitle": "購読者を表示・管理",
+      "status": {
+        "active": "アクティブ",
+        "paused": "一時停止",
+        "cancelled": "キャンセル済み",
+        "expired": "期限切れ"
+      },
+      "columns": {
+        "user": "ユーザー",
+        "plan": "プラン",
+        "price": "価格",
+        "nextBilling": "次回請求日",
+        "status": "ステータス"
+      }
     }
   }
 };
 
 deepMerge(ja, translations);
+
 fs.writeFileSync('ja.json', JSON.stringify(ja, null, 2) + '\n');
-console.log('Part 3 complete');
+console.log('Part 7 Japanese translations merged successfully!');

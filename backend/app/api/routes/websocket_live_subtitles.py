@@ -5,6 +5,8 @@ Real-time audio → transcription → translation → subtitle streaming
 
 import asyncio
 import logging
+import time
+from typing import Dict, Optional, Tuple
 
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
@@ -23,14 +25,61 @@ from app.services.rate_limiter_live import get_rate_limiter
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+# Simple in-memory cache for quota checks to reduce database load
+# Format: {user_id: (allowed, error_msg, usage_stats, timestamp)}
+_quota_check_cache: Dict[str, Tuple[bool, Optional[str], Dict, float]] = {}
+QUOTA_CACHE_TTL_SECONDS = 30.0  # Cache quota checks for 30 seconds
+
+
+def get_cached_quota_check(user_id: str) -> Optional[Tuple[bool, Optional[str], Dict]]:
+    """Get cached quota check result if still valid."""
+    if user_id in _quota_check_cache:
+        allowed, error_msg, usage_stats, timestamp = _quota_check_cache[user_id]
+        if time.time() - timestamp < QUOTA_CACHE_TTL_SECONDS:
+            logger.debug(f"Quota check cache hit for user {user_id}")
+            return (allowed, error_msg, usage_stats)
+        else:
+            # Cache expired, remove it
+            del _quota_check_cache[user_id]
+    return None
+
+
+def cache_quota_check(
+    user_id: str, allowed: bool, error_msg: Optional[str], usage_stats: Dict
+) -> None:
+    """Cache quota check result with timestamp."""
+    _quota_check_cache[user_id] = (allowed, error_msg, usage_stats, time.time())
+    # Clean up old cache entries (keep cache size reasonable)
+    if len(_quota_check_cache) > 1000:
+        current_time = time.time()
+        expired_keys = [
+            k for k, v in _quota_check_cache.items()
+            if current_time - v[3] > QUOTA_CACHE_TTL_SECONDS
+        ]
+        for k in expired_keys:
+            del _quota_check_cache[k]
+
 
 async def create_audio_stream_with_quota_updates(websocket, session, user):
-    """Generator yields audio chunks and updates quota every 10s."""
+    """
+    Generator yields audio chunks and updates quota every 10s.
+    Also sends periodic pings to maintain connection health.
+    """
     last_update = asyncio.get_event_loop().time()
+    last_ping = asyncio.get_event_loop().time()
     try:
         while True:
             audio_chunk = await websocket.receive_bytes()
             current = asyncio.get_event_loop().time()
+
+            # Send heartbeat ping every 30 seconds
+            if current - last_ping >= 30.0:
+                try:
+                    await websocket.send_json({"type": "ping", "timestamp": current})
+                    last_ping = current
+                except Exception as e:
+                    logger.warning(f"Failed to send heartbeat ping: {e}")
+
             if session and current - last_update >= 10.0:
                 try:
                     await live_feature_quota_service.update_session(
@@ -38,14 +87,28 @@ async def create_audio_stream_with_quota_updates(websocket, session, user):
                         audio_seconds_delta=10.0,
                         segments_delta=0,
                     )
-                    allowed, error_msg, _ = (
-                        await live_feature_quota_service.check_quota(
-                            user_id=str(user.id),
-                            feature_type=FeatureType.SUBTITLE,
-                            estimated_duration_minutes=0,
+
+                    # Try to get cached quota check first
+                    cached_result = get_cached_quota_check(str(user.id))
+                    if cached_result is not None:
+                        allowed, error_msg, _ = cached_result
+                    else:
+                        # Cache miss - perform actual quota check
+                        allowed, error_msg, usage_stats = (
+                            await live_feature_quota_service.check_quota(
+                                user_id=str(user.id),
+                                feature_type=FeatureType.SUBTITLE,
+                                estimated_duration_minutes=0,
+                            )
                         )
-                    )
+                        # Cache the result
+                        cache_quota_check(str(user.id), allowed, error_msg, usage_stats)
+
                     if not allowed:
+                        # Clear cache on quota exceeded
+                        if str(user.id) in _quota_check_cache:
+                            del _quota_check_cache[str(user.id)]
+
                         await websocket.send_json(
                             {
                                 "type": "quota_exceeded",
@@ -68,7 +131,8 @@ async def create_audio_stream_with_quota_updates(websocket, session, user):
 async def websocket_live_subtitles(
     websocket: WebSocket,
     channel_id: str,
-    target_lang: str = Query("en"),
+    source_lang: str = Query("he", description="Source language (input audio language)"),
+    target_lang: str = Query("en", description="Target language (output subtitle language)"),
     enable_predictive: bool = Query(
         True, description="Enable predictive subtitles (partial + final)"
     ),
@@ -149,12 +213,18 @@ async def websocket_live_subtitles(
         await websocket.close(code=4004, reason="Channel not found")
         return
 
-    # Check quota and start session
-    allowed, error_msg, usage_stats = await live_feature_quota_service.check_quota(
-        user_id=str(user.id),
-        feature_type=FeatureType.SUBTITLE,
-        estimated_duration_minutes=1.0,
-    )
+    # Check quota and start session (try cache first)
+    cached_result = get_cached_quota_check(str(user.id))
+    if cached_result is not None:
+        allowed, error_msg, usage_stats = cached_result
+    else:
+        allowed, error_msg, usage_stats = await live_feature_quota_service.check_quota(
+            user_id=str(user.id),
+            feature_type=FeatureType.SUBTITLE,
+            estimated_duration_minutes=1.0,
+        )
+        cache_quota_check(str(user.id), allowed, error_msg, usage_stats)
+
     if not allowed:
         await websocket.send_json(
             {
@@ -172,7 +242,7 @@ async def websocket_live_subtitles(
             user_id=str(user.id),
             channel_id=channel_id,
             feature_type=FeatureType.SUBTITLE,
-            source_language=channel.primary_language or "he",
+            source_language=source_lang,
             target_language=target_lang,
             platform="web",
         )
@@ -180,12 +250,14 @@ async def websocket_live_subtitles(
         logger.error(f"Failed to start quota session: {e}")
         return
 
-    logger.info(f"Live subtitle connection: user={user.id}, channel={channel_id}")
+    logger.info(
+        f"Live subtitle connection: user={user.id}, channel={channel_id}, "
+        f"source_lang={source_lang}, target_lang={target_lang}"
+    )
 
     # Initialize translation service
     try:
         translation_service = LiveTranslationService()
-        source_lang = channel.primary_language or "he"
 
         # Verify service availability
         if not translation_service.verify_service_availability().get("speech_to_text"):
@@ -213,6 +285,8 @@ async def websocket_live_subtitles(
         )
 
         # Process audio and stream subtitles
+        consecutive_errors = 0
+        max_consecutive_errors = 5
         try:
             async for (
                 subtitle_cue
@@ -224,9 +298,19 @@ async def websocket_live_subtitles(
             ):
                 # Send subtitle with appropriate type
                 subtitle_type = subtitle_cue.get("subtitle_type", "final")
-                await websocket.send_json(
-                    {"type": f"{subtitle_type}_subtitle", "data": subtitle_cue}
-                )
+                try:
+                    await websocket.send_json(
+                        {"type": f"{subtitle_type}_subtitle", "data": subtitle_cue}
+                    )
+                    consecutive_errors = 0  # Reset error counter on success
+                except Exception as send_error:
+                    consecutive_errors += 1
+                    logger.warning(
+                        f"Failed to send subtitle (attempt {consecutive_errors}/{max_consecutive_errors}): {send_error}"
+                    )
+                    if consecutive_errors >= max_consecutive_errors:
+                        logger.error("Max consecutive send errors reached, closing connection")
+                        raise
 
         except WebSocketDisconnect:
             logger.info(
@@ -234,11 +318,28 @@ async def websocket_live_subtitles(
             )
             await end_quota_session(session, UsageSessionStatus.COMPLETED)
         except Exception as e:
-            logger.error(f"Error in subtitle stream: {str(e)}")
+            error_type = type(e).__name__
+            logger.error(f"Error in subtitle stream ({error_type}): {str(e)}")
             await end_quota_session(session, UsageSessionStatus.ERROR)
             try:
+                # Send user-friendly error message based on error type
+                if "connection" in str(e).lower() or "timeout" in str(e).lower():
+                    error_msg = "Connection interrupted. Please try reconnecting."
+                    recoverable = True
+                elif "quota" in str(e).lower():
+                    error_msg = "Usage limit reached. Please try again later."
+                    recoverable = False
+                else:
+                    error_msg = "An error occurred during live translation. Please try again."
+                    recoverable = True
+
                 await websocket.send_json(
-                    {"type": "error", "message": "Translation error"}
+                    {
+                        "type": "error",
+                        "message": error_msg,
+                        "error_type": error_type,
+                        "recoverable": recoverable,
+                    }
                 )
             except Exception:
                 pass
