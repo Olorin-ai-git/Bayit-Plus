@@ -90,3 +90,106 @@ export function clearScreenReaderAnnouncements(): void {
     liveRegion.textContent = '';
   }
 }
+
+/**
+ * Generate accessible label for subtitle language option
+ */
+export function getSubtitleLanguageLabel(
+  languageName: string,
+  isSelected: boolean,
+  isEnabled: boolean = true
+): string {
+  let label = languageName
+
+  if (isSelected) {
+    label += ', selected'
+  }
+
+  if (!isEnabled) {
+    label += ', disabled'
+  }
+
+  return label
+}
+
+/**
+ * Generate accessible label for Hebrew mode option
+ */
+export function getHebrewModeLabel(
+  modeName: string,
+  isSelected: boolean,
+  isAvailable: boolean
+): string {
+  let label = modeName
+
+  if (isSelected) {
+    label += ', currently active'
+  }
+
+  if (!isAvailable) {
+    label += ', unavailable'
+  }
+
+  return label
+}
+
+/**
+ * Generate accessible hint for iOS VoiceOver
+ */
+export function getVoiceOverHint(action: string): string {
+  return `Double tap to ${action}`
+}
+
+/**
+ * ARIA role constants
+ */
+export const ARIA_ROLES = {
+  MENU: 'menu',
+  MENUITEM: 'menuitem',
+  MENUITEMRADIO: 'menuitemradio',
+  BUTTON: 'button',
+  DIALOG: 'dialog',
+  ALERT: 'alert',
+  STATUS: 'status',
+  OPTION: 'option',
+} as const
+
+/**
+ * Accessibility state for ARIA attributes
+ */
+export interface AccessibilityState {
+  disabled?: boolean
+  selected?: boolean
+  checked?: boolean
+  expanded?: boolean
+  hidden?: boolean
+}
+
+/**
+ * Generate ARIA attributes from state
+ */
+export function getAriaAttributes(state: AccessibilityState): Record<string, boolean> {
+  const attrs: Record<string, boolean> = {}
+
+  if (state.disabled !== undefined) {
+    attrs['aria-disabled'] = state.disabled
+  }
+
+  if (state.selected !== undefined) {
+    attrs['aria-selected'] = state.selected
+  }
+
+  if (state.checked !== undefined) {
+    attrs['aria-checked'] = state.checked
+  }
+
+  if (state.expanded !== undefined) {
+    attrs['aria-expanded'] = state.expanded
+  }
+
+  if (state.hidden !== undefined) {
+    attrs['aria-hidden'] = state.hidden
+  }
+
+  return attrs
+}

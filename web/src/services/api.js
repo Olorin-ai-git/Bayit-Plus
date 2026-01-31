@@ -27,6 +27,7 @@ import logger, {
   generateCorrelationId,
   setCorrelationId,
 } from '@bayit/shared-utils/logger'
+import { storageHelpers, STORAGE_KEYS } from '../utils/storage'
 
 // Correlation ID header name (matches backend)
 const CORRELATION_ID_HEADER = 'X-Correlation-ID'
@@ -40,8 +41,47 @@ const apiLogger = logger.scope('API')
 
 apiLogger.debug('Base URL configured', { baseUrl: API_BASE_URL })
 
+// Retry configuration
+const MAX_RETRIES = 3
+const RETRY_DELAY_MS = 1000
+const TIMEOUT_MS = parseInt(import.meta.env.VITE_API_TIMEOUT || '30000', 10)
+
+// Network errors that should trigger retry
+const RETRYABLE_ERROR_CODES = ['ECONNABORTED', 'ENOTFOUND', 'ENETUNREACH', 'ETIMEDOUT']
+const RETRYABLE_STATUS_CODES = [408, 429, 500, 502, 503, 504]
+
+/**
+ * Check if error is retryable
+ */
+const isRetryableError = (error) => {
+  // Network errors
+  if (error.code && RETRYABLE_ERROR_CODES.includes(error.code)) {
+    return true
+  }
+
+  // HTTP status codes
+  if (error.response && RETRYABLE_STATUS_CODES.includes(error.response.status)) {
+    return true
+  }
+
+  return false
+}
+
+/**
+ * Calculate retry delay with exponential backoff
+ */
+const getRetryDelay = (retryCount) => {
+  return RETRY_DELAY_MS * Math.pow(2, retryCount)
+}
+
+/**
+ * Wait for specified milliseconds
+ */
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
 const api = axios.create({
   baseURL: API_BASE_URL,
+  timeout: TIMEOUT_MS,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -72,8 +112,10 @@ api.interceptors.request.use((config) => {
   config.headers[CORRELATION_ID_HEADER] = correlationId
 
   // Add user location headers if available (for location-based content)
+  // NOTE: Using localStorage directly here (web-only) since request interceptors are synchronous
+  // For async storage needs (cross-platform), use storageHelpers from utils/storage.ts
   try {
-    const cachedLocation = localStorage.getItem('bayit_user_location')
+    const cachedLocation = localStorage.getItem(STORAGE_KEYS.USER_LOCATION)
     if (cachedLocation) {
       const location = JSON.parse(cachedLocation)
       if (location.city) {
@@ -96,12 +138,23 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// Response interceptor for error handling
+// Response interceptor for error handling and retry logic
 api.interceptors.response.use(
   (response) => {
     // Log successful response with timing
     const correlationId = response.headers[CORRELATION_ID_HEADER.toLowerCase()]
     const durationMs = response.headers['x-request-duration-ms']
+
+    // Check for rate limit headers
+    const rateLimitRemaining = response.headers['x-ratelimit-remaining']
+    const rateLimitReset = response.headers['x-ratelimit-reset']
+
+    if (rateLimitRemaining && parseInt(rateLimitRemaining, 10) < 10) {
+      apiLogger.warn('API rate limit approaching', {
+        remaining: rateLimitRemaining,
+        reset: rateLimitReset,
+      })
+    }
 
     apiLogger.debug(`Response: ${response.status} ${response.config.url}`, {
       status: response.status,
@@ -111,19 +164,60 @@ api.interceptors.response.use(
 
     return response.data
   },
-  (error) => {
+  async (error) => {
+    const config = error.config
+
+    // Initialize retry count if not exists
+    if (!config.__retryCount) {
+      config.__retryCount = 0
+    }
+
     // Log error
     const correlationId = getCorrelationId()
-    apiLogger.error(`Request failed: ${error.config?.url}`, {
+    apiLogger.error(`Request failed: ${config?.url}`, {
       correlationId,
       status: error.response?.status,
       error: error.response?.data || error.message,
+      retryCount: config.__retryCount,
     })
+
+    // Check if error is retryable and we haven't exceeded max retries
+    if (isRetryableError(error) && config.__retryCount < MAX_RETRIES) {
+      config.__retryCount++
+
+      // Handle 429 (rate limit) specially
+      if (error.response?.status === 429) {
+        const retryAfter = error.response.headers['retry-after']
+        const retryDelay = retryAfter
+          ? parseInt(retryAfter, 10) * 1000
+          : getRetryDelay(config.__retryCount)
+
+        apiLogger.warn(`Rate limited - retry after ${retryDelay}ms`, {
+          correlationId,
+          retryCount: config.__retryCount,
+          retryAfter,
+        })
+
+        await delay(retryDelay)
+      } else {
+        const retryDelay = getRetryDelay(config.__retryCount)
+        apiLogger.info(`Retrying request (${config.__retryCount}/${MAX_RETRIES})`, {
+          correlationId,
+          url: config.url,
+          delay: retryDelay,
+        })
+
+        await delay(retryDelay)
+      }
+
+      // Retry the request
+      return api(config)
+    }
 
     // Only logout on authentication failures, not all 401 errors
     if (error.response?.status === 401) {
       const errorDetail = error.response?.data?.detail || ''
-      const requestUrl = error.config?.url || ''
+      const requestUrl = config?.url || ''
 
       // Only logout if it's from critical auth endpoints
       const isCriticalAuthEndpoint = ['/auth/me', '/auth/login', '/auth/refresh'].some(path =>
@@ -150,6 +244,7 @@ api.interceptors.response.use(
         }
       }
     }
+
     return Promise.reject(error.response?.data || error)
   }
 )

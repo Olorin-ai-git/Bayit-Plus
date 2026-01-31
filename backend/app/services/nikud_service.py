@@ -4,15 +4,16 @@ Uses Claude AI to add nikud marks to Hebrew text for heritage speakers.
 Also provides word translation for tap-to-translate feature.
 """
 
-import hashlib
 import json
 from dataclasses import dataclass
-from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
-import anthropic
-
+from app.core.ai_clients import get_anthropic_client
 from app.core.config import settings
+from app.core.logging_config import get_logger
+from app.services.ai_text_transform_service import AITextTransformService
+
+logger = get_logger(__name__)
 
 
 @dataclass
@@ -27,91 +28,39 @@ class TranslationResult:
     example_translation: Optional[str] = None
 
 
-# Simple in-memory cache for nikud and translations
-_nikud_cache: Dict[str, str] = {}
-_translation_cache: Dict[str, TranslationResult] = {}
+class NikudService(AITextTransformService[str]):
+    """Service for adding nikud (vocalization) to Hebrew text"""
 
+    def __init__(self):
+        super().__init__(
+            cache_max_size=settings.SUBTITLE_NIKUD_CACHE_MAX_SIZE,
+            service_name="nikud",
+        )
 
-def _get_cache_key(text: str) -> str:
-    """Generate cache key for text"""
-    return hashlib.md5(text.encode()).hexdigest()
-
-
-async def add_nikud(text: str, use_cache: bool = True) -> str:
-    """
-    Add nikud (vocalization marks) to Hebrew text using Claude.
-    Nikud helps heritage speakers who understand spoken Hebrew
-    but struggle to read unvocalized text.
-    """
-    if not text or not text.strip():
-        return text
-
-    # Check cache
-    cache_key = _get_cache_key(text)
-    if use_cache and cache_key in _nikud_cache:
-        return _nikud_cache[cache_key]
-
-    prompt = f"""הוסף ניקוד (תנועות) לטקסט העברי הבא. החזר רק את הטקסט עם הניקוד, ללא הסברים נוספים.
+    async def _transform_single(self, text: str) -> str:
+        """Add nikud to a single Hebrew text"""
+        prompt = f"""הוסף ניקוד (תנועות) לטקסט העברי הבא. החזר רק את הטקסט עם הניקוד, ללא הסברים נוספים.
 
 טקסט: {text}
 
 טקסט עם ניקוד:"""
 
-    try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-
-        response = client.messages.create(
+        client = get_anthropic_client()
+        response = await client.messages.create(
             model=settings.SUBTITLE_AI_MODEL,
             max_tokens=len(text) * 3,  # Nikud adds characters
             messages=[{"role": "user", "content": prompt}],
         )
 
-        nikud_text = response.content[0].text.strip()
+        return response.content[0].text.strip()
 
-        # Cache result
-        if use_cache and len(_nikud_cache) < settings.SUBTITLE_NIKUD_CACHE_MAX_SIZE:
-            _nikud_cache[cache_key] = nikud_text
+    def _create_batch_prompt(self, texts: List[str]) -> str:
+        """Create batch prompt for nikud addition"""
+        texts_formatted = "\n---\n".join(
+            [f"[{i+1}] {t}" for i, t in enumerate(texts)]
+        )
 
-        return nikud_text
-
-    except Exception as e:
-        print(f"Error adding nikud: {e}")
-        return text
-
-
-async def add_nikud_batch(texts: List[str], use_cache: bool = True) -> List[str]:
-    """
-    Add nikud to multiple texts efficiently.
-    Batches uncached texts into single API call.
-    """
-    results = []
-    uncached_indices = []
-    uncached_texts = []
-
-    # Check cache first
-    for i, text in enumerate(texts):
-        if not text or not text.strip():
-            results.append(text)
-            continue
-
-        cache_key = _get_cache_key(text)
-        if use_cache and cache_key in _nikud_cache:
-            results.append(_nikud_cache[cache_key])
-        else:
-            results.append(None)  # Placeholder
-            uncached_indices.append(i)
-            uncached_texts.append(text)
-
-    # If all cached, return
-    if not uncached_texts:
-        return results
-
-    # Batch process uncached texts
-    texts_formatted = "\n---\n".join(
-        [f"[{i+1}] {t}" for i, t in enumerate(uncached_texts)]
-    )
-
-    prompt = f"""הוסף ניקוד לכל אחד מהטקסטים הבאים. החזר כל טקסט בשורה נפרדת, עם המספור המקורי.
+        return f"""הוסף ניקוד לכל אחד מהטקסטים הבאים. החזר כל טקסט בשורה נפרדת, עם המספור המקורי.
 
 {texts_formatted}
 
@@ -120,18 +69,12 @@ async def add_nikud_batch(texts: List[str], use_cache: bool = True) -> List[str]
 [2] טקסט עם ניקוד
 וכו'"""
 
-    try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+    def _parse_batch_response(
+        self, response_text: str, original_texts: List[str]
+    ) -> List[str]:
+        """Parse batch nikud addition response"""
+        results = []
 
-        response = client.messages.create(
-            model=settings.SUBTITLE_AI_MODEL,
-            max_tokens=sum(len(t) * 3 for t in uncached_texts),
-            messages=[{"role": "user", "content": prompt}],
-        )
-
-        response_text = response.content[0].text.strip()
-
-        # Parse response
         for line in response_text.split("\n"):
             line = line.strip()
             if line.startswith("[") and "]" in line:
@@ -140,50 +83,45 @@ async def add_nikud_batch(texts: List[str], use_cache: bool = True) -> List[str]
                     idx = int(line[1:bracket_end]) - 1
                     nikud_text = line[bracket_end + 1 :].strip()
 
-                    if 0 <= idx < len(uncached_texts):
-                        original_idx = uncached_indices[idx]
-                        results[original_idx] = nikud_text
-
-                        # Cache
-                        if use_cache and len(_nikud_cache) < settings.SUBTITLE_NIKUD_CACHE_MAX_SIZE:
-                            cache_key = _get_cache_key(uncached_texts[idx])
-                            _nikud_cache[cache_key] = nikud_text
+                    if 0 <= idx < len(original_texts):
+                        # Extend results list if needed
+                        while len(results) <= idx:
+                            results.append(None)
+                        results[idx] = nikud_text
                 except (ValueError, IndexError):
                     continue
 
-        # Fill any remaining Nones with original text
-        for i, result in enumerate(results):
-            if result is None:
-                results[i] = texts[i]
+        # Fill any missing results with original text
+        for i in range(len(original_texts)):
+            if i >= len(results) or results[i] is None:
+                if i >= len(results):
+                    results.append(original_texts[i])
+                else:
+                    results[i] = original_texts[i]
 
         return results
 
-    except Exception as e:
-        print(f"Error batch adding nikud: {e}")
-        # Return original texts for uncached items
-        for idx in uncached_indices:
-            if results[idx] is None:
-                results[idx] = texts[idx]
-        return results
 
+class TranslationService(AITextTransformService[TranslationResult]):
+    """Service for translating Hebrew words with context"""
 
-async def translate_word(
-    word: str, source_lang: str = "he", target_lang: str = "en", use_cache: bool = True
-) -> TranslationResult:
-    """
-    Translate a single word with context.
-    Used for tap-to-translate feature in interactive subtitles.
-    """
-    if not word or not word.strip():
-        return TranslationResult(word=word, translation="")
+    def __init__(self):
+        super().__init__(
+            cache_max_size=settings.SUBTITLE_NIKUD_CACHE_MAX_SIZE,
+            service_name="translation",
+        )
+        self._source_lang = "he"
+        self._target_lang = "en"
 
-    # Check cache
-    cache_key = f"{word}_{source_lang}_{target_lang}"
-    if use_cache and cache_key in _translation_cache:
-        return _translation_cache[cache_key]
+    def set_languages(self, source_lang: str, target_lang: str):
+        """Set source and target languages for translation"""
+        self._source_lang = source_lang
+        self._target_lang = target_lang
 
-    if source_lang == "he" and target_lang == "en":
-        prompt = f"""תרגם את המילה העברית הבאה לאנגלית. החזר JSON בפורמט:
+    async def _transform_single(self, text: str) -> TranslationResult:
+        """Translate a single word with context"""
+        if self._source_lang == "he" and self._target_lang == "en":
+            prompt = f"""תרגם את המילה העברית הבאה לאנגלית. החזר JSON בפורמט:
 {{
     "translation": "English translation",
     "transliteration": "How to pronounce in English letters",
@@ -192,10 +130,10 @@ async def translate_word(
     "example_translation": "Example sentence in English"
 }}
 
-מילה: {word}"""
-    else:
-        prompt = f"""Translate this word from {source_lang} to {target_lang}:
-Word: {word}
+מילה: {text}"""
+        else:
+            prompt = f"""Translate this word from {self._source_lang} to {self._target_lang}:
+Word: {text}
 
 Return JSON:
 {{
@@ -204,10 +142,8 @@ Return JSON:
     "part_of_speech": "noun/verb/etc"
 }}"""
 
-    try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-
-        response = client.messages.create(
+        client = get_anthropic_client()
+        response = await client.messages.create(
             model=settings.SUBTITLE_AI_MODEL,
             max_tokens=300,
             messages=[{"role": "user", "content": prompt}],
@@ -225,8 +161,8 @@ Return JSON:
 
         data = json.loads(response_text)
 
-        result = TranslationResult(
-            word=word,
+        return TranslationResult(
+            word=text,
             translation=data.get("translation", ""),
             transliteration=data.get("transliteration"),
             part_of_speech=data.get("part_of_speech"),
@@ -234,15 +170,51 @@ Return JSON:
             example_translation=data.get("example_translation"),
         )
 
-        # Cache
-        if use_cache and len(_translation_cache) < settings.SUBTITLE_NIKUD_CACHE_MAX_SIZE:
-            _translation_cache[cache_key] = result
+    def _create_batch_prompt(self, texts: List[str]) -> str:
+        """Create batch prompt - not implemented for translation"""
+        raise NotImplementedError("Batch translation not supported")
 
-        return result
+    def _parse_batch_response(
+        self, response_text: str, original_texts: List[str]
+    ) -> List[TranslationResult]:
+        """Parse batch response - not implemented for translation"""
+        raise NotImplementedError("Batch translation not supported")
 
-    except Exception as e:
-        print(f"Error translating word: {e}")
+
+# Singleton instances
+_nikud_service = NikudService()
+_translation_service = TranslationService()
+
+
+async def add_nikud(text: str, use_cache: bool = True) -> str:
+    """
+    Add nikud (vocalization marks) to Hebrew text using Claude.
+    Nikud helps heritage speakers who understand spoken Hebrew
+    but struggle to read unvocalized text.
+    """
+    return await _nikud_service.transform(text, use_cache)
+
+
+async def add_nikud_batch(texts: List[str], use_cache: bool = True) -> List[str]:
+    """
+    Add nikud to multiple texts efficiently.
+    Batches uncached texts into single API call.
+    """
+    return await _nikud_service.transform_batch(texts, use_cache)
+
+
+async def translate_word(
+    word: str, source_lang: str = "he", target_lang: str = "en", use_cache: bool = True
+) -> TranslationResult:
+    """
+    Translate a single word with context.
+    Used for tap-to-translate feature in interactive subtitles.
+    """
+    if not word or not word.strip():
         return TranslationResult(word=word, translation="")
+
+    _translation_service.set_languages(source_lang, target_lang)
+    return await _translation_service.transform(word, use_cache)
 
 
 async def translate_phrase(
@@ -260,9 +232,9 @@ async def translate_phrase(
         prompt = f"Translate to {target_lang}:\n\n{phrase}"
 
     try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        client = get_anthropic_client()
 
-        response = client.messages.create(
+        response = await client.messages.create(
             model=settings.SUBTITLE_AI_MODEL,
             max_tokens=len(phrase) * 2,
             messages=[{"role": "user", "content": prompt}],
@@ -271,7 +243,7 @@ async def translate_phrase(
         return response.content[0].text.strip()
 
     except Exception as e:
-        print(f"Error translating phrase: {e}")
+        logger.error(f"Error translating phrase: {e}")
         return ""
 
 
@@ -289,15 +261,17 @@ def translation_to_dict(result: TranslationResult) -> Dict[str, Any]:
 
 def clear_caches():
     """Clear all caches"""
-    global _nikud_cache, _translation_cache
-    _nikud_cache = {}
-    _translation_cache = {}
+    _nikud_service.clear_cache()
+    _translation_service.clear_cache()
 
 
 def get_cache_stats() -> Dict[str, int]:
     """Get cache statistics"""
+    nikud_stats = _nikud_service.get_cache_stats()
+    translation_stats = _translation_service.get_cache_stats()
+
     return {
-        "nikud_cache_size": len(_nikud_cache),
-        "translation_cache_size": len(_translation_cache),
+        "nikud_cache_size": nikud_stats["cache_size"],
+        "translation_cache_size": translation_stats["cache_size"],
         "max_size": settings.SUBTITLE_NIKUD_CACHE_MAX_SIZE,
     }

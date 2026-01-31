@@ -4,41 +4,28 @@ Uses Claude AI to extract Hebrew root words (שורש) from words.
 Format: "הולך [הלך]" - word followed by root in brackets.
 """
 
-import hashlib
-from datetime import datetime
-from typing import Dict, List
+from typing import List
 
-import anthropic
-
+from app.core.ai_clients import get_anthropic_client
 from app.core.config import settings
 from app.core.logging_config import get_logger
+from app.services.ai_text_transform_service import AITextTransformService
 
 logger = get_logger(__name__)
 
-# Simple in-memory cache for shoresh extraction
-_shoresh_cache: Dict[str, str] = {}
 
+class ShoreshService(AITextTransformService[str]):
+    """Service for extracting Hebrew root words (shoresh)"""
 
-def _get_cache_key(text: str) -> str:
-    """Generate cache key for text"""
-    return hashlib.md5(text.encode()).hexdigest()
+    def __init__(self):
+        super().__init__(
+            cache_max_size=settings.SUBTITLE_SHORESH_CACHE_MAX_SIZE,
+            service_name="shoresh",
+        )
 
-
-async def extract_shoresh(text: str, use_cache: bool = True) -> str:
-    """
-    Extract shoresh (root words) from Hebrew text using Claude.
-    Returns text in format: "word [root]" for each word.
-    Example: "הולך [הלך]", "כותבים [כתב]"
-    """
-    if not text or not text.strip():
-        return text
-
-    # Check cache
-    cache_key = _get_cache_key(text)
-    if use_cache and cache_key in _shoresh_cache:
-        return _shoresh_cache[cache_key]
-
-    prompt = f"""חלץ שורש מכל מילה בטקסט העברי הבא. החזר את הטקסט בפורמט: 'מילה [שורש]' לכל מילה.
+    async def _transform_single(self, text: str) -> str:
+        """Extract shoresh from a single Hebrew text"""
+        prompt = f"""חלץ שורש מכל מילה בטקסט העברי הבא. החזר את הטקסט בפורמט: 'מילה [שורש]' לכל מילה.
 
 דוגמה:
 טקסט: "הילדים הולכים לבית הספר"
@@ -48,75 +35,22 @@ async def extract_shoresh(text: str, use_cache: bool = True) -> str:
 
 תשובה:"""
 
-    try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-
-        response = client.messages.create(
+        client = get_anthropic_client()
+        response = await client.messages.create(
             model=settings.SUBTITLE_AI_MODEL,
             max_tokens=len(text) * 4,  # Shoresh adds brackets
             messages=[{"role": "user", "content": prompt}],
         )
 
-        shoresh_text = response.content[0].text.strip()
+        return response.content[0].text.strip()
 
-        # Cache result
-        if use_cache and len(_shoresh_cache) < settings.SUBTITLE_SHORESH_CACHE_MAX_SIZE:
-            _shoresh_cache[cache_key] = shoresh_text
-
-        logger.info(
-            "Shoresh extracted",
-            extra={
-                "original_length": len(text),
-                "result_length": len(shoresh_text),
-                "cached": False,
-            },
+    def _create_batch_prompt(self, texts: List[str]) -> str:
+        """Create batch prompt for shoresh extraction"""
+        texts_formatted = "\n---\n".join(
+            [f"[{i+1}] {t}" for i, t in enumerate(texts)]
         )
 
-        return shoresh_text
-
-    except Exception as e:
-        logger.error("Error extracting shoresh", extra={"error": str(e), "text": text})
-        return text
-
-
-async def extract_shoresh_batch(texts: List[str], use_cache: bool = True) -> List[str]:
-    """
-    Extract shoresh from multiple texts efficiently.
-    Batches uncached texts into single API call.
-    Returns list of texts with shoresh in same order as input.
-    """
-    results = []
-    uncached_indices = []
-    uncached_texts = []
-
-    # Check cache first
-    for i, text in enumerate(texts):
-        if not text or not text.strip():
-            results.append(text)
-            continue
-
-        cache_key = _get_cache_key(text)
-        if use_cache and cache_key in _shoresh_cache:
-            results.append(_shoresh_cache[cache_key])
-        else:
-            results.append(None)  # Placeholder
-            uncached_indices.append(i)
-            uncached_texts.append(text)
-
-    # If all cached, return
-    if not uncached_texts:
-        logger.info(
-            "Shoresh batch - all cached",
-            extra={"total_texts": len(texts), "cache_hit_rate": 1.0},
-        )
-        return results
-
-    # Batch process uncached texts
-    texts_formatted = "\n---\n".join(
-        [f"[{i+1}] {t}" for i, t in enumerate(uncached_texts)]
-    )
-
-    prompt = f"""חלץ שורש מכל מילה בכל אחד מהטקסטים הבאים. החזר כל טקסט בשורה נפרדת עם המספור המקורי, בפורמט 'מילה [שורש]'.
+        return f"""חלץ שורש מכל מילה בכל אחד מהטקסטים הבאים. החזר כל טקסט בשורה נפרדת עם המספור המקורי, בפורמט 'מילה [שורש]'.
 
 דוגמה:
 [1] הילדים הולכים
@@ -128,19 +62,13 @@ async def extract_shoresh_batch(texts: List[str], use_cache: bool = True) -> Lis
 
 תשובות:"""
 
-    try:
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-
-        response = client.messages.create(
-            model=settings.SUBTITLE_AI_MODEL,
-            max_tokens=sum(len(t) * 4 for t in uncached_texts),
-            messages=[{"role": "user", "content": prompt}],
-        )
-
-        response_text = response.content[0].text.strip()
-
-        # Parse response
+    def _parse_batch_response(
+        self, response_text: str, original_texts: List[str]
+    ) -> List[str]:
+        """Parse batch shoresh extraction response"""
+        results = []
         parsed_count = 0
+
         for line in response_text.split("\n"):
             line = line.strip()
             if line.startswith("[") and "]" in line:
@@ -149,62 +77,62 @@ async def extract_shoresh_batch(texts: List[str], use_cache: bool = True) -> Lis
                     idx = int(line[1:bracket_end]) - 1
                     shoresh_text = line[bracket_end + 1 :].strip()
 
-                    if 0 <= idx < len(uncached_texts):
-                        original_idx = uncached_indices[idx]
-                        results[original_idx] = shoresh_text
+                    if 0 <= idx < len(original_texts):
+                        # Extend results list if needed
+                        while len(results) <= idx:
+                            results.append(None)
+                        results[idx] = shoresh_text
                         parsed_count += 1
-
-                        # Cache
-                        if use_cache and len(_shoresh_cache) < settings.SUBTITLE_SHORESH_CACHE_MAX_SIZE:
-                            cache_key = _get_cache_key(uncached_texts[idx])
-                            _shoresh_cache[cache_key] = shoresh_text
                 except (ValueError, IndexError):
                     continue
 
-        # Fill any remaining Nones with original text (fallback)
-        for i, result in enumerate(results):
-            if result is None:
-                results[i] = texts[i]
+        # Fill any missing results with original text
+        for i in range(len(original_texts)):
+            if i >= len(results) or results[i] is None:
+                if i >= len(results):
+                    results.append(original_texts[i])
+                else:
+                    results[i] = original_texts[i]
 
-        cache_hit_rate = (len(texts) - len(uncached_texts)) / len(texts)
-        logger.info(
-            "Shoresh batch extracted",
-            extra={
-                "total_texts": len(texts),
-                "uncached_texts": len(uncached_texts),
-                "parsed_count": parsed_count,
-                "cache_hit_rate": cache_hit_rate,
-            },
+        self._logger.info(
+            "Shoresh batch parsed",
+            extra={"total_texts": len(original_texts), "parsed_count": parsed_count},
         )
 
         return results
 
-    except Exception as e:
-        logger.error(
-            "Error batch extracting shoresh",
-            extra={
-                "error": str(e),
-                "total_texts": len(texts),
-                "uncached_count": len(uncached_texts),
-            },
-        )
-        # Return original texts for uncached items
-        for idx in uncached_indices:
-            if results[idx] is None:
-                results[idx] = texts[idx]
-        return results
+
+# Singleton instance
+_shoresh_service = ShoreshService()
+
+
+async def extract_shoresh(text: str, use_cache: bool = True) -> str:
+    """
+    Extract shoresh (root words) from Hebrew text using Claude.
+    Returns text in format: "word [root]" for each word.
+    Example: "הולך [הלך]", "כותבים [כתב]"
+    """
+    return await _shoresh_service.transform(text, use_cache)
+
+
+async def extract_shoresh_batch(texts: List[str], use_cache: bool = True) -> List[str]:
+    """
+    Extract shoresh from multiple texts efficiently.
+    Batches uncached texts into single API call.
+    Returns list of texts with shoresh in same order as input.
+    """
+    return await _shoresh_service.transform_batch(texts, use_cache)
 
 
 def clear_cache():
     """Clear shoresh cache"""
-    global _shoresh_cache
-    _shoresh_cache = {}
-    logger.info("Shoresh cache cleared")
+    _shoresh_service.clear_cache()
 
 
-def get_cache_stats() -> Dict[str, int]:
+def get_cache_stats():
     """Get cache statistics"""
+    stats = _shoresh_service.get_cache_stats()
     return {
-        "shoresh_cache_size": len(_shoresh_cache),
-        "max_size": settings.SUBTITLE_SHORESH_CACHE_MAX_SIZE,
+        "shoresh_cache_size": stats["cache_size"],
+        "max_size": stats["max_size"],
     }

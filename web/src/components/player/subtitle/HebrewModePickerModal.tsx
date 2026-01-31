@@ -1,12 +1,13 @@
 /**
- * HebrewModePickerModal Component
+ * HebrewModePickerModal Component (Web)
  * Modal for selecting Hebrew subtitle display mode (regular, nikud, shoresh)
+ * Uses TailwindCSS for styling and web-native modal implementation
  */
 
-import { View, Text, Pressable, Modal, StyleSheet } from 'react-native'
+import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import { createPortal } from 'react-dom'
 import { HebrewMode } from '@/types/subtitle'
-import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 
 interface HebrewModePickerModalProps {
   visible: boolean
@@ -58,6 +59,60 @@ export default function HebrewModePickerModal({
   onModeSelect,
 }: HebrewModePickerModalProps) {
   const { t } = useTranslation()
+  const modalRef = useRef<HTMLDivElement>(null)
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && visible) {
+        onClose()
+      }
+    }
+
+    if (visible) {
+      document.addEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'hidden'
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = ''
+    }
+  }, [visible, onClose])
+
+  // Focus trap
+  useEffect(() => {
+    if (visible && modalRef.current) {
+      const focusableElements = modalRef.current.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
+      const firstElement = focusableElements[0] as HTMLElement
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
+
+      const handleTab = (e: KeyboardEvent) => {
+        if (e.key !== 'Tab') return
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            e.preventDefault()
+            lastElement?.focus()
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            e.preventDefault()
+            firstElement?.focus()
+          }
+        }
+      }
+
+      document.addEventListener('keydown', handleTab)
+      firstElement?.focus()
+
+      return () => {
+        document.removeEventListener('keydown', handleTab)
+      }
+    }
+  }, [visible])
 
   const handleModePress = (mode: HebrewMode) => {
     onModeSelect(mode)
@@ -71,191 +126,119 @@ export default function HebrewModePickerModal({
     return false
   }
 
-  return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
+  if (!visible) return null
+
+  const modalContent = (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-fade-in"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="hebrew-mode-modal-title"
     >
-      <Pressable style={styles.overlay} onPress={onClose}>
-        <Pressable style={styles.modalContainer} onPress={(e) => e.stopPropagation()}>
-          <View style={styles.header}>
-            <Text style={styles.title}>
-              {t('subtitles.hebrewMode.title', 'Hebrew Display Mode')}
-            </Text>
-            <Pressable onPress={onClose} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>✕</Text>
-            </Pressable>
-          </View>
+      <div
+        ref={modalRef}
+        className="bg-gray-900/95 backdrop-blur-xl rounded-2xl p-6 w-[90%] max-w-lg shadow-2xl animate-scale-in"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <h2
+            id="hebrew-mode-modal-title"
+            className="text-xl font-bold text-white"
+          >
+            {t('subtitles.hebrewMode.title', 'Hebrew Display Mode')}
+          </h2>
+          <button
+            onClick={onClose}
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+            aria-label="Close modal"
+          >
+            <span className="text-2xl">✕</span>
+          </button>
+        </div>
 
-          <View style={styles.optionsContainer}>
-            {HEBREW_MODE_OPTIONS.map((option) => {
-              const isAvailable = isModeAvailable(option.mode)
-              const isSelected = option.mode === currentMode
+        {/* Options */}
+        <div className="space-y-3">
+          {HEBREW_MODE_OPTIONS.map((option) => {
+            const isAvailable = isModeAvailable(option.mode)
+            const isSelected = option.mode === currentMode
 
-              return (
-                <Pressable
-                  key={option.mode}
-                  onPress={() => isAvailable && handleModePress(option.mode)}
-                  disabled={!isAvailable}
-                  style={({ pressed }) => [
-                    styles.option,
-                    isSelected && styles.optionSelected,
-                    !isAvailable && styles.optionDisabled,
-                    { opacity: pressed && isAvailable ? 0.7 : 1 },
-                  ]}
-                >
-                  <View style={styles.optionContent}>
-                    <Text style={styles.optionIcon}>{option.icon}</Text>
-                    <View style={styles.optionTexts}>
-                      <Text style={[
-                        styles.optionTitle,
-                        !isAvailable && styles.optionTitleDisabled
-                      ]}>
-                        {t(option.titleKey, option.mode)}
-                      </Text>
-                      <Text style={[
-                        styles.optionDescription,
-                        !isAvailable && styles.optionDescriptionDisabled
-                      ]}>
-                        {t(option.descriptionKey, 'Description')}
-                      </Text>
-                      <Text style={styles.optionExample}>{option.example}</Text>
-                    </View>
-                    {isSelected && (
-                      <View style={styles.checkmark}>
-                        <Text style={styles.checkmarkText}>✓</Text>
-                      </View>
-                    )}
-                    {!isAvailable && (
-                      <View style={styles.unavailableBadge}>
-                        <Text style={styles.unavailableText}>
-                          {t('subtitles.hebrewMode.unavailable', 'Unavailable')}
-                        </Text>
-                      </View>
-                    )}
-                  </View>
-                </Pressable>
-              )
-            })}
-          </View>
-        </Pressable>
-      </Pressable>
-    </Modal>
+            return (
+              <button
+                key={option.mode}
+                onClick={() => isAvailable && handleModePress(option.mode)}
+                disabled={!isAvailable}
+                className={`
+                  w-full rounded-lg p-4 border-2 transition-all
+                  ${
+                    isSelected
+                      ? 'bg-indigo-500/20 border-indigo-500'
+                      : 'bg-white/5 border-transparent hover:bg-white/10'
+                  }
+                  ${!isAvailable ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                `}
+                aria-label={`${t(option.titleKey)} mode${!isAvailable ? ' (unavailable)' : ''}${isSelected ? ' (selected)' : ''}`}
+                aria-pressed={isSelected}
+                aria-disabled={!isAvailable}
+              >
+                <div className="flex items-center gap-4">
+                  {/* Icon */}
+                  <span className="text-4xl flex-shrink-0">{option.icon}</span>
+
+                  {/* Text content */}
+                  <div className="flex-1 text-left">
+                    <h3
+                      className={`text-base font-semibold mb-1 ${
+                        isAvailable ? 'text-white' : 'text-gray-500'
+                      }`}
+                    >
+                      {t(option.titleKey, option.mode)}
+                    </h3>
+                    <p
+                      className={`text-sm mb-1 ${
+                        isAvailable ? 'text-gray-400' : 'text-gray-600'
+                      }`}
+                    >
+                      {t(option.descriptionKey, 'Description')}
+                    </p>
+                    <p
+                      className="text-sm text-gray-500 font-mono"
+                      dir="rtl"
+                      lang="he"
+                    >
+                      {option.example}
+                    </p>
+                  </div>
+
+                  {/* Status indicator */}
+                  {isSelected && (
+                    <div
+                      className="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center flex-shrink-0"
+                      aria-hidden="true"
+                    >
+                      <span className="text-white text-base font-bold">✓</span>
+                    </div>
+                  )}
+                  {!isAvailable && (
+                    <div
+                      className="bg-red-500/20 rounded px-2 py-1 flex-shrink-0"
+                      aria-hidden="true"
+                    >
+                      <span className="text-xs text-red-400 font-semibold">
+                        {t('subtitles.hebrewMode.unavailable', 'Unavailable')}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </div>
   )
-}
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    backgroundColor: 'rgba(20, 20, 30, 0.95)',
-    borderRadius: borderRadius.xl,
-    padding: spacing.xl,
-    width: '90%',
-    maxWidth: 500,
-    backdropFilter: 'blur(20px)',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.textPrimary,
-  },
-  closeButton: {
-    padding: spacing.md,  // Increased from spacing.sm for 44×44pt touch target
-    minHeight: 44,  // iOS HIG minimum
-    minWidth: 44,  // iOS HIG minimum
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    fontSize: 24,
-    color: colors.textSecondary,
-  },
-  optionsContainer: {
-    gap: spacing.md,
-  },
-  option: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  optionSelected: {
-    backgroundColor: 'rgba(99, 102, 241, 0.2)',
-    borderColor: colors.primary,
-  },
-  optionDisabled: {
-    opacity: 0.5,
-  },
-  optionContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  optionIcon: {
-    fontSize: 32,
-  },
-  optionTexts: {
-    flex: 1,
-  },
-  optionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: spacing.xs,
-  },
-  optionTitleDisabled: {
-    color: colors.textSecondary,
-  },
-  optionDescription: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    marginBottom: spacing.xs,
-  },
-  optionDescriptionDisabled: {
-    color: 'rgba(255, 255, 255, 0.3)',
-  },
-  optionExample: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontFamily: 'monospace',
-    direction: 'rtl',
-  },
-  checkmark: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkmarkText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  unavailableBadge: {
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-    borderRadius: borderRadius.sm,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-  },
-  unavailableText: {
-    fontSize: 11,
-    color: colors.error,
-    fontWeight: '600',
-  },
-})
+  // Render modal in portal
+  return createPortal(modalContent, document.body)
+}

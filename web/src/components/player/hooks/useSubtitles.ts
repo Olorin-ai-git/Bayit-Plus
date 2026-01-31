@@ -12,6 +12,7 @@ import {
 } from '@/types/subtitle'
 import { subtitlesService, subtitlePreferencesService } from '@/services/api'
 import logger from '@/utils/logger'
+import { storageHelpers, STORAGE_KEYS } from '@/utils/storage'
 
 interface UseSubtitlesOptions {
   contentId?: string
@@ -24,6 +25,9 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
   const [hebrewMode, setHebrewMode] = useState<HebrewMode>('regular')
   const [availableSubtitles, setAvailableSubtitles] = useState<SubtitleTrack[]>([])
   const [subtitlesLoading, setSubtitlesLoading] = useState(false)
+  const [subtitlesError, setSubtitlesError] = useState<Error | null>(null)
+  const [cuesLoading, setCuesLoading] = useState(false)
+  const [cuesError, setCuesError] = useState<Error | null>(null)
   const [currentCues, setCurrentCues] = useState<SubtitleCue[]>([])
   const [subtitleSettings, setSubtitleSettings] = useState<SubtitleSettings>({
     fontSize: 'medium',
@@ -32,20 +36,24 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     textColor: '#ffffff',
   })
 
-  // Load subtitle preferences from localStorage
+  // Load subtitle preferences from storage
   useEffect(() => {
-    try {
-      const savedPrefs = localStorage.getItem('bayit-subtitle-preferences')
-      if (savedPrefs) {
-        const prefs: SubtitlePreferences = JSON.parse(savedPrefs)
-        setSubtitlesEnabled(prefs.enabled)
-        setCurrentSubtitleLang(prefs.language)
-        setHebrewMode(prefs.hebrew_mode || 'regular')
-        setSubtitleSettings(prefs.settings)
+    const loadPreferences = async () => {
+      try {
+        const prefs = await storageHelpers.getJSON<SubtitlePreferences>(
+          STORAGE_KEYS.SUBTITLE_PREFERENCES
+        )
+        if (prefs) {
+          setSubtitlesEnabled(prefs.enabled)
+          setCurrentSubtitleLang(prefs.language)
+          setHebrewMode(prefs.hebrew_mode || 'regular')
+          setSubtitleSettings(prefs.settings)
+        }
+      } catch (error) {
+        logger.error('Failed to load subtitle preferences', 'useSubtitles', error)
       }
-    } catch (error) {
-      logger.error('Failed to load subtitle preferences', 'useSubtitles', error)
     }
+    loadPreferences()
   }, [])
 
   // Function to fetch available subtitles
@@ -53,6 +61,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     if (!contentId || isLive) return
 
     setSubtitlesLoading(true)
+    setSubtitlesError(null)
     try {
       const response = await subtitlesService.getTracks(contentId)
       setAvailableSubtitles(response.tracks || [])
@@ -90,6 +99,8 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
         setCurrentSubtitleLang(selectedLanguage)
       }
     } catch (error) {
+      const errorObj = error instanceof Error ? error : new Error(String(error))
+      setSubtitlesError(errorObj)
       logger.error('Failed to fetch subtitle tracks', 'useSubtitles', error)
     } finally {
       setSubtitlesLoading(false)
@@ -105,34 +116,45 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
   useEffect(() => {
     if (!contentId || !currentSubtitleLang || !subtitlesEnabled) {
       setCurrentCues([])
+      setCuesError(null)
       return
     }
 
     const fetchCues = async () => {
+      setCuesLoading(true)
+      setCuesError(null)
       try {
         const response = await subtitlesService.getCues(contentId, currentSubtitleLang, hebrewMode)
         setCurrentCues(response.cues || [])
       } catch (error) {
+        const errorObj = error instanceof Error ? error : new Error(String(error))
+        setCuesError(errorObj)
         logger.error('Failed to fetch subtitle cues', 'useSubtitles', error)
+        setCurrentCues([])
+      } finally {
+        setCuesLoading(false)
       }
     }
 
     fetchCues()
   }, [contentId, currentSubtitleLang, hebrewMode, subtitlesEnabled])
 
-  // Save subtitle preferences to localStorage
+  // Save subtitle preferences to storage
   useEffect(() => {
-    try {
-      const prefs: SubtitlePreferences = {
-        enabled: subtitlesEnabled,
-        language: currentSubtitleLang,
-        hebrew_mode: hebrewMode,
-        settings: subtitleSettings,
+    const savePreferences = async () => {
+      try {
+        const prefs: SubtitlePreferences = {
+          enabled: subtitlesEnabled,
+          language: currentSubtitleLang,
+          hebrew_mode: hebrewMode,
+          settings: subtitleSettings,
+        }
+        await storageHelpers.setJSON(STORAGE_KEYS.SUBTITLE_PREFERENCES, prefs)
+      } catch (error) {
+        logger.error('Failed to save subtitle preferences', 'useSubtitles', error)
       }
-      localStorage.setItem('bayit-subtitle-preferences', JSON.stringify(prefs))
-    } catch (error) {
-      logger.error('Failed to save subtitle preferences', 'useSubtitles', error)
     }
+    savePreferences()
   }, [subtitlesEnabled, currentSubtitleLang, hebrewMode, subtitleSettings])
 
   // Subtitle handlers
@@ -178,12 +200,44 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     }
   }
 
+  // Retry handlers
+  const retryFetchSubtitles = () => {
+    setSubtitlesError(null)
+    fetchAvailableSubtitles()
+  }
+
+  const retryFetchCues = () => {
+    setCuesError(null)
+    // Trigger re-fetch by toggling a dependency
+    if (contentId && currentSubtitleLang) {
+      const fetchCues = async () => {
+        setCuesLoading(true)
+        setCuesError(null)
+        try {
+          const response = await subtitlesService.getCues(contentId, currentSubtitleLang, hebrewMode)
+          setCurrentCues(response.cues || [])
+        } catch (error) {
+          const errorObj = error instanceof Error ? error : new Error(String(error))
+          setCuesError(errorObj)
+          logger.error('Failed to fetch subtitle cues', 'useSubtitles', error)
+          setCurrentCues([])
+        } finally {
+          setCuesLoading(false)
+        }
+      }
+      fetchCues()
+    }
+  }
+
   return {
     subtitlesEnabled,
     currentSubtitleLang,
     hebrewMode,
     availableSubtitles,
     subtitlesLoading,
+    subtitlesError,
+    cuesLoading,
+    cuesError,
     currentCues,
     subtitleSettings,
     handleSubtitleToggle,
@@ -191,5 +245,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     handleHebrewModeChange,
     handleSubtitleSettingsChange,
     fetchAvailableSubtitles,
+    retryFetchSubtitles,
+    retryFetchCues,
   }
 }
