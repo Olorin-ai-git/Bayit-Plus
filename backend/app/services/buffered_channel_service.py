@@ -6,13 +6,14 @@ This is how professional broadcast translation systems work.
 
 Architecture:
 - Measures actual dubbing/subtitle latency per channel
-- Delays HLS manifest segments by measured latency
+- Client-side buffering via video element manipulation
 - Guarantees perfect video-audio synchronization
 - Eliminates need for manual sync adjustment
 """
 
 import asyncio
 import logging
+from collections import OrderedDict
 from datetime import datetime, timedelta
 from typing import Dict, Optional, List
 from dataclasses import dataclass
@@ -32,24 +33,14 @@ class LatencyProfile:
     measured_at: datetime
     sample_count: int
 
-    @property
-    def recommended_delay_ms(self) -> int:
-        """Recommended video delay with 100ms safety buffer."""
+    def recommended_delay_ms(self, safety_buffer_ms: int = 100) -> int:
+        """Recommended video delay with configurable safety buffer."""
         # Use the higher of dubbing or subtitle latency
         base_latency = max(
             self.avg_dubbing_latency_ms,
             self.avg_subtitle_latency_ms
         )
-        return base_latency + 100  # 100ms safety buffer
-
-
-@dataclass
-class DelayedManifest:
-    """HLS manifest with time-shifted segments."""
-    url: str
-    delay_ms: int
-    segments: List[Dict]
-    generated_at: datetime
+        return base_latency + safety_buffer_ms
 
 
 @dataclass
@@ -73,8 +64,10 @@ class BufferedChannelService:
     """
 
     def __init__(self):
-        self.latency_profiles: Dict[str, LatencyProfile] = {}
+        # Use OrderedDict for LRU cache behavior
+        self.latency_profiles: OrderedDict[str, LatencyProfile] = OrderedDict()
         self._measurement_lock = asyncio.Lock()
+        self.active_streams: Dict[str, int] = {}  # user_id -> stream_count
 
     async def create_synced_stream(
         self,
@@ -96,63 +89,70 @@ class BufferedChannelService:
 
         Returns:
             SyncedStreamInfo with delayed video and WebSocket URLs
+
+        Raises:
+            HTTPException: If user exceeds concurrent stream quota
         """
-        # 1. Get or measure latency profile for this channel
-        profile = await self.get_latency_profile(channel_id, target_lang)
-
-        if not profile:
-            # First time for this channel - measure latency
-            profile = await self.measure_channel_latency(
-                channel_id,
-                target_lang or "en"
+        # Check user stream quota (prevent resource exhaustion)
+        user_stream_count = self.active_streams.get(user_id, 0)
+        if user_stream_count >= settings.MAX_CONCURRENT_STREAMS_PER_USER:
+            from fastapi import HTTPException
+            raise HTTPException(
+                status_code=429,
+                detail=f"Maximum concurrent streams exceeded ({settings.MAX_CONCURRENT_STREAMS_PER_USER})"
             )
 
-        # 2. Calculate required video delay
-        video_delay_ms = profile.recommended_delay_ms
+        # Increment active stream count
+        self.active_streams[user_id] = user_stream_count + 1
 
-        logger.info(
-            f"Creating synced stream for channel {channel_id} "
-            f"with {video_delay_ms}ms delay (dubbing={enable_dubbing}, "
-            f"subtitles={enable_subtitles})"
-        )
-
-        # 3. Create delayed video manifest
         try:
-            delayed_manifest = await self.create_delayed_manifest(
-                channel_id,
-                delay_ms=video_delay_ms
+            # 1. Get or measure latency profile for this channel
+            profile = await self.get_latency_profile(channel_id, target_lang)
+
+            if not profile:
+                # First time for this channel - measure latency
+                profile = await self.measure_channel_latency(
+                    channel_id,
+                    target_lang or "en"
+                )
+
+            # 2. Calculate required video delay
+            video_delay_ms = profile.recommended_delay_ms(settings.VIDEO_BUFFER_SAFETY_MS)
+
+            logger.info(
+                f"Creating synced stream for channel {channel_id} "
+                f"with {video_delay_ms}ms delay (dubbing={enable_dubbing}, "
+                f"subtitles={enable_subtitles})"
             )
-            video_url = delayed_manifest.url
-            mode = "server-side"
-        except Exception as e:
-            # Fallback to client-side buffering
-            logger.warning(
-                f"Server-side manifest delay failed: {e}. "
-                f"Client will handle buffering."
-            )
-            # Return original stream URL with delay instruction
+
+            # 3. Use client-side buffering (primary approach for live streams)
+            # Server-side HLS manifest manipulation requires CDN infrastructure
             video_url = await self.get_original_stream_url(channel_id)
             mode = "client-side"
 
-        # 4. Create WebSocket URLs for dubbing/subtitles
-        dubbing_ws = None
-        subtitle_ws = None
+            # 4. Create WebSocket URLs for dubbing/subtitles
+            dubbing_ws = None
+            subtitle_ws = None
 
-        if enable_dubbing and target_lang:
-            dubbing_ws = f"wss://{settings.API_DOMAIN}/api/v1/ws/live-dubbing/{channel_id}"
+            if enable_dubbing and target_lang:
+                dubbing_ws = f"wss://{settings.API_DOMAIN}/api/v1/ws/live-dubbing/{channel_id}"
 
-        if enable_subtitles and target_lang:
-            subtitle_ws = f"wss://{settings.API_DOMAIN}/api/v1/ws/live-subtitles/{channel_id}"
+            if enable_subtitles and target_lang:
+                subtitle_ws = f"wss://{settings.API_DOMAIN}/api/v1/ws/live-subtitles/{channel_id}"
 
-        return SyncedStreamInfo(
-            channel_id=channel_id,
-            video_url=video_url,
-            video_delay_ms=video_delay_ms,
-            dubbing_websocket_url=dubbing_ws,
-            subtitle_websocket_url=subtitle_ws,
-            sync_guaranteed=True,
-            mode=mode
-        )
+            return SyncedStreamInfo(
+                channel_id=channel_id,
+                video_url=video_url,
+                video_delay_ms=video_delay_ms,
+                dubbing_websocket_url=dubbing_ws,
+                subtitle_websocket_url=subtitle_ws,
+                sync_guaranteed=True,
+                mode=mode
+            )
+        except Exception as e:
+            # Decrement stream count on failure
+            self.active_streams[user_id] = max(0, self.active_streams[user_id] - 1)
+            raise
 
     async def get_latency_profile(
         self,
@@ -167,9 +167,11 @@ class BufferedChannelService:
         profile = self.latency_profiles.get(cache_key)
 
         if profile:
-            # Check if profile is still fresh (< 1 hour old)
+            # Check if profile is still fresh (configurable TTL)
             age = datetime.utcnow() - profile.measured_at
-            if age < timedelta(hours=1):
+            if age < timedelta(hours=settings.LATENCY_PROFILE_CACHE_TTL_HOURS):
+                # Move to end (LRU)
+                self.latency_profiles.move_to_end(cache_key)
                 return profile
 
         return None
@@ -182,7 +184,7 @@ class BufferedChannelService:
         """
         Measure actual dubbing and subtitle latency for a channel.
 
-        Sends test audio chunks and measures round-trip time.
+        Uses conservative default estimates until real-time measurement is implemented.
         Creates latency profile for future streams.
         """
         async with self._measurement_lock:
@@ -191,10 +193,10 @@ class BufferedChannelService:
                 f"target_lang={target_lang}"
             )
 
-            # For now, use conservative estimates
-            # TODO: Implement actual measurement with test audio chunks
-            dubbing_latency = 800  # ms (conservative estimate)
-            subtitle_latency = 400  # ms (conservative estimate)
+            # Use conservative estimates from configuration
+            # Real-time measurement will be added in future update
+            dubbing_latency = settings.DEFAULT_DUBBING_LATENCY_MS
+            subtitle_latency = settings.DEFAULT_SUBTITLE_LATENCY_MS
 
             profile = LatencyProfile(
                 channel_id=channel_id,
@@ -205,14 +207,20 @@ class BufferedChannelService:
                 sample_count=1
             )
 
-            # Cache the profile
+            # Cache the profile with LRU eviction
             cache_key = f"{channel_id}:{target_lang}"
-            self.latency_profiles[cache_key] = profile
+            if cache_key in self.latency_profiles:
+                self.latency_profiles.move_to_end(cache_key)
+            else:
+                # Check cache size limit
+                if len(self.latency_profiles) >= settings.MAX_LATENCY_PROFILES:
+                    self.latency_profiles.popitem(last=False)  # Remove oldest
+                self.latency_profiles[cache_key] = profile
 
             logger.info(
                 f"Latency profile created: dubbing={dubbing_latency}ms, "
                 f"subtitle={subtitle_latency}ms, "
-                f"recommended_delay={profile.recommended_delay_ms}ms"
+                f"recommended_delay={profile.recommended_delay_ms(settings.VIDEO_BUFFER_SAFETY_MS)}ms"
             )
 
             return profile
@@ -233,18 +241,18 @@ class BufferedChannelService:
         profile = self.latency_profiles.get(cache_key)
 
         if not profile:
-            # Create new profile
+            # Create new profile with defaults from settings
             profile = LatencyProfile(
                 channel_id=channel_id,
                 target_lang=target_lang,
-                avg_dubbing_latency_ms=measured_dubbing_ms or 800,
-                avg_subtitle_latency_ms=measured_subtitle_ms or 400,
+                avg_dubbing_latency_ms=measured_dubbing_ms or settings.DEFAULT_DUBBING_LATENCY_MS,
+                avg_subtitle_latency_ms=measured_subtitle_ms or settings.DEFAULT_SUBTITLE_LATENCY_MS,
                 measured_at=datetime.utcnow(),
                 sample_count=1
             )
         else:
-            # Update with exponential moving average (alpha = 0.2)
-            alpha = 0.2
+            # Update with exponential moving average (configurable alpha)
+            alpha = settings.LATENCY_EMA_ALPHA
             if measured_dubbing_ms:
                 profile.avg_dubbing_latency_ms = int(
                     alpha * measured_dubbing_ms +
@@ -258,6 +266,12 @@ class BufferedChannelService:
             profile.measured_at = datetime.utcnow()
             profile.sample_count += 1
 
+        # Add to cache with LRU management
+        if cache_key in self.latency_profiles:
+            self.latency_profiles.move_to_end(cache_key)
+        else:
+            if len(self.latency_profiles) >= settings.MAX_LATENCY_PROFILES:
+                self.latency_profiles.popitem(last=False)
         self.latency_profiles[cache_key] = profile
 
         logger.debug(
@@ -267,37 +281,10 @@ class BufferedChannelService:
             f"(n={profile.sample_count})"
         )
 
-    async def create_delayed_manifest(
-        self,
-        channel_id: str,
-        delay_ms: int,
-    ) -> DelayedManifest:
-        """
-        Create HLS manifest with time-shifted segments.
-
-        This is the core of server-side buffering - we modify the
-        HLS manifest to serve segments from the past, effectively
-        delaying the video stream.
-
-        Args:
-            channel_id: Channel to delay
-            delay_ms: How much to delay (in milliseconds)
-
-        Returns:
-            DelayedManifest with URL to delayed stream
-        """
-        # TODO: Implement actual HLS manifest manipulation
-        # For now, raise exception to trigger client-side fallback
-        raise NotImplementedError(
-            "Server-side manifest delay not yet implemented. "
-            "Client will use client-side buffering."
-        )
-
     async def get_original_stream_url(self, channel_id: str) -> str:
         """Get original (non-delayed) stream URL for a channel."""
-        # TODO: Get actual stream URL from channel service
-        # For now, return placeholder
-        return f"https://stream.bayitplus.com/live/{channel_id}/master.m3u8"
+        # Construct stream URL from configured base URL
+        return f"{settings.LIVE_STREAM_BASE_URL}/{channel_id}/master.m3u8"
 
 
 # Global singleton instance

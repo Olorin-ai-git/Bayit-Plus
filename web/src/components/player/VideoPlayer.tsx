@@ -194,6 +194,17 @@ export default function VideoPlayer({
     enabled: isLive && !!user,
   })
 
+  // Forward subtitle transcripts to trivia when both are active
+  const handleLiveSubtitleCueWithTrivia = useCallback(
+    (cue: Parameters<typeof handleLiveSubtitleCue>[0]) => {
+      handleLiveSubtitleCue(cue)
+      if (liveTrivia.isConnected && cue.original_text) {
+        liveTrivia.sendTranscript(cue.original_text, cue.source_lang || 'he')
+      }
+    },
+    [handleLiveSubtitleCue, liveTrivia.isConnected, liveTrivia.sendTranscript],
+  )
+
   // Channel chat visibility (Zustand store - persisted)
   const { isChatVisible, toggleChatVisibility } = useChannelChatStore()
 
@@ -328,7 +339,7 @@ export default function VideoPlayer({
     fetchAvailableSubtitles,
     liveSubtitleLang,
     setLiveSubtitleLang,
-    handleLiveSubtitleCue,
+    handleLiveSubtitleCue: handleLiveSubtitleCueWithTrivia,
     dubbing,
     cast,
     setIsRecording,
@@ -338,7 +349,11 @@ export default function VideoPlayer({
       toggleChat: toggleChatVisibility,
       hasUnreadMessages: false,
     } : undefined,
-    liveTrivia: isLive ? liveTrivia : undefined,
+    liveTrivia: isLive ? {
+      enabled: liveTrivia.isEnabled,
+      toggleEnabled: () => liveTrivia.setEnabled(!liveTrivia.isEnabled),
+      hasActiveFact: liveTrivia.currentFact !== null,
+    } : undefined,
     catchUp: isLive && isBetaUser && !isBetaUserLoading ? {
       showSummary: catchUp.showSummary,
       toggleSummary: () => catchUp.showSummary ? catchUp.closeSummary() : catchUp.fetchSummary(),

@@ -132,7 +132,11 @@ type ErrorCallback = (error: string, recoverable: boolean) => void
 class LiveDubbingService {
   private ws: WebSocket | null = null
   private audioCapture: SharedAudioCapture | null = null
-  private audioContext: AudioContext | null = null
+
+  // Separate AudioContexts for optimal audio quality
+  private captureContext: AudioContext | null = null  // 16kHz for STT (capture from video)
+  private playbackContext: AudioContext | null = null // 48kHz for TTS (playback dubbed audio)
+
   private isConnected = false
   private syncDelayMs = AUDIO_CONFIG.defaultSyncDelayMs
   private bufferedMode = false // Disable immediate playback for buffered mode
@@ -419,30 +423,36 @@ class LiveDubbingService {
   }
 
   /**
-   * Set up audio pipeline using ScriptProcessorNode for reliable capture.
-   * Uses 16kHz sample rate to match ElevenLabs STT requirements (same as Live Subtitles).
+   * Set up audio pipeline using separate AudioContexts for optimal quality.
+   * - Capture context at 16kHz for STT (ElevenLabs Scribe requirement)
+   * - Playback context at 48kHz for TTS (high-quality dubbed audio playback)
    */
   private async setupAudioPipeline(videoElement: HTMLVideoElement, onError: ErrorCallback): Promise<boolean> {
     try {
       logger.debug('Setting up audio pipeline', 'liveDubbingService')
 
-      // Create AudioContext for gain control and dubbed audio playback
-      this.audioContext = new AudioContext({ sampleRate: AUDIO_CONFIG.sampleRate })
-      logger.debug(`AudioContext created at ${AUDIO_CONFIG.sampleRate}Hz`, 'liveDubbingService')
+      // Create CAPTURE context at 16kHz for STT
+      this.captureContext = new AudioContext({ sampleRate: AUDIO_CONFIG.sampleRate })
+      logger.debug(`Capture AudioContext created at ${AUDIO_CONFIG.sampleRate}Hz (for STT)`, 'liveDubbingService')
 
-      // Create gain nodes for volume mixing (original vs dubbed audio)
-      this.originalGain = this.audioContext.createGain()
-      this.dubbedGain = this.audioContext.createGain()
+      // Create PLAYBACK context at 48kHz for high-quality TTS playback
+      // Use browser default (typically 48kHz) for optimal audio quality
+      this.playbackContext = new AudioContext()
+      logger.debug(`Playback AudioContext created at ${this.playbackContext.sampleRate}Hz (for TTS)`, 'liveDubbingService')
+
+      // Create gain nodes for volume mixing (use playback context for output)
+      this.originalGain = this.playbackContext.createGain()
+      this.dubbedGain = this.playbackContext.createGain()
 
       // Set initial volumes
       this.originalGain.gain.value = this.originalVolume
       this.dubbedGain.gain.value = this.dubbedVolume
 
-      // Connect gain nodes to audio output
-      this.originalGain.connect(this.audioContext.destination)
-      this.dubbedGain.connect(this.audioContext.destination)
+      // Connect gain nodes to playback context output
+      this.originalGain.connect(this.playbackContext.destination)
+      this.dubbedGain.connect(this.playbackContext.destination)
 
-      logger.debug('Gain nodes created and connected', 'liveDubbingService')
+      logger.debug('Gain nodes created and connected to playback context', 'liveDubbingService')
 
       // Get buffer size from settings (with validation)
       const settings = this.channelId
@@ -459,9 +469,9 @@ class LiveDubbingService {
         'liveDubbingService'
       )
 
-      // Create shared audio capture service (pass existing AudioContext)
+      // Create shared audio capture service (use capture context for 16kHz capture)
       this.audioCapture = new SharedAudioCapture(
-        this.audioContext,
+        this.captureContext,
         bufferSize,
         AUDIO_CONFIG.chunkLogInterval,
         {
@@ -507,11 +517,11 @@ class LiveDubbingService {
 
 
   /**
-   * Play dubbed audio through the dubbed gain node.
+   * Play dubbed audio through the dubbed gain node using playback context.
    */
   private async playDubbedAudio(base64Audio: string): Promise<void> {
-    if (!this.audioContext || !this.dubbedGain) {
-      logger.warn('Audio context not ready', 'liveDubbingService')
+    if (!this.playbackContext || !this.dubbedGain) {
+      logger.warn('Playback context not ready', 'liveDubbingService')
       return
     }
 
@@ -523,16 +533,16 @@ class LiveDubbingService {
         bytes[i] = binaryString.charCodeAt(i)
       }
 
-      // Decode audio data
-      const audioBuffer = await this.audioContext.decodeAudioData(bytes.buffer)
+      // Decode audio data using playback context (48kHz for high quality)
+      const audioBuffer = await this.playbackContext.decodeAudioData(bytes.buffer)
 
       // Create buffer source and play through dubbed gain
-      const source = this.audioContext.createBufferSource()
+      const source = this.playbackContext.createBufferSource()
       source.buffer = audioBuffer
       source.connect(this.dubbedGain)
       source.start()
 
-      logger.debug(`Playing dubbed audio (${audioBuffer.duration.toFixed(2)}s)`, 'liveDubbingService')
+      logger.debug(`Playing dubbed audio (${audioBuffer.duration.toFixed(2)}s at ${this.playbackContext.sampleRate}Hz)`, 'liveDubbingService')
     } catch (error) {
       logger.error('Error playing dubbed audio', 'liveDubbingService', error)
     }
@@ -543,10 +553,10 @@ class LiveDubbingService {
    */
   setOriginalVolume(volume: number): void {
     this.originalVolume = Math.max(0, Math.min(1, volume))
-    if (this.originalGain && this.audioContext) {
+    if (this.originalGain && this.playbackContext) {
       this.originalGain.gain.setTargetAtTime(
         this.originalVolume,
-        this.audioContext.currentTime,
+        this.playbackContext.currentTime,
         AUDIO_CONFIG.volumeTransitionTime
       )
     }
@@ -558,10 +568,10 @@ class LiveDubbingService {
    */
   setDubbedVolume(volume: number): void {
     this.dubbedVolume = Math.max(0, Math.min(1, volume))
-    if (this.dubbedGain && this.audioContext) {
+    if (this.dubbedGain && this.playbackContext) {
       this.dubbedGain.gain.setTargetAtTime(
         this.dubbedVolume,
-        this.audioContext.currentTime,
+        this.playbackContext.currentTime,
         AUDIO_CONFIG.volumeTransitionTime
       )
     }
@@ -663,10 +673,15 @@ class LiveDubbingService {
       this.dubbedGain = null
     }
 
-    // Close audio context
-    if (this.audioContext) {
-      this.audioContext.close()
-      this.audioContext = null
+    // Close both audio contexts
+    if (this.captureContext) {
+      this.captureContext.close()
+      this.captureContext = null
+    }
+
+    if (this.playbackContext) {
+      this.playbackContext.close()
+      this.playbackContext = null
     }
   }
 

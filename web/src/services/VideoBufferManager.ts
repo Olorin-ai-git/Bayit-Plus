@@ -7,11 +7,12 @@
  * Architecture:
  * 1. Measure actual latency on first audio chunk
  * 2. Calculate required video delay
- * 3. Delay video.currentTime by measured latency
+ * 3. Delay video playback via pause-based buffering
  * 4. Report measurements back to server
  */
 
 import axios from 'axios'
+import logger from '@/utils/logger'
 
 export interface LatencyMeasurement {
   dubbing_ms: number
@@ -40,6 +41,7 @@ export class VideoBufferManager {
 
   private measurementStartTime: number = 0
   private measurementInProgress: boolean = false
+  private delayTimeoutId: number | null = null // Track setTimeout for cleanup
 
   constructor(config: VideoBufferConfig) {
     this.channelId = config.channelId
@@ -56,7 +58,7 @@ export class VideoBufferManager {
     if (!this.measurementInProgress) {
       this.measurementStartTime = Date.now()
       this.measurementInProgress = true
-      console.log('[VideoBuffer] Started latency measurement')
+      logger.debug('Started latency measurement', 'VideoBufferManager')
     }
   }
 
@@ -82,7 +84,7 @@ export class VideoBufferManager {
       }
     }
 
-    console.log(`[VideoBuffer] Measured ${type} latency: ${latency}ms`)
+    logger.debug(`Measured ${type} latency: ${latency}ms`, 'VideoBufferManager')
 
     // Apply delay if not already applied
     if (!this.isDelayApplied) {
@@ -94,7 +96,8 @@ export class VideoBufferManager {
   }
 
   /**
-   * Apply video delay based on measured latency
+   * Apply video delay based on measured latency.
+   * Uses pause-based buffering (more reliable for live streams than seeking).
    */
   private applyVideoDelay(): void {
     if (!this.measuredLatency || this.isDelayApplied) return
@@ -108,31 +111,36 @@ export class VideoBufferManager {
     // Add 100ms safety buffer
     this.appliedDelay = baseLatency + 100
 
-    console.log(`[VideoBuffer] Applying ${this.appliedDelay}ms video delay`)
+    logger.info(`Applying ${this.appliedDelay}ms video delay`, 'VideoBufferManager')
 
-    // Delay video by seeking backward
+    // Use pause-based buffering (primary approach for live streams)
+    // More reliable than seeking backward on live HLS streams
     try {
-      const currentTime = this.videoElement.currentTime
-      const delaySeconds = this.appliedDelay / 1000
+      this.videoElement.pause()
 
-      // Seek backward to create delay
-      if (currentTime > delaySeconds) {
-        this.videoElement.currentTime = currentTime - delaySeconds
-        this.isDelayApplied = true
-
-        console.log(
-          `[VideoBuffer] Video delayed: ${currentTime.toFixed(2)}s → ${this.videoElement.currentTime.toFixed(2)}s`
-        )
-      } else {
-        // If video just started, pause briefly to build buffer
-        this.videoElement.pause()
-        setTimeout(() => {
-          this.videoElement.play()
-          this.isDelayApplied = true
-        }, this.appliedDelay)
+      // Clear any existing timeout
+      if (this.delayTimeoutId !== null) {
+        clearTimeout(this.delayTimeoutId)
       }
+
+      // Resume playback after delay
+      this.delayTimeoutId = setTimeout(() => {
+        // Handle play() promise to avoid unhandled rejection
+        this.videoElement.play()
+          .then(() => {
+            this.isDelayApplied = true
+            this.delayTimeoutId = null
+            logger.debug(
+              `Video delay applied successfully (${this.appliedDelay}ms)`,
+              'VideoBufferManager'
+            )
+          })
+          .catch((error) => {
+            logger.warn('Failed to resume video after delay', 'VideoBufferManager', error)
+          })
+      }, this.appliedDelay) as unknown as number
     } catch (error) {
-      console.error('[VideoBuffer] Failed to apply video delay:', error)
+      logger.error('Failed to apply video delay', 'VideoBufferManager', error)
     }
   }
 
@@ -143,18 +151,16 @@ export class VideoBufferManager {
     if (!this.measuredLatency) return
 
     try {
-      await axios.post('/api/v1/synced-streams/update-latency', null, {
-        params: {
-          channel_id: this.channelId,
-          target_lang: this.targetLang,
-          measured_dubbing_ms: this.measuredLatency.dubbing_ms || undefined,
-          measured_subtitle_ms: this.measuredLatency.subtitle_ms || undefined,
-        },
+      await axios.post('/api/v1/synced-streams/update-latency', {
+        channel_id: this.channelId,
+        target_lang: this.targetLang,
+        measured_dubbing_ms: this.measuredLatency.dubbing_ms || undefined,
+        measured_subtitle_ms: this.measuredLatency.subtitle_ms || undefined,
       })
 
-      console.log('[VideoBuffer] Reported latency to backend')
+      logger.debug('Reported latency to backend', 'VideoBufferManager')
     } catch (error) {
-      console.warn('[VideoBuffer] Failed to report latency:', error)
+      logger.warn('Failed to report latency to backend', 'VideoBufferManager', error)
       // Non-critical error, continue
     }
   }
@@ -184,12 +190,18 @@ export class VideoBufferManager {
    * Reset buffer manager (e.g., when changing channels)
    */
   reset(): void {
+    // Clear any pending timeout to prevent memory leaks
+    if (this.delayTimeoutId !== null) {
+      clearTimeout(this.delayTimeoutId)
+      this.delayTimeoutId = null
+    }
+
     this.measuredLatency = null
     this.appliedDelay = 0
     this.isDelayApplied = false
     this.measurementStartTime = 0
     this.measurementInProgress = false
-    console.log('[VideoBuffer] Reset')
+    logger.debug('Video buffer manager reset', 'VideoBufferManager')
   }
 }
 
@@ -231,10 +243,14 @@ export async function createSyncedStream(
       }
     )
 
-    console.log('[SyncedStream] Created:', response.data)
+    logger.info('Synced stream created successfully', 'createSyncedStream', {
+      channel_id: response.data.channel_id,
+      mode: response.data.mode,
+      video_delay_ms: response.data.video_delay_ms,
+    })
     return response.data
   } catch (error) {
-    console.error('[SyncedStream] Failed to create synced stream:', error)
+    logger.error('Failed to create synced stream', 'createSyncedStream', error)
     throw error
   }
 }

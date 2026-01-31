@@ -573,6 +573,57 @@ class Settings(BaseSettings):
     # Options: "google" (Google Cloud Translate), "openai" (GPT-4o-mini), or "claude" (Claude)
     LIVE_TRANSLATION_PROVIDER: str = "google"
 
+    # API Domain (REQUIRED for WebSocket URL construction in synced streams)
+    # Example: "api.bayit.plus" (production) or "localhost:8000" (development)
+    API_DOMAIN: str = Field(
+        default="localhost:8000",
+        description="API domain for WebSocket URL construction (no protocol prefix)"
+    )
+
+    # Live Stream Base URL (REQUIRED for synced stream URL generation)
+    # Example: "https://stream.bayitplus.com/live" (production)
+    LIVE_STREAM_BASE_URL: str = Field(
+        default="https://stream.bayitplus.com/live",
+        description="Base URL for live HLS streams (used in synced stream fallback)"
+    )
+
+    # Video Buffering Configuration (for perfect audio-video synchronization)
+    # Conservative latency estimates for dubbing and subtitle processing
+    DEFAULT_DUBBING_LATENCY_MS: int = Field(
+        default=800,
+        description="Default dubbing latency estimate in milliseconds (before measurement)"
+    )
+    DEFAULT_SUBTITLE_LATENCY_MS: int = Field(
+        default=400,
+        description="Default subtitle latency estimate in milliseconds (before measurement)"
+    )
+    VIDEO_BUFFER_SAFETY_MS: int = Field(
+        default=100,
+        description="Safety buffer added to video delay to prevent audio arriving before video (ms)"
+    )
+    LATENCY_PROFILE_CACHE_TTL_HOURS: int = Field(
+        default=1,
+        description="How long to cache latency profiles before re-measurement (hours)"
+    )
+    LATENCY_EMA_ALPHA: float = Field(
+        default=0.2,
+        description="Exponential moving average smoothing factor for latency updates (0.0-1.0)"
+    )
+    MAX_LATENCY_PROFILES: int = Field(
+        default=1000,
+        description="Maximum number of latency profiles to cache in memory (LRU eviction)"
+    )
+
+    # Resource Limits for Synced Streams (prevent abuse and resource exhaustion)
+    MAX_CONCURRENT_STREAMS_PER_USER: int = Field(
+        default=3,
+        description="Maximum number of concurrent synced streams per user"
+    )
+    MAX_STREAM_DURATION_HOURS: int = Field(
+        default=24,
+        description="Maximum duration for a single synced stream (hours)"
+    )
+
     # CORS (REQUIRED - supports JSON string from Secret Manager or comma-separated list)
     # Example: '["https://bayit.tv","https://api.bayit.tv"]' or "https://bayit.tv,https://api.bayit.tv"
     BACKEND_CORS_ORIGINS: list[str] | str = ""  # Required, no hardcoded defaults
