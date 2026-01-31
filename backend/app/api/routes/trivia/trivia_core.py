@@ -45,44 +45,8 @@ async def get_trivia(
     _rollout: None = Depends(check_trivia_rollout),
 ) -> dict:
     """
-    Get trivia facts for a specific content item.
-    Returns cached trivia if available, or generates new trivia from TMDB.
-
-    Args:
-        content_id: Content item ID
-        language: Preferred language for single-language mode (default: "he")
-        multilingual: If True, return all language fields. If False, return single language
-        current_user: Optional authenticated user
-    """
-    validated_id = validate_object_id(content_id)
-
-    existing = await ContentTrivia.get_for_content(validated_id)
-    if existing:
-        return format_trivia_response(existing, language, multilingual)
-
-    content = await Content.get(validated_id)
-    if not content:
-        raise HTTPException(status_code=404, detail="Content not found")
-
-    generator = TriviaGenerationService()
-    trivia = await generator.generate_trivia(content, enrich=False)
-
-    return format_trivia_response(trivia, language, multilingual)
-
-
-@router.get("/{content_id}/enriched")
-@limiter.limit(RATE_LIMITS.get("trivia_enriched", "3/hour"))
-async def get_enriched_trivia(
-    request: Request,
-    content_id: str,
-    language: str = "he",
-    multilingual: bool = False,
-    current_user: Optional[User] = Depends(get_optional_user),
-    _rollout: None = Depends(check_trivia_rollout),
-) -> dict:
-    """
-    Get full enriched trivia bundle for offline playback.
-    Includes AI-generated facts in addition to TMDB data.
+    Get enriched trivia facts for a specific content item.
+    Returns cached enriched trivia if available, or generates new AI-chained trivia.
 
     Args:
         content_id: Content item ID

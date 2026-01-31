@@ -5,7 +5,7 @@
  */
 
 import React from 'react'
-import { View, Text, Platform } from 'react-native'
+import { View, Text, Pressable, Platform } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { X, Lightbulb, ChevronRight, Sparkles } from 'lucide-react-native'
 import { GlassButton } from '@bayit/shared/components/ui/GlassButton'
@@ -44,17 +44,16 @@ export function TriviaCard({ fact, onDismiss, onFollowUp, isRTL = false }: Trivi
             {t('trivia.didYouKnow')}
           </Text>
         </View>
-        <GlassButton
-          title=""
-          icon={<X size={isTV ? 24 : 14} color="#9CA3AF" />}
+        <Pressable
           onPress={onDismiss}
-          variant="ghost"
-          size={isTV ? 'md' : 'sm'}
           style={styles.dismissButton}
           accessibilityLabel={t('common.dismiss')}
           accessibilityHint={t('trivia.dismissHint')}
+          // @ts-ignore - tvOS focus prop
           hasTVPreferredFocus={isTV}
-        />
+        >
+          <X size={isTV ? 24 : 14} color="#9CA3AF" />
+        </Pressable>
       </View>
 
       {/* Category Badge */}

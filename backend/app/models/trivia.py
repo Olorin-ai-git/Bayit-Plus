@@ -23,7 +23,7 @@ class TriviaFactModel(BaseModel):
         ..., pattern="^(cast|production|location|cultural|historical)$"
     )
     source: str = Field("manual", pattern="^(tmdb|ai|manual|cultural_reference)$")
-    display_duration: int = Field(default=10, ge=5, le=30)
+    display_duration: int = Field(default=15, ge=5, le=30)
     priority: int = Field(default=5, ge=1, le=10)
     related_person: Optional[str] = None
 
@@ -181,7 +181,7 @@ class TriviaPreferencesRequest(BaseModel):
     categories: List[str] = Field(
         default_factory=lambda: ["cast", "production", "cultural"], max_length=5
     )
-    display_duration: int = Field(10, ge=5, le=30)
+    display_duration: int = Field(15, ge=5, le=30)
 
     # NEW: Language display preferences
     display_languages: List[str] = Field(

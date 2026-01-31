@@ -27,6 +27,8 @@ interface UseTriviaReturn {
   dismissFact: () => void
   followUpFact: () => void
   updateSettings: (updates: Partial<TriviaPreferences>) => Promise<void>
+  onHoverStart: () => void
+  onHoverEnd: () => void
 }
 
 export function useTrivia({
@@ -44,7 +46,7 @@ export function useTrivia({
     error,
     isEnabled,
     intervalMs,
-    loadTrivia,
+    loadEnrichedTrivia,
     loadPreferences,
     toggleEnabled,
     updatePreferences,
@@ -57,6 +59,9 @@ export function useTrivia({
   const [lastCheckTime, setLastCheckTime] = useState<number>(0)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const autoDismissRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isHoveredRef = useRef<boolean>(false)
+  const remainingDismissMs = useRef<number>(0)
+  const dismissStartedAt = useRef<number>(0)
 
   // Load preferences on mount
   useEffect(() => {
@@ -65,14 +70,14 @@ export function useTrivia({
     })
   }, [loadPreferences])
 
-  // Load trivia when contentId changes
+  // Load enriched trivia (with AI chains) when contentId changes
   useEffect(() => {
     if (contentId) {
-      loadTrivia(contentId, language).catch((err) => {
-        logger.error('Failed to load trivia', 'useTrivia', err)
+      loadEnrichedTrivia(contentId, language).catch((err) => {
+        logger.error('Failed to load enriched trivia', 'useTrivia', err)
       })
     }
-  }, [contentId, language, loadTrivia])
+  }, [contentId, language, loadEnrichedTrivia])
 
   // Check for new trivia to show based on current time and interval
   const checkForTrivia = useCallback(() => {
@@ -108,17 +113,27 @@ export function useTrivia({
     }
   }, [isEnabled, isPlaying, checkForTrivia])
 
+  // Start or restart the auto-dismiss timer with a given duration
+  const startAutoDismissTimer = useCallback((durationMs: number) => {
+    if (autoDismissRef.current) {
+      clearTimeout(autoDismissRef.current)
+    }
+    remainingDismissMs.current = durationMs
+    dismissStartedAt.current = Date.now()
+    autoDismissRef.current = setTimeout(() => {
+      storeDismissFact()
+    }, durationMs)
+  }, [storeDismissFact])
+
   // Auto-dismiss current fact after display duration
   useEffect(() => {
     if (currentFact && preferences.auto_dismiss) {
-      if (autoDismissRef.current) {
-        clearTimeout(autoDismissRef.current)
-      }
-
       const displayDuration = currentFact.display_duration || preferences.display_duration
-      autoDismissRef.current = setTimeout(() => {
-        storeDismissFact()
-      }, displayDuration * 1000)
+      if (!isHoveredRef.current) {
+        startAutoDismissTimer(displayDuration * 1000)
+      } else {
+        remainingDismissMs.current = displayDuration * 1000
+      }
 
       return () => {
         if (autoDismissRef.current) {
@@ -127,7 +142,7 @@ export function useTrivia({
         }
       }
     }
-  }, [currentFact, preferences.auto_dismiss, preferences.display_duration, storeDismissFact])
+  }, [currentFact, preferences.auto_dismiss, preferences.display_duration, startAutoDismissTimer])
 
   // Cleanup on unmount
   useEffect(() => {
@@ -167,6 +182,23 @@ export function useTrivia({
     storeFollowUpFact()
   }, [storeFollowUpFact])
 
+  const handleHoverStart = useCallback(() => {
+    isHoveredRef.current = true
+    if (autoDismissRef.current) {
+      const elapsed = Date.now() - dismissStartedAt.current
+      remainingDismissMs.current = Math.max(0, remainingDismissMs.current - elapsed)
+      clearTimeout(autoDismissRef.current)
+      autoDismissRef.current = null
+    }
+  }, [])
+
+  const handleHoverEnd = useCallback(() => {
+    isHoveredRef.current = false
+    if (currentFact && preferences.auto_dismiss && remainingDismissMs.current > 0) {
+      startAutoDismissTimer(remainingDismissMs.current)
+    }
+  }, [currentFact, preferences.auto_dismiss, startAutoDismissTimer])
+
   const handleUpdateSettings = useCallback(
     async (updates: Partial<TriviaPreferences>) => {
       try {
@@ -189,6 +221,8 @@ export function useTrivia({
     dismissFact: handleDismissFact,
     followUpFact: handleFollowUpFact,
     updateSettings: handleUpdateSettings,
+    onHoverStart: handleHoverStart,
+    onHoverEnd: handleHoverEnd,
   }
 }
 

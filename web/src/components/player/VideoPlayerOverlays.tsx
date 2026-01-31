@@ -41,6 +41,8 @@ interface VideoPlayerOverlaysProps {
   triviaEnabled: boolean
   currentFact: TriviaFact | null
   onDismissFact: () => void
+  onTriviaHoverStart?: () => void
+  onTriviaHoverEnd?: () => void
   isTTSPlaying: boolean
 
   // Usage stats
@@ -71,6 +73,8 @@ export default function VideoPlayerOverlays({
   triviaEnabled,
   currentFact,
   onDismissFact,
+  onTriviaHoverStart,
+  onTriviaHoverEnd,
   isTTSPlaying,
   usageStats,
   loading,
@@ -115,6 +119,8 @@ export default function VideoPlayerOverlays({
         <TriviaOverlay
           fact={currentFact}
           onDismiss={onDismissFact}
+          onHoverStart={onTriviaHoverStart}
+          onHoverEnd={onTriviaHoverEnd}
           isRTL={i18n.language === 'he'}
           isTTSPlaying={isTTSPlaying}
         />

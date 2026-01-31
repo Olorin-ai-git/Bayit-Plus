@@ -39,7 +39,9 @@ export default function ChannelChatPanel({
 
   const {
     isChatVisible,
+    isChatExpanded,
     toggleChatVisibility,
+    toggleChatExpanded,
   } = useChannelChatStore()
 
   const {
@@ -60,7 +62,7 @@ export default function ChannelChatPanel({
   // Connect when chat becomes visible
   useEffect(() => {
     if (isChatVisible && !isConnected && channelId) {
-      console.log('Chat visible - connecting to channel:', channelId)
+      logger.info('Chat visible - connecting to channel', { channelId })
       connect()
     }
   }, [isChatVisible, isConnected, channelId, connect])

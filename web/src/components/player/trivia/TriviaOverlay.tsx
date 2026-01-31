@@ -23,6 +23,8 @@ interface TriviaOverlayProps {
   fact: TriviaFact | null
   onDismiss: () => void
   onFollowUp?: () => void
+  onHoverStart?: () => void
+  onHoverEnd?: () => void
   isRTL?: boolean
   accessibilityLabel?: string
   isTTSPlaying?: boolean
@@ -35,6 +37,8 @@ export function TriviaOverlay({
   fact,
   onDismiss,
   onFollowUp,
+  onHoverStart,
+  onHoverEnd,
   isRTL = false,
   accessibilityLabel,
   isTTSPlaying = false,
@@ -132,8 +136,12 @@ export function TriviaOverlay({
       accessibilityRole="alert"
       accessibilityLabel={accessibilityLabel || `${t('trivia.didYouKnow')}: ${fact.text}`}
       accessibilityLiveRegion="polite"
-      // @ts-ignore - Web-specific prop for keyboard focus
-      {...(Platform.OS === 'web' ? { tabIndex: 0 } : {})}
+      // @ts-ignore - Web-specific props for keyboard focus and hover pause
+      {...(Platform.OS === 'web' ? {
+        tabIndex: 0,
+        onMouseEnter: onHoverStart,
+        onMouseLeave: onHoverEnd,
+      } : {})}
     >
       <TriviaCard fact={fact} onDismiss={onDismiss} onFollowUp={onFollowUp} isRTL={isRTL} />
     </Animated.View>

@@ -446,6 +446,8 @@ export default function VideoPlayer({
         triviaEnabled={trivia.triviaEnabled}
         currentFact={trivia.currentFact}
         onDismissFact={trivia.dismissFact}
+        onTriviaHoverStart={trivia.onHoverStart}
+        onTriviaHoverEnd={trivia.onHoverEnd}
         isTTSPlaying={isTTSPlaying}
         usageStats={usageStats}
         loading={state.loading}

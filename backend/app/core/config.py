@@ -1258,7 +1258,7 @@ class Settings(BaseSettings):
         default=True, description="Enable trivia feature globally"
     )
     TRIVIA_DEFAULT_DISPLAY_DURATION_SECONDS: int = Field(
-        default=10,
+        default=15,
         ge=5,
         le=30,
         description="Default trivia display duration in seconds",
