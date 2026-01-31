@@ -7,7 +7,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GlassCard, GlassButton } from '@bayit/glass';
+import { GlassCard, GlassButton } from '@olorin/glass-ui/web';
 import { useNavigate } from 'react-router-dom';
 
 interface CreditBalanceWidgetProps {

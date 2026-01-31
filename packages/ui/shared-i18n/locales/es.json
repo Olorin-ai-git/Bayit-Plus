@@ -3384,7 +3384,12 @@
     "nowPlaying": "Reproduciendo Ahora",
     "upNext": "Siguiente",
     "timeRemaining": "Tiempo Restante",
-    "openAiTools": "Abrir Herramientas IA"
+    "openAiTools": "Abrir Herramientas IA",
+    "noVocabulary": "No hay palabras de vocabulario disponibles para este episodio",
+    "noContext": "No hay contexto disponible para el episodio",
+    "noQuiz": "No hay preguntas de prueba disponibles para este episodio",
+    "checkAnswer": "Verificar Respuesta",
+    "concepts": "Conceptos Clave"
   },
   "channels": {
     "kanEducational": "Kan Educativo",

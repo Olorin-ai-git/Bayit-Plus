@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, FlatList, Pressable, Image, TextInput, ActivityIndicator, useWindowDimensions, StyleSheet } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Play, Clock, Baby, Lock } from 'lucide-react';
+import { Play, Clock, Baby, Lock, Radio } from 'lucide-react';
 import { useProfileStore } from '@/stores/profileStore';
 import { childrenService } from '../services/api';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -19,6 +19,7 @@ import {
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import { useDirection } from '@/hooks/useDirection';
 import { LoadingState, EmptyState } from '@bayit/shared/components/states';
+import { AIEnhancedBadge } from '@/components/content';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
@@ -155,6 +156,38 @@ function KidsContentCard({ item }: { item: KidsContentItem }) {
         </View>
       </Pressable>
     </Link>
+  );
+}
+
+function KanEducationalFeaturedCard({ navigate, t }: { navigate: any; t: any }) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <Pressable
+      onHoverIn={() => setIsHovered(true)}
+      onHoverOut={() => setIsHovered(false)}
+      onPress={() => navigate('/live/kan-educational')}
+      style={[styles.kanEducationalCard, isHovered && styles.kanEducationalCardHovered]}
+    >
+      <View style={styles.kanEducationalBadges}>
+        <View style={styles.liveBadge}>
+          <Radio size={12} color="#fff" />
+          <Text style={styles.liveBadgeText}>{t('common.live')}</Text>
+        </View>
+        <AIEnhancedBadge features={['vocabulary', 'context', 'quiz']} size="small" />
+      </View>
+      <View style={styles.kanEducationalContent}>
+        <Text style={styles.kanEducationalTitle}>{t('channels.kanEducational')}</Text>
+        <Text style={styles.kanEducationalDescription}>{t('channels.kanEducationalDesc')}</Text>
+      </View>
+      {isHovered && (
+        <View style={styles.kanEducationalPlayOverlay}>
+          <View style={styles.kanEducationalPlayButton}>
+            <Play size={24} color="#fff" fill="#fff" />
+          </View>
+        </View>
+      )}
+    </Pressable>
   );
 }
 
@@ -437,6 +470,14 @@ export default function ChildrenPage() {
                 );
               })}
             </View>
+          </View>
+        )}
+
+        {/* Kan Educational Featured Card - shown for educational category */}
+        {selectedCategory === 'educational' && !isLoading && (
+          <View style={styles.featuredChannelSection}>
+            <Text style={styles.featuredChannelTitle}>{t('children.liveEducational', 'Live Educational Channel')}</Text>
+            <KanEducationalFeaturedCard navigate={navigate} t={t} />
           </View>
         )}
 
@@ -797,5 +838,83 @@ const styles = StyleSheet.create({
   emptyDescription: {
     color: colors.textMuted,
     fontSize: 16,
+  },
+
+  // Kan Educational Featured Card
+  featuredChannelSection: {
+    marginBottom: spacing.xl,
+  },
+  featuredChannelTitle: {
+    color: '#facc15',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: spacing.md,
+  },
+  kanEducationalCard: {
+    position: 'relative',
+    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+    borderRadius: borderRadius.xl,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.3)',
+    overflow: 'hidden',
+  },
+  kanEducationalCardHovered: {
+    backgroundColor: 'rgba(34, 197, 94, 0.25)',
+    borderColor: 'rgba(34, 197, 94, 0.5)',
+    transform: [{ scale: 1.02 }],
+  },
+  kanEducationalBadges: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  liveBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(239, 68, 68, 0.9)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: borderRadius.sm,
+  },
+  liveBadgeText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  kanEducationalContent: {
+    flex: 1,
+  },
+  kanEducationalTitle: {
+    color: colors.text,
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: spacing.xs,
+  },
+  kanEducationalDescription: {
+    color: colors.textMuted,
+    fontSize: 14,
+  },
+  kanEducationalPlayOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: borderRadius.xl,
+  },
+  kanEducationalPlayButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(34, 197, 94, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

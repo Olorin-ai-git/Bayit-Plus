@@ -67,6 +67,17 @@ class SyncYouTubeRequest(BaseModel):
     max_videos_per_channel: int = Field(default=20, ge=1, le=50)
 
 
+class ImportKanEducationalRequest(BaseModel):
+    """Request for importing Kan Educational YouTube channel content."""
+
+    max_videos: int = Field(
+        default=500, ge=1, le=1000, description="Maximum videos to import"
+    )
+    force_reimport: bool = Field(
+        default=False, description="Re-import even if content exists"
+    )
+
+
 class CurateContentRequest(BaseModel):
     """Request for curating kids content."""
 
@@ -247,6 +258,51 @@ async def sync_youtube_channels(
 
     except Exception as e:
         logger.error(f"Error syncing YouTube: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/kids/import/kan-educational")
+async def import_kan_educational(
+    data: ImportKanEducationalRequest,
+    request: Request,
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE)),
+):
+    """
+    Import ALL public videos from Kan Educational YouTube channel.
+
+    Imports the full Kan Educational (כאן חינוכית) channel content with:
+    - Kids/educational metadata (is_kids_content=True, age_rating=7)
+    - AI enhancement flags for vocabulary, context, and quiz features
+    - Educational tags for Hebrew language learning
+    - Section assignments for Kids and Judaism sections
+
+    Requires YOUTUBE_API_KEY to be configured.
+    """
+    from app.services.kan_channel_import_service import kan_channel_import_service
+
+    try:
+        result = await kan_channel_import_service.import_channel_content(
+            max_videos=data.max_videos,
+            force_reimport=data.force_reimport,
+        )
+
+        await log_audit(
+            user_id=str(current_user.id),
+            action=AuditAction.CREATE,
+            resource_type="kids_content",
+            details={
+                "operation": "kan_educational_import",
+                "imported": result.get("imported", 0),
+                "skipped": result.get("skipped", 0),
+                "total_found": result.get("total_found", 0),
+            },
+            request=request,
+        )
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Error importing Kan Educational: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

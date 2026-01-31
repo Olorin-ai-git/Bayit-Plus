@@ -220,6 +220,63 @@ async def _cleanup_stale_playback_sessions_task() -> None:
         await asyncio.sleep(300)
 
 
+async def _sync_youtube_epg_task() -> None:
+    """
+    Sync EPG schedules for YouTube playlist channels.
+
+    This ensures that all users see the same video at the same time by
+    keeping the EPG schedule in sync with the wall clock.
+    """
+    from app.models.content import LiveChannel
+    from app.services.youtube_epg_sync_service import youtube_epg_sync_service
+
+    # Wait for server to initialize
+    await asyncio.sleep(60)
+
+    while True:
+        try:
+            # Find all YouTube playlist channels
+            channels = await LiveChannel.find(
+                LiveChannel.stream_type == "youtube-playlist",
+                LiveChannel.is_active == True,
+            ).to_list()
+
+            if channels:
+                logger.info(f"Syncing EPG for {len(channels)} YouTube playlist channel(s)")
+
+                for channel in channels:
+                    try:
+                        sync_interval = getattr(
+                            channel, "epg_sync_interval_minutes", 60
+                        )
+                        result = await youtube_epg_sync_service.sync_channel_epg(
+                            str(channel.id)
+                        )
+                        logger.info(
+                            f"EPG sync for {channel.name}: "
+                            f"{result.get('epg_entries_created', 0)} entries, "
+                            f"current: {result.get('current_program', 'N/A')}"
+                        )
+                    except Exception as e:
+                        logger.error(f"EPG sync failed for {channel.name}: {e}")
+
+            # Default sync interval (use first channel's setting or 60 minutes)
+            sync_interval_seconds = 60 * 60  # 1 hour default
+            if channels:
+                sync_interval_seconds = (
+                    getattr(channels[0], "epg_sync_interval_minutes", 60) * 60
+                )
+
+        except asyncio.CancelledError:
+            logger.info("YouTube EPG sync task cancelled")
+            break
+        except Exception as e:
+            logger.error(f"YouTube EPG sync task error: {e}", exc_info=True)
+            sync_interval_seconds = 60 * 60  # Wait 1 hour on error
+
+        await asyncio.sleep(sync_interval_seconds)
+
+
 def start_background_tasks() -> None:
     """Start all background tasks."""
     global _running_tasks
@@ -274,6 +331,11 @@ def start_background_tasks() -> None:
     task = asyncio.create_task(cost_rollup_job())
     _running_tasks.append(task)
     logger.info("Started cost aggregation background task (every 1 hour)")
+
+    # YouTube EPG sync (for YouTube playlist channels like Kan Educational)
+    task = asyncio.create_task(_sync_youtube_epg_task())
+    _running_tasks.append(task)
+    logger.info("Started YouTube EPG sync background task")
 
 
 async def stop_background_tasks() -> None:

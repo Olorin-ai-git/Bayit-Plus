@@ -48,6 +48,10 @@ async def get_channels(
                 "culture_id": channel.culture_id,
                 "currentShow": channel.current_show,
                 "nextShow": channel.next_show,
+                "stream_type": channel.stream_type,
+                "is_ai_enhanced": getattr(channel, "is_ai_enhanced", False),
+                "ai_features": getattr(channel, "ai_features", []),
+                "supports_pip_widget": getattr(channel, "supports_pip_widget", False),
             }
             for channel in channels
         ],
@@ -194,6 +198,50 @@ async def get_stream_url(
                     status_code=403,
                     detail=f"This channel requires {required_tier} subscription",
                 )
+
+    # Handle YouTube playlist channels with synchronized playback
+    if channel.stream_type == "youtube-playlist":
+        from app.services.youtube_epg_sync_service import youtube_epg_sync_service
+
+        program_info = await youtube_epg_sync_service.get_current_program(channel_id)
+
+        if program_info and program_info.get("current_program"):
+            current = program_info["current_program"]
+            next_prog = program_info.get("next_program")
+
+            # Build dynamic stream URL with seek position
+            youtube_id = current.get("youtube_id")
+            seek_seconds = current.get("seek_to_seconds", 0)
+            stream_url = (
+                f"https://www.youtube.com/embed/{youtube_id}"
+                f"?autoplay=1&enablejsapi=1&start={seek_seconds}"
+            )
+
+            return {
+                "stream_url": stream_url,
+                "stream_type": "youtube-playlist",
+                "is_ai_enhanced": getattr(channel, "is_ai_enhanced", False),
+                "ai_features": getattr(channel, "ai_features", []),
+                "supports_pip_widget": getattr(channel, "supports_pip_widget", False),
+                "current_program": {
+                    "title": current.get("title"),
+                    "title_en": current.get("title_en"),
+                    "description": current.get("description"),
+                    "youtube_id": youtube_id,
+                    "started_at": current.get("started_at"),
+                    "ends_at": current.get("ends_at"),
+                    "seek_to_seconds": seek_seconds,
+                    "thumbnail": current.get("thumbnail"),
+                },
+                "next_program": {
+                    "title": next_prog.get("title"),
+                    "title_en": next_prog.get("title_en"),
+                    "youtube_id": next_prog.get("youtube_id"),
+                    "starts_at": next_prog.get("starts_at"),
+                } if next_prog else None,
+                "attribution": getattr(channel, "attribution_text_en", None)
+                    or getattr(channel, "attribution_text", None),
+            }
 
     return {
         "url": channel.stream_url,

@@ -8,7 +8,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { GlassCard, GlassSpinner } from '@bayit/glass';
+import { GlassCard, GlassSpinner } from '@olorin/glass-ui/web';
 import { AlertCircle } from 'lucide-react';
 
 export function AudibleCallbackPage() {

@@ -3519,7 +3519,12 @@
     "nowPlaying": "כרגע משודר",
     "upNext": "הבא בתור",
     "timeRemaining": "זמן נותר",
-    "openAiTools": "פתח כלי למידה"
+    "openAiTools": "פתח כלי למידה",
+    "noVocabulary": "אין מילים זמינות לפרק זה",
+    "noContext": "אין הקשר זמין לפרק",
+    "noQuiz": "אין שאלות חידון זמינות לפרק זה",
+    "checkAnswer": "בדוק תשובה",
+    "concepts": "מושגי מפתח"
   },
   "channels": {
     "kanEducational": "כאן חינוכית",

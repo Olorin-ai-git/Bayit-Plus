@@ -10,7 +10,7 @@ from datetime import datetime
 from typing import Any, Dict
 
 from app.models.content import Content
-from app.models.content_taxonomy import ContentSection
+from app.models.content_taxonomy import ContentSection, SectionSubcategory
 
 logger = logging.getLogger(__name__)
 
@@ -295,6 +295,28 @@ class JudaismContentSeeder:
         logger.info(f"Created Judaism category: {category.id}")
         return str(category.id)
 
+    async def _ensure_language_learning_subcategory(self, section_id: str) -> str:
+        """Ensure Language Learning subcategory exists in Judaism section."""
+        existing = await SectionSubcategory.find_one({
+            "section_id": section_id,
+            "slug": "language-learning"
+        })
+        if existing:
+            return str(existing.id)
+
+        subcategory = SectionSubcategory(
+            section_id=section_id,
+            slug="language-learning",
+            name_key="taxonomy.subcategories.language_learning",
+            description_key="taxonomy.subcategories.language_learning_description",
+            icon="📚",
+            order=10,
+            is_active=True,
+        )
+        await subcategory.insert()
+        logger.info(f"Created Language Learning subcategory: {subcategory.id}")
+        return str(subcategory.id)
+
     async def seed_content(self) -> Dict[str, Any]:
         """Seed Judaism content into the database."""
         seeded_count = 0
@@ -303,6 +325,9 @@ class JudaismContentSeeder:
 
         try:
             category_id = await self._ensure_judaism_category()
+            # Ensure Language Learning subcategory exists for AI-enhanced Hebrew learning
+            language_learning_id = await self._ensure_language_learning_subcategory(category_id)
+            logger.info(f"Language Learning subcategory ID: {language_learning_id}")
         except Exception as e:
             return {"message": "Failed to create Judaism category", "error": str(e)}
 
@@ -348,6 +373,7 @@ class JudaismContentSeeder:
             "errors": errors,
             "total_available": len(JUDAISM_CONTENT_SEED),
             "category_id": category_id,
+            "language_learning_subcategory_id": language_learning_id,
         }
 
     async def clear_judaism_content(self) -> Dict[str, Any]:

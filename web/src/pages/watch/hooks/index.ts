@@ -6,3 +6,4 @@ export * from './useChaptersLoader';
 export * from './useContentLoader';
 export * from './useEpisodePlayer';
 export * from './usePlaylistManager';
+export * from './useYouTubePlaylistChannel';

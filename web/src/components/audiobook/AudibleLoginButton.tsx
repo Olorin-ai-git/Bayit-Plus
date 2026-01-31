@@ -8,7 +8,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GlassButton, GlassSpinner } from '@bayit/glass';
+import { GlassButton, GlassSpinner } from '@olorin/glass-ui/web';
 import { useAuth } from '@/hooks/useAuth';
 
 interface AudibleLoginButtonProps {

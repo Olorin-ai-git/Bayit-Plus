@@ -9,6 +9,7 @@ import { GlassPlaceholder } from '@olorin/glass-ui';
 import type { ContentType as GlassContentType } from '@olorin/design-tokens';
 import { SubtitleFlags, ContentBadges } from '@bayit/shared';
 import { useModeEnforcement } from '@bayit/shared-hooks';
+import AIEnhancedBadge from './AIEnhancedBadge';
 import { useDirection } from '@/hooks/useDirection';
 import { favoritesService, watchlistService } from '@/services/api';
 import { getLocalizedCategory } from '@bayit/shared-utils/contentLocalization';
@@ -38,6 +39,9 @@ interface Content {
   url?: string;  // Article/event URL for iframe display
   video_url?: string;  // Video URL for playback (YouTube, direct video, etc.)
   content_format?: string;  // Content format (article, event, movie, video, etc.)
+  // AI Enhancement fields (for educational content like Kan Educational)
+  is_ai_enhanced?: boolean;
+  ai_features?: string[];  // ['vocabulary', 'context', 'quiz', 'translation']
 }
 
 interface ContentCardProps {
@@ -438,6 +442,16 @@ export default function ContentCard({ content, showProgress = false, showActions
               </View>
             )}
 
+            {/* AI Enhanced Badge - for educational content */}
+            {content.is_ai_enhanced && (
+              <View style={[styles.aiEnhancedBadge, isRTL ? { right: 'auto', left: spacing.sm } : {}]}>
+                <AIEnhancedBadge
+                  features={content.ai_features}
+                  size="small"
+                />
+              </View>
+            )}
+
             {/* Live Badge - positioned to avoid action buttons */}
             {content.type === 'live' && (
               <View style={[
@@ -766,6 +780,11 @@ const styles = StyleSheet.create({
   qualityBadge: {
     position: 'absolute',
     top: spacing.sm,
+    right: spacing.sm,
+  },
+  aiEnhancedBadge: {
+    position: 'absolute',
+    top: spacing.sm + 28,  // Below quality badge
     right: spacing.sm,
   },
   fallbackThumbnail: {

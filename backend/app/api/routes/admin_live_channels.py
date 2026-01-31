@@ -273,3 +273,52 @@ async def reorder_live_channels(
         request,
     )
     return {"message": "Channels reordered"}
+
+
+@router.post("/live-channels/seed-kan-educational")
+async def seed_kan_educational_channel(
+    request: Request,
+    current_user: User = Depends(has_permission(Permission.CONTENT_CREATE)),
+):
+    """
+    Seed the Kan Educational TV channel with full YouTube import and EPG sync.
+
+    This endpoint performs a complete setup:
+    1. Creates the Kan Educational LiveChannel document (if not exists)
+    2. Imports ALL public videos from Kan Educational YouTube channel
+    3. Generates initial EPG schedule for synchronized playback
+
+    The channel provides a TV-like experience where all users see the
+    same video at the same time based on wall clock synchronization.
+
+    Features enabled:
+    - AI Enhancement (vocabulary, context, quiz, translation)
+    - PiP Widget support for multitasking
+    - Kids-friendly content with age rating 7+
+    """
+    from app.services.kan_educational_seeder import seed_and_import_kan_educational
+
+    try:
+        result = await seed_and_import_kan_educational(
+            max_videos=500,
+            force_reimport=False,
+        )
+
+        await log_audit(
+            str(current_user.id),
+            AuditAction.LIVE_CHANNEL_CREATED,
+            "live_channel",
+            result.get("channel_id"),
+            {
+                "operation": "seed_kan_educational",
+                "steps": [s.get("step") for s in result.get("steps", [])],
+                "imported": result.get("imported", 0),
+                "success": result.get("success", False),
+            },
+            request,
+        )
+
+        return result
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

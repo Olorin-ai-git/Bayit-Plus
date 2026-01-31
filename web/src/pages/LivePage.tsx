@@ -15,6 +15,7 @@ import {
 } from '@bayit/shared/ui';
 import AnimatedCard from '@/components/common/AnimatedCard';
 import { LoadingState, EmptyState } from '@bayit/shared/components/states';
+import { AIEnhancedBadge } from '@/components/content';
 import logger from '@/utils/logger';
 import PageLoading from '@/components/common/PageLoading';
 
@@ -39,6 +40,10 @@ interface Channel {
   currentShow?: string;
   nextShow?: string;
   category?: string;
+  stream_type?: string;
+  is_ai_enhanced?: boolean;
+  ai_features?: string[];
+  supports_pip_widget?: boolean;
 }
 
 export default function LivePage() {
@@ -134,6 +139,11 @@ export default function LivePage() {
             isActive={selectedCategory === 'music'}
             onPress={() => setSelectedCategory('music')}
           />
+          <GlassCategoryPill
+            label={t('liveCategories.educational')}
+            isActive={selectedCategory === 'educational'}
+            onPress={() => setSelectedCategory('educational')}
+          />
         </ScrollView>
 
         {/* Channels Grid */}
@@ -146,12 +156,20 @@ export default function LivePage() {
                 variant="grid"
                 style={{ width: `${100 / numColumns}%`, padding: spacing.xs } as any}
               >
-                <GlassCard
-                  title={channel.name}
-                  imageUrl={channel.thumbnail || channel.logo}
-                  subtitle={channel.currentShow}
-                  onPress={() => navigate(`/live/${channel.id}`)}
-                />
+                <View style={styles.channelCardWrapper}>
+                  <GlassCard
+                    title={channel.name}
+                    imageUrl={channel.thumbnail || channel.logo}
+                    subtitle={channel.currentShow}
+                    onPress={() => navigate(`/live/${channel.id}`)}
+                  />
+                  {/* AI Enhanced Badge for educational channels */}
+                  {channel.is_ai_enhanced && (
+                    <View style={styles.aiEnhancedBadgeWrapper}>
+                      <AIEnhancedBadge features={channel.ai_features} size="small" />
+                    </View>
+                  )}
+                </View>
               </AnimatedCard>
             ))}
           </View>
@@ -200,6 +218,15 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  channelCardWrapper: {
+    position: 'relative',
+  },
+  aiEnhancedBadgeWrapper: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    zIndex: 10,
   },
   skeletonHeader: {
     width: 192,

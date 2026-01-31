@@ -371,6 +371,22 @@ class LiveChannel(Document):
     default_dubbing_voice_id: Optional[str] = None  # Override default ElevenLabs voice
     dubbing_sync_delay_ms: int = 600  # Default sync delay for this channel
 
+    # YouTube Playlist Channel fields (for EPG-synced YouTube channels)
+    youtube_channel_id: Optional[str] = None  # YouTube channel ID for full import
+    youtube_playlist_ids: List[str] = Field(default_factory=list)  # Multiple playlists
+    epg_sync_interval_minutes: int = 60  # How often to refresh EPG
+    attribution_text: Optional[str] = None  # Required attribution (Hebrew)
+    attribution_text_en: Optional[str] = None  # English attribution
+
+    # AI Enhancement flags
+    is_ai_enhanced: bool = False  # Has AI features (vocabulary, quiz, etc.)
+    ai_features: List[str] = Field(
+        default_factory=list
+    )  # ["vocabulary", "quiz", "context", "translation"]
+
+    # Widget support
+    supports_pip_widget: bool = True  # Can be pinned as floating widget
+
     # Visibility
     is_active: bool = True
     order: int = 0

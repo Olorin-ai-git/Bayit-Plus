@@ -13,6 +13,9 @@ import { useAuthStore } from '@/stores/authStore';
 import { logger } from '@/utils/logger';
 import VideoPlayer from '@/components/player/VideoPlayer';
 import AudioPlayer from '@/components/player/AudioPlayer';
+import AIWandToggle from '@/components/player/AIWandToggle';
+import { AICompanionSidebar } from '@/components/player/ai-companion';
+import { useAICompanionStore } from '@/stores/aiCompanionStore';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import { historyService } from '@/services/api';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
@@ -32,8 +35,9 @@ import {
   useContentLoader,
   useEpisodePlayer,
   usePlaylistManager,
+  useYouTubePlaylistChannel,
 } from './hooks';
-import { WatchPageProps } from './types';
+import { WatchPageProps, LocationState } from './types';
 
 export function WatchPage({ type = 'vod' }: WatchPageProps) {
   const { t } = useTranslation();
@@ -106,6 +110,14 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
     isTranscoded,
     directUrl,
   } = contentLoaderResult;
+
+  // YouTube playlist channel support (e.g., Kan Educational)
+  const isYouTubePlaylistChannel = streamType === 'youtube-playlist';
+  const youtubePlaylist = useYouTubePlaylistChannel(contentId, isYouTubePlaylistChannel);
+
+  // AI Companion sidebar state (for educational content)
+  const { isVisible: isAICompanionVisible, toggle: toggleAICompanion, close: closeAICompanion } = useAICompanionStore();
+  const showAIWand = isYouTubePlaylistChannel && youtubePlaylist.isAiEnhanced;
 
   // Local streamUrl state allows episode player to override the URL.
   // Use initialStreamUrl as fallback to avoid race condition where
@@ -265,6 +277,61 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
             />
+          </View>
+        ) : isYouTubePlaylistChannel && youtubePlaylist.streamUrl ? (
+          <View style={styles.youtubePlaylistContainer}>
+            {/* YouTube IFrame with synchronized playback */}
+            <View style={styles.youtubePlayerRow}>
+              <View style={styles.iframeContainer}>
+                <iframe
+                  src={youtubePlaylist.streamUrl}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    border: 'none',
+                    borderRadius: '12px',
+                  }}
+                  title={youtubePlaylist.currentProgram?.title || title}
+                  allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+                  allowFullScreen
+                />
+              </View>
+              {/* AI Companion Sidebar */}
+              <AICompanionSidebar
+                contentId={contentId}
+                programTitle={youtubePlaylist.currentProgram?.title}
+                educationalTags={youtubePlaylist.aiFeatures}
+                attribution={youtubePlaylist.attribution || undefined}
+                isVisible={isAICompanionVisible}
+                onClose={closeAICompanion}
+              />
+            </View>
+            {/* Now Playing Info Bar with AI Wand Toggle */}
+            {youtubePlaylist.currentProgram && (
+              <View style={styles.nowPlayingBar}>
+                <View style={styles.nowPlayingInfo}>
+                  <Text style={styles.nowPlayingLabel}>{t('aiCompanion.nowPlaying')}</Text>
+                  <Text style={styles.nowPlayingTitle}>{youtubePlaylist.currentProgram.title}</Text>
+                </View>
+                {youtubePlaylist.nextProgram && (
+                  <View style={styles.upNextInfo}>
+                    <Text style={styles.upNextLabel}>{t('aiCompanion.upNext')}</Text>
+                    <Text style={styles.upNextTitle}>{youtubePlaylist.nextProgram.title}</Text>
+                  </View>
+                )}
+                {/* AI Wand Toggle Button */}
+                <AIWandToggle
+                  isVisible={showAIWand}
+                  isActive={isAICompanionVisible}
+                  onToggle={toggleAICompanion}
+                  features={youtubePlaylist.aiFeatures}
+                />
+              </View>
+            )}
+            {/* Attribution */}
+            {youtubePlaylist.attribution && (
+              <Text style={styles.attributionText}>{youtubePlaylist.attribution}</Text>
+            )}
           </View>
         ) : isAudio ? (
           <AudioPlayer
@@ -463,5 +530,60 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: borderRadius['2xl'],
     overflow: 'hidden',
+  },
+  youtubePlaylistContainer: {
+    width: '100%',
+  },
+  youtubePlayerRow: {
+    flexDirection: 'row',
+    position: 'relative',
+  },
+  nowPlayingBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.lg,
+    marginTop: spacing.md,
+  },
+  nowPlayingInfo: {
+    flex: 1,
+  },
+  nowPlayingLabel: {
+    fontSize: fontSize.xs,
+    color: colors.primary.DEFAULT,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  nowPlayingTitle: {
+    fontSize: fontSize.lg,
+    color: colors.text,
+    fontWeight: '600',
+  },
+  upNextInfo: {
+    alignItems: 'flex-end',
+  },
+  upNextLabel: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+    fontWeight: '500',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  upNextTitle: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+  },
+  attributionText: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+    textAlign: 'center',
+    marginTop: spacing.sm,
+    fontStyle: 'italic',
   },
 });

@@ -6,7 +6,7 @@
 import React, { useMemo } from 'react'
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { GlassTooltip } from '@bayit/glass'
+import { GlassTooltip } from '@olorin/glass-ui/web'
 
 interface LatencyBadgeProps {
   totalLatency: number
