@@ -328,6 +328,25 @@ export function useContentData() {
     }
   }, [selectedIds, loadContent])
 
+  const handleBatchBeta = useCallback(async (beta: boolean) => {
+    if (selectedIds.length === 0) return
+
+    setIsBatchProcessing(true)
+    try {
+      await adminContentService.batchBetaContent(selectedIds, beta)
+      setSelectedIds([])
+      setSelectedItemsData([])
+      await loadContent()
+      logger.info('Batch beta update successful', { beta, count: selectedIds.length })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to update content'
+      logger.error('Batch beta failed', { error: err })
+      setError(msg)
+    } finally {
+      setIsBatchProcessing(false)
+    }
+  }, [selectedIds, loadContent])
+
   const handleSort = useCallback((columnKey: string, direction: 'asc' | 'desc') => {
     console.log('[useContentData] Sort changed:', { columnKey, direction })
     setSortBy(columnKey)
@@ -401,6 +420,7 @@ export function useContentData() {
     handleBatchMerge,
     handleBatchDelete,
     handleBatchFeature,
+    handleBatchBeta,
     handleSort,
     confirmBatchDelete,
     cancelBatchDelete,

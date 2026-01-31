@@ -1,4 +1,4 @@
-import { Merge, Star, StarOff, Trash2 } from 'lucide-react'
+import { FlaskConical, FlaskConicalOff, Merge, Star, StarOff, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import AdminBatchActionBar from '../shared/AdminBatchActionBar'
 
@@ -8,6 +8,8 @@ interface ContentBatchActionsProps {
   onMerge: () => void
   onBatchFeature: () => void
   onBatchUnfeature: () => void
+  onBatchBeta: () => void
+  onBatchUnbeta: () => void
   onBatchDelete: () => void
   isRTL?: boolean
 }
@@ -18,6 +20,8 @@ export default function ContentBatchActions({
   onMerge,
   onBatchFeature,
   onBatchUnfeature,
+  onBatchBeta,
+  onBatchUnbeta,
   onBatchDelete,
   isRTL = false,
 }: ContentBatchActionsProps) {
@@ -41,6 +45,18 @@ export default function ContentBatchActions({
       label: t('admin.content.batchUnfeature'),
       icon: <StarOff size={16} />,
       onPress: onBatchUnfeature,
+      variant: 'secondary' as const,
+    },
+    {
+      label: t('admin.content.markAsBeta'),
+      icon: <FlaskConical size={16} />,
+      onPress: onBatchBeta,
+      variant: 'secondary' as const,
+    },
+    {
+      label: t('admin.content.removeFromBeta'),
+      icon: <FlaskConicalOff size={16} />,
+      onPress: onBatchUnbeta,
       variant: 'secondary' as const,
     },
     {

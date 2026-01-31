@@ -343,6 +343,51 @@ async def batch_feature_content(
     }
 
 
+@router.post("/content/batch/beta")
+async def batch_beta_content(
+    data: dict,
+    request: Request,
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
+):
+    """Batch update beta content status for multiple content items."""
+    content_ids = data.get("content_ids", [])
+    beta = data.get("beta", True)
+
+    if not content_ids:
+        raise HTTPException(status_code=400, detail="No content IDs provided")
+
+    updated_count = 0
+    errors = []
+
+    for content_id in content_ids:
+        try:
+            content = await Content.get(content_id)
+            if content:
+                content.is_beta_content = beta
+                content.updated_at = datetime.utcnow()
+                await content.save()
+
+                await log_audit(
+                    str(current_user.id),
+                    AuditAction.CONTENT_BETA_TOGGLED,
+                    "content",
+                    content_id,
+                    {"is_beta_content": {"old": not beta, "new": beta}},
+                    request,
+                )
+                updated_count += 1
+            else:
+                errors.append(f"Content {content_id} not found")
+        except Exception as e:
+            logger.error(f"Failed to update content {content_id}: {e}")
+            errors.append(f"Failed to update {content_id}: {str(e)}")
+
+    return {
+        "updated_count": updated_count,
+        "errors": errors
+    }
+
+
 @router.post("/content/batch/merge")
 async def merge_content(
     data: MergeContentRequest,

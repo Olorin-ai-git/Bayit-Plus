@@ -843,6 +843,9 @@ export const createAdminApi = (authStore: AuthStore) => {
   batchFeatureContent: (contentIds: string[], featured: boolean): Promise<{ updated_count: number }> =>
     adminApi.post('/admin/content/batch/feature', { content_ids: contentIds, featured }),
 
+  batchBetaContent: (contentIds: string[], beta: boolean): Promise<{ updated_count: number; errors: string[] }> =>
+    adminApi.post('/admin/content/batch/beta', { content_ids: contentIds, beta }),
+
   batchPublishContent: (contentIds: string[], published: boolean): Promise<{ updated_count: number }> =>
     adminApi.post('/admin/content/batch/publish', { content_ids: contentIds, published }),
 

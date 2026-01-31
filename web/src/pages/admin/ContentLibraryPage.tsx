@@ -49,6 +49,7 @@ export default function ContentLibraryPage() {
     handleBatchMerge,
     handleBatchDelete,
     handleBatchFeature,
+    handleBatchBeta,
     handleSort,
     confirmBatchDelete,
     cancelBatchDelete,
@@ -183,6 +184,8 @@ export default function ContentLibraryPage() {
               onMerge={openMergeWizard}
               onBatchFeature={() => handleBatchFeature(true)}
               onBatchUnfeature={() => handleBatchFeature(false)}
+              onBatchBeta={() => handleBatchBeta(true)}
+              onBatchUnbeta={() => handleBatchBeta(false)}
               onBatchDelete={handleBatchDelete}
               isRTL={isRTL}
             />
