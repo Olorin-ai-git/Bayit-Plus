@@ -126,11 +126,12 @@ def format_trivia_response(
             "priority": fact.priority,
         }
 
-        # Add multilingual fields if requested
+        # Add language-specific fields: map primary text to the correct language key
         if multilingual:
-            fact_data["text_he"] = fact.text
-            fact_data["text_en"] = fact.text_en
-            fact_data["text_es"] = fact.text_es
+            lang_key = {"he": "text_he", "en": "text_en", "es": "text_es"}.get(
+                language, "text_he"
+            )
+            fact_data[lang_key] = fact.text
 
         if fact.related_person:
             fact_data["related_person"] = fact.related_person

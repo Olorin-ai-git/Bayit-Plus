@@ -67,6 +67,6 @@ async def get_trivia(
         raise HTTPException(status_code=404, detail="Content not found")
 
     generator = TriviaGenerationService()
-    trivia = await generator.generate_trivia(content, enrich=True)
+    trivia = await generator.generate_trivia(content, enrich=True, language=language)
 
     return format_trivia_response(trivia, language, multilingual, include_metadata=True)

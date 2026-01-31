@@ -21,9 +21,9 @@ async def get_subtitle_preference(
     content_id: str, current_user: User = Depends(get_current_active_user)
 ):
     """
-    Get user's preferred subtitle language for a specific content item.
+    Get user's preferred subtitle language and Hebrew mode for a specific content item.
 
-    Returns the language code (e.g., "en", "he") or null if no preference set.
+    Returns the language code (e.g., "en", "he") and hebrew_mode or null if no preference set.
     Priority: User preference > Hebrew > English
     """
     try:
@@ -37,6 +37,7 @@ async def get_subtitle_preference(
             return {
                 "content_id": content_id,
                 "preferred_language": preference.preferred_language,
+                "hebrew_mode": getattr(preference, "hebrew_mode", "regular"),
                 "last_used_at": preference.last_used_at,
             }
 
@@ -44,6 +45,7 @@ async def get_subtitle_preference(
         return {
             "content_id": content_id,
             "preferred_language": None,  # Will use fallback: he > en
+            "hebrew_mode": "regular",
             "fallback_order": ["he", "en"],
         }
 
@@ -58,19 +60,28 @@ async def get_subtitle_preference(
 async def set_subtitle_preference(
     content_id: str,
     language: str,
+    hebrew_mode: str = "regular",
     current_user: User = Depends(get_current_active_user),
 ):
     """
-    Set user's preferred subtitle language for a specific content item.
+    Set user's preferred subtitle language and Hebrew mode for a specific content item.
 
     Args:
         content_id: Content ID
         language: ISO 639-1 language code (e.g., "en", "he", "es")
+        hebrew_mode: Hebrew display mode - "regular", "nikud", or "shoresh"
     """
     try:
         # Validate language code (basic validation)
         if not language or len(language) < 2:
             raise HTTPException(status_code=400, detail="Invalid language code")
+
+        # Validate hebrew_mode
+        if hebrew_mode not in ["regular", "nikud", "shoresh"]:
+            raise HTTPException(
+                status_code=400,
+                detail="hebrew_mode must be 'regular', 'nikud', or 'shoresh'",
+            )
 
         # Check if preference already exists
         existing = await SubtitlePreference.find_one(
@@ -81,18 +92,20 @@ async def set_subtitle_preference(
         if existing:
             # Update existing preference
             existing.preferred_language = language
+            existing.hebrew_mode = hebrew_mode
             existing.updated_at = datetime.now(timezone.utc)
             existing.last_used_at = datetime.now(timezone.utc)
             await existing.save()
 
             logger.info(
-                f"Updated subtitle preference for user {current_user.id}, content {content_id}: {language}"
+                f"Updated subtitle preference for user {current_user.id}, content {content_id}: {language} ({hebrew_mode})"
             )
 
             return {
                 "status": "updated",
                 "content_id": content_id,
                 "preferred_language": language,
+                "hebrew_mode": hebrew_mode,
             }
         else:
             # Create new preference
@@ -100,17 +113,19 @@ async def set_subtitle_preference(
                 user_id=str(current_user.id),
                 content_id=content_id,
                 preferred_language=language,
+                hebrew_mode=hebrew_mode,
             )
             await preference.insert()
 
             logger.info(
-                f"Created subtitle preference for user {current_user.id}, content {content_id}: {language}"
+                f"Created subtitle preference for user {current_user.id}, content {content_id}: {language} ({hebrew_mode})"
             )
 
             return {
                 "status": "created",
                 "content_id": content_id,
                 "preferred_language": language,
+                "hebrew_mode": hebrew_mode,
             }
 
     except HTTPException:
@@ -118,6 +133,62 @@ async def set_subtitle_preference(
     except Exception as e:
         logger.error(f"Error setting subtitle preference: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to set subtitle preference")
+
+
+@router.patch("/preferences/{content_id}/hebrew-mode")
+async def update_hebrew_mode(
+    content_id: str,
+    hebrew_mode: str,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Update Hebrew mode for existing preference.
+    Convenience endpoint for quickly switching modes without changing language.
+
+    Args:
+        content_id: Content ID
+        hebrew_mode: Hebrew display mode - "regular", "nikud", or "shoresh"
+    """
+    try:
+        # Validate hebrew_mode
+        if hebrew_mode not in ["regular", "nikud", "shoresh"]:
+            raise HTTPException(
+                status_code=400,
+                detail="hebrew_mode must be 'regular', 'nikud', or 'shoresh'",
+            )
+
+        preference = await SubtitlePreference.find_one(
+            SubtitlePreference.user_id == str(current_user.id),
+            SubtitlePreference.content_id == content_id,
+        )
+
+        if not preference:
+            raise HTTPException(
+                status_code=404,
+                detail="No preference found for this content. Use POST to create one.",
+            )
+
+        preference.hebrew_mode = hebrew_mode
+        preference.updated_at = datetime.now(timezone.utc)
+        preference.last_used_at = datetime.now(timezone.utc)
+        await preference.save()
+
+        logger.info(
+            f"Updated Hebrew mode for user {current_user.id}, content {content_id}: {hebrew_mode}"
+        )
+
+        return {
+            "status": "updated",
+            "content_id": content_id,
+            "preferred_language": preference.preferred_language,
+            "hebrew_mode": hebrew_mode,
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating Hebrew mode: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to update Hebrew mode")
 
 
 @router.delete("/preferences/{content_id}")

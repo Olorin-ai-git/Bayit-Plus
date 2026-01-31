@@ -315,6 +315,7 @@ async def websocket_live_subtitles(
     channel_id: str,
     source_lang: str = Query("he", description="Source language (input audio language)"),
     target_lang: str = Query("en", description="Target language (output subtitle language)"),
+    hebrew_mode: str = Query("regular", description="Hebrew display mode: regular, nikud, or shoresh"),
     enable_predictive: bool = Query(
         True, description="Enable predictive subtitles (partial + final)"
     ),
@@ -322,6 +323,11 @@ async def websocket_live_subtitles(
     """
     Live subtitle translation. Client sends: auth message + binary audio chunks.
     Server sends: connected, subtitle, error
+
+    Hebrew Mode Support:
+    - hebrew_mode parameter: "regular", "nikud", or "shoresh"
+    - Applied server-side to Hebrew subtitles before sending to client
+    - Uses nikud_service and shoresh_service for transformations
 
     Security Features:
     - Enforces wss:// (secure WebSocket) in production

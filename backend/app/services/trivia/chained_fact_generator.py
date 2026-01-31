@@ -23,8 +23,6 @@ class ChainedFactInput(BaseModel, extra="forbid"):
     """Strict Pydantic model to validate each fact from LLM output."""
 
     text: str = Field(..., min_length=1, max_length=500)
-    text_en: str = Field(..., min_length=1, max_length=500)
-    text_es: str = Field(..., min_length=1, max_length=500)
     category: str
     related_person: Optional[str] = Field(None, max_length=200)
 
@@ -34,6 +32,21 @@ class ChainedFactInput(BaseModel, extra="forbid"):
         if v not in ALLOWED_CATEGORIES:
             raise ValueError(f"Invalid category: {v}")
         return v
+
+
+# Map language codes to the field name used for storage
+LANGUAGE_FIELD_MAP = {
+    "he": "text",
+    "en": "text_en",
+    "es": "text_es",
+}
+
+# Map language codes to display names for the LLM prompt
+LANGUAGE_NAME_MAP = {
+    "he": "Hebrew",
+    "en": "English",
+    "es": "Spanish",
+}
 
 
 async def fetch_tmdb_context(
@@ -94,9 +107,10 @@ async def generate_chained_facts(
     content: Content,
     anthropic_client: AsyncAnthropic,
     tmdb_context: dict,
+    language: str = "he",
     existing_count: int = 0,
 ) -> list[TriviaFactModel]:
-    """Generate chained AI facts using TMDB context."""
+    """Generate chained AI facts using TMDB context in a single language."""
     max_chains = settings.TRIVIA_AI_MAX_CHAINS_PER_CONTENT
     chain_depth = settings.TRIVIA_AI_MAX_CHAIN_DEPTH
     max_total = settings.TRIVIA_MAX_FACTS_PER_CONTENT - existing_count
@@ -110,7 +124,8 @@ async def generate_chained_facts(
         json.dumps(tmdb_context, ensure_ascii=False, default=str),
         settings.TRIVIA_SANITIZE_DESCRIPTION_MAX_LEN * 3,
     )
-    prompt = _build_prompt(safe_title, context_json, max_chains, chain_depth)
+    lang_name = LANGUAGE_NAME_MAP.get(language, "English")
+    prompt = _build_prompt(safe_title, context_json, max_chains, chain_depth, lang_name)
 
     try:
         response = await anthropic_client.messages.create(
@@ -125,7 +140,7 @@ async def generate_chained_facts(
         if not isinstance(parsed, list):
             logger.warning("LLM returned non-list for chained facts")
             return []
-        return _parse_chains(parsed, max_chains, chain_depth, max_total)
+        return _parse_chains(parsed, max_chains, chain_depth, max_total, language)
     except Exception as e:
         logger.warning(
             "Failed to generate chained AI facts",
@@ -134,8 +149,10 @@ async def generate_chained_facts(
         return []
 
 
-def _build_prompt(title: str, context: str, chains: int, depth: int) -> str:
-    """Build the LLM prompt for chained trivia generation."""
+def _build_prompt(
+    title: str, context: str, chains: int, depth: int, language: str = "Hebrew"
+) -> str:
+    """Build the LLM prompt for chained trivia generation in a single language."""
     return (
         f"You are a trivia writer for a streaming platform. "
         f"Generate {chains} chains of fun facts about this content.\n\n"
@@ -147,7 +164,8 @@ def _build_prompt(title: str, context: str, chains: int, depth: int) -> str:
         f"cultural impact, hidden references, actor preparation, surprising budget facts.\n"
         f"- Each chain has a hook fact and {depth - 1} follow-ups that deepen the story.\n"
         f"- Each fact is 1-2 sentences, conversational tone, genuinely surprising.\n"
-        f"- Provide text in Hebrew (text), English (text_en), Spanish (text_es).\n"
+        f"- Write ALL text in {language}.\n"
+        f"- Each fact object has: text, category, related_person (optional).\n"
         f"- category: cast, production, location, cultural, or historical\n"
         f"- related_person: optional, name of person the fact is about\n\n"
         f"Return ONLY a JSON array of chains (array of arrays of fact objects)."
@@ -155,7 +173,11 @@ def _build_prompt(title: str, context: str, chains: int, depth: int) -> str:
 
 
 def _parse_chains(
-    parsed: list, max_chains: int, chain_depth: int, max_total: int
+    parsed: list,
+    max_chains: int,
+    chain_depth: int,
+    max_total: int,
+    language: str = "he",
 ) -> list[TriviaFactModel]:
     """Parse and validate LLM chain output into TriviaFactModel list."""
     facts: list[TriviaFactModel] = []
@@ -172,11 +194,16 @@ def _parse_chains(
             except Exception as e:
                 logger.warning("Skipping invalid chained fact", extra={"error": str(e)})
                 continue
+            sanitized_text = sanitize_ai_output(v.text)
+            # Map text to the language-specific field
+            lang_fields: dict = {"text": sanitized_text}
+            if language == "en":
+                lang_fields["text_en"] = sanitized_text
+            elif language == "es":
+                lang_fields["text_es"] = sanitized_text
             chain_facts.append(TriviaFactModel(
                 fact_id=str(uuid4()),
-                text=sanitize_ai_output(v.text),
-                text_en=sanitize_ai_output(v.text_en),
-                text_es=sanitize_ai_output(v.text_es),
+                **lang_fields,
                 category=v.category, source="ai", trigger_type="random",
                 priority=8 if order == 0 else 5,
                 related_person=sanitize_ai_output(v.related_person) if v.related_person else None,

@@ -5730,7 +5730,23 @@
     "inputLanguageTooltip": "Check Input Language",
     "premiumRequired": "Premium subscription required",
     "selectInputLanguage": "Select input language",
-    "translateActive": "Live Translation Active"
+    "translateActive": "Live Translation Active",
+    "hebrewMode": {
+      "title": "Hebrew Display Mode",
+      "unavailable": "Unavailable",
+      "regular": {
+        "title": "Regular Hebrew",
+        "description": "Standard Hebrew text without vowel marks"
+      },
+      "nikud": {
+        "title": "Hebrew with Nikud",
+        "description": "Vocalized Hebrew with vowel marks for easier reading"
+      },
+      "shoresh": {
+        "title": "Shoresh (Root Words)",
+        "description": "Hebrew words with root analysis: word [root]"
+      }
+    }
   },
   "support": {
     "title": "Support Center",
@@ -5934,6 +5950,28 @@
       "teen-torah.description": "Torah classes and weekly portion for teens",
       "jewish-history": "Jewish History",
       "jewish-history.description": "History of the Jewish people",
+      "cartoons": "Cartoons",
+      "cartoons.description": "Animated cartoons for children",
+      "educational": "Educational",
+      "educational.description": "Educational content for children",
+      "hebrew-learning": "Hebrew Learning",
+      "hebrew-learning.description": "Learning Hebrew language for children",
+      "stories": "Stories",
+      "stories.description": "Children's stories and tales",
+      "jewish-kids": "Jewish Kids",
+      "jewish-kids.description": "Jewish content for young children",
+      "music": "Music",
+      "music.description": "Songs and music for children",
+      "shiurim": "Shiurim",
+      "shiurim.description": "Torah lessons and lectures",
+      "tefila": "Tefila",
+      "tefila.description": "Prayer and liturgy",
+      "jewish-music": "Jewish Music",
+      "jewish-music.description": "Jewish and Israeli music",
+      "holidays": "Holidays",
+      "holidays.description": "Jewish holidays and celebrations",
+      "jewish-docs": "Jewish Documentaries",
+      "jewish-docs.description": "Documentaries about Jewish life and culture",
       "title": "Subcategories",
       "ageGroups": {
         "title": "Age Groups"

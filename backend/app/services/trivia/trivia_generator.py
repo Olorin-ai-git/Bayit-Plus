@@ -42,6 +42,7 @@ class TriviaGenerationService:
         self,
         content: Content,
         enrich: bool = False,
+        language: str = "he",
     ) -> ContentTrivia:
         """Generate trivia using TMDB context -> chained AI -> fallback pipeline."""
         facts: list[TriviaFactModel] = []
@@ -56,6 +57,7 @@ class TriviaGenerationService:
                         content,
                         self.anthropic_client,
                         tmdb_context,
+                        language=language,
                         existing_count=len(facts),
                     )
                     if chained:
@@ -70,7 +72,7 @@ class TriviaGenerationService:
 
         # Fallback: basic TMDB facts if no AI facts generated
         if not facts and content.tmdb_id:
-            tmdb_facts = await fetch_tmdb_facts(content, self.tmdb_service)
+            tmdb_facts = await fetch_tmdb_facts(content, self.tmdb_service, language)
             facts.extend(tmdb_facts)
             if tmdb_facts:
                 sources_used.append("tmdb")
@@ -82,6 +84,7 @@ class TriviaGenerationService:
                     ai_facts = await generate_ai_facts(
                         content,
                         self.anthropic_client,
+                        language=language,
                         existing_count=len(facts),
                     )
                     facts.extend(ai_facts)
@@ -109,6 +112,7 @@ class TriviaGenerationService:
         self,
         content: Content,
         enrich: bool = False,
+        language: str = "he",
     ) -> ContentTrivia:
         """Get existing trivia or generate new if not found."""
         existing = await ContentTrivia.find_one(
@@ -117,7 +121,7 @@ class TriviaGenerationService:
 
         if existing:
             if enrich and not existing.is_enriched:
-                return await self.generate_trivia(content, enrich=True)
+                return await self.generate_trivia(content, enrich=True, language=language)
             return existing
 
-        return await self.generate_trivia(content, enrich=enrich)
+        return await self.generate_trivia(content, enrich=enrich, language=language)

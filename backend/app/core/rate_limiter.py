@@ -21,6 +21,7 @@ try:
         "subtitle_cues": "50/minute",  # High-frequency mobile requests during video playback
         "subtitle_tracks": "100/minute",  # Lightweight listing endpoint
         "subtitle_nikud": "5/hour",  # Expensive AI operations (Claude API batch processing)
+        "subtitle_shoresh": "5/hour",  # Expensive AI operations (Claude API root word extraction)
         "subtitle_translate_word": "20/minute",  # AI translation with database caching
         "subtitle_translate_phrase": "10/minute",  # AI translation for phrases (no caching)
         "subtitle_fetch_external": "3/hour",  # External API quota protection (OpenSubtitles)

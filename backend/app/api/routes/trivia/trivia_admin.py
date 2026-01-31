@@ -29,6 +29,7 @@ async def generate_trivia(
     content_id: str,
     force: bool = False,
     enrich: bool = True,
+    language: str = "he",
     current_user: User = Depends(get_current_active_user),
 ) -> dict:
     """
@@ -55,7 +56,7 @@ async def generate_trivia(
 
     # TriviaGenerationService uses atomic create_or_update - no need for delete-then-insert
     generator = TriviaGenerationService()
-    trivia = await generator.generate_trivia(content, enrich=enrich)
+    trivia = await generator.generate_trivia(content, enrich=enrich, language=language)
 
     logger.info(f"Trivia regenerated for content {content_id} by {current_user.email}")
 

@@ -16,6 +16,8 @@ from app.models.trivia import TriviaFactModel
 from app.services.security_utils import sanitize_ai_output, sanitize_for_prompt
 from app.services.tmdb_service import TMDBService
 from app.services.trivia.chained_fact_generator import (  # noqa: F401
+    LANGUAGE_FIELD_MAP,
+    LANGUAGE_NAME_MAP,
     ChainedFactInput,
     fetch_tmdb_context,
     generate_chained_facts,
@@ -24,8 +26,26 @@ from app.services.trivia.chained_fact_generator import (  # noqa: F401
 logger = logging.getLogger(__name__)
 
 
+def _tmdb_cast_text(actor_name: str, character: str, language: str) -> str:
+    """Generate cast fact text in the requested language."""
+    if language == "es":
+        return f"{actor_name} interpreta a {character}"
+    if language == "en":
+        return f"{actor_name} plays {character}"
+    return f"{actor_name} מגלם את הדמות {character}"
+
+
+def _tmdb_director_text(director_name: str, language: str) -> str:
+    """Generate director fact text in the requested language."""
+    if language == "es":
+        return f"Dirigida por {director_name}"
+    if language == "en":
+        return f"Directed by {director_name}"
+    return f"הסרט בבימויו של {director_name}"
+
+
 async def fetch_tmdb_facts(
-    content: Content, tmdb_service: TMDBService
+    content: Content, tmdb_service: TMDBService, language: str = "he"
 ) -> list[TriviaFactModel]:
     """Fetch basic trivia from TMDB (fallback when AI is unavailable)."""
     facts = []
@@ -43,12 +63,16 @@ async def fetch_tmdb_facts(
                 actor_name = actor.get("name", "")
                 character = actor.get("character", "")
                 if actor_name and character:
+                    text = _tmdb_cast_text(actor_name, character, language)
+                    lang_fields: dict = {"text": text}
+                    if language == "en":
+                        lang_fields["text_en"] = text
+                    elif language == "es":
+                        lang_fields["text_es"] = text
                     facts.append(
                         TriviaFactModel(
                             fact_id=str(uuid4()),
-                            text=f"{actor_name} מגלם את הדמות {character}",
-                            text_en=f"{actor_name} plays {character}",
-                            text_es=f"{actor_name} interpreta a {character}",
+                            **lang_fields,
                             category="cast",
                             source="tmdb",
                             trigger_type="random",
@@ -61,12 +85,16 @@ async def fetch_tmdb_facts(
             for director in directors[:1]:
                 director_name = director.get("name", "")
                 if director_name:
+                    text = _tmdb_director_text(director_name, language)
+                    lang_fields = {"text": text}
+                    if language == "en":
+                        lang_fields["text_en"] = text
+                    elif language == "es":
+                        lang_fields["text_es"] = text
                     facts.append(
                         TriviaFactModel(
                             fact_id=str(uuid4()),
-                            text=f"הסרט בבימויו של {director_name}",
-                            text_en=f"Directed by {director_name}",
-                            text_es=f"Dirigida por {director_name}",
+                            **lang_fields,
                             category="production",
                             source="tmdb",
                             trigger_type="random",
@@ -86,14 +114,19 @@ async def fetch_tmdb_facts(
 async def generate_ai_facts(
     content: Content,
     anthropic_client: AsyncAnthropic,
+    language: str = "he",
     existing_count: int = 0,
 ) -> list[TriviaFactModel]:
-    """Generate standalone AI facts (legacy, non-chained)."""
+    """Generate standalone AI facts (legacy, non-chained) in a single language."""
+    from app.services.trivia.chained_fact_generator import LANGUAGE_NAME_MAP
+
     facts = []
     max_to_generate = min(5, settings.TRIVIA_MAX_FACTS_PER_CONTENT - existing_count)
 
     if max_to_generate <= 0:
         return facts
+
+    lang_name = LANGUAGE_NAME_MAP.get(language, "English")
 
     try:
         safe_title = sanitize_for_prompt(
@@ -116,10 +149,9 @@ Year: {content.year or 'N/A'}
 Genre: {safe_genre}
 Director: {safe_director}
 
+Write ALL text in {lang_name}.
 For each fact, provide a JSON object with:
-- text: Hebrew text
-- text_en: English text
-- text_es: Spanish text
+- text: the trivia fact text
 - category: one of cast, production, location, cultural, historical
 
 Return ONLY a JSON array, no other text."""
@@ -136,16 +168,16 @@ Return ONLY a JSON array, no other text."""
 
         for item in parsed[:max_to_generate]:
             if isinstance(item, dict) and item.get("text"):
+                sanitized = sanitize_ai_output(item.get("text", ""))
+                lang_fields: dict = {"text": sanitized}
+                if language == "en":
+                    lang_fields["text_en"] = sanitized
+                elif language == "es":
+                    lang_fields["text_es"] = sanitized
                 facts.append(
                     TriviaFactModel(
                         fact_id=str(uuid4()),
-                        text=sanitize_ai_output(item.get("text", "")),
-                        text_en=sanitize_ai_output(
-                            item.get("text_en", item.get("text", ""))
-                        ),
-                        text_es=sanitize_ai_output(
-                            item.get("text_es", item.get("text", ""))
-                        ),
+                        **lang_fields,
                         category=item.get("category", "production"),
                         source="ai",
                         trigger_type="random",

@@ -52,7 +52,8 @@ class LiveSubtitleService {
     videoElement: HTMLVideoElement,
     onSubtitle: SubtitleCallback,
     onError: ErrorCallback,
-    sourceLang: string = 'he'
+    sourceLang: string = 'he',
+    hebrewMode: 'regular' | 'nikud' | 'shoresh' = 'regular'
   ): Promise<void> {
     this.firstAudioChunkSent = false
     this.firstSubtitleReceived = false
@@ -110,7 +111,7 @@ class LiveSubtitleService {
 
         const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
         const wsHost = API_BASE_URL.replace(/^https?:\/\//, '')
-        const wsUrl = `${wsProtocol}//${wsHost}/ws/live/${channelId}/subtitles?source_lang=${sourceLang}&target_lang=${targetLang}`
+        const wsUrl = `${wsProtocol}//${wsHost}/ws/live/${channelId}/subtitles?source_lang=${sourceLang}&target_lang=${targetLang}&hebrew_mode=${hebrewMode}`
 
         this.ws = new WebSocket(wsUrl)
 

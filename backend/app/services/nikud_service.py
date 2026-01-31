@@ -30,7 +30,6 @@ class TranslationResult:
 # Simple in-memory cache for nikud and translations
 _nikud_cache: Dict[str, str] = {}
 _translation_cache: Dict[str, TranslationResult] = {}
-_cache_max_size = 10000
 
 
 def _get_cache_key(text: str) -> str:
@@ -62,7 +61,7 @@ async def add_nikud(text: str, use_cache: bool = True) -> str:
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
         response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model=settings.SUBTITLE_AI_MODEL,
             max_tokens=len(text) * 3,  # Nikud adds characters
             messages=[{"role": "user", "content": prompt}],
         )
@@ -70,7 +69,7 @@ async def add_nikud(text: str, use_cache: bool = True) -> str:
         nikud_text = response.content[0].text.strip()
 
         # Cache result
-        if use_cache and len(_nikud_cache) < _cache_max_size:
+        if use_cache and len(_nikud_cache) < settings.SUBTITLE_NIKUD_CACHE_MAX_SIZE:
             _nikud_cache[cache_key] = nikud_text
 
         return nikud_text
@@ -125,7 +124,7 @@ async def add_nikud_batch(texts: List[str], use_cache: bool = True) -> List[str]
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
         response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model=settings.SUBTITLE_AI_MODEL,
             max_tokens=sum(len(t) * 3 for t in uncached_texts),
             messages=[{"role": "user", "content": prompt}],
         )
@@ -146,7 +145,7 @@ async def add_nikud_batch(texts: List[str], use_cache: bool = True) -> List[str]
                         results[original_idx] = nikud_text
 
                         # Cache
-                        if use_cache and len(_nikud_cache) < _cache_max_size:
+                        if use_cache and len(_nikud_cache) < settings.SUBTITLE_NIKUD_CACHE_MAX_SIZE:
                             cache_key = _get_cache_key(uncached_texts[idx])
                             _nikud_cache[cache_key] = nikud_text
                 except (ValueError, IndexError):
@@ -209,7 +208,7 @@ Return JSON:
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
         response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model=settings.SUBTITLE_AI_MODEL,
             max_tokens=300,
             messages=[{"role": "user", "content": prompt}],
         )
@@ -236,7 +235,7 @@ Return JSON:
         )
 
         # Cache
-        if use_cache and len(_translation_cache) < _cache_max_size:
+        if use_cache and len(_translation_cache) < settings.SUBTITLE_NIKUD_CACHE_MAX_SIZE:
             _translation_cache[cache_key] = result
 
         return result
@@ -264,7 +263,7 @@ async def translate_phrase(
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
         response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model=settings.SUBTITLE_AI_MODEL,
             max_tokens=len(phrase) * 2,
             messages=[{"role": "user", "content": prompt}],
         )
@@ -300,5 +299,5 @@ def get_cache_stats() -> Dict[str, int]:
     return {
         "nikud_cache_size": len(_nikud_cache),
         "translation_cache_size": len(_translation_cache),
-        "max_size": _cache_max_size,
+        "max_size": settings.SUBTITLE_NIKUD_CACHE_MAX_SIZE,
     }

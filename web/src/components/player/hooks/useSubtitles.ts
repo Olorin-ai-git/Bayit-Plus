@@ -8,6 +8,7 @@ import {
   SubtitleCue,
   SubtitleSettings,
   SubtitlePreferences,
+  HebrewMode,
 } from '@/types/subtitle'
 import { subtitlesService, subtitlePreferencesService } from '@/services/api'
 import logger from '@/utils/logger'
@@ -20,6 +21,7 @@ interface UseSubtitlesOptions {
 export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions) {
   const [subtitlesEnabled, setSubtitlesEnabled] = useState(false)
   const [currentSubtitleLang, setCurrentSubtitleLang] = useState<string | null>(null)
+  const [hebrewMode, setHebrewMode] = useState<HebrewMode>('regular')
   const [availableSubtitles, setAvailableSubtitles] = useState<SubtitleTrack[]>([])
   const [subtitlesLoading, setSubtitlesLoading] = useState(false)
   const [currentCues, setCurrentCues] = useState<SubtitleCue[]>([])
@@ -38,6 +40,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
         const prefs: SubtitlePreferences = JSON.parse(savedPrefs)
         setSubtitlesEnabled(prefs.enabled)
         setCurrentSubtitleLang(prefs.language)
+        setHebrewMode(prefs.hebrew_mode || 'regular')
         setSubtitleSettings(prefs.settings)
       }
     } catch (error) {
@@ -98,7 +101,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     fetchAvailableSubtitles()
   }, [contentId, isLive])
 
-  // Fetch subtitle cues when language changes
+  // Fetch subtitle cues when language or Hebrew mode changes
   useEffect(() => {
     if (!contentId || !currentSubtitleLang || !subtitlesEnabled) {
       setCurrentCues([])
@@ -107,7 +110,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
 
     const fetchCues = async () => {
       try {
-        const response = await subtitlesService.getCues(contentId, currentSubtitleLang)
+        const response = await subtitlesService.getCues(contentId, currentSubtitleLang, hebrewMode)
         setCurrentCues(response.cues || [])
       } catch (error) {
         logger.error('Failed to fetch subtitle cues', 'useSubtitles', error)
@@ -115,7 +118,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     }
 
     fetchCues()
-  }, [contentId, currentSubtitleLang, subtitlesEnabled])
+  }, [contentId, currentSubtitleLang, hebrewMode, subtitlesEnabled])
 
   // Save subtitle preferences to localStorage
   useEffect(() => {
@@ -123,13 +126,14 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
       const prefs: SubtitlePreferences = {
         enabled: subtitlesEnabled,
         language: currentSubtitleLang,
+        hebrew_mode: hebrewMode,
         settings: subtitleSettings,
       }
       localStorage.setItem('bayit-subtitle-preferences', JSON.stringify(prefs))
     } catch (error) {
       logger.error('Failed to save subtitle preferences', 'useSubtitles', error)
     }
-  }, [subtitlesEnabled, currentSubtitleLang, subtitleSettings])
+  }, [subtitlesEnabled, currentSubtitleLang, hebrewMode, subtitleSettings])
 
   // Subtitle handlers
   const handleSubtitleToggle = (enabled: boolean) => {
@@ -161,15 +165,30 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     setSubtitleSettings(settings)
   }
 
+  const handleHebrewModeChange = async (mode: HebrewMode) => {
+    setHebrewMode(mode)
+
+    // Save to backend if we have a contentId and current language is Hebrew
+    if (contentId && currentSubtitleLang === 'he') {
+      try {
+        await subtitlePreferencesService.setHebrewMode(contentId, mode)
+      } catch (error) {
+        logger.error('Failed to save Hebrew mode preference', 'useSubtitles', error)
+      }
+    }
+  }
+
   return {
     subtitlesEnabled,
     currentSubtitleLang,
+    hebrewMode,
     availableSubtitles,
     subtitlesLoading,
     currentCues,
     subtitleSettings,
     handleSubtitleToggle,
     handleSubtitleLanguageChange,
+    handleHebrewModeChange,
     handleSubtitleSettingsChange,
     fetchAvailableSubtitles,
   }

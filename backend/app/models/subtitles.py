@@ -19,6 +19,7 @@ class SubtitleCueModel(BaseModel):
     end_time: float  # seconds
     text: str
     text_nikud: Optional[str] = None
+    text_shoresh: Optional[str] = None
 
 
 class SubtitleTrackDoc(Document):
@@ -40,6 +41,10 @@ class SubtitleTrackDoc(Document):
     # Nikud version
     has_nikud_version: bool = False
     nikud_generated_at: Optional[datetime] = None
+
+    # Shoresh version
+    has_shoresh_version: bool = False
+    shoresh_generated_at: Optional[datetime] = None
 
     # Metadata
     is_default: bool = False

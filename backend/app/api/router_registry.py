@@ -60,7 +60,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 series_recording_rules,
                                 search_analytics, search_llm, search_scenes,
                                 search_suggestions, stats, subscriptions,
-                                subtitle_preferences, subtitles, support,
+                                subtitle_preferences, support,
                                 synced_streams,
                                 tel_aviv, trending, trivia,
                                 user_system_widgets, users, verification,
@@ -74,6 +74,8 @@ def register_all_routers(app: FastAPI) -> None:
         router as admin_recordings_router
     from app.api.routes.olorin import legacy_router as olorin_legacy_router
     from app.api.routes.olorin import router as olorin_router
+    # Subtitle routes (split into 3 files per 200-line limit)
+    from app.api.routes import subtitles_cues, subtitles_tracks, subtitles_translation
     # Beta 500 routes
     from app.api.routes.beta import signup, credits, sessions, status
 
@@ -133,7 +135,9 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(audiobooks.router, prefix=f"{prefix}/audiobooks", tags=["audiobooks"])
     app.include_router(epg.router, prefix=f"{prefix}/epg", tags=["epg"])
     app.include_router(chapters.router, prefix=f"{prefix}/chapters", tags=["chapters"])
-    app.include_router(subtitles.router, prefix=prefix, tags=["subtitles"])
+    app.include_router(subtitles_tracks.router, prefix=prefix, tags=["subtitles"])
+    app.include_router(subtitles_cues.router, prefix=prefix, tags=["subtitles"])
+    app.include_router(subtitles_translation.router, prefix=prefix, tags=["subtitles"])
     app.include_router(
         subtitle_preferences.router,
         prefix=f"{prefix}/subtitles",

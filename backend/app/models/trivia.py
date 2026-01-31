@@ -10,11 +10,11 @@ from pymongo import ReturnDocument
 
 
 class TriviaFactModel(BaseModel):
-    """Individual trivia fact with multilingual support and chain linking."""
+    """Individual trivia fact with optional multilingual support and chain linking."""
     fact_id: str = Field(default_factory=lambda: str(uuid4()))
-    text: str = Field(..., min_length=1, description="Hebrew text (required)")
-    text_en: str = Field(..., min_length=1, description="English text (required)")
-    text_es: str = Field(..., min_length=1, description="Spanish text (required)")
+    text: str = Field(..., min_length=1, description="Primary text in requested language")
+    text_en: Optional[str] = Field(None, description="English text (populated when generated in English)")
+    text_es: Optional[str] = Field(None, description="Spanish text (populated when generated in Spanish)")
     trigger_time: Optional[float] = Field(
         None, ge=0, description="Seconds into content"
     )
@@ -38,12 +38,19 @@ class TriviaFactModel(BaseModel):
         default=False, description="True if next fact in chain exists"
     )
 
-    @field_validator("text", "text_en", "text_es")
+    @field_validator("text")
     @classmethod
     def validate_text_not_empty(cls, v: str) -> str:
         if not v or not v.strip():
             raise ValueError("Text field cannot be empty or whitespace")
         return v.strip()
+
+    @field_validator("text_en", "text_es", mode="before")
+    @classmethod
+    def strip_optional_text(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and isinstance(v, str):
+            return v.strip() or None
+        return v
 
     @model_validator(mode="after")
     def validate_chain_consistency(self) -> "TriviaFactModel":

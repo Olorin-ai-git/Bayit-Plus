@@ -9,6 +9,7 @@ export { default as SubtitleLanguageMenu } from './SubtitleLanguageMenu'
 export { default as SubtitleFlagsPreview } from './SubtitleFlagsPreview'
 export { default as SubtitleLanguageList } from './SubtitleLanguageList'
 export { default as SubtitleDownloadSection } from './SubtitleDownloadSection'
+export { default as HebrewModePickerModal } from './HebrewModePickerModal'
 
 export type { SubtitleButtonProps } from './SubtitleButton'
 export type { SubtitleLanguageMenuProps } from './SubtitleLanguageMenu'

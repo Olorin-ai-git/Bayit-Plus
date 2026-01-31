@@ -4707,7 +4707,23 @@
     "inputLanguageTooltip": "Vérifier la langue source",
     "premiumRequired": "Abonnement premium requis",
     "selectInputLanguage": "Sélectionner la langue source",
-    "translateActive": "Traduction en direct active"
+    "translateActive": "Traduction en direct active",
+    "hebrewMode": {
+      "title": "Mode d'affichage de l'hébreu",
+      "unavailable": "Indisponible",
+      "regular": {
+        "title": "Hébreu standard",
+        "description": "Texte hébreu standard sans signes vocaliques"
+      },
+      "nikud": {
+        "title": "Hébreu avec Nikud",
+        "description": "Hébreu vocalisé avec signes vocaliques pour faciliter la lecture"
+      },
+      "shoresh": {
+        "title": "Shoresh (Racines)",
+        "description": "Mots hébreux avec analyse de racine : mot [racine]"
+      }
+    }
   },
   "support": {
     "title": "Centre d'aide",
@@ -6279,6 +6295,28 @@
       "teen-torah.description": "Cours de Torah et paracha hebdomadaire pour ados",
       "jewish-history": "Histoire Juive",
       "jewish-history.description": "Histoire du peuple juif",
+      "cartoons": "Dessins Animés",
+      "cartoons.description": "Dessins animés pour enfants",
+      "educational": "Éducatif",
+      "educational.description": "Contenu éducatif pour enfants",
+      "hebrew-learning": "Apprentissage de l'Hébreu",
+      "hebrew-learning.description": "Apprentissage de la langue hébraïque pour enfants",
+      "stories": "Histoires",
+      "stories.description": "Contes et histoires pour enfants",
+      "jewish-kids": "Enfants Juifs",
+      "jewish-kids.description": "Contenu juif pour jeunes enfants",
+      "music": "Musique",
+      "music.description": "Chansons et musique pour enfants",
+      "shiurim": "Shiourim",
+      "shiurim.description": "Cours de Torah et conférences",
+      "tefila": "Téfila",
+      "tefila.description": "Prière et liturgie",
+      "jewish-music": "Musique Juive",
+      "jewish-music.description": "Musique juive et israélienne",
+      "holidays": "Fêtes",
+      "holidays.description": "Fêtes et célébrations juives",
+      "jewish-docs": "Documentaires Juifs",
+      "jewish-docs.description": "Documentaires sur la vie et la culture juive",
       "ageGroups": {
         "title": "Groupes d'âge"
       },

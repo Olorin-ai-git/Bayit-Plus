@@ -5675,7 +5675,23 @@
     "inputLanguageTooltip": "בדוק שפת קלט",
     "premiumRequired": "נדרש מנוי פרימיום",
     "selectInputLanguage": "בחר שפת קלט",
-    "translateActive": "תרגום חי פעיל"
+    "translateActive": "תרגום חי פעיל",
+    "hebrewMode": {
+      "title": "מצב תצוגת עברית",
+      "unavailable": "לא זמין",
+      "regular": {
+        "title": "עברית רגילה",
+        "description": "טקסט עברי רגיל ללא ניקוד"
+      },
+      "nikud": {
+        "title": "עברית עם ניקוד",
+        "description": "עברית מנוקדת עם סימני תנועה לקריאה קלה יותר"
+      },
+      "shoresh": {
+        "title": "שורש (ניתוח שורשים)",
+        "description": "מילים עבריות עם ניתוח שורש: מילה [שורש]"
+      }
+    }
   },
   "support": {
     "title": "מרכז תמיכה",
@@ -5878,6 +5894,28 @@
       "teen-torah.description": "שיעורי תורה ופרשת השבוע לנוער",
       "jewish-history": "היסטוריה יהודית",
       "jewish-history.description": "תולדות עם ישראל והיסטוריה יהודית",
+      "cartoons": "קריקטורות",
+      "cartoons.description": "סרטוני אנימציה לילדים",
+      "educational": "חינוכי",
+      "educational.description": "תוכן חינוכי לילדים",
+      "hebrew-learning": "לימוד עברית",
+      "hebrew-learning.description": "לימוד השפה העברית לילדים",
+      "stories": "סיפורים",
+      "stories.description": "סיפורי ילדים ואגדות",
+      "jewish-kids": "ילדים יהודים",
+      "jewish-kids.description": "תוכן יהודי לילדים צעירים",
+      "music": "מוזיקה",
+      "music.description": "שירים ומוזיקה לילדים",
+      "shiurim": "שיעורים",
+      "shiurim.description": "שיעורי תורה והרצאות",
+      "tefila": "תפילה",
+      "tefila.description": "תפילה וליטורגיה",
+      "jewish-music": "מוזיקה יהודית",
+      "jewish-music.description": "מוזיקה יהודית וישראלית",
+      "holidays": "חגים",
+      "holidays.description": "חגים ומועדים יהודיים",
+      "jewish-docs": "סרטים תיעודיים יהודיים",
+      "jewish-docs.description": "סרטים תיעודיים על חיים ותרבות יהודית",
       "title": "קטגוריות משנה",
       "ageGroups": {
         "title": "קבוצות גיל"

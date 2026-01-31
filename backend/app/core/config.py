@@ -309,6 +309,23 @@ class Settings(BaseSettings):
     CLAUDE_MAX_TOKENS_SHORT: int = 200
     CLAUDE_MAX_TOKENS_LONG: int = 500
 
+    # Subtitle AI Processing (Nikud & Shoresh)
+    SUBTITLE_AI_MODEL: str = Field(
+        default="claude-sonnet-4-20250514",
+        env="SUBTITLE_AI_MODEL",
+        description="Claude model for subtitle nikud/shoresh generation"
+    )
+    SUBTITLE_NIKUD_CACHE_MAX_SIZE: int = Field(
+        default=10000,
+        env="SUBTITLE_NIKUD_CACHE_MAX_SIZE",
+        description="Maximum in-memory cache entries for nikud text"
+    )
+    SUBTITLE_SHORESH_CACHE_MAX_SIZE: int = Field(
+        default=10000,
+        env="SUBTITLE_SHORESH_CACHE_MAX_SIZE",
+        description="Maximum in-memory cache entries for shoresh text"
+    )
+
     # Tavily (Web Search & News API)
     TAVILY_API_KEY: str = ""
 
@@ -1273,7 +1290,7 @@ class Settings(BaseSettings):
         default=100, ge=0, le=100, description="Percentage of users to show trivia"
     )
     TRIVIA_AI_MAX_TOKENS: int = Field(
-        default=1024, ge=256, le=4096, description="Max tokens for AI trivia generation"
+        default=4096, ge=256, le=8192, description="Max tokens for AI trivia generation"
     )
     TRIVIA_SANITIZE_TITLE_MAX_LEN: int = Field(
         default=200, ge=50, le=500, description="Max length for title sanitization"

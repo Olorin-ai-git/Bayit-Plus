@@ -128,7 +128,7 @@ export interface TriviaFrequencyInfo {
 export const TRIVIA_FREQUENCIES: TriviaFrequencyInfo[] = [
   { id: 'off', label_he: 'כבוי', label_en: 'Off', interval_seconds: 0 },
   { id: 'low', label_he: 'נמוך', label_en: 'Low', interval_seconds: 600 },
-  { id: 'normal', label_he: 'רגיל', label_en: 'Normal', interval_seconds: 300 },
+  { id: 'normal', label_he: 'רגיל', label_en: 'Normal', interval_seconds: 20 }, // TODO-TEMP: revert to 300
   { id: 'high', label_he: 'גבוה', label_en: 'High', interval_seconds: 120 },
 ]
 

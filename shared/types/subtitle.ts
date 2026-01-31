@@ -3,6 +3,10 @@
  * TypeScript interfaces for subtitle-related models
  */
 
+// ============ HEBREW MODE ============
+
+export type HebrewMode = 'regular' | 'nikud' | 'shoresh'
+
 // ============ SUBTITLE CUE ============
 
 export interface SubtitleCue {
@@ -10,6 +14,8 @@ export interface SubtitleCue {
   start_time: number  // seconds
   end_time: number    // seconds
   text: string
+  text_nikud?: string  // Hebrew with vocalization marks
+  text_shoresh?: string  // Hebrew with root words: "word [root]"
   settings?: string   // VTT settings (position, align, etc.)
 }
 
@@ -24,6 +30,7 @@ export interface SubtitleTrack {
   format: 'vtt' | 'srt'
   cues: SubtitleCue[]
   has_nikud_version: boolean  // Hebrew vocalization available
+  has_shoresh_version: boolean  // Hebrew root words available
   is_default: boolean
   is_auto_generated: boolean
   created_at: string
@@ -45,6 +52,7 @@ export interface SubtitleSettings {
 export interface SubtitlePreferences {
   enabled: boolean
   language: string | null  // Selected language code
+  hebrew_mode: HebrewMode  // Display mode for Hebrew subtitles
   settings: SubtitleSettings
 }
 
@@ -52,6 +60,8 @@ export interface SubtitlePreferences {
 
 export interface LiveSubtitleCue {
   text: string
+  text_nikud?: string  // Hebrew with vocalization marks
+  text_shoresh?: string  // Hebrew with root words
   original_text: string
   timestamp: number
   source_lang: string
@@ -72,6 +82,8 @@ export interface SubtitleCuesResponse {
   cues: SubtitleCue[]
   format: string
   has_nikud_version: boolean
+  has_shoresh_version?: boolean
+  hebrew_mode?: HebrewMode
 }
 
 // ============ LANGUAGE INFO ============

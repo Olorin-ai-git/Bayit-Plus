@@ -4757,7 +4757,23 @@
     "inputLanguageTooltip": "Controlla lingua di input",
     "premiumRequired": "Abbonamento premium richiesto",
     "selectInputLanguage": "Seleziona lingua di input",
-    "translateActive": "Traduzione in diretta attiva"
+    "translateActive": "Traduzione in diretta attiva",
+    "hebrewMode": {
+      "title": "Modalità di visualizzazione ebraica",
+      "unavailable": "Non disponibile",
+      "regular": {
+        "title": "Ebraico standard",
+        "description": "Testo ebraico standard senza segni vocalici"
+      },
+      "nikud": {
+        "title": "Ebraico con Nikud",
+        "description": "Ebraico vocalizzato con segni vocalici per facilitare la lettura"
+      },
+      "shoresh": {
+        "title": "Shoresh (Radici)",
+        "description": "Parole ebraiche con analisi della radice: parola [radice]"
+      }
+    }
   },
   "support": {
     "title": "Centro assistenza",
@@ -6199,6 +6215,28 @@
       "teen-torah.description": "Lezioni di Torah e parasha settimanale per adolescenti",
       "jewish-history": "Storia ebraica",
       "jewish-history.description": "Storia del popolo ebraico",
+      "cartoons": "Cartoni Animati",
+      "cartoons.description": "Cartoni animati per bambini",
+      "educational": "Educativo",
+      "educational.description": "Contenuti educativi per bambini",
+      "hebrew-learning": "Apprendimento dell'Ebraico",
+      "hebrew-learning.description": "Apprendimento della lingua ebraica per bambini",
+      "stories": "Storie",
+      "stories.description": "Racconti e storie per bambini",
+      "jewish-kids": "Bambini Ebrei",
+      "jewish-kids.description": "Contenuti ebraici per bambini piccoli",
+      "music": "Musica",
+      "music.description": "Canzoni e musica per bambini",
+      "shiurim": "Shiurim",
+      "shiurim.description": "Lezioni di Torah e conferenze",
+      "tefila": "Tefillà",
+      "tefila.description": "Preghiera e liturgia",
+      "jewish-music": "Musica Ebraica",
+      "jewish-music.description": "Musica ebraica e israeliana",
+      "holidays": "Festività",
+      "holidays.description": "Festività e celebrazioni ebraiche",
+      "jewish-docs": "Documentari Ebraici",
+      "jewish-docs.description": "Documentari sulla vita e cultura ebraica",
       "ageGroups": {
         "title": "Fasce d'età"
       },
