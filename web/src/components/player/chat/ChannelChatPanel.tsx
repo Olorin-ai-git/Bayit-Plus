@@ -6,11 +6,12 @@
  */
 
 import { useEffect, useCallback, useRef } from 'react'
-import { View, Text, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, FlatList, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { colors } from '@olorin/design-tokens'
 import { MessageCircle, AlertTriangle } from 'lucide-react'
 import { useChannelChat } from '../hooks/useChannelChat'
+import type { ChatMessageData } from '@/services/channelChatTypes'
 import { useChannelChatStore } from '@/stores/channelChatSlice'
 import { logger } from '@/utils/logger'
 import ChannelChatHeader from './ChannelChatHeader'
@@ -31,8 +32,6 @@ export default function ChannelChatPanel({
   isLiveChannel,
 }: ChannelChatPanelProps) {
   const { t } = useTranslation()
-  const chatLog = logger.scope('ChannelChatPanel')
-  const scrollRef = useRef<ScrollView>(null)
   const autoHideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const {
@@ -51,6 +50,9 @@ export default function ChannelChatPanel({
     error,
     sendMessage,
     reconnect,
+    loadOlderMessages,
+    hasMore,
+    isLoadingMore,
   } = useChannelChat({ channelId, autoConnect: isLiveChannel })
 
   const resetAutoHide = useCallback(() => {
@@ -74,10 +76,6 @@ export default function ChannelChatPanel({
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isChatVisible, toggleChatVisibility])
-
-  useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollToEnd({ animated: true })
-  }, [messages.length])
 
   const handleSendMessage = useCallback(
     (text: string) => {
@@ -143,15 +141,25 @@ export default function ChannelChatPanel({
         onToggleExpand={toggleChatExpanded}
         isExpanded={isChatExpanded}
       />
-      <ScrollView
-        ref={scrollRef}
+      <FlatList
+        data={messages}
+        renderItem={({ item }: { item: ChatMessageData }) => (
+          <ChannelChatMessage message={item} />
+        )}
+        keyExtractor={(msg: ChatMessageData) => msg.id}
+        inverted
+        onEndReached={hasMore ? loadOlderMessages : undefined}
+        onEndReachedThreshold={0.3}
         style={styles.messageList}
         contentContainerStyle={styles.messageListContent}
-      >
-        {messages.map((msg) => (
-          <ChannelChatMessage key={msg.id} message={msg} />
-        ))}
-      </ScrollView>
+        ListFooterComponent={
+          isLoadingMore ? (
+            <View style={styles.loadingMore}>
+              <ActivityIndicator size="small" color={colors.primary.DEFAULT} />
+            </View>
+          ) : null
+        }
+      />
       <ChannelChatInput
         onSendMessage={handleSendMessage}
         maxLength={CHAT_MAX_LENGTH}

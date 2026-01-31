@@ -44,7 +44,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 admin_uploads, admin_widgets,
                                 admin_youngsters_content, audiobooks, audible_integration,
                                 auth, chapters, chat,
-                                chess, children, content, content_taxonomy,
+                                channel_chat, chess, children, content, content_taxonomy,
                                 cultures, device_pairing, devices,
                                 diagnostics, direct_messages, downloads, dubbing, epg,
                                 websocket_diagnostics,
@@ -355,6 +355,11 @@ def register_all_routers(app: FastAPI) -> None:
         websocket_channel_chat.router,
         prefix=prefix,
         tags=["websocket", "channel-chat"],
+    )
+    app.include_router(
+        channel_chat.router,
+        prefix=prefix,
+        tags=["channel-chat"],
     )
     app.include_router(
         websocket_chess.router, prefix=prefix, tags=["websocket", "chess"]

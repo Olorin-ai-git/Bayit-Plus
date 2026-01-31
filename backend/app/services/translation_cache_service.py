@@ -81,6 +81,7 @@ def sanitize_language_code(lang_code: str) -> str:
 
     Only allows 2-5 character language codes with lowercase letters and hyphens.
     Examples: "en", "en-US", "zh-CN"
+    Also allows special internal cache keys: "detect", "lang"
 
     Args:
         lang_code: Raw language code from user input
@@ -94,8 +95,14 @@ def sanitize_language_code(lang_code: str) -> str:
     if not lang_code:
         raise ValueError("Language code cannot be empty")
 
-    # Only lowercase letters and hyphens, 2-5 characters
-    if not re.match(r'^[a-z]{2}(-[A-Z]{2})?$', lang_code):
+    # Allow special internal cache keys for language detection
+    internal_keys = {"detect", "lang"}
+    if lang_code.lower() in internal_keys:
+        return lang_code.lower()
+
+    # Standard language codes: 2 lowercase letters, optionally with region code
+    # Matches: "en", "he", "en-US", "zh-CN"
+    if not re.match(r'^[a-z]{2}(-[A-Za-z]{2})?$', lang_code, re.IGNORECASE):
         raise ValueError(
             "Invalid language code format. Must be 2-5 characters (e.g., 'en', 'en-US')"
         )

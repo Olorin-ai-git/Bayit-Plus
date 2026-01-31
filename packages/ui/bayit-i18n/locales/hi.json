@@ -648,7 +648,10 @@
     "milliseconds": "मिलीसेकंड",
     "collapse": "संक्षिप्त करें",
     "expand": "विस्तार करें",
-    "details": "विवरण"
+    "details": "विवरण",
+    "back": "वापस",
+    "actions": "कार्रवाई",
+    "live": "लाइव"
   },
   "dubbing": {
     "latency": {

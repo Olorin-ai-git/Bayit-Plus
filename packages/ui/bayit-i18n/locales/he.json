@@ -334,7 +334,10 @@
     "milliseconds": "מילישניות",
     "collapse": "כווץ",
     "expand": "הרחב",
-    "details": "פרטים"
+    "details": "פרטים",
+    "back": "חזרה",
+    "actions": "פעולות",
+    "live": "שידור חי"
   },
   "dubbing": {
     "latency": {
@@ -607,7 +610,12 @@
       "connectedAnnouncement": "מחובר לשירות ההעלאה. עדכונים בזמן אמת פעילים.",
       "reconnectingAnnouncement": "מתחבר מחדש לשירות ההעלאה. ניסיון {{attempt}} מתוך {{maxAttempts}}.",
       "troubleshooting": "פתרון בעיות",
-      "troubleshootingSteps": ["בדוק את חיבור האינטרנט שלך", "ודא שהשרת פועל", "בדוק את אסימון האימות שלך", "נסה לרענן את הדף"],
+      "troubleshootingSteps": [
+        "בדוק את חיבור האינטרנט שלך",
+        "ודא שהשרת פועל",
+        "בדוק את אסימון האימות שלך",
+        "נסה לרענן את הדף"
+      ],
       "manualRefresh": "רענן ידנית",
       "manualRefreshHint": "רענן ידנית את נתוני התור",
       "refreshing": "מרענן..."

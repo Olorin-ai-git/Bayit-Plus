@@ -761,7 +761,8 @@
     "loadMore": "Load More",
     "processing": "Processing...",
     "back": "Back",
-    "actions": "Actions"
+    "actions": "Actions",
+    "live": "LIVE"
   },
   "admin": {
     "accessDenied": "Access Denied",

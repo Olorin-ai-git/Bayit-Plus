@@ -104,6 +104,30 @@ export default function LiveSubtitleControls({
     // may have just clicked to connect and we don't want to override their intent
   }, [])
 
+  // Detect external connections (e.g., auto-enabled by trivia)
+  // Poll every second to sync UI when service is connected externally
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const serviceConnected = liveSubtitleService.isServiceConnected()
+
+      // Sync if service is connected but UI shows not enabled (any non-connected status)
+      if (serviceConnected && (!enabled || status !== 'connected')) {
+        logger.info(`Detected external subtitle connection - serviceConnected=${serviceConnected}, enabled=${enabled}, status=${status}`, 'LiveSubtitleControls')
+        setEnabled(true)
+        setStatus('connected')
+        setError(null)
+      }
+      // Also sync disconnection
+      if (!serviceConnected && enabled && status === 'connected') {
+        logger.info(`Detected external subtitle disconnection - serviceConnected=${serviceConnected}, enabled=${enabled}, status=${status}`, 'LiveSubtitleControls')
+        setEnabled(false)
+        setStatus('disconnected')
+      }
+    }, 1000) // Check every second
+
+    return () => clearInterval(interval)
+  }, [enabled, status])
+
   // Handle language changes - only reconnect if already connected
   useEffect(() => {
     if (enabled && videoElement && prevLangRef.current !== targetLang) {

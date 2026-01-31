@@ -61,4 +61,8 @@ export const panelStyles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
   },
+  loadingMore: {
+    paddingVertical: spacing.md,
+    alignItems: 'center',
+  },
 })

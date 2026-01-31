@@ -648,7 +648,10 @@
     "milliseconds": "毫秒",
     "collapse": "折叠",
     "expand": "展开",
-    "details": "详情"
+    "details": "详情",
+    "back": "返回",
+    "actions": "操作",
+    "live": "直播"
   },
   "dubbing": {
     "latency": {

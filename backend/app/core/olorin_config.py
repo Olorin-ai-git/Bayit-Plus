@@ -780,6 +780,48 @@ class LiveTriviaConfig(BaseSettings):
         le=1.0,
         description="Default relevance score for extracted facts",
     )
+    min_topic_mentions: int = Field(
+        default=2,
+        ge=1,
+        le=10,
+        description="Minimum mentions required before triggering trivia for a topic",
+    )
+    min_interval_seconds: int = Field(
+        default=30,
+        ge=5,
+        le=300,
+        description="Minimum seconds between trivia facts in a session",
+    )
+    max_facts_per_session: int = Field(
+        default=20,
+        ge=1,
+        le=100,
+        description="Maximum trivia facts per session",
+    )
+    tracked_topic_default_confidence: float = Field(
+        default=0.6,
+        ge=0.0,
+        le=1.0,
+        description="Default confidence threshold for tracked topics",
+    )
+    fact_cache_ttl_seconds: int = Field(
+        default=3600,
+        ge=60,
+        le=86400,
+        description="TTL for cached trivia facts in Redis (seconds)",
+    )
+    topic_cooldown_minutes: int = Field(
+        default=5,
+        ge=1,
+        le=60,
+        description="Cooldown minutes before same topic can trigger again",
+    )
+    mention_ttl_seconds: int = Field(
+        default=300,
+        ge=30,
+        le=1800,
+        description="TTL for topic mention tracking in Redis (seconds)",
+    )
 
     class Config:
         env_prefix = "LIVE_TRIVIA_"

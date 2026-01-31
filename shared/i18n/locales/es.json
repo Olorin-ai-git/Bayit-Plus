@@ -972,8 +972,22 @@
       "disconnectSuccessMessage": "El dispositivo se ha desconectado correctamente.",
       "disconnectSuccessWithSessions": "Dispositivo desconectado y {{count}} sesión/sesiones activa(s) finalizada(s).",
       "thisDevice": "Este dispositivo",
-      "loading": "Cargando dispositivos..."
-    }
+      "loading": "Cargando dispositivos...",
+      "minutesAgo_one": "hace 1 minuto",
+      "minutesAgo_other": "hace {{count}} minutos",
+      "hoursAgo_one": "hace 1 hora",
+      "hoursAgo_other": "hace {{count}} horas",
+      "daysAgo_one": "hace 1 día",
+      "daysAgo_other": "hace {{count}} días",
+      "disconnectDevice": "Desconectar Dispositivo"
+    },
+    "viewingHistory": "Historial de Visualización",
+    "clearHistory": "Limpiar Historial",
+    "confirmClearHistory": "¿Borrar todo el historial de visualización?",
+    "historyCleared": "Historial de visualización borrado",
+    "noHistory": "Sin historial de visualización",
+    "continueWatching": "Continuar Viendo",
+    "removeFromHistory": "Eliminar del historial"
   },
   "settings": {
     "title": "Configuración",
@@ -1015,7 +1029,13 @@
     "resetToDefault": "Restablecer Predeterminado",
     "resetConfirmMessage": "¿Restablecer todas las secciones a la configuración predeterminada?",
     "sectionHidden": "Sección oculta",
-    "sectionShown": "Sección visible"
+    "sectionShown": "Sección visible",
+    "fontSize": "Tamaño de Fuente",
+    "fontSizeSmall": "Pequeño",
+    "fontSizeLarge": "Grande",
+    "chatTranslation": "Traducción de Chat",
+    "autoTranslate": "Traducir mensajes automáticamente",
+    "autoTranslateDescription": "Traducir automáticamente los mensajes de chat a tu idioma preferido"
   },
   "voice": {
     "listening": "Escuchando...",
@@ -1180,7 +1200,11 @@
     "relatedContent": "Contenido Relacionado",
     "notFound": "Contenido no encontrado",
     "availableSubtitles": "Subtítulos Disponibles",
-    "subtitleSelected": "Seleccionado: {{language}}"
+    "subtitleSelected": "Seleccionado: {{language}}",
+    "noResults": "No se encontraron resultados",
+    "tryAdjusting": "Intente ajustar sus filtros",
+    "noEpisodesAvailable": "No hay episodios disponibles para reproducir",
+    "loadingSeries": "Cargando información de la serie..."
   },
   "breadcrumbs": {
     "series": "Serie",
@@ -1283,8 +1307,12 @@
       "watchVideo": "Ver Introducción",
       "skip": "Omitir",
       "dismiss": "No mostrar de nuevo",
-      "videoUnavailable": "Video temporalmente no disponible"
-    }
+      "videoUnavailable": "Video temporalmente no disponible",
+      "loadingMartyJr": "Cargando Marty Jr...",
+      "loadingWidgets": "Cargando introducción de widgets..."
+    },
+    "minimized": "Widget minimizado",
+    "expand": "Expandir widget"
   },
   "trending": {
     "title": "Tendencias en Israel",
@@ -1407,17 +1435,17 @@
     },
     "backToApp": "Volver a la App",
     "content": {
-      "subtitle": "Administre su biblioteca de contenido",
+      "subtitle": "Gestionar películas, series y contenido de video",
       "searchPlaceholder": "Buscar contenido...",
       "emptyMessage": "No se encontró contenido",
-      "showOnlyWithSubtitles": "Solo con subtítulos",
-      "selectedItems": "{{count}} seleccionado(s)",
-      "batchMerge": "Fusionar Series",
-      "batchFeature": "Agregar a Destacados",
-      "batchUnfeature": "Quitar de Destacados",
+      "showOnlyWithSubtitles": "Mostrar solo con subtítulos",
+      "selectedItems": "{{count}} elemento(s) seleccionado(s)",
+      "batchMerge": "Fusionar",
+      "batchFeature": "Destacar",
+      "batchUnfeature": "Quitar Destacado",
       "confirmDeleteSingle": "¿Está seguro de que desea eliminar este contenido? Esta acción no se puede deshacer.",
       "confirmBatchDelete": "¿Está seguro de que desea eliminar {{count}} elemento(s)? Esta acción no se puede deshacer.",
-      "batchDeleteSuccess": "Se eliminaron exitosamente {{count}} elemento(s)",
+      "batchDeleteSuccess": "Se eliminaron {{count}} elemento(s) exitosamente",
       "batchDeletePartial": "Se eliminaron {{success}} elemento(s), pero {{failed}} elemento(s) fallaron",
       "createSuccess": "Contenido creado exitosamente",
       "updateSuccess": "Contenido actualizado exitosamente",
@@ -1428,7 +1456,20 @@
         "year": "Año",
         "subtitles": "Subtítulos",
         "status": "Estado",
-        "actions": "Acciones"
+        "actions": "Acciones",
+        "views": "Vistas",
+        "rating": "Calificación",
+        "streamUrl": "URL de Stream",
+        "epgSource": "Fuente EPG",
+        "genre": "Género",
+        "episodeNumber": "# Episodio",
+        "description": "Descripción",
+        "duration": "Duración",
+        "publishedDate": "Publicado",
+        "episodes": "Episodios",
+        "order": "Orden",
+        "name": "Nombre",
+        "slug": "Slug"
       },
       "filters": {
         "contentType": "Tipo de Contenido",
@@ -1436,7 +1477,8 @@
         "series": "Series",
         "movies": "Películas",
         "podcasts": "Podcasts",
-        "radioStations": "Estaciones de Radio"
+        "radioStations": "Estaciones de Radio",
+        "audiobooks": "Audiolibros"
       },
       "status": {
         "published": "Publicado",
@@ -1448,10 +1490,52 @@
       },
       "noEpisodes": "Sin Episodios",
       "merge": {
-        "mergeSuccess": "Serie fusionada exitosamente"
+        "mergeSuccess": "Fusión Exitosa",
+        "wizard": "Asistente de Fusión de Contenido",
+        "errorMixedTypes": "No se pueden fusionar series y películas juntas",
+        "errorDifferentNames": "Los elementos no tienen nombres coincidentes o similares",
+        "suggestionSeparate": "Seleccione solo series o solo películas",
+        "suggestionNames1": "Los elementos a fusionar deben tener el mismo nombre en diferentes idiomas",
+        "suggestionNames2": "Ejemplo: \"בורגנים\" (Hebreo) y \"burganim\" (Inglés)",
+        "cannotMerge": "No Se Pueden Fusionar Estos Elementos",
+        "canMerge": "Los Elementos Se Pueden Fusionar",
+        "suggestions": "Sugerencias:",
+        "validationPassed": "Estos elementos tienen nombres similares y son compatibles para fusionar.",
+        "continue": "Continuar",
+        "selectBase": "Seleccionar Elemento Base",
+        "selectBaseDescription": "Elija qué elemento mantener como base. Todo el contenido de otros elementos se fusionará en este.",
+        "configure": "Configurar Fusión",
+        "configureDescription": "Elija qué transferir y qué metadatos mantener.",
+        "contentTransfer": "Transferencia de Contenido",
+        "transferSeasons": "Transferir Temporadas",
+        "transferSeasonsDesc": "Mover todas las temporadas de elementos fusionados al elemento base",
+        "transferEpisodes": "Transferir Episodios",
+        "transferEpisodesDesc": "Mover todos los episodios de elementos fusionados al elemento base",
+        "metadataPreferences": "Preferencias de Metadatos",
+        "baseItem": "Elemento Base",
+        "useBasePoster": "Usar Póster del Elemento Base",
+        "useBasePosterDesc": "Mantener la imagen del póster del elemento base",
+        "useBaseDescription": "Usar Descripción del Elemento Base",
+        "useBaseDescriptionDesc": "Mantener la descripción del elemento base",
+        "mergePreview": "Vista Previa de Fusión",
+        "itemsToMerge": "Elementos a Fusionar",
+        "totalSeasons": "Total de Temporadas Después de Fusionar",
+        "totalEpisodes": "Total de Episodios Después de Fusionar",
+        "confirmMerge": "Confirmar Fusión",
+        "confirmDescription": "Revise la operación de fusión y confirme para continuar.",
+        "baseItemKeep": "Este elemento se mantendrá",
+        "itemsMergeInto": "Estos elementos se fusionarán en la base",
+        "mergeWarning": "Después de fusionar, todo el contenido se combinará en el elemento base. Los elementos fusionados se marcarán como fusionados y se ocultarán de la biblioteca.",
+        "merging": "Fusionando...",
+        "confirmButton": "Fusionar Elementos",
+        "errorNoBase": "Por favor seleccione un elemento base",
+        "errorNoMerge": "No hay elementos para fusionar",
+        "successMessage": "Se fusionaron {{count}} elemento(s) exitosamente en \"{{title}}\".",
+        "noEpisodesNote": "Nota: No se transfirieron episodios o temporadas porque aún no se han creado en la base de datos.",
+        "transferredInfo": "Transferidos: {{seasons}} temporada(s), {{episodes}} episodio(s)."
       },
       "categoryPicker": {
-        "selectPlaceholder": "Seleccionar categoría",
+        "selectPlaceholder": "Seleccionar categoría...",
         "searchPlaceholder": "Buscar categorías...",
         "noCategories": "No hay categorías disponibles",
         "noResults": "No se encontraron categorías",
@@ -1459,7 +1543,7 @@
         "loading": "Cargando categorías...",
         "modal": {
           "title": "Crear Nueva Categoría",
-          "placeholder": "Nombre de la categoría",
+          "placeholder": "Nombre de categoría (ej., Películas, Series)",
           "create": "Crear",
           "creating": "Creando..."
         },
@@ -1469,28 +1553,30 @@
         }
       },
       "streamUrlInput": {
-        "streamType": "Tipo de Transmisión",
+        "streamType": "Tipo de Stream",
         "copied": "URL copiada al portapapeles",
         "supportedFormats": {
-          "title": "Formatos soportados",
-          "hls": "HLS (.m3u8)",
-          "dash": "DASH (.mpd)",
-          "audio": "Audio (.mp3, .aac)"
+          "title": "Formatos soportados:",
+          "hls": "HLS: streams .m3u8",
+          "dash": "DASH: streams .mpd",
+          "audio": "Audio: .mp3, .aac, o streams de audio"
         },
         "errors": {
-          "required": "La URL de transmisión es requerida",
-          "invalidFormat": "Formato de URL de transmisión inválido"
-        }
+          "required": "La URL del stream es requerida",
+          "invalidFormat": "Formato de URL inválido"
+        },
+        "copyUrl": "Copiar URL",
+        "validUrl": "URL válida - detectada como {{type}}"
       },
       "editor": {
         "pageTitle": "Editar Contenido",
-        "pageTitleNew": "Agregar Nuevo Contenido",
+        "pageTitleNew": "Agregar Contenido",
         "sections": {
           "basicInfo": "Información Básica",
-          "media": "Recursos Multimedia",
-          "streaming": "Configuración de Transmisión",
+          "media": "Medios",
+          "streaming": "Streaming",
           "details": "Detalles del Contenido",
-          "publishing": "Opciones de Publicación",
+          "publishing": "Publicación",
           "accessControl": "Control de Acceso",
           "channelDetails": "Detalles del Canal",
           "stationDetails": "Detalles de la Estación",
@@ -1499,64 +1585,76 @@
         },
         "fields": {
           "title": "Título",
-          "titlePlaceholder": "Ingrese el título del contenido",
+          "titlePlaceholder": "Título del contenido",
           "titleRequired": "El título es requerido",
           "description": "Descripción",
-          "descriptionPlaceholder": "Ingrese la descripción...",
+          "descriptionPlaceholder": "Descripción del contenido",
           "year": "Año",
-          "yearPlaceholder": "ej., 2024",
+          "yearPlaceholder": "2024",
           "category": "Categoría",
-          "thumbnail": "Miniatura (relación de aspecto 3:4)",
-          "backdrop": "Fondo (relación de aspecto 16:9)",
-          "streamUrl": "URL de Transmisión",
+          "thumbnail": "Miniatura (proporción 3:4)",
+          "backdrop": "Fondo (proporción 16:9)",
+          "streamUrl": "URL del Stream",
           "streamUrlPlaceholder": "https://ejemplo.com/stream.m3u8",
-          "streamType": "Tipo de Transmisión",
+          "streamType": "Tipo de Stream",
           "drmProtected": "Protegido con DRM",
-          "drmProtectedLabel": "Habilitar protección DRM",
-          "duration": "Duración (minutos)",
-          "durationPlaceholder": "ej., 120",
-          "rating": "Clasificación",
-          "ratingPlaceholder": "ej., PG-13",
+          "drmProtectedLabel": "Este contenido requiere protección DRM",
+          "duration": "Duración",
+          "durationPlaceholder": "1:30:00",
+          "rating": "Calificación",
+          "ratingPlaceholder": "PG-13",
           "genre": "Género",
-          "genrePlaceholder": "ej., Acción",
+          "genrePlaceholder": "Drama",
           "director": "Director",
           "directorPlaceholder": "Nombre del director",
-          "isSeries": "Contenido de Serie",
-          "isSeriesLabel": "Esto es una serie",
+          "isSeries": "Serie",
+          "isSeriesLabel": "Este es contenido de serie/múltiples partes",
           "season": "Temporada",
-          "seasonNumber": "Número de temporada",
+          "seasonNumber": "# Temporada",
           "episode": "Episodio",
-          "episodeNumber": "Número de episodio",
-          "isPublishedLabel": "Publicado",
-          "isFeaturedLabel": "Destacado",
-          "isKidsContentLabel": "Contenido Infantil",
-          "requiredSubscription": "Nivel de Suscripción",
+          "episodeNumber": "# Episodio",
+          "isPublishedLabel": "Publicar este contenido inmediatamente",
+          "isFeaturedLabel": "Destacar este contenido en la página principal",
+          "isKidsContentLabel": "Este es contenido apto para niños",
+          "requiredSubscription": "Suscripción Requerida",
           "seriesId": "ID de Serie",
-          "seriesIdPlaceholder": "ID de serie padre",
+          "seriesIdPlaceholder": "identificador-de-serie",
           "channelLogo": "Logo del Canal",
-          "epgSource": "Fuente EPG",
-          "epgSourcePlaceholder": "URL del EPG",
+          "epgSource": "URL de Fuente EPG",
+          "epgSourcePlaceholder": "https://ejemplo.com/epg.xml",
           "currentShow": "Programa Actual",
           "currentShowPlaceholder": "Nombre del programa",
           "nextShow": "Próximo Programa",
-          "nextShowPlaceholder": "Programa próximo",
+          "nextShowPlaceholder": "Nombre del programa",
           "stationLogo": "Logo de la Estación",
-          "website": "Sitio Web",
-          "websitePlaceholder": "https://estacion.com",
+          "website": "URL del Sitio Web",
+          "websitePlaceholder": "https://ejemplo.com",
           "currentSong": "Canción Actual",
-          "currentSongPlaceholder": "Nombre de la canción",
-          "rssFeed": "Feed RSS",
-          "rssFeedPlaceholder": "https://podcast.com/feed.xml",
-          "posterCover": "Póster/Portada",
-          "podcastCategory": "Categoría del Podcast",
-          "podcastCategoryPlaceholder": "ej., Tecnología",
+          "currentSongPlaceholder": "Título de la canción",
+          "rssFeed": "URL del Feed RSS",
+          "rssFeedPlaceholder": "https://ejemplo.com/feed.xml",
+          "posterCover": "Portada del Podcast",
+          "podcastCategory": "Categoría",
+          "podcastCategoryPlaceholder": "Noticias, Ciencia, etc.",
           "author": "Autor",
-          "authorPlaceholder": "Nombre del autor",
-          "audioUrl": "URL de Audio",
+          "authorPlaceholder": "Autor del podcast",
+          "audioUrl": "URL del Audio",
           "audioUrlPlaceholder": "https://ejemplo.com/episodio.mp3",
-          "audioUrlRequired": "La URL de audio es requerida",
+          "audioUrlRequired": "La URL del audio es requerida",
           "publishedDate": "Fecha de Publicación",
-          "isActiveLabel": "Activo"
+          "isActiveLabel": "El canal está activo",
+          "thumbnailUrl": "URL de Miniatura",
+          "thumbnailUrlPlaceholder": "https://ejemplo.com/miniatura.jpg",
+          "backdropUrl": "URL de Fondo",
+          "logo": "Logo",
+          "streamUrlRequired": "La URL del stream es requerida",
+          "categoryRequired": "La categoría es requerida",
+          "isPublished": "Publicar",
+          "isFeatured": "Destacar",
+          "requiresSubscription": "Suscripción Requerida",
+          "isKidsContent": "Contenido Infantil",
+          "publishedAt": "Fecha de Publicación",
+          "isActive": "Activo"
         },
         "subscriptionTiers": {
           "basic": "Básico",
@@ -1569,28 +1667,81 @@
           "cancel": "Cancelar"
         },
         "imageUpload": {
-          "dropHere": "Suelta la imagen aquí o haz clic para navegar",
+          "dropHere": "Suelte la imagen aquí o haga clic para cargar",
           "formats": "PNG, JPG, WebP hasta {{maxSize}}MB",
-          "uploading": "Subiendo...",
-          "success": "Imagen subida exitosamente",
-          "orPasteUrl": "O pega la URL de la imagen",
+          "uploading": "Cargando...",
+          "success": "Imagen cargada exitosamente",
+          "orPasteUrl": "O pegue la URL de la imagen",
           "urlPlaceholder": "https://ejemplo.com/imagen.jpg",
           "validateButton": "Agregar",
           "validating": "Validando...",
           "clear": "Eliminar imagen",
-          "changeImage": "Cambiar imagen",
+          "changeImage": "Cambiar Imagen",
           "errors": {
-            "imageOnly": "Solo se permiten archivos de imagen",
+            "imageOnly": "Por favor seleccione un archivo de imagen",
             "tooLarge": "El tamaño del archivo debe ser menor a {{maxSize}}MB",
-            "uploadFailed": "Error al subir la imagen",
-            "invalidUrl": "URL de imagen inválida"
+            "uploadFailed": "Error al cargar",
+            "invalidUrl": "URL inválida"
           }
         },
         "validation": {
           "titleRequired": "El título es requerido",
           "requiredFields": "Por favor complete todos los campos requeridos"
         }
-      }
+      },
+      "title": "Biblioteca de Contenido",
+      "importFree": "Importar Contenido Gratuito",
+      "confirmDelete": "¿Eliminar este contenido?",
+      "import": {
+        "pageTitle": "Importar Contenido Gratuito",
+        "subtitle": "Explorar e importar contenido público de fuentes gratuitas",
+        "selectCategory": "Seleccionar categoría para películas importadas:",
+        "categoryPlaceholder": "Seleccionar una categoría...",
+        "loading": "Cargando fuentes...",
+        "sourceTypes": {
+          "vod": "Películas y VOD",
+          "live_tv": "TV en Vivo",
+          "radio": "Radio",
+          "podcasts": "Podcasts"
+        },
+        "items": "elemento",
+        "itemsPlural": "elementos",
+        "selectItems": "Por favor seleccione al menos un elemento para importar",
+        "selectCategory_vod": "Por favor seleccione una categoría para importaciones de VOD",
+        "importing": "Importando {{count}}... {{percent}}%",
+        "importButton": "Importar {{count}} {{item}}",
+        "noSources": "No Hay Fuentes Disponibles",
+        "noSourcesDescription": "No hay fuentes de contenido gratuito disponibles actualmente para {{type}}"
+      },
+      "movies": "Películas",
+      "series": "Series",
+      "audiobooks": "Audiolibros",
+      "podcasts": "Podcasts",
+      "validation": {
+        "titleRequired": "El título es requerido",
+        "nameRequired": "El nombre es requerido",
+        "streamUrlRequired": "La URL del stream es requerida",
+        "audioUrlRequired": "La URL del audio es requerida"
+      },
+      "episodes_one": "episodio",
+      "episodes_other": "episodios",
+      "toggleCarousel": "Alternar carrusel",
+      "mergeContent": "Fusionar Contenido",
+      "selectItemToKeep": "Seleccionar elemento a mantener",
+      "removeAction": "¿Qué hacer con los elementos eliminados?",
+      "removeActionUnpublish": "Despublicar (recomendado)",
+      "removeActionDelete": "Eliminar permanentemente",
+      "unpublishDescription": "Los elementos se ocultarán pero se pueden restaurar después",
+      "deleteWarning": "⚠️ Los elementos eliminados no se pueden recuperar",
+      "mergeReason": "Razón de la fusión",
+      "mergeReasonPlaceholder": "Ingrese la razón (mín. 10 caracteres)...",
+      "mergeReasonTooShort": "La razón debe tener al menos 10 caracteres",
+      "confirmMerge": "Fusionar Elementos",
+      "itemWillBeKept": "Este elemento se mantendrá",
+      "itemsWillBeRemoved": "{{count}} elemento será {{action}}",
+      "itemsWillBeRemoved_plural": "{{count}} elementos serán {{action}}",
+      "mergeSuccess": "Se fusionaron {{count}} elementos exitosamente",
+      "mergeFailed": "Error al fusionar contenido"
     },
     "categories": {
       "form": {
@@ -1602,18 +1753,29 @@
         "nameEnglishPlaceholder": "Nombre de categoría (Inglés)",
         "slug": "Slug",
         "slugPlaceholder": "Slug (ej., peliculas)"
+      },
+      "subtitle": "Gestionar categorías de contenido",
+      "emptyMessage": "No se encontraron categorías",
+      "status": {
+        "active": "Activo",
+        "inactive": "Inactivo"
       }
     },
     "liveChannels": {
-      "subtitle": "Administrar canales de TV en vivo",
+      "subtitle": "Gestionar canales de TV en vivo",
       "emptyMessage": "No se encontraron canales en vivo",
       "form": {
         "name": "Nombre del canal",
-        "streamUrl": "URL de transmisión",
-        "epgSource": "URL de fuente EPG (opcional)",
-        "currentShow": "Programa actual",
-        "order": "Orden"
-      }
+        "streamUrl": "URL del Stream",
+        "epgSource": "URL de Fuente EPG (opcional)",
+        "currentShow": "Programa Actual",
+        "order": "Orden",
+        "supportsSubtitles": "Habilitar Subtítulos en Vivo",
+        "primaryLanguage": "Idioma Principal (Fuente)",
+        "targetLanguages": "Idiomas de Traducción Disponibles",
+        "targetLanguagesHelp": "Seleccione a qué idiomas pueden traducir los usuarios en tiempo real"
+      },
+      "subtitleSettings": "Configuración de Subtítulos en Vivo"
     },
     "radioStations": {
       "subtitle": "Administrar estaciones de radio",
@@ -1790,8 +1952,8 @@
       },
       "addSubscription": {
         "title": "Agregar Suscripción",
-        "userEmail": "Correo del Usuario",
-        "emailPlaceholder": "Ingrese correo del usuario",
+        "userEmail": "Email del Usuario",
+        "emailPlaceholder": "Ingrese email del usuario",
         "duration": "Duración (días)",
         "selectPlan": "Seleccionar Plan"
       },
@@ -1801,7 +1963,14 @@
       "selectToDelete": "Por favor seleccione suscripciones para eliminar",
       "confirmDeleteMultiple": "¿Eliminar {{count}} suscripción(es)?",
       "selected": "seleccionados",
-      "confirmDelete": "¿Está seguro de que desea eliminar la suscripción de {{user}}? Esta acción no se puede deshacer."
+      "confirmDelete": "¿Está seguro de que desea eliminar la suscripción de {{user}}? Esta acción no se puede deshacer.",
+      "actions": {
+        "changePlan": "Cambiar Plan",
+        "pause": "Pausar",
+        "resume": "Reanudar",
+        "cancel": "Cancelar",
+        "delete": "Eliminar"
+      }
     },
     "marketingDashboard": {
       "subtitle": "Resumen de Marketing",
@@ -2066,7 +2235,9 @@
       "content": "Biblioteca de Contenido",
       "liveChannels": "Canales en Vivo",
       "radioStations": "Estaciones de Radio",
-      "podcasts": "Pódcasts"
+      "podcasts": "Pódcasts",
+      "translations": "Traducciones",
+      "librarian": "Agente Bibliotecario"
     },
     "nav": {
       "dashboard": "Panel de Control",
@@ -2177,7 +2348,7 @@
     },
     "uploads": {
       "title": "Gestión de Cargas",
-      "subtitle": "Administrar cargas de contenido y monitoreo automático de carpetas",
+      "subtitle": "Monitorear carpetas y gestionar cargas de contenido",
       "activeUploads": "Cargas Activas",
       "noActiveUploads": "No hay cargas activas",
       "queuedUploads": "Cargas en Cola",
@@ -2185,22 +2356,80 @@
       "andMore": "Y {{count}} más",
       "monitoredFolders": {
         "title": "Carpetas Monitoreadas",
-        "subtitle": "Configurar carpetas para monitoreo automático de contenido y carga",
+        "subtitle": "Configurar carpetas para detectar y cargar contenido automáticamente",
         "noMonitoredFolders": "No hay carpetas monitoreadas configuradas",
         "configureFoldersHelp": "Haga clic en 'Agregar Carpeta' para configurar carpetas monitoreadas para cargas automáticas",
         "addFolder": "Agregar Carpeta",
         "editFolder": "Editar Carpeta",
         "deleteFolder": "Eliminar Carpeta",
-        "confirmDelete": "¿Eliminar esta carpeta?",
+        "confirmDelete": "¿Eliminar {{name}}?",
         "scanFolder": "Escanear Carpeta",
         "scanSuccess": "Escaneo de carpeta completado exitosamente",
-        "scanFailed": "Error al escanear carpeta",
+        "scanFailed": "Error de escaneo: {{error}}",
         "contentType": "Tipo de Contenido",
         "lastScan": "Último Escaneo",
-        "filesFound": "Archivos Encontrados"
+        "filesFound": "Archivos Encontrados",
+        "noFolders": "No hay carpetas monitoreadas",
+        "noFoldersDescription": "Agregue carpetas para habilitar la detección y carga automática de contenido",
+        "scanFolderHint": "Buscar archivos nuevos en la carpeta y agregarlos a la cola de carga",
+        "scanning": "Escaneando...",
+        "scanComplete": "Escaneo completo: Se encontraron {{count}} archivo(s)",
+        "scanCompleteOne": "Escaneo completo: Se encontró 1 archivo",
+        "scanCompleteOther": "Escaneo completo: Se encontraron {{count}} archivos",
+        "noFilesFound": "No se encontraron archivos nuevos en la carpeta",
+        "folderName": "Nombre de Carpeta",
+        "folderPath": "Ruta de Carpeta",
+        "folderStatus": "Estado",
+        "folderEnabled": "Habilitado",
+        "folderDisabled": "Deshabilitado",
+        "neverScanned": "Nunca escaneado",
+        "filesDetected": "{{count}} archivo(s) detectado(s)",
+        "confirmDeleteMessage": "Esto detendrá el monitoreo de esta carpeta. Las cargas existentes no se verán afectadas.",
+        "deleteSuccess": "Carpeta eliminada exitosamente",
+        "deleteFailed": "Error al eliminar carpeta: {{error}}",
+        "form": {
+          "title": "Configuración de Carpeta",
+          "name": "Nombre de Carpeta",
+          "namePlaceholder": "ej., Archivo de Películas",
+          "nameRequired": "El nombre de la carpeta es requerido",
+          "nameHelp": "Nombre descriptivo para esta carpeta",
+          "path": "Ruta de Carpeta",
+          "pathPlaceholder": "/ruta/a/carpeta",
+          "pathHelp": "Ingrese la ruta completa a monitorear",
+          "pathRequired": "La ruta de la carpeta es requerida",
+          "pathInvalid": "Ruta de carpeta inválida",
+          "pathReadOnly": "La ruta no se puede cambiar después de la creación",
+          "enabled": "Habilitado",
+          "enabledHelp": "Habilitar o deshabilitar monitoreo para esta carpeta",
+          "autoUpload": "Carga Automática",
+          "autoUploadHelp": "Cargar automáticamente archivos nuevos detectados en esta carpeta",
+          "contentType": "Tipo de Contenido",
+          "contentTypeHelp": "Tipo de contenido en esta carpeta",
+          "saveButton": "Guardar Carpeta",
+          "cancelButton": "Cancelar",
+          "saving": "Guardando..."
+        }
       },
       "queueDashboard": {
-        "title": "Estado de Cola de Carga"
+        "title": "Panel de Cola de Cargas",
+        "stats": "Estadísticas de Cola",
+        "total": "Total",
+        "queued": "En Cola",
+        "active": "Activo",
+        "done": "Completado",
+        "activeJob": "Carga Activa",
+        "queuedJobs": "Cargas en Cola",
+        "recentCompleted": "Completados Recientes",
+        "noActiveJob": "No hay cargas activas",
+        "noActiveJobDescription": "La cola está vacía. Cargue archivos o escanee carpetas monitoreadas para comenzar el procesamiento.",
+        "noQueuedJobs": "No hay cargas pendientes",
+        "noQueuedJobsDescription": "Todos los archivos han sido procesados. Agregue más archivos para continuar.",
+        "noRecentCompleted": "No hay completados recientes",
+        "noRecentCompletedDescription": "Los archivos cargados exitosamente aparecerán aquí.",
+        "queuePausedWarning": "Cola pausada: {{reason}}",
+        "resumeQueue": "Reanudar Cola",
+        "pauseQueue": "Pausar Cola",
+        "clearQueue": "Limpiar Cola"
       },
       "monitoredFoldersSubtitle": "Configurar carpetas para monitoreo automático de contenido y carga",
       "noMonitoredFolders": "No hay carpetas monitoreadas configuradas",
@@ -2251,56 +2480,236 @@
         "autoUpload": "Carga Automática"
       },
       "contentTypes": {
-        "movie": "Películas",
-        "series": "Series",
-        "audiobook": "Audiolibros"
+        "movie": "Película",
+        "series": "Serie",
+        "audiobook": "Audiolibros",
+        "podcast": "Podcast",
+        "other": "Otro"
       },
       "errors": {
-        "pathRequired": "La ruta de la carpeta es obligatoria",
-        "loadFailed": "Failed to load upload data",
-        "resumeFailed": "Failed to resume upload queue",
-        "clearFailed": "Failed to clear upload queue",
-        "triggerFailed": "Failed to trigger upload scan",
-        "saveFailed": "Failed to save folder configuration",
-        "deleteFailed": "Failed to delete folder"
+        "pathRequired": "La ruta de la carpeta es requerida",
+        "loadFailed": "Error al cargar datos de carga",
+        "resumeFailed": "Error al reanudar cola",
+        "clearFailed": "Error al limpiar cola",
+        "triggerFailed": "Error al activar escaneo de carga",
+        "saveFailed": "Error al guardar configuración de carpeta",
+        "deleteFailed": "Error al eliminar carpeta monitoreada",
+        "loadFailedDescription": "No se pueden obtener los datos de la cola de carga. Por favor intente actualizar.",
+        "saveFailedDescription": "No se puede guardar la carpeta monitoreada. Por favor intente de nuevo.",
+        "uploadFailed": "Error de carga",
+        "uploadFailedDescription": "Uno o más archivos fallaron al cargar. Verifique la lista de archivos para más detalles.",
+        "invalidPath": "Ruta de carpeta inválida",
+        "pathTraversal": "La ruta contiene caracteres inválidos o intentos de traversal",
+        "networkError": "Error de red. Por favor verifique su conexión.",
+        "authError": "Error de autenticación. Por favor inicie sesión de nuevo.",
+        "serverError": "Error del servidor. Por favor intente de nuevo más tarde.",
+        "fileTooBig": "El archivo excede el tamaño máximo de {{maxSize}}",
+        "invalidFileType": "Tipo de archivo inválido. Formatos soportados: {{formats}}",
+        "duplicateFile": "Este archivo ya ha sido cargado",
+        "rateLimitExceeded": "Límite de tasa excedido. Por favor espere antes de cargar más archivos.",
+        "configValidationFailed": "Error de validación de configuración. Verifique la consola para más detalles.",
+        "websocketAuthFailed": "Error de autenticación de WebSocket",
+        "unsupportedBrowser": "Su navegador no soporta las características requeridas"
       },
       "manualUpload": {
         "title": "Carga Manual",
-        "subtitle": "Arrastra y suelta archivos o selecciona una carpeta",
-        "dropHere": "Suelta archivos aquí o haz clic para explorar",
-        "dropHereActive": "Suelta los archivos para agregarlos",
-        "dragOrClick": "Arrastra y suelta archivos aquí, o haz clic para seleccionar",
-        "dropFiles": "Suelta archivos aquí",
+        "subtitle": "Cargar archivos directamente desde su dispositivo",
+        "dropHere": "Arrastre archivos de video aquí o haga clic para explorar",
+        "dropHereActive": "Suelte los archivos para cargar",
+        "dragOrClick": "Arrastre y suelte archivos aquí, o haga clic para seleccionar",
+        "dropFiles": "Suelte los archivos aquí",
         "acceptedFormats": "Formatos aceptados",
         "maxSize": "Tamaño máximo de archivo",
-        "invalidFiles": "{{count}} file(s) rejected - invalid type or too large",
+        "invalidFiles": "{{count}} archivo(s) rechazado(s)",
         "selectFolder": "Seleccionar Carpeta",
-        "supportedFormats": "Soporta archivos de video (mp4, mkv, avi, mov, webm)",
-        "selectedFiles": "Archivos Seleccionados",
+        "supportedFormats": "Soportados: MP4, MKV, AVI, MOV, WEBM (máx {{maxSize}})",
+        "selectedFiles": "{{count}} archivo(s) seleccionado(s)",
         "noFilesSelected": "No hay archivos seleccionados",
         "clearAll": "Limpiar Todo",
         "uploadSelected": "Subir Seleccionados",
         "selectContentType": "Selecciona el tipo de contenido para cargar",
-        "uploadingFiles": "Agregando {{count}} archivo(s) a la cola...",
-        "uploadSuccess": "Se agregaron {{count}} archivo(s) a la cola exitosamente",
-        "uploadFailed": "Error al agregar archivos a la cola",
+        "uploadingFiles": "Cargando {{count}} archivo(s)...",
+        "uploadSuccess": "Se cargaron {{count}} archivo(s) exitosamente",
+        "uploadFailed": "Error de carga: {{error}}",
         "fileSize": "Tamaño",
-        "removeFile": "Eliminar",
+        "removeFile": "Eliminar {{name}}",
         "invalidFileType": "Tipo de archivo no válido. Solo se admiten archivos de video.",
         "filesCount": "{{count}} archivo(s) seleccionado(s)",
         "pendingRestore": "{{count}} archivo(s) pendiente(s) de sesión anterior",
         "pendingRestoreHint": "Arrastra o selecciona los mismos archivos para restaurar la cola de carga",
         "validationFailed": "Validation Failed",
         "uploadFailedDetails": "Failed: {{files}}",
-        "uploadFiles": "Upload {{count}} file(s)",
-        "uploadComplete": "Upload Complete",
+        "uploadFiles": "Cargar Archivos",
+        "uploadComplete": "Carga Completa",
         "successful": "{{count}} successful",
-        "failed": "{{count}} failed"
+        "failed": "{{count}} failed",
+        "browserUpload": "Carga del Navegador",
+        "urlUpload": "Importar por URL",
+        "contentType": "Tipo de Contenido",
+        "contentTypeHelp": "Seleccione el tipo de contenido que se está cargando",
+        "contentTypeRequired": "Por favor seleccione un tipo de contenido",
+        "dropZone": "Zona de Soltar",
+        "dropZoneAriaLabel": "Zona de carga de archivos. Haga clic o presione Enter para seleccionar archivos, o arrastre archivos aquí",
+        "tapToSelect": "Toque para seleccionar archivos",
+        "browseFiles": "Explorar Archivos",
+        "selectFiles": "Seleccionar Archivos",
+        "fileList": "Archivos seleccionados para cargar",
+        "fileListEmpty": "No hay archivos seleccionados",
+        "fileListEmptyDescription": "Use el selector de archivos arriba para elegir archivos a cargar",
+        "fileItem": "Archivo: {{name}}, Tamaño: {{size}}, Progreso: {{progress}}%",
+        "fileName": "Nombre del Archivo",
+        "fileType": "Tipo",
+        "fileProgress": "Progreso",
+        "fileStatus": "Estado",
+        "removeFileHint": "Eliminar este archivo de la cola de carga",
+        "fileRemoved": "Se eliminó {{name}} de la cola de carga",
+        "selectedFilesOne": "1 archivo seleccionado",
+        "selectedFilesOther": "{{count}} archivos seleccionados",
+        "totalSize": "Tamaño total: {{size}}",
+        "clearAllHint": "Eliminar todos los archivos de la cola de carga",
+        "clearAllConfirm": "¿Eliminar los {{count}} archivos?",
+        "uploading": "Cargando...",
+        "uploadProgress": "Cargando: {{percent}}% completado",
+        "uploadSuccessOne": "Se cargó 1 archivo exitosamente",
+        "uploadSuccessOther": "Se cargaron {{count}} archivos exitosamente",
+        "uploadPartialSuccess": "Se cargaron {{successful}} de {{total}} archivos. {{failed}} fallaron.",
+        "cancelUpload": "Cancelar Carga",
+        "retryUpload": "Reintentar Carga",
+        "retryFailed": "Reintentar Archivos Fallidos"
+      },
+      "urlUpload": {
+        "title": "Importar desde URL",
+        "subtitle": "Importar archivos de video desde URLs remotas",
+        "urlLabel": "URL del Video",
+        "urlPlaceholder": "https://ejemplo.com/video.mp4",
+        "urlHelp": "Ingrese una URL directa a un archivo de video",
+        "urlRequired": "La URL es requerida",
+        "importButton": "Importar desde URL",
+        "importing": "Importando...",
+        "importSuccess": "Importado exitosamente desde URL",
+        "importFailed": "Error de importación: {{error}}",
+        "invalidUrl": "Por favor ingrese una URL válida",
+        "urlMustBeHttps": "La URL debe usar protocolo HTTPS",
+        "emptyUrlList": "No se han importado URLs",
+        "emptyUrlListDescription": "Ingrese URLs arriba para importar archivos de video desde fuentes remotas",
+        "addUrl": "Agregar URL",
+        "removeUrl": "Eliminar URL"
+      },
+      "dryRun": {
+        "title": "Modo de Prueba",
+        "enabled": "Modo de Prueba Habilitado",
+        "disabled": "Modo de Prueba Deshabilitado",
+        "description": "Vista previa de carga sin transferir archivos realmente",
+        "descriptionDetailed": "Cuando está habilitado, los archivos serán validados y se extraerán metadatos, pero no se cargarán al almacenamiento. Use esto para probar cargas sin confirmar cambios.",
+        "toggle": "Habilitar Modo de Prueba",
+        "toggleHint": "Alternar modo de prueba para pruebas de carga seguras",
+        "previewTitle": "Resultados del Modo de Prueba",
+        "previewDescription": "Revise qué sucederá si procede con la carga",
+        "validFiles": "Archivos Válidos ({{count}})",
+        "invalidFiles": "Archivos Inválidos ({{count}})",
+        "warnings": "Advertencias ({{count}})",
+        "proceedButton": "Proceder con la Carga",
+        "proceedHint": "Deshabilitar modo de prueba y realizar carga real",
+        "cancelButton": "Cancelar",
+        "noResults": "No hay resultados de modo de prueba disponibles"
+      },
+      "connectionStatus": {
+        "connected": "Conectado",
+        "disconnected": "Desconectado",
+        "reconnecting": "Reconectando...",
+        "reconnectAttempt": "Reconectando (intento {{current}} de {{max}})",
+        "connectionLost": "El estado de la cola no se actualizará automáticamente",
+        "connectionLostDescription": "Conexión perdida. Use el botón Actualizar para ver el estado más reciente de la cola. Estamos intentando reconectar...",
+        "connectionLostAnnouncement": "Conexión perdida. Actualizaciones en tiempo real pausadas. Use el botón Actualizar para actualizaciones manuales.",
+        "connectedAnnouncement": "Conectado al servicio de carga. Actualizaciones en tiempo real activas.",
+        "reconnectingAnnouncement": "Reconectando al servicio de carga. Intento {{attempt}} de {{maxAttempts}}.",
+        "troubleshooting": "Solución de Problemas",
+        "troubleshootingSteps": [
+          "Verifique su conexión a internet",
+          "Verifique que el servidor esté ejecutándose",
+          "Verifique su token de autenticación",
+          "Intente actualizar la página"
+        ],
+        "manualRefresh": "Actualizar Manualmente",
+        "manualRefreshHint": "Actualizar datos de cola manualmente",
+        "refreshing": "Actualizando..."
+      },
+      "stages": {
+        "browserUpload": "Carga del Navegador",
+        "hashCalculation": "Cálculo de Hash",
+        "duplicateCheck": "Verificación de Duplicados",
+        "metadataExtraction": "Extracción de Metadatos",
+        "gcsUpload": "Carga a la Nube",
+        "databaseInsert": "Inserción en Base de Datos",
+        "complete": "Completo",
+        "failed": "Fallido"
+      },
+      "status": {
+        "queued": "En Cola",
+        "processing": "Procesando",
+        "uploading": "Cargando",
+        "complete": "Completo",
+        "failed": "Fallido",
+        "cancelled": "Cancelado",
+        "skipped": "Omitido (Duplicado)"
+      },
+      "actions": {
+        "pauseQueue": "Pausar Cola",
+        "resumeQueue": "Reanudar Cola",
+        "clearQueue": "Limpiar Cola",
+        "clearQueueConfirm": "¿Limpiar Cola de Cargas?",
+        "clearQueueConfirmMessage": "Esto cancelará {{count}} carga(s) pendiente(s). Esta acción no se puede deshacer.",
+        "triggerUpload": "Escanear Carpetas",
+        "triggerUploadHint": "Escanear todas las carpetas monitoreadas en busca de archivos nuevos",
+        "triggerUploadSuccess": "Se encontraron {{files_found}} archivo(s) para cargar",
+        "triggerUploadFailed": "Error de escaneo: {{error}}",
+        "refresh": "Actualizar",
+        "refreshHint": "Recargar datos de la cola",
+        "cancel": "Cancelar",
+        "retry": "Reintentar",
+        "remove": "Eliminar"
+      },
+      "mobile": {
+        "dataWarning": "Está usando datos móviles. Cargar {{size}} puede usar datos significativos.",
+        "dataWarningProceed": "Proceder de Todos Modos",
+        "dataWarningCancel": "Cancelar Carga",
+        "lowMemoryWarning": "La memoria del dispositivo es baja. Las cargas grandes pueden fallar.",
+        "batteryLowWarning": "La batería está baja ({{percent}}%). Las cargas pueden interrumpirse.",
+        "networkChanged": "Red cambiada. Reconectando...",
+        "mobileBrowserNotSupported": "Algunas características pueden no funcionar en navegadores móviles"
+      },
+      "accessibility": {
+        "pageDescription": "Interfaz de gestión de cargas con monitoreo de cola, cargas manuales y monitoreo de carpetas",
+        "pageTitle": "Página de Cargas del Admin",
+        "sectionQueue": "Sección del panel de cola",
+        "sectionManualUpload": "Sección de carga manual",
+        "sectionMonitoredFolders": "Sección de carpetas monitoreadas",
+        "loadingQueue": "Cargando cola de cargas...",
+        "queueLoaded": "Cola de cargas cargada con {{count}} elementos",
+        "queueLoadedOne": "Cola de cargas cargada con 1 elemento",
+        "queueLoadedOther": "Cola de cargas cargada con {{count}} elementos",
+        "uploadStarted": "Carga iniciada para {{count}} archivos",
+        "uploadStartedOne": "Carga iniciada para 1 archivo",
+        "uploadStartedOther": "Carga iniciada para {{count}} archivos",
+        "uploadProgressUpdate": "Progreso de carga: {{percent}}% completado",
+        "uploadProgressMilestone": "Carga {{percent}}% completada",
+        "uploadCompleted": "Carga completada exitosamente",
+        "uploadFailed": "Error de carga",
+        "folderAdded": "Carpeta {{name}} agregada al monitoreo",
+        "folderRemoved": "Carpeta {{name}} eliminada del monitoreo",
+        "folderScanned": "Carpeta {{name}} escaneada, se encontraron {{count}} archivos",
+        "emptyStateAction": "Presione Enter para realizar acción",
+        "connectionStatusRegion": "Información del estado de conexión",
+        "queueStatsRegion": "Región de estadísticas de cola",
+        "shortcuts": {
+          "uploadFocused": "Entrada de carga enfocada. Presione Enter para seleccionar archivos.",
+          "queueRefreshed": "Cola actualizada manualmente."
+        }
       }
     },
     "librarian": {
       "title": "Agente Bibliotecario",
-      "subtitle": "Gestión autónoma de biblioteca de contenido con IA",
+      "subtitle": "Gestión autónoma de biblioteca de contenido impulsada por IA",
       "loading": "Cargando Agente Bibliotecario...",
       "loadingConfig": "Cargando configuración...",
       "refresh": "Actualizar",
@@ -2309,53 +2718,60 @@
         "configNotLoaded": "Configuración no cargada",
         "failedToLoad": "Error al cargar datos del bibliotecario",
         "failedToLoadConfig": "Error al cargar configuración del bibliotecario",
-        "failedToTrigger": "Error al activar auditoría. Por favor, inténtalo de nuevo.",
+        "failedToTrigger": "Error al activar auditoría. Por favor intente de nuevo.",
         "failedToLoadDetails": "Error al cargar detalles del informe.",
         "failedToRollback": "Error al revertir acción.",
         "failedToPause": "Error al pausar auditoría",
         "failedToResume": "Error al reanudar auditoría",
         "failedToCancel": "Error al cancelar auditoría",
-        "failedToInterject": "Error al enviar mensaje al agente AI",
+        "failedToInterject": "Error al enviar mensaje al agente de IA",
         "budgetExceeded": "Límite de presupuesto mensual excedido. No se puede ejecutar auditoría.",
-        "contactAdmin": "La página del Bibliotecario no puede cargarse sin la configuración adecuada.\nPor favor, contacta a tu administrador."
+        "contactAdmin": "La página del Bibliotecario no puede cargar sin la configuración adecuada.\nPor favor contacte a su administrador.",
+        "failedToClearReports": "Error al limpiar informes de auditoría. Por favor intente de nuevo.",
+        "auditAlreadyRunning": "Ya hay una auditoría en ejecución. Por favor espere a que termine o cancélela antes de iniciar una nueva."
       },
       "stats": {
         "systemHealth": "Estado del Sistema",
-        "totalAudits": "Total de Auditorías (30d)",
+        "totalAudits": "Total de Ejecuciones",
         "last30Days": "Últimos 30 días",
-        "issuesFixed": "Problemas Resueltos",
+        "issuesFixed": "Problemas Corregidos",
         "lastAudit": "Última Auditoría",
         "never": "Nunca",
-        "unknown": "desconocido"
+        "unknown": "desconocido",
+        "title": "Resumen de Auditoría (30 Días)",
+        "successRate": "Tasa de Éxito",
+        "fixesApplied": "Correcciones Aplicadas",
+        "budgetUsed": "Presupuesto Usado",
+        "budgetLimit": "/ ${{limit}}"
       },
       "health": {
         "excellent": "excelente",
         "good": "bueno",
         "fair": "regular",
-        "poor": "pobre",
+        "poor": "deficiente",
         "unknown": "desconocido"
       },
       "quickActions": {
         "title": "Configuración de Ejecución",
         "subtitle": "Configurar y activar auditorías",
         "dryRun": "Modo Vista Previa",
-        "dryRunHelp": "Mostrar qué cambiaría sin realizar cambios",
+        "dryRunHelp": "Mostrar qué cambiaría sin hacer cambios",
         "scopeFilters": "Capacidades de Auditoría",
-        "scopeFiltersHelp": "Seleccionar capacidades a habilitar (se pueden combinar varias)",
-        "last24Hours": "Contenido Reciente",
-        "last24HoursHelp": "Limitar auditoría al contenido añadido en las últimas 24 horas",
+        "scopeFiltersHelp": "Seleccione capacidades a habilitar (se pueden combinar múltiples)",
+        "last24Hours": "Solo Contenido Reciente",
+        "last24HoursHelp": "Limitar auditoría al contenido agregado en las últimas 24 horas",
         "cybTitlesOnly": "Limpiar Títulos Sucios",
-        "cybTitlesOnlyHelp": "Eliminar extensiones de archivo, marcadores de calidad y etiquetas de los títulos",
-        "tmdbPostersOnly": "Pósters y Metadatos TMDB",
+        "cybTitlesOnlyHelp": "Eliminar extensiones de archivo, marcadores de calidad y etiquetas de lanzamiento de los títulos",
+        "tmdbPostersOnly": "Pósters y Metadatos de TMDB",
         "tmdbPostersOnlyHelp": "Obtener pósters, descripciones y metadatos faltantes de TMDB",
         "openSubtitlesEnabled": "Adquirir Subtítulos",
         "openSubtitlesEnabledHelp": "Descargar subtítulos faltantes de OpenSubtitles (HE/EN/ES)",
         "classifyOnly": "Verificar Clasificación",
-        "classifyOnlyHelp": "Verificar y corregir errores de clasificación película vs serie",
+        "classifyOnlyHelp": "Verificar y corregir errores de clasificación de películas vs series",
         "purgeDuplicates": "Eliminar Duplicados",
-        "purgeDuplicatesHelp": "Encontrar y eliminar contenido duplicado",
-        "triggerDaily": "Activar Auditoría Diaria",
-        "triggerAI": "Activar Auditoría de Agente IA",
+        "purgeDuplicatesHelp": "Encontrar y eliminar elementos de contenido duplicados",
+        "triggerDaily": "Ejecutar Auditoría Diaria",
+        "triggerAI": "Ejecutar Auditoría de Agente IA",
         "budgetLabel": "Límite de Presupuesto del Agente IA: ${{budget}}",
         "budgetPerAudit": "Presupuesto por Auditoría",
         "monthlyBudgetUsed": "Presupuesto Usado (30d)",
@@ -2363,46 +2779,57 @@
         "budgetWarning": "Ejecutar esta auditoría excedería el límite de presupuesto mensual",
         "aiAuditSuccess": "Auditoría de Agente IA activada exitosamente. {{dryRun}}",
         "dailyAuditSuccess": "Auditoría diaria activada exitosamente. {{dryRun}}",
-        "dryRunMode": "(Modo de ejecución simulada)",
-        "rollbackSuccess": "Acción revertida exitosamente."
+        "dryRunMode": "(Modo de prueba)",
+        "rollbackSuccess": "Acción revertida exitosamente.",
+        "auditMode": "Modo de Auditoría",
+        "auditModeHelp": "Elija qué verificar",
+        "auditType": "Tipo de Auditoría",
+        "auditTypeHelp": "Elegir entre auditoría basada en reglas o impulsada por IA",
+        "dailyAudit": "Auditoría Diaria",
+        "dailyBadge": "Basada en Reglas • Rápida • Gratis",
+        "dailyDescription": "Ejecuta verificaciones predefinidas en contenido modificado en los últimos 7 días. Rápida y predecible, sin costos de IA.",
+        "aiAgentAudit": "Auditoría de Agente IA",
+        "aiAgentBadge": "Impulsada por IA • Inteligente • Usa Presupuesto",
+        "aiAgentDescription": "Agente de IA autónomo (Claude) toma decisiones inteligentes sobre qué verificar y corregir. Más completo pero usa presupuesto de API.",
+        "auditRunningNotice": "Una auditoría está en ejecución actualmente. Los botones se habilitarán cuando termine."
       },
       "voice": {
         "title": "Control por Voz",
-        "description": "Usa tu voz para dar comandos al bibliotecario. Solo presiona el botón y habla naturalmente.",
-        "pressToSpeak": "Presiona para Hablar",
+        "description": "Use su voz para dar comandos al bibliotecario. Solo presione el botón y hable naturalmente.",
+        "pressToSpeak": "Presione para Hablar",
         "listening": "Escuchando...",
         "transcript": "Transcripción",
-        "processing": "Procesando tu comando...",
+        "processing": "Procesando su comando...",
         "speaking": "El bibliotecario está respondiendo...",
         "examples": "Comandos de Ejemplo",
-        "example1": "Verifica pósters faltantes en las últimas 24 horas",
-        "example2": "Corrige metadatos para títulos CYB",
-        "example3": "Escanea URLs de transmisión rotas",
-        "example4": "Extrae subtítulos de películas",
-        "notSupported": "El reconocimiento de voz no es compatible con tu navegador. Por favor usa Chrome, Edge o Safari.",
-        "notAvailable": "El control por voz no está disponible",
-        "noSpeech": "No se detectó habla. Por favor intenta de nuevo.",
-        "noMicrophone": "No se detectó micrófono. Por favor verifica tu dispositivo.",
-        "microphoneBlocked": "El acceso al micrófono fue bloqueado. Por favor habilítalo en la configuración de tu navegador.",
+        "example1": "Verificar pósters faltantes en las últimas 24 horas",
+        "example2": "Corregir metadatos para títulos CYB",
+        "example3": "Escanear URLs de streaming rotas",
+        "example4": "Extraer subtítulos de películas",
+        "notSupported": "El reconocimiento de voz no es compatible con su navegador. Por favor use Chrome, Edge o Safari.",
+        "notAvailable": "Control por voz no disponible",
+        "noSpeech": "No se detectó voz. Por favor intente de nuevo.",
+        "noMicrophone": "No se detectó micrófono. Por favor verifique su dispositivo.",
+        "microphoneBlocked": "El acceso al micrófono fue bloqueado. Por favor habilítelo en la configuración de su navegador.",
         "error": "Error de reconocimiento de voz: {{error}}",
-        "startFailed": "Falló al iniciar el reconocimiento de voz. Por favor intenta de nuevo.",
-        "commandFailed": "Falló al ejecutar el comando. Por favor intenta de nuevo."
+        "startFailed": "Error al iniciar reconocimiento de voz. Por favor intente de nuevo.",
+        "commandFailed": "Error al ejecutar comando. Por favor intente de nuevo."
       },
       "schedules": {
         "title": "Auditorías Programadas",
         "dailyTitle": "Auditoría Diaria",
-        "weeklyTitle": "Auditoría IA Semanal",
-        "schedule": "Programación",
+        "weeklyTitle": "Auditoría Semanal de IA",
+        "schedule": "Programa",
         "time": "Hora",
         "mode": "Modo",
         "cost": "Costo Est.",
         "status": "Estado",
         "description": "Descripción",
-        "viewInConsole": "Ver en Cloud Console",
-        "modifyNote": "Para modificar programaciones, usa Google Cloud Console",
-        "editTitle": "Editar Programación",
-        "editNotAvailable": "Edición de Programaciones No Disponible",
-        "editNotAvailableMessage": "Las modificaciones de programaciones requieren integración con la API de Cloud Scheduler. Por favor, use el botón 'Ver en Cloud Console' para modificar programaciones directamente en Google Cloud Console.",
+        "viewInConsole": "Ver en Consola de Cloud",
+        "modifyNote": "Para modificar programas, use Google Cloud Console",
+        "editTitle": "Editar Programa",
+        "editNotAvailable": "Edición de Programa No Disponible",
+        "editNotAvailableMessage": "Las modificaciones de programa requieren integración con Cloud Scheduler API. Por favor use el botón 'Ver en Cloud Console' para modificar programas directamente en Google Cloud Console.",
         "cronExpression": "Expresión Cron",
         "cronHint": "Formato: minuto hora día mes díaSemana (ej., 0 2 * * * = diario a las 2:00 AM)",
         "patterns": {
@@ -2410,14 +2837,15 @@
           "weekly": "Cada {{day}} a las {{hour}}:{{minute}}"
         },
         "days": {
-          "sunday": "domingo",
-          "monday": "lunes",
-          "tuesday": "martes",
-          "wednesday": "miércoles",
-          "thursday": "jueves",
-          "friday": "viernes",
-          "saturday": "sábado"
-        }
+          "sunday": "Domingo",
+          "monday": "Lunes",
+          "tuesday": "Martes",
+          "wednesday": "Miércoles",
+          "thursday": "Jueves",
+          "friday": "Viernes",
+          "saturday": "Sábado"
+        },
+        "subtitle": "Configurar programas de auditoría diaria y semanal"
       },
       "reports": {
         "title": "Informes de Auditoría Recientes",
@@ -2433,7 +2861,10 @@
           "status": "Estado",
           "issues": "Problemas",
           "fixes": "Correcciones",
-          "actions": "Acciones"
+          "actions": "Acciones",
+          "triggeredBy": "Activado Por",
+          "parameters": "Parámetros",
+          "stats": "Problemas / Correcciones"
         },
         "detailModal": {
           "title": "Informe de Auditoría: {{id}}",
@@ -2444,15 +2875,19 @@
           "healthyItems": "Elementos Saludables",
           "issuesFound": "Problemas Encontrados",
           "totalIssues": "Total de Problemas Encontrados",
-          "seeInsightsBelow": "Ver Perspectivas de IA abajo para más detalles",
-          "brokenStreams": "Transmisiones Rotas",
+          "seeInsightsBelow": "Ver Perspectivas de IA abajo para detalles",
+          "brokenStreams": "Streams Rotos",
           "missingMetadata": "Metadatos Faltantes",
-          "misclassifications": "Clasificaciones Erróneas",
+          "misclassifications": "Clasificaciones Incorrectas",
           "orphanedItems": "Elementos Huérfanos",
           "fixesApplied": "Correcciones Aplicadas",
           "totalFixes": "{{count}} correcciones totales",
-          "aiInsights": "Perspectivas de IA"
-        }
+          "aiInsights": "Perspectivas de IA",
+          "issuesBreakdown": "Desglose de Problemas"
+        },
+        "confirmClearAll": "¿Está seguro de que desea limpiar todos los informes de auditoría? Esta acción no se puede deshacer.",
+        "clearedSuccessfully": "Todos los informes de auditoría se limpiaron exitosamente",
+        "downloadReport": "Descargar Informe"
       },
       "logs": {
         "title": "Registros de Ejecución",
@@ -2460,69 +2895,92 @@
         "executionLog": "Registro de Ejecución de Auditoría",
         "searchPlaceholder": "Buscar registros...",
         "noLogs": "No hay registros para mostrar",
-        "noActiveAudit": "No hay Auditoría Activa",
-        "triggerAuditToSee": "Activa una auditoría para ver los registros de ejecución en vivo aquí",
+        "noActiveAudit": "No Hay Auditoría Activa",
+        "triggerAuditToSee": "Active una auditoría para ver registros de ejecución en vivo aquí",
         "auditType": "Tipo de Auditoría",
         "started": "Iniciado",
         "completed": "Completado",
         "aiInsightPrefix": "Perspectiva de IA",
         "source": {
           "librarian": "Bibliotecario",
-          "aiAgent": "Agente de IA"
+          "aiAgent": "Agente IA"
         },
         "levels": {
           "debug": "DEBUG",
           "info": "INFO",
-          "warn": "AVISO",
+          "warn": "WARN",
           "error": "ERROR",
-          "success": "ÉXITO",
+          "success": "SUCCESS",
           "trace": "TRACE"
         },
         "auditStarted": "Auditoría iniciada",
-        "brokenStreamsFound": "Se encontraron {{count}} transmisión(es) rota(s)",
+        "brokenStreamsFound": "Se encontraron {{count}} stream(s) rotos",
         "missingMetadataFound": "Se encontraron {{count}} elemento(s) con metadatos faltantes",
-        "misclassificationsFound": "Se encontraron {{count}} elemento(s) mal clasificado(s)",
-        "orphanedItemsFound": "Se encontraron {{count}} elemento(s) huérfano(s)",
+        "misclassificationsFound": "Se encontraron {{count}} elemento(s) mal clasificados",
+        "orphanedItemsFound": "Se encontraron {{count}} elemento(s) huérfanos",
         "fixesApplied": "Se aplicaron {{count}} corrección(es)",
         "auditCompleted": "Auditoría {{status}} en {{duration}}s",
         "connecting": "Conectando al registro de auditoría en vivo...",
         "auditInitializing": "🚀 Inicializando auditoría {{auditType}}...",
-        "dryRunMode": "⚠️ Ejecutando en modo PRUEBA - no se realizarán cambios",
+        "dryRunMode": "⚠️ Ejecutando en modo de PRUEBA - no se harán cambios",
         "liveMode": "✅ Ejecutando en modo EN VIVO - se aplicarán cambios",
         "budgetSet": "💰 Límite de presupuesto: ${{budget}}",
-        "connectingToAgent": "🔗 Conectando al Agente Claude AI..."
+        "connectingToAgent": "🔗 Conectando con Agente IA Claude...",
+        "lastLog": "Último registro",
+        "staleWarning": "Sin nuevos registros por {{seconds}}s - el trabajo puede estar procesando o atascado",
+        "pollingStatus": "Sondeo activo • Última verificación",
+        "items": "elementos",
+        "live": "En Vivo",
+        "updatedAgo": "Actualizado hace {{time}}",
+        "justNow": "ahora mismo",
+        "emptyState": {
+          "title": "No Hay Auditoría Activa",
+          "description": "Active una auditoría para ver registros de ejecución en vivo",
+          "dailyTitle": "Auditoría Diaria",
+          "dailyFeature1": "Rápido",
+          "dailyFeature2": "Basado en reglas",
+          "dailyFeature3": "Incremental",
+          "aiTitle": "Auditoría de Agente IA",
+          "aiFeature1": "Inteligente",
+          "aiFeature2": "Adaptativo",
+          "aiFeature3": "Completo",
+          "trigger": "Activar",
+          "lastRun": "Última ejecución: {{time}}"
+        }
       },
       "audit": {
         "types": {
-          "aiAgent": "Agente AI",
+          "aiAgent": "Agente IA",
           "dailyIncremental": "Incremental Diario"
         },
         "pause": "Pausar",
         "resume": "Reanudar",
         "cancel": "Cancelar",
         "interject": "Intervenir",
-        "interjectTitle": "Enviar Mensaje al Agente AI",
-        "interjectHint": "Este mensaje se inyectará en la conversación del agente AI en la próxima iteración. Úsalo para proporcionar contexto adicional, redirigir el enfoque o dar instrucciones específicas.",
-        "interjectPlaceholder": "ej., Enfócate solo en películas, omite series por ahora...",
+        "interjectTitle": "Enviar Mensaje al Agente IA",
+        "interjectHint": "Este mensaje se inyectará en la conversación del agente IA en la próxima iteración. Úselo para proporcionar contexto adicional, redirigir el enfoque o dar instrucciones específicas.",
+        "interjectPlaceholder": "ej., Enfocarse solo en películas, omitir series por ahora...",
         "sendInterject": "Enviar",
-        "interjectSuccess": "Mensaje enviado al agente AI exitosamente",
+        "interjectSuccess": "Mensaje enviado al agente IA exitosamente",
         "pauseSuccess": "Auditoría pausada exitosamente",
         "resumeSuccess": "Auditoría reanudada exitosamente",
         "cancelSuccess": "Auditoría cancelada exitosamente"
       },
       "progress": {
         "batch": "Lote {{current}} de {{total}}",
-        "items": "{{processed}} de {{total}} elementos"
+        "items": "{{processed}} de {{total}} elementos",
+        "finishing": "Finalizando...",
+        "finalizing": "Generando informe y aplicando correcciones"
       },
       "activityLog": {
         "title": "Registro de Actividad",
         "filterByType": "Filtrar por tipo",
         "allActions": "Todas las Acciones",
         "content": "Contenido",
-        "noDescription": "No hay descripción disponible",
+        "noDescription": "Sin descripción disponible",
         "issueType": "Tipo de Problema",
         "confidence": "Confianza",
-        "autoApproved": "Auto-aprobado",
+        "autoApproved": "Aprobado automáticamente",
         "changes": "Cambios",
         "actionTypes": {
           "addPoster": "Agregar Póster",
@@ -2536,15 +2994,18 @@
         "rolledBack": "Revertido",
         "confirmRollback": {
           "title": "Confirmar Reversión",
-          "message": "¿Estás seguro de que quieres revertir esta acción? Esto restaurará el estado anterior."
+          "message": "¿Está seguro de que desea revertir esta acción? Esto restaurará el estado anterior."
         },
-        "emptyMessage": "No se encontraron acciones"
+        "emptyMessage": "No se encontraron acciones",
+        "subtitle": "{{count}} acciones registradas",
+        "updatedFields": "Actualizado {{fields}}",
+        "pagination": "Página {{page}} de {{totalPages}}"
       },
       "modal": {
         "confirmAI": {
           "title": "¿Activar Auditoría de Agente IA?",
           "message": "Esto activará una auditoría autónoma de agente IA con un límite de presupuesto de ${{budget}}. El agente tomará decisiones sobre qué verificar y corregir. {{dryRun}}",
-          "dryRunNote": "Ejecutando en modo SIMULADO (no se realizarán cambios)."
+          "dryRunNote": "Ejecutando en modo de PRUEBA (no se harán cambios)."
         },
         "cancel": "Cancelar",
         "confirm": "Confirmar",
@@ -2554,10 +3015,12 @@
       "status": {
         "enabled": "HABILITADO",
         "disabled": "DESHABILITADO",
-        "completed": "completado",
-        "failed": "fallido",
-        "in_progress": "en_progreso",
-        "pending": "pendiente"
+        "completed": "Auditoría Completa",
+        "failed": "Auditoría Fallida",
+        "in_progress": "En Progreso",
+        "pending": "Pendiente",
+        "partial": "Parcialmente Completo",
+        "running": "Ejecutando"
       },
       "auditTypes": {
         "daily_incremental": "incremental diario",
@@ -2618,7 +3081,8 @@
         "date": "Fecha",
         "details": "Detalles",
         "resource": "Recurso",
-        "user": "Usuario"
+        "user": "Usuario",
+        "ip": "IP"
       }
     },
     "auditActions": {
@@ -2662,8 +3126,9 @@
       "widget_created": "Widget Creado",
       "widget_deleted": "Widget Eliminado",
       "widget_published": "Widget Publicado",
-      "widget_unpublished": "Widget No Publicado",
-      "widget_updated": "Widget Actualizado"
+      "widget_unpublished": "Widget Despublicado",
+      "widget_updated": "Widget Actualizado",
+      "subscription_deleted": "Suscripción Eliminada"
     },
     "settings": {
       "actionsWarning": "Estas acciones pueden afectar el rendimiento del sistema. Úselas con precaución.",
@@ -2703,7 +3168,7 @@
         "save": "Guardar"
       },
       "allPages": "Todas las páginas",
-      "allRoles": "Todo",
+      "allRoles": "Todos",
       "columns": {
         "contentType": "Tipo de Contenido",
         "order": "Orden",
@@ -2717,10 +3182,12 @@
         "live": "En vivo",
         "liveChannel": "Canal en Vivo",
         "vod": "Video bajo Demanda",
-        "podcast": "Pódcast"
+        "podcast": "Pódcast",
+        "radio": "Radio",
+        "iframe": "Iframe"
       },
       "editWidget": "Editar Widget",
-      "emptyMessage": "No se encontraron widgets. Crea uno para comenzar.",
+      "emptyMessage": "No se encontraron widgets. Cree uno para comenzar.",
       "errors": {
         "iframeUrlRequired": "Se requiere la URL del iframe",
         "selectChannel": "Por favor selecciona un canal en vivo",
@@ -2749,7 +3216,20 @@
         "active": "Activo",
         "inactive": "Inactivo"
       },
-      "subtitle": "Gestiona widgets de superposición flotante para transmisiones en vivo e incrustaciones"
+      "subtitle": "Gestiona widgets de superposición flotante para transmisiones en vivo e incrustaciones",
+      "title": "Widgets"
+    },
+    "campaignEdit": {
+      "subtitle": "Editar detalles y configuración de la campaña"
+    },
+    "contentEditor": {
+      "subtitle": "Editar metadatos e información del contenido"
+    },
+    "podcastEpisodes": {
+      "subtitle": "Gestionar episodios y metadatos de podcasts"
+    },
+    "userDetail": {
+      "subtitle": "Detalles de cuenta de usuario e historial de actividad"
     }
   },
   "watchParty": {
@@ -2826,7 +3306,11 @@
     "closePanelHint": "Cierra el panel de la fiesta de visualización",
     "cancelHint": "Cancela y cierra el diálogo",
     "viewPartyHint": "Abre el panel de la fiesta de visualización",
-    "panel": "Panel de fiesta de visualización"
+    "panel": "Panel de fiesta de visualización",
+    "inviteLink": "Enlace de invitación",
+    "copyLink": "Copiar enlace",
+    "textOnlyMode": "Solo Chat de Texto",
+    "endParty": "Terminar Fiesta"
   },
   "footer": {
     "brandDescription": "Tu hogar en EE.UU. Transmisiones de TV, VOD, radio y podcasts en hebreo.",
@@ -2889,7 +3373,10 @@
     "helpAndSupport": "Ayuda y Soporte",
     "termsOfUse": "Términos de Uso",
     "privacyPolicy": "Política de Privacidad",
-    "contactUs": "Contáctenos"
+    "contactUs": "Contáctenos",
+    "terms": "Términos de Servicio",
+    "privacy": "Política de Privacidad",
+    "contact": "Contacto"
   },
   "chapters": {
     "title": "Capítulos",
@@ -3270,7 +3757,16 @@
       "showChannels": "Muéstrame canales...",
       "playChess": "Comienza un juego de ajedrez con...",
       "multiContent": "Mostrar lado a lado..."
-    }
+    },
+    "clearChat": "Limpiar Chat",
+    "confirmClear": "¿Borrar historial de chat?",
+    "chatCleared": "Historial de chat borrado",
+    "thinking": "Pensando...",
+    "error": "Error al procesar mensaje",
+    "retry": "Reintentar",
+    "showMultipleSuccess": "Mostrando {{count}} elementos de contenido en widgets",
+    "showMultipleNotFound": "No se pudo encontrar el contenido solicitado. Por favor intenta de nuevo.",
+    "resolvingContent": "Buscando tu contenido..."
   },
   "chat": {
     "title": "Asistente Bayit+",
@@ -3283,11 +3779,24 @@
     "translating": "Traduciendo...",
     "close": "Cerrar",
     "unavailable": "Traducción no disponible",
-    "off": "Desactivado",
+    "off": "Desactivados",
     "autoGenerated": "Generados automáticamente",
-    "selectLanguage": "Seleccionar Idioma de Subtítulos",
+    "selectLanguage": "Seleccionar idioma de subtítulos",
     "liveTranslate": "Traducción en Vivo",
-    "translateTo": "Traducir a"
+    "translateTo": "Traducir a",
+    "noSubtitles": "Sin subtítulos",
+    "translationFailed": "Error de traducción",
+    "liveSubtitles": "Subtítulos en vivo",
+    "on": "Activados",
+    "language": "Idioma",
+    "size": "Tamaño",
+    "position": "Posición",
+    "none": "Ninguno",
+    "downloadMore": "Descargar más subtítulos...",
+    "downloading": "Buscando en OpenSubtitles...",
+    "opensubtitlesSource": "De OpenSubtitles.com",
+    "downloadSuccess": "Se descargaron {{count}} subtítulo(s)",
+    "noSubtitlesFound": "No se encontraron subtítulos para este contenido"
   },
   "dubbing": {
     "title": "Doblaje en Directo",
@@ -3517,7 +4026,7 @@
     "subtitle": "Juega ajedrez con amigos y familiares alrededor del mundo",
     "createGame": "Crear Nuevo Juego",
     "joinGame": "Unirse al Juego",
-    "gameCode": "Código del Juego",
+    "gameCode": "Código de Partida",
     "enterGameCode": "Ingresa el Código del Juego",
     "invalidGameCode": "Código de juego inválido. Debe tener 6 caracteres.",
     "joinFailed": "Error al unirse al juego",
@@ -3532,23 +4041,61 @@
     "mute": "Silenciar",
     "unmute": "Activar Sonido",
     "speaking": "participantes",
-    "resign": "Rendirse",
+    "resign": "Resignar",
     "offerDraw": "Ofrecer Empate",
-    "newGame": "Nuevo Juego",
-    "checkmate": "¡Jaque Mate!",
+    "newGame": "Nueva Partida",
+    "checkmate": "Jaque mate",
     "stalemate": "Tablas por Ahogado",
     "draw": "Empate",
     "resigned": "Juego Abandonado",
     "reconnecting": "Reconectando...",
     "moveHistory": "Historial de Movimientos",
     "noMoves": "No hay movimientos aún",
-    "yourTurn": "Tu Turno",
-    "opponentTurn": "Turno del Oponente",
+    "yourTurn": "Tu turno",
+    "opponentTurn": "Turno del oponente",
     "waitingForOpponent": "Esperando al oponente...",
     "gameOver": "Juego Terminado",
     "challenge": "Desafiar",
     "playedAsWhite": "Jugó con blancas",
-    "playedAsBlack": "Jugó con negras"
+    "playedAsBlack": "Jugó con negras",
+    "rating": "Calificación",
+    "searching": "Buscando oponente...",
+    "matchFound": "¡Partida encontrada!",
+    "connecting": "Conectando...",
+    "connected": "Conectado",
+    "disconnected": "Desconectado",
+    "gameEnded": "Partida terminada",
+    "youWin": "¡Ganaste!",
+    "youLose": "Perdiste",
+    "resignation": "Resignación",
+    "timeout": "Tiempo agotado",
+    "findOpponent": "Buscar Oponente",
+    "cancelSearch": "Cancelar Búsqueda",
+    "check": "Jaque",
+    "castling": "Enroque",
+    "promotion": "Promoción",
+    "enPassant": "Al paso",
+    "rematch": "Revancha",
+    "backToLobby": "Volver al Vestíbulo",
+    "showHints": "Mostrar Pistas de Guía",
+    "sendingInvite": "Enviando invitación de juego a {{name}}...",
+    "inviteSent": "¡Invitación de juego enviada a {{name}}! Código de juego: {{code}}",
+    "inviteFailed": "No se pudo encontrar ese usuario. Por favor verifica el nombre e intenta de nuevo.",
+    "inviteReceived": "¡{{name}} te invitó a una partida de ajedrez!",
+    "joinInvite": "Unirse a Partida",
+    "declineInvite": "Rechazar",
+    "copied": "¡Código copiado!",
+    "shareGame": "Compartir Partida",
+    "playBot": "Jugar contra Bot",
+    "playFriend": "Jugar con Amigo",
+    "gameMode": "Modo de Juego",
+    "playVsFriend": "Jugar vs Amigo",
+    "playVsBot": "Jugar vs Bot",
+    "difficulty": "Dificultad",
+    "easy": "Fácil",
+    "medium": "Medio",
+    "hard": "Difícil",
+    "chessBot": "Bot de Ajedrez"
   },
   "friends": {
     "title": "Amigos y Oponentes",
@@ -3982,7 +4529,7 @@
         "events": "📅 Eventos Locales",
         "food": "🍴 Delicias Culinarias",
         "markets": "🛍️ Mercados Tradicionales",
-        "arts": "🎨 Arte y Galerías"
+        "arts": "🎨 Artes y Galerías"
       }
     },
     "telAviv": {
@@ -3993,13 +4540,68 @@
       "errorLoading": "Error al cargar contenido de Tel Aviv",
       "sources": "Fuentes",
       "categories": {
-        "beaches": "🏖️ Playas y Costa",
+        "beaches": "🏖️ Playas y Paseo Marítimo",
         "nightlife": "🌃 Vida Nocturna y Entretenimiento",
         "culture": "🎭 Eventos Culturales",
         "music": "🎵 Música y Conciertos",
-        "food": "🍴 Gastronomía",
+        "food": "🍴 Gastronomía y Escena Culinaria",
         "tech": "💻 Tecnología e Innovación",
         "events": "📅 Eventos Locales"
+      }
+    },
+    "privacy": {
+      "lastUpdated": "Última Actualización: 27 de enero de 2026",
+      "intro": {
+        "title": "1. Introducción",
+        "content": "Olorin.ai LLC (\"nosotros,\" \"nuestro,\" o \"la Compañía\") está comprometido con proteger su privacidad. Esta Política de Privacidad explica cómo nuestra aplicación móvil, Bayit+ (la \"App\"), recopila, usa y protege su información.",
+        "commitment": "Construimos Bayit+ con una arquitectura de \"Privacidad Primero\". No grabamos su sala de estar. Nuestra tecnología utiliza los sensores de su dispositivo únicamente para sincronizar nuestro servicio de audio con su televisión."
+      },
+      "collection": {
+        "title": "2. Información que Recopilamos y Cómo la Usamos",
+        "camera": {
+          "title": "A. Datos de Cámara y Sincronización Visual",
+          "intro": "Para proporcionar nuestro servicio principal—sincronizar audio traducido con su TV—Bayit+ requiere acceso a la Cámara de su dispositivo.",
+          "data": "Datos Recopilados: Cuando activa el \"Modo Sincronización,\" la App captura una breve secuencia de cuadros de video (aproximadamente 3 segundos) de la pantalla de su TV.",
+          "purpose": "Propósito: Estos cuadros se transmiten a nuestro servidor de nube seguro únicamente para identificar el canal de TV público que está viendo y calcular la latencia de transmisión (retraso de tiempo).",
+          "retention": "Retención: Estos datos son efímeros. Los cuadros se procesan instantáneamente en memoria y se eliminan permanentemente inmediatamente después de establecer la sincronización. No vemos, almacenamos ni archivamos imágenes de su hogar o familia."
+        },
+        "audio": {
+          "title": "B. Datos de Audio (Si Aplica)",
+          "intro": "Si utiliza funciones que requieren sincronización de audio, la App puede solicitar acceso al Micrófono.",
+          "data": "Datos Recopilados: Breves muestras de audio de la transmisión de TV.",
+          "purpose": "Propósito: Para coincidir la huella de audio de la transmisión pública con fines de sincronización.",
+          "retention": "Retención: Como los datos visuales, las muestras de audio se procesan en tiempo real y se eliminan inmediatamente. No escuchamos ni grabamos conversaciones de usuarios."
+        },
+        "usage": {
+          "title": "C. Datos de Uso y Técnicos",
+          "content": "Podemos recopilar datos técnicos no identificables para mejorar la estabilidad de la App, incluyendo:",
+          "device": "Tipo de dispositivo y versión del sistema operativo.",
+          "crash": "Registros de errores y métricas de rendimiento.",
+          "aggregate": "Datos agregados sobre qué canales se están viendo (ej., \"50% de usuarios están viendo el Canal 12\")."
+        }
+      },
+      "sharing": {
+        "title": "3. Compartir Datos y Terceros",
+        "noSale": "Olorin.ai LLC no vende sus datos personales. Nos asociamos con proveedores de servicios de terceros confiables para proporcionar nuestra infraestructura. Estos proveedores están autorizados a usar sus datos solo según sea necesario para proporcionarnos estos servicios:",
+        "cloud": "Infraestructura de Nube: Servicios de alojamiento (ej., AWS) para procesar solicitudes de sincronización.",
+        "ai": "Procesamiento de IA: Servicios utilizados para generar traducciones de texto y audio en tiempo real de transmisiones públicas."
+      },
+      "retention": {
+        "title": "4. Retención de Datos",
+        "sync": "Datos de Sincronización (Imágenes/Audio): 0 días. Se eliminan inmediatamente después del procesamiento.",
+        "account": "Datos de Cuenta: Se retienen solo mientras su cuenta esté activa para gestionar su suscripción y preferencias."
+      },
+      "children": {
+        "title": "5. Privacidad de los Niños",
+        "content": "Aunque nuestro contenido es adecuado para todas las edades, Olorin.ai LLC no recopila conscientemente información personal identificable de niños menores de 13 años. Si es padre y cree que su hijo nos ha proporcionado información personal, por favor contáctenos."
+      },
+      "rights": {
+        "title": "6. Sus Derechos",
+        "content": "Dependiendo de su ubicación, puede tener derecho a solicitar acceso, corrección o eliminación de sus datos personales. Puede eliminar su cuenta de Bayit+ en cualquier momento dentro de la configuración de la App."
+      },
+      "contact": {
+        "title": "7. Contáctenos",
+        "intro": "Si tiene alguna pregunta sobre esta Política de Privacidad, por favor contáctenos en:"
       }
     },
     "beta": {
@@ -4008,53 +4610,172 @@
         "error": "No se puede cargar el saldo de créditos",
         "label": "Créditos de IA",
         "remaining": "Créditos Restantes",
-        "warningCritical": "Crítico: Créditos casi agotados",
+        "warningCritical": "Crítico: Quedando pocos créditos",
         "warningLow": "Advertencia: Saldo de créditos bajo",
-        "upgrade": "Actualizar Plan",
-        "upgradeAction": "Actualizar para obtener más créditos"
+        "upgrade": "Mejorar Plan",
+        "upgradeAction": "Mejora para obtener más créditos"
       },
       "settings": {
         "title": "Programas Beta",
-        "description": "Administra tu inscripción a Beta 500 y ver detalles del programa. Obtén acceso anticipado a funciones de IA.",
+        "description": "Gestiona tu inscripción a Beta 500 y ve los detalles del programa. Obtén acceso anticipado a funciones impulsadas por IA.",
         "enrolledTitle": "¡Estás en Beta 500!",
         "statusPendingVerification": "Verificación Pendiente",
         "statusActive": "Activo",
         "statusExpired": "Expirado",
-        "pendingMessage": "Estamos verificando tu inscripción. Recibirás un correo electrónico una vez aprobado.",
+        "pendingMessage": "Estamos verificando tu inscripción. Recibirás un email una vez aprobado.",
         "expiresOn": "Expira el {{date}}",
         "loadingStatus": "Cargando estado del programa...",
-        "errorLoading": "No se puede cargar la información del programa. Por favor, inténtalo de nuevo.",
+        "errorLoading": "No se puede cargar la información del programa. Por favor intenta de nuevo.",
         "programStatus": "Estado del Programa",
-        "slots": "plazas ocupadas",
-        "slotsAvailable": "{{count}} plazas disponibles",
-        "programFull": "Las 500 plazas están ocupadas"
+        "slots": "lugares ocupados",
+        "slotsAvailable": "{{count}} lugares disponibles",
+        "programFull": "Los 500 lugares están ocupados"
       },
       "enrollment": {
         "title": "Únete a Beta 500",
-        "subtitle": "Sé una de las 500 familias en experimentar funciones de IA",
-        "programFull": "Programa Completo",
-        "joinButton": "Únete a Beta 500",
+        "subtitle": "Sé una de las 500 familias en experimentar funciones impulsadas por IA",
+        "programFull": "Programa Lleno",
+        "joinButton": "Unirse a Beta 500",
         "exclusiveAccess": "Acceso Exclusivo",
         "limitedSlots": "Limitado a 500 familias",
-        "slotsAvailable": "{{available}} de {{total}} plazas disponibles",
+        "slotsAvailable": "{{available}} de {{total}} lugares disponibles",
         "freeCredits": "Créditos de IA Gratis",
         "creditsAmount": "5,000 créditos (valor $50)",
-        "duration": "Duración de Beta",
+        "duration": "Duración del Beta",
         "durationValue": "90 días",
         "features": "Funciones de IA",
-        "featuresValue": "Doblaje en vivo, búsqueda de IA, recomendaciones",
-        "whatYouGet": "Lo que obtienes",
+        "featuresValue": "Doblaje en vivo, búsqueda IA, recomendaciones",
+        "whatYouGet": "Lo Que Obtienes",
         "benefits": {
-          "liveDubbing": "Traducción de audio en tiempo real mientras ves",
+          "liveDubbing": "Traducción de audio en tiempo real mientras miras",
           "aiSearch": "Descubrimiento inteligente de contenido",
           "aiRecommendations": "Sugerencias personalizadas",
           "prioritySupport": "Acceso directo al equipo de desarrollo"
         },
-        "disclaimer": "Beta 500 es un programa de tiempo limitado. Los créditos no son renovables durante el período beta.",
-        "waitlistMessage": "Las 500 plazas están actualmente ocupadas. Únete a la lista de espera para ser notificado cuando haya una plaza disponible.",
-        "enrollmentSuccess": "¡Bienvenido a Beta 500! Revisa tu correo electrónico para verificar tu cuenta.",
-        "enrollmentError": "No se puede inscribir. Por favor, inténtalo de nuevo más tarde."
+        "disclaimer": "Beta 500 es un programa por tiempo limitado. Los créditos no son renovables durante el período beta.",
+        "waitlistMessage": "Todos los 500 lugares están actualmente ocupados. Únete a la lista de espera para ser notificado cuando un lugar esté disponible.",
+        "enrollmentSuccess": "¡Bienvenido a Beta 500! Revisa tu email para verificar tu cuenta.",
+        "enrollmentError": "No se puede inscribir. Por favor intenta más tarde."
       }
+    }
+  },
+  "audiobooks": {
+    "narrator": "Narrador",
+    "audiobook": "Audiolibro",
+    "chapter": "Capítulo",
+    "chapters": "Capítulos",
+    "playChapter": "Reproducir Capítulo",
+    "noChapters": "No hay capítulos disponibles",
+    "notFound": "Audiolibro no encontrado",
+    "author": "Autor",
+    "duration": "Duración",
+    "isbn": "ISBN"
+  },
+  "catchup": {
+    "subtitle": "Ver programas de las últimas 7 días",
+    "title": "Repetición",
+    "noPrograms": "No hay programas disponibles",
+    "loading": "Cargando programas...",
+    "watchNow": "Ver Ahora",
+    "available": "Disponible",
+    "programs": "Programas",
+    "channel": "Canal",
+    "dateFilter": "Fecha",
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "overlay": {
+      "title": "¿Recién te uniste?",
+      "description": "Te uniste a {{programName}} en progreso",
+      "creditContext": "Esto usará {{cost}} de tus {{balance}} créditos",
+      "lowBalanceWarning": "Quedan pocos créditos",
+      "acceptButton": "Ponerme al Día ({{cost}} créditos)",
+      "declineButton": "No Gracias"
+    },
+    "button": {
+      "credits": "Ponerse al Día ({{cost}} créditos)",
+      "label": "Resumen para ponerse al día",
+      "title": "Ponerse al Día"
+    },
+    "generating": "Generando resumen...",
+    "summary": {
+      "title": "Lo Que Te Perdiste",
+      "keyPoints": "Puntos Clave",
+      "windowInfo": "Últimos {{minutes}} minutos",
+      "creditsUsed": "Se usaron {{count}} créditos",
+      "creditsRemaining": "{{count}} créditos restantes",
+      "close": "Cerrar"
+    },
+    "error": {
+      "failed": "No se pudo generar el resumen",
+      "retry": "Intentar de Nuevo",
+      "insufficientCredits": "Créditos insuficientes"
+    }
+  },
+  "podcast": {
+    "subscribe": "Suscribirse",
+    "selectLanguage": "Seleccionar Idioma",
+    "switchToLanguage": "Cambiar a {{language}}",
+    "premiumRequiredForTranslation": "Se requiere suscripción premium para traducción de podcasts",
+    "player": {
+      "switchingLanguage": "Cambiando..."
+    },
+    "languages": {
+      "he": {
+        "short": "HE",
+        "full": "Hebreo"
+      },
+      "en": {
+        "short": "EN",
+        "full": "Inglés"
+      },
+      "es": {
+        "short": "ES",
+        "full": "Español"
+      }
+    }
+  },
+  "quota": {
+    "exceeded": "Cuota excedida",
+    "remaining": "Cuota restante",
+    "limit": "Límite",
+    "subtitle": "Cuota de Subtítulos",
+    "dubbing": "Cuota de Doblaje",
+    "subtitleExceeded": "Cuota de subtítulos excedida. Por favor intenta más tarde.",
+    "dubbingExceeded": "Cuota de doblaje excedida. Por favor intenta más tarde."
+  },
+  "trivia": {
+    "didYouKnow": "¿Sabías que?",
+    "dismissHint": "Toca para descartar este dato curioso",
+    "settings": {
+      "title": "Trivia y Datos Curiosos",
+      "enabled": "Mostrar Trivia",
+      "enabledDescription": "Mostrar datos interesantes durante la reproducción",
+      "frequency": "Frecuencia",
+      "frequencyHint": "Cambiar frecuencia de visualización de trivia",
+      "categories": "Categorías",
+      "category": "categoría",
+      "selectCategory": "Toca para seleccionar esta categoría",
+      "deselectCategory": "Toca para deseleccionar esta categoría",
+      "displayDuration": "Duración de Visualización",
+      "durationHint": "Cambiar cuánto tiempo se muestra el trivia",
+      "seconds": "segundos"
+    },
+    "categories": {
+      "cast": "Elenco",
+      "production": "Producción",
+      "location": "Ubicación",
+      "cultural": "Cultural",
+      "historical": "Histórico"
+    },
+    "frequency": {
+      "off": "Desactivado",
+      "low": "Baja",
+      "normal": "Normal",
+      "high": "Alta"
+    },
+    "errors": {
+      "loadFailed": "Error al cargar trivia",
+      "saveFailed": "Error al guardar preferencias de trivia"
     }
   }
 }

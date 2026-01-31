@@ -68,11 +68,11 @@ async def get_current_user_credit_balance(
     Returns:
         Credit balance details for the current user
     """
+    from app.models.beta_credit import BetaCredit
+
+    user_id = str(current_user.id)
+
     try:
-        from app.models.beta_credit import BetaCredit
-
-        user_id = str(current_user.id)
-
         # Get credit record
         credit = await BetaCredit.find_one(
             BetaCredit.user_id == user_id,
@@ -82,7 +82,7 @@ async def get_current_user_credit_balance(
         if not credit:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Credit record not found"
+                detail="Credit record not found. User is not enrolled in beta program."
             )
 
         # Check thresholds

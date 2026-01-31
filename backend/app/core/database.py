@@ -15,8 +15,17 @@ from app.core.config import settings
 from app.models.admin import (AuditLog, Campaign, EmailCampaign,
                               PushNotification, Refund, SubscriptionPlan,
                               SystemSettings, Transaction)
+# Beta 500 program models
+from app.models.beta_credit import BetaCredit
+from app.models.beta_credit_transaction import BetaCreditTransaction
 from app.models.cost_breakdown import CostBreakdown, UserCostBreakdown
 from app.models.chapters import VideoChapters
+from app.models.channel_chat import (
+    ChannelChatMessage,
+    ChatTranslationCacheEntry,
+    ChatReaction,
+    ModerationAuditLog,
+)
 from app.models.chat_translation import ChatTranslationCacheDoc
 from app.models.chess import ChessChatMessage, ChessGame
 from app.models.content import (Content, EPGEntry, LiveChannel, Podcast,
@@ -232,6 +241,14 @@ async def connect_to_mongo():
         # Chat Translation models
         ChatTranslationCacheDoc,
         DirectMessage,
+        # Channel Chat models (live channel public chat)
+        ChannelChatMessage,
+        ChatTranslationCacheEntry,
+        ChatReaction,
+        ModerationAuditLog,
+        # Beta 500 program models
+        BetaCredit,
+        BetaCreditTransaction,
         # Judaism Section models
         JewishNewsSource,
         JewishNewsItem,

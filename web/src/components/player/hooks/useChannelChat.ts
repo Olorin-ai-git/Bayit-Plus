@@ -2,10 +2,12 @@
  * Custom hook for channel chat - WebSocket connection, messages, auto-reconnection
  */
 import { useState, useCallback, useRef, useEffect } from 'react'
-import channelChatService, {
+import channelChatService, { ChannelChatService } from '@/services/channelChatService'
+import type {
   ChatMessageData, ConnectedData, UserJoinData, UserLeftData,
   ReactionUpdateData, MessageDeletedData, UserMutedData, UserUnmutedData,
 } from '@/services/channelChatService'
+import logger from '@/utils/logger'
 
 const MAX_MESSAGES = 200
 const MAX_RETRIES = 5
@@ -23,12 +25,15 @@ export interface UseChannelChatState {
   translationEnabled: boolean
   error: string | null
   connectionState: 'disconnected' | 'connecting' | 'connected' | 'reconnecting'
+  hasMore: boolean
+  isLoadingMore: boolean
 }
 
 export function useChannelChat({ channelId, autoConnect = false }: UseChannelChatOptions) {
   const [state, setState] = useState<UseChannelChatState>({
     isConnected: false, isConnecting: false, messages: [], userCount: 0,
     isBetaUser: false, translationEnabled: false, error: null, connectionState: 'disconnected',
+    hasMore: true, isLoadingMore: false,
   })
   const sessionTokenRef = useRef<string | null>(null)
   const retryCountRef = useRef(0)
@@ -37,16 +42,20 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
   const isConnectedRef = useRef(false)
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const channelIdRef = useRef(channelId)
+  const nextCursorRef = useRef<string | null>(null)
   channelIdRef.current = channelId
 
   const handleConnected = useCallback((data: ConnectedData) => {
     sessionTokenRef.current = data.session_token
     isConnectedRef.current = true
     isConnectingRef.current = false
+    const recentMessages = data.recent_messages || []
+    nextCursorRef.current = recentMessages.length > 0 ? recentMessages[0].id : null
     setState((prev) => ({
       ...prev, isConnected: true, isConnecting: false, userCount: data.user_count,
       isBetaUser: data.is_beta_user, translationEnabled: data.translation_enabled,
-      messages: data.recent_messages || [], error: null, connectionState: 'connected',
+      messages: recentMessages, error: null, connectionState: 'connected',
+      hasMore: true, isLoadingMore: false,
     }))
     retryCountRef.current = 0
     while (messageQueueRef.current.length > 0) {
@@ -155,6 +164,27 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
     channelChatService.sendMessage(text.trim(), sessionTokenRef.current)
   }, [])
 
+  const loadOlderMessages = useCallback(async () => {
+    if (state.isLoadingMore || !state.hasMore || !isConnectedRef.current) return
+    setState((prev) => ({ ...prev, isLoadingMore: true }))
+    try {
+      const response = await ChannelChatService.fetchHistory(
+        channelIdRef.current,
+        nextCursorRef.current || undefined,
+      )
+      nextCursorRef.current = response.next_cursor
+      setState((prev) => ({
+        ...prev,
+        messages: [...response.messages, ...prev.messages],
+        hasMore: response.has_more,
+        isLoadingMore: false,
+      }))
+    } catch (error) {
+      logger.error('Failed to load older messages', 'useChannelChat', error)
+      setState((prev) => ({ ...prev, isLoadingMore: false }))
+    }
+  }, [state.isLoadingMore, state.hasMore])
+
   const reconnect = useCallback(() => {
     disconnect()
     retryCountRef.current = 0
@@ -173,5 +203,5 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
     return () => { disconnect() }
   }, [autoConnect, channelId])
 
-  return { ...state, connect: doConnect, sendMessage, disconnect, reconnect }
+  return { ...state, connect: doConnect, sendMessage, disconnect, reconnect, loadOlderMessages }
 }

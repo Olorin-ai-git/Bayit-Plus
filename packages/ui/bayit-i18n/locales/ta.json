@@ -648,7 +648,10 @@
     "milliseconds": "மில்லி விநாடிகள்",
     "collapse": "சுருக்கு",
     "expand": "விரிவாக்கு",
-    "details": "விவரங்கள்"
+    "details": "விவரங்கள்",
+    "back": "பின்செல்",
+    "actions": "செயல்கள்",
+    "live": "நேரலை"
   },
   "dubbing": {
     "latency": {

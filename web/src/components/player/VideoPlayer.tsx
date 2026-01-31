@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/authStore'
 import { ttsService } from '@bayit/shared/services/ttsService'
+import liveSubtitleService from '@/services/liveSubtitleService'
 import logger from '@/utils/logger'
 import VideoPlayerOverlays from './VideoPlayerOverlays'
 import VideoPlayerPanels from './VideoPlayerPanels'
@@ -192,7 +193,7 @@ export default function VideoPlayer({
   const liveTrivia = useLiveTrivia({
     channelId: isLive ? contentId : undefined,
     language: i18n.language,
-    enabled: isLive && !!user,
+    enabled: false, // Start disabled, user must click to enable
   })
 
   // Forward subtitle transcripts to trivia when both are active
@@ -205,6 +206,33 @@ export default function VideoPlayer({
     },
     [handleLiveSubtitleCue, liveTrivia.isConnected, liveTrivia.sendTranscript],
   )
+
+  // Handle trivia toggle - auto-enable live translation if needed
+  const handleTriviaToggle = useCallback(async () => {
+    const newEnabled = !liveTrivia.isEnabled
+
+    // If enabling trivia, ensure live translation is also enabled
+    if (newEnabled && !liveSubtitleService.isServiceConnected() && videoRef.current) {
+      try {
+        logger.info('Auto-enabling live translation for trivia', 'VideoPlayer')
+        await liveSubtitleService.connect(
+          contentId || '',
+          liveSubtitleLang,
+          videoRef.current,
+          handleLiveSubtitleCueWithTrivia,
+          (error) => {
+            logger.error('Failed to auto-enable live translation for trivia', 'VideoPlayer', error)
+          }
+        )
+        logger.info('Live translation auto-enabled successfully', 'VideoPlayer')
+      } catch (error) {
+        logger.error('Failed to connect live translation for trivia', 'VideoPlayer', error)
+      }
+    }
+
+    // Toggle trivia
+    liveTrivia.setEnabled(newEnabled)
+  }, [liveTrivia.isEnabled, liveTrivia.setEnabled, contentId, liveSubtitleLang, videoRef, handleLiveSubtitleCueWithTrivia])
 
   // Channel chat visibility (Zustand store - persisted)
   const { isChatVisible, toggleChatVisibility } = useChannelChatStore()
@@ -352,7 +380,7 @@ export default function VideoPlayer({
     } : undefined,
     liveTrivia: isLive ? {
       enabled: liveTrivia.isEnabled,
-      toggleEnabled: () => liveTrivia.setEnabled(!liveTrivia.isEnabled),
+      toggleEnabled: handleTriviaToggle,
       hasActiveFact: liveTrivia.currentFact !== null,
     } : undefined,
     catchUp: isLive && isBetaUser && !isBetaUserLoading ? {

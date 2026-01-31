@@ -716,7 +716,10 @@
     "loading": "Cargando...",
     "retry": "Reintentar",
     "loadMore": "Cargar más",
-    "processing": "Procesando..."
+    "processing": "Procesando...",
+    "back": "Atrás",
+    "actions": "Acciones",
+    "live": "EN VIVO"
   },
   "widget": {
     "streamUnavailable": "Transmisión no disponible",

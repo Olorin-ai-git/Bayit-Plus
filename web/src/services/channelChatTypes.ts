@@ -69,3 +69,9 @@ export interface ChannelChatCallbacks {
   onError: (code: string, message: string, recoverable: boolean) => void
   onDisconnect: () => void
 }
+
+export interface ChatHistoryResponse {
+  messages: ChatMessageData[]
+  has_more: boolean
+  next_cursor: string | null
+}

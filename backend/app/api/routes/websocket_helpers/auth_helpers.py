@@ -47,31 +47,40 @@ async def check_authentication_message(
         auth_message = await asyncio.wait_for(websocket.receive_json(), timeout=timeout)
 
         if auth_message.get("type") != "authenticate" or not auth_message.get("token"):
-            await websocket.send_json(
-                {
-                    "type": "error",
-                    "message": "Authentication required. Send: {type: 'authenticate', token: '...'}",
-                    "recoverable": False,
-                }
-            )
-            await websocket.close(code=4001, reason="Authentication required")
+            try:
+                await websocket.send_json(
+                    {
+                        "type": "error",
+                        "message": "Authentication required. Send: {type: 'authenticate', token: '...'}",
+                        "recoverable": False,
+                    }
+                )
+                await websocket.close(code=4001, reason="Authentication required")
+            except RuntimeError:
+                pass  # Connection already closed
             return None, "Authentication required"
 
         return auth_message["token"], None
 
     except asyncio.TimeoutError:
-        await websocket.send_json(
-            {
-                "type": "error",
-                "message": "Authentication timeout",
-                "recoverable": False,
-            }
-        )
-        await websocket.close(code=4001, reason="Authentication timeout")
+        try:
+            await websocket.send_json(
+                {
+                    "type": "error",
+                    "message": "Authentication timeout",
+                    "recoverable": False,
+                }
+            )
+            await websocket.close(code=4001, reason="Authentication timeout")
+        except RuntimeError:
+            pass  # Connection already closed
         return None, "Authentication timeout"
     except Exception as e:
         logger.warning(f"Authentication error: {e}")
-        await websocket.close(code=4001, reason="Authentication error")
+        try:
+            await websocket.close(code=4001, reason="Authentication error")
+        except RuntimeError:
+            pass  # Connection already closed
         return None, str(e)
 
 
@@ -85,16 +94,19 @@ async def check_subscription_tier(
         True if authorized, False otherwise
     """
     if user.subscription_tier not in required_tiers:
-        await websocket.send_json(
-            {
-                "type": "error",
-                "message": f"Required subscription tier: {', '.join(required_tiers)}",
-                "recoverable": False,
-            }
-        )
-        await websocket.close(
-            code=4003, reason=f"Required subscription tier: {', '.join(required_tiers)}"
-        )
+        try:
+            await websocket.send_json(
+                {
+                    "type": "error",
+                    "message": f"Required subscription tier: {', '.join(required_tiers)}",
+                    "recoverable": False,
+                }
+            )
+            await websocket.close(
+                code=4003, reason=f"Required subscription tier: {', '.join(required_tiers)}"
+            )
+        except RuntimeError:
+            pass  # Connection already closed
         return False
     return True
 

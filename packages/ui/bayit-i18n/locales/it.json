@@ -648,7 +648,10 @@
     "milliseconds": "millisecondi",
     "collapse": "Comprimi",
     "expand": "Espandi",
-    "details": "dettagli"
+    "details": "dettagli",
+    "back": "Indietro",
+    "actions": "Azioni",
+    "live": "IN DIRETTA"
   },
   "dubbing": {
     "latency": {

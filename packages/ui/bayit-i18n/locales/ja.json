@@ -648,7 +648,10 @@
     "milliseconds": "ミリ秒",
     "collapse": "折りたたむ",
     "expand": "展開",
-    "details": "詳細"
+    "details": "詳細",
+    "back": "戻る",
+    "actions": "アクション",
+    "live": "ライブ"
   },
   "dubbing": {
     "latency": {

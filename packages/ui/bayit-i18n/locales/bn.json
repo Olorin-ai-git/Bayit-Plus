@@ -648,7 +648,10 @@
     "milliseconds": "মিলিসেকেন্ড",
     "collapse": "সংকুচিত করুন",
     "expand": "প্রসারিত করুন",
-    "details": "বিস্তারিত"
+    "details": "বিস্তারিত",
+    "back": "ফিরে যান",
+    "actions": "ক্রিয়াকলাপ",
+    "live": "সরাসরি"
   },
   "dubbing": {
     "latency": {

@@ -701,10 +701,13 @@ class JerusalemContentService:
                         existing_urls.add(item["url"])
 
             # Sort by relevance score then publication date
+            _utc_min = datetime.min.replace(tzinfo=timezone.utc)
             all_items.sort(
                 key=lambda x: (
                     x["relevance_score"],
-                    x.get("published_at", datetime.min),
+                    x.get("published_at", _utc_min).replace(tzinfo=timezone.utc)
+                    if x.get("published_at", _utc_min).tzinfo is None
+                    else x.get("published_at", _utc_min),
                 ),
                 reverse=True,
             )

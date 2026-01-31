@@ -716,7 +716,10 @@
     "loading": "Chargement...",
     "retry": "Réessayer",
     "loadMore": "Charger plus",
-    "processing": "Traitement..."
+    "processing": "Traitement...",
+    "back": "Retour",
+    "actions": "Actions",
+    "live": "EN DIRECT"
   },
   "widget": {
     "streamUnavailable": "Diffusion indisponible",

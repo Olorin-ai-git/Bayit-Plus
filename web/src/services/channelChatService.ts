@@ -6,13 +6,13 @@ import logger from '@/utils/logger'
 import type {
   ConnectedData, ChatMessageData, UserJoinData, UserLeftData,
   ReactionUpdateData, MessageDeletedData, UserMutedData, UserUnmutedData,
-  ChannelChatCallbacks,
+  ChannelChatCallbacks, ChatHistoryResponse,
 } from './channelChatTypes'
 
 export type {
   ConnectedData, ChatMessageData, UserJoinData, UserLeftData,
   ReactionUpdateData, MessageDeletedData, UserMutedData, UserUnmutedData,
-  ChannelChatCallbacks,
+  ChannelChatCallbacks, ChatHistoryResponse,
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_URL
@@ -180,6 +180,24 @@ class ChannelChatService {
       logger.error('Error translating message', 'channelChatService', error)
       return null
     }
+  }
+
+  static async fetchHistory(
+    channelId: string, before?: string, limit?: number,
+  ): Promise<ChatHistoryResponse> {
+    validateConfiguration()
+    const authData = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || '{}')
+    const token = authData?.state?.token
+    const params = new URLSearchParams()
+    if (before) params.set('before', before)
+    if (limit) params.set('limit', String(limit))
+    const url = `${API_BASE_URL}/live/${channelId}/chat/history${params.toString() ? `?${params.toString()}` : ''}`
+    const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => 'Unknown error')
+      throw new Error(`Failed to fetch chat history: ${errorText}`)
+    }
+    return response.json()
   }
 }
 
