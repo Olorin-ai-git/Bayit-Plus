@@ -3556,6 +3556,39 @@
     "minutesShort": "min",
     "notAvailable": "N/A"
   },
+  "badges": {
+    "aiEnhanced": "AI Enhanced",
+    "aiEnhancedTooltip": "This content has AI learning features"
+  },
+  "aiCompanion": {
+    "title": "AI Learning Companion",
+    "vocabulary": "Vocabulary",
+    "context": "Episode Context",
+    "quiz": "Quick Quiz",
+    "nowPlaying": "Now Playing",
+    "upNext": "Up Next",
+    "timeRemaining": "Time Remaining",
+    "openAiTools": "Open AI Tools"
+  },
+  "channels": {
+    "kanEducational": "Kan Educational",
+    "kanEducationalDesc": "Israeli educational channel - math, science, and learning",
+    "attribution": "Streaming content provided by Kan - Israeli Public Broadcasting Corp."
+  },
+  "widgets": {
+    "pinToWidget": "Pin to Widget",
+    "customIframe": "Custom URL Widget",
+    "pasteUrl": "Paste a URL to watch in picture-in-picture"
+  },
+  "liveCategories": {
+    "educational": "Educational"
+  },
+  "taxonomy": {
+    "subcategories": {
+      "language_learning": "Language Learning",
+      "language_learning_description": "Learn Hebrew with AI-enhanced educational content"
+    }
+  },
   "components": {
     "select": {
       "default": "Select..."
@@ -4417,6 +4450,7 @@
     "israeliCities": "Israeli Cities",
     "israeli-cities": "Israeli Cities",
     "nearYou": "Israelis Near You",
+    "betaExclusive": "Beta Exclusive",
     "israeli_businesses": "Israeli Businesses in {{city}}, {{state}}",
     "israeli_businesses_nearby": "Israeli Businesses Near You - From {{city}}",
     "searching_businesses": "Searching for Israeli businesses in {{city}}...",
@@ -5745,11 +5779,13 @@
       },
       "nikud": {
         "title": "Hebrew with Nikud",
-        "description": "Vocalized Hebrew with vowel marks for easier reading"
+        "description": "Vocalized Hebrew with vowel marks for easier reading",
+        "unavailableReason": "AI processing not available for this content"
       },
       "shoresh": {
         "title": "Shoresh (Root Words)",
-        "description": "Hebrew words with root analysis: word [root]"
+        "description": "Hebrew words with root analysis: word [root]",
+        "unavailableReason": "Root word analysis not available for this content"
       }
     },
     "loading": "Loading subtitles...",

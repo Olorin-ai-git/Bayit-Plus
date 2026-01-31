@@ -3372,6 +3372,39 @@
     "minutesShort": "min",
     "notAvailable": "N/D"
   },
+  "badges": {
+    "aiEnhanced": "Mejorado con IA",
+    "aiEnhancedTooltip": "Este contenido tiene funciones de aprendizaje con IA"
+  },
+  "aiCompanion": {
+    "title": "Compañero de Aprendizaje IA",
+    "vocabulary": "Vocabulario",
+    "context": "Contexto del Episodio",
+    "quiz": "Prueba Rápida",
+    "nowPlaying": "Reproduciendo Ahora",
+    "upNext": "Siguiente",
+    "timeRemaining": "Tiempo Restante",
+    "openAiTools": "Abrir Herramientas IA"
+  },
+  "channels": {
+    "kanEducational": "Kan Educativo",
+    "kanEducationalDesc": "Canal educativo israelí - matemáticas, ciencia y aprendizaje",
+    "attribution": "Contenido transmitido cortesía de Kan - Corporación de Radiodifusión Pública de Israel"
+  },
+  "widgets": {
+    "pinToWidget": "Fijar al Widget",
+    "customIframe": "Widget de URL Personalizada",
+    "pasteUrl": "Pega una URL para ver en imagen-en-imagen"
+  },
+  "liveCategories": {
+    "educational": "Educativo"
+  },
+  "taxonomy": {
+    "subcategories": {
+      "language_learning": "Aprendizaje de Idiomas",
+      "language_learning_description": "Aprende hebreo con contenido educativo mejorado con IA"
+    }
+  },
   "components": {
     "select": {
       "default": "Seleccionar..."
@@ -4246,6 +4279,7 @@
     },
     "audiobooks": "Audiolibros",
     "nearYou": "Cerca de ti",
+    "betaExclusive": "Exclusivo Beta",
     "israelis_in_city": "Israelíes en {{city}}, {{state}}",
     "israeli_businesses": "Negocios Israelíes en {{city}}, {{state}}",
     "israeli_businesses_nearby": "Negocios Israelíes Cerca de Ti - Desde {{city}}",

@@ -3537,6 +3537,7 @@
     },
     "audiobooks": "Livres audio",
     "nearYou": "Près de chez vous",
+    "betaExclusive": "Exclusif Bêta",
     "israelis_in_city": "Israéliens à {{city}}, {{state}}",
     "israeli_businesses": "Entreprises Israéliennes à {{city}}, {{state}}",
     "israeli_businesses_nearby": "Entreprises Israéliennes Près de Vous - Depuis {{city}}",

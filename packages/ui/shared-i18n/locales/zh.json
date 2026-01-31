@@ -3869,6 +3869,7 @@
     },
     "audiobooks": "有声书",
     "nearYou": "您附近",
+    "betaExclusive": "Beta专属",
     "israelis_in_city": "{{city}}, {{state}}的以色列人",
     "israeli_businesses": "{{city}}, {{state}}的以色列企业",
     "israeli_businesses_nearby": "您附近的以色列企业 - 来自{{city}}",

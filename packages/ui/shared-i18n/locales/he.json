@@ -3507,6 +3507,39 @@
     "minutesShort": "דק'",
     "notAvailable": "לא זמין"
   },
+  "badges": {
+    "aiEnhanced": "משופר בינה מלאכותית",
+    "aiEnhancedTooltip": "תוכן זה כולל תכונות למידה חכמות"
+  },
+  "aiCompanion": {
+    "title": "עוזר למידה חכם",
+    "vocabulary": "אוצר מילים",
+    "context": "הקשר הפרק",
+    "quiz": "חידון מהיר",
+    "nowPlaying": "כרגע משודר",
+    "upNext": "הבא בתור",
+    "timeRemaining": "זמן נותר",
+    "openAiTools": "פתח כלי למידה"
+  },
+  "channels": {
+    "kanEducational": "כאן חינוכית",
+    "kanEducationalDesc": "ערוץ חינוכי ישראלי עם תוכניות מתמטיקה, מדעים וחינוך",
+    "attribution": "תוכן בשידור באדיבות כאן - תאגיד השידור הישראלי"
+  },
+  "widgets": {
+    "pinToWidget": "הצמד לווידג'ט",
+    "customIframe": "ווידג'ט כתובת מותאמת",
+    "pasteUrl": "הדבק כתובת לצפייה בתמונה-בתוך-תמונה"
+  },
+  "liveCategories": {
+    "educational": "חינוכי"
+  },
+  "taxonomy": {
+    "subcategories": {
+      "language_learning": "לימוד שפות",
+      "language_learning_description": "למד עברית עם תוכן חינוכי משופר בינה מלאכותית"
+    }
+  },
   "components": {
     "select": {
       "default": "בחר..."
@@ -4378,6 +4411,7 @@
       }
     },
     "nearYou": "בקרבתך",
+    "betaExclusive": "בלעדי לבטא",
     "israeli_businesses": "עסקים ישראליים ב{{city}}, {{state}}",
     "israeli_businesses_nearby": "עסקים ישראליים קרובים אליך - מ{{city}}",
     "searching_businesses": "מחפש עסקים ישראליים ב{{city}}...",
