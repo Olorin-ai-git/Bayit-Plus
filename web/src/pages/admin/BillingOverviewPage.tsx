@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, CreditCard, AlertCircle, DollarSign } from 'lucide-react';
@@ -7,7 +7,7 @@ import { NativeIcon } from '@olorin/shared-icons/native';
 import StatCard from '@/components/admin/StatCard';
 import { billingService, subscriptionsService } from '@/services/adminApi';
 import { colors, spacing, fontSize } from '@olorin/design-tokens';
-import { GlassCard, GlassButton, GlassPageHeader } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassPageHeader , GlassLoadingSpinner } from '@bayit/shared/ui';
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import { useDirection } from '@/hooks/useDirection';
 import { useNotifications } from '@olorin/glass-ui/hooks';
@@ -77,7 +77,7 @@ export default function BillingOverviewPage() {
   if (loading || !overview) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+        <GlassLoadingSpinner />
         <Text style={styles.loadingText}>{t('common.loading', 'Loading...')}</Text>
       </View>
     );

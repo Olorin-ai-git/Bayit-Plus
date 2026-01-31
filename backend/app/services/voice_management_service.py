@@ -46,7 +46,7 @@ class VoiceManagementService:
             "translation_provider": settings.LIVE_TRANSLATION_PROVIDER,
             "elevenlabs_api_key_configured": bool(settings.ELEVENLABS_API_KEY),
             "openai_api_key_configured": bool(settings.OPENAI_API_KEY),
-            "google_api_key_configured": bool(settings.GOOGLE_API_KEY),
+            "google_api_key_configured": bool(settings.GOOGLE_APPLICATION_CREDENTIALS),
         }
 
         # Fetch active DB overrides
@@ -373,7 +373,7 @@ class VoiceManagementService:
                 is_healthy = True  # Basic config check
 
             elif provider == "google":
-                if not settings.GOOGLE_API_KEY:
+                if not settings.GOOGLE_APPLICATION_CREDENTIALS:
                     raise ValueError("Google API key not configured")
                 is_healthy = True  # Basic config check
 

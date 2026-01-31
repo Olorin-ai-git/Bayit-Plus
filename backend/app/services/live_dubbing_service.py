@@ -86,7 +86,7 @@ def get_tts_provider() -> TTSProvider:
 
 def get_translation_provider() -> TranslationProvider:
     """Factory function to get the configured translation provider."""
-    from app.services.live_translation_service import LiveTranslationService
+    from app.services.live_translation import LiveTranslationService
 
     return LiveTranslationService()
 

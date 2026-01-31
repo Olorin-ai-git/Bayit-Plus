@@ -3,7 +3,9 @@
     "loginRequired": "Inicio de sesión requerido",
     "loginToWatch": "Por favor inicia sesión para ver {{title}}",
     "login": "Iniciar sesión",
-    "signUp": "Registrarse"
+    "signUp": "Registrarse",
+    "signInRequired": "Inicio de sesión requerido",
+    "signInRequiredTitle": "Por favor inicia sesión para continuar"
   },
   "email": {
     "greeting": "Hola",
@@ -167,7 +169,9 @@
       "description": "Activa los servicios de ubicación para ver eventos, noticias e historias de la comunidad israelí en tu zona. Tu privacidad está protegida: solo detectamos tu ciudad.",
       "enable": "Activar ubicación",
       "notNow": "Ahora no",
-      "close": "Cerrar"
+      "close": "Cerrar",
+      "ariaLabel": "Etiqueta de accesibilidad",
+      "dismiss": "Descartar"
     },
     "status": {
       "detecting": "Detectando tu ubicación...",
@@ -387,7 +391,10 @@
       "complete": "Completado",
       "failed": "Fallido",
       "cancelled": "Cancelado",
-      "skipped": "Omitido (Duplicado)"
+      "skipped": "Omitido (Duplicado)",
+      "completed": "Completado",
+      "inProgress": "En progreso",
+      "pending": "Pendiente"
     },
     "actions": {
       "pauseQueue": "Pausar cola",
@@ -642,7 +649,14 @@
     "retry": "Reintentar",
     "upgradeBeta": "Actualiza a Beta 500 para traducción automática",
     "inputLabel": "Campo de mensaje del chat",
-    "moderationDelete": "Mensaje eliminado por el moderador"
+    "moderationDelete": "Mensaje eliminado por el moderador",
+    "participants_one": "{{count}} espectador",
+    "participants_other": "{{count}} espectadores",
+    "userJoined": "{{name}} se unió al chat",
+    "userLeft": "Un usuario salió del chat",
+    "placeholder": "Escribe un mensaje...",
+    "send": "Enviar",
+    "translationBeta": "Traducción (Beta)"
   },
   "errors": {
     "friends": {
@@ -1052,6 +1066,49 @@
       "healthy": "Saludable",
       "degraded": "Degradado",
       "unhealthy": "No Saludable"
+    },
+    "accessDenied": "Acceso denegado",
+    "noPermission": "Sin permiso",
+    "actions": {
+      "view": "Ver",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "pause": "Pausar",
+      "resume": "Reanudar",
+      "cancel": "Cancelar",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "activate": "Activar",
+      "test": "Probar"
+    },
+    "importWizard": {
+      "title": "Título",
+      "loadingSources": "Cargando fuentes",
+      "loadingCategories": "Cargando categorías",
+      "selectCategory": "Seleccionar categoría",
+      "selectItems": "Seleccionar elementos",
+      "sources": {
+        "vod": "VOD",
+        "vodDescription": "Descripción de VOD",
+        "liveTv": "TV en vivo",
+        "liveTvDescription": "Descripción de TV en vivo",
+        "radio": "Radio",
+        "radioDescription": "Descripción de radio",
+        "podcasts": "Podcasts",
+        "podcastsDescription": "Descripción de podcasts"
+      }
+    },
+    "costDashboard": {
+      "title": "Título",
+      "subtitle": "Subtítulo",
+      "view": "Ver",
+      "selectUser": "Seleccionar usuario",
+      "tabs": {
+        "overview": "Resumen",
+        "timeline": "Cronología",
+        "categories": "Categorías",
+        "topSpenders": "Mayores consumidores"
+      }
     }
   }
 }

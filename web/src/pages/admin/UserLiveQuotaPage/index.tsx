@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, RotateCcw } from 'lucide-react';
 import { liveQuotasService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { GlassCard, GlassButton , GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
-import AdminLayout from '@/components/admin/AdminLayout';
 import logger from '@/utils/logger';
 import { QuotaData } from './types';
 import UsageSection from './UsageSection';
@@ -86,17 +85,14 @@ export default function UserLiveQuotaPage() {
 
   if (loading) {
     return (
-      <AdminLayout>
-        <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
-        </View>
-      </AdminLayout>
+      <View style={styles.centerContainer}>
+        <GlassLoadingSpinner />
+      </View>
     );
   }
 
   return (
-    <AdminLayout>
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         <PageHeader userId={userId!} isRTL={isRTL} onBack={() => navigate(`/admin/users/${userId}`)} />
 
         {error && (
@@ -141,7 +137,6 @@ export default function UserLiveQuotaPage() {
           </GlassButton>
         </GlassCard>
       </ScrollView>
-    </AdminLayout>
   );
 }
 

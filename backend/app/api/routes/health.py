@@ -106,10 +106,12 @@ async def live_translation_health_check() -> dict:
     - Speech-to-text provider (Google, Whisper, or ElevenLabs)
     - Translation provider (Google, OpenAI, or Claude)
     """
-    from app.services.live_translation_service import (ANTHROPIC_AVAILABLE,
-                                                       ELEVENLABS_AVAILABLE,
-                                                       GOOGLE_AVAILABLE,
-                                                       OPENAI_AVAILABLE)
+    from app.services.live_translation import (
+        ANTHROPIC_AVAILABLE,
+        ELEVENLABS_AVAILABLE,
+        GOOGLE_AVAILABLE,
+        OPENAI_AVAILABLE,
+    )
 
     stt_provider = settings.SPEECH_TO_TEXT_PROVIDER
     translation_provider = settings.LIVE_TRANSLATION_PROVIDER

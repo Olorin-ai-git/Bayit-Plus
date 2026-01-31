@@ -3,7 +3,9 @@
     "loginRequired": "נדרשת התחברות",
     "loginToWatch": "אנא התחבר כדי לצפות ב{{title}}",
     "login": "התחבר",
-    "signUp": "הרשם"
+    "signUp": "הרשם",
+    "signInRequired": "נדרשת כניסה",
+    "signInRequiredTitle": "אנא התחבר כדי להמשיך"
   },
   "email": {
     "greeting": "שלום",
@@ -328,7 +330,14 @@
     "retry": "נסה שוב",
     "upgradeBeta": "שדרג לבטא 500 לתרגום אוטומטי",
     "inputLabel": "שדה הודעת צ'אט",
-    "moderationDelete": "ההודעה הוסרה על ידי מנהל"
+    "moderationDelete": "ההודעה הוסרה על ידי מנהל",
+    "participants_one": "צופה {{count}}",
+    "participants_other": "{{count}} צופים",
+    "userJoined": "{{name}} הצטרף לצ'אט",
+    "userLeft": "משתמש עזב את הצ'אט",
+    "placeholder": "שלח הודעה...",
+    "send": "שלח",
+    "translationBeta": "תרגום (בטא)"
   },
   "common": {
     "milliseconds": "מילישניות",
@@ -337,7 +346,11 @@
     "details": "פרטים",
     "back": "חזרה",
     "actions": "פעולות",
-    "live": "שידור חי"
+    "live": "שידור חי",
+    "loading": "טוען...",
+    "retry": "נסה שוב",
+    "loadMore": "טען עוד",
+    "processing": "מעבד..."
   },
   "dubbing": {
     "latency": {
@@ -407,7 +420,8 @@
         "selectVoice": "בחר את הקול לאודיו המדובב",
         "originalVolume": "התאם עוצמת קול של אודיו מקורי (0 = מושתק)",
         "dubbedVolume": "התאם עוצמת קול של אודיו מדובב (1 = עוצמה מלאה)"
-      }
+      },
+      "liveDubbing": "דיבוב חי"
     }
   },
   "location": {
@@ -423,7 +437,9 @@
       "description": "הפעל שירותי מיקום כדי לראות אירועים קהילתיים ישראליים, חדשות וסיפורים מהאזור שלך. הפרטיות שלך מוגנת - אנחנו מזהים רק את העיר שלך.",
       "enable": "הפעל מיקום",
       "notNow": "לא כרגע",
-      "close": "סגור"
+      "close": "סגור",
+      "ariaLabel": "באנר הרשאת מיקום",
+      "dismiss": "התעלם"
     },
     "status": {
       "detecting": "מזהה את המיקום שלך...",
@@ -643,7 +659,10 @@
       "complete": "הושלם",
       "failed": "נכשל",
       "cancelled": "בוטל",
-      "skipped": "דולג (כפילות)"
+      "skipped": "דולג (כפילות)",
+      "completed": "הושלם",
+      "inProgress": "בתהליך",
+      "pending": "ממתין"
     },
     "actions": {
       "pauseQueue": "השהה תור",

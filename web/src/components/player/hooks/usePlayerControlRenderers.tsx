@@ -252,10 +252,13 @@ export function usePlayerControlRenderers({
   , [cast, onHoveredButtonChange])
 
   const renderChannelChatButton = useCallback(() => {
-    if (!isLive || !channelChat) return null
+    if (!channelChat) return null
+    const chatLabel = isLive
+      ? t('player.liveChat', 'Live Chat')
+      : t('player.chat', 'Chat')
     return (
       <LiveFeatureButton
-        label={t('player.liveChat', 'Live Chat')}
+        label={chatLabel}
         icon={<MessageCircle size={18} color={channelChat.showChat ? colors.text : colors.textSecondary} />}
         isActive={channelChat.showChat}
         onPress={channelChat.toggleChat}

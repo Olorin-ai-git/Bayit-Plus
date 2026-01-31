@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, fontSize } from '@olorin/design-tokens';
-import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { GlassCard, GlassButton , GlassLoadingSpinner } from '@bayit/shared/ui';
 import { voiceManagementService } from '@/services/voiceManagementApi';
 import { logger } from '@/utils/logger';
 
@@ -57,7 +57,7 @@ export default function UsageChartsCard() {
       </View>
 
       {loading ? (
-        <ActivityIndicator size="small" color={colors.primary} style={styles.loader} />
+        <GlassLoadingSpinner size={32} />
       ) : data.length === 0 ? (
         <Text style={styles.empty}>
           {t('admin.voiceManagement.analytics.noUsageData', 'No usage data for this period')}

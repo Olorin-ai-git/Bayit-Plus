@@ -32,14 +32,13 @@ async def get_credit_service(
     return BetaCreditService(settings=settings, metering_service=metering_service, db=db)
 
 
-@router.get("/live/{channel_id}/chat/history", response_model=ChatHistoryResponse)
-async def get_chat_history(
+async def _fetch_chat_history(
     channel_id: str,
-    before: Optional[str] = Query(None, description="Cursor/message ID for pagination"),
-    limit: int = Query(50, ge=1, le=200, description="Number of messages to fetch"),
-    current_user: User = Depends(get_current_user),
+    before: Optional[str],
+    limit: int,
+    current_user: User,
 ) -> ChatHistoryResponse:
-    """Get paginated chat history for a channel."""
+    """Shared handler for fetching paginated chat history."""
     validate_id(channel_id, "channel_id")
     if before:
         validate_id(before, "cursor")
@@ -89,16 +88,15 @@ async def get_chat_history(
         raise HTTPException(status_code=500, detail="Failed to retrieve chat history")
 
 
-@router.get("/live/{channel_id}/chat/translate", response_model=TranslationResponse)
-async def translate_chat_message(
+async def _translate_chat(
     channel_id: str,
-    text: str = Query(..., min_length=1, max_length=5000, description="Text to translate"),
-    from_lang: Optional[str] = Query(None, description="Source language code"),
-    to_lang: str = Query(..., description="Target language code"),
-    current_user: User = Depends(get_current_user),
-    credit_service: BetaCreditService = Depends(get_credit_service),
+    text: str,
+    from_lang: Optional[str],
+    to_lang: str,
+    current_user: User,
+    credit_service: BetaCreditService,
 ) -> TranslationResponse:
-    """Translate chat message on-demand (Beta users only)."""
+    """Shared handler for chat message translation."""
     validate_id(channel_id, "channel_id")
 
     logger.info(
@@ -146,3 +144,51 @@ async def translate_chat_message(
             exc_info=True,
         )
         raise HTTPException(status_code=500, detail="Translation service unavailable")
+
+
+@router.get("/live/{channel_id}/chat/history", response_model=ChatHistoryResponse)
+async def get_chat_history(
+    channel_id: str,
+    before: Optional[str] = Query(None, description="Cursor/message ID for pagination"),
+    limit: int = Query(50, ge=1, le=200, description="Number of messages to fetch"),
+    current_user: User = Depends(get_current_user),
+) -> ChatHistoryResponse:
+    """Get paginated chat history for a live channel."""
+    return await _fetch_chat_history(channel_id, before, limit, current_user)
+
+
+@router.get("/content/{content_id}/chat/history", response_model=ChatHistoryResponse)
+async def get_content_chat_history(
+    content_id: str,
+    before: Optional[str] = Query(None, description="Cursor/message ID for pagination"),
+    limit: int = Query(50, ge=1, le=200, description="Number of messages to fetch"),
+    current_user: User = Depends(get_current_user),
+) -> ChatHistoryResponse:
+    """Get paginated chat history for VOD content."""
+    return await _fetch_chat_history(content_id, before, limit, current_user)
+
+
+@router.get("/live/{channel_id}/chat/translate", response_model=TranslationResponse)
+async def translate_chat_message(
+    channel_id: str,
+    text: str = Query(..., min_length=1, max_length=5000, description="Text to translate"),
+    from_lang: Optional[str] = Query(None, description="Source language code"),
+    to_lang: str = Query(..., description="Target language code"),
+    current_user: User = Depends(get_current_user),
+    credit_service: BetaCreditService = Depends(get_credit_service),
+) -> TranslationResponse:
+    """Translate chat message on-demand for live channel (Beta users only)."""
+    return await _translate_chat(channel_id, text, from_lang, to_lang, current_user, credit_service)
+
+
+@router.get("/content/{content_id}/chat/translate", response_model=TranslationResponse)
+async def translate_content_chat_message(
+    content_id: str,
+    text: str = Query(..., min_length=1, max_length=5000, description="Text to translate"),
+    from_lang: Optional[str] = Query(None, description="Source language code"),
+    to_lang: str = Query(..., description="Target language code"),
+    current_user: User = Depends(get_current_user),
+    credit_service: BetaCreditService = Depends(get_credit_service),
+) -> TranslationResponse:
+    """Translate chat message on-demand for VOD content (Beta users only)."""
+    return await _translate_chat(content_id, text, from_lang, to_lang, current_user, credit_service)

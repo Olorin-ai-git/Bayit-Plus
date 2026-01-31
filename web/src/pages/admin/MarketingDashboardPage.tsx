@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, Pressable, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Mail, Bell, Users, TrendingUp } from 'lucide-react';
@@ -7,7 +7,7 @@ import { NativeIcon } from '@olorin/shared-icons/native';
 import StatCard from '@/components/admin/StatCard';
 import { marketingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassCard, GlassButton, GlassPageHeader } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassPageHeader , GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import logger from '@/utils/logger';
@@ -91,7 +91,7 @@ export default function MarketingDashboardPage() {
   if (loading || !metrics) {
     return (
       <View className="flex-1 justify-center items-center gap-2">
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner />
         <Text className="text-sm text-gray-400">{t('common.loading')}</Text>
       </View>
     );

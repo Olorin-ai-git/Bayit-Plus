@@ -14,7 +14,7 @@ const MAX_RETRIES = 5
 const BASE_DELAY = 1000
 const MAX_DELAY = 30000
 
-export interface UseChannelChatOptions { channelId: string; autoConnect?: boolean }
+export interface UseChannelChatOptions { channelId: string; autoConnect?: boolean; isLive?: boolean }
 
 export interface UseChannelChatState {
   isConnected: boolean
@@ -29,7 +29,7 @@ export interface UseChannelChatState {
   isLoadingMore: boolean
 }
 
-export function useChannelChat({ channelId, autoConnect = false }: UseChannelChatOptions) {
+export function useChannelChat({ channelId, autoConnect = false, isLive = true }: UseChannelChatOptions) {
   const [state, setState] = useState<UseChannelChatState>({
     isConnected: false, isConnecting: false, messages: [], userCount: 0,
     isBetaUser: false, translationEnabled: false, error: null, connectionState: 'disconnected',
@@ -165,9 +165,9 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
           reconnectTimerRef.current = setTimeout(() => doConnect(), delay)
         }
       },
-    })
+    }, isLive)
   }, [handleConnected, handleMessage, handleUserJoined, handleUserLeft,
-    handleReactionUpdate, handleMessageDeleted, handleUserMuted, handleUserUnmuted, handleError])
+    handleReactionUpdate, handleMessageDeleted, handleUserMuted, handleUserUnmuted, handleError, isLive])
 
   const disconnect = useCallback(() => {
     if (reconnectTimerRef.current) {
@@ -199,6 +199,8 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
       const response = await ChannelChatService.fetchHistory(
         channelIdRef.current,
         nextCursorRef.current || undefined,
+        undefined,
+        isLive,
       )
       nextCursorRef.current = response.next_cursor
       setState((prev) => ({
@@ -211,7 +213,7 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
       logger.error('Failed to load older messages', 'useChannelChat', error)
       setState((prev) => ({ ...prev, isLoadingMore: false }))
     }
-  }, [state.isLoadingMore, state.hasMore])
+  }, [state.isLoadingMore, state.hasMore, isLive])
 
   const reconnect = useCallback(() => {
     disconnect()

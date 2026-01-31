@@ -1,7 +1,7 @@
-import { View, Text, ActivityIndicator, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ScrollText, Play, Zap, FileSearch, ShieldCheck, Database } from 'lucide-react';
-import { GlassBadge, GlassButton } from '@bayit/shared/ui';
+import { GlassBadge, GlassButton , GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassDraggableExpander, GlassLog } from '@bayit/shared/ui/web';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { AuditReportDetail } from '@/services/librarianService';
@@ -155,7 +155,7 @@ export const LiveAuditLogPanel = ({
       }
       icon={
         report?.status === 'in_progress' ? (
-          <ActivityIndicator size="small" color={colors.primary} />
+          <GlassLoadingSpinner size={32} />
         ) : (
           <ScrollText size={20} color={colors.primary} />
         )
@@ -185,7 +185,7 @@ export const LiveAuditLogPanel = ({
     >
       {connectingToLog ? (
         <View style={styles.connectingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <GlassLoadingSpinner />
           <Text style={styles.connectingText}>
             {t('admin.librarian.logs.connecting', 'Connecting to live audit log...')}
           </Text>

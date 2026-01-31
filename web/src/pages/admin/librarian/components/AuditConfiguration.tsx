@@ -1,6 +1,6 @@
-import { View, Text, ActivityIndicator, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Settings, Play, Bot, Minus, Plus } from 'lucide-react';
-import { GlassButton, GlassToggle } from '@bayit/shared/ui';
+import { GlassButton, GlassToggle , GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassDraggableExpander } from '@bayit/shared/ui/web';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { useTranslation } from 'react-i18next';
@@ -224,7 +224,7 @@ export const AuditConfiguration = ({
       {isAuditRunning && !triggering && (
         <View style={[styles.runningNotice, { borderColor: colors.warning.DEFAULT + '40' }]}>
           <View style={[styles.runningNoticeHeader, { flexDirection }]}>
-            <ActivityIndicator size="small" color={colors.warning.DEFAULT} />
+            <GlassLoadingSpinner size={32} />
             <Text style={[styles.runningNoticeText, { textAlign, color: colors.warning.DEFAULT }]}>
               {t('admin.librarian.quickActions.auditRunningNotice', 'An audit is currently running')}
             </Text>

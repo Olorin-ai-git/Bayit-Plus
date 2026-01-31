@@ -4,7 +4,7 @@ Tests the complete pipeline with real service initialization.
 """
 
 import pytest
-from app.services.live_translation_service import LiveTranslationService
+from app.services.live_translation import LiveTranslationService
 from app.services.translation_cache_service import TranslationCacheService
 
 

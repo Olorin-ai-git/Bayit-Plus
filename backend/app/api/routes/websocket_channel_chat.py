@@ -27,9 +27,8 @@ router = APIRouter()
 logger = get_logger(__name__)
 
 
-@router.websocket("/ws/live/{channel_id}/chat")
-async def websocket_channel_chat(websocket: WebSocket, channel_id: str):
-    """WebSocket endpoint for live channel public chat."""
+async def _handle_channel_chat_ws(websocket: WebSocket, channel_id: str) -> None:
+    """Shared WebSocket handler for channel chat (live and VOD content)."""
     await websocket.accept()
 
     user: Optional[User] = None
@@ -97,3 +96,15 @@ async def websocket_channel_chat(websocket: WebSocket, channel_id: str):
             remaining = await chat_service.leave_channel_chat(channel_id, user_id, client_ip)
             if user_name:
                 await broadcast_user_left(chat_service, channel_id, user_name, remaining)
+
+
+@router.websocket("/ws/live/{channel_id}/chat")
+async def websocket_channel_chat(websocket: WebSocket, channel_id: str):
+    """WebSocket endpoint for live channel public chat."""
+    await _handle_channel_chat_ws(websocket, channel_id)
+
+
+@router.websocket("/ws/content/{content_id}/chat")
+async def websocket_content_chat(websocket: WebSocket, content_id: str):
+    """WebSocket endpoint for content (VOD) community chat."""
+    await _handle_channel_chat_ws(websocket, content_id)

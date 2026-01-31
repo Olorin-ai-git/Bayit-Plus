@@ -116,7 +116,7 @@ class SubtitleCaptureService:
 
     async def _capture_loop(self) -> None:
         """Background loop that processes transcript messages."""
-        from app.services.live_translation_service import LiveTranslationService
+        from app.services.live_translation import LiveTranslationService
 
         translation_service = LiveTranslationService()
 

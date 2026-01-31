@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, Pressable, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight, Mail, Key, Ban, UserCheck, Edit2, Trash2, Clock, Check, X } from 'lucide-react';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { usersService, type User } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassCard, GlassButton, GlassModal, GlassInput, GlassToggle, GlassView, GlassPageHeader } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal, GlassInput, GlassToggle, GlassView, GlassPageHeader , GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { useNotifications } from '@olorin/glass-ui/hooks';;
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
@@ -208,7 +208,7 @@ export default function UserDetailPage() {
   if (loading) {
     return (
       <GlassView className="flex-1 justify-center items-center gap-2">
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner />
         <Text className="text-sm text-gray-400">{t('common.loading')}</Text>
       </GlassView>
     );

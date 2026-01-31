@@ -1,6 +1,6 @@
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { MessageSquare, Play } from 'lucide-react';
-import { GlassButton } from '@bayit/shared/ui';
+import { GlassButton , GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassLog } from '@bayit/shared/ui/web';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { useTranslation } from 'react-i18next';
@@ -85,7 +85,7 @@ export const LiveAuditLog = ({
 
       {connectingToLiveLog ? (
         <View style={styles.liveLogConnecting}>
-          <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+          <GlassLoadingSpinner />
           <Text style={[styles.liveLogConnectingText, { textAlign: isRTL ? 'right' : 'left', color: colors.textMuted }]}>
             {t('admin.librarian.logs.connecting', 'Connecting...')}
           </Text>

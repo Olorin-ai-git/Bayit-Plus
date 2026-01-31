@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Plus, Send, Eye, Mail } from 'lucide-react';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { marketingService } from '@/services/adminApi';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
-import { GlassCard, GlassButton, GlassInput, GlassModal, GlassPageHeader } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassInput, GlassModal, GlassPageHeader , GlassLoadingSpinner } from '@bayit/shared/ui';
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import { useDirection } from '@/hooks/useDirection';
 import { useNotifications } from '@olorin/glass-ui/hooks';
@@ -147,7 +147,7 @@ export default function EmailCampaignsPage() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+        <GlassLoadingSpinner />
         <Text style={styles.loadingText}>{t('common.loading', 'Loading...')}</Text>
       </View>
     );

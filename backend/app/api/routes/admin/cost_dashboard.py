@@ -22,7 +22,7 @@ from .cost_schemas import (
 
 from app.services.admin import cost_dashboard_service as service
 
-router = APIRouter(prefix="/admin/costs", tags=["admin-costs"])
+router = APIRouter(prefix="/costs", tags=["admin-costs"])
 logger = get_logger(__name__)
 
 

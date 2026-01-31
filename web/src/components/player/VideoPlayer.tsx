@@ -373,7 +373,7 @@ export default function VideoPlayer({
     cast,
     setIsRecording,
     setRecordingDuration,
-    channelChat: isLive ? {
+    channelChat: contentId ? {
       showChat: isChatVisible,
       toggleChat: toggleChatVisibility,
       hasUnreadMessages: false,
@@ -533,8 +533,8 @@ export default function VideoPlayer({
         title={title}
       />
 
-      {/* Channel Live Chat for Live TV */}
-      {isLive && contentId && (
+      {/* Channel Chat for Live TV and VOD */}
+      {contentId && (
         <GlassChatSidebar
           channelId={contentId}
           isLiveChannel={isLive}

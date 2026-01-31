@@ -18,7 +18,7 @@ from app.models.user import User
 from app.services.live_feature_quota_service import LiveFeatureQuotaService
 from app.services.voice_management_service import VoiceManagementService
 
-router = APIRouter(prefix="/admin/voice-management", tags=["Admin - Voice Management"])
+router = APIRouter(prefix="/voice-management", tags=["Admin - Voice Management"])
 logger = logging.getLogger(__name__)
 
 

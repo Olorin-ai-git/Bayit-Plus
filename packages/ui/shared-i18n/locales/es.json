@@ -15,7 +15,8 @@
     "name": "Nombre",
     "guest": "Invitado",
     "premium": "Premium",
-    "basic": "Básico"
+    "basic": "Básico",
+    "tapToLogin": "Toca para iniciar sesión"
   },
   "admin": {
     "brand": {
@@ -58,7 +59,12 @@
         "rating": "Calificación",
         "slug": "Babosa",
         "streamUrl": "URL de transmisión",
-        "views": "Vistas"
+        "views": "Vistas",
+        "icon": "Icono",
+        "logo": "Logo",
+        "cover": "Portada",
+        "languages": "Idiomas",
+        "translationStatus": "Estado de traducción"
       },
       "filters": {
         "contentType": "Tipo de Contenido",
@@ -71,7 +77,8 @@
         "all": "Todo",
         "allContent": "Todo",
         "status": "Estado",
-        "subtitles": "Subtítulos"
+        "subtitles": "Subtítulos",
+        "audiobooks": "Audiolibros"
       },
       "status": {
         "published": "Publicado",
@@ -79,11 +86,56 @@
       },
       "type": {
         "movie": "Película",
-        "series": "Serie"
+        "series": "Serie",
+        "audiobook": "Audiolibro",
+        "podcast": "Podcast",
+        "radio": "Radio"
       },
       "noEpisodes": "Sin Episodios",
       "merge": {
-        "mergeSuccess": "Serie fusionada exitosamente"
+        "mergeSuccess": "Serie fusionada exitosamente",
+        "wizard": "Asistente de Fusión de Contenido",
+        "errorMixedTypes": "No se pueden fusionar series y películas juntas",
+        "errorDifferentNames": "Los elementos no tienen nombres coincidentes o similares",
+        "suggestionSeparate": "Seleccione solo series o solo películas",
+        "suggestionNames1": "Los elementos a fusionar deben tener el mismo nombre en diferentes idiomas",
+        "suggestionNames2": "Ejemplo: \"בורגנים\" (Hebreo) y \"burganim\" (Inglés)",
+        "cannotMerge": "No Se Pueden Fusionar Estos Elementos",
+        "canMerge": "Los Elementos Se Pueden Fusionar",
+        "suggestions": "Sugerencias:",
+        "validationPassed": "Estos elementos tienen nombres similares y son compatibles para fusionar.",
+        "continue": "Continuar",
+        "selectBase": "Seleccionar Elemento Base",
+        "selectBaseDescription": "Elija qué elemento mantener como base. Todo el contenido de otros elementos se fusionará en este.",
+        "configure": "Configurar Fusión",
+        "configureDescription": "Elija qué transferir y qué metadatos mantener.",
+        "contentTransfer": "Transferencia de Contenido",
+        "transferSeasons": "Transferir Temporadas",
+        "transferSeasonsDesc": "Mover todas las temporadas de elementos fusionados al elemento base",
+        "transferEpisodes": "Transferir Episodios",
+        "transferEpisodesDesc": "Mover todos los episodios de elementos fusionados al elemento base",
+        "metadataPreferences": "Preferencias de Metadatos",
+        "baseItem": "Elemento Base",
+        "useBasePoster": "Usar Póster del Elemento Base",
+        "useBasePosterDesc": "Mantener la imagen del póster del elemento base",
+        "useBaseDescription": "Usar Descripción del Elemento Base",
+        "useBaseDescriptionDesc": "Mantener la descripción del elemento base",
+        "mergePreview": "Vista Previa de Fusión",
+        "itemsToMerge": "Elementos a Fusionar",
+        "totalSeasons": "Total de Temporadas Después de Fusionar",
+        "totalEpisodes": "Total de Episodios Después de Fusionar",
+        "confirmMerge": "Confirmar Fusión",
+        "confirmDescription": "Revise la operación de fusión y confirme para continuar.",
+        "baseItemKeep": "Este elemento se mantendrá",
+        "itemsMergeInto": "Estos elementos se fusionarán en la base",
+        "mergeWarning": "Después de fusionar, todo el contenido se combinará en el elemento base. Los elementos fusionados se marcarán como fusionados y se ocultarán de la biblioteca.",
+        "merging": "Fusionando...",
+        "confirmButton": "Fusionar Elementos",
+        "errorNoBase": "Por favor seleccione un elemento base",
+        "errorNoMerge": "No hay elementos para fusionar",
+        "successMessage": "Se fusionaron {{count}} elemento(s) exitosamente en \"{{title}}\".",
+        "noEpisodesNote": "Nota: No se transfirieron episodios o temporadas porque aún no se han creado en la base de datos.",
+        "transferredInfo": "Transferidos: {{seasons}} temporada(s), {{episodes}} episodio(s)."
       },
       "categoryPicker": {
         "selectPlaceholder": "Seleccionar categoría",
@@ -205,7 +257,8 @@
           "isKidsContent": "Contenido Infantil",
           "isActive": "Activo",
           "publishedAt": "Fecha de Publicación",
-          "requiresSubscription": "Suscripción Requerida"
+          "requiresSubscription": "Suscripción Requerida",
+          "logoPlaceholder": "URL del logo"
         },
         "subscriptionTiers": {
           "basic": "Básico",
@@ -259,7 +312,8 @@
         "sourceTypes": {
           "live_tv": "TV en vivo",
           "podcasts": "Pódcasts",
-          "vod": "Películas y VOD"
+          "vod": "Películas y VOD",
+          "radio": "Radio"
         },
         "subtitle": "Explorar e importar contenido público de fuentes gratuitas"
       },
@@ -273,7 +327,29 @@
         "titleRequired": "El título es obligatorio"
       },
       "podcastsComingSoon": "Gestión de podcasts próximamente. Use la sección de Podcasts.",
-      "radioComingSoon": "Gestión de estaciones de radio próximamente. Use la sección de Estaciones de Radio."
+      "radioComingSoon": "Gestión de estaciones de radio próximamente. Use la sección de Estaciones de Radio.",
+      "movies": "Películas",
+      "series": "Series",
+      "audiobooks": "Audiolibros",
+      "podcasts": "Podcasts",
+      "mergeContent": "Fusionar Contenido",
+      "selectItemToKeep": "Seleccionar elemento a mantener",
+      "removeAction": "¿Qué hacer con los elementos eliminados?",
+      "removeActionUnpublish": "Despublicar (recomendado)",
+      "removeActionDelete": "Eliminar permanentemente",
+      "unpublishDescription": "Los elementos se ocultarán pero se pueden restaurar después",
+      "deleteWarning": "⚠️ Los elementos eliminados no se pueden recuperar",
+      "mergeReason": "Razón de la fusión",
+      "mergeReasonPlaceholder": "Ingrese la razón (mín. 10 caracteres)...",
+      "mergeReasonTooShort": "La razón debe tener al menos 10 caracteres",
+      "confirmMerge": "Fusionar Elementos",
+      "itemWillBeKept": "Este elemento se mantendrá",
+      "itemsWillBeRemoved": "{{count}} elemento será {{action}}",
+      "itemsWillBeRemoved_plural": "{{count}} elementos serán {{action}}",
+      "mergeSuccess": "Se fusionaron {{count}} elementos exitosamente",
+      "mergeFailed": "Error al fusionar contenido",
+      "episodes": "episodios",
+      "publishedOnly": "Solo publicados"
     },
     "categories": {
       "form": {
@@ -291,7 +367,11 @@
       "status": {
         "active": "Activo",
         "inactive": "Inactivo"
-      }
+      },
+      "createSuccess": "Categoría creada",
+      "deleteCategory": "Eliminar categoría",
+      "editCategory": "Editar categoría",
+      "updateSuccess": "Categoría actualizada"
     },
     "liveChannels": {
       "subtitle": "Administrar canales de TV en vivo",
@@ -301,8 +381,15 @@
         "streamUrl": "URL de transmisión",
         "epgSource": "URL de fuente EPG (opcional)",
         "currentShow": "Programa actual",
-        "order": "Orden"
-      }
+        "order": "Orden",
+        "supportsSubtitles": "Habilitar Subtítulos en Vivo",
+        "primaryLanguage": "Idioma Principal (Fuente)",
+        "targetLanguages": "Idiomas de Traducción Disponibles",
+        "targetLanguagesHelp": "Seleccione a qué idiomas pueden traducir los usuarios en tiempo real"
+      },
+      "subtitleSettings": "Configuración de Subtítulos en Vivo",
+      "deleteChannel": "Eliminar canal",
+      "editChannel": "Editar canal"
     },
     "radioStations": {
       "subtitle": "Administrar estaciones de radio",
@@ -313,7 +400,20 @@
         "streamUrl": "URL de transmisión",
         "currentShow": "Programa actual (opcional)",
         "currentSong": "Canción actual (opcional)",
-        "order": "Orden"
+        "order": "Orden",
+        "currentShowPlaceholder": "Programa actual (opcional)",
+        "currentSongPlaceholder": "Canción actual (opcional)",
+        "genrePlaceholder": "Género (ej., Electrónica, Noticias)",
+        "namePlaceholder": "Nombre de la estación",
+        "orderPlaceholder": "Orden",
+        "streamUrlPlaceholder": "URL de transmisión (HLS/Audio)",
+        "titleEdit": "Editar estación de radio",
+        "titleNew": "Nueva estación de radio"
+      },
+      "errors": {
+        "deleteFailed": "Error al eliminar la estación de radio",
+        "loadFailed": "Error al cargar las estaciones de radio",
+        "saveFailed": "Error al guardar la estación de radio"
       }
     },
     "podcasts": {
@@ -337,7 +437,10 @@
         "description": "Descripción",
         "category": "Categoría",
         "rssFeed": "URL de feed RSS",
-        "website": "URL del sitio web (opcional)"
+        "website": "URL del sitio web (opcional)",
+        "cover": "Portada del podcast",
+        "coverUrl": "URL de portada",
+        "uploadCover": "Subir"
       },
       "episodes": {
         "form": {
@@ -350,7 +453,10 @@
           "publishedDate": "Fecha de publicación (YYYY-MM-DD)"
         }
       },
-      "translate": "Traducir"
+      "translate": "Traducir",
+      "editTitle": "Editar título",
+      "newTitle": "Nuevo título",
+      "toggleFeatured": "Alternar destacado"
     },
     "translation": {
       "title": "Panel de traducción",
@@ -401,7 +507,8 @@
         "noSubscription": "Sin Suscripción",
         "status": "Estado",
         "created": "Creado",
-        "actions": "Acciones"
+        "actions": "Acciones",
+        "lastLogin": "Último acceso"
       },
       "confirmDelete": "Eliminar Usuario",
       "confirmDeleteMessage": "¿Estás seguro de que quieres eliminar a {{name}}? Esta acción no se puede deshacer.",
@@ -427,7 +534,83 @@
         "admin": "Administrador",
         "moderator": "Moderador",
         "user": "Usuario"
-      }
+      },
+      "active": "Activo",
+      "activityTitle": "Historial de actividad",
+      "addSubscription": "Agregar suscripción",
+      "applyFilters": "Aplicar",
+      "ban": "Bloquear",
+      "banConfirm": "Bloquear usuario",
+      "banMessage": "¿Está seguro de que desea bloquear a este usuario?",
+      "billingTitle": "Historial de facturación",
+      "bulkActions": "Acciones masivas",
+      "bulkActionsTitle": "Acciones masivas",
+      "bulkBan": "Bloquear usuarios seleccionados",
+      "bulkDelete": "Eliminar usuarios seleccionados",
+      "bulkDeleteConfirm": "Eliminar usuarios seleccionados",
+      "cancelSubscription": "Cancelar",
+      "changePlan": "Cambiar plan",
+      "clearFilters": "Limpiar todo",
+      "create": "Crear usuario",
+      "created": "Usuario creado",
+      "createdSuccess": "El usuario ha sido creado exitosamente.",
+      "customPermissions": "Permisos personalizados",
+      "deleteConfirm": "Eliminar usuario",
+      "deleteMessage": "¿Está seguro de que desea eliminar permanentemente a este usuario?",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "Ingrese correo electrónico",
+      "expiresOn": "Expira",
+      "extendSubscription": "Extender",
+      "filterRole": "Rol",
+      "filterStatus": "Estado",
+      "filterSubscription": "Plan de suscripción",
+      "filterTitle": "Filtrar usuarios",
+      "inherited": "Heredado",
+      "joined": "Registrado",
+      "lastLogin": "Último acceso",
+      "name": "Nombre",
+      "nameEmailRequired": "El nombre y el correo electrónico son obligatorios.",
+      "namePlaceholder": "Ingrese nombre",
+      "noBilling": "Sin historial de facturación",
+      "noSubscription": "Sin suscripción activa",
+      "noUsers": "No se encontraron usuarios",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Ingrese contraseña",
+      "passwordRequired": "La contraseña es obligatoria para nuevos usuarios.",
+      "passwordReset": "Restablecimiento de contraseña",
+      "passwordResetSuccess": "El correo de restablecimiento de contraseña ha sido enviado.",
+      "permissionsSubtitle": "Los permisos basados en roles son heredados. Se pueden agregar permisos personalizados a continuación.",
+      "permissionsTitle": "Permisos de usuario",
+      "profileInfo": "Información del perfil",
+      "resetPasswordMessage": "Esto enviará un correo de restablecimiento de contraseña al usuario.",
+      "resetPasswordTitle": "Restablecer contraseña",
+      "role": "Rol",
+      "rolePermissions": "Permisos del rol",
+      "save": "Guardar cambios",
+      "saveError": "Error",
+      "saveErrorMessage": "Error al guardar el usuario. Intente de nuevo.",
+      "savePermissions": "Guardar permisos",
+      "searchPlaceholder": "Buscar por nombre o correo...",
+      "selectRole": "Seleccionar rol",
+      "sendReset": "Enviar correo de restablecimiento",
+      "subscriptionTitle": "Detalles de suscripción",
+      "tabs": {
+        "activity": "Actividad",
+        "billing": "Facturación",
+        "permissions": "Permisos",
+        "profile": "Perfil",
+        "subscription": "Suscripción"
+      },
+      "updated": "Usuario actualizado",
+      "updatedSuccess": "El usuario ha sido actualizado exitosamente.",
+      "validationError": "Error de validación",
+      "activeDesc": "Descripción de actividad",
+      "editUser": "Editar usuario",
+      "emailVerified": "Correo verificado",
+      "emptyMessage": "No se encontraron usuarios",
+      "lastUpdated": "Última actualización",
+      "userDeleted": "Usuario eliminado",
+      "userUpdated": "Usuario actualizado"
     },
     "campaigns": {
       "subtitle": "Administrar códigos de cupón y descuentos",
@@ -442,7 +625,9 @@
         "usage": "Usos",
         "validUntil": "Válido Hasta",
         "status": "Estado",
-        "actions": "Acciones"
+        "actions": "Acciones",
+        "dates": "Fechas",
+        "type": "Tipo"
       },
       "confirmDelete": "Eliminar Campaña",
       "confirmDeleteMessage": "¿Estás seguro de que quieres eliminar \"{{name}}\"? Esta acción no se puede deshacer.",
@@ -464,7 +649,97 @@
         "unlimited": "Ilimitado",
         "validUntil": "Válido Hasta",
         "active": "Campaña Activa"
-      }
+      },
+      "activateError": "Error al activar la campaña",
+      "activateFailed": "Error al activar la campaña",
+      "activateSuccess": "Campaña activada",
+      "activatedSuccess": "La campaña ha sido activada.",
+      "active": "Activa",
+      "allUsersTarget": "Todos los usuarios son objetivo por defecto",
+      "amountOff": "Descuento fijo",
+      "applyFilters": "Aplicar",
+      "audienceBuilder": "Constructor de audiencia",
+      "autoApply": "Aplicar automáticamente",
+      "autoApplyDesc": "Aplicar automáticamente a compras elegibles",
+      "basicInfo": "Información básica",
+      "clearAudience": "Limpiar",
+      "clearFilters": "Limpiar",
+      "code": "Código",
+      "codePlaceholder": "ej., VERANO20",
+      "conversionRate": "Tasa de conversión",
+      "create": "Crear campaña",
+      "created": "Campaña creada",
+      "createdSuccess": "La campaña ha sido creada exitosamente.",
+      "deactivateError": "Error al desactivar la campaña",
+      "deactivatedSuccess": "La campaña ha sido desactivada.",
+      "deleteConfirm": "Eliminar campaña",
+      "deleteFailed": "Error al eliminar la campaña",
+      "deleteMessage": "¿Está seguro de que desea eliminar esta campaña?",
+      "deleteSuccess": "Campaña eliminada",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Ingrese descripción de la campaña",
+      "details": "Detalles de la campaña",
+      "discount": "Descuento",
+      "discountConfig": "Configuración de descuento",
+      "discountRequired": "El valor del descuento debe ser mayor que 0",
+      "discountType": "Tipo de descuento",
+      "editAudience": "Editar audiencia",
+      "endDate": "Fecha de fin",
+      "filterByStatus": "Estado",
+      "filterByType": "Tipo",
+      "filterStatus": "Estado",
+      "filterTitle": "Filtrar campañas",
+      "filterType": "Tipo",
+      "filters": "Filtros",
+      "firstPurchaseDesc": "Solo aplica a usuarios en su primera compra",
+      "firstPurchaseOnly": "Solo primera compra",
+      "generate": "Generar",
+      "loadError": "Error al cargar la campaña",
+      "maxDiscount": "Monto máximo de descuento ($)",
+      "minimumPurchase": "Monto mínimo de compra ($)",
+      "name": "Nombre de la campaña",
+      "namePlaceholder": "Ingrese nombre de la campaña",
+      "nameRequired": "El nombre de la campaña es obligatorio",
+      "noCampaigns": "No se encontraron campañas",
+      "noData": "No se encontraron campañas",
+      "noLimit": "Sin límite",
+      "options": "Opciones",
+      "pauseFailed": "Error al pausar la campaña",
+      "pauseSuccess": "Campaña pausada",
+      "percentOff": "Porcentaje de descuento",
+      "promoCode": "Código promocional",
+      "redemptions": "Canjes",
+      "revenueImpact": "Impacto en ingresos",
+      "save": "Guardar cambios",
+      "saveError": "Error al guardar la campaña",
+      "schedule": "Programar",
+      "scheduled": "Programada",
+      "search": "Buscar campañas...",
+      "selectEndDate": "Seleccionar fecha de fin",
+      "selectStartDate": "Seleccionar fecha de inicio",
+      "setAudience": "Definir audiencia",
+      "stackable": "Acumulable",
+      "stackableDesc": "Se puede combinar con otras promociones",
+      "startDate": "Fecha de inicio",
+      "statistics": "Estadísticas",
+      "stats": {
+        "active": "Activas",
+        "scheduled": "Programadas",
+        "total": "Total",
+        "totalUsage": "Uso total"
+      },
+      "statsError": "Error al cargar estadísticas de la campaña",
+      "subscriptionPlan": "Plan de suscripción",
+      "targetAudience": "Audiencia objetivo",
+      "title": "Campañas de marketing",
+      "totalRedemptions": "Total de canjes",
+      "trialDays": "Días de prueba",
+      "type": "Tipo de campaña",
+      "unlimited": "Ilimitado",
+      "updated": "Campaña actualizada",
+      "updatedSuccess": "La campaña ha sido actualizada exitosamente.",
+      "usageLimit": "Límite de uso",
+      "userStatus": "Estado del usuario"
     },
     "subscriptions": {
       "subtitle": "Ver y administrar suscriptores del sistema",
@@ -479,7 +754,10 @@
         "plan": "Plan",
         "price": "Precio",
         "nextBilling": "Próxima Facturación",
-        "status": "Estado"
+        "status": "Estado",
+        "amount": "Monto",
+        "renews": "Renueva",
+        "started": "Inicio"
       },
       "perMonth": "/mes",
       "searchPlaceholder": "Buscar suscripción...",
@@ -503,7 +781,50 @@
       "selectToDelete": "Por favor seleccione suscripciones para eliminar",
       "confirmDeleteMultiple": "¿Eliminar {{count}} suscripción(es)?",
       "selected": "seleccionados",
-      "confirmDelete": "¿Está seguro de que desea eliminar la suscripción de {{user}}? Esta acción no se puede deshacer."
+      "confirmDelete": "¿Está seguro de que desea eliminar la suscripción de {{user}}? Esta acción no se puede deshacer.",
+      "actions": {
+        "changePlan": "Cambiar Plan",
+        "pause": "Pausar",
+        "resume": "Reanudar",
+        "cancel": "Cancelar",
+        "delete": "Eliminar"
+      },
+      "active": "Activa",
+      "apply": "Aplicar",
+      "applyDiscount": "Aplicar descuento",
+      "atRisk": "En riesgo",
+      "cancelConfirm": "Cancelar suscripción",
+      "cancelFailed": "Error al cancelar la suscripción",
+      "cancelMessage": "¿Está seguro de que desea cancelar esta suscripción?",
+      "cancelSuccess": "Suscripción cancelada",
+      "churnRate": "Tasa de abandono",
+      "confirmCancel": "¿Está seguro de que desea cancelar esta suscripción?",
+      "days": "Días a extender",
+      "details": "Detalles de suscripción",
+      "discountApplied": "Descuento aplicado",
+      "discountMonths": "Número de meses",
+      "discountPercent": "Descuento (%)",
+      "extend": "Extender",
+      "extendSubscription": "Extender suscripción",
+      "extended": "Extendida",
+      "invalidDays": "Ingrese un número válido de días",
+      "invalidDiscount": "Ingrese valores de descuento válidos",
+      "managePlans": "Gestionar planes",
+      "noData": "No se encontraron suscripciones",
+      "noSubscriptions": "No se encontraron suscripciones",
+      "pauseFailed": "Error al pausar la suscripción",
+      "pauseSuccess": "Suscripción pausada",
+      "resumeFailed": "Error al reanudar la suscripción",
+      "resumeSuccess": "Suscripción reanudada",
+      "retention": "Retención",
+      "search": "Buscar suscripciones...",
+      "stats": {
+        "active": "Activas",
+        "paused": "Pausadas",
+        "revenue": "Ingresos mensuales",
+        "total": "Total"
+      },
+      "title": "Suscripciones"
     },
     "marketingDashboard": {
       "subtitle": "Resumen de Marketing",
@@ -517,7 +838,12 @@
         "completed": "Completado",
         "scheduled": "Programado",
         "draft": "Borrador"
-      }
+      },
+      "clickRate": "Tasa de clics",
+      "conversionRate": "Tasa de conversión",
+      "openRate": "Tasa de apertura",
+      "sent": "Enviados",
+      "unsubscribeRate": "Tasa de cancelación"
     },
     "transactions": {
       "subtitle": "Ver historial de pagos",
@@ -534,7 +860,9 @@
         "amount": "Monto",
         "type": "Tipo",
         "status": "Estado",
-        "date": "Fecha"
+        "date": "Fecha",
+        "description": "Descripción",
+        "method": "Método"
       },
       "filters": {
         "all": "Todos"
@@ -542,7 +870,52 @@
       "searchPlaceholder": "Buscar transacción...",
       "emptyMessage": "No se encontraron transacciones",
       "details": "Detalles de Transacción",
-      "email": "Correo"
+      "email": "Correo",
+      "amount": "Monto",
+      "amountRange": "Rango de monto",
+      "apply": "Aplicar",
+      "clearFilters": "Limpiar",
+      "completed": "Completada",
+      "confirmRefund": "Confirmar reembolso",
+      "date": "Fecha",
+      "dateRange": "Rango de fechas",
+      "description": "Descripción",
+      "export": "Exportar",
+      "exportFailed": "Error en la exportación",
+      "exportMessage": "Los datos de transacciones han sido exportados.",
+      "exportStarted": "Exportando transacciones...",
+      "exportSuccess": "Exportación completada",
+      "filterByStatus": "Estado",
+      "filterByType": "Tipo",
+      "filterTitle": "Filtrar transacciones",
+      "invalidAmount": "Monto de reembolso inválido",
+      "invoiceGenerated": "Factura generada",
+      "invoiceMessage": "La factura ha sido generada y está lista para descargar.",
+      "noData": "No se encontraron transacciones",
+      "noTransactions": "No se encontraron transacciones",
+      "originalAmount": "Monto original",
+      "paymentMethod": "Método de pago",
+      "pending": "Pendiente",
+      "processRefund": "Procesar reembolso",
+      "reasonPlaceholder": "Ingrese motivo del reembolso...",
+      "reasonRequired": "El motivo del reembolso es obligatorio",
+      "refundAmount": "Monto del reembolso",
+      "refundError": "Error al procesar el reembolso",
+      "refundProcessed": "Reembolso procesado",
+      "refundReason": "Motivo",
+      "refundSuccess": "El reembolso ha sido procesado exitosamente.",
+      "refunded": "Reembolsado",
+      "search": "Buscar transacciones...",
+      "stats": {
+        "completed": "Completadas",
+        "pending": "Pendientes",
+        "total": "Total",
+        "totalAmount": "Monto total"
+      },
+      "title": "Transacciones",
+      "total": "Total de transacciones",
+      "transactionId": "ID de transacción",
+      "userId": "ID de usuario"
     },
     "pushNotifications": {
       "subtitle": "Crear y enviar notificaciones a usuarios",
@@ -606,19 +979,49 @@
         "amount": "Monto",
         "reason": "Motivo",
         "status": "Estado",
-        "requestDate": "Fecha de Solicitud"
+        "requestDate": "Fecha de Solicitud",
+        "date": "Solicitado",
+        "requested": "Solicitado",
+        "transaction": "Transacción"
       },
       "stats": {
         "pendingTitle": "Pendiente de Aprobación",
         "approvedTitle": "Aprobados",
         "rejectedTitle": "Rechazados",
-        "totalRefunded": "Total Reembolsado"
+        "totalRefunded": "Total Reembolsado",
+        "approved": "Aprobados",
+        "pending": "Pendientes",
+        "total": "Total",
+        "totalAmount": "Monto total"
       },
       "emptyMessage": "No se encontraron solicitudes de reembolso",
       "errors": {
         "rejectReasonRequired": "Por favor ingresa un motivo de rechazo"
       },
-      "title": "Reembolsos"
+      "title": "Reembolsos",
+      "approve": "Aprobar",
+      "approveConfirm": "Aprobar reembolso",
+      "approveFailed": "Error al aprobar el reembolso",
+      "approveSuccess": "Reembolso aprobado",
+      "approved": "Aprobado",
+      "approvedMessage": "El reembolso ha sido aprobado.",
+      "confirmReject": "¿Está seguro de que desea rechazar este reembolso?",
+      "details": "Detalles del reembolso",
+      "noData": "No se encontraron solicitudes de reembolso",
+      "noRefunds": "No se encontraron reembolsos",
+      "pending": "Revisión pendiente",
+      "processedAt": "Procesado",
+      "reasonPlaceholder": "Ingrese el motivo del rechazo...",
+      "reasonRequired": "El motivo del rechazo es obligatorio",
+      "rejectFailed": "Error al rechazar el reembolso",
+      "rejectRefund": "Rechazar reembolso",
+      "rejectSuccess": "Reembolso rechazado",
+      "rejected": "Rechazado",
+      "rejectedMessage": "El reembolso ha sido rechazado.",
+      "rejectingAmount": "Rechazando reembolso de",
+      "rejectionReason": "Motivo del rechazo",
+      "search": "Buscar reembolsos...",
+      "totalApproved": "Total reembolsado"
     },
     "plans": {
       "title": "Gestión de Planes",
@@ -647,7 +1050,24 @@
       "errors": {
         "requiredFields": "El nombre y el precio son obligatorios"
       },
-      "confirmDelete": "¿Eliminar el plan \"{{name}}\"?"
+      "confirmDelete": "¿Eliminar el plan \"{{name}}\"?",
+      "active": "Activo",
+      "addFeature": "Agregar",
+      "addNew": "Agregar nuevo plan",
+      "createPlan": "Crear plan",
+      "created": "Plan creado exitosamente",
+      "deleteConfirm": "Eliminar plan",
+      "editPlan": "Editar plan",
+      "featurePlaceholder": "Ingrese característica...",
+      "features": "Características",
+      "interval": "Intervalo de facturación",
+      "loadError": "Error al cargar los planes de suscripción. Intente de nuevo.",
+      "name": "Nombre del plan",
+      "namePlaceholder": "ej., Premium",
+      "price": "Precio ($)",
+      "requiredFields": "El nombre y el precio son obligatorios",
+      "saveError": "Error al guardar el plan",
+      "updated": "Plan actualizado exitosamente"
     },
     "emailCampaigns": {
       "subtitle": "Crear y gestionar campañas de correo",
@@ -667,7 +1087,11 @@
         "opened": "Abiertos",
         "clicked": "Clickeados",
         "created": "Creado",
-        "actions": "Acciones"
+        "actions": "Acciones",
+        "date": "Fecha",
+        "metrics": "Métricas",
+        "recipients": "Destinatarios",
+        "subject": "Asunto"
       },
       "confirmSend": "¿Enviar la campaña \"{{name}}\"?",
       "confirmDelete": "¿Eliminar la campaña \"{{name}}\"?",
@@ -697,7 +1121,25 @@
       "editModal": {
         "title": "Editar Campaña"
       },
-      "sendTestEmail": "Enviar Prueba"
+      "sendTestEmail": "Enviar Prueba",
+      "clicked": "Clics",
+      "create": "Crear campaña",
+      "details": "Detalles de la campaña",
+      "noData": "No se encontraron campañas de correo",
+      "opened": "Abiertos",
+      "scheduledAt": "Programado",
+      "search": "Buscar campañas...",
+      "sendingTest": "Enviando correo de prueba...",
+      "sentAt": "Enviado",
+      "stats": {
+        "openRate": "Tasa de apertura",
+        "recipients": "Destinatarios",
+        "sent": "Enviados",
+        "total": "Total"
+      },
+      "testFailed": "Error al enviar correo de prueba",
+      "testSent": "Correo de prueba enviado",
+      "title": "Campañas de correo"
     },
     "dashboard": {
       "subtitle": "Descripción General del Sistema",
@@ -711,7 +1153,8 @@
       "revenue": "Ingresos",
       "subscriptions": "Suscripciones",
       "recentActivity": "Actividad Reciente",
-      "quickActions": "Acciones Rápidas"
+      "quickActions": "Acciones Rápidas",
+      "noRecentActivity": "Sin actividad reciente"
     },
     "common": {
       "all": "Todos",
@@ -725,7 +1168,13 @@
       "filterAction": "Acción",
       "filterResource": "Recurso",
       "filterUser": "Usuario",
-      "filterDateRange": "Rango de fechas"
+      "filterDateRange": "Rango de fechas",
+      "uploading": "Subiendo...",
+      "deleteConfirmMessage": "¿Estás seguro de que deseas eliminar este elemento? Esta acción no se puede deshacer.",
+      "deleteConfirmTitle": "Confirmar eliminación",
+      "deleteEpisodeMessage": "¿Estás seguro de que deseas eliminar este episodio?",
+      "edit": "Editar",
+      "featured": "Destacado"
     },
     "stats": {
       "totalUsers": "Total de Usuarios",
@@ -746,7 +1195,26 @@
       "viewReports": "Ver Reportes",
       "new": "Nuevo",
       "newPodcast": "Crear nuevo podcast",
-      "newEpisode": "Crear nuevo episodio"
+      "newEpisode": "Crear nuevo episodio",
+      "back": "Volver al contenido",
+      "feature": "Destacar",
+      "publish": "Publicar",
+      "unfeature": "Quitar destacado",
+      "unpublish": "Despublicar",
+      "activate": "Activar",
+      "approve": "Aprobar",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "edit": "Editar",
+      "newAudiobook": "Nuevo audiolibro",
+      "newCategory": "Nueva categoría",
+      "newChannel": "Nuevo canal",
+      "newStation": "Nueva estación",
+      "pause": "Pausar",
+      "reject": "Rechazar",
+      "resume": "Reanudar",
+      "test": "Probar",
+      "view": "Ver"
     },
     "placeholder": {
       "userId": "Ingresa ID de usuario",
@@ -769,7 +1237,18 @@
       "liveChannels": "Canales en Vivo",
       "radioStations": "Estaciones de Radio",
       "podcasts": "Pódcasts",
-      "audiobooks": "Audiolibros"
+      "audiobooks": "Audiolibros",
+      "translations": "Traducciones",
+      "librarian": "Agente Bibliotecario",
+      "billingOverview": "Resumen de facturación",
+      "campaignDetail": "Campaña",
+      "dashboard": "Panel de control",
+      "emailCampaigns": "Campañas de correo",
+      "marketingDashboard": "Panel de marketing",
+      "newCampaign": "Nueva campaña",
+      "newUser": "Nuevo usuario",
+      "planManagement": "Gestión de planes",
+      "userDetail": "Detalle de usuario"
     },
     "nav": {
       "dashboard": "Panel de Control",
@@ -803,7 +1282,9 @@
       "translations": "Traducciones",
       "costDashboard": "Panel de Costos",
       "audiobooks": "Audiolibros",
-      "diagnostics": "Diagnósticos del Sistema"
+      "diagnostics": "Diagnósticos del Sistema",
+      "backToApp": "Volver a la app",
+      "logout": "Cerrar sesión"
     },
     "liveQuotas": {
       "title": "Gestión de Cuotas de Funciones en Vivo",
@@ -843,7 +1324,14 @@
       "subtitles": "Subtítulos",
       "dubbing": "Doblaje",
       "cost": "Costo",
-      "noData": "No hay datos de uso disponibles"
+      "noData": "No hay datos de uso disponibles",
+      "dubbingDayInput": "Minutos de doblaje por día",
+      "dubbingHourInput": "Minutos de doblaje por hora",
+      "dubbingMonthInput": "Minutos de doblaje por mes",
+      "notesLabel": "Notas del administrador",
+      "subtitleDayInput": "Minutos de subtítulos por día",
+      "subtitleHourInput": "Minutos de subtítulos por hora",
+      "subtitleMonthInput": "Minutos de subtítulos por mes"
     },
     "featured": {
       "title": "Contenido Destacado",
@@ -916,10 +1404,73 @@
         "scanFailed": "Error al escanear carpeta",
         "contentType": "Tipo de Contenido",
         "lastScan": "Último Escaneo",
-        "filesFound": "Archivos Encontrados"
+        "filesFound": "Archivos Encontrados",
+        "noFolders": "No hay carpetas monitoreadas",
+        "noFoldersDescription": "Agregue carpetas para habilitar la detección y carga automática de contenido",
+        "scanFolderHint": "Buscar archivos nuevos en la carpeta y agregarlos a la cola de carga",
+        "scanning": "Escaneando...",
+        "scanComplete": "Escaneo completo: Se encontraron {{count}} archivo(s)",
+        "scanCompleteOne": "Escaneo completo: Se encontró 1 archivo",
+        "scanCompleteOther": "Escaneo completo: Se encontraron {{count}} archivos",
+        "noFilesFound": "No se encontraron archivos nuevos en la carpeta",
+        "folderName": "Nombre de Carpeta",
+        "folderPath": "Ruta de Carpeta",
+        "folderStatus": "Estado",
+        "folderEnabled": "Habilitado",
+        "folderDisabled": "Deshabilitado",
+        "neverScanned": "Nunca escaneado",
+        "filesDetected": "{{count}} archivo(s) detectado(s)",
+        "confirmDeleteMessage": "Esto detendrá el monitoreo de esta carpeta. Las cargas existentes no se verán afectadas.",
+        "deleteSuccess": "Carpeta eliminada exitosamente",
+        "deleteFailed": "Error al eliminar carpeta: {{error}}",
+        "form": {
+          "title": "Configuración de Carpeta",
+          "name": "Nombre de Carpeta",
+          "namePlaceholder": "ej., Archivo de Películas",
+          "nameRequired": "El nombre de la carpeta es requerido",
+          "nameHelp": "Nombre descriptivo para esta carpeta",
+          "path": "Ruta de Carpeta",
+          "pathPlaceholder": "/ruta/a/carpeta",
+          "pathHelp": "Ingrese la ruta completa a monitorear",
+          "pathRequired": "La ruta de la carpeta es requerida",
+          "pathInvalid": "Ruta de carpeta inválida",
+          "pathReadOnly": "La ruta no se puede cambiar después de la creación",
+          "enabled": "Habilitado",
+          "enabledHelp": "Habilitar o deshabilitar monitoreo para esta carpeta",
+          "autoUpload": "Carga Automática",
+          "autoUploadHelp": "Cargar automáticamente archivos nuevos detectados en esta carpeta",
+          "contentType": "Tipo de Contenido",
+          "contentTypeHelp": "Tipo de contenido en esta carpeta",
+          "saveButton": "Guardar Carpeta",
+          "cancelButton": "Cancelar",
+          "saving": "Guardando..."
+        },
+        "addSuccess": "Carpeta agregada exitosamente",
+        "autoUpload": "Carga automática",
+        "enabled": "Habilitado",
+        "scanTriggered": "Escaneo iniciado",
+        "updateSuccess": "Carpeta actualizada exitosamente"
       },
       "queueDashboard": {
-        "title": "Estado de Cola de Carga"
+        "title": "Estado de Cola de Carga",
+        "stats": "Estadísticas de Cola",
+        "total": "Total",
+        "queued": "En Cola",
+        "active": "Activo",
+        "done": "Completado",
+        "activeJob": "Carga Activa",
+        "queuedJobs": "Cargas en Cola",
+        "recentCompleted": "Completados Recientes",
+        "noActiveJob": "No hay cargas activas",
+        "noActiveJobDescription": "La cola está vacía. Cargue archivos o escanee carpetas monitoreadas para comenzar el procesamiento.",
+        "noQueuedJobs": "No hay cargas pendientes",
+        "noQueuedJobsDescription": "Todos los archivos han sido procesados. Agregue más archivos para continuar.",
+        "noRecentCompleted": "No hay completados recientes",
+        "noRecentCompletedDescription": "Los archivos cargados exitosamente aparecerán aquí.",
+        "queuePausedWarning": "Cola pausada: {{reason}}",
+        "resumeQueue": "Reanudar Cola",
+        "pauseQueue": "Pausar Cola",
+        "clearQueue": "Limpiar Cola"
       },
       "monitoredFoldersSubtitle": "Configurar carpetas para monitoreo automático de contenido y carga",
       "noMonitoredFolders": "No hay carpetas monitoreadas configuradas",
@@ -973,7 +1524,8 @@
         "movie": "Películas",
         "series": "Series",
         "audiobook": "Audiolibros",
-        "podcast": "Pódcasts"
+        "podcast": "Pódcasts",
+        "other": "Otro"
       },
       "errors": {
         "pathRequired": "La ruta de la carpeta es obligatoria",
@@ -982,7 +1534,30 @@
         "clearFailed": "Failed to clear upload queue",
         "triggerFailed": "Failed to trigger upload scan",
         "saveFailed": "Failed to save folder configuration",
-        "deleteFailed": "Failed to delete folder"
+        "deleteFailed": "Failed to delete folder",
+        "loadFailedDescription": "No se pueden obtener los datos de la cola de carga. Por favor intente actualizar.",
+        "saveFailedDescription": "No se puede guardar la carpeta monitoreada. Por favor intente de nuevo.",
+        "uploadFailed": "Error de carga",
+        "uploadFailedDescription": "Uno o más archivos fallaron al cargar. Verifique la lista de archivos para más detalles.",
+        "invalidPath": "Ruta de carpeta inválida",
+        "pathTraversal": "La ruta contiene caracteres inválidos o intentos de traversal",
+        "networkError": "Error de red. Por favor verifique su conexión.",
+        "authError": "Error de autenticación. Por favor inicie sesión de nuevo.",
+        "serverError": "Error del servidor. Por favor intente de nuevo más tarde.",
+        "fileTooBig": "El archivo excede el tamaño máximo de {{maxSize}}",
+        "invalidFileType": "Tipo de archivo inválido. Formatos soportados: {{formats}}",
+        "duplicateFile": "Este archivo ya ha sido cargado",
+        "rateLimitExceeded": "Límite de tasa excedido. Por favor espere antes de cargar más archivos.",
+        "configValidationFailed": "Error de validación de configuración. Verifique la consola para más detalles.",
+        "websocketAuthFailed": "Error de autenticación de WebSocket",
+        "unsupportedBrowser": "Su navegador no soporta las características requeridas",
+        "addFolderFailed": "Error al agregar carpeta",
+        "deleteFolderFailed": "Error al eliminar carpeta",
+        "dryRunFailed": "Error en la simulación",
+        "scanFolderFailed": "Error al escanear carpeta",
+        "updateFolderFailed": "Error al actualizar carpeta",
+        "urlUploadFailed": "Error al cargar URL",
+        "urlValidationFailed": "Error al validar URL"
       },
       "manualUpload": {
         "title": "Carga Manual",
@@ -1027,8 +1602,185 @@
         "invalidFilesCount": "{{count}} archivos no válidos",
         "proceedUpload": "Cargar {{count}} archivos válidos",
         "folderTooLarge": "La carpeta contiene demasiados archivos (máx {{max}})",
-        "folderTooDeep": "Estructura de carpeta demasiado profunda (máx {{max}} niveles)"
-      }
+        "folderTooDeep": "Estructura de carpeta demasiado profunda (máx {{max}} niveles)",
+        "browserUpload": "Carga del Navegador",
+        "urlUpload": "Importar por URL",
+        "contentType": "Tipo de Contenido",
+        "contentTypeHelp": "Seleccione el tipo de contenido que se está cargando",
+        "contentTypeRequired": "Por favor seleccione un tipo de contenido",
+        "dropZone": "Zona de Soltar",
+        "dropZoneAriaLabel": "Zona de carga de archivos. Haga clic o presione Enter para seleccionar archivos, o arrastre archivos aquí",
+        "tapToSelect": "Toque para seleccionar archivos",
+        "browseFiles": "Explorar Archivos",
+        "selectFiles": "Seleccionar Archivos",
+        "fileList": "Archivos seleccionados para cargar",
+        "fileListEmpty": "No hay archivos seleccionados",
+        "fileListEmptyDescription": "Use el selector de archivos arriba para elegir archivos a cargar",
+        "fileItem": "Archivo: {{name}}, Tamaño: {{size}}, Progreso: {{progress}}%",
+        "fileName": "Nombre del Archivo",
+        "fileType": "Tipo",
+        "fileProgress": "Progreso",
+        "fileStatus": "Estado",
+        "removeFileHint": "Eliminar este archivo de la cola de carga",
+        "fileRemoved": "Se eliminó {{name}} de la cola de carga",
+        "selectedFilesOne": "1 archivo seleccionado",
+        "selectedFilesOther": "{{count}} archivos seleccionados",
+        "totalSize": "Tamaño total: {{size}}",
+        "clearAllHint": "Eliminar todos los archivos de la cola de carga",
+        "clearAllConfirm": "¿Eliminar los {{count}} archivos?",
+        "uploading": "Cargando...",
+        "uploadProgress": "Cargando: {{percent}}% completado",
+        "uploadSuccessOne": "Se cargó 1 archivo exitosamente",
+        "uploadSuccessOther": "Se cargaron {{count}} archivos exitosamente",
+        "uploadPartialSuccess": "Se cargaron {{successful}} de {{total}} archivos. {{failed}} fallaron.",
+        "cancelUpload": "Cancelar Carga",
+        "retryUpload": "Reintentar Carga",
+        "retryFailed": "Reintentar Archivos Fallidos",
+        "clearFiles": "Limpiar archivos",
+        "progress": "Progreso",
+        "status": "Estado",
+        "total": "Total",
+        "uploadCancelled": "Carga cancelada"
+      },
+      "urlUpload": {
+        "title": "Importar desde URL",
+        "subtitle": "Importar archivos de video desde URLs remotas",
+        "urlLabel": "URL del Video",
+        "urlPlaceholder": "https://ejemplo.com/video.mp4",
+        "urlHelp": "Ingrese una URL directa a un archivo de video",
+        "urlRequired": "La URL es requerida",
+        "importButton": "Importar desde URL",
+        "importing": "Importando...",
+        "importSuccess": "Importado exitosamente desde URL",
+        "importFailed": "Error de importación: {{error}}",
+        "invalidUrl": "Por favor ingrese una URL válida",
+        "urlMustBeHttps": "La URL debe usar protocolo HTTPS",
+        "emptyUrlList": "No se han importado URLs",
+        "emptyUrlListDescription": "Ingrese URLs arriba para importar archivos de video desde fuentes remotas",
+        "addUrl": "Agregar URL",
+        "removeUrl": "Eliminar URL",
+        "hint": "Pista",
+        "placeholder": "Marcador de posición",
+        "upload": "Cargar",
+        "validate": "Validar"
+      },
+      "dryRun": {
+        "title": "Modo de Prueba",
+        "enabled": "Modo de Prueba Habilitado",
+        "disabled": "Modo de Prueba Deshabilitado",
+        "description": "Vista previa de carga sin transferir archivos realmente",
+        "descriptionDetailed": "Cuando está habilitado, los archivos serán validados y se extraerán metadatos, pero no se cargarán al almacenamiento. Use esto para probar cargas sin confirmar cambios.",
+        "toggle": "Habilitar Modo de Prueba",
+        "toggleHint": "Alternar modo de prueba para pruebas de carga seguras",
+        "previewTitle": "Resultados del Modo de Prueba",
+        "previewDescription": "Revise qué sucederá si procede con la carga",
+        "validFiles": "Archivos Válidos ({{count}})",
+        "invalidFiles": "Archivos Inválidos ({{count}})",
+        "warnings": "Advertencias ({{count}})",
+        "proceedButton": "Proceder con la Carga",
+        "proceedHint": "Deshabilitar modo de prueba y realizar carga real",
+        "cancelButton": "Cancelar",
+        "noResults": "No hay resultados de modo de prueba disponibles",
+        "duplicates": "Duplicados",
+        "errors": "Errores",
+        "preview": "Vista previa",
+        "proceedWithUpload": "Proceder con la carga",
+        "willUpload": "Se cargará"
+      },
+      "connectionStatus": {
+        "connected": "Conectado",
+        "disconnected": "Desconectado",
+        "reconnecting": "Reconectando...",
+        "reconnectAttempt": "Reconectando (intento {{current}} de {{max}})",
+        "connectionLost": "El estado de la cola no se actualizará automáticamente",
+        "connectionLostDescription": "Conexión perdida. Use el botón Actualizar para ver el estado más reciente de la cola. Estamos intentando reconectar...",
+        "connectionLostAnnouncement": "Conexión perdida. Actualizaciones en tiempo real pausadas. Use el botón Actualizar para actualizaciones manuales.",
+        "connectedAnnouncement": "Conectado al servicio de carga. Actualizaciones en tiempo real activas.",
+        "reconnectingAnnouncement": "Reconectando al servicio de carga. Intento {{attempt}} de {{maxAttempts}}.",
+        "troubleshooting": "Solución de Problemas",
+        "troubleshootingSteps": [
+          "Verifique su conexión a internet",
+          "Verifique que el servidor esté ejecutándose",
+          "Verifique su token de autenticación",
+          "Intente actualizar la página"
+        ],
+        "manualRefresh": "Actualizar Manualmente",
+        "manualRefreshHint": "Actualizar datos de cola manualmente",
+        "refreshing": "Actualizando..."
+      },
+      "stages": {
+        "browserUpload": "Carga del Navegador",
+        "hashCalculation": "Cálculo de Hash",
+        "duplicateCheck": "Verificación de Duplicados",
+        "metadataExtraction": "Extracción de Metadatos",
+        "gcsUpload": "Carga a la Nube",
+        "databaseInsert": "Inserción en Base de Datos",
+        "complete": "Completo",
+        "failed": "Fallido"
+      },
+      "status": {
+        "queued": "En Cola",
+        "processing": "Procesando",
+        "uploading": "Cargando",
+        "complete": "Completo",
+        "failed": "Fallido",
+        "cancelled": "Cancelado",
+        "skipped": "Omitido (Duplicado)"
+      },
+      "actions": {
+        "pauseQueue": "Pausar Cola",
+        "resumeQueue": "Reanudar Cola",
+        "clearQueue": "Limpiar Cola",
+        "clearQueueConfirm": "¿Limpiar Cola de Cargas?",
+        "clearQueueConfirmMessage": "Esto cancelará {{count}} carga(s) pendiente(s). Esta acción no se puede deshacer.",
+        "triggerUpload": "Escanear Carpetas",
+        "triggerUploadHint": "Escanear todas las carpetas monitoreadas en busca de archivos nuevos",
+        "triggerUploadSuccess": "Se encontraron {{files_found}} archivo(s) para cargar",
+        "triggerUploadFailed": "Error de escaneo: {{error}}",
+        "refresh": "Actualizar",
+        "refreshHint": "Recargar datos de la cola",
+        "cancel": "Cancelar",
+        "retry": "Reintentar",
+        "remove": "Eliminar"
+      },
+      "mobile": {
+        "dataWarning": "Está usando datos móviles. Cargar {{size}} puede usar datos significativos.",
+        "dataWarningProceed": "Proceder de Todos Modos",
+        "dataWarningCancel": "Cancelar Carga",
+        "lowMemoryWarning": "La memoria del dispositivo es baja. Las cargas grandes pueden fallar.",
+        "batteryLowWarning": "La batería está baja ({{percent}}%). Las cargas pueden interrumpirse.",
+        "networkChanged": "Red cambiada. Reconectando...",
+        "mobileBrowserNotSupported": "Algunas características pueden no funcionar en navegadores móviles"
+      },
+      "accessibility": {
+        "pageDescription": "Interfaz de gestión de cargas con monitoreo de cola, cargas manuales y monitoreo de carpetas",
+        "pageTitle": "Página de Cargas del Admin",
+        "sectionQueue": "Sección del panel de cola",
+        "sectionManualUpload": "Sección de carga manual",
+        "sectionMonitoredFolders": "Sección de carpetas monitoreadas",
+        "loadingQueue": "Cargando cola de cargas...",
+        "queueLoaded": "Cola de cargas cargada con {{count}} elementos",
+        "queueLoadedOne": "Cola de cargas cargada con 1 elemento",
+        "queueLoadedOther": "Cola de cargas cargada con {{count}} elementos",
+        "uploadStarted": "Carga iniciada para {{count}} archivos",
+        "uploadStartedOne": "Carga iniciada para 1 archivo",
+        "uploadStartedOther": "Carga iniciada para {{count}} archivos",
+        "uploadProgressUpdate": "Progreso de carga: {{percent}}% completado",
+        "uploadProgressMilestone": "Carga {{percent}}% completada",
+        "uploadCompleted": "Carga completada exitosamente",
+        "uploadFailed": "Error de carga",
+        "folderAdded": "Carpeta {{name}} agregada al monitoreo",
+        "folderRemoved": "Carpeta {{name}} eliminada del monitoreo",
+        "folderScanned": "Carpeta {{name}} escaneada, se encontraron {{count}} archivos",
+        "emptyStateAction": "Presione Enter para realizar acción",
+        "connectionStatusRegion": "Información del estado de conexión",
+        "queueStatsRegion": "Región de estadísticas de cola",
+        "shortcuts": {
+          "uploadFocused": "Entrada de carga enfocada. Presione Enter para seleccionar archivos.",
+          "queueRefreshed": "Cola actualizada manualmente."
+        }
+      },
+      "cancelUpload": "Cancelar"
     },
     "librarian": {
       "title": "Agente Bibliotecario",
@@ -1049,7 +1801,9 @@
         "failedToCancel": "Error al cancelar auditoría",
         "failedToInterject": "Error al enviar mensaje al agente AI",
         "budgetExceeded": "Límite de presupuesto mensual excedido. No se puede ejecutar auditoría.",
-        "contactAdmin": "La página del Bibliotecario no puede cargarse sin la configuración adecuada.\nPor favor, contacta a tu administrador."
+        "contactAdmin": "La página del Bibliotecario no puede cargarse sin la configuración adecuada.\nPor favor, contacta a tu administrador.",
+        "failedToClearReports": "Error al limpiar informes de auditoría. Por favor intente de nuevo.",
+        "auditAlreadyRunning": "Ya hay una auditoría en ejecución. Por favor espere a que termine o cancélela antes de iniciar una nueva."
       },
       "stats": {
         "systemHealth": "Estado del Sistema",
@@ -1058,7 +1812,12 @@
         "issuesFixed": "Problemas Resueltos",
         "lastAudit": "Última Auditoría",
         "never": "Nunca",
-        "unknown": "desconocido"
+        "unknown": "desconocido",
+        "title": "Resumen de Auditoría (30 Días)",
+        "successRate": "Tasa de Éxito",
+        "fixesApplied": "Correcciones Aplicadas",
+        "budgetUsed": "Presupuesto Usado",
+        "budgetLimit": "/ ${{limit}}"
       },
       "health": {
         "excellent": "excelente",
@@ -1096,7 +1855,21 @@
         "aiAuditSuccess": "Auditoría de Agente IA activada exitosamente. {{dryRun}}",
         "dailyAuditSuccess": "Auditoría diaria activada exitosamente. {{dryRun}}",
         "dryRunMode": "(Modo de ejecución simulada)",
-        "rollbackSuccess": "Acción revertida exitosamente."
+        "rollbackSuccess": "Acción revertida exitosamente.",
+        "auditMode": "Modo de Auditoría",
+        "auditModeHelp": "Elija qué verificar",
+        "auditType": "Tipo de Auditoría",
+        "auditTypeHelp": "Elegir entre auditoría basada en reglas o impulsada por IA",
+        "dailyAudit": "Auditoría Diaria",
+        "dailyBadge": "Basada en Reglas • Rápida • Gratis",
+        "dailyDescription": "Ejecuta verificaciones predefinidas en contenido modificado en los últimos 7 días. Rápida y predecible, sin costos de IA.",
+        "aiAgentAudit": "Auditoría de Agente IA",
+        "aiAgentBadge": "Impulsada por IA • Inteligente • Usa Presupuesto",
+        "aiAgentDescription": "Agente de IA autónomo (Claude) toma decisiones inteligentes sobre qué verificar y corregir. Más completo pero usa presupuesto de API.",
+        "auditRunningNotice": "Una auditoría está en ejecución actualmente. Los botones se habilitarán cuando termine.",
+        "forceUpdates": "Forzar actualizaciones",
+        "liveMode": "Modo en vivo",
+        "previewMode": "Modo vista previa"
       },
       "voice": {
         "title": "Control por Voz",
@@ -1149,7 +1922,8 @@
           "thursday": "jueves",
           "friday": "viernes",
           "saturday": "sábado"
-        }
+        },
+        "subtitle": "Configurar programas de auditoría diaria y semanal"
       },
       "reports": {
         "title": "Informes de Auditoría Recientes",
@@ -1165,7 +1939,10 @@
           "status": "Estado",
           "issues": "Problemas",
           "fixes": "Correcciones",
-          "actions": "Acciones"
+          "actions": "Acciones",
+          "triggeredBy": "Activado Por",
+          "parameters": "Parámetros",
+          "stats": "Problemas / Correcciones"
         },
         "detailModal": {
           "title": "Informe de Auditoría: {{id}}",
@@ -1183,11 +1960,34 @@
           "orphanedItems": "Elementos Huérfanos",
           "fixesApplied": "Correcciones Aplicadas",
           "totalFixes": "{{count}} correcciones totales",
-          "aiInsights": "Perspectivas de IA"
+          "aiInsights": "Perspectivas de IA",
+          "issuesBreakdown": "Desglose de Problemas",
+          "agentSummary": "Resumen del agente",
+          "auditFailed": "Auditoría fallida",
+          "auditIncomplete": "Auditoría incompleta",
+          "errorDetails": "Detalles del error"
         },
         "reapplyFixes": "Reaplicar Correcciones",
         "reapplying": "Reaplicando...",
-        "reapplyError": "Error al reaplicar correcciones"
+        "reapplyError": "Error al reaplicar correcciones",
+        "confirmClearAll": "¿Está seguro de que desea limpiar todos los informes de auditoría? Esta acción no se puede deshacer.",
+        "clearedSuccessfully": "Todos los informes de auditoría se limpiaron exitosamente",
+        "downloadReport": "Descargar Informe",
+        "actions": "ACCIONES",
+        "clearFilters": "Limpiar filtros",
+        "date": "FECHA",
+        "duration": "DURACIÓN",
+        "fixes": "correcciones",
+        "issues": "problemas",
+        "more": "más",
+        "noMatchingReports": "No se encontraron reportes coincidentes",
+        "of": "de",
+        "report": "reporte",
+        "reports": "reportes",
+        "search": "Buscar reportes...",
+        "showing": "Mostrando",
+        "status": "ESTADO",
+        "type": "TIPO"
       },
       "logs": {
         "title": "Registros de Ejecución",
@@ -1225,7 +2025,33 @@
         "dryRunMode": "⚠️ Ejecutando en modo PRUEBA - no se realizarán cambios",
         "liveMode": "✅ Ejecutando en modo EN VIVO - se aplicarán cambios",
         "budgetSet": "💰 Límite de presupuesto: ${{budget}}",
-        "connectingToAgent": "🔗 Conectando al Agente Claude AI..."
+        "connectingToAgent": "🔗 Conectando al Agente Claude AI...",
+        "lastLog": "Último registro",
+        "staleWarning": "Sin nuevos registros por {{seconds}}s - el trabajo puede estar procesando o atascado",
+        "pollingStatus": "Sondeo activo • Última verificación",
+        "items": "elementos",
+        "live": "En Vivo",
+        "updatedAgo": "Actualizado hace {{time}}",
+        "justNow": "ahora mismo",
+        "emptyState": {
+          "title": "No Hay Auditoría Activa",
+          "description": "Active una auditoría para ver registros de ejecución en vivo",
+          "dailyTitle": "Auditoría Diaria",
+          "dailyFeature1": "Rápido",
+          "dailyFeature2": "Basado en reglas",
+          "dailyFeature3": "Incremental",
+          "aiTitle": "Auditoría de Agente IA",
+          "aiFeature1": "Inteligente",
+          "aiFeature2": "Adaptativo",
+          "aiFeature3": "Completo",
+          "trigger": "Activar",
+          "lastRun": "Última ejecución: {{time}}"
+        },
+        "connectingSubtext": "Estableciendo conexión segura al flujo de auditoría",
+        "idle": "Inactivo",
+        "quickAudit": "Auditoría rápida",
+        "triggerFullAudit": "Configurar y ejecutar auditoría completa",
+        "warning": "Advertencia"
       },
       "audit": {
         "types": {
@@ -1244,11 +2070,16 @@
         "pauseSuccess": "Auditoría pausada exitosamente",
         "resumeSuccess": "Auditoría reanudada exitosamente",
         "cancelSuccess": "Auditoría cancelada exitosamente",
-        "reapplyStarted": "Reaplicación de correcciones iniciada. Consulta el panel en vivo para ver el progreso."
+        "reapplyStarted": "Reaplicación de correcciones iniciada. Consulta el panel en vivo para ver el progreso.",
+        "status": {
+          "never": "Nunca"
+        }
       },
       "progress": {
         "batch": "Lote {{current}} de {{total}}",
-        "items": "{{processed}} de {{total}} elementos"
+        "items": "{{processed}} de {{total}} elementos",
+        "finishing": "Finalizando...",
+        "finalizing": "Generando informe y aplicando correcciones"
       },
       "activityLog": {
         "title": "Registro de Actividad",
@@ -1274,7 +2105,10 @@
           "title": "Confirmar Reversión",
           "message": "¿Estás seguro de que quieres revertir esta acción? Esto restaurará el estado anterior."
         },
-        "emptyMessage": "No se encontraron acciones"
+        "emptyMessage": "No se encontraron acciones",
+        "subtitle": "{{count}} acciones registradas",
+        "updatedFields": "Actualizado {{fields}}",
+        "pagination": "Página {{page}} de {{totalPages}}"
       },
       "modal": {
         "confirmAI": {
@@ -1293,11 +2127,25 @@
         "completed": "completado",
         "failed": "fallido",
         "in_progress": "en_progreso",
-        "pending": "pendiente"
+        "pending": "pendiente",
+        "partial": "Parcialmente Completo",
+        "running": "Ejecutando"
       },
       "auditTypes": {
         "daily_incremental": "incremental diario",
         "ai_agent": "Agente IA"
+      },
+      "kidsAudit": {
+        "ageDistribution": "Distribución por clasificación de edad",
+        "approved": "Aprobado",
+        "categoryBalance": "Balance de categorías",
+        "flagged": "Marcado",
+        "noCategories": "Sin categorías aún",
+        "pendingReview": "Pendiente",
+        "runAudit": "Auditar contenido infantil",
+        "subtitle": "Estado de moderación de contenido",
+        "title": "Salud del contenido infantil",
+        "totalItems": "Total de elementos"
       }
     },
     "billing": {
@@ -1317,18 +2165,83 @@
       "churnRate": "Tasa de Abandono",
       "atRiskUsers": "Usuarios en Riesgo",
       "churnedUsers": "Usuarios Perdidos",
-      "quickLinks": "Enlaces Rápidos"
+      "quickLinks": "Enlaces Rápidos",
+      "export": "Exportar",
+      "managePlans": "Gestionar planes de precios",
+      "manageRefunds": "Gestionar solicitudes de reembolso",
+      "manageSubscriptions": "Gestionar suscripciones",
+      "paymentMethods": "Métodos de pago",
+      "plans": "Planes",
+      "quickActions": "Acciones rápidas",
+      "recentTransactions": "Transacciones recientes",
+      "refunds": "Reembolsos",
+      "revenueChart": "Tendencia de ingresos",
+      "subscriptions": "Suscripciones",
+      "title": "Facturación e ingresos",
+      "total": "Total",
+      "viewAll": "Ver todo",
+      "viewAllTransactions": "Ver todas las transacciones",
+      "viewTransactions": "Transacciones"
     },
     "marketing": {
       "recentCampaigns": "Campañas Recientes",
       "audienceSegments": "Segmentos de Audiencia",
       "emailMetrics": "Métricas de Correo",
       "pushMetrics": "Métricas de Push",
-      "quickActions": "Acciones Rápidas"
+      "quickActions": "Acciones Rápidas",
+      "clickRate": "Tasa de clics en correos",
+      "conversionRate": "Tasa de conversión",
+      "emailCampaigns": "Campañas de correo",
+      "emailCampaignsDesc": "Crear y gestionar campañas de correo",
+      "emailOpenRate": "Tasa de apertura de correos",
+      "emailsSent": "Correos enviados",
+      "loadError": "Error al cargar datos de marketing",
+      "noData": "No hay datos disponibles",
+      "opened": "Abiertos",
+      "overview": "Resumen",
+      "performance": "Métricas de rendimiento",
+      "pushDesc": "Enviar notificaciones push a usuarios",
+      "pushNotifications": "Notificaciones push",
+      "pushOpenRate": "Tasa de apertura push",
+      "pushSent": "Push enviados",
+      "sent": "Enviados",
+      "unsubscribeRate": "Tasa de cancelación",
+      "viewAll": "Ver todo"
     },
     "push": {
       "titlePlaceholder": "Título de Notificación",
-      "bodyPlaceholder": "Mensaje de Notificación"
+      "bodyPlaceholder": "Mensaje de Notificación",
+      "audience": "Audiencia objetivo",
+      "body": "Cuerpo",
+      "columns": {
+        "body": "Cuerpo",
+        "opened": "Abiertos",
+        "scheduled": "Programado",
+        "sent": "Enviado",
+        "status": "Estado",
+        "title": "Título"
+      },
+      "create": "Crear notificación",
+      "createNotification": "Crear notificación",
+      "deepLink": "Enlace profundo (opcional)",
+      "deleteConfirm": "Eliminar notificación",
+      "editNotification": "Editar notificación",
+      "loadError": "Error al cargar notificaciones. Intente de nuevo.",
+      "noNotifications": "No se encontraron notificaciones",
+      "preview": "Vista previa",
+      "requiredFields": "El título y el cuerpo son obligatorios",
+      "schedule": "Programar",
+      "scheduleDate": "Fecha y hora",
+      "scheduleNotification": "Programar notificación",
+      "scheduled": "Programado",
+      "scheduledMessage": "La notificación ha sido programada",
+      "searchPlaceholder": "Buscar notificaciones...",
+      "send": "Enviar ahora",
+      "sendConfirm": "Enviar notificación",
+      "sendMessage": "¿Enviar esta notificación a todos los usuarios objetivo ahora?",
+      "sent": "Enviado",
+      "sentMessage": "La notificación se está enviando",
+      "title": "Título"
     },
     "auditLogs": {
       "subtitle": "Rastrear todas las acciones del sistema",
@@ -1354,7 +2267,8 @@
         "date": "Fecha",
         "details": "Detalles",
         "resource": "Recurso",
-        "user": "Usuario"
+        "user": "Usuario",
+        "ip": "IP"
       }
     },
     "auditActions": {
@@ -1399,7 +2313,8 @@
       "widget_deleted": "Widget Eliminado",
       "widget_published": "Widget Publicado",
       "widget_unpublished": "Widget No Publicado",
-      "widget_updated": "Widget Actualizado"
+      "widget_updated": "Widget Actualizado",
+      "subscription_deleted": "Suscripción Eliminada"
     },
     "settings": {
       "actionsWarning": "Estas acciones pueden afectar el rendimiento del sistema. Úselas con precaución.",
@@ -1431,7 +2346,26 @@
       "systemActions": "Acciones del Sistema",
       "termsUrl": "URL de Términos del Servicio",
       "trialDays": "Días del Período de Prueba",
-      "userSettings": "Configuración de Usuario"
+      "userSettings": "Configuración de Usuario",
+      "clear": "Limpiar",
+      "clearCacheConfirm": "¿Está seguro de que desea limpiar la caché del sistema?",
+      "clearCacheDesc": "Limpiar todos los datos en caché del sistema",
+      "contactLegal": "Contacto y legal",
+      "dangerZone": "Zona de peligro",
+      "defaultPlanDesc": "Plan de suscripción predeterminado para nuevos usuarios",
+      "featureFlagsDesc": "Habilitar o deshabilitar funciones en tiempo real",
+      "flagError": "Error al actualizar la bandera de función",
+      "general": "Configuración general",
+      "loadError": "Error al cargar la configuración",
+      "maxDevicesDesc": "Máximo de dispositivos por cuenta",
+      "reset": "Restablecer",
+      "resetAnalyticsConfirm": "¿Está seguro de que desea restablecer todos los datos analíticos? Esta acción no se puede deshacer.",
+      "resetAnalyticsDesc": "Restablecer todos los datos analíticos",
+      "save": "Guardar cambios",
+      "saveError": "Error al guardar la configuración",
+      "saved": "Guardado",
+      "savedMessage": "La configuración se ha guardado exitosamente",
+      "trialDaysDesc": "Número de días de prueba gratuita"
     },
     "widgets": {
       "actions": {
@@ -1488,7 +2422,8 @@
         "active": "Activo",
         "inactive": "Inactivo"
       },
-      "subtitle": "Gestiona widgets de superposición flotante para transmisiones en vivo e incrustaciones"
+      "subtitle": "Gestiona widgets de superposición flotante para transmisiones en vivo e incrustaciones",
+      "title": "Widgets"
     },
     "diagnostics": {
       "title": "Diagnósticos del Sistema",
@@ -1510,8 +2445,327 @@
       "degraded": "Degradado",
       "latency": "Latencia: {{ms}}ms",
       "healthy": "Saludable",
-      "unhealthy": "No Saludable"
-    }
+      "unhealthy": "No Saludable",
+      "check": "Verificar",
+      "loading": "Cargando",
+      "service": "Servicio",
+      "status": "Estado"
+    },
+    "campaignEdit": {
+      "subtitle": "Editar detalles y configuración de la campaña"
+    },
+    "contentEditor": {
+      "subtitle": "Editar metadatos e información del contenido"
+    },
+    "podcastEpisodes": {
+      "subtitle": "Gestionar episodios y metadatos de podcasts"
+    },
+    "userDetail": {
+      "subtitle": "Detalles de cuenta de usuario e historial de actividad"
+    },
+    "audiobooks": {
+      "confirmDelete": "¿Eliminar este audiolibro?",
+      "createTitle": "Crear audiolibro",
+      "editTitle": "Editar audiolibro",
+      "emptyMessage": "No se encontraron audiolibros",
+      "feature": {
+        "alreadyFeatured": "Este audiolibro ya está destacado.",
+        "order": "Orden de visualización",
+        "preview": "Vista previa",
+        "section": "Sección destacada",
+        "success": "Audiolibro destacado exitosamente",
+        "title": "Destacar audiolibro"
+      },
+      "form": {
+        "author": "Autor",
+        "description": "Descripción",
+        "duration": "Duración",
+        "isbn": "ISBN",
+        "narrator": "Narrador",
+        "publisher": "Editorial",
+        "quality": "Calidad de audio",
+        "streamUrl": "URL de transmisión",
+        "subscription": "Nivel de suscripción",
+        "title": "Título"
+      },
+      "loadError": "Error al cargar audiolibros",
+      "publish": {
+        "missingFields": "Campos obligatorios faltantes: título, autor, URL de transmisión",
+        "publishConfirm": "Publicar este audiolibro lo hará visible para todos los usuarios.",
+        "publishTitle": "Publicar audiolibro",
+        "unpublishTitle": "Despublicar",
+        "unpublishWarning": "Este audiolibro está publicado y visible para los usuarios. Despublicarlo lo ocultará inmediatamente."
+      },
+      "subtitle": "Gestionar biblioteca de audiolibros",
+      "upload": {
+        "button": "Subir",
+        "dragDrop": "Haga clic para seleccionar archivo de audio",
+        "invalidType": "Tipo de archivo inválido. Permitidos: MP3, AAC, M4A, FLAC",
+        "selectFile": "Seleccionar archivo de audio",
+        "streamUrl": "URL de transmisión generada",
+        "title": "Subir archivo de audio",
+        "tooLarge": "El archivo excede el límite de 500MB"
+      }
+    },
+    "columns": {
+      "author": "Autor",
+      "cover": "Portada",
+      "duration": "Duración",
+      "narrator": "Narrador",
+      "published": "Publicado",
+      "title": "Título"
+    },
+    "email": {
+      "audience": "Audiencia objetivo",
+      "body": "Cuerpo del correo (HTML)",
+      "bodyPlaceholder": "Ingrese contenido HTML...",
+      "campaignName": "Nombre de la campaña",
+      "columns": {
+        "clicked": "Clics",
+        "created": "Creada",
+        "name": "Campaña",
+        "opened": "Abiertos",
+        "sent": "Enviados",
+        "status": "Estado",
+        "subject": "Asunto"
+      },
+      "create": "Crear campaña",
+      "createCampaign": "Crear campaña",
+      "deleteConfirm": "Eliminar campaña",
+      "editCampaign": "Editar campaña",
+      "loadError": "Error al cargar campañas de correo",
+      "namePlaceholder": "ej., Boletín semanal",
+      "noCampaigns": "No se encontraron campañas",
+      "requiredFields": "El nombre y el asunto son obligatorios",
+      "searchPlaceholder": "Buscar campañas...",
+      "send": "Enviar",
+      "sendConfirm": "Enviar campaña",
+      "sendMessage": "¿Está seguro de que desea enviar esta campaña ahora?",
+      "sendTest": "Enviar correo de prueba",
+      "sent": "Enviado",
+      "sentMessage": "La campaña se está enviando",
+      "subject": "Asunto del correo",
+      "testEmail": "Dirección de correo",
+      "testSent": "Prueba enviada"
+    },
+    "logs": {
+      "action": "Acción",
+      "additionalDetails": "Detalles adicionales",
+      "apply": "Aplicar",
+      "clearFilters": "Limpiar",
+      "columns": {
+        "action": "Acción",
+        "ip": "Dirección IP",
+        "resource": "Recurso",
+        "resourceId": "ID del recurso",
+        "timestamp": "Fecha y hora",
+        "user": "Usuario"
+      },
+      "details": "Detalles del registro",
+      "export": "Exportar",
+      "exported": "Exportado",
+      "exportedMessage": "Los registros de auditoría han sido exportados",
+      "filterAction": "Acción",
+      "filterDateRange": "Rango de fechas",
+      "filterResource": "Tipo de recurso",
+      "filterTitle": "Filtrar registros",
+      "filterUser": "ID de usuario",
+      "filters": "Filtros",
+      "id": "ID de registro",
+      "ipAddress": "Dirección IP",
+      "loadError": "Error al cargar los registros de auditoría. Intente de nuevo.",
+      "noLogs": "No se encontraron registros de auditoría",
+      "resourceId": "ID del recurso",
+      "resourceType": "Tipo de recurso",
+      "timestamp": "Fecha y hora",
+      "userId": "ID de usuario"
+    },
+    "merge": {
+      "baseItem": "Elemento base",
+      "baseItemKeep": "Este elemento se conservará",
+      "canMerge": "Los elementos se pueden fusionar",
+      "cannotMerge": "No se pueden fusionar estos elementos",
+      "configure": "Configurar fusión",
+      "confirmButton": "Fusionar elementos",
+      "confirmMerge": "Confirmar fusión",
+      "contentTransfer": "Transferencia de contenido",
+      "continue": "Continuar",
+      "errorMixedTypes": "No se pueden fusionar series y películas juntas",
+      "errorNoBase": "Seleccione un elemento base",
+      "errorNoMerge": "No hay elementos para fusionar",
+      "itemsMergeInto": "Estos elementos se fusionarán en el base",
+      "itemsToMerge": "Elementos a fusionar",
+      "mergePreview": "Vista previa de fusión",
+      "metadataPreferences": "Preferencias de metadatos",
+      "selectBase": "Seleccionar elemento base",
+      "suggestionSeparate": "Seleccione solo series o solo películas",
+      "suggestions": "Sugerencias:",
+      "totalEpisodes": "Total de episodios después de fusionar",
+      "transferEpisodes": "Transferir episodios",
+      "transferSeasons": "Transferir temporadas",
+      "useBaseDescription": "Usar descripción del elemento base",
+      "useBasePoster": "Usar póster del elemento base",
+      "wizard": "Asistente de fusión de contenido",
+      "configureDescription": "Configurar descripción",
+      "confirmDescription": "Confirmar descripción",
+      "mergeWarning": "Advertencia de fusión",
+      "selectBaseDescription": "Seleccionar descripción base",
+      "transferEpisodesDesc": "Descripción de transferencia de episodios",
+      "transferSeasonsDesc": "Descripción de transferencia de temporadas",
+      "useBaseDescriptionDesc": "Descripción de uso de descripción base",
+      "useBasePosterDesc": "Descripción de uso de póster base",
+      "validationPassed": "Validación aprobada"
+    },
+    "support": {
+      "action": {
+        "resolve": "Marcar como resuelto"
+      },
+      "detail": {
+        "addNote": "Agregar nota",
+        "category": "Categoría",
+        "created": "Creado",
+        "language": "Idioma",
+        "message": "Mensaje del cliente",
+        "noNotes": "Sin notas aún",
+        "notePlaceholder": "Escriba una nota...",
+        "notes": "Notas internas",
+        "priority": "Prioridad",
+        "saveNote": "Guardar nota",
+        "updateStatus": "Actualizar estado",
+        "useTemplate": "Usar plantilla",
+        "user": "Usuario"
+      },
+      "empty": "No hay tickets que coincidan con sus filtros",
+      "filter": {
+        "all": "Todos",
+        "closed": "Cerrado",
+        "inProgress": "En progreso",
+        "open": "Abierto",
+        "resolved": "Resuelto"
+      },
+      "loadError": "Error al cargar datos del panel",
+      "loading": "Cargando panel...",
+      "priority": {
+        "all": "Todas las prioridades",
+        "high": "Alta",
+        "low": "Baja",
+        "medium": "Media",
+        "urgent": "Urgente"
+      },
+      "stats": {
+        "highPriority": "Alta prioridad",
+        "inProgress": "En progreso",
+        "open": "Abiertos",
+        "resolved": "Resueltos",
+        "total": "Total"
+      },
+      "subtitle": "Gestionar tickets de soporte al cliente",
+      "time": {
+        "justNow": "Justo ahora"
+      },
+      "title": "Panel de soporte"
+    },
+    "table": {
+      "actions": "Acciones",
+      "noData": "No hay datos disponibles",
+      "of": "de",
+      "search": "Buscar...",
+      "showing": "Mostrando"
+    },
+    "templates": {
+      "title": "Plantillas de respuesta"
+    },
+    "triviaAnalytics": {
+      "activeSessions": "Sesiones activas",
+      "confidence": "confianza",
+      "coverage": "Cobertura de contenido",
+      "factsGenerated": "Datos generados",
+      "recentTopics": "Temas recientes",
+      "subtitle": "Monitorear temas de trivia en vivo, sesiones y cobertura de contenido",
+      "title": "Analíticas de trivia",
+      "totalTopics": "Temas detectados"
+    },
+    "voiceManagement": {
+      "analytics": {
+        "cost": "Costo",
+        "costBreakdown": "Desglose de costos de voz",
+        "feature": "Función",
+        "latencyMetrics": "Métricas de latencia",
+        "minutes": "Minutos",
+        "noCostData": "No hay datos de costos disponibles",
+        "noSessions": "No hay sesiones activas",
+        "noUsageData": "No hay datos de uso para este período",
+        "realtimeSessions": "Sesiones en tiempo real",
+        "samples": "Muestras",
+        "sessions": "Sesiones",
+        "totalCost": "Total",
+        "usageCharts": "Datos de uso"
+      },
+      "configuration": {
+        "assistantVoice": "Voz del asistente",
+        "defaultVoice": "Voz predeterminada",
+        "loadError": "Error al cargar",
+        "providers": "Proveedores",
+        "sttProvider": "Proveedor STT",
+        "supportVoice": "Voz de soporte",
+        "translationProvider": "Proveedor de traducción",
+        "voiceIds": "IDs de voz"
+      },
+      "quotas": {
+        "dubbingLimits": "Límites de doblaje",
+        "quotaDetails": "Detalles de cuota",
+        "searchUser": "Buscar usuario",
+        "subtitleLimits": "Límites de subtítulos",
+        "tier": "Nivel",
+        "userEmail": "Correo del usuario",
+        "userIdPlaceholder": "ID de usuario"
+      },
+      "settings": {
+        "apiKeys": "Claves de API",
+        "webhookInfo": "Información de webhook",
+        "webhooks": "Webhooks"
+      },
+      "subtitle": "Subtítulo",
+      "tabs": {
+        "analytics": "Analítica",
+        "configuration": "Configuración",
+        "library": "Biblioteca",
+        "quotas": "Cuotas",
+        "settings": "Configuración"
+      },
+      "title": "Título"
+    },
+    "accessDenied": "Acceso denegado",
+    "costDashboard": {
+      "selectUser": "Seleccionar usuario",
+      "subtitle": "Subtítulo",
+      "tabs": {
+        "categories": "Categorías",
+        "overview": "Resumen",
+        "timeline": "Cronología",
+        "topSpenders": "Mayores consumidores"
+      },
+      "title": "Título",
+      "view": "Ver"
+    },
+    "importWizard": {
+      "loadingCategories": "Cargando categorías",
+      "loadingSources": "Cargando fuentes",
+      "selectCategory": "Seleccionar categoría",
+      "selectItems": "Seleccionar elementos",
+      "sources": {
+        "liveTv": "TV en vivo",
+        "liveTvDescription": "Descripción de TV en vivo",
+        "podcasts": "Podcasts",
+        "podcastsDescription": "Descripción de podcasts",
+        "radio": "Radio",
+        "radioDescription": "Descripción de radio",
+        "vod": "VOD",
+        "vodDescription": "Descripción de VOD"
+      },
+      "title": "Título"
+    },
+    "noPermission": "Sin permiso"
   },
   "breadcrumbs": {
     "series": "Serie",
@@ -1571,7 +2825,18 @@
       "showChannels": "Muéstrame canales...",
       "playChess": "Comienza un juego de ajedrez con...",
       "multiContent": "Mostrar lado a lado..."
-    }
+    },
+    "clearChat": "Limpiar Chat",
+    "confirmClear": "¿Borrar historial de chat?",
+    "chatCleared": "Historial de chat borrado",
+    "thinking": "Pensando...",
+    "error": "Error al procesar mensaje",
+    "retry": "Reintentar",
+    "showMultipleSuccess": "Mostrando {{count}} elementos de contenido en widgets",
+    "showMultipleNotFound": "No se pudo encontrar el contenido solicitado. Por favor intenta de nuevo.",
+    "resolvingContent": "Buscando tu contenido...",
+    "listening": "Escuchando...",
+    "processing": "Procesando..."
   },
   "chess": {
     "title": "Ajedrez",
@@ -1610,7 +2875,46 @@
     "gameOver": "Juego Terminado",
     "challenge": "Desafiar",
     "playedAsWhite": "Jugó con blancas",
-    "playedAsBlack": "Jugó con negras"
+    "playedAsBlack": "Jugó con negras",
+    "rating": "Calificación",
+    "searching": "Buscando oponente...",
+    "matchFound": "¡Partida encontrada!",
+    "connecting": "Conectando...",
+    "connected": "Conectado",
+    "disconnected": "Desconectado",
+    "gameEnded": "Partida terminada",
+    "youWin": "¡Ganaste!",
+    "youLose": "Perdiste",
+    "resignation": "Resignación",
+    "timeout": "Tiempo agotado",
+    "findOpponent": "Buscar Oponente",
+    "cancelSearch": "Cancelar Búsqueda",
+    "check": "Jaque",
+    "castling": "Enroque",
+    "promotion": "Promoción",
+    "enPassant": "Al paso",
+    "rematch": "Revancha",
+    "backToLobby": "Volver al Vestíbulo",
+    "showHints": "Mostrar Pistas de Guía",
+    "sendingInvite": "Enviando invitación de juego a {{name}}...",
+    "inviteSent": "¡Invitación de juego enviada a {{name}}! Código de juego: {{code}}",
+    "inviteFailed": "No se pudo encontrar ese usuario. Por favor verifica el nombre e intenta de nuevo.",
+    "inviteReceived": "¡{{name}} te invitó a una partida de ajedrez!",
+    "joinInvite": "Unirse a Partida",
+    "declineInvite": "Rechazar",
+    "copied": "¡Código copiado!",
+    "shareGame": "Compartir Partida",
+    "playBot": "Jugar contra Bot",
+    "playFriend": "Jugar con Amigo",
+    "gameMode": "Modo de Juego",
+    "playVsFriend": "Jugar vs Amigo",
+    "playVsBot": "Jugar vs Bot",
+    "difficulty": "Dificultad",
+    "easy": "Fácil",
+    "medium": "Medio",
+    "hard": "Difícil",
+    "chessBot": "Bot de Ajedrez",
+    "theirTurn": "Turno del oponente"
   },
   "children": {
     "title": "Niños",
@@ -1763,6 +3067,61 @@
         "welcomeMessage": "Gracias por unirte a nuestro programa beta exclusivo. Has recibido 500 créditos de IA para probar nuestras funciones avanzadas.",
         "verifyPrompt": "Por favor, verifica tu correo electrónico para activar tu cuenta y créditos."
       }
+    },
+    "privacy": {
+      "lastUpdated": "Última Actualización: 27 de enero de 2026",
+      "intro": {
+        "title": "1. Introducción",
+        "content": "Olorin.ai LLC (\"nosotros,\" \"nuestro,\" o \"la Compañía\") está comprometido con proteger su privacidad. Esta Política de Privacidad explica cómo nuestra aplicación móvil, Bayit+ (la \"App\"), recopila, usa y protege su información.",
+        "commitment": "Construimos Bayit+ con una arquitectura de \"Privacidad Primero\". No grabamos su sala de estar. Nuestra tecnología utiliza los sensores de su dispositivo únicamente para sincronizar nuestro servicio de audio con su televisión."
+      },
+      "collection": {
+        "title": "2. Información que Recopilamos y Cómo la Usamos",
+        "camera": {
+          "title": "A. Datos de Cámara y Sincronización Visual",
+          "intro": "Para proporcionar nuestro servicio principal—sincronizar audio traducido con su TV—Bayit+ requiere acceso a la Cámara de su dispositivo.",
+          "data": "Datos Recopilados: Cuando activa el \"Modo Sincronización,\" la App captura una breve secuencia de cuadros de video (aproximadamente 3 segundos) de la pantalla de su TV.",
+          "purpose": "Propósito: Estos cuadros se transmiten a nuestro servidor de nube seguro únicamente para identificar el canal de TV público que está viendo y calcular la latencia de transmisión (retraso de tiempo).",
+          "retention": "Retención: Estos datos son efímeros. Los cuadros se procesan instantáneamente en memoria y se eliminan permanentemente inmediatamente después de establecer la sincronización. No vemos, almacenamos ni archivamos imágenes de su hogar o familia."
+        },
+        "audio": {
+          "title": "B. Datos de Audio (Si Aplica)",
+          "intro": "Si utiliza funciones que requieren sincronización de audio, la App puede solicitar acceso al Micrófono.",
+          "data": "Datos Recopilados: Breves muestras de audio de la transmisión de TV.",
+          "purpose": "Propósito: Para coincidir la huella de audio de la transmisión pública con fines de sincronización.",
+          "retention": "Retención: Como los datos visuales, las muestras de audio se procesan en tiempo real y se eliminan inmediatamente. No escuchamos ni grabamos conversaciones de usuarios."
+        },
+        "usage": {
+          "title": "C. Datos de Uso y Técnicos",
+          "content": "Podemos recopilar datos técnicos no identificables para mejorar la estabilidad de la App, incluyendo:",
+          "device": "Tipo de dispositivo y versión del sistema operativo.",
+          "crash": "Registros de errores y métricas de rendimiento.",
+          "aggregate": "Datos agregados sobre qué canales se están viendo (ej., \"50% de usuarios están viendo el Canal 12\")."
+        }
+      },
+      "sharing": {
+        "title": "3. Compartir Datos y Terceros",
+        "noSale": "Olorin.ai LLC no vende sus datos personales. Nos asociamos con proveedores de servicios de terceros confiables para proporcionar nuestra infraestructura. Estos proveedores están autorizados a usar sus datos solo según sea necesario para proporcionarnos estos servicios:",
+        "cloud": "Infraestructura de Nube: Servicios de alojamiento (ej., AWS) para procesar solicitudes de sincronización.",
+        "ai": "Procesamiento de IA: Servicios utilizados para generar traducciones de texto y audio en tiempo real de transmisiones públicas."
+      },
+      "retention": {
+        "title": "4. Retención de Datos",
+        "sync": "Datos de Sincronización (Imágenes/Audio): 0 días. Se eliminan inmediatamente después del procesamiento.",
+        "account": "Datos de Cuenta: Se retienen solo mientras su cuenta esté activa para gestionar su suscripción y preferencias."
+      },
+      "children": {
+        "title": "5. Privacidad de los Niños",
+        "content": "Aunque nuestro contenido es adecuado para todas las edades, Olorin.ai LLC no recopila conscientemente información personal identificable de niños menores de 13 años. Si es padre y cree que su hijo nos ha proporcionado información personal, por favor contáctenos."
+      },
+      "rights": {
+        "title": "6. Sus Derechos",
+        "content": "Dependiendo de su ubicación, puede tener derecho a solicitar acceso, corrección o eliminación de sus datos personales. Puede eliminar su cuenta de Bayit+ en cualquier momento dentro de la configuración de la App."
+      },
+      "contact": {
+        "title": "7. Contáctenos",
+        "intro": "Si tiene alguna pregunta sobre esta Política de Privacidad, por favor contáctenos en:"
+      }
     }
   },
   "clock": {
@@ -1838,7 +3197,53 @@
     "cancelHint": "Cancela la acción actual",
     "disconnect": "Desconectar",
     "thisContent": "este contenido",
-    "backToHome": "Volver al inicio"
+    "backToHome": "Volver al inicio",
+    "loadingArticle": "Cargando artículo...",
+    "watch": "Ver",
+    "share": "Compartir",
+    "noContent": "No hay contenido disponible",
+    "premium": "PREMIUM",
+    "poweredBy": "Desarrollado por",
+    "filters": "Filtros",
+    "upgrade": "Actualizar a Premium",
+    "active": "Activo",
+    "copy": "Copiar URL",
+    "email": "Correo electrónico",
+    "filter": "Filtrar",
+    "inactive": "Inactivo",
+    "of": "de",
+    "processing": "Procesando...",
+    "showing": "Mostrando",
+    "unban": "Desbloquear",
+    "addToLibrary": "Agregar a la biblioteca",
+    "ascending": "Más antiguo primero",
+    "creating": "Creando...",
+    "daysAgo": "hace {{count}} días",
+    "descending": "Más reciente primero",
+    "details": "Detalles",
+    "favorited": "Agregado a favoritos",
+    "goBack": "Volver",
+    "hoursAgo": "hace {{count}} horas",
+    "info": "Información",
+    "joining": "Uniéndose",
+    "justNow": "Justo ahora",
+    "language": "Idioma",
+    "lastUpdated": "Actualizado",
+    "loadMore": "Cargar más",
+    "logout": "Cerrar sesión",
+    "milliseconds": "Milisegundos",
+    "movie": "Película",
+    "normal": "Normal",
+    "notAuthenticated": "No autenticado",
+    "page": "Página",
+    "saved": "¡Guardado!",
+    "select": "Seleccionar",
+    "selected": "Seleccionado",
+    "selectRegion": "Seleccionar región",
+    "series": "Serie",
+    "signIn": "Iniciar sesión",
+    "website": "Sitio web",
+    "yesterday": "Ayer"
   },
   "components": {
     "select": {
@@ -1876,7 +3281,13 @@
     "relatedContent": "Contenido Relacionado",
     "notFound": "Contenido no encontrado",
     "availableSubtitles": "Subtítulos Disponibles",
-    "subtitleSelected": "Seleccionado: {{language}}"
+    "subtitleSelected": "Seleccionado: {{language}}",
+    "noResults": "No se encontraron resultados",
+    "tryAdjusting": "Intente ajustar sus filtros",
+    "noEpisodesAvailable": "No hay episodios disponibles para reproducir",
+    "loadingSeries": "Cargando información de la serie...",
+    "trailer": "Tráiler",
+    "trailerNotAvailable": "Tráiler no disponible para este título"
   },
   "cultureCities": {
     "connectionTo": "Conexion con {{city}}",
@@ -1982,7 +3393,8 @@
     "storage": "Almacenamiento",
     "empty": "Sin descargas",
     "emptyHint": "Descarga contenido para ver sin conexion",
-    "paused": "Pausado"
+    "paused": "Pausado",
+    "loading": "Cargando descargas..."
   },
   "dubbing": {
     "title": "Doblaje en Directo",
@@ -2042,7 +3454,18 @@
       "rateLimitExceeded": "Demasiados Intentos",
       "rateLimitExceededMessage": "Por favor, espera antes de intentar de nuevo",
       "sessionTimeout": "Sesión Expirada",
-      "sessionTimeoutMessage": "Tu sesión de doblaje ha expirado"
+      "sessionTimeoutMessage": "Tu sesión de doblaje ha expirado",
+      "audioCaptureTitle": "Acceso al micrófono denegado",
+      "authFailed": {
+        "title": "Error de autenticación"
+      },
+      "rateLimitTitle": "Demasiadas solicitudes",
+      "sessionTitle": "Sesión expirada",
+      "sttTitle": "Error de reconocimiento de voz",
+      "translationAction": "El sistema continuará con el audio original",
+      "translationTitle": "Tiempo de espera de traducción",
+      "ttsTitle": "Error de texto a voz",
+      "websocketTitle": "Conexión perdida"
     },
     "simplifiedHebrew": {
       "title": "Hebreo Simplificado",
@@ -2054,7 +3477,40 @@
       "active": "Hebreo Simplificado Activo",
       "clickToEnable": "Clic para activar el audio de hebreo simplificado",
       "premiumRequired": "Se requiere suscripción premium"
-    }
+    },
+    "active": "Doblaje en vivo activo",
+    "clickToEnable": "Haz clic para activar el doblaje en vivo",
+    "controls": {
+      "liveDubbing": "Doblaje en vivo"
+    },
+    "inputLanguageTooltip": "Verificar idioma de entrada",
+    "latency": {
+      "badge": {
+        "accessibilityHint": "Indicador de latencia",
+        "title": "Título",
+        "tooltip": "Información de latencia"
+      },
+      "breakdown": {
+        "cacheHitRate": "Tasa de aciertos de caché",
+        "provider": "Proveedor",
+        "title": "Título"
+      },
+      "components": {
+        "buffer": "Búfer",
+        "network": "Red",
+        "stt": "STT",
+        "sync": "Sincronización",
+        "translation": "Traducción",
+        "tts": "TTS"
+      },
+      "graph": {
+        "noData": "Sin datos",
+        "title": "Título"
+      }
+    },
+    "noVoicesAvailable": "No hay voces disponibles",
+    "premiumRequired": "Se requiere suscripción premium",
+    "selectInputLanguage": "Seleccionar idioma de entrada"
   },
   "empty": {
     "noContent": "No hay contenido disponible",
@@ -2093,7 +3549,10 @@
     "permissionDenied": {
       "title": "Acceso denegado",
       "description": "No tienes permiso para ver este contenido"
-    }
+    },
+    "clearSearch": "Limpiar búsqueda",
+    "description": "No se encontró contenido coincidente",
+    "title": "Sin resultados"
   },
   "epg": {
     "title": "Guía de TV",
@@ -2138,7 +3597,11 @@
     "exampleQuery4": "Muéstrame todos los programas de noticias mañana por la mañana",
     "aiDisclaimer": "Impulsado por Claude AI. Los resultados pueden variar según la disponibilidad de datos del programa.",
     "interpretationTitle": "Lo que entendí",
-    "noResultsFound": "No se encontraron programas que coincidan con tu consulta"
+    "noResultsFound": "No se encontraron programas que coincidan con tu consulta",
+    "noProgramsScheduled": "No hay programas programados",
+    "noProgramsFound": "No Se Encontraron Programas",
+    "noDataAvailable": "No Hay Datos de Guía de TV Disponibles",
+    "live": "EN VIVO"
   },
   "errors": {
     "networkError": "Error de Red",
@@ -2180,13 +3643,77 @@
       "cancel": "Cancelar"
     },
     "title": "Error",
-    "networkUnavailable": "Red no disponible"
+    "networkUnavailable": "Red no disponible",
+    "auth": {
+      "notAuthenticated": "No autenticado",
+      "playbackAuthRequired": "Se requiere autenticación para la reproducción",
+      "tokenRefreshFailed": "Error al actualizar el token"
+    },
+    "chess": {
+      "connectFailed": "Error de conexión",
+      "notConnected": "No conectado"
+    },
+    "connection": {
+      "error": "Error",
+      "failed": "Fallido",
+      "timeout": "Tiempo de espera agotado"
+    },
+    "devices": {
+      "disconnectFailed": "Error al desconectar",
+      "loadFailed": "Error al cargar",
+      "registerFailed": "Error al registrar"
+    },
+    "friends": {
+      "acceptFailed": "Error al aceptar",
+      "cancelFailed": "Error al cancelar",
+      "fetchFailed": "Error al obtener datos",
+      "rejectFailed": "Error al rechazar",
+      "removeFailed": "Error al eliminar",
+      "requestsFetchFailed": "Error al obtener solicitudes",
+      "sendFailed": "Error al enviar"
+    },
+    "player": {
+      "loadFailed": "Error al cargar",
+      "noStreamUrl": "Sin URL de transmisión",
+      "notReady": "No está listo",
+      "sessionCreateFailed": "Error al crear la sesión"
+    },
+    "podcast": {
+      "playbackError": "Error de reproducción",
+      "switchLanguageFailed": "Error al cambiar idioma"
+    },
+    "profile": {
+      "createFailed": "Error al crear",
+      "deleteFailed": "Error al eliminar",
+      "fetchFailed": "Error al obtener datos",
+      "selectFailed": "Error al seleccionar",
+      "updateFailed": "Error al actualizar"
+    },
+    "retrySearch": "Reintentar búsqueda",
+    "searchFailed": "Error en la búsqueda",
+    "settings": {
+      "loadFailed": "Error al cargar",
+      "saveFailed": "Error al guardar"
+    },
+    "stats": {
+      "fetchFailed": "Error al obtener datos",
+      "h2hFetchFailed": "Error al obtener datos de enfrentamientos",
+      "historyFetchFailed": "Error al obtener historial",
+      "leaderboardFetchFailed": "Error al obtener clasificación",
+      "playerFetchFailed": "Error al obtener datos del jugador"
+    },
+    "streamError": "Error de transmisión",
+    "streamLoadFailed": "Error al cargar la transmisión. Por favor intenta de nuevo.",
+    "trivia": {
+      "invalidChannel": "Canal no válido"
+    }
   },
   "favorites": {
     "title": "Favoritos",
     "items": "elementos",
     "empty": "Sin favoritos aún",
-    "emptyHint": "Añade elementos a tus favoritos"
+    "emptyHint": "Añade elementos a tus favoritos",
+    "loading": "Cargando favoritos..."
   },
   "flows": {
     "title": "Flujos",
@@ -2382,7 +3909,8 @@
       "title": "Mantente Conectado",
       "description": "Recibe actualizaciones sobre nuevos contenidos y funciones",
       "placeholder": "Tu correo electrónico",
-      "success": "¡Gracias por suscribirte!"
+      "success": "¡Gracias por suscribirte!",
+      "submit": "Suscribirse"
     },
     "apps": {
       "title": "Descarga Nuestra App",
@@ -2411,7 +3939,10 @@
     "helpAndSupport": "Ayuda y Soporte",
     "termsOfUse": "Términos de Uso",
     "privacyPolicy": "Política de Privacidad",
-    "contactUs": "Contáctenos"
+    "contactUs": "Contáctenos",
+    "terms": "Términos de Servicio",
+    "privacy": "Política de Privacidad",
+    "contact": "Contacto"
   },
   "friends": {
     "title": "Amigos y Oponentes",
@@ -2590,7 +4121,8 @@
     "israeli_businesses_nearby": "Negocios Israelíes Cerca de Ti - Desde {{city}}",
     "searching_businesses": "Buscando negocios israelíes en {{city}}...",
     "no_businesses_found": "No se encontraron negocios israelíes en {{city}}",
-    "businesses_load_error": "No se pueden cargar los listados de negocios. Inténtalo de nuevo."
+    "businesses_load_error": "No se pueden cargar los listados de negocios. Inténtalo de nuevo.",
+    "podcasts": "Podcasts"
   },
   "jerusalem": {
     "title": "Conexión con Jerusalén",
@@ -2641,6 +4173,28 @@
       "parashaStudy": "Parashá",
       "shabbatRecipes": "Recetas",
       "prayers": "Oraciones"
+    },
+    "calendar": {
+      "dafYomi": "Daf Yomi",
+      "holiday": "Festividad",
+      "ofOmer": "del Omer",
+      "omerDay": "Día",
+      "parasha": "Parashá",
+      "shabbat": "Shabat",
+      "title": "Calendario judío"
+    },
+    "community": {
+      "empty": "No se encontraron organizaciones",
+      "emptyHint": "Intenta seleccionar una región diferente",
+      "jcc": "JCC",
+      "kosher": "Kosher",
+      "mikvaot": "Mikvaot",
+      "synagogues": "Sinagogas",
+      "title": "Directorio comunitario"
+    },
+    "news": {
+      "empty": "No hay noticias disponibles",
+      "title": "Noticias judías"
     }
   },
   "live": {
@@ -2655,7 +4209,8 @@
       "sports": "Deportes",
       "kids": "Niños",
       "music": "Música"
-    }
+    },
+    "loadingChannels": "Cargando canales..."
   },
   "liveTV": {
     "title": "TV en Vivo",
@@ -2748,7 +4303,11 @@
     "plans": "Planes",
     "admin": "Administración",
     "games": "Juegos",
-    "friends": "Amigos"
+    "friends": "Amigos",
+    "support": "Soporte",
+    "privacy": "Política de Privacidad",
+    "liveChannels": "Canales en vivo",
+    "menu": "Menú"
   },
   "notFound": {
     "title": "Página no encontrada",
@@ -2975,7 +4534,12 @@
       },
       "panelOpened": "Panel de búsqueda de escenas abierto",
       "navigation": "Navegación de búsqueda de escenas",
-      "position": "Resultado {{current}} de {{total}}"
+      "position": "Resultado {{current}} de {{total}}",
+      "error": "Error",
+      "results": {
+        "found": "Encontrados",
+        "label": "Etiqueta"
+      }
     },
     "streamLimit": {
       "title": "Límite de transmisión alcanzado",
@@ -2992,7 +4556,41 @@
       "error": "Error al conectar al dispositivo de transmisión",
       "noDevices": "No se encontraron dispositivos de transmisión",
       "unsupported": "La transmisión no está disponible para este contenido"
-    }
+    },
+    "live": "EN VIVO",
+    "play": "Reproducir",
+    "pause": "Pausar",
+    "mute": "Silenciar",
+    "unmute": "Activar sonido",
+    "volume": "Volumen",
+    "albumArt": "Portada del álbum de {{title}}",
+    "seekBar": "Progreso de reproducción",
+    "skipBack": "Retroceder {{seconds}} segundos",
+    "skipForward": "Avanzar 30 segundos",
+    "previousChapter": "Capítulo anterior",
+    "nextChapter": "Capítulo siguiente",
+    "skipBackward": "Retroceder 30 segundos",
+    "restart": "Reiniciar desde el principio",
+    "liveChat": "Chat en Vivo",
+    "liveTrivia": "Trivia en Vivo",
+    "showAIFeatures": "Mostrar Funciones de IA",
+    "hideAIFeatures": "Ocultar Funciones de IA",
+    "chat": "Chat",
+    "enterFullscreen": "Pantalla completa",
+    "errors": {
+      "decodeError": "No se puede decodificar la transmisión de audio",
+      "loadAborted": "La carga fue interrumpida",
+      "networkError": "Error de red: la transmisión puede no estar disponible",
+      "noSource": "No hay transmisión disponible",
+      "streamFailed": "Error al cargar la transmisión",
+      "unknown": "Error de reproducción desconocido",
+      "unsupportedFormat": "Formato de audio no compatible"
+    },
+    "exitFullscreen": "Salir de pantalla completa",
+    "liveLanguageMagic": "Magia de idiomas en vivo",
+    "retrying": "Reintentando",
+    "selectLanguage": "Seleccionar idioma",
+    "selectOutputLanguage": "Seleccionar idioma de salida"
   },
   "podcasts": {
     "title": "Podcasts",
@@ -3011,7 +4609,49 @@
       "educational": "Educativo"
     },
     "noPodcasts": "Sin podcasts disponibles",
-    "tryLater": "Intenta de nuevo más tarde"
+    "tryLater": "Intenta de nuevo más tarde",
+    "selectLanguage": "Idioma de Audio",
+    "switchToLanguage": "Cambiar a {{language}}",
+    "languageSwitched": "Reproduciendo en {{language}}",
+    "availableInLanguage": "Disponible en {{language}}",
+    "availableLanguages": "Disponible en varios idiomas",
+    "downloadForOffline": "Descargar para escuchar sin conexión",
+    "downloadProgress": "Descargando {{progress}}%",
+    "downloaded": "Descargado",
+    "downloadFailed": "Error en la descarga",
+    "retryDownload": "Reintentar descarga",
+    "deleteDownload": "Eliminar descarga",
+    "confirmDelete": "¿Eliminar audio descargado?",
+    "quality": {
+      "label": "Calidad de Audio",
+      "low": "Baja (64 kbps) - Ahorra datos",
+      "medium": "Media (96 kbps) - Equilibrada",
+      "high": "Alta (128 kbps) - Mejor calidad"
+    },
+    "languages": {
+      "he": {
+        "short": "Hebreo",
+        "full": "Hebreo"
+      },
+      "en": {
+        "short": "Inglés",
+        "full": "Inglés"
+      }
+    },
+    "player": {
+      "switchingLanguage": "Cambiando idioma de audio...",
+      "languageSwitchError": "No se pudo cambiar el idioma",
+      "loadingTranslation": "Cargando audio traducido...",
+      "translationUnavailable": "La traducción aún no está disponible"
+    },
+    "onboarding": {
+      "multiLanguageTitle": "Audio Multilenguaje",
+      "multiLanguageDescription": "Este podcast está disponible en hebreo e inglés. Toca el selector de idioma para cambiar.",
+      "downloadTitle": "Escuchar Sin Conexión",
+      "downloadDescription": "Descarga episodios para escuchar sin conexión a internet.",
+      "gotIt": "Entendido"
+    },
+    "loadingShows": "Cargando programas de podcast..."
   },
   "profile": {
     "title": "Mi Perfil",
@@ -3216,7 +4856,14 @@
         "processingFailed": "Error al procesar la entrada de voz",
         "intentClassification": "No se pudo entender el comando",
         "timeout": "Tiempo de reconocimiento de voz agotado"
-      }
+      },
+      "testingWakeWord": "Di \"Hola Bayit\"...",
+      "testWakeWord": "Probar palabra de activación",
+      "wakeWordEnabled": "Activar palabra de activación \"Hola Bayit\"",
+      "wakeWordEnabledDesc": "Di \"Hola Bayit\" para activar los comandos de voz sin presionar un botón",
+      "wakeWordPrivacy": "La detección de la palabra de activación se procesa localmente en tu dispositivo; no se envía audio hasta que se detecte \"Hola Bayit\"",
+      "wakeWordSensitivity": "Sensibilidad de la palabra de activación",
+      "wakeWordSensitivityDesc": "Una mayor sensibilidad detecta la palabra de activación más fácilmente, pero puede causar activaciones falsas"
     },
     "dropdown": {
       "myProfile": "Mi Perfil",
@@ -3283,8 +4930,23 @@
       "disconnectSuccessMessage": "El dispositivo se ha desconectado correctamente.",
       "disconnectSuccessWithSessions": "Dispositivo desconectado y {{count}} sesión/sesiones activa(s) finalizada(s).",
       "thisDevice": "Este dispositivo",
-      "loading": "Cargando dispositivos..."
-    }
+      "loading": "Cargando dispositivos...",
+      "minutesAgo_one": "hace 1 minuto",
+      "minutesAgo_other": "hace {{count}} minutos",
+      "hoursAgo_one": "hace 1 hora",
+      "hoursAgo_other": "hace {{count}} horas",
+      "daysAgo_one": "hace 1 día",
+      "daysAgo_other": "hace {{count}} días",
+      "disconnectDevice": "Desconectar Dispositivo"
+    },
+    "viewingHistory": "Historial de Visualización",
+    "clearHistory": "Limpiar Historial",
+    "confirmClearHistory": "¿Borrar todo el historial de visualización?",
+    "historyCleared": "Historial de visualización borrado",
+    "noHistory": "Sin historial de visualización",
+    "continueWatching": "Continuar Viendo",
+    "removeFromHistory": "Eliminar del historial",
+    "unknown": "Jugador desconocido"
   },
   "profiles": {
     "addProfile": "Añadir perfil",
@@ -3308,7 +4970,8 @@
     "noStations": "Sin estaciones de radio disponibles",
     "tryLater": "Intenta de nuevo más tarde",
     "playing": "REPRODUCIENDO",
-    "fmSuffix": "FM"
+    "fmSuffix": "FM",
+    "loadingStations": "Cargando estaciones de radio..."
   },
   "recordings": {
     "title": "Mis Grabaciones",
@@ -3479,8 +5142,19 @@
     "controls": {
       "placeholder": "Buscar contenido...",
       "hints": {
-        "searchInput": "Ingresa palabras clave para buscar"
-      }
+        "searchInput": "Ingresa palabras clave para buscar",
+        "filters": "Filtros",
+        "llmSearch": "Búsqueda con IA"
+      },
+      "contentTypes": {
+        "all": "Todos",
+        "live": "En vivo",
+        "podcast": "Podcast",
+        "radio": "Radio",
+        "vod": "VOD"
+      },
+      "filters": "Filtros",
+      "llmSearch": "Búsqueda con IA"
     },
     "semantic": {
       "keyword": "Palabra clave",
@@ -3489,8 +5163,34 @@
       "info": "La búsqueda de IA comprende el contexto y encuentra momentos exactos en videos analizando escenas, diálogos y contenido visual."
     },
     "empty": {
-      "clearSearch": "Borrar búsqueda"
-    }
+      "clearSearch": "Borrar búsqueda",
+      "checkSpelling": "Verificar ortografía",
+      "differentKeywords": "Palabras clave diferentes",
+      "noResults": "Sin resultados",
+      "noResultsMessage": "No se encontraron resultados",
+      "searchLanguage": "Idioma de búsqueda",
+      "startSearching": "Comenzar a buscar",
+      "startSearchingMessage": "Escribe para comenzar a buscar contenido",
+      "tryAgain": "Intentar de nuevo",
+      "useVoice": "Usar voz"
+    },
+    "loadingMore": "Cargando más resultados...",
+    "viewMode": {
+      "grid": "Cuadrícula",
+      "list": "Lista",
+      "cards": "Tarjetas"
+    },
+    "activeFilters": "Filtros activos",
+    "advancedFilters": "Filtros avanzados",
+    "aiSearch": "Búsqueda con IA",
+    "aiSearchActive": "La búsqueda semántica con IA está activa: encontrando resultados basados en significado y contexto",
+    "aiSearchInactive": "Activa la búsqueda con IA para obtener resultados más inteligentes basados en significado, no solo palabras clave",
+    "error": "Error",
+    "errors": {
+      "retrySearch": "Reintentar búsqueda",
+      "somethingWrong": "Algo salió mal"
+    },
+    "resultsTitle": "Resultados de búsqueda"
   },
   "settings": {
     "title": "Configuración",
@@ -3532,7 +5232,28 @@
     "resetToDefault": "Restablecer Predeterminado",
     "resetConfirmMessage": "¿Restablecer todas las secciones a la configuración predeterminada?",
     "sectionHidden": "Sección oculta",
-    "sectionShown": "Sección visible"
+    "sectionShown": "Sección visible",
+    "fontSize": "Tamaño de Fuente",
+    "fontSizeSmall": "Pequeño",
+    "fontSizeLarge": "Grande",
+    "chatTranslation": "Traducción de Chat",
+    "autoTranslate": "Traducir mensajes automáticamente",
+    "autoTranslateDescription": "Traducir automáticamente los mensajes de chat a tu idioma preferido",
+    "ritual": {
+      "autoPlay": "Reproducción automática",
+      "contentTypes": "Tipos de contenido",
+      "description": "Configura tu experiencia matutina personalizada",
+      "enabled": "Activado",
+      "endTime": "Hora de finalización",
+      "news": "Noticias",
+      "options": "Opciones adicionales",
+      "radio": "Radio",
+      "skipWeekends": "Omitir fines de semana",
+      "startTime": "Hora de inicio",
+      "timeRange": "Rango de tiempo",
+      "title": "Título",
+      "videos": "Videos"
+    }
   },
   "stats": {
     "statistics": "Estadísticas",
@@ -3641,7 +5362,27 @@
     "nikudLiveDescription": "Subtítulos en hebreo vocalizados con signos diacríticos para facilitar la lectura",
     "nikudEnabled": "Subtítulos con nikud activados",
     "nikudDisabled": "Subtítulos con nikud desactivados",
-    "nikudSubtitleLabel": "Hebreo con nikud: {{text}}"
+    "nikudSubtitleLabel": "Hebreo con nikud: {{text}}",
+    "noSubtitles": "Sin subtítulos",
+    "translationFailed": "Error de traducción",
+    "liveSubtitles": "Subtítulos en vivo",
+    "on": "Activados",
+    "language": "Idioma",
+    "size": "Tamaño",
+    "position": "Posición",
+    "none": "Ninguno",
+    "downloadMore": "Descargar más subtítulos...",
+    "downloading": "Buscando en OpenSubtitles...",
+    "opensubtitlesSource": "De OpenSubtitles.com",
+    "downloadSuccess": "Se descargaron {{count}} subtítulo(s)",
+    "noSubtitlesFound": "No se encontraron subtítulos para este contenido",
+    "available": "Subtítulos",
+    "clickToEnable": "Haz clic para activar la traducción en vivo",
+    "connectionError": "Error de traducción en vivo",
+    "inputLanguageTooltip": "Verificar idioma de entrada",
+    "premiumRequired": "Se requiere suscripción premium",
+    "selectInputLanguage": "Seleccionar idioma de entrada",
+    "translateActive": "Traducción en vivo activa"
   },
   "support": {
     "title": "Centro de Soporte",
@@ -3843,7 +5584,10 @@
       "teen-torah.description": "Clases de Torá y porción semanal para adolescentes",
       "jewish-history": "Historia Judía",
       "jewish-history.description": "Historia del pueblo judío",
-      "title": "Subcategorías"
+      "title": "Subcategorías",
+      "ageGroups": {
+        "title": "Grupos de edad"
+      }
     }
   },
   "telAviv": {
@@ -3889,7 +5633,36 @@
       "languageHint": "Selecciona 1-3 idiomas para mostrar en cada dato",
       "language": "idioma",
       "selectLanguage": "Seleccionar este idioma",
-      "deselectLanguage": "Deseleccionar este idioma"
+      "deselectLanguage": "Deseleccionar este idioma",
+      "title": "Trivia y Datos Curiosos",
+      "enabled": "Mostrar Trivia",
+      "enabledDescription": "Mostrar datos interesantes durante la reproducción",
+      "frequency": "Frecuencia",
+      "frequencyHint": "Cambiar frecuencia de visualización de trivia",
+      "categories": "Categorías",
+      "category": "categoría",
+      "selectCategory": "Toca para seleccionar esta categoría",
+      "deselectCategory": "Toca para deseleccionar esta categoría",
+      "displayDuration": "Duración de Visualización",
+      "durationHint": "Cambiar cuánto tiempo se muestra el trivia",
+      "seconds": "segundos"
+    },
+    "categories": {
+      "cast": "Elenco",
+      "production": "Producción",
+      "location": "Ubicación",
+      "cultural": "Cultural",
+      "historical": "Histórico"
+    },
+    "frequency": {
+      "off": "Desactivado",
+      "low": "Baja",
+      "normal": "Normal",
+      "high": "Alta"
+    },
+    "errors": {
+      "loadFailed": "Error al cargar trivia",
+      "saveFailed": "Error al guardar preferencias de trivia"
     }
   },
   "tvLogin": {
@@ -3943,7 +5716,9 @@
     "emptyDescription": "Intenta seleccionar otra categoría",
     "allContent": "Todo el contenido",
     "noContent": "No hay contenido disponible",
-    "noContentInCategory": "No se encontró contenido en esta categoría"
+    "noContentInCategory": "No se encontró contenido en esta categoría",
+    "filters": "Filtros",
+    "loadingContent": "Cargando películas y series..."
   },
   "voice": {
     "listening": "Escuchando...",
@@ -3957,7 +5732,17 @@
     "micPermissionDenied": "Permiso de micrófono denegado",
     "error": "No te escuché, intenta de nuevo",
     "ready": "Listo",
-    "speaking": "Hablando"
+    "speaking": "Hablando",
+    "avatarPreferences": {
+      "currentMode": "Modo actual",
+      "title": "Visualización de avatar"
+    },
+    "features": {
+      "animations": "✨ Animaciones",
+      "transcript": "💬 Transcripción",
+      "waveform": "〰️ Forma de onda",
+      "wizard": "🧙 Asistente"
+    }
   },
   "voiceMode": {
     "title": "Modo de Voz",
@@ -4026,7 +5811,10 @@
     "now": "Ahora",
     "related": "Contenido relacionado",
     "deleteEpisode": "Eliminar Episodio",
-    "confirmDeleteEpisode": "¿Eliminar este episodio?"
+    "confirmDeleteEpisode": "¿Eliminar este episodio?",
+    "playlist": "Lista de reproducción",
+    "streamError": "No se pudo cargar la transmisión. Por favor intenta de nuevo más tarde.",
+    "streamUnavailable": "Transmisión no disponible"
   },
   "watchParty": {
     "title": "Watch Party",
@@ -4102,7 +5890,24 @@
     "closePanelHint": "Cierra el panel de la fiesta de visualización",
     "cancelHint": "Cancela y cierra el diálogo",
     "viewPartyHint": "Abre el panel de la fiesta de visualización",
-    "panel": "Panel de fiesta de visualización"
+    "panel": "Panel de fiesta de visualización",
+    "inviteLink": "Enlace de invitación",
+    "copyLink": "Copiar enlace",
+    "textOnlyMode": "Solo Chat de Texto",
+    "endParty": "Terminar Fiesta",
+    "activeLabel": "Watch Party - Activa",
+    "buffering": "Cargando...",
+    "hostActiveLabel": "Watch Party - Estás como anfitrión",
+    "hosting": "Anfitrión",
+    "listening": "Escuchando",
+    "placeholder": {
+      "roomCode": "ABCD1234"
+    },
+    "roomCodeLabel": "Código de sala",
+    "startVoice": "Iniciar voz",
+    "stopVoice": "Detener voz",
+    "voiceInputHint": "Pista de entrada de voz",
+    "watching": "Viendo"
   },
   "watchlist": {
     "filters": {
@@ -4119,7 +5924,8 @@
     "items": "elementos",
     "watched": "visto",
     "empty": "Tu lista está vacía",
-    "emptyHint": "Comienza a ver y los elementos aparecerán aquí"
+    "emptyHint": "Comienza a ver y los elementos aparecerán aquí",
+    "loading": "Cargando lista de seguimiento..."
   },
   "widgets": {
     "empty": "Sin widgets",
@@ -4173,7 +5979,14 @@
       "saveWidget": "Guardar Widget",
       "saving": "Guardando...",
       "cancel": "Cancelar",
-      "change": "Cambiar"
+      "change": "Cambiar",
+      "errors": {
+        "contentRequired": "Por favor selecciona contenido",
+        "iframeUrlRequired": "La URL del iFrame es obligatoria",
+        "nameExists": "Ya existe un widget con este nombre",
+        "titleRequired": "El título es obligatorio"
+      },
+      "validating": "Validando..."
     },
     "intro": {
       "title": "Bienvenido a Widgets",
@@ -4181,8 +5994,19 @@
       "watchVideo": "Ver Introducción",
       "skip": "Omitir",
       "dismiss": "No mostrar de nuevo",
-      "videoUnavailable": "Video temporalmente no disponible"
-    }
+      "videoUnavailable": "Video temporalmente no disponible",
+      "loadingMartyJr": "Cargando Marty Jr...",
+      "loadingWidgets": "Cargando introducción de widgets..."
+    },
+    "minimized": "Widget minimizado",
+    "expand": "Expandir widget",
+    "contentPicker": {
+      "noContent": "No hay contenido disponible",
+      "tryAnotherTab": "Intenta seleccionar otra categoría"
+    },
+    "delete": "Eliminar",
+    "hide": "Ocultar",
+    "resetPosition": "Restablecer posición"
   },
   "youngsters": {
     "title": "Jóvenes",
@@ -4225,7 +6049,10 @@
       "syncYouTube": "Sincronizar YouTube",
       "tagVod": "Etiquetar VOD",
       "pendingModeration": "Pendiente de moderación"
-    }
+    },
+    "loading": "Cargando contenido...",
+    "news": "Noticias",
+    "trending": "Tendencias"
   },
   "catchup": {
     "overlay": {
@@ -4234,11 +6061,17 @@
       "creditContext": "Esto usará {{cost}} de tus {{balance}} créditos",
       "lowBalanceWarning": "Créditos restantes bajos",
       "acceptButton": "Ponme al día ({{cost}} créditos)",
-      "declineButton": "No, gracias"
+      "declineButton": "No, gracias",
+      "accept": "Aceptar",
+      "balanceContext": "Contexto de saldo",
+      "decline": "Rechazar",
+      "lowBalance": "Saldo bajo",
+      "thisProgram": "Este programa"
     },
     "button": {
       "credits": "Ponerme al día ({{cost}} créditos)",
-      "label": "Ponerme al día ({{cost}} créditos)"
+      "label": "Ponerme al día ({{cost}} créditos)",
+      "title": "Ponerse al Día"
     },
     "generating": "Generando resumen...",
     "summary": {
@@ -4247,12 +6080,241 @@
       "windowInfo": "Últimos {{minutes}} minutos",
       "creditsUsed": "{{count}} créditos utilizados",
       "creditsRemaining": "{{count}} créditos restantes",
-      "close": "Cerrar"
+      "close": "Cerrar",
+      "cached": "En caché",
+      "remaining": "Restante",
+      "window": "Ventana"
     },
     "error": {
       "failed": "No se pudo generar el resumen",
       "retry": "Intentar de nuevo",
       "insufficientCredits": "Créditos insuficientes"
+    },
+    "subtitle": "Ver programas de las últimas 7 días",
+    "title": "Repetición",
+    "noPrograms": "No hay programas disponibles",
+    "loading": "Cargando programas...",
+    "watchNow": "Ver Ahora",
+    "available": "Disponible",
+    "programs": "Programas",
+    "channel": "Canal",
+    "dateFilter": "Fecha",
+    "today": "Hoy",
+    "yesterday": "Ayer"
+  },
+  "audiobooks": {
+    "narrator": "Narrador",
+    "audiobook": "Audiolibro",
+    "chapter": "Capítulo",
+    "chapters": "Capítulos",
+    "playChapter": "Reproducir Capítulo",
+    "noChapters": "No hay capítulos disponibles",
+    "notFound": "Audiolibro no encontrado",
+    "author": "Autor",
+    "duration": "Duración",
+    "isbn": "ISBN",
+    "available": "Disponible",
+    "averageRating": "Calificación promedio",
+    "description": "Descubre audiolibros de todo el mundo",
+    "details": "Detalles",
+    "filters": "Filtros",
+    "loadError": "Error al cargar el audiolibro",
+    "loading": "Cargando audiolibros...",
+    "noAudiobooks": "Sin audiolibros",
+    "quality": "Calidad de audio",
+    "sortBy": "Ordenar por",
+    "sortOrder": "Orden",
+    "subscription": "Suscripción",
+    "title": "Audiolibros",
+    "tryLater": "Intentar más tarde"
+  },
+  "podcast": {
+    "subscribe": "Suscribirse",
+    "selectLanguage": "Seleccionar Idioma",
+    "switchToLanguage": "Cambiar a {{language}}",
+    "premiumRequiredForTranslation": "Se requiere suscripción premium para traducción de podcasts",
+    "player": {
+      "switchingLanguage": "Cambiando..."
+    },
+    "languages": {
+      "he": {
+        "short": "HE",
+        "full": "Hebreo"
+      },
+      "en": {
+        "short": "EN",
+        "full": "Inglés"
+      },
+      "es": {
+        "short": "ES",
+        "full": "Español"
+      }
     }
+  },
+  "quota": {
+    "exceeded": "Cuota excedida",
+    "remaining": "Cuota restante",
+    "limit": "Límite",
+    "subtitle": "Cuota de Subtítulos",
+    "dubbing": "Cuota de Doblaje",
+    "subtitleExceeded": "Cuota de subtítulos excedida. Por favor intenta más tarde.",
+    "dubbingExceeded": "Cuota de doblaje excedida. Por favor intenta más tarde."
+  },
+  "validation": {
+    "authorRequired": "El autor es obligatorio",
+    "orderRange": "El orden debe estar entre 1 y 100",
+    "streamUrlRequired": "La URL de transmisión es obligatoria",
+    "titleRequired": "El título es obligatorio"
+  },
+  "audible": {
+    "accountLinked": "Cuenta vinculada",
+    "connected": "Conectado",
+    "connecting": "Conectando",
+    "connectionFailed": "Error de conexión",
+    "pleaseWait": "Por favor espera"
+  },
+  "beta": {
+    "credits": {
+      "error": "Error al cargar créditos",
+      "label": "Créditos de IA",
+      "loading": "Cargando créditos...",
+      "remaining": "{{count}} créditos restantes",
+      "upgrade": "Mejorar",
+      "upgradeAction": "Acción de mejora",
+      "warningCritical": "Advertencia crítica",
+      "warningLow": "Advertencia de saldo bajo"
+    }
+  },
+  "cancelled": {
+    "description": "Tu pago ha sido cancelado.",
+    "helpText": "No se realizaron cargos a tu cuenta.",
+    "retry": "Intentar de nuevo",
+    "title": "Pago cancelado"
+  },
+  "devices": {
+    "activeNow": "Activo ahora",
+    "confirmDisconnect": "¿Desconectar dispositivo?",
+    "daysAgo": "hace {{count}} días",
+    "disconnect": "Desconectar",
+    "disconnectSuccess": "Dispositivo desconectado",
+    "disconnectSuccessMessage": "El dispositivo ha sido desconectado exitosamente.",
+    "disconnectSuccessWithSessions": "Dispositivo desconectado con sesiones",
+    "hoursAgo": "hace {{count}} horas",
+    "loading": "Cargando dispositivos...",
+    "minutesAgo": "hace {{count}} minutos",
+    "noDevices": "No hay dispositivos conectados",
+    "noDevicesDescription": "Los dispositivos aparecerán aquí cuando inicies sesión en diferentes plataformas",
+    "registeredDevices": "Dispositivos registrados",
+    "thisDevice": "Este dispositivo"
+  },
+  "liveAiDataFlow": {
+    "subtitle": "Monitorear el procesamiento de IA en tiempo real para canales en vivo",
+    "tabs": {
+      "dubbing": "Doblaje",
+      "translation": "Traducción",
+      "trivia": "Trivia"
+    },
+    "title": "Flujo de datos de IA en vivo"
+  },
+  "pending": {
+    "description": "Tu pago está siendo procesado. Por favor espera...",
+    "helpText": "Esto generalmente toma unos segundos. No cierres esta página.",
+    "takingLonger": "Esto está tardando más de lo esperado...",
+    "timeElapsed": "Tiempo transcurrido: {{time}}",
+    "title": "Procesando pago"
+  },
+  "privacy": {
+    "children": {
+      "content": "Si bien nuestro contenido es apto para todas las edades, Olorin.ai LLC no recopila intencionalmente información personal identificable de menores de 13 años. Si eres padre y crees que tu hijo nos ha proporcionado información personal, por favor contáctanos.",
+      "title": "5. Menores"
+    },
+    "collection": {
+      "audio": {
+        "data": "Datos recopilados: Breves muestras de audio de la transmisión de TV.",
+        "intro": "Si utilizas funciones que requieren sincronización de audio, la aplicación puede solicitar acceso al micrófono.",
+        "purpose": "Propósito: Para hacer coincidir la huella de audio de la transmisión pública con fines de sincronización.",
+        "retention": "Retención: Al igual que los datos visuales, las muestras de audio se procesan en tiempo real y se eliminan inmediatamente. No escuchamos ni grabamos conversaciones de los usuarios.",
+        "title": "Título"
+      },
+      "camera": {
+        "data": "Datos",
+        "intro": "Para proporcionar nuestro servicio principal—sincronizar audio traducido con tu TV—Bayit+ requiere acceso a la cámara de tu dispositivo.",
+        "purpose": "Propósito",
+        "retention": "Retención: Estos datos son efímeros. Los fotogramas se procesan instantáneamente en memoria y se eliminan permanentemente inmediatamente después de que se establece la sincronización. No vemos, almacenamos ni archivamos imágenes de tu hogar o familia.",
+        "title": "A. Datos de cámara y sincronización visual"
+      },
+      "title": "2. Información que recopilamos y cómo la usamos",
+      "usage": {
+        "aggregate": "Agregados",
+        "content": "Podemos recopilar datos técnicos no identificables para mejorar la estabilidad de la aplicación, incluyendo:",
+        "crash": "Registros de fallos y métricas de rendimiento.",
+        "device": "Tipo de dispositivo y versión del sistema operativo.",
+        "title": "C. Datos de uso y técnicos"
+      }
+    },
+    "contact": {
+      "intro": "Si tienes alguna pregunta sobre esta Política de privacidad, por favor contáctanos en:",
+      "title": "7. Contáctanos"
+    },
+    "intro": {
+      "commitment": "Construimos Bayit+ con una arquitectura de \"Privacidad primero\". No grabamos tu sala de estar. Nuestra tecnología utiliza tu dispositivo.",
+      "content": "Contenido",
+      "title": "1. Introducción"
+    },
+    "lastUpdated": "Última actualización: 27 de enero de 2026",
+    "retention": {
+      "account": "Datos de cuenta: Se conservan solo mientras tu cuenta esté activa para gestionar tu suscripción y preferencias.",
+      "sync": "Sincronización",
+      "title": "4. Retención de datos"
+    },
+    "rights": {
+      "content": "Dependiendo de tu ubicación, puedes tener derecho a solicitar acceso, corrección o eliminación de tus datos personales. Puedes eliminar tu cuenta de Bayit+ en cualquier momento desde la configuración de la aplicación.",
+      "title": "6. Tus derechos"
+    },
+    "sharing": {
+      "ai": "Procesamiento de IA: Servicios utilizados para generar traducciones de texto y audio en tiempo real a partir de transmisiones públicas.",
+      "cloud": "Nube",
+      "noSale": "Olorin.ai LLC no vende tus datos personales. Colaboramos con proveedores de servicios terceros de confianza para ofrecer nuestra infraestructura. Estos proveedores están autorizados a usar tus datos solo según sea necesario para prestarnos estos servicios:",
+      "title": "3. Compartir datos y terceros"
+    }
+  },
+  "semantic": {
+    "info": "La búsqueda con IA entiende el significado, no solo las palabras clave",
+    "infoTitle": "Búsqueda semántica",
+    "keyword": "Palabra clave",
+    "semantic": "Semántica"
+  },
+  "success": {
+    "continue": "Continuar",
+    "description": "Tu pago ha sido procesado exitosamente.",
+    "redirecting": "Redirigiendo...",
+    "title": "Pago exitoso"
+  },
+  "suggestions": {
+    "categoriesTitle": "Categorías",
+    "clearRecent": "Limpiar recientes",
+    "recentTitle": "Búsquedas recientes",
+    "trendingTitle": "Tendencias"
+  },
+  "viewMode": {
+    "cards": "Tarjetas",
+    "grid": "Cuadrícula",
+    "list": "Lista"
+  },
+  "widget": {
+    "103fmEpisodes": "Episodios de 103fm",
+    "audioUnavailable": "Audio no disponible",
+    "contentUnavailable": "Contenido no disponible",
+    "errorLoadingContent": "Error al cargar contenido",
+    "iframeNotConfigured": "iFrame no configurado",
+    "loadingEpisodes": "Cargando episodios",
+    "loadingNews": "Cargando noticias",
+    "noContentConfigured": "No hay contenido configurado",
+    "noEpisodesFound": "No se encontraron episodios",
+    "podcastUnavailable": "Podcast no disponible",
+    "stationUnavailable": "Estación no disponible",
+    "streamUnavailable": "Transmisión no disponible",
+    "unknownComponent": "Componente desconocido",
+    "ynetBreakingNews": "Noticias de última hora de Ynet"
   }
 }

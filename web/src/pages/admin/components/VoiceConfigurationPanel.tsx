@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Save, Play, RefreshCw } from 'lucide-react';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
-import { GlassCard, GlassButton, GlassInput, GlassSelect, GlassModal } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassInput, GlassSelect, GlassModal , GlassLoadingSpinner } from '@bayit/shared/ui';
 import { voiceManagementService } from '@/services/voiceManagementApi';
 import { useDirection } from '@/hooks/useDirection';
 import logger from '@/utils/logger';
@@ -103,7 +103,7 @@ export default function VoiceConfigurationPanel() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner />
         <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );

@@ -16,7 +16,7 @@ from app.models.user import User
 from app.services.admin import trivia_analytics_service as service
 
 router = APIRouter(
-    prefix="/admin/trivia/analytics",
+    prefix="/trivia/analytics",
     tags=["admin-trivia-analytics"],
 )
 logger = get_logger(__name__)

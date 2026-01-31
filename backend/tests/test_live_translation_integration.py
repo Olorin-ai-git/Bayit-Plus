@@ -103,7 +103,7 @@ class TestLiveTranslationIntegration:
                         mock_translate.Client.return_value = mock_translate_client
 
                         # Import and create service
-                        from app.services.live_translation_service import (
+                        from app.services.live_translation import (
                             LiveTranslationService,
                         )
 
@@ -149,7 +149,7 @@ class TestLiveTranslationIntegration:
                         mock_elevenlabs.return_value = mock_elevenlabs_instance
                         mock_openai.return_value = MagicMock()
 
-                        from app.services.live_translation_service import (
+                        from app.services.live_translation import (
                             LiveTranslationService,
                         )
 
@@ -190,7 +190,7 @@ class TestLiveTranslationIntegration:
                         )
                         mock_translate.Client.return_value = mock_translate_client
 
-                        from app.services.live_translation_service import (
+                        from app.services.live_translation import (
                             LiveTranslationService,
                         )
 
@@ -303,7 +303,7 @@ class TestMultiProviderConfiguration:
                         )
                         mock_anthropic.return_value = mock_anthropic_instance
 
-                        from app.services.live_translation_service import (
+                        from app.services.live_translation import (
                             LiveTranslationService,
                         )
 

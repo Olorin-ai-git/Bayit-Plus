@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, UserPlus, Tag, Mail, BarChart3 } from 'lucide-react';
@@ -7,7 +7,7 @@ import StatCard from '@/components/admin/StatCard';
 import { dashboardService } from '@/services/adminApi';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
-import { GlassCard, GlassButton, GlassPageHeader } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassPageHeader , GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import logger from '@/utils/logger';
@@ -160,7 +160,7 @@ export default function AdminDashboardPage() {
   if (loading || !stats) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+        <GlassLoadingSpinner />
         <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );

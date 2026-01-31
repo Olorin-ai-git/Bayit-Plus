@@ -3,7 +3,9 @@
     "loginRequired": "ログインが必要です",
     "loginToWatch": "{{title}} を視聴するにはサインインしてください",
     "login": "ログイン",
-    "signUp": "新規登録"
+    "signUp": "新規登録",
+    "signInRequired": "ログインが必要です",
+    "signInRequiredTitle": "続行するにはログインしてください"
   },
   "email": {
     "greeting": "こんにちは",
@@ -167,7 +169,9 @@
       "description": "位置情報サービスを有効にすると、お住まいの地域のイスラエルコミュニティイベント、ニュース、ストーリーが表示されます。プライバシーは保護されています。検出するのは市区町村のみです。",
       "enable": "位置情報を有効にする",
       "notNow": "今はしない",
-      "close": "閉じる"
+      "close": "閉じる",
+      "ariaLabel": "アクセシビリティラベル",
+      "dismiss": "閉じる"
     },
     "status": {
       "detecting": "位置情報を検出中...",
@@ -387,7 +391,10 @@
       "complete": "完了",
       "failed": "失敗",
       "cancelled": "キャンセル済み",
-      "skipped": "スキップ（重複）"
+      "skipped": "スキップ（重複）",
+      "completed": "完了",
+      "inProgress": "進行中",
+      "pending": "保留中"
     },
     "actions": {
       "pauseQueue": "キューを一時停止",
@@ -642,7 +649,14 @@
     "retry": "再試行",
     "upgradeBeta": "自動翻訳を利用するにはBeta 500にアップグレード",
     "inputLabel": "チャットメッセージ入力",
-    "moderationDelete": "モデレーターによりメッセージが削除されました"
+    "moderationDelete": "モデレーターによりメッセージが削除されました",
+    "participants_one": "{{count}}人の視聴者",
+    "participants_other": "{{count}}人の視聴者",
+    "userJoined": "{{name}}がチャットに参加しました",
+    "userLeft": "ユーザーがチャットを退出しました",
+    "placeholder": "メッセージを送信...",
+    "send": "送信",
+    "translationBeta": "翻訳（ベータ版）"
   },
   "common": {
     "milliseconds": "ミリ秒",
@@ -651,7 +665,11 @@
     "details": "詳細",
     "back": "戻る",
     "actions": "アクション",
-    "live": "ライブ"
+    "live": "ライブ",
+    "loading": "読み込み中...",
+    "retry": "再試行",
+    "loadMore": "もっと読み込む",
+    "processing": "処理中..."
   },
   "dubbing": {
     "latency": {
@@ -721,7 +739,8 @@
         "selectVoice": "吹き替え音声を選択",
         "originalVolume": "元の音声のボリュームを調整（0 = ミュート）",
         "dubbedVolume": "吹き替え音声のボリュームを調整（1 = 最大）"
-      }
+      },
+      "liveDubbing": "ライブ吹き替え"
     }
   },
   "errors": {

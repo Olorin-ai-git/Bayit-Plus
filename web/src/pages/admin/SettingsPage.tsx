@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Save, RefreshCw, Trash2, AlertTriangle } from 'lucide-react';
 import { settingsService } from '@/services/adminApi';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
-import { GlassCard, GlassButton, GlassModal, GlassInput, GlassToggle, GlassView, GlassPageHeader } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassModal, GlassInput, GlassToggle, GlassView, GlassPageHeader , GlassLoadingSpinner } from '@bayit/shared/ui';
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants';
 import { useDirection } from '@/hooks/useDirection';
 import { useNotifications } from '@olorin/glass-ui/hooks';
@@ -133,7 +133,7 @@ export default function SettingsPage() {
   if (loading || !settings) {
     return (
       <GlassView style={styles.loadingContainer} intensity="medium">
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner />
         <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </GlassView>
     );

@@ -15,7 +15,8 @@
     "name": "שם",
     "guest": "אורח",
     "premium": "פרימיום",
-    "basic": "בסיסי"
+    "basic": "בסיסי",
+    "tapToLogin": "הקש להתחברות"
   },
   "admin": {
     "brand": {
@@ -50,18 +51,48 @@
         "amount": "סכום",
         "reason": "סיבה",
         "status": "סטטוס",
-        "requestDate": "תאריך בקשה"
+        "requestDate": "תאריך בקשה",
+        "date": "תאריך בקשה",
+        "requested": "התבקש",
+        "transaction": "עסקה"
       },
       "stats": {
         "pendingTitle": "ממתינים לאישור",
         "approvedTitle": "אושרו",
         "rejectedTitle": "נדחו",
-        "totalRefunded": "סה״כ הוחזר"
+        "totalRefunded": "סה״כ הוחזר",
+        "approved": "אושרו",
+        "pending": "ממתינים",
+        "total": "סה\"כ",
+        "totalAmount": "סכום כולל"
       },
       "emptyMessage": "לא נמצאו בקשות להחזר",
       "errors": {
         "rejectReasonRequired": "נא להזין סיבת דחייה"
-      }
+      },
+      "approve": "אשר",
+      "approveConfirm": "אשר החזר",
+      "approveFailed": "אישור ההחזר נכשל",
+      "approveSuccess": "ההחזר אושר",
+      "approved": "אושר",
+      "approvedMessage": "ההחזר אושר.",
+      "confirmReject": "האם אתה בטוח שברצונך לדחות החזר זה?",
+      "details": "פרטי החזר",
+      "noData": "לא נמצאו בקשות החזר",
+      "noRefunds": "לא נמצאו החזרים",
+      "pending": "ממתין לבדיקה",
+      "processedAt": "עובד",
+      "reasonPlaceholder": "הזן סיבה לדחייה...",
+      "reasonRequired": "סיבת דחייה היא חובה",
+      "rejectFailed": "דחיית ההחזר נכשלה",
+      "rejectRefund": "דחה החזר",
+      "rejectSuccess": "ההחזר נדחה",
+      "rejected": "נדחה",
+      "rejectedMessage": "ההחזר נדחה.",
+      "rejectingAmount": "דוחה החזר בסך",
+      "rejectionReason": "סיבת דחייה",
+      "search": "חיפוש החזרים...",
+      "totalApproved": "סה\"כ הוחזר"
     },
     "plans": {
       "title": "ניהול תוכניות",
@@ -90,7 +121,24 @@
       "errors": {
         "requiredFields": "שם ומחיר הם חובה"
       },
-      "confirmDelete": "מחק את התוכנית \"{{name}}\"?"
+      "confirmDelete": "מחק את התוכנית \"{{name}}\"?",
+      "active": "פעיל",
+      "addFeature": "הוסף",
+      "addNew": "הוסף מסלול חדש",
+      "createPlan": "צור מסלול",
+      "created": "המסלול נוצר בהצלחה",
+      "deleteConfirm": "מחק מסלול",
+      "editPlan": "ערוך מסלול",
+      "featurePlaceholder": "הזן תכונה...",
+      "features": "תכונות",
+      "interval": "מחזור חיוב",
+      "loadError": "טעינת מסלולי המנוי נכשלה. נסה שוב.",
+      "name": "שם המסלול",
+      "namePlaceholder": "לדוגמה, פרימיום",
+      "price": "מחיר ($)",
+      "requiredFields": "שם ומחיר הם שדות חובה",
+      "saveError": "שמירת המסלול נכשלה",
+      "updated": "המסלול עודכן בהצלחה"
     },
     "emailCampaigns": {
       "title": "קמפיינים בדוא״ל",
@@ -111,7 +159,11 @@
         "opened": "נפתחו",
         "clicked": "לחיצות",
         "created": "נוצר",
-        "actions": "פעולות"
+        "actions": "פעולות",
+        "date": "תאריך",
+        "metrics": "מדדים",
+        "recipients": "נמענים",
+        "subject": "נושא"
       },
       "editModal": {
         "title": "עריכת קמפיין"
@@ -141,7 +193,24 @@
       },
       "errors": {
         "requiredFields": "שם ונושא הם חובה"
-      }
+      },
+      "clicked": "נלחץ",
+      "create": "צור קמפיין",
+      "details": "פרטי קמפיין",
+      "noData": "לא נמצאו קמפייני אימייל",
+      "opened": "נפתח",
+      "scheduledAt": "מתוזמן",
+      "search": "חיפוש קמפיינים...",
+      "sendingTest": "שולח אימייל בדיקה...",
+      "sentAt": "נשלח",
+      "stats": {
+        "openRate": "שיעור פתיחה",
+        "recipients": "נמענים",
+        "sent": "נשלחו",
+        "total": "סה\"כ"
+      },
+      "testFailed": "שליחת אימייל הבדיקה נכשלה",
+      "testSent": "אימייל בדיקה נשלח"
     },
     "dashboard": {
       "subtitle": "סקירה כללית של המערכת",
@@ -155,7 +224,8 @@
       "revenue": "הכנסות",
       "subscriptions": "מנויים",
       "recentActivity": "פעילות אחרונה",
-      "quickActions": "פעולות מהירות"
+      "quickActions": "פעולות מהירות",
+      "noRecentActivity": "אין פעילות אחרונה"
     },
     "common": {
       "all": "הכל",
@@ -169,7 +239,13 @@
       "filterAction": "פעולה",
       "filterResource": "משאב",
       "filterUser": "משתמש",
-      "filterDateRange": "טווח תאריכים"
+      "filterDateRange": "טווח תאריכים",
+      "uploading": "מעלה...",
+      "deleteConfirmMessage": "האם אתה בטוח שברצונך למחוק פריט זה? פעולה זו אינה הפיכה.",
+      "deleteConfirmTitle": "אישור מחיקה",
+      "deleteEpisodeMessage": "האם אתה בטוח שברצונך למחוק פרק זה?",
+      "edit": "עריכה",
+      "featured": "מומלץ"
     },
     "stats": {
       "totalUsers": "סה״כ משתמשים",
@@ -190,7 +266,26 @@
       "sendEmail": "שלח אימייל",
       "viewReports": "צפה בדוחות",
       "newPodcast": "צור פודקאסט חדש",
-      "newEpisode": "צור פרק חדש"
+      "newEpisode": "צור פרק חדש",
+      "back": "חזרה לתוכן",
+      "feature": "הדגש",
+      "publish": "פרסם",
+      "unfeature": "הסר הדגשה",
+      "unpublish": "הסר פרסום",
+      "activate": "הפעל",
+      "approve": "אשר",
+      "cancel": "בטל",
+      "delete": "מחק",
+      "edit": "ערוך",
+      "newAudiobook": "ספר שמע חדש",
+      "newCategory": "קטגוריה חדשה",
+      "newChannel": "ערוץ חדש",
+      "newStation": "תחנה חדשה",
+      "pause": "השהה",
+      "reject": "דחה",
+      "resume": "המשך",
+      "test": "בדיקה",
+      "view": "צפה"
     },
     "auditActions": {
       "user_created": "משתמש נוצר",
@@ -234,7 +329,8 @@
       "widget_updated": "ווידג'ט עודכן",
       "widget_deleted": "ווידג'ט נמחק",
       "widget_published": "ווידג'ט פורסם",
-      "widget_unpublished": "ווידג'ט בוטל פרסומו"
+      "widget_unpublished": "ווידג'ט בוטל פרסומו",
+      "subscription_deleted": "מנוי נמחק"
     },
     "placeholder": {
       "userId": "הזן מזהה משתמש",
@@ -257,7 +353,17 @@
       "radioStations": "תחנות רדיו",
       "podcasts": "פודקאסטים",
       "settings": "הגדרות",
-      "audiobooks": "ספרי שמע"
+      "audiobooks": "ספרי שמע",
+      "librarian": "סוכן ספרן",
+      "billingOverview": "סקירת חיובים",
+      "campaignDetail": "קמפיין",
+      "dashboard": "לוח בקרה",
+      "emailCampaigns": "קמפייני אימייל",
+      "marketingDashboard": "לוח בקרה שיווקי",
+      "newCampaign": "קמפיין חדש",
+      "newUser": "משתמש חדש",
+      "planManagement": "ניהול מסלולים",
+      "userDetail": "פרטי משתמש"
     },
     "nav": {
       "dashboard": "לוח בקרה",
@@ -291,7 +397,9 @@
       "translations": "תרגומים",
       "costDashboard": "לוח עלויות",
       "audiobooks": "ספרי שמע",
-      "diagnostics": "אבחון מערכת"
+      "diagnostics": "אבחון מערכת",
+      "backToApp": "חזרה לאפליקציה",
+      "logout": "התנתק"
     },
     "liveQuotas": {
       "title": "ניהול מכסות תכונות חיות",
@@ -331,7 +439,14 @@
       "subtitles": "כתוביות",
       "dubbing": "דיבוב",
       "cost": "עלות",
-      "noData": "אין נתוני שימוש זמינים"
+      "noData": "אין נתוני שימוש זמינים",
+      "dubbingDayInput": "דקות דיבוב ליום",
+      "dubbingHourInput": "דקות דיבוב לשעה",
+      "dubbingMonthInput": "דקות דיבוב לחודש",
+      "notesLabel": "הערות מנהל",
+      "subtitleDayInput": "דקות כתוביות ליום",
+      "subtitleHourInput": "דקות כתוביות לשעה",
+      "subtitleMonthInput": "דקות כתוביות לחודש"
     },
     "featured": {
       "title": "תוכן מובחר",
@@ -440,7 +555,13 @@
         "episodes": "פרקים",
         "order": "סדר",
         "name": "שם",
-        "slug": "מזהה"
+        "slug": "מזהה",
+        "subtitles": "כתוביות",
+        "icon": "סמל",
+        "logo": "לוגו",
+        "cover": "עטיפה",
+        "languages": "שפות",
+        "translationStatus": "סטטוס תרגום"
       },
       "validation": {
         "titleRequired": "כותרת נדרשת",
@@ -453,7 +574,10 @@
       "noEpisodes": "אין פרקים",
       "type": {
         "series": "סדרה",
-        "movie": "סרט"
+        "movie": "סרט",
+        "audiobook": "ספר שמע",
+        "podcast": "פודקאסט",
+        "radio": "רדיו"
       },
       "toggleCarousel": "הוסף/הסר מהקרוסלה",
       "editor": {
@@ -541,7 +665,8 @@
           "isActive": "פעיל",
           "isActiveLabel": "הערוץ פעיל",
           "requiredSubscription": "מנוי נדרש",
-          "publishedDate": "תאריך פרסום"
+          "publishedDate": "תאריך פרסום",
+          "logoPlaceholder": "כתובת לוגו"
         },
         "subscriptionTiers": {
           "basic": "בסיסי",
@@ -669,7 +794,12 @@
         "mergeSuccess": "מיזוג הושלם בהצלחה"
       },
       "podcastsComingSoon": "ניהול פודקאסטים בקרוב. השתמש בסעיף הפודקאסטים.",
-      "radioComingSoon": "ניהול תחנות רדיו בקרוב. השתמש בסעיף תחנות הרדיו."
+      "radioComingSoon": "ניהול תחנות רדיו בקרוב. השתמש בסעיף תחנות הרדיו.",
+      "createSuccess": "התוכן נוצר בהצלחה. מפנה...",
+      "episodes": "פרקים",
+      "updateSuccess": "התוכן עודכן בהצלחה. מפנה...",
+      "deleteSuccess": "הקטגוריה נמחקה",
+      "publishedOnly": "מפורסמים בלבד"
     },
     "categories": {
       "subtitle": "ניהול קטגוריות תוכן",
@@ -681,8 +811,17 @@
       "form": {
         "nameHebrew": "שם הקטגוריה (עברית)",
         "nameEnglish": "שם הקטגוריה (אנגלית)",
-        "slug": "כתובת ידידותית"
-      }
+        "slug": "כתובת ידידותית",
+        "nameEnglishPlaceholder": "שם קטגוריה (אנגלית)",
+        "nameHebrewPlaceholder": "שם קטגוריה (עברית)",
+        "slugPlaceholder": "מזהה (לדוגמה, movies)",
+        "titleEdit": "עריכת קטגוריה",
+        "titleNew": "קטגוריה חדשה"
+      },
+      "createSuccess": "הקטגוריה נוצרה",
+      "deleteCategory": "מחק קטגוריה",
+      "editCategory": "ערוך קטגוריה",
+      "updateSuccess": "הקטגוריה עודכנה"
     },
     "recordings": {
       "title": "ניהול הקלטות",
@@ -797,7 +936,14 @@
         "invalidFilesCount": "{{count}} קבצים לא תקינים",
         "proceedUpload": "העלה {{count}} קבצים תקינים",
         "folderTooLarge": "התיקייה מכילה יותר מדי קבצים (מקסימום {{max}})",
-        "folderTooDeep": "מבנה התיקייה עמוק מדי (מקסימום {{max}} רמות)"
+        "folderTooDeep": "מבנה התיקייה עמוק מדי (מקסימום {{max}} רמות)",
+        "clearFiles": "נקה קבצים",
+        "failed": "נכשל",
+        "progress": "התקדמות",
+        "status": "סטטוס",
+        "successful": "הצליח",
+        "total": "סה\"כ",
+        "uploadCancelled": "ההעלאה בוטלה"
       },
       "urlUpload": {
         "title": "ייבוא מכתובת URL",
@@ -815,7 +961,11 @@
         "emptyUrlList": "לא יובאו כתובות URL",
         "emptyUrlListDescription": "הזן כתובות URL למעלה כדי לייבא קבצי וידאו ממקורות מרוחקים",
         "addUrl": "הוסף URL",
-        "removeUrl": "הסר URL"
+        "removeUrl": "הסר URL",
+        "hint": "הזן כתובת URL ישירה לקובץ מדיה",
+        "placeholder": "הזן כתובת URL...",
+        "upload": "העלה",
+        "validate": "אמת"
       },
       "monitoredFolders": {
         "title": "תיקיות מנוטרות",
@@ -866,7 +1016,14 @@
           "saveButton": "שמור תיקייה",
           "cancelButton": "ביטול",
           "saving": "שומר..."
-        }
+        },
+        "addSuccess": "התיקייה נוספה בהצלחה",
+        "autoUpload": "העלאה אוטומטית",
+        "contentType": "סוג תוכן",
+        "enabled": "מופעל",
+        "filesFound": "קבצים שנמצאו",
+        "scanTriggered": "הסריקה הופעלה",
+        "updateSuccess": "התיקייה עודכנה בהצלחה"
       },
       "dryRun": {
         "title": "מצב ריצה יבשה",
@@ -884,7 +1041,12 @@
         "proceedButton": "המשך עם העלאה",
         "proceedHint": "השבת ריצה יבשה ובצע העלאה אמיתית",
         "cancelButton": "ביטול",
-        "noResults": "אין תוצאות ריצה יבשה זמינות"
+        "noResults": "אין תוצאות ריצה יבשה זמינות",
+        "duplicates": "כפילויות",
+        "errors": "שגיאות",
+        "preview": "תצוגה מקדימה",
+        "proceedWithUpload": "המשך להעלאה",
+        "willUpload": "יועלה"
       },
       "connectionStatus": {
         "connected": "מחובר",
@@ -976,7 +1138,14 @@
         "rateLimitExceeded": "חריגה ממגבלת קצב. המתן לפני העלאת קבצים נוספים.",
         "configValidationFailed": "אימות הגדרות נכשל. בדוק את הקונסול לפרטים.",
         "websocketAuthFailed": "אימות WebSocket נכשל",
-        "unsupportedBrowser": "הדפדפן שלך לא תומך בתכונות הנדרשות"
+        "unsupportedBrowser": "הדפדפן שלך לא תומך בתכונות הנדרשות",
+        "addFolderFailed": "הוספת התיקייה נכשלה",
+        "deleteFolderFailed": "מחיקת התיקייה נכשלה",
+        "dryRunFailed": "הרצת הדמיה נכשלה",
+        "scanFolderFailed": "סריקת התיקייה נכשלה",
+        "updateFolderFailed": "עדכון התיקייה נכשל",
+        "urlUploadFailed": "העלאה מכתובת URL נכשלה",
+        "urlValidationFailed": "אימות כתובת URL נכשל"
       },
       "mobile": {
         "dataWarning": "אתה משתמש בנתונים סלולריים. העלאה של {{size}} עשויה להשתמש בנתונים משמעותיים.",
@@ -1116,7 +1285,12 @@
         "issuesFixed": "בעיות שתוקנו",
         "lastAudit": "ביקורת אחרונה",
         "never": "אף פעם",
-        "unknown": "לא ידוע"
+        "unknown": "לא ידוע",
+        "title": "סקירת ביקורת (30 יום)",
+        "successRate": "אחוז הצלחה",
+        "fixesApplied": "תיקונים שבוצעו",
+        "budgetUsed": "תקציב בשימוש",
+        "budgetLimit": "/ ${{limit}}"
       },
       "health": {
         "excellent": "מצוין",
@@ -1165,7 +1339,10 @@
         "aiAuditSuccess": "ביקורת סוכן AI הופעלה בהצלחה. {{dryRun}}",
         "dailyAuditSuccess": "ביקורת יומית הופעלה בהצלחה. {{dryRun}}",
         "dryRunMode": "(מצב ריצת ניסיון)",
-        "rollbackSuccess": "הפעולה בוטלה בהצלחה."
+        "rollbackSuccess": "הפעולה בוטלה בהצלחה.",
+        "forceUpdates": "כפה עדכונים",
+        "liveMode": "מצב חי",
+        "previewMode": "מצב תצוגה מקדימה"
       },
       "voice": {
         "title": "שליטה קולית",
@@ -1237,7 +1414,10 @@
           "status": "סטטוס",
           "issues": "בעיות",
           "fixes": "תיקונים",
-          "actions": "פעולות"
+          "actions": "פעולות",
+          "triggeredBy": "הופעל על ידי",
+          "parameters": "פרמטרים",
+          "stats": "בעיות / תיקונים"
         },
         "detailModal": {
           "title": "דוח ביקורת: {{id}}",
@@ -1255,11 +1435,32 @@
           "orphanedItems": "פריטים נטושים",
           "fixesApplied": "תיקונים שבוצעו",
           "totalFixes": "{{count}} תיקונים בסך הכל",
-          "aiInsights": "תובנות AI"
+          "aiInsights": "תובנות AI",
+          "issuesBreakdown": "פירוט בעיות",
+          "agentSummary": "סיכום סוכן",
+          "auditFailed": "הביקורת נכשלה",
+          "auditIncomplete": "ביקורת לא שלמה",
+          "errorDetails": "פרטי שגיאה"
         },
         "reapplyFixes": "החל תיקונים מחדש",
         "reapplying": "מחיל תיקונים...",
-        "reapplyError": "החלת התיקונים נכשלה"
+        "reapplyError": "החלת התיקונים נכשלה",
+        "downloadReport": "הורד דוח",
+        "actions": "פעולות",
+        "clearFilters": "נקה מסננים",
+        "date": "תאריך",
+        "duration": "משך",
+        "fixes": "תיקונים",
+        "issues": "בעיות",
+        "more": "עוד",
+        "noMatchingReports": "לא נמצאו דוחות תואמים",
+        "of": "מתוך",
+        "report": "דוח",
+        "reports": "דוחות",
+        "search": "חיפוש דוחות...",
+        "showing": "מציג",
+        "status": "סטטוס",
+        "type": "סוג"
       },
       "logs": {
         "title": "לוגים של ביצוע",
@@ -1300,7 +1501,31 @@
         "dryRunMode": "⚠️ רץ במצב ניסיון - לא ייעשו שינויים",
         "liveMode": "✅ רץ במצב חי - שינויים יבוצעו",
         "budgetSet": "💰 מגבלת תקציב: ${{budget}}",
-        "connectingToAgent": "🔗 מתחבר לסוכן Claude AI..."
+        "connectingToAgent": "🔗 מתחבר לסוכן Claude AI...",
+        "items": "פריטים",
+        "live": "חי",
+        "updatedAgo": "עודכן לפני {{time}}",
+        "justNow": "הרגע",
+        "emptyState": {
+          "title": "אין ביקורת פעילה",
+          "description": "הפעילו ביקורת כדי לראות לוגים בזמן אמת",
+          "dailyTitle": "ביקורת יומית",
+          "dailyDescription": "הביקורת היומית האוטומטית תציג לוגים כאן כשתפעל",
+          "dailyFeature1": "מהיר",
+          "dailyFeature2": "מבוסס חוקים",
+          "dailyFeature3": "מצטבר",
+          "aiTitle": "ביקורת סוכן AI",
+          "aiFeature1": "חכם",
+          "aiFeature2": "אדפטיבי",
+          "aiFeature3": "מקיף",
+          "trigger": "הפעל",
+          "lastRun": "הרצה אחרונה: {{time}}"
+        },
+        "connectingSubtext": "יוצר חיבור מאובטח לזרם הביקורת",
+        "idle": "לא פעיל",
+        "quickAudit": "ביקורת מהירה",
+        "triggerFullAudit": "הגדר והפעל ביקורת מלאה",
+        "warning": "אזהרה"
       },
       "audit": {
         "types": {
@@ -1386,6 +1611,18 @@
       "auditTypes": {
         "daily_incremental": "יומי הדרגתי",
         "ai_agent": "סוכן AI"
+      },
+      "kidsAudit": {
+        "ageDistribution": "התפלגות דירוג גיל",
+        "approved": "אושר",
+        "categoryBalance": "איזון קטגוריות",
+        "flagged": "סומן",
+        "noCategories": "אין קטגוריות עדיין",
+        "pendingReview": "ממתין",
+        "runAudit": "בקר תוכן ילדים",
+        "subtitle": "מצב פיקוח תוכן",
+        "title": "בריאות תוכן ילדים",
+        "totalItems": "סה\"כ פריטים"
       }
     },
     "widgets": {
@@ -1463,18 +1700,83 @@
       "churnRate": "שיעור הפירוק",
       "atRiskUsers": "משתמשים בסיכון",
       "churnedUsers": "משתמשים שעזבו",
-      "quickLinks": "קישורים מהירים"
+      "quickLinks": "קישורים מהירים",
+      "export": "ייצוא",
+      "managePlans": "ניהול מסלולי מחירים",
+      "manageRefunds": "ניהול בקשות החזר",
+      "manageSubscriptions": "ניהול מנויים",
+      "paymentMethods": "אמצעי תשלום",
+      "plans": "מסלולים",
+      "quickActions": "פעולות מהירות",
+      "recentTransactions": "עסקאות אחרונות",
+      "refunds": "החזרים",
+      "revenueChart": "מגמת הכנסות",
+      "subscriptions": "מנויים",
+      "title": "חיוב והכנסות",
+      "total": "סה\"כ",
+      "viewAll": "הצג הכל",
+      "viewAllTransactions": "הצג את כל העסקאות",
+      "viewTransactions": "עסקאות"
     },
     "marketing": {
       "recentCampaigns": "קמפיינים אחרונים",
       "audienceSegments": "קטעי קהל",
       "emailMetrics": "מדדי דוא״ל",
       "pushMetrics": "מדדי דחיפה",
-      "quickActions": "פעולות מהירות"
+      "quickActions": "פעולות מהירות",
+      "clickRate": "שיעור הקלקות אימייל",
+      "conversionRate": "שיעור המרה",
+      "emailCampaigns": "קמפייני אימייל",
+      "emailCampaignsDesc": "צור ונהל קמפייני אימייל",
+      "emailOpenRate": "שיעור פתיחת אימייל",
+      "emailsSent": "אימיילים שנשלחו",
+      "loadError": "טעינת נתוני שיווק נכשלה",
+      "noData": "אין נתונים זמינים",
+      "opened": "נפתחו",
+      "overview": "סקירה",
+      "performance": "מדדי ביצועים",
+      "pushDesc": "שלח התראות למשתמשים",
+      "pushNotifications": "התראות דחיפה",
+      "pushOpenRate": "שיעור פתיחת התראות",
+      "pushSent": "התראות שנשלחו",
+      "sent": "נשלחו",
+      "unsubscribeRate": "שיעור הסרה",
+      "viewAll": "הצג הכל"
     },
     "push": {
       "titlePlaceholder": "כותרת הודעה",
-      "bodyPlaceholder": "תוכן ההודעה"
+      "bodyPlaceholder": "תוכן ההודעה",
+      "audience": "קהל יעד",
+      "body": "תוכן",
+      "columns": {
+        "body": "תוכן",
+        "opened": "נפתח",
+        "scheduled": "מתוזמן",
+        "sent": "נשלח",
+        "status": "סטטוס",
+        "title": "כותרת"
+      },
+      "create": "צור התראה",
+      "createNotification": "צור התראה",
+      "deepLink": "קישור עמוק (אופציונלי)",
+      "deleteConfirm": "מחק התראה",
+      "editNotification": "ערוך התראה",
+      "loadError": "טעינת ההתראות נכשלה. נסה שוב.",
+      "noNotifications": "לא נמצאו התראות",
+      "preview": "תצוגה מקדימה",
+      "requiredFields": "כותרת ותוכן הם שדות חובה",
+      "schedule": "תזמון",
+      "scheduleDate": "תאריך ושעה",
+      "scheduleNotification": "תזמן התראה",
+      "scheduled": "מתוזמן",
+      "scheduledMessage": "ההתראה תוזמנה",
+      "searchPlaceholder": "חיפוש התראות...",
+      "send": "שלח עכשיו",
+      "sendConfirm": "שלח התראה",
+      "sendMessage": "לשלוח התראה זו לכל המשתמשים ביעד עכשיו?",
+      "sent": "נשלח",
+      "sentMessage": "ההתראה נשלחת",
+      "title": "כותרת"
     },
     "auditLogs": {
       "subtitle": "מעקב אחר כל הפעולות במערכת",
@@ -1534,7 +1836,26 @@
         "watch_party": "צפייה משותפת",
         "voice_search": "חיפוש קולי",
         "ai_recommendations": "המלצות AI"
-      }
+      },
+      "clear": "נקה",
+      "clearCacheConfirm": "האם אתה בטוח שברצונך לנקות את מטמון המערכת?",
+      "clearCacheDesc": "נקה את כל הנתונים השמורים במטמון",
+      "contactLegal": "יצירת קשר ומשפטי",
+      "dangerZone": "אזור מסוכן",
+      "defaultPlanDesc": "מסלול מנוי ברירת מחדל למשתמשים חדשים",
+      "featureFlagsDesc": "הפעל או השבת תכונות בזמן אמת",
+      "flagError": "עדכון דגל התכונה נכשל",
+      "general": "הגדרות כלליות",
+      "loadError": "טעינת ההגדרות נכשלה",
+      "maxDevicesDesc": "מספר מכשירים מרבי לחשבון",
+      "reset": "אפס",
+      "resetAnalyticsConfirm": "האם אתה בטוח שברצונך לאפס את כל נתוני האנליטיקס? פעולה זו אינה ניתנת לביטול.",
+      "resetAnalyticsDesc": "אפס את כל נתוני האנליטיקס",
+      "save": "שמור שינויים",
+      "saveError": "שמירת ההגדרות נכשלה",
+      "saved": "נשמר",
+      "savedMessage": "ההגדרות נשמרו בהצלחה",
+      "trialDaysDesc": "מספר ימי ניסיון חינם"
     },
     "liveChannels": {
       "subtitle": "ניהול ערוצי טלוויזיה חיים",
@@ -1544,8 +1865,15 @@
         "streamUrl": "כתובת הזרמה",
         "epgSource": "כתובת מקור EPG (אופציונלי)",
         "currentShow": "תוכנית נוכחית",
-        "order": "מיקום"
-      }
+        "order": "מיקום",
+        "supportsSubtitles": "הפעל כתוביות שידור חי",
+        "primaryLanguage": "שפה ראשית (מקור)",
+        "targetLanguages": "שפות תרגום זמינות",
+        "targetLanguagesHelp": "בחרו לאילו שפות המשתמשים יכולים לתרגם בזמן אמת"
+      },
+      "subtitleSettings": "הגדרות כתוביות שידור חי",
+      "deleteChannel": "מחק ערוץ",
+      "editChannel": "ערוך ערוץ"
     },
     "radioStations": {
       "subtitle": "ניהול תחנות רדיו",
@@ -1556,7 +1884,20 @@
         "streamUrl": "כתובת הזרמה",
         "currentShow": "תוכנית נוכחית (אופציונלי)",
         "currentSong": "שיר נוכחי (אופציונלי)",
-        "order": "מיקום"
+        "order": "מיקום",
+        "currentShowPlaceholder": "תוכנית נוכחית (אופציונלי)",
+        "currentSongPlaceholder": "שיר נוכחי (אופציונלי)",
+        "genrePlaceholder": "ז'אנר (לדוגמה, אלקטרוני, חדשות)",
+        "namePlaceholder": "שם תחנה",
+        "orderPlaceholder": "סדר",
+        "streamUrlPlaceholder": "כתובת שידור (HLS/אודיו)",
+        "titleEdit": "עריכת תחנת רדיו",
+        "titleNew": "תחנת רדיו חדשה"
+      },
+      "errors": {
+        "deleteFailed": "מחיקת תחנת הרדיו נכשלה",
+        "loadFailed": "טעינת תחנות הרדיו נכשלה",
+        "saveFailed": "שמירת תחנת הרדיו נכשלה"
       }
     },
     "podcasts": {
@@ -1580,7 +1921,10 @@
         "description": "תיאור",
         "category": "קטגוריה",
         "rssFeed": "כתובת RSS",
-        "website": "כתובת אתר (אופציונלי)"
+        "website": "כתובת אתר (אופציונלי)",
+        "cover": "תמונת פודקאסט",
+        "coverUrl": "כתובת תמונה",
+        "uploadCover": "העלה"
       },
       "episodes": {
         "form": {
@@ -1593,7 +1937,10 @@
           "publishedDate": "תאריך פרסום (YYYY-MM-DD)"
         }
       },
-      "translate": "תרגם"
+      "translate": "תרגם",
+      "editTitle": "ערוך כותרת",
+      "newTitle": "כותרת חדשה",
+      "toggleFeatured": "הפעל/בטל מומלץ"
     },
     "translation": {
       "title": "לוח בקרת תרגומים",
@@ -1644,7 +1991,8 @@
         "noSubscription": "ללא מנוי",
         "status": "סטטוס",
         "created": "נוצר",
-        "actions": "פעולות"
+        "actions": "פעולות",
+        "lastLogin": "כניסה אחרונה"
       },
       "confirmDelete": "מחיקת משתמש",
       "confirmDeleteMessage": "האם אתה בטוח שברצונך למחוק את {{name}}? פעולה זו לא ניתנת לביטול.",
@@ -1670,7 +2018,83 @@
         "admin": "מנהל",
         "moderator": "מנחה",
         "user": "משתמש"
-      }
+      },
+      "active": "פעיל",
+      "activityTitle": "היסטוריית פעילות",
+      "addSubscription": "הוסף מנוי",
+      "applyFilters": "החל",
+      "ban": "חסום",
+      "banConfirm": "חסום משתמש",
+      "banMessage": "האם אתה בטוח שברצונך לחסום משתמש זה?",
+      "billingTitle": "היסטוריית חיובים",
+      "bulkActions": "פעולות מרובות",
+      "bulkActionsTitle": "פעולות מרובות",
+      "bulkBan": "חסום משתמשים נבחרים",
+      "bulkDelete": "מחק משתמשים נבחרים",
+      "bulkDeleteConfirm": "מחק משתמשים נבחרים",
+      "cancelSubscription": "ביטול",
+      "changePlan": "שנה מסלול",
+      "clearFilters": "נקה הכל",
+      "create": "צור משתמש",
+      "created": "משתמש נוצר",
+      "createdSuccess": "המשתמש נוצר בהצלחה.",
+      "customPermissions": "הרשאות מותאמות",
+      "deleteConfirm": "מחק משתמש",
+      "deleteMessage": "האם אתה בטוח שברצונך למחוק משתמש זה לצמיתות?",
+      "email": "אימייל",
+      "emailPlaceholder": "הזן אימייל",
+      "expiresOn": "פג תוקף",
+      "extendSubscription": "הארך",
+      "filterRole": "תפקיד",
+      "filterStatus": "סטטוס",
+      "filterSubscription": "מסלול מנוי",
+      "filterTitle": "סנן משתמשים",
+      "inherited": "בירושה",
+      "joined": "הצטרף",
+      "lastLogin": "כניסה אחרונה",
+      "name": "שם",
+      "nameEmailRequired": "שם ואימייל הם שדות חובה.",
+      "namePlaceholder": "הזן שם",
+      "noBilling": "אין היסטוריית חיובים",
+      "noSubscription": "אין מנוי פעיל",
+      "noUsers": "לא נמצאו משתמשים",
+      "password": "סיסמה",
+      "passwordPlaceholder": "הזן סיסמה",
+      "passwordRequired": "סיסמה היא חובה למשתמשים חדשים.",
+      "passwordReset": "איפוס סיסמה",
+      "passwordResetSuccess": "אימייל לאיפוס סיסמה נשלח.",
+      "permissionsSubtitle": "הרשאות מבוססות תפקיד עוברות בירושה. ניתן להוסיף הרשאות מותאמות למטה.",
+      "permissionsTitle": "הרשאות משתמש",
+      "profileInfo": "פרטי פרופיל",
+      "resetPasswordMessage": "פעולה זו תשלח אימייל לאיפוס סיסמה למשתמש.",
+      "resetPasswordTitle": "איפוס סיסמה",
+      "role": "תפקיד",
+      "rolePermissions": "הרשאות תפקיד",
+      "save": "שמור שינויים",
+      "saveError": "שגיאה",
+      "saveErrorMessage": "שמירת המשתמש נכשלה. נסה שוב.",
+      "savePermissions": "שמור הרשאות",
+      "searchPlaceholder": "חיפוש לפי שם או אימייל...",
+      "selectRole": "בחר תפקיד",
+      "sendReset": "שלח אימייל איפוס",
+      "subscriptionTitle": "פרטי מנוי",
+      "tabs": {
+        "activity": "פעילות",
+        "billing": "חיוב",
+        "permissions": "הרשאות",
+        "profile": "פרופיל",
+        "subscription": "מנוי"
+      },
+      "updated": "משתמש עודכן",
+      "updatedSuccess": "המשתמש עודכן בהצלחה.",
+      "validationError": "שגיאת אימות",
+      "activeDesc": "פעיל כעת",
+      "editUser": "ערוך משתמש",
+      "emailVerified": "דוא\"ל מאומת",
+      "emptyMessage": "לא נמצאו משתמשים",
+      "lastUpdated": "עודכן לאחרונה",
+      "userDeleted": "המשתמש נמחק",
+      "userUpdated": "המשתמש עודכן"
     },
     "campaigns": {
       "subtitle": "נהל קודי קופון והנחות",
@@ -1685,7 +2109,9 @@
         "usage": "שימושים",
         "validUntil": "תוקף",
         "status": "סטטוס",
-        "actions": "פעולות"
+        "actions": "פעולות",
+        "dates": "תאריכים",
+        "type": "סוג"
       },
       "confirmDelete": "מחיקת קמפיין",
       "confirmDeleteMessage": "האם אתה בטוח שברצונך למחוק את \"{{name}}\"? פעולה זו לא ניתנת לביטול.",
@@ -1707,7 +2133,97 @@
         "unlimited": "ללא הגבלה",
         "validUntil": "בתוקף עד",
         "active": "קמפיין פעיל"
-      }
+      },
+      "activateError": "הפעלת הקמפיין נכשלה",
+      "activateFailed": "הפעלת הקמפיין נכשלה",
+      "activateSuccess": "הקמפיין הופעל",
+      "activatedSuccess": "הקמפיין הופעל.",
+      "active": "פעיל",
+      "allUsersTarget": "כל המשתמשים ביעד כברירת מחדל",
+      "amountOff": "הנחה בסכום",
+      "applyFilters": "החל",
+      "audienceBuilder": "בונה קהל",
+      "autoApply": "החלה אוטומטית",
+      "autoApplyDesc": "החל באופן אוטומטי על רכישות מתאימות",
+      "basicInfo": "מידע בסיסי",
+      "clearAudience": "נקה",
+      "clearFilters": "נקה",
+      "code": "קוד",
+      "codePlaceholder": "לדוגמה, SUMMER20",
+      "conversionRate": "שיעור המרה",
+      "create": "צור קמפיין",
+      "created": "קמפיין נוצר",
+      "createdSuccess": "הקמפיין נוצר בהצלחה.",
+      "deactivateError": "השבתת הקמפיין נכשלה",
+      "deactivatedSuccess": "הקמפיין הושבת.",
+      "deleteConfirm": "מחק קמפיין",
+      "deleteFailed": "מחיקת הקמפיין נכשלה",
+      "deleteMessage": "האם אתה בטוח שברצונך למחוק קמפיין זה?",
+      "deleteSuccess": "הקמפיין נמחק",
+      "description": "תיאור",
+      "descriptionPlaceholder": "הזן תיאור קמפיין",
+      "details": "פרטי קמפיין",
+      "discount": "הנחה",
+      "discountConfig": "הגדרת הנחה",
+      "discountRequired": "ערך ההנחה חייב להיות גדול מ-0",
+      "discountType": "סוג הנחה",
+      "editAudience": "ערוך קהל",
+      "endDate": "תאריך סיום",
+      "filterByStatus": "סטטוס",
+      "filterByType": "סוג",
+      "filterStatus": "סטטוס",
+      "filterTitle": "סנן קמפיינים",
+      "filterType": "סוג",
+      "filters": "מסננים",
+      "firstPurchaseDesc": "חל רק על משתמשים שמבצעים רכישה ראשונה",
+      "firstPurchaseOnly": "רכישה ראשונה בלבד",
+      "generate": "צור",
+      "loadError": "טעינת הקמפיין נכשלה",
+      "maxDiscount": "סכום הנחה מרבי ($)",
+      "minimumPurchase": "סכום רכישה מינימלי ($)",
+      "name": "שם קמפיין",
+      "namePlaceholder": "הזן שם קמפיין",
+      "nameRequired": "שם הקמפיין הוא חובה",
+      "noCampaigns": "לא נמצאו קמפיינים",
+      "noData": "לא נמצאו קמפיינים",
+      "noLimit": "ללא הגבלה",
+      "options": "אפשרויות",
+      "pauseFailed": "השהיית הקמפיין נכשלה",
+      "pauseSuccess": "הקמפיין הושהה",
+      "percentOff": "הנחה באחוזים",
+      "promoCode": "קוד קידום",
+      "redemptions": "מימושים",
+      "revenueImpact": "השפעה על הכנסות",
+      "save": "שמור שינויים",
+      "saveError": "שמירת הקמפיין נכשלה",
+      "schedule": "תזמון",
+      "scheduled": "מתוזמן",
+      "search": "חיפוש קמפיינים...",
+      "selectEndDate": "בחר תאריך סיום",
+      "selectStartDate": "בחר תאריך התחלה",
+      "setAudience": "הגדר קהל",
+      "stackable": "ניתן לשילוב",
+      "stackableDesc": "ניתן לשלב עם מבצעים אחרים",
+      "startDate": "תאריך התחלה",
+      "statistics": "סטטיסטיקה",
+      "stats": {
+        "active": "פעילים",
+        "scheduled": "מתוזמנים",
+        "total": "סה\"כ",
+        "totalUsage": "סה\"כ שימוש"
+      },
+      "statsError": "טעינת סטטיסטיקות הקמפיין נכשלה",
+      "subscriptionPlan": "מסלול מנוי",
+      "targetAudience": "קהל יעד",
+      "title": "קמפיינים שיווקיים",
+      "totalRedemptions": "סה\"כ מימושים",
+      "trialDays": "ימי ניסיון",
+      "type": "סוג קמפיין",
+      "unlimited": "ללא הגבלה",
+      "updated": "קמפיין עודכן",
+      "updatedSuccess": "הקמפיין עודכן בהצלחה.",
+      "usageLimit": "מגבלת שימוש",
+      "userStatus": "סטטוס משתמש"
     },
     "subscriptions": {
       "subtitle": "צפה ונהל מנויי המערכת",
@@ -1722,7 +2238,10 @@
         "plan": "תוכנית",
         "price": "מחיר",
         "nextBilling": "חיוב הבא",
-        "status": "סטטוס"
+        "status": "סטטוס",
+        "amount": "סכום",
+        "renews": "מתחדש",
+        "started": "התחיל"
       },
       "perMonth": "/חודש",
       "searchPlaceholder": "חפש מנוי...",
@@ -1746,7 +2265,50 @@
       "selectToDelete": "אנא בחר מנויים למחיקה",
       "confirmDeleteMultiple": "למחוק {{count}} מנויים?",
       "selected": "נבחרו",
-      "confirmDelete": "האם אתה בטוח שברצונך למחוק את המנוי עבור {{user}}? פעולה זו אינה ניתנת לביטול."
+      "confirmDelete": "האם אתה בטוח שברצונך למחוק את המנוי עבור {{user}}? פעולה זו אינה ניתנת לביטול.",
+      "actions": {
+        "changePlan": "שנה מסלול",
+        "pause": "השהה",
+        "resume": "חדש",
+        "cancel": "בטל",
+        "delete": "מחק"
+      },
+      "active": "פעיל",
+      "apply": "החל",
+      "applyDiscount": "החל הנחה",
+      "atRisk": "בסיכון",
+      "cancelConfirm": "בטל מנוי",
+      "cancelFailed": "ביטול המנוי נכשל",
+      "cancelMessage": "האם אתה בטוח שברצונך לבטל מנוי זה?",
+      "cancelSuccess": "המנוי בוטל",
+      "churnRate": "שיעור נטישה",
+      "confirmCancel": "האם אתה בטוח שברצונך לבטל מנוי זה?",
+      "days": "ימים להארכה",
+      "details": "פרטי מנוי",
+      "discountApplied": "הנחה הוחלה",
+      "discountMonths": "מספר חודשים",
+      "discountPercent": "הנחה (%)",
+      "extend": "הארך",
+      "extendSubscription": "הארך מנוי",
+      "extended": "הוארך",
+      "invalidDays": "הזן מספר ימים תקין",
+      "invalidDiscount": "הזן ערכי הנחה תקינים",
+      "managePlans": "נהל מסלולים",
+      "noData": "לא נמצאו מנויים",
+      "noSubscriptions": "לא נמצאו מנויים",
+      "pauseFailed": "השהיית המנוי נכשלה",
+      "pauseSuccess": "המנוי הושהה",
+      "resumeFailed": "חידוש המנוי נכשל",
+      "resumeSuccess": "המנוי חודש",
+      "retention": "שימור",
+      "search": "חיפוש מנויים...",
+      "stats": {
+        "active": "פעילים",
+        "paused": "מושהים",
+        "revenue": "הכנסה חודשית",
+        "total": "סה\"כ"
+      },
+      "title": "מנויים"
     },
     "marketingDashboard": {
       "subtitle": "סקירת שיווק",
@@ -1760,7 +2322,12 @@
         "completed": "הושלם",
         "scheduled": "מתוזמן",
         "draft": "טיוטה"
-      }
+      },
+      "clickRate": "שיעור הקלקות",
+      "conversionRate": "שיעור המרה",
+      "openRate": "שיעור פתיחה",
+      "sent": "נשלחו",
+      "unsubscribeRate": "שיעור ביטול מנוי"
     },
     "transactions": {
       "subtitle": "צפה בהיסטוריית התשלומים",
@@ -1777,7 +2344,9 @@
         "amount": "סכום",
         "type": "סוג",
         "status": "סטטוס",
-        "date": "תאריך"
+        "date": "תאריך",
+        "description": "תיאור",
+        "method": "אמצעי"
       },
       "filters": {
         "all": "הכל"
@@ -1785,7 +2354,52 @@
       "searchPlaceholder": "חפש עסקה...",
       "emptyMessage": "לא נמצאו עסקאות",
       "details": "פרטי עסקה",
-      "email": "אימייל"
+      "email": "אימייל",
+      "amount": "סכום",
+      "amountRange": "טווח סכום",
+      "apply": "החל",
+      "clearFilters": "נקה",
+      "completed": "הושלם",
+      "confirmRefund": "אשר החזר",
+      "date": "תאריך",
+      "dateRange": "טווח תאריכים",
+      "description": "תיאור",
+      "export": "ייצוא",
+      "exportFailed": "הייצוא נכשל",
+      "exportMessage": "נתוני העסקאות יוצאו.",
+      "exportStarted": "מייצא עסקאות...",
+      "exportSuccess": "הייצוא הושלם",
+      "filterByStatus": "סטטוס",
+      "filterByType": "סוג",
+      "filterTitle": "סנן עסקאות",
+      "invalidAmount": "סכום החזר לא תקין",
+      "invoiceGenerated": "חשבונית נוצרה",
+      "invoiceMessage": "החשבונית נוצרה ומוכנה להורדה.",
+      "noData": "לא נמצאו עסקאות",
+      "noTransactions": "לא נמצאו עסקאות",
+      "originalAmount": "סכום מקורי",
+      "paymentMethod": "אמצעי תשלום",
+      "pending": "ממתין",
+      "processRefund": "בצע החזר",
+      "reasonPlaceholder": "הזן סיבת החזר...",
+      "reasonRequired": "סיבת ההחזר היא חובה",
+      "refundAmount": "סכום החזר",
+      "refundError": "ביצוע ההחזר נכשל",
+      "refundProcessed": "החזר בוצע",
+      "refundReason": "סיבה",
+      "refundSuccess": "ההחזר בוצע בהצלחה.",
+      "refunded": "הוחזר",
+      "search": "חיפוש עסקאות...",
+      "stats": {
+        "completed": "הושלמו",
+        "pending": "ממתינים",
+        "total": "סה\"כ",
+        "totalAmount": "סכום כולל"
+      },
+      "title": "עסקאות",
+      "total": "סה\"כ עסקאות",
+      "transactionId": "מזהה עסקה",
+      "userId": "מזהה משתמש"
     },
     "pushNotifications": {
       "subtitle": "צור ושלח התראות למשתמשים",
@@ -1843,8 +2457,327 @@
       "degraded": "מושפל",
       "latency": "זמן תגובה: {{ms}}ms",
       "healthy": "תקין",
-      "unhealthy": "לא תקין"
-    }
+      "unhealthy": "לא תקין",
+      "check": "בדיקה",
+      "loading": "טוען",
+      "service": "שירות",
+      "status": "סטטוס"
+    },
+    "campaignEdit": {
+      "subtitle": "עריכת פרטי קמפיין והגדרות"
+    },
+    "contentEditor": {
+      "subtitle": "עריכת מטאדטה ומידע של תוכן"
+    },
+    "podcastEpisodes": {
+      "subtitle": "ניהול פרקי פודקאסט ומטאדטה"
+    },
+    "userDetail": {
+      "subtitle": "פרטי חשבון משתמש והיסטוריית פעילות"
+    },
+    "audiobooks": {
+      "confirmDelete": "למחוק ספר שמע זה?",
+      "createTitle": "צור ספר שמע",
+      "editTitle": "ערוך ספר שמע",
+      "emptyMessage": "לא נמצאו ספרי שמע",
+      "feature": {
+        "alreadyFeatured": "ספר שמע זה כבר מודגש.",
+        "order": "סדר תצוגה",
+        "preview": "תצוגה מקדימה",
+        "section": "מדור מודגש",
+        "success": "ספר השמע הודגש בהצלחה",
+        "title": "הדגש ספר שמע"
+      },
+      "form": {
+        "author": "מחבר",
+        "description": "תיאור",
+        "duration": "משך",
+        "isbn": "ISBN",
+        "narrator": "קריין",
+        "publisher": "מוציא לאור",
+        "quality": "איכות שמע",
+        "streamUrl": "כתובת שידור",
+        "subscription": "דרגת מנוי",
+        "title": "כותרת"
+      },
+      "loadError": "טעינת ספרי השמע נכשלה",
+      "publish": {
+        "missingFields": "שדות חובה חסרים: כותרת, מחבר, כתובת שידור",
+        "publishConfirm": "פרסום ספר שמע זה יהפוך אותו לגלוי לכל המשתמשים.",
+        "publishTitle": "פרסם ספר שמע",
+        "unpublishTitle": "הסר פרסום",
+        "unpublishWarning": "ספר שמע זה מפורסם כרגע וגלוי למשתמשים. הסרת הפרסום תסתיר אותו מיד."
+      },
+      "subtitle": "ניהול ספריית ספרי שמע",
+      "upload": {
+        "button": "העלה",
+        "dragDrop": "לחץ לבחירת קובץ שמע",
+        "invalidType": "סוג קובץ לא תקין. מותר: MP3, AAC, M4A, FLAC",
+        "selectFile": "בחר קובץ שמע",
+        "streamUrl": "כתובת שידור נוצרה",
+        "title": "העלאת קובץ שמע",
+        "tooLarge": "גודל הקובץ חורג ממגבלת 500MB"
+      }
+    },
+    "columns": {
+      "author": "מחבר",
+      "cover": "כריכה",
+      "duration": "משך",
+      "narrator": "קריין",
+      "published": "פורסם",
+      "title": "כותרת"
+    },
+    "email": {
+      "audience": "קהל יעד",
+      "body": "גוף האימייל (HTML)",
+      "bodyPlaceholder": "הזן תוכן HTML...",
+      "campaignName": "שם קמפיין",
+      "columns": {
+        "clicked": "נלחץ",
+        "created": "נוצר",
+        "name": "קמפיין",
+        "opened": "נפתח",
+        "sent": "נשלח",
+        "status": "סטטוס",
+        "subject": "נושא"
+      },
+      "create": "צור קמפיין",
+      "createCampaign": "צור קמפיין",
+      "deleteConfirm": "מחק קמפיין",
+      "editCampaign": "ערוך קמפיין",
+      "loadError": "טעינת קמפייני האימייל נכשלה",
+      "namePlaceholder": "לדוגמה, ניוזלטר שבועי",
+      "noCampaigns": "לא נמצאו קמפיינים",
+      "requiredFields": "שם ונושא הם שדות חובה",
+      "searchPlaceholder": "חיפוש קמפיינים...",
+      "send": "שלח",
+      "sendConfirm": "שלח קמפיין",
+      "sendMessage": "האם אתה בטוח שברצונך לשלוח קמפיין זה עכשיו?",
+      "sendTest": "שלח אימייל בדיקה",
+      "sent": "נשלח",
+      "sentMessage": "הקמפיין נשלח",
+      "subject": "נושא האימייל",
+      "testEmail": "כתובת אימייל",
+      "testSent": "בדיקה נשלחה"
+    },
+    "logs": {
+      "action": "פעולה",
+      "additionalDetails": "פרטים נוספים",
+      "apply": "החל",
+      "clearFilters": "נקה",
+      "columns": {
+        "action": "פעולה",
+        "ip": "כתובת IP",
+        "resource": "משאב",
+        "resourceId": "מזהה משאב",
+        "timestamp": "חותמת זמן",
+        "user": "משתמש"
+      },
+      "details": "פרטי יומן",
+      "export": "ייצוא",
+      "exported": "יוצא",
+      "exportedMessage": "יומני הביקורת יוצאו",
+      "filterAction": "פעולה",
+      "filterDateRange": "טווח תאריכים",
+      "filterResource": "סוג משאב",
+      "filterTitle": "סנן יומנים",
+      "filterUser": "מזהה משתמש",
+      "filters": "מסננים",
+      "id": "מזהה יומן",
+      "ipAddress": "כתובת IP",
+      "loadError": "טעינת יומני הביקורת נכשלה. נסה שוב.",
+      "noLogs": "לא נמצאו יומני ביקורת",
+      "resourceId": "מזהה משאב",
+      "resourceType": "סוג משאב",
+      "timestamp": "חותמת זמן",
+      "userId": "מזהה משתמש"
+    },
+    "merge": {
+      "baseItem": "פריט בסיס",
+      "baseItemKeep": "פריט זה יישמר",
+      "canMerge": "ניתן למזג פריטים",
+      "cannotMerge": "לא ניתן למזג פריטים אלה",
+      "configure": "הגדר מיזוג",
+      "confirmButton": "מזג פריטים",
+      "confirmMerge": "אשר מיזוג",
+      "contentTransfer": "העברת תוכן",
+      "continue": "המשך",
+      "errorMixedTypes": "לא ניתן למזג סדרות וסרטים יחד",
+      "errorNoBase": "בחר פריט בסיס",
+      "errorNoMerge": "אין פריטים למיזוג",
+      "itemsMergeInto": "פריטים אלה ימוזגו לפריט הבסיס",
+      "itemsToMerge": "פריטים למיזוג",
+      "mergePreview": "תצוגה מקדימה של מיזוג",
+      "metadataPreferences": "העדפות מטא-נתונים",
+      "selectBase": "בחר פריט בסיס",
+      "suggestionSeparate": "בחר רק סדרות או רק סרטים",
+      "suggestions": "הצעות:",
+      "totalEpisodes": "סה\"כ פרקים לאחר מיזוג",
+      "transferEpisodes": "העבר פרקים",
+      "transferSeasons": "העבר עונות",
+      "useBaseDescription": "השתמש בתיאור פריט הבסיס",
+      "useBasePoster": "השתמש בפוסטר פריט הבסיס",
+      "wizard": "אשף מיזוג תוכן",
+      "configureDescription": "הגדר את אפשרויות המיזוג",
+      "confirmDescription": "אשר את פרטי המיזוג",
+      "mergeWarning": "פעולת מיזוג אינה הפיכה. אנא בדוק היטב לפני האישור.",
+      "selectBaseDescription": "בחר את הפריט הבסיסי למיזוג",
+      "transferEpisodesDesc": "העבר את כל הפרקים לפריט הבסיסי",
+      "transferSeasonsDesc": "העבר את כל העונות לפריט הבסיסי",
+      "useBaseDescriptionDesc": "השתמש בתיאור של הפריט הבסיסי",
+      "useBasePosterDesc": "השתמש בפוסטר של הפריט הבסיסי",
+      "validationPassed": "האימות עבר בהצלחה"
+    },
+    "support": {
+      "action": {
+        "resolve": "סמן כפתור"
+      },
+      "detail": {
+        "addNote": "הוסף הערה",
+        "category": "קטגוריה",
+        "created": "נוצר",
+        "language": "שפה",
+        "message": "הודעת לקוח",
+        "noNotes": "אין הערות עדיין",
+        "notePlaceholder": "כתוב הערה...",
+        "notes": "הערות פנימיות",
+        "priority": "עדיפות",
+        "saveNote": "שמור הערה",
+        "updateStatus": "עדכן סטטוס",
+        "useTemplate": "השתמש בתבנית",
+        "user": "משתמש"
+      },
+      "empty": "אין פניות התואמות למסננים",
+      "filter": {
+        "all": "הכל",
+        "closed": "סגור",
+        "inProgress": "בטיפול",
+        "open": "פתוח",
+        "resolved": "נפתר"
+      },
+      "loadError": "טעינת נתוני לוח הבקרה נכשלה",
+      "loading": "טוען לוח בקרה...",
+      "priority": {
+        "all": "כל העדיפויות",
+        "high": "גבוהה",
+        "low": "נמוכה",
+        "medium": "בינונית",
+        "urgent": "דחוף"
+      },
+      "stats": {
+        "highPriority": "עדיפות גבוהה",
+        "inProgress": "בטיפול",
+        "open": "פתוחים",
+        "resolved": "נפתרו",
+        "total": "סה\"כ"
+      },
+      "subtitle": "ניהול פניות תמיכת לקוחות",
+      "time": {
+        "justNow": "הרגע"
+      },
+      "title": "לוח בקרה תמיכה"
+    },
+    "table": {
+      "actions": "פעולות",
+      "noData": "אין נתונים זמינים",
+      "of": "מתוך",
+      "search": "חיפוש...",
+      "showing": "מציג"
+    },
+    "templates": {
+      "title": "תבניות תגובה"
+    },
+    "triviaAnalytics": {
+      "activeSessions": "סשנים פעילים",
+      "confidence": "ביטחון",
+      "coverage": "כיסוי תוכן",
+      "factsGenerated": "עובדות שנוצרו",
+      "recentTopics": "נושאים אחרונים",
+      "subtitle": "מעקב אחר נושאי טריוויה חיים, סשנים וכיסוי תוכן",
+      "title": "אנליטיקת טריוויה",
+      "totalTopics": "נושאים שזוהו"
+    },
+    "voiceManagement": {
+      "analytics": {
+        "cost": "עלות",
+        "costBreakdown": "פירוט עלויות קול",
+        "feature": "תכונה",
+        "latencyMetrics": "מדדי השהייה",
+        "minutes": "דקות",
+        "noCostData": "אין נתוני עלות זמינים",
+        "noSessions": "אין סשנים פעילים",
+        "noUsageData": "אין נתוני שימוש לתקופה זו",
+        "realtimeSessions": "סשנים בזמן אמת",
+        "samples": "דגימות",
+        "sessions": "סשנים",
+        "totalCost": "סה\"כ",
+        "usageCharts": "נתוני שימוש"
+      },
+      "configuration": {
+        "assistantVoice": "קול עוזר",
+        "defaultVoice": "קול ברירת מחדל",
+        "loadError": "שגיאת טעינה",
+        "providers": "ספקים",
+        "sttProvider": "ספק זיהוי דיבור",
+        "supportVoice": "קול תמיכה",
+        "translationProvider": "ספק תרגום",
+        "voiceIds": "מזהי קול"
+      },
+      "quotas": {
+        "dubbingLimits": "מגבלות דיבוב",
+        "quotaDetails": "פרטי מכסה",
+        "searchUser": "חפש משתמש",
+        "subtitleLimits": "מגבלות כתוביות",
+        "tier": "רמה",
+        "userEmail": "דוא\"ל משתמש",
+        "userIdPlaceholder": "הזן מזהה משתמש..."
+      },
+      "settings": {
+        "apiKeys": "מפתחות API",
+        "webhookInfo": "מידע על Webhook",
+        "webhooks": "Webhooks"
+      },
+      "subtitle": "ניהול סינתזת קול, ניתוח, מכסות והגדרות",
+      "tabs": {
+        "analytics": "ניתוח",
+        "configuration": "הגדרות",
+        "library": "ספרייה",
+        "quotas": "מכסות",
+        "settings": "הגדרות מערכת"
+      },
+      "title": "ניהול קול"
+    },
+    "accessDenied": "הגישה נדחתה",
+    "costDashboard": {
+      "selectUser": "בחר משתמש",
+      "subtitle": "מעקב אחר עלויות שימוש בפלטפורמה",
+      "tabs": {
+        "categories": "קטגוריות",
+        "overview": "סקירה כללית",
+        "timeline": "ציר זמן",
+        "topSpenders": "המשתמשים המובילים"
+      },
+      "title": "לוח בקרת עלויות",
+      "view": "צפה"
+    },
+    "importWizard": {
+      "loadingCategories": "טוען קטגוריות",
+      "loadingSources": "טוען מקורות",
+      "selectCategory": "בחר קטגוריה",
+      "selectItems": "בחר פריטים",
+      "sources": {
+        "liveTv": "טלוויזיה חיה",
+        "liveTvDescription": "ייבא ערוצי טלוויזיה בשידור חי",
+        "podcasts": "פודקאסטים",
+        "podcastsDescription": "ייבא תוכניות פודקאסט",
+        "radio": "רדיו",
+        "radioDescription": "ייבא תחנות רדיו",
+        "vod": "וידאו לפי דרישה",
+        "vodDescription": "ייבא סרטים וסדרות"
+      },
+      "title": "אשף ייבוא"
+    },
+    "noPermission": "אין הרשאה"
   },
   "audiobooks": {
     "audiobook": "ספר שמע",
@@ -1980,7 +2913,14 @@
       "noAudiobooks": "לא נמצאו ספרי אודיו",
       "noFavorites": "עדיין לא הוספת ספרי אודיו למועדפים",
       "trySearch": "חפש ספר אודיו לפי שם, מחבר או קורא"
-    }
+    },
+    "available": "זמין",
+    "averageRating": "דירוג ממוצע",
+    "description": "גלה ספרי שמע מרחבי העולם",
+    "details": "פרטים",
+    "loading": "טוען ספרי שמע...",
+    "sortOrder": "סדר",
+    "subscription": "מנוי"
   },
   "breadcrumbs": {
     "series": "סדרה",
@@ -2052,7 +2992,9 @@
       "showChannels": "הראה לי את הערוצים...",
       "playChess": "התחל משחק שחמט עם...",
       "multiContent": "הצג זה לצד זה..."
-    }
+    },
+    "listening": "מאזין...",
+    "processing": "מעבד..."
   },
   "chess": {
     "title": "שחמט",
@@ -2105,7 +3047,9 @@
     "easy": "קל",
     "medium": "בינוני",
     "hard": "קשה",
-    "chessBot": "בוט שחמט"
+    "chessBot": "בוט שחמט",
+    "disconnected": "מנותק",
+    "theirTurn": "תורם"
   },
   "children": {
     "title": "ילדים",
@@ -2389,7 +3333,52 @@
     "cancelHint": "מבטל את הפעולה הנוכחית",
     "disconnect": "התנתק",
     "thisContent": "תוכן זה",
-    "backToHome": "חזרה לדף הבית"
+    "backToHome": "חזרה לדף הבית",
+    "loadingArticle": "טוען כתבה...",
+    "watch": "צפה",
+    "share": "שתף",
+    "noContent": "אין תוכן להצגה",
+    "premium": "פרימיום",
+    "poweredBy": "מופעל על ידי",
+    "filters": "מסננים",
+    "active": "פעיל",
+    "copy": "העתק קישור",
+    "email": "אימייל",
+    "filter": "סינון",
+    "inactive": "לא פעיל",
+    "of": "מתוך",
+    "processing": "מעבד...",
+    "showing": "מציג",
+    "unban": "הסר חסימה",
+    "addToLibrary": "הוסף לספרייה",
+    "ascending": "הישן ביותר תחילה",
+    "creating": "יוצר...",
+    "daysAgo": "לפני {{count}} ימים",
+    "descending": "החדש ביותר תחילה",
+    "details": "פרטים",
+    "favorited": "נוסף למועדפים",
+    "goBack": "חזור",
+    "hoursAgo": "לפני {{count}} שעות",
+    "info": "מידע",
+    "joining": "מצטרף",
+    "justNow": "הרגע",
+    "language": "שפה",
+    "lastUpdated": "עודכן",
+    "loadMore": "טען עוד",
+    "logout": "התנתק",
+    "milliseconds": "אלפיות שנייה",
+    "movie": "סרט",
+    "normal": "רגיל",
+    "notAuthenticated": "לא מחובר",
+    "page": "עמוד",
+    "saved": "נשמר!",
+    "select": "בחר",
+    "selected": "נבחר",
+    "selectRegion": "בחר אזור",
+    "series": "סדרה",
+    "signIn": "התחבר",
+    "website": "אתר",
+    "yesterday": "אתמול"
   },
   "components": {
     "select": {
@@ -2429,7 +3418,9 @@
     "relatedContent": "תוכן קשור",
     "notFound": "התוכן לא נמצא",
     "availableSubtitles": "כתוביות זמינות",
-    "subtitleSelected": "נבחר: {{language}}"
+    "subtitleSelected": "נבחר: {{language}}",
+    "trailer": "טריילר",
+    "trailerNotAvailable": "טריילר אינו זמין עבור כותרת זו"
   },
   "cultureCities": {
     "connectionTo": "חיבור ל{{city}}",
@@ -2535,7 +3526,8 @@
     "storage": "אחסון",
     "empty": "אין הורדות",
     "emptyHint": "הורד תוכן לצפייה במצב לא מקוון",
-    "paused": "מושהה"
+    "paused": "מושהה",
+    "loading": "טוען הורדות..."
   },
   "dubbing": {
     "title": "דיבוב חי",
@@ -2595,7 +3587,18 @@
       "rateLimitExceeded": "יותר מדי ניסיונות",
       "rateLimitExceededMessage": "אנא חכה לפני ניסיון שוב",
       "sessionTimeout": "פעילות פג תוקף",
-      "sessionTimeoutMessage": "הפעילות של דיבוב שלך פג תוקף"
+      "sessionTimeoutMessage": "הפעילות של דיבוב שלך פג תוקף",
+      "audioCaptureTitle": "הגישה למיקרופון נדחתה",
+      "authFailed": {
+        "title": "שגיאת אימות"
+      },
+      "rateLimitTitle": "יותר מדי בקשות",
+      "sessionTitle": "הפגישה פגה",
+      "sttTitle": "שגיאת זיהוי דיבור",
+      "translationAction": "המערכת תמשיך עם השמע המקורי",
+      "translationTitle": "פסק זמן תרגום",
+      "ttsTitle": "שגיאת המרת טקסט לדיבור",
+      "websocketTitle": "החיבור אבד"
     },
     "simplifiedHebrew": {
       "title": "עברית קלה",
@@ -2607,7 +3610,40 @@
       "active": "עברית קלה פעילה",
       "clickToEnable": "לחץ להפעלת שמע עברית קלה",
       "premiumRequired": "נדרש מנוי פרימיום"
-    }
+    },
+    "active": "דיבוב חי פעיל",
+    "clickToEnable": "לחץ להפעלת דיבוב חי",
+    "controls": {
+      "liveDubbing": "דיבוב חי"
+    },
+    "inputLanguageTooltip": "בדוק שפת קלט",
+    "latency": {
+      "badge": {
+        "accessibilityHint": "מציג את ההשהייה הנוכחית של הדיבוב החי",
+        "title": "השהייה",
+        "tooltip": "זמן השהייה בין השמע המקורי לדיבוב"
+      },
+      "breakdown": {
+        "cacheHitRate": "שיעור פגיעה במטמון",
+        "provider": "ספק",
+        "title": "פירוט השהייה"
+      },
+      "components": {
+        "buffer": "חוצץ",
+        "network": "רשת",
+        "stt": "זיהוי דיבור",
+        "sync": "סנכרון",
+        "translation": "תרגום",
+        "tts": "המרה לדיבור"
+      },
+      "graph": {
+        "noData": "אין נתונים",
+        "title": "גרף השהייה"
+      }
+    },
+    "noVoicesAvailable": "אין קולות זמינים",
+    "premiumRequired": "נדרש מנוי פרימיום",
+    "selectInputLanguage": "בחר שפת קלט"
   },
   "empty": {
     "noContent": "אין תוכן זמין",
@@ -2646,7 +3682,10 @@
     "permissionDenied": {
       "title": "הגישה נדחתה",
       "description": "אין לך הרשאה לצפות בתוכן הזה"
-    }
+    },
+    "clearSearch": "נקה חיפוש",
+    "description": "לא נמצא תוכן תואם",
+    "title": "אין תוצאות"
   },
   "epg": {
     "title": "מדריך תוכניות",
@@ -2691,7 +3730,11 @@
     "exampleQuery4": "הצג לי את כל תוכניות החדשות מחר בבוקר",
     "aiDisclaimer": "מופעל על ידי Claude AI. התוצאות עשויות להשתנות בהתאם לזמינות נתוני התוכניות.",
     "interpretationTitle": "מה הבנתי",
-    "noResultsFound": "לא נמצאו תוכניות התואמות לשאילתה שלך"
+    "noResultsFound": "לא נמצאו תוכניות התואמות לשאילתה שלך",
+    "noProgramsScheduled": "אין תוכניות מתוכננות",
+    "noProgramsFound": "לא נמצאו תוכניות",
+    "noDataAvailable": "אין נתוני מדריך טלוויזיה זמינים",
+    "live": "שידור חי"
   },
   "errors": {
     "networkError": "שגיאת רשת",
@@ -2733,13 +3776,77 @@
       "cancel": "ביטול"
     },
     "title": "שגיאה",
-    "networkUnavailable": "הרשת אינה זמינה"
+    "networkUnavailable": "הרשת אינה זמינה",
+    "auth": {
+      "notAuthenticated": "לא מאומת",
+      "playbackAuthRequired": "נדרש אימות להפעלה",
+      "tokenRefreshFailed": "רענון האסימון נכשל"
+    },
+    "chess": {
+      "connectFailed": "ההתחברות נכשלה",
+      "notConnected": "לא מחובר"
+    },
+    "connection": {
+      "error": "שגיאה",
+      "failed": "נכשל",
+      "timeout": "פסק זמן"
+    },
+    "devices": {
+      "disconnectFailed": "הניתוק נכשל",
+      "loadFailed": "הטעינה נכשלה",
+      "registerFailed": "הרישום נכשל"
+    },
+    "friends": {
+      "acceptFailed": "האישור נכשל",
+      "cancelFailed": "הביטול נכשל",
+      "fetchFailed": "השליפה נכשלה",
+      "rejectFailed": "הדחייה נכשלה",
+      "removeFailed": "ההסרה נכשלה",
+      "requestsFetchFailed": "שליפת הבקשות נכשלה",
+      "sendFailed": "השליחה נכשלה"
+    },
+    "player": {
+      "loadFailed": "הטעינה נכשלה",
+      "noStreamUrl": "אין כתובת שידור",
+      "notReady": "לא מוכן",
+      "sessionCreateFailed": "יצירת הפגישה נכשלה"
+    },
+    "podcast": {
+      "playbackError": "שגיאת הפעלה",
+      "switchLanguageFailed": "החלפת השפה נכשלה"
+    },
+    "profile": {
+      "createFailed": "היצירה נכשלה",
+      "deleteFailed": "המחיקה נכשלה",
+      "fetchFailed": "השליפה נכשלה",
+      "selectFailed": "הבחירה נכשלה",
+      "updateFailed": "העדכון נכשל"
+    },
+    "retrySearch": "נסה חיפוש מחדש",
+    "searchFailed": "החיפוש נכשל",
+    "settings": {
+      "loadFailed": "הטעינה נכשלה",
+      "saveFailed": "השמירה נכשלה"
+    },
+    "stats": {
+      "fetchFailed": "שליפת הנתונים נכשלה",
+      "h2hFetchFailed": "שליפת נתוני ראש בראש נכשלה",
+      "historyFetchFailed": "שליפת ההיסטוריה נכשלה",
+      "leaderboardFetchFailed": "שליפת טבלת המובילים נכשלה",
+      "playerFetchFailed": "שליפת נתוני השחקן נכשלה"
+    },
+    "streamError": "שגיאת שידור",
+    "streamLoadFailed": "טעינת השידור נכשלה. אנא נסה שוב.",
+    "trivia": {
+      "invalidChannel": "ערוץ לא תקין"
+    }
   },
   "favorites": {
     "title": "מועדפים",
     "items": "פריטים",
     "empty": "אין מועדפים עדיין",
-    "emptyHint": "הוסף פריטים למועדפים שלך"
+    "emptyHint": "הוסף פריטים למועדפים שלך",
+    "loading": "טוען מועדפים..."
   },
   "flows": {
     "title": "רצפים",
@@ -2815,7 +3922,9 @@
       "removeConfirmNo": "ביטול",
       "maxItems": "מקסימום {{max}} פריטים. הסר פריט כדי להוסיף עוד.",
       "emptyAi": "ה-AI יבחר תוכן אוטומטית בהתאם להעדפותיך.",
-      "more": "פריטים נוספים"
+      "more": "פריטים נוספים",
+      "confirmRemove": "לחצו שוב לאישור ההסרה",
+      "maxReached": "הגעתם למקסימום של {{max}} פריטים"
     },
     "days": {
       "sunday": "ראשון",
@@ -2857,7 +3966,8 @@
       "thisWeek": "השבוע: {{day}} ב-{{time}}",
       "comingSoon": "טריגרים לחגים בקרוב",
       "startTime": "שעת התחלה",
-      "endTime": "שעת סיום"
+      "endTime": "שעת סיום",
+      "locationBased": "זמנים לפי המיקום שלכם"
     },
     "examples": {
       "title": "רצפים לדוגמה",
@@ -2890,7 +4000,11 @@
       "nameRequired": "שם הרצף נדרש",
       "startTimeRequired": "שעת התחלה נדרשת לטריגר לפי זמן",
       "noDaysSelected": "בחר לפחות יום אחד",
-      "invalidTime": "פורמט זמן לא תקין"
+      "invalidTime": "פורמט זמן לא תקין",
+      "endTimeRequired": "שעת סיום נדרשת",
+      "timeRange": "שעת הסיום חייבת להיות אחרי שעת ההתחלה",
+      "daysRequired": "יש לבחור לפחות יום אחד",
+      "contentRequired": "הוסיפו תוכן או הפעילו AI"
     },
     "tv": {
       "useCompanion": "להתאמה מלאה, השתמש באפליקציית Bayit+ בטלפון או בקר ב-bayit.plus במחשב."
@@ -2928,7 +4042,8 @@
       "title": "הישאר מעודכן",
       "description": "הירשם לניוזלטר שלנו לקבלת עדכונים ותוכן בלעדי.",
       "placeholder": "הזן את האימייל שלך",
-      "success": "תודה על ההרשמה!"
+      "success": "תודה על ההרשמה!",
+      "submit": "הירשם"
     },
     "apps": {
       "title": "הורד את האפליקציה",
@@ -3188,6 +4303,28 @@
       "parashaStudy": "פרשה",
       "shabbatRecipes": "מתכונים",
       "prayers": "תפילות"
+    },
+    "calendar": {
+      "dafYomi": "דף יומי",
+      "holiday": "חג",
+      "ofOmer": "לעומר",
+      "omerDay": "יום",
+      "parasha": "פרשה",
+      "shabbat": "שבת",
+      "title": "לוח שנה יהודי"
+    },
+    "community": {
+      "empty": "לא נמצאו ארגונים",
+      "emptyHint": "נסה לבחור אזור אחר",
+      "jcc": "מרכז קהילתי",
+      "kosher": "כשרות",
+      "mikvaot": "מקוואות",
+      "synagogues": "בתי כנסת",
+      "title": "מדריך קהילתי"
+    },
+    "news": {
+      "empty": "אין חדשות זמינות",
+      "title": "חדשות יהודיות"
     }
   },
   "live": {
@@ -3202,7 +4339,8 @@
       "sports": "ספורט",
       "kids": "ילדים",
       "music": "מוזיקה"
-    }
+    },
+    "loadingChannels": "טוען ערוצים..."
   },
   "liveTV": {
     "title": "טלוויזיה חיה",
@@ -3239,7 +4377,10 @@
     "errors": {
       "fillAllFields": "נא למלא את כל השדות",
       "loginFailed": "שגיאה בהתחברות. נסה שוב.",
-      "noAccount": "אין לך חשבון?"
+      "noAccount": "אין לך חשבון?",
+      "emailRequired": "יש להזין כתובת אימייל",
+      "passwordRequired": "יש להזין סיסמה",
+      "googleFailed": "ההתחברות עם גוגל נכשלה. נסו שוב."
     },
     "qrInstructions": "סרוק את הקוד עם הטלפון להתחברות מהירה",
     "methodQR": "קוד QR",
@@ -3262,7 +4403,8 @@
     "send": "שלח",
     "createAccount": "צור חשבון",
     "bayitThinking": "בית חושב...",
-    "signUpNow": "הירשם עכשיו"
+    "signUpNow": "הירשם עכשיו",
+    "unexpectedError": "אירעה שגיאה לא צפויה"
   },
   "nav": {
     "home": "ראשי",
@@ -3292,7 +4434,9 @@
     "games": "משחקים",
     "friends": "חברים",
     "privacy": "מדיניות פרטיות",
-    "flows": "רצפים"
+    "flows": "רצפים",
+    "liveChannels": "ערוצים חיים",
+    "menu": "תפריט"
   },
   "notFound": {
     "title": "הדף לא נמצא",
@@ -3539,7 +4683,12 @@
       },
       "panelOpened": "חלונית חיפוש סצנות נפתחה",
       "navigation": "ניווט חיפוש סצנות",
-      "position": "תוצאה {{current}} מתוך {{total}}"
+      "position": "תוצאה {{current}} מתוך {{total}}",
+      "error": "שגיאה",
+      "results": {
+        "found": "נמצאו",
+        "label": "תווית"
+      }
     },
     "streamLimit": {
       "title": "הגעת למגבלת הזרמות",
@@ -3556,7 +4705,27 @@
       "error": "שגיאה בהתחברות למכשיר שידור",
       "noDevices": "לא נמצאו מכשירי שידור",
       "unsupported": "השידור אינו זמין לתוכן זה"
-    }
+    },
+    "liveChat": "צ׳אט חי",
+    "chat": "צ׳אט",
+    "liveTrivia": "טריוויה חיה",
+    "showAIFeatures": "הצג תכונות AI",
+    "hideAIFeatures": "הסתר תכונות AI",
+    "enterFullscreen": "מסך מלא",
+    "errors": {
+      "decodeError": "לא ניתן לפענח את זרם השמע",
+      "loadAborted": "הטעינה בוטלה",
+      "networkError": "שגיאת רשת - ייתכן שהשידור אינו זמין",
+      "noSource": "אין שידור זמין",
+      "streamFailed": "טעינת השידור נכשלה",
+      "unknown": "שגיאת הפעלה לא ידועה",
+      "unsupportedFormat": "פורמט שמע לא נתמך"
+    },
+    "exitFullscreen": "יציאה ממסך מלא",
+    "liveLanguageMagic": "קסם שפה חיה",
+    "retrying": "ניסיון חוזר",
+    "selectLanguage": "בחר שפה",
+    "selectOutputLanguage": "בחר שפת פלט"
   },
   "podcasts": {
     "title": "פודקאסטים",
@@ -3616,7 +4785,8 @@
       "downloadTitle": "האזנה לא מקוונת",
       "downloadDescription": "הורד פרקים להאזנה ללא חיבור לאינטרנט.",
       "gotIt": "הבנתי"
-    }
+    },
+    "loadingShows": "טוען תוכניות פודקאסט..."
   },
   "profile": {
     "title": "הפרופיל שלי",
@@ -3821,7 +4991,14 @@
         "processingFailed": "נכשל בעיבוד קלט קולי",
         "intentClassification": "לא הצלחתי להבין את הפקודה",
         "timeout": "זיהוי הקול עבר את זמן הקצוב"
-      }
+      },
+      "testingWakeWord": "אמור \"היי בית\"...",
+      "testWakeWord": "בדוק מילת השכמה",
+      "wakeWordEnabled": "הפעל מילת השכמה \"היי בית\"",
+      "wakeWordEnabledDesc": "אמור \"היי בית\" כדי להפעיל פקודות קוליות ללא לחיצת כפתור",
+      "wakeWordPrivacy": "זיהוי מילת ההשכמה מעובד מקומית במכשיר שלך - אין שליחת שמע עד לאחר זיהוי \"היי בית\"",
+      "wakeWordSensitivity": "רגישות מילת השכמה",
+      "wakeWordSensitivityDesc": "רגישות גבוהה יותר מזהה את מילת ההשכמה בקלות רבה יותר אך עלולה לגרום להפעלות שווא"
     },
     "dropdown": {
       "myProfile": "הפרופיל שלי",
@@ -3888,8 +5065,16 @@
       "disconnectSuccessMessage": "המכשיר נותק בהצלחה.",
       "disconnectSuccessWithSessions": "המכשיר נותק ו-{{count}} סשן/סשנים פעילים הסתיימו.",
       "thisDevice": "מכשיר זה",
-      "loading": "טוען מכשירים..."
-    }
+      "loading": "טוען מכשירים...",
+      "minutesAgo_one": "לפני דקה",
+      "minutesAgo_other": "לפני {{count}} דקות",
+      "hoursAgo_one": "לפני שעה",
+      "hoursAgo_other": "לפני {{count}} שעות",
+      "daysAgo_one": "לפני יום",
+      "daysAgo_other": "לפני {{count}} ימים",
+      "disconnectDevice": "נתק מכשיר"
+    },
+    "unknown": "נגן לא ידוע"
   },
   "profiles": {
     "addProfile": "הוסף פרופיל",
@@ -3913,7 +5098,8 @@
     "noStations": "אין תחנות רדיו זמינות",
     "tryLater": "נסה שוב מאוחר יותר",
     "playing": "מתנגן",
-    "fmSuffix": "FM"
+    "fmSuffix": "FM",
+    "loadingStations": "טוען תחנות רדיו..."
   },
   "recordings": {
     "title": "ההקלטות שלי",
@@ -4084,8 +5270,19 @@
     "controls": {
       "placeholder": "חפש תוכן...",
       "hints": {
-        "searchInput": "הזן מילות חיפוש"
-      }
+        "searchInput": "הזן מילות חיפוש",
+        "filters": "מסננים",
+        "llmSearch": "חיפוש חכם"
+      },
+      "contentTypes": {
+        "all": "הכל",
+        "live": "שידור חי",
+        "podcast": "פודקאסט",
+        "radio": "רדיו",
+        "vod": "וידאו"
+      },
+      "filters": "מסננים",
+      "llmSearch": "חיפוש חכם"
     },
     "semantic": {
       "keyword": "חיפוש",
@@ -4094,8 +5291,34 @@
       "info": "חיפוש AI מבין הקשר ומוצא רגעים מדויקים בסרטונים על ידי ניתוח סצנות, דיאלוגים ותוכן חזותי."
     },
     "empty": {
-      "clearSearch": "נקה חיפוש"
-    }
+      "clearSearch": "נקה חיפוש",
+      "checkSpelling": "בדוק איות",
+      "differentKeywords": "מילות מפתח שונות",
+      "noResults": "אין תוצאות",
+      "noResultsMessage": "לא נמצאו תוצאות התואמות לחיפוש שלך",
+      "searchLanguage": "שפת חיפוש",
+      "startSearching": "התחל לחפש",
+      "startSearchingMessage": "הקלד מילות חיפוש כדי למצוא תוכן",
+      "tryAgain": "נסה שוב",
+      "useVoice": "השתמש בקול"
+    },
+    "loadingMore": "טוען עוד תוצאות...",
+    "viewMode": {
+      "grid": "רשת",
+      "list": "רשימה",
+      "cards": "כרטיסים"
+    },
+    "activeFilters": "מסננים פעילים",
+    "advancedFilters": "מסננים מתקדמים",
+    "aiSearch": "חיפוש AI",
+    "aiSearchActive": "חיפוש סמנטי מבוסס AI פעיל - מוצא תוצאות על פי משמעות והקשר",
+    "aiSearchInactive": "הפעל חיפוש AI לתוצאות חכמות יותר המבוססות על משמעות, לא רק מילות מפתח",
+    "error": "שגיאה",
+    "errors": {
+      "retrySearch": "נסה שוב",
+      "somethingWrong": "משהו השתבש"
+    },
+    "resultsTitle": "תוצאות חיפוש"
   },
   "settings": {
     "title": "הגדרות",
@@ -4140,7 +5363,22 @@
     "resetToDefault": "אפס לברירת מחדל",
     "resetConfirmMessage": "האם אתה בטוח שברצונך לאפס את סעיפי דף הבית לתצורה המקורית?",
     "sectionHidden": "הסעיף הוסתר",
-    "sectionShown": "הסעיף מוצג"
+    "sectionShown": "הסעיף מוצג",
+    "ritual": {
+      "autoPlay": "הפעלה אוטומטית",
+      "contentTypes": "סוגי תוכן",
+      "description": "הגדר את חוויית הבוקר המותאמת אישית שלך",
+      "enabled": "מופעל",
+      "endTime": "שעת סיום",
+      "news": "חדשות",
+      "options": "אפשרויות נוספות",
+      "radio": "רדיו",
+      "skipWeekends": "דלג על סופי שבוע",
+      "startTime": "שעת התחלה",
+      "timeRange": "טווח זמנים",
+      "title": "טקס בוקר",
+      "videos": "סרטונים"
+    }
   },
   "stats": {
     "statistics": "סטטיסטיקות",
@@ -4255,7 +5493,14 @@
     "nikudLiveDescription": "כתוביות עברית מנוקדות לקריאה קלה יותר",
     "nikudEnabled": "כתוביות ניקוד מופעלות",
     "nikudDisabled": "כתוביות ניקוד כבויות",
-    "nikudSubtitleLabel": "עברית עם ניקוד: {{text}}"
+    "nikudSubtitleLabel": "עברית עם ניקוד: {{text}}",
+    "available": "כתוביות",
+    "clickToEnable": "לחץ להפעלת תרגום חי",
+    "connectionError": "שגיאת תרגום חי",
+    "inputLanguageTooltip": "בדוק שפת קלט",
+    "premiumRequired": "נדרש מנוי פרימיום",
+    "selectInputLanguage": "בחר שפת קלט",
+    "translateActive": "תרגום חי פעיל"
   },
   "support": {
     "title": "מרכז תמיכה",
@@ -4457,7 +5702,10 @@
       "teen-torah.description": "שיעורי תורה ופרשת השבוע לנוער",
       "jewish-history": "היסטוריה יהודית",
       "jewish-history.description": "תולדות עם ישראל והיסטוריה יהודית",
-      "title": "קטגוריות משנה"
+      "title": "קטגוריות משנה",
+      "ageGroups": {
+        "title": "קבוצות גיל"
+      }
     }
   },
   "telAviv": {
@@ -4586,7 +5834,9 @@
     "emptyDescription": "נסה לבחור קטגוריה אחרת",
     "allContent": "כל התוכן",
     "noContent": "אין תוכן זמין",
-    "noContentInCategory": "לא נמצא תוכן בקטגוריה זו"
+    "noContentInCategory": "לא נמצא תוכן בקטגוריה זו",
+    "filters": "מסננים",
+    "loadingContent": "טוען סרטים וסדרות..."
   },
   "voice": {
     "listening": "מקשיב...",
@@ -4600,7 +5850,17 @@
     "transcriptionNotAvailable": "תמלול לא זמין",
     "transcriptionFailed": "התמלול נכשל",
     "micPermissionDenied": "הרשאת מיקרופון נדחתה",
-    "error": "לא הצלחתי לשמוע, נסה שוב"
+    "error": "לא הצלחתי לשמוע, נסה שוב",
+    "avatarPreferences": {
+      "currentMode": "מצב נוכחי",
+      "title": "תצוגת אווטאר"
+    },
+    "features": {
+      "animations": "✨ אנימציות",
+      "transcript": "💬 תמליל",
+      "waveform": "〰️ גל קולי",
+      "wizard": "🧙 אשף"
+    }
   },
   "voiceMode": {
     "voiceOnly": "קולי בלבד",
@@ -4668,7 +5928,10 @@
     "now": "עכשיו",
     "related": "תוכן דומה",
     "deleteEpisode": "מחק פרק",
-    "confirmDeleteEpisode": "מחק פרק זה?"
+    "confirmDeleteEpisode": "מחק פרק זה?",
+    "playlist": "רשימת השמעה",
+    "streamError": "לא ניתן לטעון את השידור. אנא נסה שוב מאוחר יותר.",
+    "streamUnavailable": "השידור אינו זמין"
   },
   "watchParty": {
     "title": "מסיבת צפייה",
@@ -4746,7 +6009,20 @@
     "closePanelHint": "סוגר את פאנל מסיבת הצפייה",
     "cancelHint": "מבטל וסוגר את הדיאלוג",
     "viewPartyHint": "פותח את פאנל מסיבת הצפייה",
-    "panel": "פאנל מסיבת צפייה"
+    "panel": "פאנל מסיבת צפייה",
+    "activeLabel": "צפייה משותפת - פעיל",
+    "buffering": "טוען...",
+    "hostActiveLabel": "צפייה משותפת - אתה המארח",
+    "hosting": "מארח",
+    "listening": "מאזין",
+    "placeholder": {
+      "roomCode": "ABCD1234"
+    },
+    "roomCodeLabel": "קוד חדר",
+    "startVoice": "התחל שיחה קולית",
+    "stopVoice": "עצור שיחה קולית",
+    "voiceInputHint": "לחץ והחזק כדי לדבר",
+    "watching": "צופה"
   },
   "watchlist": {
     "filters": {
@@ -4763,7 +6039,8 @@
     "items": "פריטים",
     "watched": "נצפה",
     "empty": "רשימת הצפייה שלך ריקה",
-    "emptyHint": "התחל לצפות והפריטים יופיעו כאן"
+    "emptyHint": "התחל לצפות והפריטים יופיעו כאן",
+    "loading": "טוען רשימת צפייה..."
   },
   "widgets": {
     "empty": "אין וידג'טים עדיין",
@@ -4817,7 +6094,14 @@
       "saveWidget": "שמור וידג'ט",
       "saving": "שומר...",
       "cancel": "ביטול",
-      "change": "שנה"
+      "change": "שנה",
+      "errors": {
+        "contentRequired": "אנא בחר תוכן",
+        "iframeUrlRequired": "כתובת iFrame נדרשת",
+        "nameExists": "וידג'ט עם שם זה כבר קיים",
+        "titleRequired": "כותרת נדרשת"
+      },
+      "validating": "מאמת..."
     },
     "intro": {
       "title": "ברוכים הבאים לוידג'טים",
@@ -4828,7 +6112,14 @@
       "videoUnavailable": "וידאו אינו זמין באופן זמני",
       "loadingMartyJr": "טוען את מרטי ג'וניור...",
       "loadingWidgets": "טוען הקדמה לוידג'טים..."
-    }
+    },
+    "contentPicker": {
+      "noContent": "אין תוכן זמין",
+      "tryAnotherTab": "נסה לבחור קטגוריה אחרת"
+    },
+    "delete": "מחק",
+    "hide": "הסתר",
+    "resetPosition": "אפס מיקום"
   },
   "youngsters": {
     "title": "צעירים",
@@ -4871,7 +6162,10 @@
       "syncYouTube": "סנכרון יוטיוב",
       "tagVod": "תיוג VOD",
       "pendingModeration": "ממתין למודרציה"
-    }
+    },
+    "loading": "טוען תוכן...",
+    "news": "חדשות",
+    "trending": "פופולרי"
   },
   "catchup": {
     "overlay": {
@@ -4880,11 +6174,17 @@
       "creditContext": "זה ישתמש ב-{{cost}} מתוך {{balance}} הקרדיטים שלך",
       "lowBalanceWarning": "נותרו מעט קרדיטים",
       "acceptButton": "עדכן אותי ({{cost}} קרדיטים)",
-      "declineButton": "לא תודה"
+      "declineButton": "לא תודה",
+      "accept": "אשר",
+      "balanceContext": "יתרת הקרדיטים שלך",
+      "decline": "דחה",
+      "lowBalance": "יתרה נמוכה",
+      "thisProgram": "תוכנית זו"
     },
     "button": {
       "credits": "עדכון ({{cost}} קרדיטים)",
-      "label": "עדכון ({{cost}} קרדיטים)"
+      "label": "עדכון ({{cost}} קרדיטים)",
+      "title": "עדכון"
     },
     "generating": "מייצר סיכום...",
     "summary": {
@@ -4893,12 +6193,198 @@
       "windowInfo": "{{minutes}} הדקות האחרונות",
       "creditsUsed": "השתמשת ב-{{count}} קרדיטים",
       "creditsRemaining": "נותרו {{count}} קרדיטים",
-      "close": "סגור"
+      "close": "סגור",
+      "cached": "שמור במטמון",
+      "remaining": "נותר",
+      "window": "חלון זמן"
     },
     "error": {
       "failed": "לא ניתן לייצר סיכום",
       "retry": "נסה שוב",
       "insufficientCredits": "אין מספיק קרדיטים"
     }
+  },
+  "quota": {
+    "subtitleExceeded": "מכסת הכתוביות נוצלה. אנא נסה שוב מאוחר יותר.",
+    "dubbingExceeded": "מכסת הדיבוב נוצלה. אנא נסה שוב מאוחר יותר."
+  },
+  "podcast": {
+    "selectLanguage": "בחר שפה",
+    "switchToLanguage": "עבור ל{{language}}",
+    "premiumRequiredForTranslation": "נדרש מנוי פרימיום לתרגום פודקאסטים",
+    "player": {
+      "switchingLanguage": "מחליף..."
+    },
+    "languages": {
+      "he": {
+        "short": "עב",
+        "full": "עברית"
+      },
+      "en": {
+        "short": "EN",
+        "full": "אנגלית"
+      },
+      "es": {
+        "short": "ES",
+        "full": "ספרדית"
+      }
+    }
+  },
+  "validation": {
+    "authorRequired": "שדה מחבר הוא חובה",
+    "orderRange": "הסדר חייב להיות בין 1 ל-100",
+    "streamUrlRequired": "כתובת שידור היא חובה",
+    "titleRequired": "שדה כותרת הוא חובה"
+  },
+  "audible": {
+    "accountLinked": "החשבון מקושר",
+    "connected": "מחובר",
+    "connecting": "מתחבר",
+    "connectionFailed": "החיבור נכשל",
+    "pleaseWait": "אנא המתן"
+  },
+  "beta": {
+    "credits": {
+      "error": "טעינת הקרדיטים נכשלה",
+      "label": "קרדיטים AI",
+      "loading": "טוען קרדיטים...",
+      "remaining": "נותרו {{count}} קרדיטים",
+      "upgrade": "שדרג",
+      "upgradeAction": "שדרג עכשיו",
+      "warningCritical": "הקרדיטים שלך עומדים להיגמר",
+      "warningLow": "יתרת הקרדיטים נמוכה"
+    }
+  },
+  "cancelled": {
+    "description": "התשלום שלך בוטל.",
+    "helpText": "לא בוצע חיוב לחשבונך.",
+    "retry": "נסה שוב",
+    "title": "התשלום בוטל"
+  },
+  "devices": {
+    "activeNow": "פעיל כעת",
+    "confirmDisconnect": "לנתק מכשיר?",
+    "daysAgo": "לפני {{count}} ימים",
+    "disconnect": "נתק",
+    "disconnectSuccess": "המכשיר נותק",
+    "disconnectSuccessMessage": "המכשיר נותק בהצלחה.",
+    "disconnectSuccessWithSessions": "המכשיר נותק וכל הפגישות הפעילות סוגרו.",
+    "hoursAgo": "לפני {{count}} שעות",
+    "loading": "טוען מכשירים...",
+    "minutesAgo": "לפני {{count}} דקות",
+    "noDevices": "אין מכשירים מחוברים",
+    "noDevicesDescription": "מכשירים יופיעו כאן כשתתחבר מפלטפורמות שונות",
+    "registeredDevices": "מכשירים רשומים",
+    "thisDevice": "מכשיר זה"
+  },
+  "liveAiDataFlow": {
+    "subtitle": "מעקב בזמן אמת אחר עיבוד AI עבור ערוצים חיים",
+    "tabs": {
+      "dubbing": "דיבוב",
+      "translation": "תרגום",
+      "trivia": "טריוויה"
+    },
+    "title": "זרימת נתוני AI חיה"
+  },
+  "pending": {
+    "description": "התשלום שלך בעיבוד. אנא המתן...",
+    "helpText": "זה בדרך כלל לוקח מספר שניות. אל תסגור דף זה.",
+    "takingLonger": "זה לוקח יותר זמן מהצפוי...",
+    "timeElapsed": "זמן שחלף: {{time}}",
+    "title": "עיבוד תשלום"
+  },
+  "privacy": {
+    "children": {
+      "content": "בעוד שהתוכן שלנו מתאים לכל הגילאים, Olorin.ai LLC אינה אוספת ביודעין מידע אישי מזהה מילדים מתחת לגיל 13. אם אתה הורה ומאמין שילדך סיפק לנו מידע אישי, אנא צור איתנו קשר.",
+      "title": "5. ילדים"
+    },
+    "collection": {
+      "audio": {
+        "data": "מידע שנאסף: דגימות שמע קצרות של שידור הטלוויזיה.",
+        "intro": "אם אתה משתמש בתכונות הדורשות סנכרון שמע, האפליקציה עשויה לבקש גישה למיקרופון.",
+        "purpose": "מטרה: להתאים את טביעת האצבע הקולית של השידור הציבורי למטרות סנכרון.",
+        "retention": "שמירה: כמו נתונים חזותיים, דגימות שמע מעובדות בזמן אמת ונמחקות מיד. אנחנו לא מאזינים או מקליטים שיחות משתמשים.",
+        "title": "ב. נתוני סנכרון שמע"
+      },
+      "camera": {
+        "data": "מידע שנאסף: פריימים בודדים ברזולוציה נמוכה של מסך הטלוויזיה שלך.",
+        "intro": "כדי לספק את השירות המרכזי שלנו - סנכרון שמע מתורגם עם הטלוויזיה שלך - בית+ דורש גישה למצלמת המכשיר שלך.",
+        "purpose": "מטרה: זיהוי התוכן המשודר בטלוויזיה שלך לצורך סנכרון מדויק.",
+        "retention": "שמירה: נתון זה זמני. הפריימים מעובדים מיד בזיכרון ונמחקים לצמיתות מיד לאחר ביסוס הסנכרון. אנחנו לא צופים, שומרים או מאחסנים תמונות של הבית או המשפחה שלך.",
+        "title": "א. נתוני מצלמה וסנכרון חזותי"
+      },
+      "title": "2. מידע שאנו אוספים ואיך אנו משתמשים בו",
+      "usage": {
+        "aggregate": "נתוני שימוש מצטברים ואנונימיים",
+        "content": "אנו עשויים לאסוף נתונים טכניים לא מזהים לשיפור יציבות האפליקציה, כולל:",
+        "crash": "יומני קריסה ומדדי ביצועים.",
+        "device": "סוג המכשיר וגרסת מערכת ההפעלה.",
+        "title": "ג. נתוני שימוש וטכניים"
+      }
+    },
+    "contact": {
+      "intro": "אם יש לך שאלות לגבי מדיניות פרטיות זו, אנא צור איתנו קשר בכתובת:",
+      "title": "7. צור קשר"
+    },
+    "intro": {
+      "commitment": "בנינו את בית+ עם ארכיטקטורת \"פרטיות קודם כל\". אנחנו לא מצלמים את הסלון שלך. הטכנולוגיה שלנו משתמשת במכשיר שלך לעיבוד מקומי בלבד.",
+      "content": "מדיניות פרטיות זו מתארת כיצד Olorin.ai LLC אוספת, משתמשת ומגנה על המידע שלך.",
+      "title": "1. מבוא"
+    },
+    "lastUpdated": "עדכון אחרון: 27 בינואר 2026",
+    "retention": {
+      "account": "נתוני חשבון: נשמרים רק כל עוד החשבון שלך פעיל לניהול המנוי וההעדפות שלך.",
+      "sync": "נתוני סנכרון: נמחקים מיד לאחר העיבוד ואינם נשמרים.",
+      "title": "4. שמירת מידע"
+    },
+    "rights": {
+      "content": "בהתאם למיקומך, ייתכן שיש לך זכות לבקש גישה, תיקון או מחיקה של המידע האישי שלך. באפשרותך למחוק את חשבון בית+ שלך בכל עת דרך הגדרות האפליקציה.",
+      "title": "6. הזכויות שלך"
+    },
+    "sharing": {
+      "ai": "עיבוד AI: שירותים המשמשים ליצירת תרגומי טקסט ושמע בזמן אמת משידורים ציבוריים.",
+      "cloud": "ענן: שירותי תשתית לאירוח ואחסון נתונים מאובטח.",
+      "noSale": "Olorin.ai LLC אינה מוכרת את המידע האישי שלך. אנו משתפים פעולה עם ספקי שירות צד שלישי מהימנים כדי לספק את התשתית שלנו. ספקים אלה מורשים להשתמש במידע שלך רק ככל שנדרש לספק לנו את השירותים הללו:",
+      "title": "3. שיתוף מידע וצדדים שלישיים"
+    }
+  },
+  "semantic": {
+    "info": "חיפוש מבוסס AI מבין משמעות, לא רק מילות מפתח",
+    "infoTitle": "חיפוש סמנטי",
+    "keyword": "מילת מפתח",
+    "semantic": "סמנטי"
+  },
+  "success": {
+    "continue": "המשך",
+    "description": "התשלום שלך עובד בהצלחה.",
+    "redirecting": "מפנה...",
+    "title": "התשלום הצליח"
+  },
+  "suggestions": {
+    "categoriesTitle": "קטגוריות",
+    "clearRecent": "נקה חיפושים אחרונים",
+    "recentTitle": "חיפושים אחרונים",
+    "trendingTitle": "פופולרי"
+  },
+  "viewMode": {
+    "cards": "כרטיסים",
+    "grid": "רשת",
+    "list": "רשימה"
+  },
+  "widget": {
+    "103fmEpisodes": "פרקי 103FM",
+    "audioUnavailable": "השמע אינו זמין",
+    "contentUnavailable": "התוכן אינו זמין",
+    "errorLoadingContent": "שגיאה בטעינת התוכן",
+    "iframeNotConfigured": "iFrame לא מוגדר",
+    "loadingEpisodes": "טוען פרקים",
+    "loadingNews": "טוען חדשות",
+    "noContentConfigured": "לא הוגדר תוכן",
+    "noEpisodesFound": "לא נמצאו פרקים",
+    "podcastUnavailable": "הפודקאסט אינו זמין",
+    "stationUnavailable": "התחנה אינה זמינה",
+    "streamUnavailable": "השידור אינו זמין",
+    "unknownComponent": "רכיב לא ידוע",
+    "ynetBreakingNews": "חדשות אחרונות Ynet"
   }
 }

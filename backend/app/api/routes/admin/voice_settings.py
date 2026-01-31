@@ -48,8 +48,8 @@ async def get_api_keys_status(
                 "masked_key": mask_key(settings.OPENAI_API_KEY),
             },
             "google": {
-                "configured": bool(settings.GOOGLE_API_KEY),
-                "masked_key": mask_key(settings.GOOGLE_API_KEY),
+                "configured": bool(settings.GOOGLE_APPLICATION_CREDENTIALS),
+                "masked_key": mask_key(settings.GOOGLE_APPLICATION_CREDENTIALS),
             },
         }
 

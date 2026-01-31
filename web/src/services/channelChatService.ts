@@ -35,7 +35,7 @@ class ChannelChatService {
   private sessionToken: string | null = null
   private callbacks: ChannelChatCallbacks | null = null
 
-  async connect(channelId: string, callbacks: ChannelChatCallbacks): Promise<void> {
+  async connect(channelId: string, callbacks: ChannelChatCallbacks, isLive = true): Promise<void> {
     try { validateConfiguration() } catch (error) {
       callbacks.onError('CONFIG_ERROR', error instanceof Error ? error.message : 'Configuration error', false)
       return
@@ -49,7 +49,8 @@ class ChannelChatService {
       this.callbacks = callbacks
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
       const wsHost = API_BASE_URL.replace(/^https?:\/\//, '').replace(/\/api\/v1\/?$/, '')
-      this.ws = new WebSocket(`${wsProtocol}//${wsHost}/api/v1/ws/live/${channelId}/chat`)
+      const wsPathPrefix = isLive ? 'live' : 'content'
+      this.ws = new WebSocket(`${wsProtocol}//${wsHost}/api/v1/ws/${wsPathPrefix}/${channelId}/chat`)
 
       this.ws.onopen = () => {
         logger.debug('WebSocket connected, authenticating...', 'channelChatService')
@@ -161,7 +162,7 @@ class ChannelChatService {
   }
 
   static async translateMessage(
-    channelId: string, text: string, fromLang: string, toLang: string,
+    channelId: string, text: string, fromLang: string, toLang: string, isLive = true,
   ): Promise<string | null> {
     validateConfiguration()
     try {
@@ -169,8 +170,9 @@ class ChannelChatService {
       const token = authData?.state?.token
       const params = new URLSearchParams({ text, to_lang: toLang })
       if (fromLang) params.set('from_lang', fromLang)
+      const pathPrefix = isLive ? 'live' : 'content'
       const response = await fetch(
-        `${API_BASE_URL}/live/${channelId}/chat/translate?${params.toString()}`,
+        `${API_BASE_URL}/${pathPrefix}/${channelId}/chat/translate?${params.toString()}`,
         { headers: { Authorization: `Bearer ${token}` } },
       )
       if (!response.ok) throw new Error('Translation failed')
@@ -183,7 +185,7 @@ class ChannelChatService {
   }
 
   static async fetchHistory(
-    channelId: string, before?: string, limit?: number,
+    channelId: string, before?: string, limit?: number, isLive = true,
   ): Promise<ChatHistoryResponse> {
     validateConfiguration()
     const authData = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || '{}')
@@ -191,7 +193,8 @@ class ChannelChatService {
     const params = new URLSearchParams()
     if (before) params.set('before', before)
     if (limit) params.set('limit', String(limit))
-    const url = `${API_BASE_URL}/live/${channelId}/chat/history${params.toString() ? `?${params.toString()}` : ''}`
+    const pathPrefix = isLive ? 'live' : 'content'
+    const url = `${API_BASE_URL}/${pathPrefix}/${channelId}/chat/history${params.toString() ? `?${params.toString()}` : ''}`
     const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'Unknown error')

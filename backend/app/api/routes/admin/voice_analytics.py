@@ -15,7 +15,7 @@ from app.models.user import User
 from app.services.voice_management_service import VoiceManagementService
 
 router = APIRouter(
-    prefix="/admin/voice-management/analytics",
+    prefix="/voice-management/analytics",
     tags=["Admin - Voice Analytics"],
 )
 logger = logging.getLogger(__name__)

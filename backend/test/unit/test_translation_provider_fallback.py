@@ -7,7 +7,7 @@ import asyncio
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from app.services.live_translation_service import LiveTranslationService
+from app.services.live_translation import LiveTranslationService
 
 
 class TestTranslationProviderFallback:

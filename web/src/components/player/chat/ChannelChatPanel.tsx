@@ -56,7 +56,7 @@ export default function ChannelChatPanel({
     loadOlderMessages,
     hasMore,
     isLoadingMore,
-  } = useChannelChat({ channelId, autoConnect: isLiveChannel })
+  } = useChannelChat({ channelId, autoConnect: isLiveChannel, isLive: isLiveChannel })
 
   const handleToggleTranslation = useCallback(async (msg: ChatMessageData) => {
     const msgId = msg.id
@@ -67,7 +67,7 @@ export default function ChannelChatPanel({
     if (!translations[msgId]) {
       const userLang = i18n.language?.split('-')[0] || 'en'
       const translated = await ChannelChatService.translateMessage(
-        channelId, msg.message, msg.original_language, userLang,
+        channelId, msg.message, msg.original_language, userLang, isLiveChannel,
       )
       if (translated) setTranslations((prev) => ({ ...prev, [msgId]: translated }))
     }

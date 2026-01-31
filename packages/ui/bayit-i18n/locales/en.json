@@ -3,7 +3,9 @@
     "loginRequired": "Login Required",
     "loginToWatch": "Please sign in to watch {{title}}",
     "login": "Login",
-    "signUp": "Sign Up"
+    "signUp": "Sign Up",
+    "signInRequired": "Sign In Required",
+    "signInRequiredTitle": "Please sign in to continue"
   },
   "email": {
     "greeting": "Hello",
@@ -371,7 +373,14 @@
     "retry": "Retry",
     "upgradeBeta": "Upgrade to Beta 500 for auto-translation",
     "inputLabel": "Chat message input",
-    "moderationDelete": "Message removed by moderator"
+    "moderationDelete": "Message removed by moderator",
+    "participants_one": "{{count}} viewer",
+    "participants_other": "{{count}} viewers",
+    "userJoined": "{{name}} joined the chat",
+    "userLeft": "A user left the chat",
+    "placeholder": "Send a message...",
+    "send": "Send",
+    "translationBeta": "Translation (Beta)"
   },
   "errors": {
     "friends": {

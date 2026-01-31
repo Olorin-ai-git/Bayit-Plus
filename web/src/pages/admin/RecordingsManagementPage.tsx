@@ -4,13 +4,13 @@
  */
 
 import { useState, useEffect } from 'react'
-import { View, Text, FlatList, ActivityIndicator, Pressable, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Search, Trash2, Play, HardDrive, Users, Video } from 'lucide-react'
 import { useDirection } from '@/hooks/useDirection'
 import { useNotifications } from '@olorin/glass-ui/hooks'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
-import { GlassView, GlassInput, GlassPageHeader } from '@bayit/shared/ui'
+import { GlassView, GlassInput, GlassPageHeader , GlassLoadingSpinner } from '@bayit/shared/ui'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 import logger from '@/utils/logger'
 import api from '@/services/api'
@@ -234,7 +234,7 @@ export default function RecordingsManagementPage() {
 
       {loading ? (
         <View className="flex-1 justify-center items-center gap-2">
-          <ActivityIndicator size="large" color={colors.primary} />
+          <GlassLoadingSpinner />
           <Text className="text-sm text-gray-400">{t('common.loading')}</Text>
         </View>
       ) : recordings.length === 0 ? (

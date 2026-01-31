@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Activity, DollarSign, Clock } from 'lucide-react';
-import { GlassButton, GlassStatCard, GlassModal, GlassTextarea, GlassPageHeader } from '@bayit/shared/ui';
+import { GlassButton, GlassStatCard, GlassModal, GlassTextarea, GlassPageHeader , GlassLoadingSpinner } from '@bayit/shared/ui';
 import { colors, spacing, fontSize } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import { ADMIN_PAGE_CONFIG } from '../../../../../shared/utils/adminConstants';
@@ -292,7 +292,7 @@ const LibrarianAgentPage = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+        <GlassLoadingSpinner />
         <Text style={[styles.loadingText, { color: colors.textMuted }]}>{t('admin.librarian.loading')}</Text>
       </View>
     );
@@ -311,7 +311,7 @@ const LibrarianAgentPage = () => {
   if (!config) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+        <GlassLoadingSpinner />
         <Text style={[styles.loadingText, { color: colors.textMuted }]}>{t('admin.librarian.loadingConfig')}</Text>
       </View>
     );

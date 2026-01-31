@@ -19,7 +19,7 @@ The module is split into logical submodules for maintainability:
 
 from fastapi import APIRouter
 
-from app.api.routes.librarian.audit_endpoints import router as audit_router
+from app.api.routes.librarian.audit import router as audit_router
 from app.api.routes.librarian.series_linking import router as series_router
 from app.api.routes.librarian.status import router as status_router
 from app.api.routes.librarian.voice_command import router as voice_router

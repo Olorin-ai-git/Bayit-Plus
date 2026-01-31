@@ -65,7 +65,7 @@ class TestLiveTranslationServiceInit:
                 mock_speech.SpeechClient.return_value = MagicMock()
                 mock_translate.Client.return_value = MagicMock()
 
-                from app.services.live_translation_service import LiveTranslationService
+                from app.services.live_translation import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="google", translation_provider="google"
@@ -115,7 +115,7 @@ class TestLiveTranslationServiceInit:
                 mock_elevenlabs.return_value = MagicMock()
                 mock_translate.Client.return_value = MagicMock()
 
-                from app.services.live_translation_service import LiveTranslationService
+                from app.services.live_translation import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="elevenlabs", translation_provider="google"
@@ -142,7 +142,7 @@ class TestLiveTranslationServiceInit:
                 mock_elevenlabs.return_value = MagicMock()
                 mock_anthropic.return_value = MagicMock()
 
-                from app.services.live_translation_service import LiveTranslationService
+                from app.services.live_translation import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="elevenlabs", translation_provider="claude"
@@ -155,7 +155,7 @@ class TestLiveTranslationServiceInit:
 
     def test_init_invalid_stt_provider(self, mock_settings):
         """Test initialization fails with invalid STT provider."""
-        from app.services.live_translation_service import LiveTranslationService
+        from app.services.live_translation import LiveTranslationService
 
         with pytest.raises(ValueError) as exc_info:
             LiveTranslationService(provider="invalid", translation_provider="google")
@@ -171,7 +171,7 @@ class TestLiveTranslationServiceInit:
         ) as mock_elevenlabs:
             mock_elevenlabs.return_value = MagicMock()
 
-            from app.services.live_translation_service import LiveTranslationService
+            from app.services.live_translation import LiveTranslationService
 
             with pytest.raises(ValueError) as exc_info:
                 LiveTranslationService(
@@ -199,7 +199,7 @@ class TestLiveTranslationServiceVerify:
                 mock_elevenlabs.return_value = mock_elevenlabs_instance
                 mock_openai.return_value = MagicMock()
 
-                from app.services.live_translation_service import LiveTranslationService
+                from app.services.live_translation import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="elevenlabs", translation_provider="openai"
@@ -234,7 +234,7 @@ class TestLiveTranslationServiceTranslate:
                 }
                 mock_translate.Client.return_value = mock_translate_client
 
-                from app.services.live_translation_service import LiveTranslationService
+                from app.services.live_translation import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="elevenlabs", translation_provider="google"
@@ -272,7 +272,7 @@ class TestLiveTranslationServiceTranslate:
                 )
                 mock_openai.return_value = mock_openai_instance
 
-                from app.services.live_translation_service import LiveTranslationService
+                from app.services.live_translation import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="elevenlabs", translation_provider="openai"
@@ -310,7 +310,7 @@ class TestLiveTranslationServiceTranslate:
                 )
                 mock_anthropic.return_value = mock_anthropic_instance
 
-                from app.services.live_translation_service import LiveTranslationService
+                from app.services.live_translation import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="elevenlabs", translation_provider="claude"
@@ -336,7 +336,7 @@ class TestLiveTranslationServiceTranslate:
                 mock_translate_client.translate.side_effect = Exception("API error")
                 mock_translate.Client.return_value = mock_translate_client
 
-                from app.services.live_translation_service import LiveTranslationService
+                from app.services.live_translation import LiveTranslationService
 
                 service = LiveTranslationService(
                     provider="elevenlabs", translation_provider="google"

@@ -3,7 +3,9 @@
     "loginRequired": "需要登录",
     "loginToWatch": "请登录以观看 {{title}}",
     "login": "登录",
-    "signUp": "注册"
+    "signUp": "注册",
+    "signInRequired": "需要登录",
+    "signInRequiredTitle": "请登录以继续"
   },
   "email": {
     "greeting": "您好",
@@ -167,7 +169,9 @@
       "description": "启用位置服务以查看您所在地区的以色列社区活动、新闻和故事。您的隐私受到保护——我们仅检测您所在的城市。",
       "enable": "启用位置",
       "notNow": "暂时不用",
-      "close": "关闭"
+      "close": "关闭",
+      "ariaLabel": "无障碍标签",
+      "dismiss": "忽略"
     },
     "status": {
       "detecting": "正在检测您的位置...",
@@ -387,7 +391,10 @@
       "complete": "完成",
       "failed": "失败",
       "cancelled": "已取消",
-      "skipped": "已跳过（重复）"
+      "skipped": "已跳过（重复）",
+      "completed": "已完成",
+      "inProgress": "进行中",
+      "pending": "待处理"
     },
     "actions": {
       "pauseQueue": "暂停队列",
@@ -642,7 +649,14 @@
     "retry": "重试",
     "upgradeBeta": "升级到 Beta 500 以使用自动翻译",
     "inputLabel": "聊天消息输入",
-    "moderationDelete": "消息已被管理员删除"
+    "moderationDelete": "消息已被管理员删除",
+    "participants_one": "{{count}} 位观众",
+    "participants_other": "{{count}} 位观众",
+    "userJoined": "{{name}} 加入了聊天",
+    "userLeft": "有用户离开了聊天",
+    "placeholder": "发送消息...",
+    "send": "发送",
+    "translationBeta": "翻译（测试版）"
   },
   "common": {
     "milliseconds": "毫秒",
@@ -651,7 +665,11 @@
     "details": "详情",
     "back": "返回",
     "actions": "操作",
-    "live": "直播"
+    "live": "直播",
+    "loading": "加载中...",
+    "retry": "重试",
+    "loadMore": "加载更多",
+    "processing": "处理中..."
   },
   "dubbing": {
     "latency": {
@@ -721,7 +739,8 @@
         "selectVoice": "选择配音的声音",
         "originalVolume": "调整原始音频音量（0 = 静音）",
         "dubbedVolume": "调整配音音频音量（1 = 最大音量）"
-      }
+      },
+      "liveDubbing": "实时配音"
     }
   },
   "errors": {

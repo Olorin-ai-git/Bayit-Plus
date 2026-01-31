@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Lightbulb } from 'lucide-react';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
-import { GlassCard, GlassPageHeader } from '@bayit/shared/ui';
+import { GlassCard, GlassPageHeader , GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
 import { triviaAnalyticsService } from '@/services/triviaAnalyticsApi';
 import { logger } from '@/utils/logger';
@@ -62,7 +62,7 @@ export default function TriviaAnalyticsPage() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner />
       </View>
     );
   }

@@ -111,16 +111,17 @@ async def get_system_stats(
                 }
             },
         ]
-        today_results = await LiveFeatureUsageSession.aggregate(
+        collection = LiveFeatureUsageSession.get_pymongo_collection()
+        today_results = await collection.aggregate(
             today_pipeline
-        ).to_list()
+        ).to_list(None)
         month_pipeline = [
             {"$match": {"started_at": {"$gte": month_start}}},
             {"$group": {"_id": None, "total_cost": {"$sum": "$estimated_total_cost"}}},
         ]
-        month_results = await LiveFeatureUsageSession.aggregate(
+        month_results = await collection.aggregate(
             month_pipeline
-        ).to_list()
+        ).to_list(None)
         subtitle_minutes_today = 0.0
         dubbing_minutes_today = 0.0
         cost_today = 0.0
@@ -193,7 +194,8 @@ async def get_top_users(
             {"$sort": {"total_minutes": -1}},
             {"$limit": limit},
         ]
-        results = await LiveFeatureUsageSession.aggregate(pipeline).to_list()
+        collection = LiveFeatureUsageSession.get_pymongo_collection()
+        results = await collection.aggregate(pipeline).to_list(None)
 
         # Enrich with user details
         top_users = []

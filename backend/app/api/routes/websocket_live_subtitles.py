@@ -21,7 +21,7 @@ from app.core.config import settings
 from app.models.content import LiveChannel
 from app.models.live_feature_quota import FeatureType, UsageSessionStatus
 from app.services.live_feature_quota_service import live_feature_quota_service
-from app.services.live_translation_service import LiveTranslationService
+from app.services.live_translation import LiveTranslationService
 from app.services.rate_limiter_live import get_rate_limiter
 
 router = APIRouter()

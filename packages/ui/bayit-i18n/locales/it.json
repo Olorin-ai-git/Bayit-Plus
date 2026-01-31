@@ -3,7 +3,9 @@
     "loginRequired": "Accesso richiesto",
     "loginToWatch": "Accedi per guardare {{title}}",
     "login": "Accedi",
-    "signUp": "Registrati"
+    "signUp": "Registrati",
+    "signInRequired": "Accesso richiesto",
+    "signInRequiredTitle": "Effettua l'accesso per continuare"
   },
   "email": {
     "greeting": "Ciao",
@@ -167,7 +169,9 @@
       "description": "Attiva i servizi di localizzazione per vedere eventi, notizie e storie della comunità israeliana nella tua zona. La tua privacy è protetta - rileviamo solo la tua città.",
       "enable": "Attiva localizzazione",
       "notNow": "Non ora",
-      "close": "Chiudi"
+      "close": "Chiudi",
+      "ariaLabel": "Etichetta accessibilità",
+      "dismiss": "Ignora"
     },
     "status": {
       "detecting": "Rilevamento della tua posizione...",
@@ -387,7 +391,10 @@
       "complete": "Completato",
       "failed": "Fallito",
       "cancelled": "Annullato",
-      "skipped": "Saltato (Duplicato)"
+      "skipped": "Saltato (Duplicato)",
+      "completed": "Completato",
+      "inProgress": "In corso",
+      "pending": "In attesa"
     },
     "actions": {
       "pauseQueue": "Metti in pausa la coda",
@@ -642,7 +649,24 @@
     "retry": "Riprova",
     "upgradeBeta": "Passa a Beta 500 per la traduzione automatica",
     "inputLabel": "Campo di inserimento messaggio",
-    "moderationDelete": "Messaggio rimosso dal moderatore"
+    "moderationDelete": "Messaggio rimosso dal moderatore",
+    "placeholder": "Scrivi un messaggio...",
+    "send": "Invia",
+    "noMessages": "Nessun messaggio ancora. Sii il primo a commentare!",
+    "loadMore": "Carica altri messaggi",
+    "connecting": "Connessione...",
+    "connectionError": "Errore di connessione. Riconnessione...",
+    "rules": {
+      "title": "Regole della chat",
+      "beRespectful": "Sii rispettoso verso gli altri",
+      "noSpam": "Niente spam o pubblicità",
+      "noHateSpeech": "Niente incitamento all'odio o discriminazione"
+    },
+    "participants_one": "{{count}} partecipante",
+    "participants_other": "{{count}} partecipanti",
+    "userJoined": "{{user}} si è unito alla chat",
+    "userLeft": "{{user}} ha lasciato la chat",
+    "translationBeta": "Traduzione (Beta)"
   },
   "common": {
     "milliseconds": "millisecondi",
@@ -651,7 +675,11 @@
     "details": "dettagli",
     "back": "Indietro",
     "actions": "Azioni",
-    "live": "IN DIRETTA"
+    "live": "IN DIRETTA",
+    "loading": "Caricamento...",
+    "retry": "Riprova",
+    "loadMore": "Carica altro",
+    "processing": "Elaborazione..."
   },
   "dubbing": {
     "latency": {
@@ -721,7 +749,8 @@
         "selectVoice": "Scegli la voce per l'audio doppiato",
         "originalVolume": "Regola il volume dell'audio originale (0 = muto)",
         "dubbedVolume": "Regola il volume dell'audio doppiato (1 = volume completo)"
-      }
+      },
+      "liveDubbing": "Doppiaggio in diretta"
     }
   },
   "errors": {

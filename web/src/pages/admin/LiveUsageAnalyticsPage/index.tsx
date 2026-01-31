@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { Users, DollarSign, Clock, Activity } from 'lucide-react';
 import { liveQuotasService } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
-import AdminLayout from '@/components/admin/AdminLayout';
 import logger from '@/utils/logger';
 import { SystemStats, TopUser, UsageReport } from './types';
 import StatCard from './StatCard';
@@ -66,17 +66,14 @@ export default function LiveUsageAnalyticsPage() {
 
   if (loading) {
     return (
-      <AdminLayout>
-        <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
-        </View>
-      </AdminLayout>
+      <View style={styles.centerContainer}>
+        <GlassLoadingSpinner />
+      </View>
     );
   }
 
   return (
-    <AdminLayout>
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={[styles.title, isRTL && styles.textRTL]}>
@@ -150,7 +147,6 @@ export default function LiveUsageAnalyticsPage() {
         {/* Top Users */}
         <TopUsersTable topUsers={topUsers} isRTL={isRTL} />
       </ScrollView>
-    </AdminLayout>
   );
 }
 

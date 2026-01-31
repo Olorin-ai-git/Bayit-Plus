@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, AlertTriangle, Info, Archive, XCircle, CheckCircle2, RefreshCw, Terminal } from 'lucide-react';
-import { GlassModal, GlassButton, GlassCard, GlassBadge } from '@bayit/shared/ui';
+import { GlassModal, GlassButton, GlassCard, GlassBadge , GlassLoadingSpinner } from '@bayit/shared/ui';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { AuditReportDetail, LibrarianConfig, LogEntry, reapplyAuditFixes } from '@/services/librarianService';
 import logger from '@/utils/logger';
@@ -130,7 +130,7 @@ export const ReportDetailModal = ({
     >
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+          <GlassLoadingSpinner />
           <Text style={styles.loadingText}>{t('admin.librarian.loading')}</Text>
         </View>
       ) : report ? (

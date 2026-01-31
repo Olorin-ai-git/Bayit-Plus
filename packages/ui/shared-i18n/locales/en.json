@@ -15,7 +15,8 @@
     "name": "Name",
     "guest": "Guest",
     "premium": "Premium",
-    "basic": "Basic"
+    "basic": "Basic",
+    "tapToLogin": "Tap to login"
   },
   "admin": {
     "brand": {
@@ -49,19 +50,49 @@
         "amount": "Amount",
         "reason": "Reason",
         "status": "Status",
-        "requestDate": "Request Date"
+        "requestDate": "Request Date",
+        "date": "Requested",
+        "requested": "Requested",
+        "transaction": "Transaction"
       },
       "stats": {
         "pendingTitle": "Pending Approval",
         "approvedTitle": "Approved",
         "rejectedTitle": "Rejected",
-        "totalRefunded": "Total Refunded"
+        "totalRefunded": "Total Refunded",
+        "approved": "Approved",
+        "pending": "Pending",
+        "total": "Total",
+        "totalAmount": "Total Amount"
       },
       "emptyMessage": "No refund requests found",
       "errors": {
         "rejectReasonRequired": "Please enter rejection reason"
       },
-      "title": "Refunds"
+      "title": "Refunds",
+      "approve": "Approve",
+      "approveConfirm": "Approve Refund",
+      "approveFailed": "Failed to approve refund",
+      "approveSuccess": "Refund approved",
+      "approved": "Approved",
+      "approvedMessage": "Refund has been approved.",
+      "confirmReject": "Are you sure you want to reject this refund?",
+      "details": "Refund Details",
+      "noData": "No refund requests found",
+      "noRefunds": "No refunds found",
+      "pending": "Pending Review",
+      "processedAt": "Processed",
+      "reasonPlaceholder": "Enter reason for rejection...",
+      "reasonRequired": "Rejection reason is required",
+      "rejectFailed": "Failed to reject refund",
+      "rejectRefund": "Reject Refund",
+      "rejectSuccess": "Refund rejected",
+      "rejected": "Rejected",
+      "rejectedMessage": "Refund has been rejected.",
+      "rejectingAmount": "Rejecting refund of",
+      "rejectionReason": "Rejection Reason",
+      "search": "Search refunds...",
+      "totalApproved": "Total Refunded"
     },
     "plans": {
       "title": "Plan Management",
@@ -90,7 +121,24 @@
       "errors": {
         "requiredFields": "Name and price are required"
       },
-      "confirmDelete": "Delete plan \"{{name}}\"?"
+      "confirmDelete": "Delete plan \"{{name}}\"?",
+      "active": "Active",
+      "addFeature": "Add",
+      "addNew": "Add New Plan",
+      "createPlan": "Create Plan",
+      "created": "Plan created successfully",
+      "deleteConfirm": "Delete Plan",
+      "editPlan": "Edit Plan",
+      "featurePlaceholder": "Enter feature...",
+      "features": "Features",
+      "interval": "Billing Interval",
+      "loadError": "Failed to load subscription plans. Please try again.",
+      "name": "Plan Name",
+      "namePlaceholder": "e.g., Premium",
+      "price": "Price ($)",
+      "requiredFields": "Name and price are required",
+      "saveError": "Failed to save plan",
+      "updated": "Plan updated successfully"
     },
     "emailCampaigns": {
       "subtitle": "Create and manage email campaigns",
@@ -110,7 +158,11 @@
         "opened": "Opened",
         "clicked": "Clicked",
         "created": "Created",
-        "actions": "Actions"
+        "actions": "Actions",
+        "date": "Date",
+        "metrics": "Metrics",
+        "recipients": "Recipients",
+        "subject": "Subject"
       },
       "editModal": {
         "title": "Edit Campaign"
@@ -140,7 +192,25 @@
       },
       "errors": {
         "requiredFields": "Name and subject are required"
-      }
+      },
+      "clicked": "Clicked",
+      "create": "Create Campaign",
+      "details": "Campaign Details",
+      "noData": "No email campaigns found",
+      "opened": "Opened",
+      "scheduledAt": "Scheduled",
+      "search": "Search campaigns...",
+      "sendingTest": "Sending test email...",
+      "sentAt": "Sent",
+      "stats": {
+        "openRate": "Open Rate",
+        "recipients": "Recipients",
+        "sent": "Sent",
+        "total": "Total"
+      },
+      "testFailed": "Failed to send test email",
+      "testSent": "Test email sent",
+      "title": "Email Campaigns"
     },
     "campaignEdit": {
       "subtitle": "Edit campaign details and settings"
@@ -157,7 +227,8 @@
       "revenue": "Revenue",
       "subscriptions": "Subscriptions",
       "recentActivity": "Recent Activity",
-      "quickActions": "Quick Actions"
+      "quickActions": "Quick Actions",
+      "noRecentActivity": "No recent activity"
     },
     "common": {
       "all": "All",
@@ -171,7 +242,13 @@
       "filterAction": "Action",
       "filterResource": "Resource",
       "filterUser": "User",
-      "filterDateRange": "Date range"
+      "filterDateRange": "Date range",
+      "uploading": "Uploading...",
+      "deleteConfirmMessage": "Delete Confirm Message",
+      "deleteConfirmTitle": "Delete Confirm Title",
+      "deleteEpisodeMessage": "Delete Episode Message",
+      "edit": "Edit",
+      "featured": "Featured"
     },
     "stats": {
       "totalUsers": "Total Users",
@@ -192,7 +269,26 @@
       "sendEmail": "Send Email",
       "viewReports": "View Reports",
       "newPodcast": "Create new podcast",
-      "newEpisode": "Create new episode"
+      "newEpisode": "Create new episode",
+      "back": "Back to Content",
+      "feature": "Feature",
+      "publish": "Publish",
+      "unfeature": "Unfeature",
+      "unpublish": "Unpublish",
+      "activate": "Activate",
+      "approve": "Approve",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "newAudiobook": "New Audiobook",
+      "newCategory": "New Category",
+      "newChannel": "New Channel",
+      "newStation": "New Station",
+      "pause": "Pause",
+      "reject": "Reject",
+      "resume": "Resume",
+      "test": "Test",
+      "view": "View"
     },
     "auditActions": {
       "user_created": "User Created",
@@ -261,7 +357,16 @@
       "radioStations": "Radio Stations",
       "podcasts": "Podcasts",
       "settings": "Settings",
-      "audiobooks": "Audiobooks"
+      "audiobooks": "Audiobooks",
+      "billingOverview": "Billing Overview",
+      "campaignDetail": "Campaign",
+      "dashboard": "Dashboard",
+      "emailCampaigns": "Email Campaigns",
+      "marketingDashboard": "Marketing Dashboard",
+      "newCampaign": "New Campaign",
+      "newUser": "New User",
+      "planManagement": "Plan Management",
+      "userDetail": "User Detail"
     },
     "nav": {
       "dashboard": "Dashboard",
@@ -295,7 +400,9 @@
       "translations": "Translations",
       "costDashboard": "Cost Dashboard",
       "audiobooks": "Audiobooks",
-      "diagnostics": "System Diagnostics"
+      "diagnostics": "System Diagnostics",
+      "backToApp": "Back to App",
+      "logout": "Logout"
     },
     "liveQuotas": {
       "title": "Live Feature Quota Management",
@@ -335,7 +442,14 @@
       "subtitles": "Subtitles",
       "dubbing": "Dubbing",
       "cost": "Cost",
-      "noData": "No usage data available"
+      "noData": "No usage data available",
+      "dubbingDayInput": "Dubbing minutes per day",
+      "dubbingHourInput": "Dubbing minutes per hour",
+      "dubbingMonthInput": "Dubbing minutes per month",
+      "notesLabel": "Admin notes",
+      "subtitleDayInput": "Subtitle minutes per day",
+      "subtitleHourInput": "Subtitle minutes per hour",
+      "subtitleMonthInput": "Subtitle minutes per month"
     },
     "featured": {
       "title": "Featured Content",
@@ -445,7 +559,12 @@
         "order": "Order",
         "name": "Name",
         "slug": "Slug",
-        "subtitles": "Subtitles"
+        "subtitles": "Subtitles",
+        "icon": "Icon",
+        "logo": "Logo",
+        "cover": "Cover",
+        "languages": "Languages",
+        "translationStatus": "Translation Status"
       },
       "validation": {
         "titleRequired": "Title is required",
@@ -458,7 +577,10 @@
       "noEpisodes": "No Episodes",
       "type": {
         "series": "Series",
-        "movie": "Movie"
+        "movie": "Movie",
+        "audiobook": "Audiobook",
+        "podcast": "Podcast",
+        "radio": "Radio"
       },
       "toggleCarousel": "Toggle carousel",
       "editor": {
@@ -546,7 +668,8 @@
           "isActive": "Active",
           "isActiveLabel": "Channel is active",
           "requiredSubscription": "Required Subscription",
-          "publishedDate": "Published Date"
+          "publishedDate": "Published Date",
+          "logoPlaceholder": "Logo URL"
         },
         "subscriptionTiers": {
           "basic": "Basic",
@@ -674,7 +797,12 @@
         "mergeSuccess": "Merge Successful"
       },
       "podcastsComingSoon": "Podcast management coming soon. Use the Podcasts section.",
-      "radioComingSoon": "Radio station management coming soon. Use the Radio Stations section."
+      "radioComingSoon": "Radio station management coming soon. Use the Radio Stations section.",
+      "createSuccess": "Content created successfully. Redirecting...",
+      "episodes": "episodes",
+      "updateSuccess": "Content updated successfully. Redirecting...",
+      "deleteSuccess": "Category deleted",
+      "publishedOnly": "Published Only"
     },
     "categories": {
       "subtitle": "Manage content categories",
@@ -686,8 +814,17 @@
       "form": {
         "nameHebrew": "Category name (Hebrew)",
         "nameEnglish": "Category name (English)",
-        "slug": "Slug"
-      }
+        "slug": "Slug",
+        "nameEnglishPlaceholder": "Category name (English)",
+        "nameHebrewPlaceholder": "Category name (Hebrew)",
+        "slugPlaceholder": "Slug (e.g., movies)",
+        "titleEdit": "Edit Category",
+        "titleNew": "New Category"
+      },
+      "createSuccess": "Category created",
+      "deleteCategory": "Delete Category",
+      "editCategory": "Edit Category",
+      "updateSuccess": "Category updated"
     },
     "recordings": {
       "title": "Recordings Management",
@@ -802,7 +939,14 @@
         "invalidFilesCount": "{{count}} invalid files",
         "proceedUpload": "Upload {{count}} valid files",
         "folderTooLarge": "Folder contains too many files (max {{max}})",
-        "folderTooDeep": "Folder structure too deep (max {{max}} levels)"
+        "folderTooDeep": "Folder structure too deep (max {{max}} levels)",
+        "clearFiles": "Clear Files",
+        "failed": "Failed",
+        "progress": "Progress",
+        "status": "Status",
+        "successful": "Successful",
+        "total": "Total",
+        "uploadCancelled": "Upload Cancelled"
       },
       "urlUpload": {
         "title": "Import from URL",
@@ -820,7 +964,11 @@
         "emptyUrlList": "No URLs imported",
         "emptyUrlListDescription": "Enter URLs above to import video files from remote sources",
         "addUrl": "Add URL",
-        "removeUrl": "Remove URL"
+        "removeUrl": "Remove URL",
+        "hint": "Hint",
+        "placeholder": "Placeholder",
+        "upload": "Upload",
+        "validate": "Validate"
       },
       "monitoredFolders": {
         "title": "Monitored Folders",
@@ -871,7 +1019,14 @@
           "saveButton": "Save Folder",
           "cancelButton": "Cancel",
           "saving": "Saving..."
-        }
+        },
+        "addSuccess": "Add Success",
+        "autoUpload": "Auto Upload",
+        "contentType": "Content Type",
+        "enabled": "Enabled",
+        "filesFound": "Files Found",
+        "scanTriggered": "Scan Triggered",
+        "updateSuccess": "Update Success"
       },
       "dryRun": {
         "title": "Dry Run Mode",
@@ -889,7 +1044,12 @@
         "proceedButton": "Proceed with Upload",
         "proceedHint": "Disable dry run and perform actual upload",
         "cancelButton": "Cancel",
-        "noResults": "No dry run results available"
+        "noResults": "No dry run results available",
+        "duplicates": "Duplicates",
+        "errors": "Errors",
+        "preview": "Preview",
+        "proceedWithUpload": "Proceed With Upload",
+        "willUpload": "Will Upload"
       },
       "connectionStatus": {
         "connected": "Connected",
@@ -981,7 +1141,14 @@
         "rateLimitExceeded": "Rate limit exceeded. Please wait before uploading more files.",
         "configValidationFailed": "Configuration validation failed. Check console for details.",
         "websocketAuthFailed": "WebSocket authentication failed",
-        "unsupportedBrowser": "Your browser doesn't support required features"
+        "unsupportedBrowser": "Your browser doesn't support required features",
+        "addFolderFailed": "Add Folder Failed",
+        "deleteFolderFailed": "Delete Folder Failed",
+        "dryRunFailed": "Dry Run Failed",
+        "scanFolderFailed": "Scan Folder Failed",
+        "updateFolderFailed": "Update Folder Failed",
+        "urlUploadFailed": "Url Upload Failed",
+        "urlValidationFailed": "Url Validation Failed"
       },
       "mobile": {
         "dataWarning": "You're on cellular data. Uploading {{size}} may use significant data.",
@@ -1175,7 +1342,10 @@
         "aiAuditSuccess": "AI Agent audit triggered successfully. {{dryRun}}",
         "dailyAuditSuccess": "Daily audit triggered successfully. {{dryRun}}",
         "dryRunMode": "(Dry run mode)",
-        "rollbackSuccess": "Action rolled back successfully."
+        "rollbackSuccess": "Action rolled back successfully.",
+        "forceUpdates": "Force Updates",
+        "liveMode": "Live Mode",
+        "previewMode": "Preview Mode"
       },
       "voice": {
         "title": "Voice Control",
@@ -1270,11 +1440,30 @@
           "orphanedItems": "Orphaned Items",
           "fixesApplied": "Fixes Applied",
           "totalFixes": "{{count}} total fixes",
-          "aiInsights": "AI Insights"
+          "aiInsights": "AI Insights",
+          "agentSummary": "Agent Summary",
+          "auditFailed": "Audit Failed",
+          "auditIncomplete": "Audit Incomplete",
+          "errorDetails": "Error Details"
         },
         "reapplyFixes": "Reapply Fixes",
         "reapplying": "Reapplying...",
-        "reapplyError": "Failed to reapply fixes"
+        "reapplyError": "Failed to reapply fixes",
+        "actions": "ACTIONS",
+        "clearFilters": "Clear Filters",
+        "date": "DATE",
+        "duration": "DURATION",
+        "fixes": "fixes",
+        "issues": "issues",
+        "more": "more",
+        "noMatchingReports": "No matching reports found",
+        "of": "of",
+        "report": "report",
+        "reports": "reports",
+        "search": "Search reports...",
+        "showing": "Showing",
+        "status": "STATUS",
+        "type": "TYPE"
       },
       "logs": {
         "title": "Execution Logs",
@@ -1333,7 +1522,12 @@
         "dryRunMode": "⚠️ Running in DRY RUN mode - no changes will be made",
         "liveMode": "✅ Running in LIVE mode - changes will be applied",
         "budgetSet": "💰 Budget limit: ${{budget}}",
-        "connectingToAgent": "🔗 Connecting to Claude AI Agent..."
+        "connectingToAgent": "🔗 Connecting to Claude AI Agent...",
+        "connectingSubtext": "Establishing secure connection to audit stream",
+        "idle": "Idle",
+        "quickAudit": "Quick Audit",
+        "triggerFullAudit": "Configure & Trigger Full Audit",
+        "warning": "Warning"
       },
       "audit": {
         "types": {
@@ -1352,7 +1546,10 @@
         "pauseSuccess": "Audit paused successfully",
         "resumeSuccess": "Audit resumed successfully",
         "cancelSuccess": "Audit cancelled successfully",
-        "reapplyStarted": "Fix reapplication started. Check the live panel for progress."
+        "reapplyStarted": "Fix reapplication started. Check the live panel for progress.",
+        "status": {
+          "never": "Never"
+        }
       },
       "progress": {
         "batch": "Batch {{current}} of {{total}}",
@@ -1413,6 +1610,18 @@
       "auditTypes": {
         "daily_incremental": "daily incremental",
         "ai_agent": "AI Agent"
+      },
+      "kidsAudit": {
+        "ageDistribution": "Age Rating Distribution",
+        "approved": "Approved",
+        "categoryBalance": "Category Balance",
+        "flagged": "Flagged",
+        "noCategories": "No categories yet",
+        "pendingReview": "Pending",
+        "runAudit": "Audit Kids Content",
+        "subtitle": "Content moderation status",
+        "title": "Kids Content Health",
+        "totalItems": "Total Items"
       }
     },
     "widgets": {
@@ -1490,18 +1699,83 @@
       "churnRate": "Churn Rate",
       "atRiskUsers": "At Risk Users",
       "churnedUsers": "Churned Users",
-      "quickLinks": "Quick Links"
+      "quickLinks": "Quick Links",
+      "export": "Export",
+      "managePlans": "Manage pricing plans",
+      "manageRefunds": "Manage refund requests",
+      "manageSubscriptions": "Manage subscriptions",
+      "paymentMethods": "Payment Methods",
+      "plans": "Plans",
+      "quickActions": "Quick Actions",
+      "recentTransactions": "Recent Transactions",
+      "refunds": "Refunds",
+      "revenueChart": "Revenue Trend",
+      "subscriptions": "Subscriptions",
+      "title": "Billing & Revenue",
+      "total": "Total",
+      "viewAll": "View All",
+      "viewAllTransactions": "View all transactions",
+      "viewTransactions": "Transactions"
     },
     "marketing": {
       "recentCampaigns": "Recent Campaigns",
       "audienceSegments": "Audience Segments",
       "emailMetrics": "Email Metrics",
       "pushMetrics": "Push Metrics",
-      "quickActions": "Quick Actions"
+      "quickActions": "Quick Actions",
+      "clickRate": "Email Click Rate",
+      "conversionRate": "Conversion Rate",
+      "emailCampaigns": "Email Campaigns",
+      "emailCampaignsDesc": "Create and manage email campaigns",
+      "emailOpenRate": "Email Open Rate",
+      "emailsSent": "Emails Sent",
+      "loadError": "Failed to load marketing data",
+      "noData": "No data available",
+      "opened": "Opened",
+      "overview": "Overview",
+      "performance": "Performance Metrics",
+      "pushDesc": "Send push notifications to users",
+      "pushNotifications": "Push Notifications",
+      "pushOpenRate": "Push Open Rate",
+      "pushSent": "Push Sent",
+      "sent": "Sent",
+      "unsubscribeRate": "Unsubscribe Rate",
+      "viewAll": "View All"
     },
     "push": {
       "titlePlaceholder": "Notification Title",
-      "bodyPlaceholder": "Notification Message"
+      "bodyPlaceholder": "Notification Message",
+      "audience": "Target Audience",
+      "body": "Body",
+      "columns": {
+        "body": "Body",
+        "opened": "Opened",
+        "scheduled": "Scheduled",
+        "sent": "Sent",
+        "status": "Status",
+        "title": "Title"
+      },
+      "create": "Create Notification",
+      "createNotification": "Create Notification",
+      "deepLink": "Deep Link (optional)",
+      "deleteConfirm": "Delete Notification",
+      "editNotification": "Edit Notification",
+      "loadError": "Failed to load notifications. Please try again.",
+      "noNotifications": "No notifications found",
+      "preview": "Preview",
+      "requiredFields": "Title and body are required",
+      "schedule": "Schedule",
+      "scheduleDate": "Date & Time",
+      "scheduleNotification": "Schedule Notification",
+      "scheduled": "Scheduled",
+      "scheduledMessage": "Notification has been scheduled",
+      "searchPlaceholder": "Search notifications...",
+      "send": "Send Now",
+      "sendConfirm": "Send Notification",
+      "sendMessage": "Send this notification to all targeted users now?",
+      "sent": "Sent",
+      "sentMessage": "Notification is being sent",
+      "title": "Title"
     },
     "auditLogs": {
       "subtitle": "Track all system actions",
@@ -1561,7 +1835,26 @@
         "watch_party": "Watch Party",
         "voice_search": "Voice Search",
         "ai_recommendations": "AI Recommendations"
-      }
+      },
+      "clear": "Clear",
+      "clearCacheConfirm": "Are you sure you want to clear the system cache?",
+      "clearCacheDesc": "Clear all cached data from the system",
+      "contactLegal": "Contact & Legal",
+      "dangerZone": "Danger Zone",
+      "defaultPlanDesc": "Default subscription plan for new users",
+      "featureFlagsDesc": "Enable or disable features in real-time",
+      "flagError": "Failed to update feature flag",
+      "general": "General Settings",
+      "loadError": "Failed to load settings",
+      "maxDevicesDesc": "Maximum devices per account",
+      "reset": "Reset",
+      "resetAnalyticsConfirm": "Are you sure you want to reset all analytics data? This action cannot be undone.",
+      "resetAnalyticsDesc": "Reset all analytics data",
+      "save": "Save Changes",
+      "saveError": "Failed to save settings",
+      "saved": "Saved",
+      "savedMessage": "Settings have been saved successfully",
+      "trialDaysDesc": "Number of free trial days"
     },
     "contentEditor": {
       "subtitle": "Edit content metadata and information"
@@ -1580,7 +1873,9 @@
         "primaryLanguage": "Primary Language (Source)",
         "targetLanguages": "Available Translation Languages",
         "targetLanguagesHelp": "Select which languages users can translate to in real-time"
-      }
+      },
+      "deleteChannel": "Delete Channel",
+      "editChannel": "Edit Channel"
     },
     "radioStations": {
       "subtitle": "Manage radio stations",
@@ -1591,7 +1886,20 @@
         "streamUrl": "Stream URL",
         "currentShow": "Current Show (optional)",
         "currentSong": "Current Song (optional)",
-        "order": "Order"
+        "order": "Order",
+        "currentShowPlaceholder": "Current Show (optional)",
+        "currentSongPlaceholder": "Current Song (optional)",
+        "genrePlaceholder": "Genre (e.g., Electronic, News)",
+        "namePlaceholder": "Station name",
+        "orderPlaceholder": "Order",
+        "streamUrlPlaceholder": "Stream URL (HLS/Audio)",
+        "titleEdit": "Edit Radio Station",
+        "titleNew": "New Radio Station"
+      },
+      "errors": {
+        "deleteFailed": "Failed to delete radio station",
+        "loadFailed": "Failed to load radio stations",
+        "saveFailed": "Failed to save radio station"
       }
     },
     "podcasts": {
@@ -1615,7 +1923,10 @@
         "description": "Description",
         "category": "Category",
         "rssFeed": "RSS Feed URL",
-        "website": "Website URL (optional)"
+        "website": "Website URL (optional)",
+        "cover": "Podcast Cover",
+        "coverUrl": "Cover URL",
+        "uploadCover": "Upload"
       },
       "episodes": {
         "form": {
@@ -1628,7 +1939,10 @@
           "publishedDate": "Published Date (YYYY-MM-DD)"
         }
       },
-      "translate": "Translate"
+      "translate": "Translate",
+      "editTitle": "Edit Title",
+      "newTitle": "New Title",
+      "toggleFeatured": "Toggle Featured"
     },
     "podcastEpisodes": {
       "subtitle": "Manage podcast episodes and metadata"
@@ -1682,7 +1996,8 @@
         "noSubscription": "No Subscription",
         "status": "Status",
         "created": "Created",
-        "actions": "Actions"
+        "actions": "Actions",
+        "lastLogin": "Last Login"
       },
       "confirmDelete": "Delete User",
       "confirmDeleteMessage": "Are you sure you want to delete {{name}}? This action cannot be undone.",
@@ -1708,7 +2023,83 @@
         "admin": "Admin",
         "moderator": "Moderator",
         "user": "User"
-      }
+      },
+      "active": "Active",
+      "activityTitle": "Activity History",
+      "addSubscription": "Add Subscription",
+      "applyFilters": "Apply",
+      "ban": "Ban",
+      "banConfirm": "Ban User",
+      "banMessage": "Are you sure you want to ban this user?",
+      "billingTitle": "Billing History",
+      "bulkActions": "Bulk Actions",
+      "bulkActionsTitle": "Bulk Actions",
+      "bulkBan": "Ban Selected Users",
+      "bulkDelete": "Delete Selected Users",
+      "bulkDeleteConfirm": "Delete Selected Users",
+      "cancelSubscription": "Cancel",
+      "changePlan": "Change Plan",
+      "clearFilters": "Clear All",
+      "create": "Create User",
+      "created": "User Created",
+      "createdSuccess": "User has been created successfully.",
+      "customPermissions": "Custom Permissions",
+      "deleteConfirm": "Delete User",
+      "deleteMessage": "Are you sure you want to permanently delete this user?",
+      "email": "Email",
+      "emailPlaceholder": "Enter email",
+      "expiresOn": "Expires",
+      "extendSubscription": "Extend",
+      "filterRole": "Role",
+      "filterStatus": "Status",
+      "filterSubscription": "Subscription Plan",
+      "filterTitle": "Filter Users",
+      "inherited": "Inherited",
+      "joined": "Joined",
+      "lastLogin": "Last Login",
+      "name": "Name",
+      "nameEmailRequired": "Name and email are required.",
+      "namePlaceholder": "Enter name",
+      "noBilling": "No billing history",
+      "noSubscription": "No active subscription",
+      "noUsers": "No users found",
+      "password": "Password",
+      "passwordPlaceholder": "Enter password",
+      "passwordRequired": "Password is required for new users.",
+      "passwordReset": "Password Reset",
+      "passwordResetSuccess": "Password reset email has been sent.",
+      "permissionsSubtitle": "Role-based permissions are inherited. Custom permissions can be added below.",
+      "permissionsTitle": "User Permissions",
+      "profileInfo": "Profile Information",
+      "resetPasswordMessage": "This will send a password reset email to the user.",
+      "resetPasswordTitle": "Reset Password",
+      "role": "Role",
+      "rolePermissions": "Role Permissions",
+      "save": "Save Changes",
+      "saveError": "Error",
+      "saveErrorMessage": "Failed to save user. Please try again.",
+      "savePermissions": "Save Permissions",
+      "searchPlaceholder": "Search by name or email...",
+      "selectRole": "Select Role",
+      "sendReset": "Send Reset Email",
+      "subscriptionTitle": "Subscription Details",
+      "tabs": {
+        "activity": "Activity",
+        "billing": "Billing",
+        "permissions": "Permissions",
+        "profile": "Profile",
+        "subscription": "Subscription"
+      },
+      "updated": "User Updated",
+      "updatedSuccess": "User has been updated successfully.",
+      "validationError": "Validation Error",
+      "activeDesc": "Active Desc",
+      "editUser": "Edit User",
+      "emailVerified": "Email Verified",
+      "emptyMessage": "Empty Message",
+      "lastUpdated": "Last Updated",
+      "userDeleted": "User Deleted",
+      "userUpdated": "User Updated"
     },
     "userDetail": {
       "subtitle": "User account details and activity history"
@@ -1726,7 +2117,9 @@
         "usage": "Uses",
         "validUntil": "Valid Until",
         "status": "Status",
-        "actions": "Actions"
+        "actions": "Actions",
+        "dates": "Dates",
+        "type": "Type"
       },
       "confirmDelete": "Delete Campaign",
       "confirmDeleteMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
@@ -1748,7 +2141,97 @@
         "unlimited": "Unlimited",
         "validUntil": "Valid Until",
         "active": "Campaign Active"
-      }
+      },
+      "activateError": "Failed to activate campaign",
+      "activateFailed": "Failed to activate campaign",
+      "activateSuccess": "Campaign activated",
+      "activatedSuccess": "Campaign has been activated.",
+      "active": "Active",
+      "allUsersTarget": "All users are targeted by default",
+      "amountOff": "Amount Off",
+      "applyFilters": "Apply",
+      "audienceBuilder": "Audience Builder",
+      "autoApply": "Auto Apply",
+      "autoApplyDesc": "Automatically apply to eligible purchases",
+      "basicInfo": "Basic Information",
+      "clearAudience": "Clear",
+      "clearFilters": "Clear",
+      "code": "Code",
+      "codePlaceholder": "e.g., SUMMER20",
+      "conversionRate": "Conversion Rate",
+      "create": "Create Campaign",
+      "created": "Campaign Created",
+      "createdSuccess": "Campaign has been created successfully.",
+      "deactivateError": "Failed to deactivate campaign",
+      "deactivatedSuccess": "Campaign has been deactivated.",
+      "deleteConfirm": "Delete Campaign",
+      "deleteFailed": "Failed to delete campaign",
+      "deleteMessage": "Are you sure you want to delete this campaign?",
+      "deleteSuccess": "Campaign deleted",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter campaign description",
+      "details": "Campaign Details",
+      "discount": "Discount",
+      "discountConfig": "Discount Configuration",
+      "discountRequired": "Discount value must be greater than 0",
+      "discountType": "Discount Type",
+      "editAudience": "Edit Audience",
+      "endDate": "End Date",
+      "filterByStatus": "Status",
+      "filterByType": "Type",
+      "filterStatus": "Status",
+      "filterTitle": "Filter Campaigns",
+      "filterType": "Type",
+      "filters": "Filters",
+      "firstPurchaseDesc": "Only applies to users making their first purchase",
+      "firstPurchaseOnly": "First Purchase Only",
+      "generate": "Generate",
+      "loadError": "Failed to load campaign",
+      "maxDiscount": "Maximum Discount Amount ($)",
+      "minimumPurchase": "Minimum Purchase Amount ($)",
+      "name": "Campaign Name",
+      "namePlaceholder": "Enter campaign name",
+      "nameRequired": "Campaign name is required",
+      "noCampaigns": "No campaigns found",
+      "noData": "No campaigns found",
+      "noLimit": "No limit",
+      "options": "Options",
+      "pauseFailed": "Failed to pause campaign",
+      "pauseSuccess": "Campaign paused",
+      "percentOff": "Percent Off",
+      "promoCode": "Promo Code",
+      "redemptions": "Redemptions",
+      "revenueImpact": "Revenue Impact",
+      "save": "Save Changes",
+      "saveError": "Failed to save campaign",
+      "schedule": "Schedule",
+      "scheduled": "Scheduled",
+      "search": "Search campaigns...",
+      "selectEndDate": "Select End Date",
+      "selectStartDate": "Select Start Date",
+      "setAudience": "Set Audience",
+      "stackable": "Stackable",
+      "stackableDesc": "Can be combined with other promotions",
+      "startDate": "Start Date",
+      "statistics": "Statistics",
+      "stats": {
+        "active": "Active",
+        "scheduled": "Scheduled",
+        "total": "Total",
+        "totalUsage": "Total Usage"
+      },
+      "statsError": "Failed to load campaign statistics",
+      "subscriptionPlan": "Subscription Plan",
+      "targetAudience": "Target Audience",
+      "title": "Marketing Campaigns",
+      "totalRedemptions": "Total Redemptions",
+      "trialDays": "Trial Days",
+      "type": "Campaign Type",
+      "unlimited": "Unlimited",
+      "updated": "Campaign Updated",
+      "updatedSuccess": "Campaign has been updated successfully.",
+      "usageLimit": "Usage Limit",
+      "userStatus": "User Status"
     },
     "subscriptions": {
       "subtitle": "View and manage system subscribers",
@@ -1763,7 +2246,10 @@
         "plan": "Plan",
         "price": "Price",
         "nextBilling": "Next Billing",
-        "status": "Status"
+        "status": "Status",
+        "amount": "Amount",
+        "renews": "Renews",
+        "started": "Started"
       },
       "perMonth": "/month",
       "searchPlaceholder": "Search subscription...",
@@ -1794,7 +2280,43 @@
       "selectToDelete": "Please select subscriptions to delete",
       "confirmDeleteMultiple": "Delete {{count}} subscription(s)?",
       "selected": "selected",
-      "confirmDelete": "Are you sure you want to delete the subscription for {{user}}? This action cannot be undone."
+      "confirmDelete": "Are you sure you want to delete the subscription for {{user}}? This action cannot be undone.",
+      "active": "Active",
+      "apply": "Apply",
+      "applyDiscount": "Apply Discount",
+      "atRisk": "At Risk",
+      "cancelConfirm": "Cancel Subscription",
+      "cancelFailed": "Failed to cancel subscription",
+      "cancelMessage": "Are you sure you want to cancel this subscription?",
+      "cancelSuccess": "Subscription cancelled",
+      "churnRate": "Churn Rate",
+      "confirmCancel": "Are you sure you want to cancel this subscription?",
+      "days": "Days to extend",
+      "details": "Subscription Details",
+      "discountApplied": "Discount Applied",
+      "discountMonths": "Number of months",
+      "discountPercent": "Discount (%)",
+      "extend": "Extend",
+      "extendSubscription": "Extend Subscription",
+      "extended": "Extended",
+      "invalidDays": "Please enter a valid number of days",
+      "invalidDiscount": "Please enter valid discount values",
+      "managePlans": "Manage Plans",
+      "noData": "No subscriptions found",
+      "noSubscriptions": "No subscriptions found",
+      "pauseFailed": "Failed to pause subscription",
+      "pauseSuccess": "Subscription paused",
+      "resumeFailed": "Failed to resume subscription",
+      "resumeSuccess": "Subscription resumed",
+      "retention": "Retention",
+      "search": "Search subscriptions...",
+      "stats": {
+        "active": "Active",
+        "paused": "Paused",
+        "revenue": "Monthly Revenue",
+        "total": "Total"
+      },
+      "title": "Subscriptions"
     },
     "marketingDashboard": {
       "subtitle": "Marketing Overview",
@@ -1808,7 +2330,12 @@
         "completed": "Completed",
         "scheduled": "Scheduled",
         "draft": "Draft"
-      }
+      },
+      "clickRate": "Click Rate",
+      "conversionRate": "Conversion Rate",
+      "openRate": "Open Rate",
+      "sent": "Sent",
+      "unsubscribeRate": "Unsubscribe Rate"
     },
     "transactions": {
       "subtitle": "View payment history",
@@ -1825,7 +2352,9 @@
         "amount": "Amount",
         "type": "Type",
         "status": "Status",
-        "date": "Date"
+        "date": "Date",
+        "description": "Description",
+        "method": "Method"
       },
       "filters": {
         "all": "All"
@@ -1833,7 +2362,52 @@
       "searchPlaceholder": "Search transaction...",
       "emptyMessage": "No transactions found",
       "details": "Transaction Details",
-      "email": "Email"
+      "email": "Email",
+      "amount": "Amount",
+      "amountRange": "Amount Range",
+      "apply": "Apply",
+      "clearFilters": "Clear",
+      "completed": "Completed",
+      "confirmRefund": "Confirm Refund",
+      "date": "Date",
+      "dateRange": "Date Range",
+      "description": "Description",
+      "export": "Export",
+      "exportFailed": "Export failed",
+      "exportMessage": "Transaction data has been exported.",
+      "exportStarted": "Exporting transactions...",
+      "exportSuccess": "Export completed",
+      "filterByStatus": "Status",
+      "filterByType": "Type",
+      "filterTitle": "Filter Transactions",
+      "invalidAmount": "Invalid refund amount",
+      "invoiceGenerated": "Invoice Generated",
+      "invoiceMessage": "Invoice has been generated and is ready for download.",
+      "noData": "No transactions found",
+      "noTransactions": "No transactions found",
+      "originalAmount": "Original Amount",
+      "paymentMethod": "Payment Method",
+      "pending": "Pending",
+      "processRefund": "Process Refund",
+      "reasonPlaceholder": "Enter refund reason...",
+      "reasonRequired": "Refund reason is required",
+      "refundAmount": "Refund Amount",
+      "refundError": "Failed to process refund",
+      "refundProcessed": "Refund Processed",
+      "refundReason": "Reason",
+      "refundSuccess": "The refund has been processed successfully.",
+      "refunded": "Refunded",
+      "search": "Search transactions...",
+      "stats": {
+        "completed": "Completed",
+        "pending": "Pending",
+        "total": "Total",
+        "totalAmount": "Total Amount"
+      },
+      "title": "Transactions",
+      "total": "Total Transactions",
+      "transactionId": "Transaction ID",
+      "userId": "User ID"
     },
     "pushNotifications": {
       "subtitle": "Create and send notifications to users",
@@ -1891,8 +2465,315 @@
       "degraded": "Degraded",
       "latency": "Latency: {{ms}}ms",
       "healthy": "Healthy",
-      "unhealthy": "Unhealthy"
-    }
+      "unhealthy": "Unhealthy",
+      "check": "Check",
+      "loading": "Loading",
+      "service": "Service",
+      "status": "Status"
+    },
+    "audiobooks": {
+      "confirmDelete": "Delete this audiobook?",
+      "createTitle": "Create Audiobook",
+      "editTitle": "Edit Audiobook",
+      "emptyMessage": "No audiobooks found",
+      "feature": {
+        "alreadyFeatured": "This audiobook is already featured.",
+        "order": "Display Order",
+        "preview": "Preview",
+        "section": "Featured Section",
+        "success": "Audiobook featured successfully",
+        "title": "Feature Audiobook"
+      },
+      "form": {
+        "author": "Author",
+        "description": "Description",
+        "duration": "Duration",
+        "isbn": "ISBN",
+        "narrator": "Narrator",
+        "publisher": "Publisher",
+        "quality": "Audio Quality",
+        "streamUrl": "Stream URL",
+        "subscription": "Subscription Tier",
+        "title": "Title"
+      },
+      "loadError": "Failed to load audiobooks",
+      "publish": {
+        "missingFields": "Missing required fields: title, author, stream URL",
+        "publishConfirm": "Publishing this audiobook will make it visible to all users.",
+        "publishTitle": "Publish Audiobook",
+        "unpublishTitle": "Unpublish",
+        "unpublishWarning": "This audiobook is currently published and visible to users. Unpublishing will hide it immediately."
+      },
+      "subtitle": "Manage audiobook library",
+      "upload": {
+        "button": "Upload",
+        "dragDrop": "Click to select audio file",
+        "invalidType": "Invalid file type. Allowed: MP3, AAC, M4A, FLAC",
+        "selectFile": "Select Audio File",
+        "streamUrl": "Stream URL Generated",
+        "title": "Upload Audio File",
+        "tooLarge": "File size exceeds 500MB limit"
+      }
+    },
+    "columns": {
+      "author": "Author",
+      "cover": "Cover",
+      "duration": "Duration",
+      "narrator": "Narrator",
+      "published": "Published",
+      "title": "Title"
+    },
+    "email": {
+      "audience": "Target Audience",
+      "body": "Email Body (HTML)",
+      "bodyPlaceholder": "Enter HTML content...",
+      "campaignName": "Campaign Name",
+      "columns": {
+        "clicked": "Clicked",
+        "created": "Created",
+        "name": "Campaign",
+        "opened": "Opened",
+        "sent": "Sent",
+        "status": "Status",
+        "subject": "Subject"
+      },
+      "create": "Create Campaign",
+      "createCampaign": "Create Campaign",
+      "deleteConfirm": "Delete Campaign",
+      "editCampaign": "Edit Campaign",
+      "loadError": "Failed to load email campaigns",
+      "namePlaceholder": "e.g., Weekly Newsletter",
+      "noCampaigns": "No campaigns found",
+      "requiredFields": "Name and subject are required",
+      "searchPlaceholder": "Search campaigns...",
+      "send": "Send",
+      "sendConfirm": "Send Campaign",
+      "sendMessage": "Are you sure you want to send this campaign now?",
+      "sendTest": "Send Test Email",
+      "sent": "Sent",
+      "sentMessage": "Campaign is being sent",
+      "subject": "Email Subject",
+      "testEmail": "Email Address",
+      "testSent": "Test Sent"
+    },
+    "logs": {
+      "action": "Action",
+      "additionalDetails": "Additional Details",
+      "apply": "Apply",
+      "clearFilters": "Clear",
+      "columns": {
+        "action": "Action",
+        "ip": "IP Address",
+        "resource": "Resource",
+        "resourceId": "Resource ID",
+        "timestamp": "Timestamp",
+        "user": "User"
+      },
+      "details": "Log Details",
+      "export": "Export",
+      "exported": "Exported",
+      "exportedMessage": "Audit logs have been exported",
+      "filterAction": "Action",
+      "filterDateRange": "Date Range",
+      "filterResource": "Resource Type",
+      "filterTitle": "Filter Logs",
+      "filterUser": "User ID",
+      "filters": "Filters",
+      "id": "Log ID",
+      "ipAddress": "IP Address",
+      "loadError": "Failed to load audit logs. Please try again.",
+      "noLogs": "No audit logs found",
+      "resourceId": "Resource ID",
+      "resourceType": "Resource Type",
+      "timestamp": "Timestamp",
+      "userId": "User ID"
+    },
+    "merge": {
+      "baseItem": "Base Item",
+      "baseItemKeep": "This item will be kept",
+      "canMerge": "Items Can Be Merged",
+      "cannotMerge": "Cannot Merge These Items",
+      "configure": "Configure Merge",
+      "confirmButton": "Merge Items",
+      "confirmMerge": "Confirm Merge",
+      "contentTransfer": "Content Transfer",
+      "continue": "Continue",
+      "errorMixedTypes": "Cannot merge series and movies together",
+      "errorNoBase": "Please select a base item",
+      "errorNoMerge": "No items to merge",
+      "itemsMergeInto": "These items will be merged into base",
+      "itemsToMerge": "Items to Merge",
+      "mergePreview": "Merge Preview",
+      "metadataPreferences": "Metadata Preferences",
+      "selectBase": "Select Base Item",
+      "suggestionSeparate": "Select only series or only movies",
+      "suggestions": "Suggestions:",
+      "totalEpisodes": "Total Episodes After Merge",
+      "transferEpisodes": "Transfer Episodes",
+      "transferSeasons": "Transfer Seasons",
+      "useBaseDescription": "Use Base Item Description",
+      "useBasePoster": "Use Base Item Poster",
+      "wizard": "Merge Content Wizard",
+      "configureDescription": "Configure Description",
+      "confirmDescription": "Confirm Description",
+      "mergeWarning": "Merge Warning",
+      "selectBaseDescription": "Select Base Description",
+      "transferEpisodesDesc": "Transfer Episodes Desc",
+      "transferSeasonsDesc": "Transfer Seasons Desc",
+      "useBaseDescriptionDesc": "Use Base Description Desc",
+      "useBasePosterDesc": "Use Base Poster Desc",
+      "validationPassed": "Validation Passed"
+    },
+    "support": {
+      "action": {
+        "resolve": "Mark Resolved"
+      },
+      "detail": {
+        "addNote": "Add Note",
+        "category": "Category",
+        "created": "Created",
+        "language": "Language",
+        "message": "Customer Message",
+        "noNotes": "No notes yet",
+        "notePlaceholder": "Write a note...",
+        "notes": "Internal Notes",
+        "priority": "Priority",
+        "saveNote": "Save Note",
+        "updateStatus": "Update Status",
+        "useTemplate": "Use Template",
+        "user": "User"
+      },
+      "empty": "No tickets match your filters",
+      "filter": {
+        "all": "All",
+        "closed": "Closed",
+        "inProgress": "In Progress",
+        "open": "Open",
+        "resolved": "Resolved"
+      },
+      "loadError": "Failed to load dashboard data",
+      "loading": "Loading dashboard...",
+      "priority": {
+        "all": "All Priorities",
+        "high": "High",
+        "low": "Low",
+        "medium": "Medium",
+        "urgent": "Urgent"
+      },
+      "stats": {
+        "highPriority": "High Priority",
+        "inProgress": "In Progress",
+        "open": "Open",
+        "resolved": "Resolved",
+        "total": "Total"
+      },
+      "subtitle": "Manage customer support tickets",
+      "time": {
+        "justNow": "Just now"
+      },
+      "title": "Support Dashboard"
+    },
+    "table": {
+      "actions": "Actions",
+      "noData": "No data available",
+      "of": "of",
+      "search": "Search...",
+      "showing": "Showing"
+    },
+    "templates": {
+      "title": "Response Templates"
+    },
+    "triviaAnalytics": {
+      "activeSessions": "Active Sessions",
+      "confidence": "confidence",
+      "coverage": "Content Coverage",
+      "factsGenerated": "Facts Generated",
+      "recentTopics": "Recent Topics",
+      "subtitle": "Monitor live trivia topics, sessions, and content coverage",
+      "title": "Trivia Analytics",
+      "totalTopics": "Topics Detected"
+    },
+    "voiceManagement": {
+      "analytics": {
+        "cost": "Cost",
+        "costBreakdown": "Cost Breakdown",
+        "feature": "Feature",
+        "latencyMetrics": "Latency Metrics",
+        "minutes": "Minutes",
+        "noCostData": "No cost data available",
+        "noSessions": "No active sessions",
+        "noUsageData": "No usage data available for this period",
+        "realtimeSessions": "Real-time Sessions",
+        "samples": "Samples",
+        "sessions": "Sessions",
+        "totalCost": "Total",
+        "usageCharts": "Usage Charts"
+      },
+      "configuration": {
+        "assistantVoice": "Assistant Voice",
+        "defaultVoice": "Default Voice",
+        "loadError": "Failed to load voice configuration",
+        "providers": "Providers",
+        "sttProvider": "STT Provider",
+        "supportVoice": "Support Voice",
+        "translationProvider": "Translation Provider",
+        "voiceIds": "Voice IDs"
+      },
+      "quotas": {
+        "dubbingLimits": "Dubbing Limits",
+        "quotaDetails": "Quota Details",
+        "searchUser": "Search User",
+        "subtitleLimits": "Subtitle Limits",
+        "tier": "Tier",
+        "userEmail": "User Email",
+        "userIdPlaceholder": "Enter user ID"
+      },
+      "settings": {
+        "apiKeys": "API Keys",
+        "webhookInfo": "Webhook Information",
+        "webhooks": "Webhooks"
+      },
+      "subtitle": "Manage voice synthesis, analytics, quotas and settings",
+      "tabs": {
+        "analytics": "Analytics",
+        "configuration": "Configuration",
+        "library": "Library",
+        "quotas": "Quotas",
+        "settings": "Settings"
+      },
+      "title": "Voice Management"
+    },
+    "accessDenied": "Access Denied",
+    "costDashboard": {
+      "selectUser": "Select User",
+      "subtitle": "Subtitle",
+      "tabs": {
+        "categories": "Categories",
+        "overview": "Overview",
+        "timeline": "Timeline",
+        "topSpenders": "Top Spenders"
+      },
+      "title": "Title",
+      "view": "View"
+    },
+    "importWizard": {
+      "loadingCategories": "Loading Categories",
+      "loadingSources": "Loading Sources",
+      "selectCategory": "Select Category",
+      "selectItems": "Select Items",
+      "sources": {
+        "liveTv": "Live Tv",
+        "liveTvDescription": "Live Tv Description",
+        "podcasts": "Podcasts",
+        "podcastsDescription": "Podcasts Description",
+        "radio": "Radio",
+        "radioDescription": "Radio Description",
+        "vod": "Vod",
+        "vodDescription": "Vod Description"
+      },
+      "title": "Title"
+    },
+    "noPermission": "No Permission"
   },
   "audiobooks": {
     "audiobook": "Audiobook",
@@ -2028,7 +2909,14 @@
       "noAudiobooks": "No audiobooks found",
       "noFavorites": "You haven't added any audiobooks to your favorites yet",
       "trySearch": "Try searching for an audiobook by title, author, or narrator"
-    }
+    },
+    "available": "Available",
+    "averageRating": "Average Rating",
+    "description": "Discover audiobooks from around the world",
+    "details": "Details",
+    "loading": "Loading audiobooks...",
+    "sortOrder": "Order",
+    "subscription": "Subscription"
   },
   "breadcrumbs": {
     "series": "Series",
@@ -2100,7 +2988,9 @@
       "showChannels": "Show me channels...",
       "playChess": "Start a chess game with...",
       "multiContent": "Show side by side..."
-    }
+    },
+    "listening": "Listening...",
+    "processing": "Processing..."
   },
   "chess": {
     "title": "Chess",
@@ -2153,7 +3043,9 @@
     "easy": "Easy",
     "medium": "Medium",
     "hard": "Hard",
-    "chessBot": "Chess Bot"
+    "chessBot": "Chess Bot",
+    "disconnected": "Disconnected",
+    "theirTurn": "Their Turn"
   },
   "children": {
     "title": "Kids",
@@ -2491,7 +3383,51 @@
     "cancelHint": "Cancels current action",
     "disconnect": "Disconnect",
     "thisContent": "this content",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "loadingArticle": "Loading article...",
+    "watch": "Watch",
+    "share": "Share",
+    "noContent": "No content available",
+    "premium": "PREMIUM",
+    "poweredBy": "Powered by",
+    "active": "Active",
+    "copy": "Copy URL",
+    "email": "Email",
+    "filter": "Filter",
+    "inactive": "Inactive",
+    "of": "of",
+    "processing": "Processing...",
+    "showing": "Showing",
+    "unban": "Unban",
+    "addToLibrary": "Add to Library",
+    "ascending": "Oldest First",
+    "creating": "Creating...",
+    "daysAgo": "{{count}} days ago",
+    "descending": "Newest First",
+    "details": "Details",
+    "favorited": "Favorited",
+    "goBack": "Go Back",
+    "hoursAgo": "{{count}} hours ago",
+    "info": "Info",
+    "joining": "Joining",
+    "justNow": "Just now",
+    "language": "Language",
+    "lastUpdated": "Updated",
+    "loadMore": "Load More",
+    "logout": "Logout",
+    "milliseconds": "Milliseconds",
+    "movie": "Movie",
+    "normal": "Normal",
+    "notAuthenticated": "Not authenticated",
+    "page": "Page",
+    "saved": "נשמר!",
+    "select": "Select",
+    "selected": "Selected",
+    "selectRegion": "Select Region",
+    "series": "Series",
+    "signIn": "Sign In",
+    "website": "Website",
+    "yesterday": "Yesterday"
   },
   "components": {
     "select": {
@@ -2531,7 +3467,9 @@
     "relatedContent": "Related Content",
     "notFound": "Content not found",
     "availableSubtitles": "Available Subtitles",
-    "subtitleSelected": "Selected: {{language}}"
+    "subtitleSelected": "Selected: {{language}}",
+    "trailer": "Trailer",
+    "trailerNotAvailable": "Trailer not available for this title"
   },
   "cultureCities": {
     "connectionTo": "{{city}} Connection",
@@ -2637,7 +3575,8 @@
     "storage": "Storage",
     "empty": "No downloads",
     "emptyHint": "Download content for offline viewing",
-    "paused": "Paused"
+    "paused": "Paused",
+    "loading": "Loading downloads..."
   },
   "dubbing": {
     "title": "Live Dubbing",
@@ -2697,7 +3636,18 @@
       "rateLimitExceeded": "Too Many Attempts",
       "rateLimitExceededMessage": "Please wait before trying again",
       "sessionTimeout": "Session Expired",
-      "sessionTimeoutMessage": "Your dubbing session has expired"
+      "sessionTimeoutMessage": "Your dubbing session has expired",
+      "audioCaptureTitle": "Microphone Access Denied",
+      "authFailed": {
+        "title": "Authentication Error"
+      },
+      "rateLimitTitle": "Too Many Requests",
+      "sessionTitle": "Session Expired",
+      "sttTitle": "Speech Recognition Error",
+      "translationAction": "The system will continue with original audio",
+      "translationTitle": "Translation Timeout",
+      "ttsTitle": "Text-to-Speech Error",
+      "websocketTitle": "Connection Lost"
     },
     "simplifiedHebrew": {
       "title": "Simplified Hebrew",
@@ -2709,7 +3659,40 @@
       "active": "Simplified Hebrew Active",
       "clickToEnable": "Click to enable simplified Hebrew audio",
       "premiumRequired": "Premium subscription required"
-    }
+    },
+    "active": "Live Dubbing Active",
+    "clickToEnable": "Click to enable live dubbing",
+    "controls": {
+      "liveDubbing": "Live Dubbing"
+    },
+    "inputLanguageTooltip": "Check Input Language",
+    "latency": {
+      "badge": {
+        "accessibilityHint": "Accessibility Hint",
+        "title": "Title",
+        "tooltip": "Tooltip"
+      },
+      "breakdown": {
+        "cacheHitRate": "Cache Hit Rate",
+        "provider": "Provider",
+        "title": "Title"
+      },
+      "components": {
+        "buffer": "Buffer",
+        "network": "Network",
+        "stt": "Stt",
+        "sync": "Sync",
+        "translation": "Translation",
+        "tts": "Tts"
+      },
+      "graph": {
+        "noData": "No Data",
+        "title": "Title"
+      }
+    },
+    "noVoicesAvailable": "No voices available",
+    "premiumRequired": "Premium subscription required",
+    "selectInputLanguage": "Select input language"
   },
   "empty": {
     "noContent": "No content available",
@@ -2748,7 +3731,10 @@
     "permissionDenied": {
       "title": "Access denied",
       "description": "You don't have permission to view this content"
-    }
+    },
+    "clearSearch": "Clear Search",
+    "description": "No matching content found",
+    "title": "No Results"
   },
   "epg": {
     "title": "TV Guide",
@@ -2793,7 +3779,11 @@
     "exampleQuery4": "Show me all news programs tomorrow morning",
     "aiDisclaimer": "Powered by Claude AI. Results may vary based on program data availability.",
     "interpretationTitle": "What I understood",
-    "noResultsFound": "No programs found matching your query"
+    "noResultsFound": "No programs found matching your query",
+    "noProgramsScheduled": "No programs scheduled",
+    "noProgramsFound": "No Programs Found",
+    "noDataAvailable": "No TV Guide Data Available",
+    "live": "LIVE"
   },
   "errors": {
     "networkError": "Network Error",
@@ -2835,13 +3825,77 @@
       "cancel": "Cancel"
     },
     "title": "Error",
-    "networkUnavailable": "Network unavailable"
+    "networkUnavailable": "Network unavailable",
+    "auth": {
+      "notAuthenticated": "Not Authenticated",
+      "playbackAuthRequired": "Playback Auth Required",
+      "tokenRefreshFailed": "Token Refresh Failed"
+    },
+    "chess": {
+      "connectFailed": "Connect Failed",
+      "notConnected": "Not Connected"
+    },
+    "connection": {
+      "error": "Error",
+      "failed": "Failed",
+      "timeout": "Timeout"
+    },
+    "devices": {
+      "disconnectFailed": "Disconnect Failed",
+      "loadFailed": "Load Failed",
+      "registerFailed": "Register Failed"
+    },
+    "friends": {
+      "acceptFailed": "Accept Failed",
+      "cancelFailed": "Cancel Failed",
+      "fetchFailed": "Fetch Failed",
+      "rejectFailed": "Reject Failed",
+      "removeFailed": "Remove Failed",
+      "requestsFetchFailed": "Requests Fetch Failed",
+      "sendFailed": "Send Failed"
+    },
+    "player": {
+      "loadFailed": "Load Failed",
+      "noStreamUrl": "No Stream Url",
+      "notReady": "Not Ready",
+      "sessionCreateFailed": "Session Create Failed"
+    },
+    "podcast": {
+      "playbackError": "Playback Error",
+      "switchLanguageFailed": "Switch Language Failed"
+    },
+    "profile": {
+      "createFailed": "Create Failed",
+      "deleteFailed": "Delete Failed",
+      "fetchFailed": "Fetch Failed",
+      "selectFailed": "Select Failed",
+      "updateFailed": "Update Failed"
+    },
+    "retrySearch": "Retry Search",
+    "searchFailed": "Search Failed",
+    "settings": {
+      "loadFailed": "Load Failed",
+      "saveFailed": "Save Failed"
+    },
+    "stats": {
+      "fetchFailed": "Fetch Failed",
+      "h2hFetchFailed": "H2h Fetch Failed",
+      "historyFetchFailed": "History Fetch Failed",
+      "leaderboardFetchFailed": "Leaderboard Fetch Failed",
+      "playerFetchFailed": "Player Fetch Failed"
+    },
+    "streamError": "Stream Error",
+    "streamLoadFailed": "Failed to load stream. Please try again.",
+    "trivia": {
+      "invalidChannel": "Invalid Channel"
+    }
   },
   "favorites": {
     "title": "Favorites",
     "items": "items",
     "empty": "No favorites yet",
-    "emptyHint": "Add items to your favorites"
+    "emptyHint": "Add items to your favorites",
+    "loading": "Loading favorites..."
   },
   "flows": {
     "title": "Flows",
@@ -3026,7 +4080,8 @@
       "title": "Stay Updated",
       "description": "Subscribe to our newsletter for the latest updates and exclusive content.",
       "placeholder": "Enter your email",
-      "success": "Thanks for subscribing!"
+      "success": "Thanks for subscribing!",
+      "submit": "Subscribe"
     },
     "apps": {
       "title": "Get the App",
@@ -3287,6 +4342,28 @@
       "parashaStudy": "Parasha",
       "shabbatRecipes": "Recipes",
       "prayers": "Prayers"
+    },
+    "calendar": {
+      "dafYomi": "Daf Yomi",
+      "holiday": "Holiday",
+      "ofOmer": "of the Omer",
+      "omerDay": "Day",
+      "parasha": "Parasha",
+      "shabbat": "Shabbat",
+      "title": "Jewish Calendar"
+    },
+    "community": {
+      "empty": "No organizations found",
+      "emptyHint": "Try selecting a different region",
+      "jcc": "JCC",
+      "kosher": "Kosher",
+      "mikvaot": "Mikvaot",
+      "synagogues": "Synagogues",
+      "title": "Community Directory"
+    },
+    "news": {
+      "empty": "No news available",
+      "title": "Jewish News"
     }
   },
   "live": {
@@ -3301,7 +4378,8 @@
       "sports": "Sports",
       "kids": "Kids",
       "music": "Music"
-    }
+    },
+    "loadingChannels": "Loading channels..."
   },
   "liveTV": {
     "title": "Live TV",
@@ -3395,7 +4473,9 @@
     "games": "Games",
     "friends": "Friends",
     "privacy": "Privacy Policy",
-    "flows": "Flows"
+    "flows": "Flows",
+    "liveChannels": "Live Channels",
+    "menu": "Menu"
   },
   "notFound": {
     "title": "Page Not Found",
@@ -3636,7 +4716,12 @@
       },
       "panelOpened": "Scene search panel opened",
       "navigation": "Scene search navigation",
-      "position": "Result {{current}} of {{total}}"
+      "position": "Result {{current}} of {{total}}",
+      "error": "Error",
+      "results": {
+        "found": "Found",
+        "label": "Label"
+      }
     },
     "streamLimit": {
       "title": "Stream Limit Reached",
@@ -3653,7 +4738,27 @@
       "error": "Failed to connect to cast device",
       "noDevices": "No cast devices found",
       "unsupported": "Casting not available for this content"
-    }
+    },
+    "liveChat": "Live Chat",
+    "chat": "Chat",
+    "liveTrivia": "Live Trivia",
+    "showAIFeatures": "Show AI Features",
+    "hideAIFeatures": "Hide AI Features",
+    "enterFullscreen": "Enter Fullscreen",
+    "errors": {
+      "decodeError": "Cannot decode audio stream",
+      "loadAborted": "Loading was aborted",
+      "networkError": "Network error - stream may be unavailable",
+      "noSource": "No stream available",
+      "streamFailed": "Stream failed to load",
+      "unknown": "Unknown playback error",
+      "unsupportedFormat": "Audio format not supported"
+    },
+    "exitFullscreen": "Exit Fullscreen",
+    "liveLanguageMagic": "Live Language Magic",
+    "retrying": "Retry attempt",
+    "selectLanguage": "Select Language",
+    "selectOutputLanguage": "Select Output Language"
   },
   "podcast": {
     "selectLanguage": "Select Language",
@@ -3735,7 +4840,8 @@
       "downloadTitle": "Listen Offline",
       "downloadDescription": "Download episodes to listen without internet connection.",
       "gotIt": "Got it"
-    }
+    },
+    "loadingShows": "Loading podcast shows..."
   },
   "profile": {
     "title": "My Profile",
@@ -3940,7 +5046,14 @@
         "processingFailed": "Failed to process voice input",
         "intentClassification": "Could not understand command",
         "timeout": "Voice recognition timed out"
-      }
+      },
+      "testingWakeWord": "Say \"Hi Bayit\"...",
+      "testWakeWord": "Test Wake Word",
+      "wakeWordEnabled": "Enable \"Hi Bayit\" wake word",
+      "wakeWordEnabledDesc": "Say \"Hi Bayit\" to activate voice commands without pressing a button",
+      "wakeWordPrivacy": "Wake word detection is processed locally on your device - no audio is sent until after \"Hi Bayit\" is detected",
+      "wakeWordSensitivity": "Wake Word Sensitivity",
+      "wakeWordSensitivityDesc": "Higher sensitivity detects the wake word more easily but may cause false triggers"
     },
     "devices": {
       "registeredDevices": "Registered Devices",
@@ -4015,7 +5128,8 @@
     "phoneUnverified": "Phone not verified",
     "completeVerification": "Complete verification to unlock all features",
     "unlockPremium": "Unlock Premium Features",
-    "unlockPremiumDescription": "Upgrade to enjoy exclusive content and features"
+    "unlockPremiumDescription": "Upgrade to enjoy exclusive content and features",
+    "unknown": "Unknown Player"
   },
   "profiles": {
     "addProfile": "Add Profile",
@@ -4039,7 +5153,8 @@
     "noStations": "No radio stations available",
     "tryLater": "Try again later",
     "playing": "PLAYING",
-    "fmSuffix": "FM"
+    "fmSuffix": "FM",
+    "loadingStations": "Loading radio stations..."
   },
   "recordings": {
     "title": "My Recordings",
@@ -4210,8 +5325,19 @@
     "controls": {
       "placeholder": "Search for content...",
       "hints": {
-        "searchInput": "Enter keywords to search"
-      }
+        "searchInput": "Enter keywords to search",
+        "filters": "Filters",
+        "llmSearch": "Llm Search"
+      },
+      "contentTypes": {
+        "all": "All",
+        "live": "Live",
+        "podcast": "Podcast",
+        "radio": "Radio",
+        "vod": "Vod"
+      },
+      "filters": "Filters",
+      "llmSearch": "Llm Search"
     },
     "semantic": {
       "keyword": "Keyword",
@@ -4220,8 +5346,34 @@
       "info": "AI search understands context and finds exact moments in videos by analyzing scenes, dialogue, and visual content."
     },
     "empty": {
-      "clearSearch": "Clear search"
-    }
+      "clearSearch": "Clear search",
+      "checkSpelling": "Check Spelling",
+      "differentKeywords": "Different Keywords",
+      "noResults": "No Results",
+      "noResultsMessage": "No Results Message",
+      "searchLanguage": "Search Language",
+      "startSearching": "Start Searching",
+      "startSearchingMessage": "Start Searching Message",
+      "tryAgain": "Try Again",
+      "useVoice": "Use Voice"
+    },
+    "loadingMore": "Loading more results...",
+    "viewMode": {
+      "grid": "Grid",
+      "list": "List",
+      "cards": "Cards"
+    },
+    "activeFilters": "Active Filters",
+    "advancedFilters": "Advanced Filters",
+    "aiSearch": "AI Search",
+    "aiSearchActive": "AI-powered semantic search is active - finding results based on meaning and context",
+    "aiSearchInactive": "Enable AI search for smarter results based on meaning, not just keywords",
+    "error": "Error",
+    "errors": {
+      "retrySearch": "Retry Search",
+      "somethingWrong": "Something Wrong"
+    },
+    "resultsTitle": "Search Results"
   },
   "settings": {
     "title": "Settings",
@@ -4266,7 +5418,22 @@
     "resetToDefault": "Reset to Default",
     "resetConfirmMessage": "Are you sure you want to reset home page sections to their default configuration?",
     "sectionHidden": "Section hidden",
-    "sectionShown": "Section shown"
+    "sectionShown": "Section shown",
+    "ritual": {
+      "autoPlay": "Auto Play",
+      "contentTypes": "Content Types",
+      "description": "הגדר את חוויית הבוקר המותאמת אישית שלך",
+      "enabled": "Enabled",
+      "endTime": "End Time",
+      "news": "News",
+      "options": "אפשרויות נוספות",
+      "radio": "Radio",
+      "skipWeekends": "Skip Weekends",
+      "startTime": "Start Time",
+      "timeRange": "טווח זמנים",
+      "title": "Title",
+      "videos": "Videos"
+    }
   },
   "stats": {
     "statistics": "Statistics",
@@ -4381,7 +5548,14 @@
     "nikudLiveDescription": "Vocalized Hebrew subtitles with diacritical marks for easier reading",
     "nikudEnabled": "Nikud subtitles enabled",
     "nikudDisabled": "Nikud subtitles disabled",
-    "nikudSubtitleLabel": "Hebrew with nikud: {{text}}"
+    "nikudSubtitleLabel": "Hebrew with nikud: {{text}}",
+    "available": "Subtitles",
+    "clickToEnable": "Click to enable live translation",
+    "connectionError": "Live Translation Error",
+    "inputLanguageTooltip": "Check Input Language",
+    "premiumRequired": "Premium subscription required",
+    "selectInputLanguage": "Select input language",
+    "translateActive": "Live Translation Active"
   },
   "support": {
     "title": "Support Center",
@@ -4584,7 +5758,10 @@
       "teen-torah.description": "Torah classes and weekly portion for teens",
       "jewish-history": "Jewish History",
       "jewish-history.description": "History of the Jewish people",
-      "title": "Subcategories"
+      "title": "Subcategories",
+      "ageGroups": {
+        "title": "Age Groups"
+      }
     }
   },
   "telAviv": {
@@ -4713,7 +5890,9 @@
     "emptyDescription": "Try selecting another category",
     "allContent": "All Content",
     "noContent": "No content available",
-    "noContentInCategory": "No content found in this category"
+    "noContentInCategory": "No content found in this category",
+    "filters": "Filters",
+    "loadingContent": "Loading movies and series..."
   },
   "voice": {
     "listening": "Listening...",
@@ -4727,7 +5906,17 @@
     "transcriptionNotAvailable": "Transcription not available",
     "transcriptionFailed": "Transcription failed",
     "micPermissionDenied": "Microphone permission denied",
-    "error": "Couldn't hear you, please try again"
+    "error": "Couldn't hear you, please try again",
+    "avatarPreferences": {
+      "currentMode": "Current Mode",
+      "title": "Avatar Display"
+    },
+    "features": {
+      "animations": "✨ Animations",
+      "transcript": "💬 Transcript",
+      "waveform": "〰️ Waveform",
+      "wizard": "🧙 Wizard"
+    }
   },
   "voiceMode": {
     "voiceOnly": "Voice Only",
@@ -4795,7 +5984,10 @@
     "now": "Now",
     "related": "Related Content",
     "deleteEpisode": "Delete Episode",
-    "confirmDeleteEpisode": "Delete this episode?"
+    "confirmDeleteEpisode": "Delete this episode?",
+    "playlist": "Playlist",
+    "streamError": "Unable to load the stream. Please try again later.",
+    "streamUnavailable": "Stream Unavailable"
   },
   "watchParty": {
     "title": "Watch Party",
@@ -4873,7 +6065,20 @@
     "closePanelHint": "Closes watch party panel",
     "cancelHint": "Cancels and closes dialog",
     "viewPartyHint": "Opens watch party panel",
-    "panel": "Watch Party panel"
+    "panel": "Watch Party panel",
+    "activeLabel": "Watch Party - Active",
+    "buffering": "Buffering...",
+    "hostActiveLabel": "Watch Party - You are hosting",
+    "hosting": "Hosting",
+    "listening": "Listening",
+    "placeholder": {
+      "roomCode": "ABCD1234"
+    },
+    "roomCodeLabel": "Room code",
+    "startVoice": "Start Voice",
+    "stopVoice": "Stop Voice",
+    "voiceInputHint": "Voice Input Hint",
+    "watching": "Watching"
   },
   "watchlist": {
     "filters": {
@@ -4890,7 +6095,8 @@
     "items": "items",
     "watched": "watched",
     "empty": "Your watchlist is empty",
-    "emptyHint": "Start watching and items will appear here"
+    "emptyHint": "Start watching and items will appear here",
+    "loading": "Loading watchlist..."
   },
   "widgets": {
     "empty": "No widgets yet",
@@ -4944,7 +6150,14 @@
       "saveWidget": "Save Widget",
       "saving": "Saving...",
       "cancel": "Cancel",
-      "change": "Change"
+      "change": "Change",
+      "errors": {
+        "contentRequired": "Please select content",
+        "iframeUrlRequired": "iFrame URL is required",
+        "nameExists": "A widget with this name already exists",
+        "titleRequired": "Title is required"
+      },
+      "validating": "Validating..."
     },
     "intro": {
       "title": "Welcome to Widgets",
@@ -4955,7 +6168,14 @@
       "videoUnavailable": "Video temporarily unavailable",
       "loadingMartyJr": "Loading Marty Jr...",
       "loadingWidgets": "Loading widgets intro..."
-    }
+    },
+    "contentPicker": {
+      "noContent": "No content available",
+      "tryAnotherTab": "Try selecting another category"
+    },
+    "delete": "Delete",
+    "hide": "Hide",
+    "resetPosition": "Reset Position"
   },
   "youngsters": {
     "title": "Youngsters",
@@ -4998,7 +6218,10 @@
       "syncYouTube": "Sync YouTube",
       "tagVod": "Tag VOD",
       "pendingModeration": "Pending Moderation"
-    }
+    },
+    "loading": "Loading content...",
+    "news": "News",
+    "trending": "Trending"
   },
   "catchup": {
     "overlay": {
@@ -5007,11 +6230,17 @@
       "creditContext": "This will use {{cost}} of your {{balance}} credits",
       "lowBalanceWarning": "Low credits remaining",
       "acceptButton": "Catch Me Up ({{cost}} credits)",
-      "declineButton": "No Thanks"
+      "declineButton": "No Thanks",
+      "accept": "Accept",
+      "balanceContext": "Balance Context",
+      "decline": "Decline",
+      "lowBalance": "Low Balance",
+      "thisProgram": "This Program"
     },
     "button": {
       "credits": "Catch Up ({{cost}} credits)",
-      "label": "Catch up summary ({{cost}} credits)"
+      "label": "Catch up summary ({{cost}} credits)",
+      "title": "Catch Up"
     },
     "generating": "Generating summary...",
     "summary": {
@@ -5020,12 +6249,176 @@
       "windowInfo": "Last {{minutes}} minutes",
       "creditsUsed": "Used {{count}} credits",
       "creditsRemaining": "{{count}} credits remaining",
-      "close": "Close"
+      "close": "Close",
+      "cached": "Cached",
+      "remaining": "Remaining",
+      "window": "Window"
     },
     "error": {
       "failed": "Could not generate summary",
       "retry": "Try Again",
       "insufficientCredits": "Not enough credits"
     }
+  },
+  "quota": {
+    "subtitleExceeded": "Subtitle quota exceeded. Please try again later.",
+    "dubbingExceeded": "Dubbing quota exceeded. Please try again later."
+  },
+  "validation": {
+    "authorRequired": "Author is required",
+    "orderRange": "Order must be between 1 and 100",
+    "streamUrlRequired": "Stream URL is required",
+    "titleRequired": "Title is required"
+  },
+  "audible": {
+    "accountLinked": "Account Linked",
+    "connected": "Connected",
+    "connecting": "Connecting",
+    "connectionFailed": "Connection Failed",
+    "pleaseWait": "Please Wait"
+  },
+  "beta": {
+    "credits": {
+      "error": "Failed to load credits",
+      "label": "AI Credits",
+      "loading": "Loading credits...",
+      "remaining": "{{count}} credits remaining",
+      "upgrade": "Upgrade",
+      "upgradeAction": "Upgrade Action",
+      "warningCritical": "Warning Critical",
+      "warningLow": "Warning Low"
+    }
+  },
+  "cancelled": {
+    "description": "Your payment has been cancelled.",
+    "helpText": "No charges were made to your account.",
+    "retry": "Try Again",
+    "title": "Payment Cancelled"
+  },
+  "devices": {
+    "activeNow": "Active now",
+    "confirmDisconnect": "Disconnect Device?",
+    "daysAgo": "{{count}} days ago",
+    "disconnect": "Disconnect",
+    "disconnectSuccess": "Device Disconnected",
+    "disconnectSuccessMessage": "Device has been successfully disconnected.",
+    "disconnectSuccessWithSessions": "Disconnect Success With Sessions",
+    "hoursAgo": "{{count}} hours ago",
+    "loading": "Loading devices...",
+    "minutesAgo": "{{count}} minutes ago",
+    "noDevices": "No devices connected",
+    "noDevicesDescription": "Devices will appear here when you log in on different platforms",
+    "registeredDevices": "Registered Devices",
+    "thisDevice": "This device"
+  },
+  "liveAiDataFlow": {
+    "subtitle": "Monitor real-time AI processing for live channels",
+    "tabs": {
+      "dubbing": "Dubbing",
+      "translation": "Translation",
+      "trivia": "Trivia"
+    },
+    "title": "Live AI Data Flow"
+  },
+  "pending": {
+    "description": "Your payment is being processed. Please wait...",
+    "helpText": "This usually takes a few seconds. Do not close this page.",
+    "takingLonger": "This is taking longer than expected...",
+    "timeElapsed": "Time elapsed: {{time}}",
+    "title": "Payment Processing"
+  },
+  "privacy": {
+    "children": {
+      "content": "While our content is suitable for all ages, Olorin.ai LLC does not knowingly collect personal identifiable information from children under the age of 13. If you are a parent and believe your child has provided us with personal information, please contact us.",
+      "title": "5. Children\\"
+    },
+    "collection": {
+      "audio": {
+        "data": "Data Collected: Brief audio samples of the TV broadcast.",
+        "intro": "If you utilize features requiring audio synchronization, the App may request Microphone access.",
+        "purpose": "Purpose: To match the audio fingerprint of the public broadcast for synchronization purposes.",
+        "retention": "Retention: Like visual data, audio samples are processed in real-time and immediately deleted. We do not listen to or record user conversations.",
+        "title": "Title"
+      },
+      "camera": {
+        "data": "Data",
+        "intro": "To provide our core service—synchronizing translated audio with your TV—Bayit+ requires access to your device\\",
+        "purpose": "Purpose",
+        "retention": "Retention: This data is ephemeral. The frames are processed instantly in memory and are permanently deleted immediately after the synchronization is established. We do not view, store, or archive images of your home or family.",
+        "title": "A. Camera & Visual Synchronization Data"
+      },
+      "title": "2. Information We Collect & How We Use It",
+      "usage": {
+        "aggregate": "Aggregate",
+        "content": "We may collect non-identifiable technical data to improve App stability, including:",
+        "crash": "Crash logs and performance metrics.",
+        "device": "Device type and operating system version.",
+        "title": "C. Usage & Technical Data"
+      }
+    },
+    "contact": {
+      "intro": "If you have any questions about this Privacy Policy, please contact us at:",
+      "title": "7. Contact Us"
+    },
+    "intro": {
+      "commitment": "We built Bayit+ with a \"Privacy-First\" architecture. We do not record your living room. Our technology uses your device\\",
+      "content": "Content",
+      "title": "1. Introduction"
+    },
+    "lastUpdated": "Last Updated: January 27, 2026",
+    "retention": {
+      "account": "Account Data: Retained only as long as your account is active to manage your subscription and preferences.",
+      "sync": "Sync",
+      "title": "4. Data Retention"
+    },
+    "rights": {
+      "content": "Depending on your location, you may have the right to request access to, correction of, or deletion of your personal data. You may delete your Bayit+ account at any time within the App settings.",
+      "title": "6. Your Rights"
+    },
+    "sharing": {
+      "ai": "AI Processing: Services used to generate real-time text and audio translations from public broadcast feeds.",
+      "cloud": "Cloud",
+      "noSale": "Olorin.ai LLC does not sell your personal data. We partner with trusted third-party service providers to deliver our infrastructure. These providers are authorized to use your data only as necessary to provide these services to us:",
+      "title": "3. Data Sharing and Third Parties"
+    }
+  },
+  "semantic": {
+    "info": "AI-powered search understands meaning, not just keywords",
+    "infoTitle": "Semantic Search",
+    "keyword": "Keyword",
+    "semantic": "Semantic"
+  },
+  "success": {
+    "continue": "Continue",
+    "description": "Your payment has been processed successfully.",
+    "redirecting": "Redirecting...",
+    "title": "Payment Successful"
+  },
+  "suggestions": {
+    "categoriesTitle": "Categories",
+    "clearRecent": "Clear Recent",
+    "recentTitle": "Recent Searches",
+    "trendingTitle": "Trending"
+  },
+  "viewMode": {
+    "cards": "Cards",
+    "grid": "Grid",
+    "list": "List"
+  },
+  "widget": {
+    "103fmEpisodes": "103fm Episodes",
+    "audioUnavailable": "Audio Unavailable",
+    "contentUnavailable": "Content Unavailable",
+    "errorLoadingContent": "Error Loading Content",
+    "iframeNotConfigured": "Iframe Not Configured",
+    "loadingEpisodes": "Loading Episodes",
+    "loadingNews": "Loading News",
+    "noContentConfigured": "No Content Configured",
+    "noEpisodesFound": "No Episodes Found",
+    "podcastUnavailable": "Podcast Unavailable",
+    "stationUnavailable": "Station Unavailable",
+    "streamUnavailable": "Stream Unavailable",
+    "unknownComponent": "Unknown Component",
+    "ynetBreakingNews": "Ynet Breaking News"
   }
 }
