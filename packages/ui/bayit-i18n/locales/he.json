@@ -878,6 +878,202 @@
         "categories": "קטגוריות",
         "topSpenders": "בעלי ההוצאה הגבוהים"
       }
+    },
+    "nav": {
+      "dashboard": "לוח בקרה",
+      "users": "משתמשים",
+      "librarian": "ספרן AI",
+      "aiVoice": "AI וקול",
+      "voiceManagement": "ניהול קול",
+      "liveQuotas": "מכסות חיות",
+      "triviaAnalytics": "ניתוח טריוויה",
+      "translations": "תרגומים",
+      "liveAiDataFlow": "זרימת נתוני AI חי",
+      "campaigns": "קמפיינים",
+      "billing": "חיובים",
+      "costDashboard": "לוח עלויות",
+      "billingOverview": "סקירה",
+      "transactions": "עסקאות",
+      "refunds": "החזרים",
+      "subscriptions": "מנויים",
+      "subscriptionsList": "רשימת מנויים",
+      "plans": "תוכניות",
+      "marketing": "שיווק",
+      "content": "תוכן",
+      "settings": "הגדרות",
+      "diagnostics": "אבחון",
+      "systemHealth": "תקינות מערכת"
+    }
+  },
+  "liveAiDataFlow": {
+    "title": "זרימת נתוני AI חי",
+    "subtitle": "הדמיה של צינור עיבוד מקצה לקצה עבור תכונות AI חי",
+    "tabs": {
+      "translation": "תרגום",
+      "dubbing": "דיבוב",
+      "trivia": "טריוויה"
+    },
+    "services": {
+      "elevenlabs": "ElevenLabs",
+      "googleCloud": "Google Cloud",
+      "googleTranslate": "Google Translate",
+      "openai": "OpenAI",
+      "claude": "Claude",
+      "spacy": "spaCy",
+      "redis": "Redis",
+      "tavily": "Tavily"
+    },
+    "translation": {
+      "nodes": {
+        "auth": {
+          "title": "אימות WebSocket + הגבלת קצב",
+          "input": "בקשת חיבור WebSocket עם אסימון JWT",
+          "output": "סשן מאומת עם הגבלת קצב מופעלת"
+        },
+        "quota": {
+          "title": "בדיקת מכסה (מטמון 30 שניות)",
+          "input": "מזהה משתמש וסוג תכונה",
+          "output": "תוצאת אימות מכסה (במטמון 30 שניות)"
+        },
+        "stt": {
+          "title": "המרת דיבור לטקסט (ElevenLabs Scribe v2)",
+          "input": "זרם אודיו גולמי מהערוץ",
+          "output": "קטעי טקסט מתומללים עם חותמות זמן"
+        },
+        "dedup": {
+          "title": "ביטול כפילויות (70% חפיפה)",
+          "input": "קטע תמלול חדש",
+          "output": "קטעים ייחודיים מסוננים (סף חפיפה 70%)"
+        },
+        "predictive": {
+          "title": "פליטת כתוביות חזויה (אופציונלי)",
+          "input": "תמלול בשפת המקור",
+          "output": "תצוגת כתוביות מוקדמת לפני התרגום"
+        },
+        "translate": {
+          "title": "תרגום (Google/OpenAI/Claude)",
+          "input": "קטע טקסט בשפת המקור",
+          "output": "טקסט מתורגם לשפת היעד"
+        },
+        "chunk": {
+          "title": "חלוקת טקסט (מקסימום 80 תווים)",
+          "input": "טקסט מתורגם בכל אורך",
+          "output": "קטעים של מקסימום 80 תווים לתצוגה"
+        },
+        "emit": {
+          "title": "פליטת כתוביות סופית",
+          "input": "כתובית מתורגמת מחולקת",
+          "output": "אירוע WebSocket ללקוח עם נתוני כתובית"
+        }
+      }
+    },
+    "dubbing": {
+      "nodes": {
+        "auth": {
+          "title": "אימות WebSocket + הגבלת קצב",
+          "input": "בקשת חיבור WebSocket עם אסימון JWT",
+          "output": "סשן מאומת עם הגבלת קצב מופעלת"
+        },
+        "quota": {
+          "title": "בדיקת מכסה",
+          "input": "מזהה משתמש וסוג תכונת דיבוב",
+          "output": "תוצאת אימות מכסה"
+        },
+        "session": {
+          "title": "אתחול סשן + הרשמה ל-ChannelSTTManager",
+          "input": "מזהה ערוץ והעדפות שפה",
+          "output": "מנוי למנהל STT משותף של הערוץ"
+        },
+        "stt": {
+          "title": "STT משותף (1 לערוץ, חיסכון 99%)",
+          "input": "זרם אודיו של הערוץ (משותף בין משתמשים)",
+          "output": "תמלול משותף לכל מנויי הערוץ"
+        },
+        "transcriptEmit": {
+          "title": "פליטת תמלול ללקוח",
+          "input": "קטע תמלול STT משותף",
+          "output": "אירוע WebSocket עם תמלול מקורי"
+        },
+        "translate": {
+          "title": "תרגום",
+          "input": "טקסט תמלול מקורי",
+          "output": "טקסט מתורגם לשפת היעד של המשתמש"
+        },
+        "translationEmit": {
+          "title": "פליטת תרגום ללקוח",
+          "input": "קטע טקסט מתורגם",
+          "output": "אירוע WebSocket עם טקסט מתורגם"
+        },
+        "tts": {
+          "title": "סינתזת דיבור בזרימה (חיבור חדש לכל תמלול)",
+          "input": "טקסט מתורגם לסינתזת דיבור",
+          "output": "קטעי אודיו בזרימה מ-ElevenLabs"
+        },
+        "encode": {
+          "title": "קידוד אודיו (base64)",
+          "input": "מאגר אודיו גולמי מ-TTS",
+          "output": "אודיו מקודד ב-base64 מוכן להעברה"
+        },
+        "audioEmit": {
+          "title": "פליטת אודיו מדובב",
+          "input": "קטע אודיו מקודד",
+          "output": "אירוע WebSocket עם נתוני אודיו מדובב"
+        }
+      }
+    },
+    "trivia": {
+      "nodes": {
+        "auth": {
+          "title": "אימות WebSocket + הגבלת קצב",
+          "input": "בקשת חיבור WebSocket עם אסימון JWT",
+          "output": "סשן מאומת עם הגבלת קצב מופעלת"
+        },
+        "quota": {
+          "title": "בדיקת מכסה (מבוססת עובדות)",
+          "input": "מזהה משתמש וסוג תכונת טריוויה",
+          "output": "אימות מכסה (חיוב לפי עובדה)"
+        },
+        "topic": {
+          "title": "זיהוי נושאים (NER)",
+          "input": "טקסט תמלול מערוץ חי",
+          "output": "ישויות ונושאים מזוהים"
+        },
+        "mention": {
+          "title": "מעקב אזכורים (מינימום 2, צינון 60 דקות)",
+          "input": "ישות מזוהה עם מספר אזכורים",
+          "output": "נושא זכאי (2+ אזכורים, לא בצינון)"
+        },
+        "session": {
+          "title": "ניהול סשנים (FIFO מקסימום 100)",
+          "input": "בקשת סשן טריוויה חדשה",
+          "output": "משבצת סשן מוקצית (פינוי FIFO ב-100)"
+        },
+        "cache": {
+          "title": "חיפוש במטמון עובדות (TTL 24 שעות)",
+          "input": "ישות נושא לחיפוש עובדות",
+          "output": "עובדה מהמטמון אם זמינה (TTL 24 שעות)"
+        },
+        "search": {
+          "title": "חיפוש אינטרנט (בהחמצת מטמון בלבד)",
+          "input": "ישות נושא הזקוקה לעובדות חדשות",
+          "output": "תוצאות חיפוש אינטרנט מ-Tavily"
+        },
+        "extract": {
+          "title": "חילוץ עובדות (בהחמצת מטמון בלבד)",
+          "input": "תוצאות חיפוש אינטרנט לנושא",
+          "output": "עובדת טריוויה מובנית שחולצה על ידי AI"
+        },
+        "tracking": {
+          "title": "מעקב סשן + מרווח (מינימום 15 שניות)",
+          "input": "עובדת טריוויה שנוצרה",
+          "output": "עובדה בתור עם מרווח מינימלי של 15 שניות"
+        },
+        "emit": {
+          "title": "פליטת עובדת טריוויה (רב-לשונית)",
+          "input": "עובדת טריוויה עם תרגומים",
+          "output": "אירוע WebSocket עם טריוויה רב-לשונית"
+        }
+      }
     }
   }
 }

@@ -340,6 +340,137 @@ class DubbingConfig(BaseSettings):
         env_prefix = "DUBBING_"
 
 
+class SubtitleConfig(BaseSettings):
+    """Live subtitle translation configuration (Premium feature)."""
+
+    # Quota cache configuration
+    quota_cache_ttl_seconds: float = Field(
+        default=30.0,
+        ge=1.0,
+        le=300.0,
+        description="Time-to-live for quota check cache (seconds)",
+    )
+    quota_cache_max_size: int = Field(
+        default=100,
+        ge=10,
+        le=1000,
+        description="Maximum quota cache entries (LRU eviction)",
+    )
+
+    # WebSocket heartbeat and timeout configuration
+    heartbeat_interval_seconds: float = Field(
+        default=30.0,
+        ge=5.0,
+        le=120.0,
+        description="Interval between WebSocket heartbeat pings (seconds)",
+    )
+    quota_update_interval_seconds: float = Field(
+        default=10.0,
+        ge=1.0,
+        le=60.0,
+        description="Interval between quota session updates (seconds)",
+    )
+    connection_timeout_seconds: float = Field(
+        default=60.0,
+        ge=10.0,
+        le=300.0,
+        description="Timeout for stale connections (no activity)",
+    )
+
+    # Subtitle text configuration
+    max_subtitle_length: int = Field(
+        default=80,
+        ge=40,
+        le=200,
+        description="Maximum characters per subtitle line",
+    )
+    preferred_subtitle_length: int = Field(
+        default=60,
+        ge=30,
+        le=100,
+        description="Preferred characters per subtitle line",
+    )
+
+    # Audio configuration
+    audio_sample_rate: int = Field(
+        default=16000,
+        description="Audio sample rate in Hz for STT (ElevenLabs Scribe requires 16kHz)",
+    )
+
+    # Translation AI model configuration
+    translation_model: str = Field(
+        default="gpt-4o-mini",
+        description="AI model for subtitle translation",
+    )
+    translation_temperature: float = Field(
+        default=0.3,
+        ge=0.0,
+        le=2.0,
+        description="AI model temperature for translation consistency",
+    )
+    translation_timeout_seconds: float = Field(
+        default=0.100,
+        ge=0.01,
+        le=10.0,
+        description="Timeout for translation API requests (seconds)",
+    )
+
+    # STT WebSocket configuration (ElevenLabs)
+    stt_max_reconnect_attempts: int = Field(
+        default=5,
+        ge=1,
+        le=20,
+        description="Maximum STT WebSocket reconnection attempts",
+    )
+    stt_initial_reconnect_delay_seconds: float = Field(
+        default=1.0,
+        ge=0.1,
+        le=10.0,
+        description="Initial delay before reconnection attempt (seconds)",
+    )
+    stt_max_reconnect_delay_seconds: float = Field(
+        default=30.0,
+        ge=1.0,
+        le=300.0,
+        description="Maximum delay between reconnection attempts (seconds)",
+    )
+    stt_reconnect_backoff_multiplier: float = Field(
+        default=2.0,
+        ge=1.1,
+        le=5.0,
+        description="Exponential backoff multiplier for reconnection delays",
+    )
+    stt_ping_interval_seconds: int = Field(
+        default=20,
+        ge=5,
+        le=120,
+        description="STT WebSocket ping interval (seconds)",
+    )
+    stt_ping_timeout_seconds: int = Field(
+        default=30,
+        ge=10,
+        le=180,
+        description="STT WebSocket ping timeout (seconds)",
+    )
+    stt_close_timeout_seconds: int = Field(
+        default=10,
+        ge=1,
+        le=60,
+        description="STT WebSocket graceful close timeout (seconds)",
+    )
+
+    # Deduplication configuration
+    dedup_min_pattern_length: int = Field(
+        default=10,
+        ge=5,
+        le=50,
+        description="Minimum pattern length for transcript deduplication",
+    )
+
+    class Config:
+        env_prefix = "SUBTITLE_"
+
+
 class RecapConfig(BaseSettings):
     """Recap agent configuration for live broadcast summaries."""
 
@@ -890,6 +1021,10 @@ class OlorinSettings(BaseSettings):
     dubbing: DubbingConfig = Field(
         default_factory=DubbingConfig,
         description="Realtime dubbing configuration",
+    )
+    subtitle: SubtitleConfig = Field(
+        default_factory=SubtitleConfig,
+        description="Live subtitle translation configuration",
     )
     recap: RecapConfig = Field(
         default_factory=RecapConfig,

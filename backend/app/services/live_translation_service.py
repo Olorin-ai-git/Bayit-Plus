@@ -78,14 +78,8 @@ LANGUAGE_CODES = {
     "yi": "yi",
 }
 
-# Maximum characters per subtitle line for readability
-MAX_SUBTITLE_LENGTH = 80
-# Preferred chunk length for splitting
-PREFERRED_SUBTITLE_LENGTH = 60
-
-
 def chunk_text_for_subtitles(
-    text: str, max_length: int = MAX_SUBTITLE_LENGTH
+    text: str, max_length: int | None = None
 ) -> list[str]:
     """
     Split long text into smaller chunks suitable for subtitles.
@@ -93,6 +87,13 @@ def chunk_text_for_subtitles(
     Splits at natural breakpoints (punctuation, then spaces) to maintain readability.
     Returns a list of text chunks, each under max_length characters.
     """
+    from app.core.config import settings
+
+    # Use configuration if max_length not provided
+    if max_length is None:
+        max_length = settings.olorin.subtitle.max_subtitle_length
+    preferred_length = settings.olorin.subtitle.preferred_subtitle_length
+
     if len(text) <= max_length:
         return [text]
 
@@ -110,19 +111,19 @@ def chunk_text_for_subtitles(
         # Priority 1: Split at sentence-ending punctuation (. ! ?)
         for punct in [". ", "! ", "? ", "। ", "。", "؟ "]:
             pos = remaining.rfind(punct, 0, max_length)
-            if pos > PREFERRED_SUBTITLE_LENGTH // 2:
+            if pos > preferred_length // 2:
                 split_point = pos + len(punct)
                 break
         else:
             # Priority 2: Split at comma or semicolon
             for punct in [", ", "; ", "، ", "、"]:
                 pos = remaining.rfind(punct, 0, max_length)
-                if pos > PREFERRED_SUBTITLE_LENGTH // 2:
+                if pos > preferred_length // 2:
                     split_point = pos + len(punct)
                     break
             else:
                 # Priority 3: Split at space
-                pos = remaining.rfind(" ", PREFERRED_SUBTITLE_LENGTH // 2, max_length)
+                pos = remaining.rfind(" ", preferred_length // 2, max_length)
                 if pos > 0:
                     split_point = pos + 1
                 # If no space found, just hard cut at max_length
@@ -387,11 +388,13 @@ class LiveTranslationService:
         self, source_lang: str = "he"
     ) -> speech.StreamingRecognitionConfig:
         """Get streaming recognition configuration."""
+        from app.core.config import settings
+
         lang_code = LANGUAGE_CODES.get(source_lang, f"{source_lang}-IL")
 
         config = speech.RecognitionConfig(
             encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-            sample_rate_hertz=16000,
+            sample_rate_hertz=settings.olorin.subtitle.audio_sample_rate,
             language_code=lang_code,
             enable_automatic_punctuation=True,
             model="latest_long",
@@ -600,10 +603,12 @@ class LiveTranslationService:
             return translated
 
         elif provider == "openai" and self.openai_client:
-            # OpenAI GPT-4o-mini translation (async with timeout)
+            # OpenAI translation (async with timeout)
+            from app.core.config import settings
+
             response = await asyncio.wait_for(
                 self.openai_client.chat.completions.create(
-                    model="gpt-4o-mini",
+                    model=settings.olorin.subtitle.translation_model,
                     messages=[
                         {
                             "role": "system",
@@ -615,7 +620,7 @@ class LiveTranslationService:
                         },
                         {"role": "user", "content": text},
                     ],
-                    temperature=0.3,
+                    temperature=settings.olorin.subtitle.translation_temperature,
                     max_tokens=500,
                 ),
                 timeout=timeout_seconds,
@@ -823,11 +828,13 @@ class LiveTranslationService:
                     translated = transcript
                 else:
                     # Use optimized timeout and caching for live subtitles
+                    from app.core.config import settings
+
                     translated = await self.translate_text(
                         transcript,
                         actual_source_lang,
                         target_lang,
-                        timeout_seconds=0.100,  # Reduced from 250ms to 100ms
+                        timeout_seconds=settings.olorin.subtitle.translation_timeout_seconds,
                         enable_fallback=True,  # Enable provider fallback
                         cache_ttl_seconds=300,  # 5 minutes for live features
                     )

@@ -14,6 +14,7 @@ import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassLiveControlButton } from './controls/GlassLiveControlButton'
 import { GlassView } from '@bayit/shared/ui'
 import liveSubtitleService, { LiveSubtitleCue } from '@/services/liveSubtitleService'
+import { liveSubtitleConfig } from '@/config/liveSubtitleConfig'
 import logger from '@/utils/logger'
 
 const LANG_FLAGS: Record<string, string> = {
@@ -90,8 +91,6 @@ export default function LiveSubtitleControls({
     }
   }, [isDubbingActive])
 
-  if (!isLive) return null
-
   // Sync UI state with actual service connection state ONLY on mount
   // DO NOT poll - it creates race conditions with async connection logic
   useEffect(() => {
@@ -105,7 +104,7 @@ export default function LiveSubtitleControls({
   }, [])
 
   // Detect external connections (e.g., auto-enabled by trivia)
-  // Poll every second to sync UI when service is connected externally
+  // Poll at configured interval to sync UI when service is connected externally
   useEffect(() => {
     const interval = setInterval(() => {
       const serviceConnected = liveSubtitleService.isServiceConnected()
@@ -123,7 +122,7 @@ export default function LiveSubtitleControls({
         setEnabled(false)
         setStatus('disconnected')
       }
-    }, 1000) // Check every second
+    }, liveSubtitleConfig.externalConnectionPollIntervalMs)
 
     return () => clearInterval(interval)
   }, [enabled, status])
@@ -265,6 +264,9 @@ export default function LiveSubtitleControls({
       }
     }
   }
+
+  // Early return AFTER all hooks to comply with React's Rules of Hooks
+  if (!isLive) return null
 
   return (
     <View

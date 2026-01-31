@@ -833,5 +833,203 @@
         "dubbedVolume": "Ajustar volumen del audio doblado (1 = volumen completo)"
       }
     }
+  },
+  "liveAiDataFlow": {
+    "title": "Flujo de datos de IA en vivo",
+    "subtitle": "Visualizacion del pipeline de extremo a extremo para funciones de IA en vivo",
+    "tabs": {
+      "translation": "Traduccion",
+      "dubbing": "Doblaje",
+      "trivia": "Trivia"
+    },
+    "services": {
+      "elevenlabs": "ElevenLabs",
+      "googleCloud": "Google Cloud",
+      "googleTranslate": "Google Translate",
+      "openai": "OpenAI",
+      "claude": "Claude",
+      "spacy": "spaCy",
+      "redis": "Redis",
+      "tavily": "Tavily"
+    },
+    "translation": {
+      "nodes": {
+        "auth": {
+          "title": "Autenticacion WebSocket + Limite de tasa",
+          "input": "Solicitud de conexion WebSocket con token JWT",
+          "output": "Sesion autenticada con limite de tasa aplicado"
+        },
+        "quota": {
+          "title": "Verificacion de cuota (cache 30s)",
+          "input": "ID de usuario y tipo de funcion",
+          "output": "Resultado de validacion de cuota (cache 30s)"
+        },
+        "stt": {
+          "title": "STT (ElevenLabs Scribe v2)",
+          "input": "Flujo de audio sin procesar del canal",
+          "output": "Segmentos de texto transcritos con marcas de tiempo"
+        },
+        "dedup": {
+          "title": "Deduplicacion (70% superposicion)",
+          "input": "Nuevo segmento de transcripcion",
+          "output": "Segmentos unicos filtrados (umbral 70%)"
+        },
+        "predictive": {
+          "title": "Emision predictiva de subtitulos (opcional)",
+          "input": "Transcripcion en idioma original",
+          "output": "Visualizacion temprana de subtitulos antes de traduccion"
+        },
+        "translate": {
+          "title": "Traduccion (Google/OpenAI/Claude)",
+          "input": "Segmento de texto en idioma original",
+          "output": "Texto traducido al idioma destino"
+        },
+        "chunk": {
+          "title": "Division de texto (max 80 caracteres)",
+          "input": "Texto traducido de cualquier longitud",
+          "output": "Fragmentos de max 80 caracteres para visualizacion"
+        },
+        "emit": {
+          "title": "Emision final de subtitulos",
+          "input": "Subtitulo traducido fragmentado",
+          "output": "Evento WebSocket al cliente con datos de subtitulo"
+        }
+      }
+    },
+    "dubbing": {
+      "nodes": {
+        "auth": {
+          "title": "Autenticacion WebSocket + Limite de tasa",
+          "input": "Solicitud de conexion WebSocket con token JWT",
+          "output": "Sesion autenticada con limite de tasa aplicado"
+        },
+        "quota": {
+          "title": "Verificacion de cuota",
+          "input": "ID de usuario y tipo de funcion de doblaje",
+          "output": "Resultado de validacion de cuota"
+        },
+        "session": {
+          "title": "Inicio de sesion + Suscripcion ChannelSTTManager",
+          "input": "ID de canal y preferencias de idioma",
+          "output": "Suscrito al gestor STT compartido del canal"
+        },
+        "stt": {
+          "title": "STT compartido (1 por canal, 99% ahorro)",
+          "input": "Flujo de audio del canal (compartido entre usuarios)",
+          "output": "Transcripcion compartida para todos los suscriptores"
+        },
+        "transcriptEmit": {
+          "title": "Emision de transcripcion al cliente",
+          "input": "Segmento de transcripcion STT compartido",
+          "output": "Evento WebSocket con transcripcion original"
+        },
+        "translate": {
+          "title": "Traduccion",
+          "input": "Texto de transcripcion original",
+          "output": "Texto traducido al idioma del usuario"
+        },
+        "translationEmit": {
+          "title": "Emision de traduccion al cliente",
+          "input": "Segmento de texto traducido",
+          "output": "Evento WebSocket con texto traducido"
+        },
+        "tts": {
+          "title": "TTS en streaming (nueva conexion por transcripcion)",
+          "input": "Texto traducido para sintesis de voz",
+          "output": "Fragmentos de audio en streaming de ElevenLabs"
+        },
+        "encode": {
+          "title": "Codificacion de audio (base64)",
+          "input": "Buffer de audio sin procesar de TTS",
+          "output": "Audio codificado en base64 listo para transporte"
+        },
+        "audioEmit": {
+          "title": "Emision de audio doblado",
+          "input": "Fragmento de audio codificado",
+          "output": "Evento WebSocket con datos de audio doblado"
+        }
+      }
+    },
+    "trivia": {
+      "nodes": {
+        "auth": {
+          "title": "Autenticacion WebSocket + Limite de tasa",
+          "input": "Solicitud de conexion WebSocket con token JWT",
+          "output": "Sesion autenticada con limite de tasa aplicado"
+        },
+        "quota": {
+          "title": "Verificacion de cuota (basada en datos)",
+          "input": "ID de usuario y tipo de funcion de trivia",
+          "output": "Validacion de cuota (facturacion por dato)"
+        },
+        "topic": {
+          "title": "Deteccion de temas (NER)",
+          "input": "Texto de transcripcion del canal en vivo",
+          "output": "Entidades y temas detectados"
+        },
+        "mention": {
+          "title": "Seguimiento de menciones (min 2, enfriamiento 60 min)",
+          "input": "Entidad detectada con conteo de menciones",
+          "output": "Tema elegible (2+ menciones, no en enfriamiento)"
+        },
+        "session": {
+          "title": "Gestion de sesiones (FIFO max 100)",
+          "input": "Solicitud de nueva sesion de trivia",
+          "output": "Ranura de sesion asignada (desalojo FIFO en 100)"
+        },
+        "cache": {
+          "title": "Busqueda en cache de datos (TTL 24h)",
+          "input": "Entidad de tema para busqueda de datos",
+          "output": "Dato en cache si disponible (TTL 24h)"
+        },
+        "search": {
+          "title": "Busqueda web (solo en fallo de cache)",
+          "input": "Entidad de tema que necesita datos frescos",
+          "output": "Resultados de busqueda web de Tavily"
+        },
+        "extract": {
+          "title": "Extraccion de datos (solo en fallo de cache)",
+          "input": "Resultados de busqueda web para el tema",
+          "output": "Dato de trivia estructurado extraido por IA"
+        },
+        "tracking": {
+          "title": "Seguimiento de sesion + Intervalo (min 15s)",
+          "input": "Dato de trivia generado",
+          "output": "Dato en cola con intervalo minimo de 15s"
+        },
+        "emit": {
+          "title": "Emision de dato de trivia (multilingue)",
+          "input": "Dato de trivia con traducciones",
+          "output": "Evento WebSocket con trivia multilingue"
+        }
+      }
+    }
+  },
+  "admin": {
+    "nav": {
+      "dashboard": "Panel",
+      "users": "Usuarios",
+      "librarian": "Bibliotecario IA",
+      "aiVoice": "IA y Voz",
+      "voiceManagement": "Gestión de Voz",
+      "liveQuotas": "Cuotas en Vivo",
+      "triviaAnalytics": "Análisis de Trivia",
+      "translations": "Traducciones",
+      "liveAiDataFlow": "Flujo de Datos IA en Vivo",
+      "campaigns": "Campañas",
+      "billing": "Facturación",
+      "costDashboard": "Panel de Costos",
+      "billingOverview": "Resumen",
+      "transactions": "Transacciones",
+      "refunds": "Reembolsos",
+      "subscriptions": "Suscripciones",
+      "subscriptionsList": "Lista de Suscripciones",
+      "plans": "Planes",
+      "marketing": "Marketing",
+      "content": "Contenido",
+      "settings": "Configuración",
+      "diagnostics": "Diagnósticos",
+      "systemHealth": "Salud del Sistema"
+    }
   }
 }

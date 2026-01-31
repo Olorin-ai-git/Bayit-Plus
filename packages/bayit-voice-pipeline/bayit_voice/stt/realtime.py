@@ -31,11 +31,6 @@ ELEVENLABS_LANGUAGE_CODES = {
     "fr": "fr", "de": "de", "it": "it", "pt": "pt", "yi": "yi",
 }
 
-MAX_RECONNECT_ATTEMPTS = 5
-INITIAL_RECONNECT_DELAY_SEC = 1.0
-MAX_RECONNECT_DELAY_SEC = 30.0
-RECONNECT_BACKOFF_MULTIPLIER = 2.0
-
 
 class ElevenLabsRealtimeService:
     """Real-time speech-to-text service with ultra-low latency (~150ms) and auto-reconnection."""
@@ -91,12 +86,23 @@ class ElevenLabsRealtimeService:
             ws_url += f"&language_code={lang_code}"
 
         try:
+            # Get WebSocket configuration (with fallbacks for standalone usage)
+            try:
+                from app.core.config import settings
+                ping_interval = settings.olorin.subtitle.stt_ping_interval_seconds
+                ping_timeout = settings.olorin.subtitle.stt_ping_timeout_seconds
+                close_timeout = settings.olorin.subtitle.stt_close_timeout_seconds
+            except ImportError:
+                ping_interval = 20
+                ping_timeout = 30
+                close_timeout = 10
+
             self.websocket = await websockets.connect(
                 ws_url,
                 additional_headers={"xi-api-key": self.config.elevenlabs_api_key},
-                ping_interval=20,
-                ping_timeout=30,
-                close_timeout=10,
+                ping_interval=ping_interval,
+                ping_timeout=ping_timeout,
+                close_timeout=close_timeout,
             )
 
             self._connected = True
@@ -129,17 +135,30 @@ class ElevenLabsRealtimeService:
 
     async def _attempt_reconnect(self) -> bool:
         """Attempt to reconnect with exponential backoff."""
-        if self._reconnect_attempts >= MAX_RECONNECT_ATTEMPTS:
-            logger.error(f"Max reconnection attempts ({MAX_RECONNECT_ATTEMPTS}) exceeded")
+        try:
+            from app.core.config import settings
+            max_attempts = settings.olorin.subtitle.stt_max_reconnect_attempts
+            initial_delay = settings.olorin.subtitle.stt_initial_reconnect_delay_seconds
+            max_delay = settings.olorin.subtitle.stt_max_reconnect_delay_seconds
+            backoff_multiplier = settings.olorin.subtitle.stt_reconnect_backoff_multiplier
+        except ImportError:
+            # Fallback for standalone usage (defaults match previous hardcoded values)
+            max_attempts = 5
+            initial_delay = 1.0
+            max_delay = 30.0
+            backoff_multiplier = 2.0
+
+        if self._reconnect_attempts >= max_attempts:
+            logger.error(f"Max reconnection attempts ({max_attempts}) exceeded")
             return False
 
         self._reconnect_attempts += 1
         delay = min(
-            INITIAL_RECONNECT_DELAY_SEC * (RECONNECT_BACKOFF_MULTIPLIER ** (self._reconnect_attempts - 1)),
-            MAX_RECONNECT_DELAY_SEC
+            initial_delay * (backoff_multiplier ** (self._reconnect_attempts - 1)),
+            max_delay
         )
 
-        logger.warning(f"Attempting reconnection {self._reconnect_attempts}/{MAX_RECONNECT_ATTEMPTS} in {delay:.1f}s...")
+        logger.warning(f"Attempting reconnection {self._reconnect_attempts}/{max_attempts} in {delay:.1f}s...")
         await asyncio.sleep(delay)
 
         try:
@@ -193,20 +212,22 @@ class ElevenLabsRealtimeService:
                 try:
                     # Explicitly handle UTF-8 encoding for message
                     if isinstance(message, bytes):
-                        message = message.decode('utf-8', errors='ignore')
+                        # Use 'replace' to detect encoding issues with replacement character
+                        message = message.decode('utf-8', errors='replace')
 
-                    data = json.loads(message, encoding='utf-8') if isinstance(message, bytes) else json.loads(message)
+                    # Parse JSON (message is already decoded to string above)
+                    data = json.loads(message)
                     msg_type = data.get("message_type", "")
 
                     if msg_type == "committed_transcript_with_timestamps":
                         transcript_text = data.get("text", "").strip()
                         detected_lang = data.get("language_code", "auto")
 
-                        # Ensure UTF-8 encoding is preserved (should already be unicode string from JSON)
-                        # Verify no encoding issues by checking for replacement characters
+                        # Check for encoding issues (replacement character indicates invalid UTF-8)
                         if '\ufffd' in transcript_text:
                             logger.warning(
-                                f"Encoding issue detected in transcript - contains replacement character"
+                                f"Encoding issue detected in transcript - contains replacement character. "
+                                f"Original may have had invalid UTF-8 bytes."
                             )
 
                         if transcript_text and len(transcript_text) >= 2:

@@ -20,6 +20,7 @@ from .live_quotas import router as live_quotas_router
 from .marketing import router as marketing_router
 from .plans import router as plans_router
 from .recordings import router as recordings_router
+from .trivia_analytics import router as trivia_analytics_router
 from .settings import router as settings_router
 from .subscriptions import router as subscriptions_router
 from .users import router as users_router
@@ -50,6 +51,7 @@ router.include_router(voice_management_router, tags=["admin-voice-management"])
 router.include_router(voice_analytics_router, tags=["admin-voice-analytics"])
 router.include_router(voice_quotas_router, tags=["admin-voice-quotas"])
 router.include_router(voice_settings_router, tags=["admin-voice-settings"])
+router.include_router(trivia_analytics_router, tags=["admin-trivia-analytics"])
 router.include_router(database_maintenance_router, tags=["admin-database"])
 
 __all__ = ["router", "require_admin", "has_permission", "log_audit"]

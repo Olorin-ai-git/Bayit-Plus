@@ -23,6 +23,8 @@ export { GlassErrorBanner } from './GlassErrorBanner';
 export type { GlassErrorBannerProps } from './GlassErrorBanner';
 export { GlassBadge } from './GlassBadge';
 export { GlassTabs } from './GlassTabs';
+export { GlassTabContainer } from './GlassTabContainer';
+export type { GlassTabContainerProps, TabContent } from './GlassTabContainer';
 export { GlassCategoryPill } from './GlassCategoryPill';
 export { GlassBreadcrumbs } from './GlassBreadcrumbs';
 export { AnalogClock } from './AnalogClock';

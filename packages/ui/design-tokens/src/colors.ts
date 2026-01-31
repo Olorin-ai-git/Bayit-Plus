@@ -242,6 +242,8 @@ export const colors = {
   glassOverlay: 'rgba(10, 10, 10, 0.8)',  // Overlay background
   glassOverlayStrong: 'rgba(10, 10, 10, 0.95)',  // Strong overlay
   glassOverlayPurple: 'rgba(88, 28, 135, 0.4)',  // Purple-tinted overlay
+  glassWhiteSubtle: 'rgba(255, 255, 255, 0.06)',  // Subtle white overlay for badges/pills
+  glassWhiteFaint: 'rgba(255, 255, 255, 0.03)',   // Faint white overlay for secondary surfaces
 };
 
 export default colors;

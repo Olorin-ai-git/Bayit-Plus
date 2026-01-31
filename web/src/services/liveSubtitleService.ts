@@ -5,6 +5,7 @@
 
 import logger from '@/utils/logger'
 import i18n from 'i18next'
+import { liveSubtitleConfig } from '@/config/liveSubtitleConfig'
 import {
   VideoBufferManager,
   createSyncedStream,
@@ -120,7 +121,7 @@ class LiveSubtitleService {
             this.disconnect()
             reject(new Error('Connection timeout'))
           }
-        }, 10000) // 10 second timeout
+        }, liveSubtitleConfig.connectionTimeoutMs)
 
         this.ws.onopen = async () => {
           logger.debug('WebSocket connected, sending authentication', 'liveSubtitleService')
@@ -158,8 +159,8 @@ class LiveSubtitleService {
               // Start connection health monitoring
               this.heartbeatInterval = setInterval(() => {
                 const timeSinceLastMessage = Date.now() - this.lastMessageTime
-                // If no message received in 60 seconds, connection may be stale
-                if (timeSinceLastMessage > 60000) {
+                // Check if connection is stale (no messages received)
+                if (timeSinceLastMessage > liveSubtitleConfig.staleConnectionTimeoutMs) {
                   logger.warn(
                     `No messages received for ${Math.floor(timeSinceLastMessage / 1000)}s - connection may be stale`,
                     'liveSubtitleService'
@@ -168,7 +169,7 @@ class LiveSubtitleService {
                   this.disconnect()
                   onError('Connection timeout - no activity detected')
                 }
-              }, 10000) // Check every 10 seconds
+              }, liveSubtitleConfig.heartbeatCheckIntervalMs)
 
               try {
                 await this.startAudioCapture(videoElement)
@@ -254,9 +255,9 @@ class LiveSubtitleService {
    */
   private async startAudioCapture(videoElement: HTMLVideoElement): Promise<void> {
     try {
-      // Use 16kHz sample rate for ElevenLabs Scribe
-      this.audioContext = new AudioContext({ sampleRate: 16000 })
-      logger.debug('AudioContext created with sampleRate: 16000Hz', 'liveSubtitleService')
+      // Use configured sample rate (default: 16kHz for ElevenLabs Scribe)
+      this.audioContext = new AudioContext({ sampleRate: liveSubtitleConfig.sampleRate })
+      logger.debug(`AudioContext created with sampleRate: ${liveSubtitleConfig.sampleRate}Hz`, 'liveSubtitleService')
 
       // IMPORTANT: captureStream() gets audio DIRECTLY from video element
       // This does NOT use the microphone - it captures the video's audio track

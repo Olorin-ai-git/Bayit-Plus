@@ -136,7 +136,10 @@ const UserLiveQuotaPage = lazy(() => import('./pages/admin/UserLiveQuotaPage'))
 const LiveUsageAnalyticsPage = lazy(() => import('./pages/admin/LiveUsageAnalyticsPage'))
 const TranslationDashboardPage = lazy(() => import('./pages/admin/TranslationDashboardPage'))
 const CostDashboardPage = lazy(() => import('./pages/admin/CostDashboardPage'))
+const VoiceManagementPage = lazy(() => import('./pages/admin/VoiceManagementPage'))
+const TriviaAnalyticsPage = lazy(() => import('./pages/admin/TriviaAnalyticsPage'))
 const SystemDiagnosticsPage = lazy(() => import('./pages/admin/SystemDiagnosticsPage'))
+const LiveAIDataFlowPage = lazy(() => import('./pages/admin/LiveAIDataFlowPage'))
 
 // Auth hydration guard wrapper
 const AppContent = () => {
@@ -227,7 +230,10 @@ const AppContent = () => {
         <Route path="translations" element={<TranslationDashboardPage />} />
         <Route path="widgets" element={<WidgetsPage />} />
         <Route path="recordings" element={<RecordingsManagementPage />} />
+        <Route path="voice" element={<VoiceManagementPage />} />
+        <Route path="trivia" element={<TriviaAnalyticsPage />} />
         <Route path="diagnostics" element={<SystemDiagnosticsPage />} />
+        <Route path="live-ai-dataflow" element={<LiveAIDataFlowPage />} />
       </Route>
 
       {/* Main Routes with Layout (protected by auth + payment guard) */}

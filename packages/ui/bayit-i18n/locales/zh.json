@@ -878,6 +878,202 @@
         "categories": "分类",
         "topSpenders": "消费排行"
       }
+    },
+    "nav": {
+      "dashboard": "仪表板",
+      "users": "用户",
+      "librarian": "AI图书管理员",
+      "aiVoice": "AI与语音",
+      "voiceManagement": "语音管理",
+      "liveQuotas": "实时配额",
+      "triviaAnalytics": "问答分析",
+      "translations": "翻译",
+      "liveAiDataFlow": "实时AI数据流",
+      "campaigns": "活动",
+      "billing": "账单",
+      "costDashboard": "成本仪表板",
+      "billingOverview": "概览",
+      "transactions": "交易",
+      "refunds": "退款",
+      "subscriptions": "订阅",
+      "subscriptionsList": "订阅列表",
+      "plans": "方案",
+      "marketing": "营销",
+      "content": "内容",
+      "settings": "设置",
+      "diagnostics": "诊断",
+      "systemHealth": "系统健康"
+    }
+  },
+  "liveAiDataFlow": {
+    "title": "实时AI数据流",
+    "subtitle": "实时AI功能的端到端管道可视化",
+    "tabs": {
+      "translation": "翻译",
+      "dubbing": "配音",
+      "trivia": "趣味问答"
+    },
+    "services": {
+      "elevenlabs": "ElevenLabs",
+      "googleCloud": "Google Cloud",
+      "googleTranslate": "Google Translate",
+      "openai": "OpenAI",
+      "claude": "Claude",
+      "spacy": "spaCy",
+      "redis": "Redis",
+      "tavily": "Tavily"
+    },
+    "translation": {
+      "nodes": {
+        "auth": {
+          "title": "WebSocket Auth + Rate Limit",
+          "input": "WebSocket connection request with JWT token",
+          "output": "Authenticated session with rate limit applied"
+        },
+        "quota": {
+          "title": "Quota Check (30s cache)",
+          "input": "User ID and feature type",
+          "output": "Quota validation result (cached 30s)"
+        },
+        "stt": {
+          "title": "STT (ElevenLabs Scribe v2)",
+          "input": "Raw audio stream from channel",
+          "output": "Transcribed text segments with timestamps"
+        },
+        "dedup": {
+          "title": "Deduplication (70% overlap)",
+          "input": "New transcript segment",
+          "output": "Filtered unique segments (70% overlap threshold)"
+        },
+        "predictive": {
+          "title": "Predictive Subtitle Emit (optional)",
+          "input": "Original language transcript",
+          "output": "Early subtitle display before translation"
+        },
+        "translate": {
+          "title": "Translation (Google/OpenAI/Claude)",
+          "input": "Original language text segment",
+          "output": "Translated text in target language"
+        },
+        "chunk": {
+          "title": "Text Chunking (max 80 chars)",
+          "input": "Translated text of any length",
+          "output": "Chunks of max 80 characters for display"
+        },
+        "emit": {
+          "title": "Final Subtitle Emit",
+          "input": "Chunked translated subtitle",
+          "output": "WebSocket event to client with subtitle data"
+        }
+      }
+    },
+    "dubbing": {
+      "nodes": {
+        "auth": {
+          "title": "WebSocket Auth + Rate Limit",
+          "input": "WebSocket connection request with JWT token",
+          "output": "Authenticated session with rate limit applied"
+        },
+        "quota": {
+          "title": "Quota Check",
+          "input": "User ID and dubbing feature type",
+          "output": "Quota validation result"
+        },
+        "session": {
+          "title": "Session Init + ChannelSTTManager Subscribe",
+          "input": "Channel ID and language preferences",
+          "output": "Subscribed to shared STT channel manager"
+        },
+        "stt": {
+          "title": "Shared STT (1 per channel, 99% cost save)",
+          "input": "Channel audio stream (shared across users)",
+          "output": "Shared transcript for all channel subscribers"
+        },
+        "transcriptEmit": {
+          "title": "Transcript Emit to Client",
+          "input": "Shared STT transcript segment",
+          "output": "WebSocket event with original transcript"
+        },
+        "translate": {
+          "title": "Translation",
+          "input": "Original transcript text",
+          "output": "Translated text in user's target language"
+        },
+        "translationEmit": {
+          "title": "Translation Emit to Client",
+          "input": "Translated text segment",
+          "output": "WebSocket event with translated text"
+        },
+        "tts": {
+          "title": "TTS Streaming (new conn per transcript)",
+          "input": "Translated text for speech synthesis",
+          "output": "Streaming audio chunks from ElevenLabs"
+        },
+        "encode": {
+          "title": "Audio Encoding (base64)",
+          "input": "Raw audio buffer from TTS",
+          "output": "Base64-encoded audio ready for transport"
+        },
+        "audioEmit": {
+          "title": "Dubbed Audio Emit",
+          "input": "Encoded audio chunk",
+          "output": "WebSocket event with dubbed audio data"
+        }
+      }
+    },
+    "trivia": {
+      "nodes": {
+        "auth": {
+          "title": "WebSocket Auth + Rate Limit",
+          "input": "WebSocket connection request with JWT token",
+          "output": "Authenticated session with rate limit applied"
+        },
+        "quota": {
+          "title": "Quota Check (fact-based)",
+          "input": "User ID and trivia feature type",
+          "output": "Quota validation (per-fact billing)"
+        },
+        "topic": {
+          "title": "Topic Detection (NER)",
+          "input": "Transcript text from live channel",
+          "output": "Detected named entities and topics"
+        },
+        "mention": {
+          "title": "Mention Tracking (min 2, 60-min cooldown)",
+          "input": "Detected entity with mention count",
+          "output": "Eligible topic (2+ mentions, not in cooldown)"
+        },
+        "session": {
+          "title": "Session Management (FIFO max 100)",
+          "input": "New trivia session request",
+          "output": "Session slot allocated (FIFO eviction at 100)"
+        },
+        "cache": {
+          "title": "Fact Cache Lookup (24h TTL)",
+          "input": "Topic entity for fact lookup",
+          "output": "Cached fact if available (24h TTL)"
+        },
+        "search": {
+          "title": "Web Search (cache miss only)",
+          "input": "Topic entity needing fresh facts",
+          "output": "Web search results from Tavily"
+        },
+        "extract": {
+          "title": "Fact Extraction (cache miss only)",
+          "input": "Web search results for topic",
+          "output": "Structured trivia fact extracted by AI"
+        },
+        "tracking": {
+          "title": "Session Tracking + Interval (15s min)",
+          "input": "Generated trivia fact",
+          "output": "Fact queued with 15s minimum interval"
+        },
+        "emit": {
+          "title": "Trivia Fact Emit (multilingual)",
+          "input": "Trivia fact with translations",
+          "output": "WebSocket event with multilingual trivia"
+        }
+      }
     }
   }
 }

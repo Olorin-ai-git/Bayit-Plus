@@ -6,6 +6,8 @@ Real-time audio → transcription → translation → subtitle streaming
 import asyncio
 import logging
 import time
+from collections import OrderedDict
+from threading import RLock
 from typing import Dict, Optional, Tuple
 
 from beanie import PydanticObjectId
@@ -25,66 +27,202 @@ from app.services.rate_limiter_live import get_rate_limiter
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-# Simple in-memory cache for quota checks to reduce database load
-# Format: {user_id: (allowed, error_msg, usage_stats, timestamp)}
-_quota_check_cache: Dict[str, Tuple[bool, Optional[str], Dict, float]] = {}
-QUOTA_CACHE_TTL_SECONDS = 30.0  # Cache quota checks for 30 seconds
+
+class QuotaCache:
+    """
+    Thread-safe LRU cache for quota check results.
+
+    Features:
+    - LRU (Least Recently Used) eviction policy
+    - Thread-safe operations with RLock
+    - Configurable max size and TTL
+    - Cache statistics (hits, misses, evictions)
+    - O(1) get/set operations
+    """
+
+    def __init__(self, max_size: int | None = None, ttl_seconds: float | None = None):
+        """
+        Initialize quota cache.
+
+        Args:
+            max_size: Maximum number of entries (default: from settings)
+            ttl_seconds: Time-to-live for entries in seconds (default: from settings)
+        """
+        from app.core.config import settings
+
+        self.max_size = max_size or settings.olorin.subtitle.quota_cache_max_size
+        self.ttl_seconds = ttl_seconds or settings.olorin.subtitle.quota_cache_ttl_seconds
+        self._cache: OrderedDict[str, Tuple[bool, Optional[str], Dict, float]] = OrderedDict()
+        self._lock = RLock()
+        self._stats = {"hits": 0, "misses": 0, "evictions": 0}
+
+    def get(self, user_id: str) -> Optional[Tuple[bool, Optional[str], Dict]]:
+        """
+        Get cached quota check result if still valid.
+
+        Args:
+            user_id: User ID to look up
+
+        Returns:
+            Tuple of (allowed, error_msg, usage_stats) if valid, None otherwise
+        """
+        with self._lock:
+            if user_id not in self._cache:
+                self._stats["misses"] += 1
+                return None
+
+            allowed, error_msg, usage_stats, timestamp = self._cache[user_id]
+
+            # Check if entry expired
+            if time.time() - timestamp >= self.ttl_seconds:
+                del self._cache[user_id]
+                self._stats["misses"] += 1
+                return None
+
+            # Move to end (most recently used)
+            self._cache.move_to_end(user_id)
+            self._stats["hits"] += 1
+            logger.debug(
+                f"Quota cache hit for user {user_id} (hits={self._stats['hits']}, misses={self._stats['misses']})"
+            )
+            return (allowed, error_msg, usage_stats)
+
+    def set(self, user_id: str, allowed: bool, error_msg: Optional[str], usage_stats: Dict) -> None:
+        """
+        Cache quota check result with timestamp.
+
+        Args:
+            user_id: User ID
+            allowed: Whether quota allows the action
+            error_msg: Error message if not allowed
+            usage_stats: Usage statistics
+        """
+        with self._lock:
+            # Remove if exists (to update timestamp)
+            if user_id in self._cache:
+                del self._cache[user_id]
+
+            # Add new entry
+            self._cache[user_id] = (allowed, error_msg, usage_stats, time.time())
+
+            # LRU eviction if over max size
+            if len(self._cache) > self.max_size:
+                # Remove oldest entry (first item in OrderedDict)
+                oldest_key = next(iter(self._cache))
+                del self._cache[oldest_key]
+                self._stats["evictions"] += 1
+                logger.debug(
+                    f"Quota cache evicted oldest entry (size={len(self._cache)}/{self.max_size}, evictions={self._stats['evictions']})"
+                )
+
+    def clear(self, user_id: Optional[str] = None) -> None:
+        """
+        Clear cache entry for specific user or entire cache.
+
+        Args:
+            user_id: User ID to clear, or None to clear all
+        """
+        with self._lock:
+            if user_id:
+                if user_id in self._cache:
+                    del self._cache[user_id]
+            else:
+                self._cache.clear()
+                self._stats = {"hits": 0, "misses": 0, "evictions": 0}
+
+    def stats(self) -> Dict[str, int]:
+        """Get cache statistics."""
+        with self._lock:
+            return {
+                **self._stats,
+                "size": len(self._cache),
+                "max_size": self.max_size,
+            }
+
+
+# Global quota cache instance
+_quota_cache = QuotaCache()
+
+# Allowed language codes for source_lang parameter (security validation)
+ALLOWED_LANGUAGES = {"he", "en", "ar", "es", "ru", "fr", "de", "it", "pt", "yi", "ja", "bn", "ta", "hi"}
+
+
+def validate_language_code(lang: str) -> str:
+    """
+    Validate language code to prevent injection attacks.
+
+    Args:
+        lang: Language code to validate
+
+    Returns:
+        Validated language code
+
+    Raises:
+        ValueError: If language code is invalid
+    """
+    # Check format (2-5 lowercase letters)
+    if not lang or not isinstance(lang, str):
+        raise ValueError(f"Invalid language code: must be a non-empty string")
+
+    if not lang.islower() or not lang.isalpha():
+        raise ValueError(
+            f"Invalid language code '{lang}': must contain only lowercase letters"
+        )
+
+    if len(lang) < 2 or len(lang) > 5:
+        raise ValueError(
+            f"Invalid language code '{lang}': must be 2-5 characters long"
+        )
+
+    # Check against allowed languages
+    if lang not in ALLOWED_LANGUAGES:
+        raise ValueError(
+            f"Unsupported language '{lang}'. Allowed languages: {', '.join(sorted(ALLOWED_LANGUAGES))}"
+        )
+
+    return lang
 
 
 def get_cached_quota_check(user_id: str) -> Optional[Tuple[bool, Optional[str], Dict]]:
     """Get cached quota check result if still valid."""
-    if user_id in _quota_check_cache:
-        allowed, error_msg, usage_stats, timestamp = _quota_check_cache[user_id]
-        if time.time() - timestamp < QUOTA_CACHE_TTL_SECONDS:
-            logger.debug(f"Quota check cache hit for user {user_id}")
-            return (allowed, error_msg, usage_stats)
-        else:
-            # Cache expired, remove it
-            del _quota_check_cache[user_id]
-    return None
+    return _quota_cache.get(user_id)
 
 
 def cache_quota_check(
     user_id: str, allowed: bool, error_msg: Optional[str], usage_stats: Dict
 ) -> None:
     """Cache quota check result with timestamp."""
-    _quota_check_cache[user_id] = (allowed, error_msg, usage_stats, time.time())
-    # Clean up old cache entries (keep cache size reasonable)
-    if len(_quota_check_cache) > 1000:
-        current_time = time.time()
-        expired_keys = [
-            k for k, v in _quota_check_cache.items()
-            if current_time - v[3] > QUOTA_CACHE_TTL_SECONDS
-        ]
-        for k in expired_keys:
-            del _quota_check_cache[k]
+    _quota_cache.set(user_id, allowed, error_msg, usage_stats)
 
 
 async def create_audio_stream_with_quota_updates(websocket, session, user):
     """
-    Generator yields audio chunks and updates quota every 10s.
+    Generator yields audio chunks and updates quota periodically.
     Also sends periodic pings to maintain connection health.
     """
     last_update = asyncio.get_event_loop().time()
     last_ping = asyncio.get_event_loop().time()
+    heartbeat_interval = settings.olorin.subtitle.heartbeat_interval_seconds
+    quota_update_interval = settings.olorin.subtitle.quota_update_interval_seconds
+
     try:
         while True:
             audio_chunk = await websocket.receive_bytes()
             current = asyncio.get_event_loop().time()
 
-            # Send heartbeat ping every 30 seconds
-            if current - last_ping >= 30.0:
+            # Send heartbeat ping at configured interval
+            if current - last_ping >= heartbeat_interval:
                 try:
                     await websocket.send_json({"type": "ping", "timestamp": current})
                     last_ping = current
                 except Exception as e:
                     logger.warning(f"Failed to send heartbeat ping: {e}")
 
-            if session and current - last_update >= 10.0:
+            if session and current - last_update >= quota_update_interval:
                 try:
                     await live_feature_quota_service.update_session(
                         session_id=session.session_id,
-                        audio_seconds_delta=10.0,
+                        audio_seconds_delta=quota_update_interval,
                         segments_delta=0,
                     )
 
@@ -106,8 +244,7 @@ async def create_audio_stream_with_quota_updates(websocket, session, user):
 
                     if not allowed:
                         # Clear cache on quota exceeded
-                        if str(user.id) in _quota_check_cache:
-                            del _quota_check_cache[str(user.id)]
+                        _quota_cache.clear(str(user.id))
 
                         await websocket.send_json(
                             {
@@ -180,6 +317,24 @@ async def websocket_live_subtitles(
             }
         )
         await websocket.close(code=4001, reason="Authentication failed")
+        return
+
+    # SECURITY: Validate language parameters (prevent injection attacks)
+    try:
+        source_lang = validate_language_code(source_lang)
+        target_lang = validate_language_code(target_lang)
+    except ValueError as e:
+        await websocket.send_json(
+            {
+                "type": "error",
+                "message": str(e),
+                "recoverable": False,
+            }
+        )
+        await websocket.close(code=4002, reason="Invalid language parameter")
+        logger.warning(
+            f"Invalid language parameter from user {user.id}: source={source_lang}, target={target_lang}. Error: {e}"
+        )
         return
 
     # Check rate limit (5 connections per minute)
@@ -261,6 +416,8 @@ async def websocket_live_subtitles(
 
         # Verify service availability
         if not translation_service.verify_service_availability().get("speech_to_text"):
+            # Clean up session before returning (prevent resource leak)
+            await end_quota_session(session, UsageSessionStatus.ERROR)
             await websocket.send_json(
                 {"type": "error", "message": "Speech-to-text service unavailable"}
             )
@@ -322,13 +479,20 @@ async def websocket_live_subtitles(
             logger.error(f"Error in subtitle stream ({error_type}): {str(e)}")
             await end_quota_session(session, UsageSessionStatus.ERROR)
             try:
-                # Send user-friendly error message based on error type
-                if "connection" in str(e).lower() or "timeout" in str(e).lower():
+                # Classify error based on exception type (not string matching)
+                if isinstance(e, (ConnectionError, asyncio.TimeoutError, TimeoutError)):
                     error_msg = "Connection interrupted. Please try reconnecting."
                     recoverable = True
-                elif "quota" in str(e).lower():
-                    error_msg = "Usage limit reached. Please try again later."
-                    recoverable = False
+                elif isinstance(e, WebSocketDisconnect):
+                    if e.code == 4029:  # Quota exceeded code
+                        error_msg = "Usage limit reached. Please try again later."
+                        recoverable = False
+                    else:
+                        error_msg = "Connection closed unexpectedly. Please try reconnecting."
+                        recoverable = True
+                elif isinstance(e, (ValueError, TypeError)):
+                    error_msg = "Invalid data received. Please refresh and try again."
+                    recoverable = True
                 else:
                     error_msg = "An error occurred during live translation. Please try again."
                     recoverable = True

@@ -177,6 +177,8 @@ import {
   DollarSign,
   TrendingUp,
   Mic2,
+  Lightbulb,
+  Workflow,
 } from 'lucide-react';
 
 export interface AdminPageConfig {
@@ -359,6 +361,12 @@ export const ADMIN_PAGE_CONFIG: Record<string, AdminPageConfig> = {
     iconBackgroundColor: `${colors.primary.DEFAULT}26`,
     category: 'technical',
   },
+  trivia: {
+    icon: Lightbulb,
+    iconColor: colors.warning.DEFAULT,
+    iconBackgroundColor: `${colors.warning.DEFAULT}26`,
+    category: 'technical',
+  },
   translation: {
     icon: Languages,
     iconColor: colors.primary.DEFAULT,
@@ -375,6 +383,13 @@ export const ADMIN_PAGE_CONFIG: Record<string, AdminPageConfig> = {
     icon: Grid3x3,
     iconColor: colors.primary.DEFAULT,
     iconBackgroundColor: `${colors.primary.DEFAULT}26`,
+    category: 'technical',
+  },
+
+  'live-ai-dataflow': {
+    icon: Workflow,
+    iconColor: colors.info.DEFAULT,
+    iconBackgroundColor: `${colors.info.DEFAULT}26`,
     category: 'technical',
   },
 

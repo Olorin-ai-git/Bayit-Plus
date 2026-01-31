@@ -25,6 +25,9 @@ import {
   BarChart3,
   Headphones,
   Activity,
+  Mic2,
+  Lightbulb,
+  Workflow,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -47,7 +50,18 @@ const NAV_ITEMS: NavItem[] = [
   { key: 'dashboard', labelKey: 'admin.nav.dashboard', icon: LayoutDashboard, route: '/admin' },
   { key: 'users', labelKey: 'admin.nav.users', icon: Users, route: '/admin/users' },
   { key: 'librarian', labelKey: 'admin.nav.librarian', icon: Bot, route: '/admin/librarian' },
-  { key: 'live-quotas', labelKey: 'admin.nav.liveQuotas', icon: Clock, route: '/admin/live-quotas' },
+  {
+    key: 'ai-voice',
+    labelKey: 'admin.nav.aiVoice',
+    icon: Mic2,
+    children: [
+      { key: 'voice-management', labelKey: 'admin.nav.voiceManagement', icon: Mic2, route: '/admin/voice' },
+      { key: 'live-quotas', labelKey: 'admin.nav.liveQuotas', icon: Clock, route: '/admin/live-quotas' },
+      { key: 'trivia-analytics', labelKey: 'admin.nav.triviaAnalytics', icon: Lightbulb, route: '/admin/trivia' },
+      { key: 'translations', labelKey: 'admin.nav.translations', icon: Languages, route: '/admin/translations' },
+      { key: 'live-ai-dataflow', labelKey: 'admin.nav.liveAiDataFlow', icon: Workflow, route: '/admin/live-ai-dataflow' },
+    ],
+  },
   { key: 'campaigns', labelKey: 'admin.nav.campaigns', icon: Tag, route: '/admin/campaigns' },
   {
     key: 'billing',
@@ -91,7 +105,6 @@ const NAV_ITEMS: NavItem[] = [
       { key: 'radio-stations', labelKey: 'admin.nav.radioStations', route: '/admin/radio-stations' },
       { key: 'podcasts', labelKey: 'admin.nav.podcasts', route: '/admin/podcasts' },
       { key: 'audiobooks', labelKey: 'admin.nav.audiobooks', route: '/admin/audiobooks' },
-      { key: 'translations', labelKey: 'admin.nav.translations', route: '/admin/translations' },
       { key: 'widgets', labelKey: 'admin.nav.widgets', route: '/admin/widgets' },
     ],
   },

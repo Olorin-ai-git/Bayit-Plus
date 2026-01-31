@@ -22,7 +22,6 @@ from app.models.cost_breakdown import CostBreakdown, UserCostBreakdown
 from app.models.chapters import VideoChapters
 from app.models.channel_chat import (
     ChannelChatMessage,
-    ChatTranslationCacheEntry,
     ChatReaction,
     ModerationAuditLog,
 )
@@ -108,6 +107,40 @@ class Database:
 db = Database()
 
 
+async def _cleanup_stale_indexes(database):
+    """
+    Drop indexes left behind by removed models to prevent DuplicateKeyError on startup.
+
+    ChatTranslationCacheEntry was removed (conflicted with ChatTranslationCacheDoc on the
+    same collection). Its unique index on (message_id, language) causes E11000 errors
+    because documents from the active model don't have those fields (null duplicates).
+    """
+    stale_indexes = {
+        "chat_translation_cache": ["message_language_unique_idx", "cache_ttl_idx"],
+    }
+    for collection_name, index_names in stale_indexes.items():
+        collection = database[collection_name]
+        for index_name in index_names:
+            try:
+                await collection.drop_index(index_name)
+                logger.info(
+                    "Dropped stale index",
+                    extra={"collection": collection_name, "index": index_name},
+                )
+            except Exception as e:
+                if "not found" in str(e).lower() or "IndexNotFound" in str(e):
+                    pass
+                else:
+                    logger.warning(
+                        "Failed to drop stale index",
+                        extra={
+                            "collection": collection_name,
+                            "index": index_name,
+                            "error": str(e),
+                        },
+                    )
+
+
 async def ensure_ttl_indexes(database):
     """
     Create TTL (Time To Live) indexes for automatic document expiration.
@@ -115,6 +148,9 @@ async def ensure_ttl_indexes(database):
     TTL indexes cannot be defined in Beanie model Settings because they require
     the `expireAfterSeconds` parameter. We create them manually during startup.
     """
+    # Clean up indexes from removed models first
+    await _cleanup_stale_indexes(database)
+
     try:
         # Translation cache: Expire documents based on expires_at field
         # expireAfterSeconds=0 means expire exactly at the expires_at time
@@ -128,9 +164,15 @@ async def ensure_ttl_indexes(database):
     except Exception as e:
         # Index may already exist, log warning but don't fail startup
         if "already exists" in str(e) or "IndexOptionsConflict" in str(e):
-            logger.debug(f"TTL index already exists on chat_translation_cache: {e}")
+            logger.debug(
+                "TTL index already exists on chat_translation_cache",
+                extra={"error": str(e)},
+            )
         else:
-            logger.warning(f"Failed to create TTL index on chat_translation_cache: {e}")
+            logger.warning(
+                "Failed to create TTL index on chat_translation_cache",
+                extra={"error": str(e)},
+            )
 
 
 async def connect_to_mongo():
@@ -243,7 +285,6 @@ async def connect_to_mongo():
         DirectMessage,
         # Channel Chat models (live channel public chat)
         ChannelChatMessage,
-        ChatTranslationCacheEntry,
         ChatReaction,
         ModerationAuditLog,
         # Beta 500 program models
